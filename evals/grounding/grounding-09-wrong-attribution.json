@@ -1,0 +1,67 @@
+{
+  "id": "grounding-09-wrong-attribution",
+  "plantedItemId": "b7ce385de9d7dd99",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W39",
+      "headline": "Platform and AI tooling, week 39",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "74d7fc3b7b5b3a6d",
+          "title": "loomserve v0.10.0 ships an official Helm chart",
+          "url": "https://code.brightloom.example/loomserve/releases/tag/v0.10.0",
+          "area": "AI models and tooling",
+          "summary": "loomserve v0.10.0 ships an official Helm chart with sane defaults for GPU nodes and can run several model replicas behind one service.",
+          "whyItMatters": "Values are documented in the chart README."
+        },
+        {
+          "itemId": "7a504875fdf6cb25",
+          "title": "Sablecore Kubernetes adds node auto-repair",
+          "url": "https://sablecore.example/news/node-auto-repair",
+          "area": "Platform engineering",
+          "summary": "Sablecore Kubernetes can replace a node automatically when it stays NotReady for ten minutes. Repairs drain the node first and respect pod disruption budgets.",
+          "whyItMatters": "Auto-repair is enabled per node pool."
+        },
+        {
+          "itemId": "b7ce385de9d7dd99",
+          "title": "Skerry functions can query Cobaltry tables directly",
+          "url": "https://skerry.example/blog/cobaltry-binding",
+          "area": "Platform engineering",
+          "summary": "Skerry functions can now query Cobaltry tables directly through a built-in binding that Cobaltry's engineers co-developed. It ships in Skerry 1.1.",
+          "whyItMatters": "Queries are read-only."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "74d7fc3b7b5b3a6d",
+      "sourceId": "brightloom-releases",
+      "kind": "github",
+      "url": "https://code.brightloom.example/loomserve/releases/tag/v0.10.0",
+      "title": "loomserve v0.10.0 ships an official Helm chart",
+      "summary": "loomserve v0.10.0 ships an official Helm chart with sane defaults for GPU nodes. The chart can run several model replicas behind one service. Values are documented in the chart README.",
+      "publishedAt": "2026-09-22T08:00:00.000Z"
+    },
+    {
+      "id": "7a504875fdf6cb25",
+      "sourceId": "sablecore-news",
+      "kind": "rss",
+      "url": "https://sablecore.example/news/node-auto-repair",
+      "title": "Sablecore Kubernetes adds node auto-repair",
+      "summary": "Sablecore Kubernetes can now replace a node automatically when it stays NotReady for ten minutes. Repairs drain the node first and respect pod disruption budgets. Auto-repair is enabled per node pool.",
+      "publishedAt": "2026-09-23T10:00:00.000Z"
+    },
+    {
+      "id": "b7ce385de9d7dd99",
+      "sourceId": "skerry-blog",
+      "kind": "rss",
+      "url": "https://skerry.example/blog/cobaltry-binding",
+      "title": "Skerry functions can query Cobaltry tables directly",
+      "summary": "Skerry functions can now query Cobaltry tables directly through a built-in binding. The integration was built by the Skerry team and ships in Skerry 1.1. Queries are read-only.",
+      "publishedAt": "2026-09-24T09:00:00.000Z"
+    }
+  ]
+}

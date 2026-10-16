@@ -1,0 +1,67 @@
+{
+  "id": "grounding-03-wrong-date",
+  "plantedItemId": "57debf66dd98b6af",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W39",
+      "headline": "Platform and AI tooling, week 39",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "89255bfa647fad34",
+          "title": "Anvilworks opens its remote build cache",
+          "url": "https://anvilworks.example/blog/remote-cache-open-source",
+          "area": "Platform engineering",
+          "summary": "Anvilworks has open-sourced its remote build cache server under the Apache 2.0 licence. The server speaks the standard remote execution cache protocol, so existing clients work unchanged.",
+          "whyItMatters": "A hosted version stays available as a paid plan."
+        },
+        {
+          "itemId": "0fb1dad68a082956",
+          "title": "Skerry edge runtime 1.0 ships",
+          "url": "https://skerry.example/blog/edge-runtime-1-0",
+          "area": "Platform engineering",
+          "summary": "Skerry 1.0 is the first stable release of the edge runtime and starts functions in under a millisecond by snapshotting the initialised heap.",
+          "whyItMatters": "Pricing and the free tier are unchanged."
+        },
+        {
+          "itemId": "57debf66dd98b6af",
+          "title": "Dockhaven registry ends mutable tags for official images",
+          "url": "https://dockhaven.example/news/immutable-tags",
+          "area": "Platform engineering",
+          "summary": "Dockhaven will make tags on its official images immutable from 4 October, so a pull by tag always returns the same content.",
+          "whyItMatters": "Pipelines that re-push a tag need to switch to unique tags before the change."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "89255bfa647fad34",
+      "sourceId": "anvilworks-blog",
+      "kind": "rss",
+      "url": "https://anvilworks.example/blog/remote-cache-open-source",
+      "title": "Anvilworks opens its remote build cache",
+      "summary": "Anvilworks has open-sourced its remote build cache server under the Apache 2.0 licence. The server speaks the standard remote execution cache protocol, so existing clients work unchanged. A hosted version stays available as a paid plan.",
+      "publishedAt": "2026-09-22T09:00:00.000Z"
+    },
+    {
+      "id": "0fb1dad68a082956",
+      "sourceId": "skerry-blog",
+      "kind": "rss",
+      "url": "https://skerry.example/blog/edge-runtime-1-0",
+      "title": "Skerry edge runtime 1.0 ships",
+      "summary": "Skerry 1.0 is the first stable release of the edge runtime. It starts functions in under a millisecond by snapshotting the initialised heap. Pricing and the free tier are unchanged.",
+      "publishedAt": "2026-09-23T11:00:00.000Z"
+    },
+    {
+      "id": "57debf66dd98b6af",
+      "sourceId": "dockhaven-news",
+      "kind": "rss",
+      "url": "https://dockhaven.example/news/immutable-tags",
+      "title": "Dockhaven registry ends mutable tags for official images",
+      "summary": "Dockhaven will make tags on its official images immutable from 14 October. After that date a tag can no longer be pushed over an existing image, so a pull by tag always returns the same content. Pipelines that re-push a tag need to switch to unique tags before the change.",
+      "publishedAt": "2026-09-24T14:00:00.000Z"
+    }
+  ]
+}

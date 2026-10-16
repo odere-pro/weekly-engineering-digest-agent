@@ -1,0 +1,67 @@
+{
+  "id": "grounding-07-wrong-number",
+  "plantedItemId": "8e3f29bcf4bf76aa",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W37",
+      "headline": "Platform and AI tooling, week 37",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "7df3d47793944efa",
+          "title": "Dockhaven registry adds pull-through caching",
+          "url": "https://dockhaven.example/news/pull-through-cache",
+          "area": "Platform engineering",
+          "summary": "Dockhaven can act as a pull-through cache for other registries and keeps cached images for 30 days after the last pull.",
+          "whyItMatters": "Cache hits do not count against the pull rate limit."
+        },
+        {
+          "itemId": "8e3f29bcf4bf76aa",
+          "title": "Anvilworks raises cache limits",
+          "url": "https://anvilworks.example/blog/raised-cache-limits",
+          "area": "Platform engineering",
+          "summary": "Anvilworks raises the maximum size of a single remote cache entry from 512 MB to 20 GB. Larger entries are stored in chunks and fetched in parallel.",
+          "whyItMatters": "Existing caches need no migration."
+        },
+        {
+          "itemId": "5e1e009a9101a85c",
+          "title": "Ploverly agents can stream tool results",
+          "url": "https://blog.ploverly.example/2026/09/streaming-tool-results",
+          "area": "AI models and tooling",
+          "summary": "Ploverly 0.14 lets tools stream partial results back to the agent while they run, and the agent can stop a tool early once it has what it needs.",
+          "whyItMatters": "Streaming is opt-in per tool."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "7df3d47793944efa",
+      "sourceId": "dockhaven-news",
+      "kind": "rss",
+      "url": "https://dockhaven.example/news/pull-through-cache",
+      "title": "Dockhaven registry adds pull-through caching",
+      "summary": "Dockhaven can now act as a pull-through cache for other registries. Cached images are kept for 30 days after the last pull. Cache hits do not count against the pull rate limit.",
+      "publishedAt": "2026-09-08T09:00:00.000Z"
+    },
+    {
+      "id": "8e3f29bcf4bf76aa",
+      "sourceId": "anvilworks-blog",
+      "kind": "rss",
+      "url": "https://anvilworks.example/blog/raised-cache-limits",
+      "title": "Anvilworks raises cache limits",
+      "summary": "Anvilworks raises the maximum size of a single remote cache entry from 512 MB to 2 GB. Larger entries are stored in chunks and fetched in parallel. Existing caches need no migration.",
+      "publishedAt": "2026-09-09T11:00:00.000Z"
+    },
+    {
+      "id": "5e1e009a9101a85c",
+      "sourceId": "ploverly-blog",
+      "kind": "rss",
+      "url": "https://blog.ploverly.example/2026/09/streaming-tool-results",
+      "title": "Ploverly agents can stream tool results",
+      "summary": "Ploverly 0.14 lets tools stream partial results back to the agent while they run. The agent can stop a tool early once it has what it needs. Streaming is opt-in per tool.",
+      "publishedAt": "2026-09-10T15:00:00.000Z"
+    }
+  ]
+}

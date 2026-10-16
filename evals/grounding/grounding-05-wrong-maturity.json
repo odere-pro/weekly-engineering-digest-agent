@@ -1,0 +1,67 @@
+{
+  "id": "grounding-05-wrong-maturity",
+  "plantedItemId": "772a13293f4857b6",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W41",
+      "headline": "Platform and AI tooling, week 41",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "772a13293f4857b6",
+          "title": "Ploverly previews durable agent runs",
+          "url": "https://blog.ploverly.example/2026/10/durable-agent-runs-preview",
+          "area": "AI models and tooling",
+          "summary": "Ploverly has made durable agent runs generally available. A run's state is checkpointed after every tool call, so a crashed worker resumes where it stopped.",
+          "whyItMatters": "A crashed worker resumes where it stopped instead of starting over."
+        },
+        {
+          "itemId": "2aa2b90b01814f1b",
+          "title": "Cobaltry adds incremental models",
+          "url": "https://cobaltry.example/blog/incremental-models",
+          "area": "Platform engineering",
+          "summary": "Cobaltry 5.1 adds incremental models that process only the rows that changed since the last run. A full refresh is still available with a flag.",
+          "whyItMatters": "Incremental runs record their watermark in the project state."
+        },
+        {
+          "itemId": "33dd8072e040e578",
+          "title": "driftmark v2.0.0 renames the scorer API",
+          "url": "https://code.driftmark.example/driftmark/releases/tag/v2.0.0",
+          "area": "AI models and tooling",
+          "summary": "driftmark v2.0.0 renames Scorer.run to Scorer.evaluate and removes the old name. A codemod script rewrites call sites.",
+          "whyItMatters": "Results files keep the same format."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "772a13293f4857b6",
+      "sourceId": "ploverly-blog",
+      "kind": "rss",
+      "url": "https://blog.ploverly.example/2026/10/durable-agent-runs-preview",
+      "title": "Ploverly previews durable agent runs",
+      "summary": "Ploverly has opened a public preview of durable agent runs. A run's state is checkpointed after every tool call, so a crashed worker resumes where it stopped. The preview is free, the API may change before general availability, and it is not recommended for production workloads.",
+      "publishedAt": "2026-10-06T09:00:00.000Z"
+    },
+    {
+      "id": "2aa2b90b01814f1b",
+      "sourceId": "cobaltry-blog",
+      "kind": "rss",
+      "url": "https://cobaltry.example/blog/incremental-models",
+      "title": "Cobaltry adds incremental models",
+      "summary": "Cobaltry 5.1 adds incremental models that process only the rows that changed since the last run. A full refresh is still available with a flag. Incremental runs record their watermark in the project state.",
+      "publishedAt": "2026-10-07T12:00:00.000Z"
+    },
+    {
+      "id": "33dd8072e040e578",
+      "sourceId": "driftmark-releases",
+      "kind": "github",
+      "url": "https://code.driftmark.example/driftmark/releases/tag/v2.0.0",
+      "title": "driftmark v2.0.0 renames the scorer API",
+      "summary": "driftmark v2.0.0 renames the scorer API: Scorer.run becomes Scorer.evaluate and the old name is removed. A codemod script rewrites call sites. Results files keep the same format.",
+      "publishedAt": "2026-10-08T08:30:00.000Z"
+    }
+  ]
+}

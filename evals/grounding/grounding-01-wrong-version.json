@@ -1,0 +1,67 @@
+{
+  "id": "grounding-01-wrong-version",
+  "plantedItemId": "a2b3556d63f888ab",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W37",
+      "headline": "Platform and AI tooling, week 37",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "fec259b8a197c153",
+          "title": "tidalforge v1.9.0: drift detection and faster plans",
+          "url": "https://code.tidalforge.example/tidalforge/releases/tag/v1.9.0",
+          "area": "Platform engineering",
+          "summary": "tidalforge v1.9.0 adds a drift detection command that compares live infrastructure with the saved state and prints the differences. Plans on large workspaces run faster because state is read in parallel.",
+          "whyItMatters": "Teams can see where live infrastructure has drifted from the saved state."
+        },
+        {
+          "itemId": "a2b3556d63f888ab",
+          "title": "Ferrowind adds dynamic database leases and a rotation audit log",
+          "url": "https://blog.ferrowind.example/2026/09/dynamic-database-leases",
+          "area": "Platform engineering",
+          "summary": "Ferrowind 2.7 adds dynamic database leases, so applications request short-lived credentials that expire on their own. A new audit log records every secret rotation with the caller and the time.",
+          "whyItMatters": "Rotations now leave an audit trail with the caller and the time."
+        },
+        {
+          "itemId": "a7928b07f00b5c83",
+          "title": "Mistvale queue gets log compaction for streams",
+          "url": "https://mistvale.example/blog/streams-log-compaction",
+          "area": "Platform engineering",
+          "summary": "Mistvale Queue adds log compaction for streams, keeping only the latest message per key so topics stop growing without bound. Compaction runs in the background and can be paused per stream.",
+          "whyItMatters": "Topics stop growing without bound."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "fec259b8a197c153",
+      "sourceId": "tidalforge-releases",
+      "kind": "github",
+      "url": "https://code.tidalforge.example/tidalforge/releases/tag/v1.9.0",
+      "title": "tidalforge v1.9.0: drift detection and faster plans",
+      "summary": "tidalforge v1.9.0 adds a drift detection command that compares live infrastructure with the saved state and prints the differences. Plan time on large workspaces drops because state is now read in parallel. The release also fixes a crash when a module output is null.",
+      "publishedAt": "2026-09-08T10:00:00.000Z"
+    },
+    {
+      "id": "a2b3556d63f888ab",
+      "sourceId": "ferrowind-blog",
+      "kind": "rss",
+      "url": "https://blog.ferrowind.example/2026/09/dynamic-database-leases",
+      "title": "Ferrowind adds dynamic database leases and a rotation audit log",
+      "summary": "Ferrowind 2.6 adds dynamic database leases: applications request short-lived credentials that expire on their own. A new audit log records every secret rotation with the caller and the time. Clusters on 2.5 can upgrade with a rolling restart.",
+      "publishedAt": "2026-09-09T09:00:00.000Z"
+    },
+    {
+      "id": "a7928b07f00b5c83",
+      "sourceId": "mistvale-blog",
+      "kind": "rss",
+      "url": "https://mistvale.example/blog/streams-log-compaction",
+      "title": "Mistvale queue gets log compaction for streams",
+      "summary": "Mistvale Queue adds log compaction for streams: only the latest message per key is kept, which keeps topics from growing without bound. Compaction runs in the background and can be paused per stream. The feature is generally available in the current release.",
+      "publishedAt": "2026-09-10T13:00:00.000Z"
+    }
+  ]
+}

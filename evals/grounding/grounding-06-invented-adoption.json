@@ -1,0 +1,67 @@
+{
+  "id": "grounding-06-invented-adoption",
+  "plantedItemId": "366019640edf3089",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W36",
+      "headline": "Platform and AI tooling, week 36",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "c14d9993c3745a7f",
+          "title": "Emberline CI adds ARM runners",
+          "url": "https://blog.emberline.example/2026/09/arm-runners",
+          "area": "Platform engineering",
+          "summary": "Emberline CI now offers ARM runners in four sizes, from 2 to 16 vCPUs, and they cost less per minute than x86 runners of the same size.",
+          "whyItMatters": "Container images need an ARM variant to run on them."
+        },
+        {
+          "itemId": "a9beef70febe47e3",
+          "title": "Skerry adds cron triggers",
+          "url": "https://skerry.example/blog/cron-triggers",
+          "area": "Platform engineering",
+          "summary": "Skerry functions can now run on a schedule with cron triggers defined in the project file. Schedules run in UTC.",
+          "whyItMatters": "A trigger that fails is retried up to three times."
+        },
+        {
+          "itemId": "366019640edf3089",
+          "title": "Lumenstack adds adaptive log sampling",
+          "url": "https://lumenstack.example/blog/adaptive-log-sampling",
+          "area": "Platform engineering",
+          "summary": "Lumenstack's agent can now sample logs adaptively, keeping every error and a falling share of repeated info lines. The sampling rate is set per service and can be changed without a restart.",
+          "whyItMatters": "More than 300 companies already run it in production."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "c14d9993c3745a7f",
+      "sourceId": "emberline-blog",
+      "kind": "rss",
+      "url": "https://blog.emberline.example/2026/09/arm-runners",
+      "title": "Emberline CI adds ARM runners",
+      "summary": "Emberline CI now offers ARM runners in four sizes, from 2 to 16 vCPUs. ARM runners cost less per minute than x86 runners of the same size. Container images need an ARM variant to run on them.",
+      "publishedAt": "2026-09-01T09:00:00.000Z"
+    },
+    {
+      "id": "a9beef70febe47e3",
+      "sourceId": "skerry-blog",
+      "kind": "rss",
+      "url": "https://skerry.example/blog/cron-triggers",
+      "title": "Skerry adds cron triggers",
+      "summary": "Skerry functions can now run on a schedule with cron triggers. Schedules are defined in the project file and run in UTC. A trigger that fails is retried up to three times.",
+      "publishedAt": "2026-09-02T10:00:00.000Z"
+    },
+    {
+      "id": "366019640edf3089",
+      "sourceId": "lumenstack-blog",
+      "kind": "rss",
+      "url": "https://lumenstack.example/blog/adaptive-log-sampling",
+      "title": "Lumenstack adds adaptive log sampling",
+      "summary": "Lumenstack's agent can now sample logs adaptively: it keeps every error and a falling share of repeated info lines. The sampling rate is set per service and can be changed without a restart. The feature is off by default.",
+      "publishedAt": "2026-09-03T13:00:00.000Z"
+    }
+  ]
+}

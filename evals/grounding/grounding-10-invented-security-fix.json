@@ -1,0 +1,67 @@
+{
+  "id": "grounding-10-invented-security-fix",
+  "plantedItemId": "c1185d6d3e58aed7",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W40",
+      "headline": "Platform and AI tooling, week 40",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "09b97387c5bb6ac2",
+          "title": "Emberline CI caches dependencies by lockfile hash",
+          "url": "https://blog.emberline.example/2026/10/lockfile-cache-keys",
+          "area": "Platform engineering",
+          "summary": "Emberline CI keys its dependency cache on the hash of the lockfile, so a cache is reused only when dependencies are unchanged. Teams can still set a manual key.",
+          "whyItMatters": "Cache restore happens before checkout finishes."
+        },
+        {
+          "itemId": "c1185d6d3e58aed7",
+          "title": "Ferrowind 2.6.1 fixes a token renewal bug",
+          "url": "https://blog.ferrowind.example/2026/10/ferrowind-2-6-1",
+          "area": "Platform engineering",
+          "summary": "Ferrowind 2.6.1 fixes a bug where renewing a token could reset its remaining lease to the default. It also patches a critical remote code execution vulnerability.",
+          "whyItMatters": "There are no configuration changes."
+        },
+        {
+          "itemId": "80fc2f24ea05c167",
+          "title": "Thistledown gateway adds per-key spend budgets",
+          "url": "https://thistledown.example/blog/per-key-spend-budgets",
+          "area": "AI models and tooling",
+          "summary": "Thistledown Gateway lets admins set a monthly spend budget on each API key. A key that reaches its budget is blocked until the next month or until an admin raises the limit.",
+          "whyItMatters": "Budgets can be edited through the admin API."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "09b97387c5bb6ac2",
+      "sourceId": "emberline-blog",
+      "kind": "rss",
+      "url": "https://blog.emberline.example/2026/10/lockfile-cache-keys",
+      "title": "Emberline CI caches dependencies by lockfile hash",
+      "summary": "Emberline CI now keys its dependency cache on the hash of the lockfile, so a cache is reused only when dependencies are unchanged. Cache restore happens before checkout finishes. Teams can still set a manual key.",
+      "publishedAt": "2026-09-29T09:00:00.000Z"
+    },
+    {
+      "id": "c1185d6d3e58aed7",
+      "sourceId": "ferrowind-blog",
+      "kind": "rss",
+      "url": "https://blog.ferrowind.example/2026/10/ferrowind-2-6-1",
+      "title": "Ferrowind 2.6.1 fixes a token renewal bug",
+      "summary": "Ferrowind 2.6.1 is a bug-fix release. It fixes a bug where renewing a token could reset its remaining lease to the default. There are no configuration changes.",
+      "publishedAt": "2026-09-30T10:00:00.000Z"
+    },
+    {
+      "id": "80fc2f24ea05c167",
+      "sourceId": "thistledown-blog",
+      "kind": "rss",
+      "url": "https://thistledown.example/blog/per-key-spend-budgets",
+      "title": "Thistledown gateway adds per-key spend budgets",
+      "summary": "Thistledown Gateway lets admins set a monthly spend budget on each API key. A key that reaches its budget is blocked until the next month or until an admin raises the limit. Budgets can be edited through the admin API.",
+      "publishedAt": "2026-10-01T11:00:00.000Z"
+    }
+  ]
+}

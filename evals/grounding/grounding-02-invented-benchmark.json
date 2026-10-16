@@ -1,0 +1,67 @@
+{
+  "id": "grounding-02-invented-benchmark",
+  "plantedItemId": "b729b102e2b49037",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W38",
+      "headline": "Platform and AI tooling, week 38",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "b729b102e2b49037",
+          "title": "loomserve 0.9 adds speculative decoding",
+          "url": "https://code.brightloom.example/loomserve/releases/tag/v0.9.0",
+          "area": "AI models and tooling",
+          "summary": "loomserve 0.9 adds speculative decoding with a small draft model and cuts generation latency by 38 percent in the project's own benchmarks. It also exposes queue depth as a metric.",
+          "whyItMatters": "Operators enable it per model in the config file."
+        },
+        {
+          "itemId": "fcac0fea0b60d648",
+          "title": "Emberline CI makes merge queues generally available",
+          "url": "https://blog.emberline.example/2026/09/merge-queues-ga",
+          "area": "Platform engineering",
+          "summary": "Emberline CI merge queues are generally available. Each pull request is built on top of the ones ahead of it and merged only if checks pass.",
+          "whyItMatters": "Teams can set a maximum queue length per branch."
+        },
+        {
+          "itemId": "fd0875f82d111617",
+          "title": "Sablecore Kubernetes adds support for 1.37",
+          "url": "https://sablecore.example/news/kubernetes-1-37-support",
+          "area": "Platform engineering",
+          "summary": "Sablecore Kubernetes 4.2 supports upstream Kubernetes 1.37 and upgrades the control plane from 1.36 one node at a time. Support for 1.34 ends with this release.",
+          "whyItMatters": "Support for 1.34 ends with this release."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "b729b102e2b49037",
+      "sourceId": "brightloom-releases",
+      "kind": "github",
+      "url": "https://code.brightloom.example/loomserve/releases/tag/v0.9.0",
+      "title": "loomserve 0.9 adds speculative decoding",
+      "summary": "loomserve 0.9 adds speculative decoding with a small draft model, enabled per model in the config file. The release also adds a metrics endpoint for queue depth and fixes memory growth with long prompts.",
+      "publishedAt": "2026-09-15T08:00:00.000Z"
+    },
+    {
+      "id": "fcac0fea0b60d648",
+      "sourceId": "emberline-blog",
+      "kind": "rss",
+      "url": "https://blog.emberline.example/2026/09/merge-queues-ga",
+      "title": "Emberline CI makes merge queues generally available",
+      "summary": "Emberline CI merge queues are now generally available. The queue builds each pull request on top of the ones ahead of it and merges only if checks pass. Teams can set a maximum queue length per branch.",
+      "publishedAt": "2026-09-16T10:30:00.000Z"
+    },
+    {
+      "id": "fd0875f82d111617",
+      "sourceId": "sablecore-news",
+      "kind": "rss",
+      "url": "https://sablecore.example/news/kubernetes-1-37-support",
+      "title": "Sablecore Kubernetes adds support for 1.37",
+      "summary": "Sablecore Kubernetes 4.2 adds support for upstream Kubernetes 1.37. Control plane upgrades from 1.36 are applied one node at a time. Support for 1.34 ends with this release.",
+      "publishedAt": "2026-09-17T09:00:00.000Z"
+    }
+  ]
+}

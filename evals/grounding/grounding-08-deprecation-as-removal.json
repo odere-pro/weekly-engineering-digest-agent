@@ -1,0 +1,67 @@
+{
+  "id": "grounding-08-deprecation-as-removal",
+  "plantedItemId": "d51a0ff3d56d37f0",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W38",
+      "headline": "Platform and AI tooling, week 38",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "d51a0ff3d56d37f0",
+          "title": "Thistledown deprecates its v1 completion route",
+          "url": "https://thistledown.example/blog/v1-route-deprecation",
+          "area": "AI models and tooling",
+          "summary": "Thistledown Gateway has removed the v1 completion route in favour of v2, and requests to it now fail.",
+          "whyItMatters": "Teams calling v1 need to move to v2."
+        },
+        {
+          "itemId": "232ce02e6c1671b1",
+          "title": "driftmark v2.1.0 adds run comparison",
+          "url": "https://code.driftmark.example/driftmark/releases/tag/v2.1.0",
+          "area": "AI models and tooling",
+          "summary": "driftmark v2.1.0 adds a compare command that lines up two runs and lists the cases whose scores changed. Output can be written as Markdown or JSON.",
+          "whyItMatters": "The command exits non-zero when a score drops below a set threshold."
+        },
+        {
+          "itemId": "6148441edbbb1bd0",
+          "title": "Mistvale queue adds tiered storage",
+          "url": "https://mistvale.example/blog/tiered-storage",
+          "area": "Platform engineering",
+          "summary": "Mistvale Queue can move old segments to object storage and read them back on demand, so local disk keeps only the most recent segments.",
+          "whyItMatters": "Tiered storage is configured per topic."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "d51a0ff3d56d37f0",
+      "sourceId": "thistledown-blog",
+      "kind": "rss",
+      "url": "https://thistledown.example/blog/v1-route-deprecation",
+      "title": "Thistledown deprecates its v1 completion route",
+      "summary": "Thistledown Gateway deprecates the v1 completion route in favour of v2. The v1 route keeps working and will be removed in the next major release. Requests to v1 now return a deprecation header.",
+      "publishedAt": "2026-09-15T09:30:00.000Z"
+    },
+    {
+      "id": "232ce02e6c1671b1",
+      "sourceId": "driftmark-releases",
+      "kind": "github",
+      "url": "https://code.driftmark.example/driftmark/releases/tag/v2.1.0",
+      "title": "driftmark v2.1.0 adds run comparison",
+      "summary": "driftmark v2.1.0 adds a compare command that lines up two runs and lists the cases whose scores changed. Output can be written as Markdown or JSON. The command exits non-zero when a score drops below a set threshold.",
+      "publishedAt": "2026-09-16T08:00:00.000Z"
+    },
+    {
+      "id": "6148441edbbb1bd0",
+      "sourceId": "mistvale-blog",
+      "kind": "rss",
+      "url": "https://mistvale.example/blog/tiered-storage",
+      "title": "Mistvale queue adds tiered storage",
+      "summary": "Mistvale Queue can move old segments to object storage and read them back on demand. Local disk keeps only the most recent segments. Tiered storage is configured per topic.",
+      "publishedAt": "2026-09-17T12:00:00.000Z"
+    }
+  ]
+}

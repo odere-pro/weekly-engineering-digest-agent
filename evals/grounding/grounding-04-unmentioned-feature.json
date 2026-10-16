@@ -1,0 +1,67 @@
+{
+  "id": "grounding-04-unmentioned-feature",
+  "plantedItemId": "3ca46778ce166e50",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W40",
+      "headline": "Platform and AI tooling, week 40",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "81bf4003c4f53c01",
+          "title": "Lumenstack ships a hardened telemetry collector build",
+          "url": "https://lumenstack.example/blog/hardened-collector-build",
+          "area": "Platform engineering",
+          "summary": "Lumenstack's hardened telemetry collector build runs as a non-root user and ships only the receivers and exporters most teams use. The image is signed so its provenance can be verified.",
+          "whyItMatters": "The image is under 50 MB."
+        },
+        {
+          "itemId": "3ca46778ce166e50",
+          "title": "wrenfield v0.12.0 adds filtered search",
+          "url": "https://code.wrenfield.example/wrenfield/releases/tag/v0.12.0",
+          "area": "AI models and tooling",
+          "summary": "wrenfield v0.12.0 adds filtered search, so queries can restrict results by metadata, and also adds GPU-accelerated index building. Filters are evaluated during the graph walk.",
+          "whyItMatters": "The release also drops support for Python 3.9."
+        },
+        {
+          "itemId": "19dc604d403e95cc",
+          "title": "Thistledown gateway adds model fallbacks",
+          "url": "https://thistledown.example/blog/gateway-model-fallbacks",
+          "area": "AI models and tooling",
+          "summary": "Thistledown Gateway can fall back to a second model when the first returns an error or times out. Fallback chains are defined per route in the config.",
+          "whyItMatters": "Each fallback attempt is logged with the reason."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "81bf4003c4f53c01",
+      "sourceId": "lumenstack-blog",
+      "kind": "rss",
+      "url": "https://lumenstack.example/blog/hardened-collector-build",
+      "title": "Lumenstack ships a hardened telemetry collector build",
+      "summary": "Lumenstack has published a hardened build of its telemetry collector. The build runs as a non-root user, ships only the receivers and exporters most teams use, and is signed so its provenance can be verified. The image is under 50 MB.",
+      "publishedAt": "2026-09-29T09:00:00.000Z"
+    },
+    {
+      "id": "3ca46778ce166e50",
+      "sourceId": "wrenfield-releases",
+      "kind": "github",
+      "url": "https://code.wrenfield.example/wrenfield/releases/tag/v0.12.0",
+      "title": "wrenfield v0.12.0 adds filtered search",
+      "summary": "wrenfield v0.12.0 adds filtered search: a query can restrict results to documents whose metadata matches a filter expression. Filters are evaluated during the graph walk, not after it. The release also drops support for Python 3.9.",
+      "publishedAt": "2026-09-30T08:00:00.000Z"
+    },
+    {
+      "id": "19dc604d403e95cc",
+      "sourceId": "thistledown-blog",
+      "kind": "rss",
+      "url": "https://thistledown.example/blog/gateway-model-fallbacks",
+      "title": "Thistledown gateway adds model fallbacks",
+      "summary": "Thistledown Gateway can now fall back to a second model when the first returns an error or times out. Fallback chains are defined per route in the config. Each fallback attempt is logged with the reason.",
+      "publishedAt": "2026-10-01T10:00:00.000Z"
+    }
+  ]
+}
