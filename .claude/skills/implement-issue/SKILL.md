@@ -56,11 +56,16 @@ Fix every CRITICAL and HIGH finding, then re-run the gate.
 
 ## 4. Commit (one signed commit)
 
+`main` may have moved while you worked, so rebase first and squash onto the merge base
+(never `git reset --soft main` directly: it would revert whatever landed on main meanwhile).
+
 ```bash
-git add -A
-git reset --soft main    # squash anything committed so far
+git add -A && git commit -q -m "wip" || true      # park all work in a commit
+git rebase main                                     # bring in the latest main
+git reset --soft "$(git merge-base HEAD main)"      # squash everything since main
 git commit -m "<type>(<area>): <what> ($ARGUMENTS)"
-git verify-commit HEAD   # must say Good signature for odere.pro@gmail.com
+node "$PLAN/bin/check-owns.mjs" $ARGUMENTS          # still only owned files
+git verify-commit HEAD                              # Good signature for odere.pro@gmail.com
 ```
 
 - Subject ≤ 72 chars, imperative. Body only if the why is not obvious (≤ 10 lines).
