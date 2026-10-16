@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": { "commit": "", "pr": "" },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm coverage:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm digest:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(pnpm vitest:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git rebase main:*)",
+      "Bash(git merge --ff-only:*)",
+      "Bash(git switch:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git reset --soft:*)",
+      "Bash(git verify-commit:*)",
+      "Bash(node docs/plan/bin/*)",
+      "Bash(curl -s http://localhost:11434/*)",
+      "Bash(ollama list)",
+      "Bash(ollama show:*)"
+    ],
+    "ask": ["Bash(git push:*)", "Bash(ollama pull:*)", "Bash(docker compose:*)"],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Bash(cat .env*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}\"/.claude/hooks/guard-frozen.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}\"/.claude/hooks/format.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
