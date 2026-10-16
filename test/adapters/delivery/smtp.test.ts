@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createSmtpDelivery, type SmtpOptions } from '../../../src/adapters/delivery/smtp.js';
+import {
+  createSmtpDelivery,
+  type SmtpOptions,
+  type SmtpTransportConfig,
+} from '../../../src/adapters/delivery/smtp.js';
 
 const nodemailer = vi.hoisted(() => ({ createTransport: vi.fn() }));
 vi.mock('nodemailer', () => nodemailer);
@@ -44,6 +48,7 @@ describe('createSmtpDelivery', () => {
       host: 'smtp.example.test',
       port: 587,
       secure: false,
+      requireTLS: true,
       auth: { user: 'digest@example.test', pass: PASSWORD },
       ...TIMEOUTS,
     });
@@ -59,10 +64,23 @@ describe('createSmtpDelivery', () => {
       host: 'smtp.example.test',
       port: 587,
       secure: false,
+      requireTLS: true,
       auth: { user: 'digest@example.test', pass: PASSWORD },
       ...TIMEOUTS,
     });
     expect(sendMail).toHaveBeenCalledOnce();
+  });
+
+  it('requires STARTTLS by default and lets a local mail catcher opt out', () => {
+    const seen: boolean[] = [];
+    const createTransport = (config: SmtpTransportConfig) => {
+      seen.push(config.requireTLS);
+      return { sendMail: vi.fn() };
+    };
+    createSmtpDelivery({ ...baseOptions, createTransport });
+    createSmtpDelivery({ ...baseOptions, requireTLS: false, createTransport });
+
+    expect(seen).toEqual([true, false]);
   });
 
   it('refuses to start without any recipient', () => {

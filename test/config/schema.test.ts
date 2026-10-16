@@ -56,6 +56,20 @@ describe('config schema', () => {
     ).toBe(true);
   });
 
+  it('requires TLS for email delivery unless switched off', () => {
+    const email = {
+      host: 'smtp.example.com',
+      user: 'u',
+      from: 'a@example.com',
+      to: ['b@example.com'],
+    };
+    expect(makeConfig({ delivery: { email } }).delivery.email?.requireTLS).toBe(true);
+    expect(
+      makeConfig({ delivery: { email: { ...email, requireTLS: false } } }).delivery.email
+        ?.requireTLS,
+    ).toBe(false);
+  });
+
   it('parses digest.config.example.json', () => {
     const raw: unknown = JSON.parse(readFileSync('digest.config.example.json', 'utf8'));
     expect(ConfigSchema.safeParse(raw).success).toBe(true);

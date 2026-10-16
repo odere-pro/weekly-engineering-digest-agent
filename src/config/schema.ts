@@ -50,6 +50,8 @@ export const EmailDeliverySchema = z.object({
   host: z.string().min(1),
   port: z.number().int().min(1).max(65535).default(587),
   secure: z.boolean().default(false),
+  /** Refuse to send credentials unless the server upgrades to TLS (STARTTLS). Off only for local mail catchers. */
+  requireTLS: z.boolean().default(true),
   user: z.string().min(1),
   from: z.email(),
   to: z.array(z.email()).min(1),

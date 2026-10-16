@@ -11,6 +11,7 @@ export interface SmtpTransportConfig {
   host: string;
   port: number;
   secure: boolean;
+  requireTLS: boolean;
   auth: { user: string; pass: string };
   connectionTimeout: number;
   greetingTimeout: number;
@@ -33,6 +34,8 @@ export interface SmtpOptions {
   host: string;
   port: number;
   secure: boolean;
+  /** Require STARTTLS before AUTH (default true), so the password never travels in cleartext. */
+  requireTLS?: boolean;
   user: string;
   /** From .env only. */
   password: string;
@@ -52,6 +55,7 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
     host: options.host,
     port: options.port,
     secure: options.secure,
+    requireTLS: options.requireTLS ?? true,
     auth: { user: options.user, pass: options.password },
     connectionTimeout: CONNECTION_TIMEOUT_MS,
     greetingTimeout: GREETING_TIMEOUT_MS,
