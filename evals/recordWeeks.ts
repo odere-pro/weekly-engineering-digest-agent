@@ -149,8 +149,15 @@ export async function recordWeeks(
   );
 
   const buckets = bucketByWeek(collected.items, weekIds);
-  const records = await Promise.all(
+  // allSettled: when one week fails, the others still finish writing before this rejects, so no
+  // write outlives the call (a caller cleaning up the folder would otherwise race them).
+  const settled = await Promise.allSettled(
     [...buckets].map(([weekId, items]) => recordWeek(join(outDir, weekId), weekId, items)),
+  );
+  const failure = settled.find((result) => result.status === 'rejected');
+  if (failure) throw failure.reason;
+  const records = settled.flatMap((result) =>
+    result.status === 'fulfilled' ? [result.value] : [],
   );
   for (const line of reportLines(outDir, records, resolved, collected.failedSources)) log(line);
   return weekIds;
