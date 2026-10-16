@@ -13,6 +13,7 @@ case "$file" in
 esac
 
 root="${CLAUDE_PROJECT_DIR:-$PWD}"
+case "$file" in "$root"/*) ;; *) exit 0 ;; esac  # only files inside this checkout
 cd "$root" 2>/dev/null || exit 0
 
 [ -x node_modules/.bin/prettier ] && node_modules/.bin/prettier --write --log-level silent "$file" >/dev/null 2>&1
