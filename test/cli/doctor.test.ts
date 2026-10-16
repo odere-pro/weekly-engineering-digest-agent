@@ -285,7 +285,7 @@ describe('doctorCommand', () => {
     });
 
     it('accepts exactly the minimum version and a version with a suffix', async () => {
-      const exact = await runDoctor({ health: { version: '0.35.1' } });
+      const exact = await runDoctor({ health: { version: '0.40.0' } });
       const suffixed = await runDoctor({ health: { version: '0.40.0-rc1' } });
 
       expect(resultFor(exact.text, '✓', 'ollama version:')).toBeDefined();

@@ -38,7 +38,7 @@ export const PROFILES: Readonly<Record<ProfileName, ModelProfile>> = {
     writers: [MODEL_TAGS.gemma31bMlx, MODEL_TAGS.nemotronLightningMlx],
     judge: MODEL_TAGS.clef,
     requiresAppleSilicon: true,
-    minOllamaVersion: '0.35.1',
+    minOllamaVersion: '0.40.0',
   },
   fast: {
     name: 'fast',

@@ -30,8 +30,14 @@ eval:
 history:
 	pnpm digest history
 
+# The app in a container cannot see the host; tell it which OS/CPU Ollama runs on.
+export DIGEST_HOST_OS := $(shell uname -s | tr A-Z a-z)
+export DIGEST_HOST_ARCH := $(shell uname -m)
+
 docker-init:
-	docker compose run --rm digest init
+	@[ -e digest.config.json ] || touch digest.config.json
+	@[ -e .env ] || (umask 077 && touch .env)
+	docker compose run --rm --no-deps digest init
 
 docker-up:
 	docker compose up -d
@@ -40,4 +46,4 @@ docker-down:
 	docker compose down
 
 tracing-up:
-	docker compose --profile tracing up -d
+	OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces docker compose --profile tracing up -d

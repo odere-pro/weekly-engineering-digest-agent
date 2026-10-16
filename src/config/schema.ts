@@ -132,5 +132,12 @@ export const EnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   /** Set to enable OpenTelemetry traces (e.g. http://localhost:4318/v1/traces). */
   OTEL_EXPORTER_OTLP_ENDPOINT: z.url().optional(),
+  /**
+   * The OS and CPU of the machine Ollama runs on, when it differs from this process (the app in
+   * a Linux container, Ollama on a Mac host). Values as `uname -s` / `uname -m` or Node's
+   * `process.platform` / `process.arch`; `make docker-*` exports them.
+   */
+  DIGEST_HOST_OS: z.string().min(1).optional(),
+  DIGEST_HOST_ARCH: z.string().min(1).optional(),
 });
 export type Env = z.infer<typeof EnvSchema>;
