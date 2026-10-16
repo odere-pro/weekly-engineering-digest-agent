@@ -15,7 +15,11 @@ const TOKEN = 'ghp_SECRET_TOKEN_0123456789';
 const ATOM_URL = 'https://github.com/acme/widgets/releases.atom';
 const REST_URL = 'https://api.github.com/repos/acme/widgets/releases?per_page=20';
 
-const source: Source = { id: 'acme-widgets', kind: 'github', url: 'https://github.com/acme/widgets' };
+const source: Source = {
+  id: 'acme-widgets',
+  kind: 'github',
+  url: 'https://github.com/acme/widgets',
+};
 const window: FetchWindow = {
   since: new Date('2026-10-05T00:00:00Z'),
   until: new Date('2026-10-15T00:00:00Z'),
@@ -255,7 +259,12 @@ describe('createGithubReleasesFetcher', () => {
         atomEntry('v1.0.2', 'not a date'),
         atomEntry('v1.0.3', '2026-10-08T00:00:00Z', 'v1.0.3', ''),
         atomEntry('v1.0.4', '2026-10-08T00:00:00Z', 'v1.0.4', 'ftp://example.com/v1.0.4'),
-        atomEntry('v1.0.6', '2026-10-08T00:00:00Z', 'v1.0.6', 'https://evil.example/releases/tag/v1'),
+        atomEntry(
+          'v1.0.6',
+          '2026-10-08T00:00:00Z',
+          'v1.0.6',
+          'https://evil.example/releases/tag/v1',
+        ),
         atomEntry('v1.0.5', '2026-10-08T00:00:00Z'),
       ]);
       const { fetch } = fakeFetch(() => ok(feed));
@@ -294,9 +303,24 @@ describe('createGithubReleasesFetcher', () => {
 
     it('decodes the tag from the release URL, with a fallback for bad escapes', async () => {
       const feed = atomFeed([
-        atomEntry('plus', '2026-10-08T00:00:00Z', 'Plus', 'https://github.com/acme/widgets/releases/tag/v1.0.0%2Bbuild.5'),
-        atomEntry('bad', '2026-10-09T00:00:00Z', 'Bad', 'https://github.com/acme/widgets/releases/tag/v1%'),
-        atomEntry('other', '2026-10-10T00:00:00Z', 'Elsewhere', 'https://github.com/acme/widgets/releases/latest'),
+        atomEntry(
+          'plus',
+          '2026-10-08T00:00:00Z',
+          'Plus',
+          'https://github.com/acme/widgets/releases/tag/v1.0.0%2Bbuild.5',
+        ),
+        atomEntry(
+          'bad',
+          '2026-10-09T00:00:00Z',
+          'Bad',
+          'https://github.com/acme/widgets/releases/tag/v1%',
+        ),
+        atomEntry(
+          'other',
+          '2026-10-10T00:00:00Z',
+          'Elsewhere',
+          'https://github.com/acme/widgets/releases/latest',
+        ),
       ]);
       const { fetch } = fakeFetch(() => ok(feed));
 
@@ -328,7 +352,10 @@ describe('createGithubReleasesFetcher', () => {
     it.each([
       ['an HTML page', '<html><body>not a feed</body></html>'],
       ['text that is not XML', 'Service Unavailable'],
-      ['an Atom feed cut off mid-entry', atomFeed([atomEntry('v1.0.0', '2026-10-08T00:00:00Z')]).slice(0, -20)],
+      [
+        'an Atom feed cut off mid-entry',
+        atomFeed([atomEntry('v1.0.0', '2026-10-08T00:00:00Z')]).slice(0, -20),
+      ],
       ['an Atom-looking feed without the Atom namespace', '<feed><title>x</title></feed>'],
     ])('throws naming the source on %s', async (_label, body) => {
       const { fetch } = fakeFetch(() => ok(body));
@@ -513,7 +540,9 @@ describe('createGithubReleasesFetcher', () => {
         '```',
         'Done.',
       ].join('\n');
-      const { fetch } = fakeFetch(() => json([restRelease('v1.0.0', '2026-10-08T00:00:00Z', { body })]));
+      const { fetch } = fakeFetch(() =>
+        json([restRelease('v1.0.0', '2026-10-08T00:00:00Z', { body })]),
+      );
 
       const [item] = await createGithubReleasesFetcher({ fetch, token: TOKEN }).fetch(
         source,
@@ -528,7 +557,9 @@ describe('createGithubReleasesFetcher', () => {
 
     it('handles Windows line endings and an unterminated code fence', async () => {
       const body = 'Intro\r\n```ts\r\nconst a: Array<number> = [];\r\n';
-      const { fetch } = fakeFetch(() => json([restRelease('v1.0.0', '2026-10-08T00:00:00Z', { body })]));
+      const { fetch } = fakeFetch(() =>
+        json([restRelease('v1.0.0', '2026-10-08T00:00:00Z', { body })]),
+      );
 
       const [item] = await createGithubReleasesFetcher({ fetch, token: TOKEN }).fetch(
         source,
@@ -655,9 +686,7 @@ describe('createGithubReleasesFetcher', () => {
 
     it('keeps the error name so aborts and timeouts are still recognizable', async () => {
       const { fetch } = fakeFetch(() =>
-        Promise.reject(
-          new DOMException('This operation was aborted', 'AbortError'),
-        ),
+        Promise.reject(new DOMException('This operation was aborted', 'AbortError')),
       );
 
       await expect(

@@ -269,7 +269,8 @@ function tagFromReleaseUrl(url: string): string | undefined {
 
 /** Release notes are Markdown: keep `<T>` inside code from being read as an HTML tag. */
 function markdownToPlainText(markdown: string): string {
-  const escapeAngles = (code: string): string => code.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  const escapeAngles = (code: string): string =>
+    code.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
   return safePlainText(
     markdown.replace(MARKDOWN_FENCE, escapeAngles).replace(MARKDOWN_CODE_SPAN, escapeAngles),
   );
