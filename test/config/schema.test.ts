@@ -26,6 +26,22 @@ describe('config schema', () => {
     });
   });
 
+  it('rejects keepWeeks below dedupeWeeks, since pruned weeks leave dedupe', () => {
+    const base = {
+      focusAreas: ['a'],
+      sources: [{ id: 'x', kind: 'rss', url: 'https://example.com/feed' }],
+    } as const;
+    const result = ConfigSchema.safeParse({ ...base, keepWeeks: 2, dedupeWeeks: 4 });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.path).toEqual(['keepWeeks']);
+    expect(ConfigSchema.safeParse({ ...base, keepWeeks: 4, dedupeWeeks: 4 }).success).toBe(true);
+  });
+
+  it('accepts a think setting per role', () => {
+    const config = makeConfig({ models: { think: { guardRisk: false, write: 'low' } } });
+    expect(config.models.think).toEqual({ guardRisk: false, write: 'low' });
+  });
+
   it('defaults the time zone to the local one', () => {
     const config = ConfigSchema.parse({
       focusAreas: ['a'],

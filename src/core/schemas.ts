@@ -154,6 +154,10 @@ export function exitCodeFor(status: RunStatus): ExitCode {
   }
 }
 
+/** Delivery channel ids; `Delivery.id` uses the same three. */
+export const DeliveryIdSchema = z.enum(['markdown', 'email', 'slack']);
+export type DeliveryId = z.infer<typeof DeliveryIdSchema>;
+
 export const RunRecordSchema = z.object({
   runId: WeekIdSchema,
   status: RunStatusSchema,
@@ -176,6 +180,11 @@ export const RunRecordSchema = z.object({
   winner: z.string().nullable(),
   /** URLs delivered in this run; feeds cross-week dedupe. */
   sentUrls: z.array(z.url()),
+  /**
+   * Channels that got this week's digest. Set on a partly delivered (failed) run, so a rerun
+   * sends the saved digest.md to the other channels only. Absent in older records.
+   */
+  deliveredTo: z.array(DeliveryIdSchema).optional(),
   error: z.object({ message: z.string(), step: StepNameSchema.optional() }).optional(),
 });
 export type RunRecord = z.infer<typeof RunRecordSchema>;

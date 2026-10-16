@@ -14,6 +14,8 @@ export interface RunStore {
   /** True when the week's run.json has status "sent". */
   hasSentDigest(runId: string): Promise<boolean>;
   saveArtifact(runId: string, name: ArtifactName, content: string): Promise<void>;
+  /** The saved artifact, or undefined when the week has none. */
+  readArtifact(runId: string, name: ArtifactName): Promise<string | undefined>;
   saveRunRecord(record: RunRecord): Promise<void>;
   getRunRecord(runId: string): Promise<RunRecord | undefined>;
   /** URLs sent in the `weeks` weeks before `runId`. */

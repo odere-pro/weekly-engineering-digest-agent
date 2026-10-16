@@ -6,7 +6,7 @@ import { systemClock, type Clock } from '../../shared/clock.js';
 import { DigestError } from '../../shared/errors.js';
 import { previousWeekIds } from '../../shared/isoWeek.js';
 import { noopLogger, type Logger } from '../../shared/telemetry.js';
-import { writeFileAtomic } from './atomicFile.js';
+import { readTextIfExists, writeFileAtomic } from './atomicFile.js';
 import {
   assertRunId,
   listWeekFolders,
@@ -59,6 +59,11 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
       const dir = runDir(folders, runId);
       await mkdir(dir, { recursive: true });
       await writeFileAtomic(join(dir, name), content);
+    },
+
+    async readArtifact(runId: string, name: ArtifactName): Promise<string | undefined> {
+      if (!ARTIFACT_NAMES.has(name)) throw new DigestError(`Unknown artifact name "${name}"`);
+      return readTextIfExists(join(runDir(folders, runId), name));
     },
 
     async saveRunRecord(record: RunRecord): Promise<void> {

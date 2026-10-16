@@ -133,6 +133,23 @@ describe('artifacts', () => {
     ).rejects.toThrow(DigestError);
     await expect(readdir(root)).resolves.toEqual([]);
   });
+
+  it('reads a saved artifact back, and undefined for one never saved', async () => {
+    const store = makeStore();
+    await store.saveArtifact('2026-W42', 'digest.md', '# Digest');
+
+    await expect(store.readArtifact('2026-W42', 'digest.md')).resolves.toBe('# Digest');
+    await expect(store.readArtifact('2026-W42', 'drafts.json')).resolves.toBeUndefined();
+    await expect(store.readArtifact('2026-W41', 'digest.md')).resolves.toBeUndefined();
+  });
+
+  it('refuses to read outside the week folder', async () => {
+    const store = makeStore();
+    await expect(store.readArtifact('../escape', 'digest.md')).rejects.toThrow(DigestError);
+    await expect(store.readArtifact('2026-W42', '../../evil.txt' as ArtifactName)).rejects.toThrow(
+      DigestError,
+    );
+  });
 });
 
 describe('run record', () => {

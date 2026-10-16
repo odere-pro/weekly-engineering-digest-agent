@@ -275,6 +275,7 @@ export function createEvalStore(): RunStore {
       artifacts.set(`${runId}/${name}`, content);
       return Promise.resolve();
     },
+    readArtifact: (runId, name) => Promise.resolve(artifacts.get(`${runId}/${name}`)),
     saveRunRecord: (record) => {
       records.set(record.runId, record);
       return Promise.resolve();

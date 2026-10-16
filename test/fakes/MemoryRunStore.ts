@@ -33,6 +33,10 @@ export class MemoryRunStore implements RunStore {
     return Promise.resolve();
   }
 
+  readArtifact(runId: string, name: ArtifactName): Promise<string | undefined> {
+    return Promise.resolve(this.artifacts.get(`${runId}/${name}`));
+  }
+
   saveRunRecord(record: RunRecord): Promise<void> {
     this.records.set(record.runId, record);
     return Promise.resolve();

@@ -72,6 +72,13 @@ export const ModelOverridesSchema = z.object({
   /** Per-role timeout in ms. */
   timeoutsMs: z.partialRecord(RoleSchema, z.number().int().min(1000)).optional(),
   retries: z.number().int().min(0).max(5).default(2),
+  /**
+   * Thinking per role for models that support it (Ollama `think`). Unset roles use the adapter
+   * default: guardRisk off, others the model's own default.
+   */
+  think: z
+    .partialRecord(RoleSchema, z.union([z.boolean(), z.enum(['low', 'medium', 'high'])]))
+    .optional(),
 });
 
 export const ScheduleSchema = z.object({
@@ -83,36 +90,41 @@ export const ScheduleSchema = z.object({
     .default(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
 });
 
-export const ConfigSchema = z.object({
-  profile: ProfileNameSchema.default('quality'),
-  /** Max 25: the classifier asks a choice over these plus "other" (decision models allow 26 options). */
-  focusAreas: z
-    .array(z.string().trim().min(1))
-    .min(1)
-    .max(25)
-    .refine(
-      (a) => new Set(a.map((x) => x.toLowerCase())).size === a.length,
-      'focus areas must be unique',
-    ),
-  sources: z
-    .array(SourceSchema)
-    .min(1)
-    .refine((s) => new Set(s.map((x) => x.id)).size === s.length, 'source ids must be unique'),
-  windowDays: z.number().int().min(1).max(31).default(7),
-  maxItemsPerSource: z.number().int().min(1).max(100).default(20),
-  /** Items in the digest: 3-5. */
-  topN: z.number().int().min(3).max(5).default(5),
-  /** Weeks of sent URLs removed from new digests. */
-  dedupeWeeks: z.number().int().min(0).max(12).default(4),
-  /** Run folders older than this are pruned (digest.md kept). */
-  keepWeeks: z.number().int().min(1).default(12),
-  dataDir: z.string().min(1).default('data'),
-  schedule: ScheduleSchema.prefault({}),
-  delivery: DeliveryConfigSchema.prefault({}),
-  guards: GuardsConfigSchema.prefault({}),
-  thresholds: ThresholdsSchema.prefault({}),
-  models: ModelOverridesSchema.prefault({}),
-});
+export const ConfigSchema = z
+  .object({
+    profile: ProfileNameSchema.default('quality'),
+    /** Max 25: the classifier asks a choice over these plus "other" (decision models allow 26 options). */
+    focusAreas: z
+      .array(z.string().trim().min(1))
+      .min(1)
+      .max(25)
+      .refine(
+        (a) => new Set(a.map((x) => x.toLowerCase())).size === a.length,
+        'focus areas must be unique',
+      ),
+    sources: z
+      .array(SourceSchema)
+      .min(1)
+      .refine((s) => new Set(s.map((x) => x.id)).size === s.length, 'source ids must be unique'),
+    windowDays: z.number().int().min(1).max(31).default(7),
+    maxItemsPerSource: z.number().int().min(1).max(100).default(20),
+    /** Items in the digest: 3-5. */
+    topN: z.number().int().min(3).max(5).default(5),
+    /** Weeks of sent URLs removed from new digests. */
+    dedupeWeeks: z.number().int().min(0).max(12).default(4),
+    /** Run folders older than this are pruned (digest.md kept). */
+    keepWeeks: z.number().int().min(1).default(12),
+    dataDir: z.string().min(1).default('data'),
+    schedule: ScheduleSchema.prefault({}),
+    delivery: DeliveryConfigSchema.prefault({}),
+    guards: GuardsConfigSchema.prefault({}),
+    thresholds: ThresholdsSchema.prefault({}),
+    models: ModelOverridesSchema.prefault({}),
+  })
+  .refine((config) => config.keepWeeks >= config.dedupeWeeks, {
+    message: 'keepWeeks must be at least dedupeWeeks: pruned weeks drop out of cross-week dedupe',
+    path: ['keepWeeks'],
+  });
 export type Config = z.infer<typeof ConfigSchema>;
 export type ConfigInput = z.input<typeof ConfigSchema>;
 
