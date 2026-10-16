@@ -1,6 +1,17 @@
-import { mkdir, mkdtemp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type * as Fs from 'node:fs/promises';
 import { parseEnv } from 'node:util';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -14,6 +25,12 @@ import { DEFAULT_FOCUS_AREAS, DEFAULT_SOURCES } from '../../src/config/defaultSo
 import { loadConfig } from '../../src/config/load.js';
 import { ConfigSchema, SecretsSchema } from '../../src/config/schema.js';
 import { NotImplementedError } from '../../src/shared/errors.js';
+
+// Real files, except that a test can make rename or chmod fail like a bind mount does.
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const actual = await importOriginal<typeof Fs>();
+  return { ...actual, rename: vi.fn(actual.rename), chmod: vi.fn(actual.chmod) };
+});
 
 vi.mock('@inquirer/prompts', () => ({
   checkbox: vi.fn(),
@@ -105,6 +122,10 @@ interface Harness {
 interface HarnessOptions {
   rules?: readonly Rule[];
   existing?: readonly string[];
+  /** Files that exist with no content, like the ones `make docker-init` creates. */
+  empty?: readonly string[];
+  /** The zone this process runs in. */
+  timeZone?: string;
   inDocker?: boolean;
   env?: Record<string, string>;
   ramGiB?: number;
@@ -114,7 +135,8 @@ interface HarnessOptions {
 
 function harness(options: HarnessOptions = {}): Harness {
   const files = new Map<string, { content: string; secret: boolean }>();
-  const preexisting = new Set(options.existing ?? []);
+  const emptyFiles = new Set(options.empty ?? []);
+  const preexisting = new Set([...(options.existing ?? []), ...emptyFiles]);
   const scripted = scriptedPrompts(options.rules);
   const out: string[] = [];
   const err: string[] = [];
@@ -124,6 +146,7 @@ function harness(options: HarnessOptions = {}): Harness {
     env: options.env ?? {},
     platform: options.platform ?? 'linux',
     totalMemoryBytes: (options.ramGiB ?? 32) * GIB,
+    timeZone: options.timeZone ?? 'Europe/Berlin',
     cwd: '/work',
     envPath: ENV_PATH,
     scheduleProgram: '/usr/local/bin/digest',
@@ -132,6 +155,7 @@ function harness(options: HarnessOptions = {}): Harness {
       Promise.resolve(
         preexisting.has(path) || files.has(path) || (path === '/.dockerenv' && !!options.inDocker),
       ),
+    isEmptyFile: (path) => Promise.resolve(emptyFiles.has(path) && !files.has(path)),
     writeFile: (path, content) => {
       files.set(path, { content, secret: false });
       return Promise.resolve();
@@ -315,12 +339,40 @@ describe('OLLAMA_URL by mode', () => {
       'http://ollama:11434',
     ],
     ['Docker, host OS unknown', { inDocker: true, env: {} }, 'http://ollama:11434'],
+    [
+      'Docker on a Mac, as `uname -s` spells it',
+      { inDocker: true, env: { DIGEST_HOST_OS: 'Darwin' } },
+      'http://host.docker.internal:11434',
+    ],
+    [
+      'Docker, host OS blank',
+      { inDocker: true, env: { DIGEST_HOST_OS: '' } },
+      'http://ollama:11434',
+    ],
+    [
+      'a plain host with an unreadable DIGEST_HOST_OS',
+      { inDocker: false, env: { DIGEST_HOST_OS: 'plan9' } },
+      'http://localhost:11434',
+    ],
   ])('%s', async (_name, options, expected) => {
     const h = harness(options);
 
     await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
 
     expect(writtenEnv(h)['OLLAMA_URL']).toBe(expected);
+  });
+});
+
+describe('an unreadable DIGEST_HOST_OS in Docker', () => {
+  it('stops before asking anything, and names the variable', async () => {
+    const h = harness({ inDocker: true, env: { DIGEST_HOST_OS: 'plan9' } });
+
+    const code = await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(1);
+    expect(h.err.join('')).toContain('DIGEST_HOST_OS');
+    expect(h.calls).toEqual([]);
+    expect(h.files.size).toBe(0);
   });
 });
 
@@ -696,6 +748,344 @@ describe('output', () => {
   });
 });
 
+describe('files that make docker-init created empty', () => {
+  it('counts empty files as absent, so --yes works', async () => {
+    const h = harness({ empty: [CONFIG_PATH, ENV_PATH] });
+
+    const code = await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(0);
+    expect(h.err).toEqual([]);
+    expect(h.files.get(CONFIG_PATH)?.content).toContain('"focusAreas"');
+    expect(h.files.get(ENV_PATH)?.secret).toBe(true);
+  });
+
+  it('does not ask whether to overwrite them', async () => {
+    const h = harness({ empty: [CONFIG_PATH, ENV_PATH] });
+
+    const code = await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(0);
+    expect(h.calls.some((c) => /Overwrite/.test(c.message))).toBe(false);
+  });
+
+  it('still refuses a file with content, and names only that one', async () => {
+    const h = harness({ existing: [CONFIG_PATH], empty: [ENV_PATH] });
+
+    const code = await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(1);
+    expect(h.files.size).toBe(0);
+    expect(h.err.join('')).toContain(CONFIG_PATH);
+    expect(h.err.join('')).not.toContain(ENV_PATH);
+  });
+
+  it('asks about the file with content only', async () => {
+    const h = harness({ existing: [ENV_PATH], empty: [CONFIG_PATH], rules: [[/Overwrite/, true]] });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    const question = h.calls.find((c) => /Overwrite/.test(c.message));
+    expect(question?.message).toContain(ENV_PATH);
+    expect(question?.message).not.toContain(CONFIG_PATH);
+  });
+});
+
+describe('schedule time zone', () => {
+  const zoneCall = (h: Harness): PromptCall | undefined =>
+    h.calls.find((c) => /Time zone/.test(c.message));
+
+  it('writes the zone this process runs in with --yes', async () => {
+    const h = harness({ timeZone: 'Asia/Tokyo' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenConfig(h)['schedule']).toEqual({ timeZone: 'Asia/Tokyo' });
+    expect(zoneCall(h)).toBeUndefined();
+  });
+
+  it('offers the detected zone as the default and writes it on Enter', async () => {
+    const h = harness({ timeZone: 'America/Chicago' });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(zoneCall(h)?.kind).toBe('input');
+    expect(zoneCall(h)?.options.default).toBe('America/Chicago');
+    expect(writtenConfig(h)['schedule']).toEqual({ timeZone: 'America/Chicago' });
+  });
+
+  it('writes the zone the user types, trimmed', async () => {
+    const h = harness({ rules: [[/Time zone/, '  America/New_York ']] });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(writtenConfig(h)['schedule']).toEqual({ timeZone: 'America/New_York' });
+  });
+
+  it.each(['Mars/Phobos', 'Berlin', '', '   '])('rejects "%s" as a zone', async (typed) => {
+    const h = harness();
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    const verdict = zoneCall(h)?.options.validate?.(typed);
+
+    expect(verdict).toEqual(expect.stringMatching(/time zone/i));
+  });
+
+  it.each(['Europe/Berlin', 'UTC', 'Asia/Kolkata'])('accepts %s as a zone', async (typed) => {
+    const h = harness();
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(zoneCall(h)?.options.validate?.(typed)).toBe(true);
+  });
+
+  it('says in the prompt that a container runs on UTC unless TZ is set', async () => {
+    const h = harness({ inDocker: true, timeZone: 'UTC' });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    const message = zoneCall(h)?.message ?? '';
+    expect(message).toContain('UTC');
+    expect(message).toContain('TZ');
+    expect(zoneCall(h)?.options.default).toBe('UTC');
+  });
+
+  it('keeps the prompt plain outside Docker, even on a UTC machine', async () => {
+    const h = harness({ timeZone: 'UTC' });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(zoneCall(h)?.message).not.toContain('Docker');
+  });
+
+  it('does not blame Docker when TZ already gave the container a real zone', async () => {
+    const h = harness({ inDocker: true, timeZone: 'Europe/Berlin' });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(zoneCall(h)?.message).not.toContain('UTC');
+  });
+
+  it('warns after --yes in Docker that UTC was used, and how to change it', async () => {
+    const h = harness({ inDocker: true, timeZone: 'UTC' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    const printed = h.out.join('');
+    expect(printed).toContain('schedule.timeZone');
+    expect(printed).toMatch(/UTC/);
+    expect(writtenConfig(h)['schedule']).toEqual({ timeZone: 'UTC' });
+  });
+
+  it('lists the zone in the summary', async () => {
+    const h = harness({ timeZone: 'Asia/Tokyo' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(h.out.join('')).toContain('Asia/Tokyo');
+  });
+});
+
+describe('in Docker, where the files are single-file bind mounts', () => {
+  let dir: string;
+  let envPath: string;
+  let configPath: string;
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'digest-init-docker-'));
+    envPath = join(dir, '.env');
+    configPath = join(dir, 'digest.config.json');
+  });
+
+  beforeEach(() => {
+    vi.mocked(rename).mockClear();
+  });
+
+  afterEach(async () => {
+    // Drops failures a test queued but the code never asked for, so they cannot leak.
+    vi.mocked(rename).mockReset();
+    vi.mocked(chmod).mockReset();
+    await chmod(dir, 0o700);
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const errnoError = (code: string): Error =>
+    Object.assign(new Error(`${code}: operation failed`), { code });
+
+  function diskIo(overrides: Partial<InitIo> = {}): { io: Partial<InitIo>; err: string[] } {
+    const err: string[] = [];
+    const io: Partial<InitIo> = {
+      prompts: scriptedPrompts([[/Overwrite/, true]]).prompts,
+      env: { DIGEST_HOST_OS: 'darwin' },
+      platform: 'linux',
+      totalMemoryBytes: 32 * GIB,
+      timeZone: 'Europe/Berlin',
+      cwd: dir,
+      envPath,
+      renderSchedule: () => SCHEDULE,
+      stdout: () => undefined,
+      stderr: (text) => err.push(text),
+      ...overrides,
+    };
+    return { io, err };
+  }
+
+  /** What `make docker-init` leaves behind. */
+  async function createEmptyFiles(): Promise<void> {
+    await writeFile(configPath, '', { mode: 0o644 });
+    await writeFile(envPath, '', { mode: 0o600 });
+  }
+
+  const modeOf = async (path: string): Promise<number> => (await stat(path)).mode & 0o777;
+  const leftovers = async (): Promise<string[]> =>
+    (await readdir(dir)).filter((name) => name.endsWith('.tmp'));
+
+  it('writes both empty files that make docker-init created', async () => {
+    await createEmptyFiles();
+    const { io } = diskIo();
+
+    const code = await initCommand({ yes: true, config: configPath }, io);
+
+    expect(code).toBe(0);
+    const loaded = await loadConfig({ configPath, envPath, processEnv: {} });
+    expect(loaded.config.schedule.timeZone).toBe('Europe/Berlin');
+    expect(loaded.env.OLLAMA_URL).toBe('http://localhost:11434');
+    expect(await modeOf(envPath)).toBe(0o600);
+  });
+
+  it.each(['EBUSY', 'EXDEV', 'EACCES', 'EPERM'])(
+    'writes .env in place when the rename fails with %s',
+    async (code) => {
+      await createEmptyFiles();
+      const before = await stat(envPath);
+      vi.mocked(rename).mockRejectedValueOnce(errnoError(code));
+      const { io, err } = diskIo();
+
+      const exitCode = await initCommand({ yes: true, config: configPath }, io);
+
+      expect(err).toEqual([]);
+      expect(exitCode).toBe(0);
+      const after = await stat(envPath);
+      expect(after.ino).toBe(before.ino);
+      expect(after.mode & 0o777).toBe(0o600);
+      expect(await readFile(envPath, 'utf8')).toContain('OLLAMA_URL=');
+      expect(await leftovers()).toEqual([]);
+    },
+  );
+
+  it('tightens a world-readable .env before writing secrets into it in place', async () => {
+    await writeFile(envPath, 'SMTP_PASSWORD=old\n', { mode: 0o644 });
+    await chmod(envPath, 0o644);
+    vi.mocked(rename).mockRejectedValueOnce(errnoError('EBUSY'));
+    const { io } = diskIo();
+
+    const code = await initCommand({ config: configPath }, io);
+
+    expect(code).toBe(0);
+    expect(await modeOf(envPath)).toBe(0o600);
+    expect(await readFile(envPath, 'utf8')).not.toContain('old');
+  });
+
+  it('accepts a chmod that is refused when the file is already owner-only', async () => {
+    await createEmptyFiles();
+    vi.mocked(rename).mockRejectedValueOnce(errnoError('EBUSY'));
+    vi.mocked(chmod).mockRejectedValueOnce(errnoError('EPERM'));
+    const { io } = diskIo();
+
+    const code = await initCommand({ yes: true, config: configPath }, io);
+
+    expect(code).toBe(0);
+    expect(await readFile(envPath, 'utf8')).toContain('OLLAMA_URL=');
+  });
+
+  it('writes nothing into a world-readable .env it cannot tighten', async () => {
+    await createEmptyFiles();
+    await chmod(envPath, 0o644);
+    vi.mocked(rename).mockRejectedValueOnce(errnoError('EBUSY'));
+    vi.mocked(chmod).mockRejectedValueOnce(errnoError('EPERM'));
+    const { io, err } = diskIo();
+
+    const code = await initCommand({ yes: true, config: configPath }, io);
+
+    expect(code).toBe(1);
+    expect(err.join('')).toContain(envPath);
+    expect(err.join('')).toContain('DIGEST_UID');
+    expect(await readFile(envPath, 'utf8')).toBe('');
+  });
+
+  it('writes nothing into a world-readable .env when chmod says yes but changes nothing', async () => {
+    await createEmptyFiles();
+    await chmod(envPath, 0o644);
+    vi.mocked(rename).mockRejectedValueOnce(errnoError('EBUSY'));
+    vi.mocked(chmod).mockResolvedValueOnce(undefined);
+    const { io, err } = diskIo();
+
+    const code = await initCommand({ yes: true, config: configPath }, io);
+
+    expect(code).toBe(1);
+    expect(err.join('')).toContain('still readable by others');
+    expect(await readFile(envPath, 'utf8')).toBe('');
+  });
+
+  it('does not fall back for an error that is not about the bind mount', async () => {
+    await writeFile(envPath, 'KEEP=me\n', { mode: 0o600 });
+    vi.mocked(rename).mockRejectedValueOnce(errnoError('ENOSPC'));
+    const { io, err } = diskIo();
+
+    const code = await initCommand({ config: configPath }, io);
+
+    expect(code).toBe(1);
+    expect(err.join('')).toContain(`Could not write ${envPath}`);
+    expect(err.join('')).toContain('ENOSPC');
+    expect(await readFile(envPath, 'utf8')).toBe('KEEP=me\n');
+    expect(await leftovers()).toEqual([]);
+  });
+
+  it('keeps the temp file and rename path wherever the rename works', async () => {
+    await writeFile(envPath, 'SMTP_PASSWORD=old\n', { mode: 0o644 });
+    const before = await stat(envPath);
+    const { io } = diskIo();
+
+    const code = await initCommand({ config: configPath }, io);
+
+    expect(code).toBe(0);
+    expect(rename).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(rename).mock.calls[0]?.[1]).toBe(envPath);
+    expect((await stat(envPath)).ino).not.toBe(before.ino);
+    expect(await modeOf(envPath)).toBe(0o600);
+    expect(await leftovers()).toEqual([]);
+  });
+
+  it.skipIf(process.getuid?.() === 0)(
+    'writes in place when the folder is read-only, as /app is for the node user',
+    async () => {
+      await createEmptyFiles();
+      await chmod(dir, 0o555);
+      const { io, err } = diskIo();
+
+      const code = await initCommand({ yes: true, config: configPath }, io);
+
+      expect(err).toEqual([]);
+      expect(code).toBe(0);
+      expect(await readFile(envPath, 'utf8')).toContain('OLLAMA_URL=');
+      expect(await modeOf(envPath)).toBe(0o600);
+    },
+  );
+
+  it.skipIf(process.getuid?.() === 0)(
+    'fails with the file name when the folder is read-only and there is no file to write in place',
+    async () => {
+      await writeFile(configPath, '', { mode: 0o644 });
+      await chmod(dir, 0o555);
+      const { io, err } = diskIo();
+
+      const code = await initCommand({ yes: true, config: configPath }, io);
+
+      expect(code).toBe(1);
+      expect(err.join('')).toContain(`Could not write ${envPath}`);
+    },
+  );
+});
+
 describe('with the real file system', () => {
   let dir: string;
 
@@ -821,7 +1211,7 @@ describe('the default prompts', () => {
     expect(code).toBe(0);
     expect(inquirer.checkbox).toHaveBeenCalledTimes(2);
     expect(inquirer.select).toHaveBeenCalledOnce();
-    expect(inquirer.input).toHaveBeenCalledOnce();
+    expect(inquirer.input).toHaveBeenCalledTimes(2);
   });
 
   it('use inquirer for passwords and confirmations', async () => {

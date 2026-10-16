@@ -1,6 +1,13 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { loadConfig, redactSecrets, type LoadOptions } from '../../src/config/load.js';
+import {
+  loadConfig,
+  redactSecrets,
+  resolveHostPlatform,
+  type LoadOptions,
+} from '../../src/config/load.js';
 import { NON_MAC_FALLBACK, PROFILES } from '../../src/config/profiles.js';
 import { SecretsSchema } from '../../src/config/schema.js';
 import { DigestError } from '../../src/shared/errors.js';
@@ -223,6 +230,191 @@ describe('loadConfig', () => {
       }
     });
   });
+});
+
+describe('resolveHostPlatform', () => {
+  const process_ = { os: 'linux', arch: 'x64' } as const;
+
+  it('uses the running process when the host is not named', () => {
+    expect(resolveHostPlatform({}, process_)).toEqual(process_);
+  });
+
+  it.each([
+    ['darwin', 'darwin'],
+    ['Darwin', 'darwin'],
+    ['linux', 'linux'],
+    ['Linux', 'linux'],
+    ['win32', 'win32'],
+    ['windows', 'win32'],
+    ['Windows', 'win32'],
+    ['MINGW64_NT-10.0-22631', 'win32'],
+    ['MSYS_NT-10.0-22631', 'win32'],
+  ])('reads the OS %s as %s', (spelling, os) => {
+    expect(resolveHostPlatform({ DIGEST_HOST_OS: spelling }, process_).os).toBe(os);
+  });
+
+  it.each([
+    ['arm64', 'arm64'],
+    ['aarch64', 'arm64'],
+    ['AARCH64', 'arm64'],
+    ['x86_64', 'x64'],
+    ['amd64', 'x64'],
+    ['x64', 'x64'],
+  ])('reads the CPU %s as %s', (spelling, arch) => {
+    expect(resolveHostPlatform({ DIGEST_HOST_ARCH: spelling }, process_).arch).toBe(arch);
+  });
+
+  it.each([[''], ['  ']])('treats the blank value %j as not named', (blank) => {
+    expect(
+      resolveHostPlatform({ DIGEST_HOST_OS: blank, DIGEST_HOST_ARCH: blank }, process_),
+    ).toEqual(process_);
+  });
+
+  it('takes each part from the process when only the other one is named', () => {
+    expect(resolveHostPlatform({ DIGEST_HOST_OS: 'Darwin' }, process_)).toEqual({
+      os: 'darwin',
+      arch: 'x64',
+    });
+    expect(resolveHostPlatform({ DIGEST_HOST_ARCH: 'arm64' }, process_)).toEqual({
+      os: 'linux',
+      arch: 'arm64',
+    });
+  });
+
+  it.each([
+    ['DIGEST_HOST_OS', 'plan9'],
+    ['DIGEST_HOST_ARCH', 'riscv128'],
+  ])('names %s when it holds an unknown value', (variable, value) => {
+    const run = (): unknown => resolveHostPlatform({ [variable]: value }, process_);
+    expect(run).toThrow(DigestError);
+    expect(run).toThrow(variable);
+    expect(run).toThrow(value);
+  });
+});
+
+describe('host platform override (Docker on a Mac)', () => {
+  const containerOnLinux = async <T>(action: () => Promise<T>): Promise<T> => {
+    const original = {
+      platform: Object.getOwnPropertyDescriptor(process, 'platform'),
+      arch: Object.getOwnPropertyDescriptor(process, 'arch'),
+    };
+    Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+    Object.defineProperty(process, 'arch', { value: 'arm64', configurable: true });
+    try {
+      return await action();
+    } finally {
+      if (original.platform) Object.defineProperty(process, 'platform', original.platform);
+      if (original.arch) Object.defineProperty(process, 'arch', original.arch);
+    }
+  };
+  const { platform: _omitted, ...withoutPlatform } = base();
+
+  it('keeps the quality profile inside a Linux container on an Apple silicon host', async () => {
+    const loaded = await containerOnLinux(() =>
+      loadConfig({
+        ...withoutPlatform,
+        processEnv: { DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'arm64' },
+      }),
+    );
+
+    expect(loaded.profile).toEqual(PROFILES.quality);
+  });
+
+  it('accepts the uname spelling that make docker-* exports', async () => {
+    const loaded = await containerOnLinux(() =>
+      loadConfig({
+        ...withoutPlatform,
+        processEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'aarch64' },
+      }),
+    );
+
+    expect(loaded.profile).toEqual(PROFILES.quality);
+  });
+
+  it('falls back when the host is an Intel Mac', async () => {
+    const loaded = await containerOnLinux(() =>
+      loadConfig({
+        ...withoutPlatform,
+        processEnv: { DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'x86_64' },
+      }),
+    );
+
+    expect(loaded.profile).toEqual({ ...NON_MAC_FALLBACK, name: 'quality' });
+  });
+
+  it('falls back when the host is Linux', async () => {
+    const loaded = await containerOnLinux(() =>
+      loadConfig({ ...withoutPlatform, processEnv: { DIGEST_HOST_OS: 'Linux' } }),
+    );
+
+    expect(loaded.profile).toEqual({ ...NON_MAC_FALLBACK, name: 'quality' });
+  });
+
+  it('assumes the container has the CPU of the host when only the OS is named', async () => {
+    const loaded = await containerOnLinux(() =>
+      loadConfig({ ...withoutPlatform, processEnv: { DIGEST_HOST_OS: 'darwin' } }),
+    );
+
+    expect(loaded.profile).toEqual(PROFILES.quality);
+  });
+
+  it('reads the override from the env file too', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'digest-load-'));
+    try {
+      const envPath = join(dir, '.env');
+      await writeFile(envPath, 'DIGEST_HOST_OS=Darwin\nDIGEST_HOST_ARCH=arm64\n');
+
+      const loaded = await containerOnLinux(() => loadConfig({ ...withoutPlatform, envPath }));
+
+      expect(loaded.profile).toEqual(PROFILES.quality);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('lets an explicit platform win over the environment', async () => {
+    const loaded = await loadConfig(
+      base({
+        platform: linux,
+        processEnv: { DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'arm64' },
+      }),
+    );
+
+    expect(loaded.profile).toEqual({ ...NON_MAC_FALLBACK, name: 'quality' });
+  });
+
+  it('does not look at the override when an explicit platform is given', async () => {
+    const loaded = await loadConfig(base({ processEnv: { DIGEST_HOST_OS: 'plan9' } }));
+
+    expect(loaded.profile).toEqual(PROFILES.quality);
+  });
+
+  it('reports an unknown host OS as a config error that names the variable', async () => {
+    const error = await failure(withPlatformOmitted({ processEnv: { DIGEST_HOST_OS: 'plan9' } }));
+
+    expect(error.message).toContain('DIGEST_HOST_OS');
+    expect(error.message).toContain('plan9');
+  });
+
+  it('reports an unknown host CPU as a config error that names the variable', async () => {
+    const error = await failure(
+      withPlatformOmitted({ processEnv: { DIGEST_HOST_ARCH: 'riscv128' } }),
+    );
+
+    expect(error.message).toContain('DIGEST_HOST_ARCH');
+  });
+
+  it('still reads DIGEST_HOST_OS into the environment settings', async () => {
+    const loaded = await loadConfig(
+      base({ processEnv: { DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'arm64' } }),
+    );
+
+    expect(loaded.env).toMatchObject({ DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'arm64' });
+  });
+
+  function withPlatformOmitted(overrides: LoadOptions): LoadOptions {
+    return { ...withoutPlatform, ...overrides };
+  }
 });
 
 describe('redactSecrets', () => {

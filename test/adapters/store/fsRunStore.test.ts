@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { chmod, mkdir, mkdtemp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { hostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { createFsRunStore } from '../../../src/adapters/store/fsRunStore.js';
@@ -413,7 +413,14 @@ describe('acquireLock', () => {
     const lock = await store.acquireLock('2026-W42');
 
     const content = JSON.parse(await readFile(lockPath(), 'utf8')) as unknown;
-    expect(content).toEqual({ pid: process.pid, runId: '2026-W42', startedAt: NOW });
+    expect(content).toEqual({
+      pid: process.pid,
+      runId: '2026-W42',
+      startedAt: NOW,
+      hostname: hostname(),
+      token: expect.any(String) as string,
+      heartbeatAt: NOW,
+    });
 
     await lock.release();
     await expect(stat(lockPath())).rejects.toMatchObject({ code: 'ENOENT' });
@@ -426,7 +433,7 @@ describe('acquireLock', () => {
     const second = store.acquireLock('2026-W43');
     await expect(second).rejects.toThrow(DigestError);
     await expect(second).rejects.toThrow(
-      `Another run is in progress (pid ${String(process.pid)}, week 2026-W42)`,
+      `Another run is in progress (pid ${String(process.pid)}, host ${hostname()}, week 2026-W42)`,
     );
     await expect(second).rejects.toMatchObject({ exitCode: ExitCode.Failed });
   });

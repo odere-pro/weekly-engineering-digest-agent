@@ -16,7 +16,7 @@ export interface LoadOptions {
   configPath?: string;
   /** Default: ./.env (optional file; process.env wins). */
   envPath?: string;
-  /** Default: the running process. */
+  /** Default: DIGEST_HOST_OS/DIGEST_HOST_ARCH when set, else the running process. */
   platform?: Platform;
   /** Default: process.env. */
   processEnv?: Readonly<Record<string, string | undefined>>;
@@ -38,10 +38,62 @@ export async function loadConfig(options: LoadOptions = {}): Promise<LoadedConfi
   const config = await readConfig(configPath);
   const merged = await readEnvironment(envPath, options.processEnv ?? process.env);
   const { secrets, env } = parseEnvironment(merged, envPath);
-  const platform = options.platform ?? { os: process.platform, arch: process.arch };
+  const platform = options.platform ?? resolveHostPlatform(env);
   const profile = resolveProfile(config.profile, platform, config.models.writers);
 
   return { config, env, secrets, profile, configPath };
+}
+
+/**
+ * The machine the models run on. In a container that is not the machine `process` describes:
+ * on a Mac, Docker runs Linux while Ollama runs on the host and uses its Apple GPU, so
+ * `make docker-*` names the host in DIGEST_HOST_OS/DIGEST_HOST_ARCH (as `uname -s`/`uname -m`
+ * print them). A part that is not named comes from `fallback`.
+ */
+export function resolveHostPlatform(
+  env: Pick<Env, 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>,
+  fallback: Platform = { os: process.platform, arch: process.arch },
+): Platform {
+  // Blank counts as not named, as everywhere else in the environment.
+  const hostOs = env.DIGEST_HOST_OS?.trim();
+  const hostArch = env.DIGEST_HOST_ARCH?.trim();
+  return {
+    os: !hostOs
+      ? fallback.os
+      : parseHostValue('DIGEST_HOST_OS', hostOs, 'darwin, linux or windows', toNodeOs),
+    arch: !hostArch
+      ? fallback.arch
+      : parseHostValue('DIGEST_HOST_ARCH', hostArch, 'arm64 or x86_64', toNodeArch),
+  };
+}
+
+function parseHostValue<T>(
+  variable: string,
+  value: string,
+  expected: string,
+  parse: (spelling: string) => T | undefined,
+): T {
+  const parsed = parse(value.trim().toLowerCase());
+  if (parsed === undefined) {
+    throw new DigestError(
+      `Invalid ${variable} "${value}": use ${expected} (as "uname" prints it).`,
+    );
+  }
+  return parsed;
+}
+
+function toNodeOs(spelling: string): NodeJS.Platform | undefined {
+  if (spelling === 'darwin' || spelling === 'linux' || spelling === 'win32') return spelling;
+  if (spelling === 'windows' || spelling.startsWith('mingw') || spelling.startsWith('msys')) {
+    return 'win32';
+  }
+  return undefined;
+}
+
+function toNodeArch(spelling: string): string | undefined {
+  if (spelling === 'arm64' || spelling === 'aarch64') return 'arm64';
+  if (spelling === 'x64' || spelling === 'x86_64' || spelling === 'amd64') return 'x64';
+  return undefined;
 }
 
 /** Replaces every secret value found in `text` with "[redacted]" (W1-14). */

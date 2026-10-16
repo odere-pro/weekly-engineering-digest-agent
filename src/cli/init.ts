@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { access, mkdir, rename, rm, writeFile } from 'node:fs/promises';
+import { access, chmod, mkdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { totalmem } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { checkbox, confirm, input, password, select } from '@inquirer/prompts';
 import { z } from 'zod';
 import { DEFAULT_FOCUS_AREAS, DEFAULT_SOURCES } from '../config/defaultSources.js';
+import { resolveHostPlatform } from '../config/load.js';
 import {
   ConfigSchema,
   EmailDeliverySchema,
@@ -53,6 +54,8 @@ export interface InitIo {
   env: Readonly<Record<string, string | undefined>>;
   platform: NodeJS.Platform;
   totalMemoryBytes: number;
+  /** The IANA zone this process runs in; the default for `schedule.timeZone`. */
+  timeZone: string;
   cwd: string;
   /** Where the secrets file goes; digest loads ./.env. */
   envPath: string;
@@ -60,9 +63,15 @@ export interface InitIo {
   scheduleProgram: string;
   renderSchedule: (os: NodeJS.Platform, options: OsScheduleOptions) => OsSchedule;
   exists: (path: string) => Promise<boolean>;
+  /** True for an existing file with no content, such as the ones `make docker-init` creates. */
+  isEmptyFile: (path: string) => Promise<boolean>;
   /** Writes a normal file, creating its folder. */
   writeFile: (path: string, content: string) => Promise<void>;
-  /** Writes a file that only its owner can read (mode 0600), replacing any existing file. */
+  /**
+   * Writes a file that only its owner can read (mode 0600), replacing any existing file. Goes
+   * through a temp file and a rename; where that is impossible (a single-file bind mount in
+   * Docker, a read-only folder) it writes the existing file in place.
+   */
   writeSecretFile: (path: string, content: string) => Promise<void>;
   stdout: (text: string) => void;
   stderr: (text: string) => void;
@@ -76,6 +85,13 @@ const SECRET_FILE_MODE = 0o600;
 const DEFAULT_SMTP_PORT = 587;
 const IMPLICIT_TLS_PORT = 465;
 const OLLAMA_PORT = 11434;
+const GROUP_AND_OTHER_BITS = 0o077;
+const OWNER_ONLY_HINT =
+  'Run "chmod 600" on it on the host, or set DIGEST_UID and DIGEST_GID to your user (see docker-compose.yml).';
+/** A rename onto these fails when the target is a bind mount or its folder is not writable. */
+const IN_PLACE_FALLBACK_CODES: ReadonlySet<string> = new Set(['EBUSY', 'EXDEV', 'EACCES', 'EPERM']);
+/** What a container reports when TZ is not set. */
+const CONTAINER_DEFAULT_ZONES: ReadonlySet<string> = new Set(['UTC', 'Etc/UTC']);
 
 const PROFILE_DESCRIPTIONS: Readonly<Record<ProfileName, string>> = {
   quality: 'Two writers and a judge. Best output; about 32 GB RAM and 40 GB of disk.',
@@ -127,6 +143,7 @@ interface EmailAnswers {
 
 interface Answers {
   profile: ProfileName;
+  timeZone: string;
   focusAreas: string[];
   email?: EmailAnswers;
   slackWebhook?: string;
@@ -137,24 +154,30 @@ async function runInit(options: InitCommandOptions, io: InitIo): Promise<number>
   await confirmOverwrite([configPath, io.envPath], options.yes === true, io);
 
   const inDocker = await io.exists(DOCKERENV_PATH);
-  const answers = options.yes === true ? defaultAnswers(io) : await askAnswers(io);
+  const hostOs = namedHostOs(io, inDocker);
+  const answers = options.yes === true ? defaultAnswers(io) : await askAnswers(io, inDocker);
   const config = validatedConfig(buildConfigInput(answers));
-  const ollamaUrl = resolveOllamaUrl({ inDocker, hostOs: io.env['DIGEST_HOST_OS'] });
+  const ollamaUrl = resolveOllamaUrl({ inDocker, hostOs });
   const envFile = renderEnvFile(ollamaUrl, secretsOf(answers));
 
   await writeOrFail(configPath, () => io.writeFile(configPath, toJson(buildConfigInput(answers))));
   await writeOrFail(io.envPath, () => io.writeSecretFile(io.envPath, envFile));
 
   io.stdout(summary({ configPath, envPath: io.envPath, answers, ollamaUrl }));
-  io.stdout(inDocker ? DOCKER_NEXT_STEPS : scheduleSection(io, configPath, config.schedule.cron));
+  io.stdout(
+    inDocker
+      ? dockerNextSteps(answers.timeZone)
+      : scheduleSection(io, configPath, config.schedule.cron),
+  );
   return ExitCode.Sent;
 }
 
 // ---------------------------------------------------------------- existing files
 
+/** An empty file is as good as none: Docker needs the files to exist before the first run. */
 async function confirmOverwrite(paths: string[], yes: boolean, io: InitIo): Promise<void> {
   const present = await Promise.all(
-    paths.map(async (path) => ((await io.exists(path)) ? path : '')),
+    paths.map(async (path) => ((await hasContent(path, io)) ? path : '')),
   );
   const existing = present.filter((path) => path !== '');
   if (existing.length === 0) return;
@@ -169,19 +192,25 @@ async function confirmOverwrite(paths: string[], yes: boolean, io: InitIo): Prom
   if (!overwrite) throw new DigestError(`Kept ${list}. Nothing was written.`);
 }
 
+async function hasContent(path: string, io: InitIo): Promise<boolean> {
+  return (await io.exists(path)) && !(await io.isEmptyFile(path));
+}
+
 // ---------------------------------------------------------------- questions
 
 function defaultAnswers(io: InitIo): Answers {
   return {
     profile: recommendProfile(io.totalMemoryBytes),
+    timeZone: io.timeZone,
     focusAreas: [...DEFAULT_FOCUS_AREAS],
   };
 }
 
-async function askAnswers(io: InitIo): Promise<Answers> {
+async function askAnswers(io: InitIo, inDocker: boolean): Promise<Answers> {
   const { prompts } = io;
   const focusAreas = await askFocusAreas(prompts);
   const profile = await askProfile(io);
+  const timeZone = await askTimeZone(io, inDocker);
   const channels = await prompts.checkbox({
     message: 'Also deliver the digest by (Markdown files are always written)',
     choices: [
@@ -193,6 +222,7 @@ async function askAnswers(io: InitIo): Promise<Answers> {
   const slackWebhook = channels.includes('slack') ? await askSlackWebhook(prompts) : undefined;
   return {
     profile,
+    timeZone,
     focusAreas,
     ...(email && { email }),
     ...(slackWebhook && { slackWebhook }),
@@ -239,6 +269,39 @@ async function askProfile(io: InitIo): Promise<ProfileName> {
       description: PROFILE_DESCRIPTIONS[profile],
     })),
   });
+}
+
+/**
+ * The OS Ollama runs on, spelled as the loader reads it (`Darwin` from `uname -s` is a Mac too).
+ * Only a container needs it, so a bad value elsewhere is left for the loader to report.
+ */
+function namedHostOs(io: InitIo, inDocker: boolean): string | undefined {
+  const named = io.env['DIGEST_HOST_OS'];
+  if (!inDocker || named === undefined || named.trim() === '') return undefined;
+  return resolveHostPlatform({ DIGEST_HOST_OS: named }).os;
+}
+
+/** The default is where this process runs; in a container that is UTC unless TZ is set. */
+async function askTimeZone(io: InitIo, inDocker: boolean): Promise<string> {
+  const containerOnUtc = inDocker && CONTAINER_DEFAULT_ZONES.has(io.timeZone);
+  const hint = containerOnUtc
+    ? ' (the container runs on UTC unless TZ is set; enter your own zone, e.g. Europe/Berlin)'
+    : '';
+  const zone = await io.prompts.input({
+    message: `Time zone for the weekly schedule${hint}`,
+    default: io.timeZone,
+    validate: (value) => isTimeZone(value.trim()) || 'Enter an IANA time zone, e.g. Europe/Berlin',
+  });
+  return zone.trim();
+}
+
+function isTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: value });
+    return value !== '';
+  } catch {
+    return false;
+  }
 }
 
 async function askEmail(prompts: InitPrompts): Promise<EmailAnswers> {
@@ -321,6 +384,7 @@ function buildConfigInput(answers: Answers): ConfigInput {
   return {
     profile: answers.profile,
     focusAreas: answers.focusAreas,
+    schedule: { timeZone: answers.timeZone },
     sources: [...DEFAULT_SOURCES],
     ...(Object.keys(delivery).length > 0 && { delivery }),
   };
@@ -403,6 +467,12 @@ async function writeOrFail(path: string, write: () => Promise<void>): Promise<vo
 const DOCKER_NEXT_STEPS =
   '\nNext: "docker compose up -d" starts the weekly schedule. Run "digest doctor" first to check the setup.\n';
 
+/** A container on UTC would run the Monday 07:45 digest at 07:45 UTC, so say how to change it. */
+function dockerNextSteps(timeZone: string): string {
+  if (!CONTAINER_DEFAULT_ZONES.has(timeZone)) return DOCKER_NEXT_STEPS;
+  return `\nThe schedule runs on ${timeZone}. For your local time, set schedule.timeZone in digest.config.json (for example "Europe/Berlin").\n${DOCKER_NEXT_STEPS}`;
+}
+
 function summary(info: {
   configPath: string;
   envPath: string;
@@ -420,6 +490,7 @@ function summary(info: {
     `  profile:  ${answers.profile}`,
     `  focus:    ${answers.focusAreas.join(', ')}`,
     `  delivery: ${channels.join(', ')}`,
+    `  schedule: ${info.answers.timeZone}`,
     `  ollama:   ${info.ollamaUrl}`,
     '',
   ].join('\n');
@@ -460,11 +531,13 @@ function createDefaultIo(): InitIo {
     env: process.env,
     platform: process.platform,
     totalMemoryBytes: totalmem(),
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     cwd: process.cwd(),
     envPath: DEFAULT_ENV_PATH,
     scheduleProgram: defaultScheduleProgram(),
     renderSchedule: renderOsSchedule,
     exists: pathExists,
+    isEmptyFile,
     writeFile: writeTextFile,
     writeSecretFile,
     stdout: (text) => {
@@ -517,8 +590,32 @@ async function writeTextFile(path: string, content: string): Promise<void> {
   await writeFile(path, content, 'utf8');
 }
 
-/** Creates the file with mode 0600 under a temp name, then renames it over `path`: never readable by others. */
+async function isEmptyFile(path: string): Promise<boolean> {
+  try {
+    const info = await stat(path);
+    return info.isFile() && info.size === 0;
+  } catch {
+    // Unreadable counts as "has content": the caller then asks before overwriting.
+    return false;
+  }
+}
+
+/**
+ * Writes `content` to a file only its owner can read. The temp file and rename keep readers from
+ * seeing half a file; where the rename cannot work (the file is a single-file bind mount, the
+ * folder is read-only) the existing file is written in place instead.
+ */
 async function writeSecretFile(path: string, content: string): Promise<void> {
+  try {
+    await writeViaTempFile(path, content);
+  } catch (error) {
+    if (!IN_PLACE_FALLBACK_CODES.has(errorCode(error) ?? '')) throw error;
+    await writeInPlace(path, content);
+  }
+}
+
+/** Creates the file with mode 0600 under a temp name, then renames it over `path`: never readable by others. */
+async function writeViaTempFile(path: string, content: string): Promise<void> {
   const temp = `${path}.${randomUUID()}.tmp`;
   try {
     await writeFile(temp, content, { encoding: 'utf8', mode: SECRET_FILE_MODE, flag: 'wx' });
@@ -527,4 +624,42 @@ async function writeSecretFile(path: string, content: string): Promise<void> {
     await rm(temp, { force: true });
     throw error;
   }
+}
+
+async function writeInPlace(path: string, content: string): Promise<void> {
+  await restrictToOwner(path);
+  // The mode only applies to a file this call creates.
+  await writeFile(path, content, { encoding: 'utf8', mode: SECRET_FILE_MODE });
+}
+
+/**
+ * Makes an existing file owner-only before secrets go into it. A mount that refuses chmod is
+ * fine if the file already is owner-only; a chmod that did nothing is not. Otherwise nothing is
+ * written.
+ */
+async function restrictToOwner(path: string): Promise<void> {
+  try {
+    await chmod(path, SECRET_FILE_MODE);
+  } catch (error) {
+    if (errorCode(error) === 'ENOENT') return;
+    if (await isOwnerOnly(path)) return;
+    throw new Error(
+      `${path} is readable by others and cannot be restricted (${errorMessage(error)}). ${OWNER_ONLY_HINT}`,
+      { cause: error },
+    );
+  }
+  if (!(await isOwnerOnly(path))) {
+    throw new Error(`${path} is still readable by others after chmod. ${OWNER_ONLY_HINT}`);
+  }
+}
+
+async function isOwnerOnly(path: string): Promise<boolean> {
+  const { mode } = await stat(path);
+  return (mode & GROUP_AND_OTHER_BITS) === 0;
+}
+
+function errorCode(error: unknown): string | undefined {
+  return error instanceof Error && 'code' in error && typeof error.code === 'string'
+    ? error.code
+    : undefined;
 }

@@ -34,6 +34,24 @@ check_compose() {
   pass "each profile starts the expected services"
 }
 
+# The Compose settings that the container work (W2-06) relies on.
+check_compose_settings() {
+  config="$(DIGEST_HOST_OS=darwin DIGEST_HOST_ARCH=arm64 compose config)" ||
+    fail "compose config failed with the host variables set"
+  for setting in 'DIGEST_HOST_OS: darwin' 'DIGEST_HOST_ARCH: arm64' 'stop_grace_period: 30m'; do
+    printf '%s\n' "$config" | grep -q "$setting" || fail "digest service lacks '$setting'"
+  done
+  compose --profile linux config | grep -q 'OLLAMA_MAX_LOADED_MODELS: "1"' ||
+    fail "the ollama service must set OLLAMA_MAX_LOADED_MODELS=1"
+  pass "digest gets the host OS and CPU and a long stop grace period; ollama keeps one model loaded"
+
+  # Compose reads .env for interpolation, so a copied example must not set the endpoint.
+  if grep -q '^[[:space:]]*OLLAMA_URL=' .env.example; then
+    fail ".env.example sets OLLAMA_URL: a copied .env would override the Compose default"
+  fi
+  pass ".env.example leaves OLLAMA_URL unset"
+}
+
 check_pull_script() {
   sh -n docker/pull-models.sh || fail "docker/pull-models.sh has a syntax error"
   expected="$(pnpm --silent exec tsx docker/printLinuxModels.mjs)"
@@ -74,7 +92,31 @@ check_image() {
   pass "the image contains no .env or digest.config.json"
 }
 
+# `make docker-init` creates empty files and mounts them one by one: renaming a temp file onto a
+# single-file bind mount fails, and /app is not writable for the node user.
+check_init() {
+  dir="$(mktemp -d)"
+  : >"$dir/digest.config.json"
+  (umask 077 && : >"$dir/.env")
+  if ! docker run --rm --user "$(id -u):$(id -g)" -e DIGEST_HOST_OS=darwin -e TZ=Europe/Berlin \
+    -v "$dir/digest.config.json:/app/digest.config.json" -v "$dir/.env:/app/.env" \
+    "$IMAGE" init --yes >/dev/null; then
+    rm -rf "$dir"
+    fail "init --yes failed on empty single-file bind mounts"
+  fi
+  grep -q '"timeZone": "Europe/Berlin"' "$dir/digest.config.json" ||
+    { rm -rf "$dir"; fail "init did not write schedule.timeZone"; }
+  grep -q '^OLLAMA_URL=http://host.docker.internal:11434$' "$dir/.env" ||
+    { rm -rf "$dir"; fail "init did not point a Mac host at host.docker.internal"; }
+  mode="$(stat -c %a "$dir/.env" 2>/dev/null || stat -f %Lp "$dir/.env")"
+  rm -rf "$dir"
+  [ "$mode" = "600" ] || fail ".env must stay mode 600, got $mode"
+  pass "init --yes writes both single-file bind mounts in place, .env stays 600"
+}
+
 check_compose
+check_compose_settings
 check_pull_script
 check_image
+check_init
 echo "All container checks passed."

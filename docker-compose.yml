@@ -2,7 +2,9 @@
 #
 #   Mac (default): Docker on macOS cannot use the Apple GPU, so the app talks to the Ollama app on
 #     the host. `digest init` writes OLLAMA_URL=http://host.docker.internal:11434 to .env when it
-#     knows the host is a Mac: export DIGEST_HOST_OS=darwin (the shell passes it through).
+#     knows the host is a Mac. The container is Linux, so the app must be told the host is a Mac to
+#     pick the Mac model profiles: `make docker-*` exports DIGEST_HOST_OS and DIGEST_HOST_ARCH from
+#     uname; with plain `docker compose`, export darwin and arm64 yourself (passed through below).
 #   Linux: `docker compose --profile linux up -d` adds a bundled Ollama and pulls the models once
 #     into the `ollama-models` volume (or set COMPOSE_PROFILES=linux). OLLAMA_URL then defaults to
 #     http://ollama:11434. A value in .env wins, and localhost never works from inside a container.
@@ -14,11 +16,16 @@
 # Files: digest.config.json and .env are mounted from this folder, so they must exist before the
 #   first run (`touch digest.config.json .env`). The app reads secrets from the mounted .env; there
 #   is no env_file, so secrets stay out of `docker inspect` and `docker compose config`.
-#   Init needs no Ollama: run it as `docker compose run --rm --no-deps digest init`.
+#   Init needs no Ollama: run it as `docker compose run --rm --no-deps digest init` (or
+#   `make docker-init`). Empty files count as absent, so `init --yes` works on the touched files.
 # Linux hosts: create ./data yourself and set DIGEST_UID/DIGEST_GID (in .env or the shell) to your
 #   `id -u`/`id -g`, so the container can write ./data and read a chmod 600 .env.
-# Time zone: the schedule uses the container's zone. Set TZ (for example Europe/Berlin) in .env or
-#   the shell; it defaults to UTC.
+# Time zone: `digest init` writes schedule.timeZone to digest.config.json; that is what the weekly
+#   schedule and the ISO week use. Its prompt defaults to the container's zone, which is UTC unless
+#   TZ (for example Europe/Berlin) is set in .env or the shell.
+# Stopping: `serve` finishes a digest that is running before it exits, so `stop_grace_period` is
+#   long. A container that is killed anyway leaves a run lock; the next run takes it over once its
+#   heartbeat is 5 minutes old, including from another container.
 
 name: eng-digest
 
@@ -28,12 +35,17 @@ services:
     image: eng-digest:local
     init: true
     restart: unless-stopped
+    # Longer than a digest takes: the quality profile writes with two large models, and a single
+    # write call may wait up to 10 minutes. Idle containers stop at once; this only delays
+    # `docker compose stop` while a run is in flight.
+    stop_grace_period: 30m
     user: '${DIGEST_UID:-1000}:${DIGEST_GID:-1000}'
     environment:
       - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
       - TZ=${TZ:-UTC}
       # No value: passed through from the shell or .env only when set.
       - DIGEST_HOST_OS
+      - DIGEST_HOST_ARCH
       - OTEL_EXPORTER_OTLP_ENDPOINT
     volumes:
       - ./data:/app/data
@@ -65,6 +77,9 @@ services:
     profiles: [linux]
     image: ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99
     restart: unless-stopped
+    environment:
+      # One model in memory at a time: the steps run in sequence and the models are large.
+      OLLAMA_MAX_LOADED_MODELS: '1'
     volumes:
       - ollama-models:/root/.ollama
     # NVIDIA GPU (needs the NVIDIA Container Toolkit); without it the models run on the CPU.
