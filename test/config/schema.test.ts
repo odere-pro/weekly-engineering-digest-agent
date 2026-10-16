@@ -37,6 +37,12 @@ describe('config schema', () => {
     expect(ConfigSchema.safeParse({ ...base, keepWeeks: 4, dedupeWeeks: 4 }).success).toBe(true);
   });
 
+  it('rejects a writer listed twice', () => {
+    expect(() => makeConfig({ models: { writers: ['gemma4:31b', 'gemma4:31b'] } })).toThrow(
+      /writers must be unique/,
+    );
+  });
+
   it('accepts a think setting per role', () => {
     const config = makeConfig({ models: { think: { guardRisk: false, write: 'low' } } });
     expect(config.models.think).toEqual({ guardRisk: false, write: 'low' });

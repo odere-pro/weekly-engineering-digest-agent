@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { generateStructured } from '../../src/core/structured.js';
 import { DigestError } from '../../src/shared/errors.js';
+import { UNTRUSTED_DATA_RULE } from '../../src/shared/untrusted.js';
 import { FakeModelProvider } from '../fakes/index.js';
 
 const Schema = z.object({ answer: z.number() });
@@ -29,6 +30,10 @@ describe('generateStructured', () => {
     expect(result).toMatchObject({ value: { answer: 3 }, repaired: true });
     expect(result.calls).toHaveLength(2);
     expect(model.generateCalls[1]?.prompt).toContain('did not match');
+    expect(model.generateCalls[1]?.prompt).toContain(UNTRUSTED_DATA_RULE);
+    expect(model.generateCalls[1]?.prompt).toMatch(
+      /<<<DATA previous-answer>>>[\s\S]*<<<END DATA>>>/,
+    );
     expect(model.generateCalls[1]?.model).toBe('fake-write');
   });
 

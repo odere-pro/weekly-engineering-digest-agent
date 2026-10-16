@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import type { GenerateRequest, GenerateResult, ModelProvider } from '../ports/ModelProvider.js';
 import { DigestError } from '../shared/errors.js';
+import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted.js';
 import type { StepName } from './schemas.js';
 
 export interface StructuredResult<T> {
@@ -56,7 +57,9 @@ export async function generateStructured<T>(
     prompt: [
       'Your previous answer did not match the required JSON schema.',
       `Problems:\n${firstCheck.error}`,
-      `Previous answer:\n${first.text}`,
+      // The answer can carry collected text, so it is data like any item.
+      UNTRUSTED_DATA_RULE,
+      `Previous answer:\n${wrapUntrusted('previous-answer', first.text)}`,
       'Return only the corrected JSON object.',
     ].join('\n\n'),
   });

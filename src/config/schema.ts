@@ -68,7 +68,14 @@ export type DeliveryConfig = z.infer<typeof DeliveryConfigSchema>;
 
 export const ModelOverridesSchema = z.object({
   /** Replace the profile's writer panel. One entry turns the panel off. */
-  writers: z.array(z.string().min(1)).min(1).optional(),
+  writers: z
+    .array(z.string().min(1))
+    .min(1)
+    .refine(
+      (w) => new Set(w).size === w.length,
+      'writers must be unique: outcomes and scores are keyed by tag',
+    )
+    .optional(),
   /** Per-role timeout in ms. */
   timeoutsMs: z.partialRecord(RoleSchema, z.number().int().min(1000)).optional(),
   retries: z.number().int().min(0).max(5).default(2),
