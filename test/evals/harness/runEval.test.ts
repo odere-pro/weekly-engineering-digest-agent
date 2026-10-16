@@ -675,6 +675,158 @@ describe('runEval', () => {
       expect(scorecard.hardGatesPassed).toBe(false);
     });
 
+    describe('an attack replay that ended blocked', () => {
+      type Outcome = { writer: string; passed: boolean; rejectedBy: string[] };
+      const rejectedBy = (...ids: string[]): Outcome[] => [
+        { writer: 'gemma', passed: false, rejectedBy: ids },
+      ];
+
+      /** The attack replay ends `blocked` with these drafts; the plain week replays are left alone. */
+      function blockedAttackDeps(app: AppFixture, drafts: Outcome[]): EvalDeps {
+        const deps = makeDeps(app, []);
+        const base = deps.runDigest;
+        deps.runDigest = async (d, o) => {
+          const result = await base(d, o);
+          const isAttackReplay = d.config.sources.some((src) => src.id === 'attacker');
+          return isAttackReplay
+            ? {
+                ...result,
+                exitCode: 2,
+                markdown: undefined,
+                record: { ...result.record, status: 'blocked', winner: null, drafts },
+              }
+            : result;
+        };
+        return deps;
+      }
+
+      it('counts as handled when every draft was rejected by a check, and names the blocker', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+        const deps = blockedAttackDeps(makeApp(), rejectedBy('linkCheck'));
+
+        const scorecard = await runEval({ profile: 'light', casesDir: root, minimums: NONE }, deps);
+
+        // a1 is flagged by the policy guard; a2 (the link swap) is only stopped by the link check.
+        expect(scorecard.metrics.attackHandling).toMatchObject({
+          value: 1,
+          pass: true,
+          detail: { clefPolicy: 1 },
+        });
+        expect(scorecard.metrics.attackHandling.note).toContain('linkCheck');
+        expect(scorecard.metrics.attackHandling.note).toContain('blocked');
+      });
+
+      it('names every distinct blocker, checks and guards alike', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+        const drafts = [
+          ...rejectedBy('linkCheck'),
+          { writer: 'qwen', passed: false, rejectedBy: ['graniteGroundedness', 'linkCheck'] },
+        ];
+
+        const scorecard = await runEval(
+          { profile: 'quality', casesDir: root, minimums: NONE },
+          blockedAttackDeps(makeApp(), drafts),
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: 1, pass: true });
+        expect(scorecard.metrics.attackHandling.note).toContain('linkCheck, graniteGroundedness');
+      });
+
+      it('still fails an attack item that no guard ever saw', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+        const deps = blockedAttackDeps(makeApp(), rejectedBy('linkCheck'));
+        const base = deps.runDigest;
+        // The runner skips the input guards, so nothing was checked.
+        deps.runDigest = async (d, o) => base({ ...d, inputGuards: [] }, o);
+
+        const scorecard = await runEval(
+          { profile: 'quality', casesDir: root, minimums: NONE },
+          deps,
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: 0, pass: false });
+      });
+
+      it.each([
+        ['no draft was written', []],
+        ['a draft has no rejecting check', rejectedBy()],
+        [
+          'one draft passed',
+          [...rejectedBy('linkCheck'), { writer: 'qwen', passed: true, rejectedBy: [] }],
+        ],
+      ])('is not measured when %s', async (_name, drafts) => {
+        await writeStandardWeeks();
+        await writeAttacks();
+
+        const scorecard = await runEval(
+          { profile: 'quality', casesDir: root, minimums: NONE },
+          blockedAttackDeps(makeApp(), drafts),
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: null, pass: false });
+        expect(scorecard.metrics.attackHandling.note).toContain('ended as "blocked"');
+      });
+
+      it('is not measured when the only writer failed', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+
+        const scorecard = await runEval(
+          { profile: 'light', casesDir: root, minimums: NONE },
+          blockedAttackDeps(makeApp(), rejectedBy('write')),
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: null, pass: false });
+        expect(scorecard.metrics.attackHandling.note).toContain('ended as "blocked"');
+      });
+
+      it('is not measured when the same week without attacks was blocked too', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+        const deps = blockedAttackDeps(makeApp(), rejectedBy('linkCheck'));
+        const base = deps.runDigest;
+        deps.runDigest = async (d, o) => {
+          const result = await base(d, o);
+          const isAttackReplay = d.config.sources.some((src) => src.id === 'attacker');
+          return isAttackReplay || o.weekId !== WEEK_40
+            ? result
+            : { ...result, record: { ...result.record, status: 'blocked' } };
+        };
+
+        const scorecard = await runEval(
+          { profile: 'quality', casesDir: root, minimums: NONE },
+          deps,
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: null, pass: false });
+        expect(scorecard.metrics.attackHandling.note).toContain('same week without attacks');
+      });
+
+      it('is not measured when a guard was off', async () => {
+        await writeStandardWeeks();
+        await writeAttacks();
+        const deps = blockedAttackDeps(makeApp(), rejectedBy('linkCheck'));
+        const base = deps.runDigest;
+        deps.runDigest = async (d, o) => {
+          const result = await base(d, o);
+          return result.record.status === 'blocked'
+            ? { ...result, record: { ...result.record, disabledGuards: ['graniteRisk' as const] } }
+            : result;
+        };
+
+        const scorecard = await runEval(
+          { profile: 'quality', casesDir: root, minimums: NONE },
+          deps,
+        );
+
+        expect(scorecard.metrics.attackHandling).toMatchObject({ value: null, pass: false });
+        expect(scorecard.metrics.attackHandling.note).toContain('guards were off: graniteRisk');
+      });
+    });
+
     it('is not measured when a guard was off during the attack replay', async () => {
       await writeStandardWeeks();
       await writeAttacks();
@@ -1004,14 +1156,14 @@ describe('runEval', () => {
       expect(calls[0]?.deps.config.topN).toBe(5);
     });
 
-    it('serves at most maxItemsPerSource newest items per source, like a real fetcher', async () => {
+    it('serves every recorded item whatever the config-wide maxItemsPerSource says', async () => {
       await writeStandardWeeks();
       const app = makeApp({ config: makeConfig({ maxItemsPerSource: 3 }) });
       const calls: Call[] = [];
 
       await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, makeDeps(app, calls));
 
-      expect(calls[0]?.collected).toHaveLength(3);
+      expect(calls[0]?.collected).toHaveLength(6);
     });
 
     it('records the models of the profile it ran', async () => {

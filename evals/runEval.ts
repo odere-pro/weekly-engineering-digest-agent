@@ -31,6 +31,7 @@ import { normalizeUrl, sameUrl } from '../src/shared/url.js';
 import {
   assembleMetrics,
   attackHandling,
+  attackRunMeasurement,
   classifierAccuracy,
   digestItemIds,
   failedHardGates,
@@ -74,6 +75,11 @@ const WEEK_DAYS = 7;
 const STABILITY_RUNS = 3;
 /** Attack items are dated just before the end of the replayed week: newest, so worst case. */
 const ATTACK_LEAD_MS = 1000;
+/**
+ * What the recorder asks every feed for. A replay serves a source this many items unless the
+ * allowlist caps the source lower, so it sees all that was recorded.
+ */
+const RECORDED_ITEMS_PER_SOURCE = 100;
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */
 const REPLAY_TOP_N = 5;
 const URL_IN_TEXT = /https?:\/\/[^\s<>"'`)\]]+/gi;
@@ -189,7 +195,49 @@ async function loadWeek(weeksDir: string, weekId: string): Promise<EvalWeek> {
   if (unknown.length > 0) {
     throw new DigestError(`${labelsPath}: ids not in items.json: ${unknown.join(', ')}`);
   }
-  return { weekId, items, labels };
+  const week = { weekId, items, labels };
+  assertLabelsVisible(week, [], weeksDir);
+  return week;
+}
+
+/** What the replay serves for one source: the allowlist's own cap, else everything recorded. */
+function replayCap(sourceId: string, allowlist: readonly Source[]): number {
+  return allowlist.find((source) => source.id === sourceId)?.maxItems ?? RECORDED_ITEMS_PER_SOURCE;
+}
+
+/** Like the real fetchers: a source's newest items first. */
+function newestFirst(items: readonly Item[]): Item[] {
+  return items.toSorted((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+}
+
+/**
+ * A labeled item the replay never serves cannot be recalled or leak, so its label would be
+ * silently wrong. Fails when any label sits past the cap of its source (`allowlist` caps; a
+ * source it does not list is served in full).
+ */
+function assertLabelsVisible(week: EvalWeek, allowlist: readonly Source[], weeksDir: string): void {
+  const ranks = new Map<string, { sourceId: string; rank: number }>();
+  const sourceIds = new Set(week.items.map((item) => item.sourceId));
+  for (const sourceId of sourceIds) {
+    const own = week.items.filter((item) => item.sourceId === sourceId);
+    newestFirst(own).forEach((item, index) => ranks.set(item.id, { sourceId, rank: index + 1 }));
+  }
+  const labeled = [
+    ...week.labels.mustInclude.map((id) => ({ list: 'mustInclude', id })),
+    ...week.labels.mustExclude.map((id) => ({ list: 'mustExclude', id })),
+  ];
+  const unseen = labeled.flatMap(({ list, id }) => {
+    const { sourceId = '', rank = 0 } = ranks.get(id) ?? {};
+    const cap = replayCap(sourceId, allowlist);
+    return rank > cap
+      ? [
+          `${list} ${id} is item ${rank} of ${sourceId}, but the replay serves only its newest ${cap} items`,
+        ]
+      : [];
+  });
+  if (unseen.length > 0) {
+    throw new DigestError(`${join(weeksDir, week.weekId, 'labels.json')}: ${unseen.join('; ')}`);
+  }
 }
 
 async function loadWeeks(weeksDir: string): Promise<EvalWeek[]> {
@@ -329,13 +377,17 @@ function endOfWeek(weekId: string): Date {
   return new Date(weekStartUtc(weekId).getTime() + WEEK_DAYS * DAY_MS - 1);
 }
 
-/** One source per source id found in the recorded items; the url is never fetched. */
-function sourcesOf(items: readonly Item[]): Source[] {
+/**
+ * One source per source id found in the recorded items; the url is never fetched. Each source
+ * carries its replay cap, so the pipeline sees what was recorded, not the usual 20 per source.
+ */
+function sourcesOf(items: readonly Item[], allowlist: readonly Source[]): Source[] {
   const firstOfSource = new Map(items.map((item) => [item.sourceId, item]));
   return [...firstOfSource.values()].map((item) => ({
     id: item.sourceId,
     kind: item.kind,
     url: item.url,
+    maxItems: replayCap(item.sourceId, allowlist),
   }));
 }
 
@@ -348,10 +400,10 @@ function recordedFetchers(items: readonly Item[]): DigestDeps['fetchers'] {
         // Like the real fetchers: this source's newest items, at most `maxItems`.
         fetch: (source: Source, window: FetchWindow) =>
           Promise.resolve(
-            items
-              .filter((item) => item.sourceId === source.id)
-              .toSorted((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
-              .slice(0, window.maxItems),
+            newestFirst(items.filter((item) => item.sourceId === source.id)).slice(
+              0,
+              window.maxItems,
+            ),
           ),
       },
     ]),
@@ -380,7 +432,7 @@ async function replay(
     ...app,
     config: {
       ...app.config,
-      sources: sourcesOf(items),
+      sources: sourcesOf(items, app.config.sources),
       topN: REPLAY_TOP_N,
       guards: GuardsConfigSchema.parse({}),
     },
@@ -569,15 +621,17 @@ function winnerScore(record: RunRecord): number | undefined {
   return record.drafts.find((draft) => draft.writer === record.winner)?.score?.score;
 }
 
-/** Not measured when the replay did not finish as a dry run or a guard was off. */
-function attackMeasurement(attack: AttackReplay | undefined): Measurement {
+/** The first week's plain replay is the baseline the attack replay is compared with. */
+function attackMeasurement(
+  attack: AttackReplay | undefined,
+  baseline: Replay | undefined,
+): Measurement {
   if (!attack) return attackHandling([]);
-  const { status, disabledGuards } = attack.run.record;
-  if (status !== 'dry-run') return { value: null, note: `the attack replay ended as "${status}"` };
-  if (disabledGuards.length > 0) {
-    return { value: null, note: `guards were off: ${disabledGuards.join(', ')}` };
-  }
-  return attackHandling(attack.outcomes);
+  const { status, disabledGuards, drafts } = attack.run.record;
+  return attackRunMeasurement(
+    { status, disabledGuards, drafts, baselineStatus: baseline?.record.status },
+    attack.outcomes,
+  );
 }
 
 function groundingMeasurement(grounding: GroundingResults): Measurement {
@@ -622,7 +676,7 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
   return {
     linkValidity: weeks(linkValidity([...weekSamples, ...attackSamples])),
     attackHandling: withCoverage(
-      attackMeasurement(run.attack),
+      attackMeasurement(run.attack, run.weekRuns[0]?.run),
       cases.attacks.length,
       minimums.attacks,
       'attack cases',
@@ -714,6 +768,8 @@ export async function runEval(options: EvalOptions, deps: EvalDeps): Promise<Sco
   const cases = await loadEvalCases(options.casesDir);
   const handle = await deps.buildApp(options.profile);
   try {
+    const weeksDir = join(options.casesDir, 'weeks');
+    for (const week of cases.weeks) assertLabelsVisible(week, handle.deps.config.sources, weeksDir);
     const run = await evaluate(cases, handle.deps, deps);
     return buildScorecard({
       profile: options.profile,

@@ -2,7 +2,7 @@ import { ItemSchema, type Item, type Source, type SourceKind } from '../schemas.
 import type { FetchWindow, SourceFetcher } from '../../ports/SourceFetcher.js';
 import type { Clock } from '../../shared/clock.js';
 import { errorMessage } from '../../shared/errors.js';
-import { withRetry, withTimeout } from '../../shared/retry.js';
+import { TimeoutError, withRetry, withTimeout } from '../../shared/retry.js';
 import type { Logger } from '../../shared/telemetry.js';
 
 export interface CollectInput {
@@ -38,6 +38,34 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 500;
 const MAX_CONCURRENT_SOURCES = 4;
+const FIRST_SERVER_ERROR = 500;
+const MAX_CAUSE_DEPTH = 5;
+/**
+ * How both source fetchers word a non-2xx answer: "HTTP 503 fetching <id>", or a GitHub rate
+ * limit, "... (HTTP 403)". Anchored so a status quoted inside a parse error is not mistaken for one.
+ */
+const HTTP_STATUS = /(?:^|\()HTTP (\d{3})\b/;
+/**
+ * Node's fetch reports every transport failure as a TypeError with one of these messages. Like
+ * the Ollama adapter, any of them is retried, whatever the cause: a spent retry is cheaper than
+ * a source lost for the week.
+ */
+const FETCH_FAILURE_MESSAGE = /^(?:fetch failed|terminated)$/;
+/** Transport error codes, for failures that reach us without the TypeError wrapper. */
+const NETWORK_ERROR_CODES: ReadonlySet<string> = new Set([
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'EHOSTUNREACH',
+  'ENETUNREACH',
+  'EPIPE',
+  'ETIMEDOUT',
+  'UND_ERR_CONNECT_TIMEOUT',
+  'UND_ERR_HEADERS_TIMEOUT',
+  'UND_ERR_BODY_TIMEOUT',
+  'UND_ERR_SOCKET',
+]);
 
 /**
  * Fetches every allowlisted source (W1-03). A source that fails after its retries is listed in
@@ -87,6 +115,7 @@ function fetchWithRetry(
     {
       retries: deps.retries ?? DEFAULT_RETRIES,
       baseDelayMs: RETRY_BASE_DELAY_MS,
+      shouldRetry: isRetryableFetchError,
       onRetry: (error, attempt) => {
         deps.logger.debug('Retrying source', {
           sourceId: source.id,
@@ -96,6 +125,41 @@ function fetchWithRetry(
       },
     },
   );
+}
+
+/**
+ * Timeouts, network failures and 5xx can clear up on their own. A 4xx (including a GitHub rate
+ * limit), a bad URL or a feed that does not parse fails the same way again, so those fail fast.
+ * Mirrors `isRetryable` in the Ollama adapter; the fetchers report an HTTP status in their
+ * message, not as a field.
+ */
+function isRetryableFetchError(error: unknown): boolean {
+  if (error instanceof TimeoutError) return true;
+  const status = HTTP_STATUS.exec(errorMessage(error))?.[1];
+  if (status !== undefined) return Number(status) >= FIRST_SERVER_ERROR;
+  return isNetworkFailure(error);
+}
+
+function isNetworkFailure(error: unknown): boolean {
+  // The GitHub fetcher rebuilds a failure from message and name alone, so match the name too.
+  const isFetchFailure =
+    error instanceof Error &&
+    error.name === 'TypeError' &&
+    FETCH_FAILURE_MESSAGE.test(error.message);
+  return isFetchFailure || causeChain(error).some(hasNetworkCode);
+}
+
+function causeChain(error: unknown): Error[] {
+  const chain: Error[] = [];
+  for (let current = error; current instanceof Error && chain.length < MAX_CAUSE_DEPTH;) {
+    chain.push(current);
+    current = current.cause;
+  }
+  return chain;
+}
+
+function hasNetworkCode(error: Error): boolean {
+  return 'code' in error && typeof error.code === 'string' && NETWORK_ERROR_CODES.has(error.code);
 }
 
 /** Keeps schema-valid items inside `[since, until]`; the window check is defense in depth. */

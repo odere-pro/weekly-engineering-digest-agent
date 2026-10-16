@@ -5,6 +5,8 @@ import {
   type CollectInput,
   type CollectOutput,
 } from '../../../src/core/steps/collect.js';
+import { createGithubReleasesFetcher } from '../../../src/adapters/sources/githubReleases.js';
+import { createRssFetcher } from '../../../src/adapters/sources/rss.js';
 import type { Item, Source, SourceKind } from '../../../src/core/schemas.js';
 import type { FetchWindow, SourceFetcher } from '../../../src/ports/SourceFetcher.js';
 import { makeItem } from '../../builders.js';
@@ -239,7 +241,7 @@ describe('collectStep', () => {
         fetch: () => {
           attempts += 1;
           return attempts <= failures
-            ? Promise.reject(new Error(`attempt ${attempts} failed`))
+            ? Promise.reject(new Error(`HTTP 503 fetching flaky (attempt ${attempts})`))
             : Promise.resolve(items);
         },
       };
@@ -263,7 +265,9 @@ describe('collectStep', () => {
       const out = await run(makeInput([makeSource('down')]), makeDeps({ rss: fetcher }));
 
       expect(attempts()).toBe(3);
-      expect(out.failedSources).toEqual([{ sourceId: 'down', error: 'attempt 3 failed' }]);
+      expect(out.failedSources).toEqual([
+        { sourceId: 'down', error: 'HTTP 503 fetching flaky (attempt 3)' },
+      ]);
     });
 
     it('honors deps.retries', async () => {
@@ -289,6 +293,191 @@ describe('collectStep', () => {
       await vi.advanceTimersByTimeAsync(1);
       expect(attempts()).toBe(3);
       await expect(pending).resolves.toMatchObject({ failedSources: [] });
+    });
+  });
+
+  describe('which errors are retried', () => {
+    /** A fetcher that always rejects with `error` and counts its attempts. */
+    function alwaysFailing(error: Error): { fetcher: SourceFetcher; attempts: () => number } {
+      let attempts = 0;
+      const fetcher: SourceFetcher = {
+        kind: 'rss',
+        fetch: () => {
+          attempts += 1;
+          return Promise.reject(error);
+        },
+      };
+      return { fetcher, attempts: () => attempts };
+    }
+
+    async function attemptsFor(error: Error): Promise<number> {
+      const { fetcher, attempts } = alwaysFailing(error);
+      await run(makeInput([makeSource('s')]), makeDeps({ rss: fetcher }));
+      return attempts();
+    }
+
+    const networkCause = (code: string): Error =>
+      Object.assign(new Error(`low level ${code}`), { code });
+    const redactedFetchFailure = (): Error => {
+      // The GitHub fetcher rebuilds a failure from its message and name alone.
+      const safe = new Error('fetch failed');
+      safe.name = 'TypeError';
+      return safe;
+    };
+
+    it.each([
+      ['a 404', new Error('HTTP 404 fetching s')],
+      ['a 410', new Error('HTTP 410 fetching s')],
+      ['a 403', new Error('HTTP 403 fetching s')],
+      ['a GitHub rate limit (403)', new Error('GitHub rate limit hit fetching s (HTTP 403)')],
+      [
+        'a GitHub rate limit (429) with a reset time',
+        new Error(
+          'GitHub rate limit hit fetching s (HTTP 429); resets at 2026-10-12T10:00:00.000Z',
+        ),
+      ],
+      ['a feed parse error', new Error('Cannot parse feed s: Unexpected close tag')],
+      [
+        'a bad GitHub URL',
+        new Error(
+          'Source s is not a GitHub repository URL (expected https://github.com/<owner>/<repo>)',
+        ),
+      ],
+      ['a malformed GitHub response', new Error('Malformed GitHub API response fetching s')],
+      ['a missing fetcher result', new Error('Fetcher did not return a list of items')],
+      ['a programming error', new TypeError("Cannot read properties of undefined (reading 'x')")],
+    ])('tries %s once and gives up', async (_name, error) => {
+      expect(await attemptsFor(error)).toBe(1);
+    });
+
+    it.each([
+      ['a 500', new Error('HTTP 500 fetching s')],
+      ['a 503', new Error('HTTP 503 fetching s')],
+      ['a 599', new Error('HTTP 599 fetching s')],
+      [
+        'a refused connection',
+        new TypeError('fetch failed', { cause: networkCause('ECONNREFUSED') }),
+      ],
+      ['a reset connection', new TypeError('fetch failed', { cause: networkCause('ECONNRESET') })],
+      ['a DNS failure', new TypeError('fetch failed', { cause: networkCause('ENOTFOUND') })],
+      ['a dropped body', new TypeError('terminated', { cause: networkCause('UND_ERR_SOCKET') })],
+      ['a coded error without a cause', networkCause('ETIMEDOUT')],
+      ['a fetch failure with its cause stripped', redactedFetchFailure()],
+    ])('retries %s twice', async (_name, error) => {
+      expect(await attemptsFor(error)).toBe(3);
+    });
+
+    it('retries a source that times out', async () => {
+      let attempts = 0;
+      const hanging: SourceFetcher = {
+        kind: 'rss',
+        fetch: () => {
+          attempts += 1;
+          return new Promise<Item[]>(() => undefined);
+        },
+      };
+
+      const out = await run(
+        makeInput([makeSource('hang')]),
+        makeDeps({ rss: hanging }, { timeoutMs: 50 }),
+      );
+
+      expect(attempts).toBe(3);
+      expect(out.failedSources).toEqual([{ sourceId: 'hang', error: 'Timed out after 50 ms' }]);
+    });
+
+    it('stops retrying as soon as the error stops being retryable', async () => {
+      const errors = [new Error('HTTP 503 fetching s'), new Error('HTTP 404 fetching s')];
+      let attempts = 0;
+      const fetcher: SourceFetcher = {
+        kind: 'rss',
+        fetch: () => Promise.reject(errors[attempts++] ?? new Error('unexpected extra attempt')),
+      };
+
+      const out = await run(makeInput([makeSource('s')]), makeDeps({ rss: fetcher }));
+
+      expect(attempts).toBe(2);
+      expect(out.failedSources).toEqual([{ sourceId: 's', error: 'HTTP 404 fetching s' }]);
+    });
+
+    it('does not log a retry for an error it gives up on at once', async () => {
+      const { logger, debug } = makeTestLogger();
+      const { fetcher } = alwaysFailing(new Error('HTTP 404 fetching s'));
+
+      await run(makeInput([makeSource('s')]), makeDeps({ rss: fetcher }, { logger }));
+
+      expect(debug).not.toHaveBeenCalledWith('Retrying source', expect.anything());
+    });
+  });
+
+  // The step reads the HTTP status from the fetchers' error messages, so pin it to the real ones.
+  describe('which errors are retried, with the real fetchers', () => {
+    const replying = (status: number, headers: Record<string, string> = {}) =>
+      vi.fn<typeof fetch>(() => Promise.resolve(new Response('not a feed', { status, headers })));
+    const github = (id: string): Source => ({
+      id,
+      kind: 'github',
+      url: 'https://github.com/acme/tool',
+    });
+
+    async function fetchCalls(
+      source: Source,
+      fetchFn: ReturnType<typeof vi.fn<typeof fetch>>,
+    ): Promise<{ calls: number; failure: string | undefined }> {
+      const fetchers = {
+        rss: createRssFetcher({ fetch: fetchFn }),
+        github: createGithubReleasesFetcher({ fetch: fetchFn }),
+      };
+      const out = await run(makeInput([source]), makeDeps(fetchers));
+      return { calls: fetchFn.mock.calls.length, failure: out.failedSources[0]?.error };
+    }
+
+    it.each([
+      [500, 3],
+      [503, 3],
+      [404, 1],
+      [403, 1],
+      [429, 1],
+    ])('rss: an HTTP %i answer is fetched %i time(s)', async (status, calls) => {
+      expect((await fetchCalls(makeSource('feed'), replying(status))).calls).toBe(calls);
+    });
+
+    it.each([
+      [503, {}, 3],
+      [404, {}, 1],
+      [403, { 'x-ratelimit-remaining': '0' }, 1],
+      [429, { 'retry-after': '60' }, 1],
+    ])('github: an HTTP %i answer %j is fetched %i time(s)', async (status, headers, calls) => {
+      const result = await fetchCalls(github('repo'), replying(status, headers));
+
+      expect(result.calls).toBe(calls);
+      expect(result.failure).toContain(`HTTP ${status}`);
+    });
+
+    it('rss: retries a dropped connection', async () => {
+      const cause = Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' });
+      const dropped = vi.fn<typeof fetch>(() =>
+        Promise.reject(new TypeError('fetch failed', { cause })),
+      );
+
+      expect((await fetchCalls(makeSource('feed'), dropped)).calls).toBe(3);
+    });
+
+    it('rss: a 200 answer that does not parse is fetched once', async () => {
+      const result = await fetchCalls(makeSource('feed'), replying(200));
+
+      expect(result.calls).toBe(1);
+      expect(result.failure).toContain('Cannot parse feed feed');
+    });
+
+    it('github: a URL that is not a repository is never fetched', async () => {
+      const fetchFn = replying(200);
+      const bad: Source = { id: 'repo', kind: 'github', url: 'https://example.com/acme/tool' };
+
+      const result = await fetchCalls(bad, fetchFn);
+
+      expect(result.calls).toBe(0);
+      expect(result.failure).toContain('not a GitHub repository URL');
     });
   });
 
