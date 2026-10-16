@@ -1,8 +1,8 @@
 import type { Draft, GuardCheckId, GuardVerdict, Item } from '../schemas.js';
 import type { OutputGuard } from '../../ports/Guard.js';
 import type { GuardsConfig } from '../../config/schema.js';
-import { NotImplementedError } from '../../shared/errors.js';
 import type { Logger } from '../../shared/telemetry.js';
+import { applyGuards, flaggedBy, planGuards } from './guardInput.js';
 
 export interface GuardOutputDeps {
   guards: readonly OutputGuard[];
@@ -17,10 +17,23 @@ export interface GuardOutputOutput {
 }
 
 /** Runs the output guards on each draft separately (W1-06). */
-export function guardOutputStep(
-  _drafts: readonly Draft[],
-  _sources: readonly Item[],
-  _deps: GuardOutputDeps,
+export async function guardOutputStep(
+  drafts: readonly Draft[],
+  sources: readonly Item[],
+  deps: GuardOutputDeps,
 ): Promise<GuardOutputOutput> {
-  throw new NotImplementedError('W1-06');
+  const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
+  const checks = active.map((guard) => (draft: Draft) => guard.checkDraft(draft, sources));
+  const { kept, dropped } = await applyGuards(drafts, checks, deps.config.mode);
+  for (const { subject, verdicts } of dropped) {
+    deps.logger.debug('output guards rejected draft', {
+      writer: subject.writer,
+      flaggedBy: flaggedBy(verdicts),
+    });
+  }
+  return {
+    passed: kept,
+    rejected: dropped.map(({ subject, verdicts }) => ({ draft: subject, verdicts })),
+    disabledChecks,
+  };
 }
