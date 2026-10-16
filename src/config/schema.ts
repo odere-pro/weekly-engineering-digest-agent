@@ -1,0 +1,126 @@
+// digest.config.json and .env schemas. Frozen after Wave 0; defaults and thresholds are tuned on main.
+import { z } from 'zod';
+import { RoleSchema, SourceSchema } from '../core/schemas.js';
+
+export const ProfileNameSchema = z.enum(['quality', 'fast', 'light']);
+export type ProfileName = z.infer<typeof ProfileNameSchema>;
+
+export const GuardModeSchema = z.enum(['any', 'all']);
+export type GuardMode = z.infer<typeof GuardModeSchema>;
+
+export const InputGuardsSchema = z.object({
+  enabled: z.boolean().default(true),
+  /** any: block on the first flag. all: block only when every enabled guard flags. */
+  mode: GuardModeSchema.default('any'),
+  checks: z
+    .object({ clefPolicy: z.boolean().default(true), graniteRisk: z.boolean().default(true) })
+    .prefault({}),
+});
+
+export const OutputGuardsSchema = z.object({
+  enabled: z.boolean().default(true),
+  mode: GuardModeSchema.default('any'),
+  checks: z
+    .object({
+      graniteGroundedness: z.boolean().default(true),
+      clefRubric: z.boolean().default(true),
+    })
+    .prefault({}),
+});
+
+export const GuardsConfigSchema = z.object({
+  input: InputGuardsSchema.prefault({}),
+  output: OutputGuardsSchema.prefault({}),
+});
+export type GuardsConfig = z.infer<typeof GuardsConfigSchema>;
+
+export const ThresholdsSchema = z.object({
+  /** Items below this expected relevance (0-3) are dropped. */
+  minRelevance: z.number().min(0).max(3).default(1.5),
+  /** Items with hype probability above this are dropped. */
+  maxHype: z.number().min(0).max(1).default(0.5),
+  /** Items with minor-release probability above this are dropped. */
+  maxMinorRelease: z.number().min(0).max(1).default(0.5),
+  /** A decision-model guard flags when P(yes) is above this. */
+  guardFlag: z.number().min(0).max(1).default(0.5),
+});
+export type Thresholds = z.infer<typeof ThresholdsSchema>;
+
+export const EmailDeliverySchema = z.object({
+  host: z.string().min(1),
+  port: z.number().int().min(1).max(65535).default(587),
+  secure: z.boolean().default(false),
+  user: z.string().min(1),
+  from: z.email(),
+  to: z.array(z.email()).min(1),
+});
+
+export const DeliveryConfigSchema = z.object({
+  /** Always on: the digest is written here. */
+  markdown: z.object({ dir: z.string().min(1).default('data/digests') }).prefault({}),
+  email: EmailDeliverySchema.optional(),
+  /** The webhook URL lives in .env (SLACK_WEBHOOK_URL). */
+  slack: z.object({ enabled: z.boolean().default(false) }).optional(),
+});
+export type DeliveryConfig = z.infer<typeof DeliveryConfigSchema>;
+
+export const ModelOverridesSchema = z.object({
+  /** Replace the profile's writer panel. One entry turns the panel off. */
+  writers: z.array(z.string().min(1)).min(1).optional(),
+  /** Per-role timeout in ms. */
+  timeoutsMs: z.partialRecord(RoleSchema, z.number().int().min(1000)).optional(),
+  retries: z.number().int().min(0).max(5).default(2),
+});
+
+export const ScheduleSchema = z.object({
+  /** Default: Mondays 07:45. */
+  cron: z.string().min(1).default('45 7 * * 1'),
+  timeZone: z
+    .string()
+    .min(1)
+    .default(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
+});
+
+export const ConfigSchema = z.object({
+  profile: ProfileNameSchema.default('quality'),
+  focusAreas: z.array(z.string().min(1)).min(1),
+  sources: z
+    .array(SourceSchema)
+    .min(1)
+    .refine((s) => new Set(s.map((x) => x.id)).size === s.length, 'source ids must be unique'),
+  windowDays: z.number().int().min(1).max(31).default(7),
+  maxItemsPerSource: z.number().int().min(1).max(100).default(20),
+  /** Items in the digest: 3-5. */
+  topN: z.number().int().min(3).max(5).default(5),
+  /** Weeks of sent URLs removed from new digests. */
+  dedupeWeeks: z.number().int().min(0).max(12).default(4),
+  /** Run folders older than this are pruned (digest.md kept). */
+  keepWeeks: z.number().int().min(1).default(12),
+  dataDir: z.string().min(1).default('data'),
+  schedule: ScheduleSchema.prefault({}),
+  delivery: DeliveryConfigSchema.prefault({}),
+  guards: GuardsConfigSchema.prefault({}),
+  thresholds: ThresholdsSchema.prefault({}),
+  models: ModelOverridesSchema.prefault({}),
+});
+export type Config = z.infer<typeof ConfigSchema>;
+export type ConfigInput = z.input<typeof ConfigSchema>;
+
+/** Secrets: .env only, never logged, never written to run records or traces. */
+export const SecretsSchema = z.object({
+  SMTP_PASSWORD: z.string().min(1).optional(),
+  SLACK_WEBHOOK_URL: z.url().optional(),
+  GITHUB_TOKEN: z.string().min(1).optional(),
+});
+export type Secrets = z.infer<typeof SecretsSchema>;
+
+export const SECRET_KEYS = Object.keys(SecretsSchema.shape) as (keyof Secrets)[];
+
+/** Non-secret environment settings. */
+export const EnvSchema = z.object({
+  OLLAMA_URL: z.url().default('http://localhost:11434'),
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  /** Set to enable OpenTelemetry traces (e.g. http://localhost:4318/v1/traces). */
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.url().optional(),
+});
+export type Env = z.infer<typeof EnvSchema>;

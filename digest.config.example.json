@@ -1,0 +1,27 @@
+{
+  "profile": "quality",
+  "focusAreas": ["AI models and tooling", "Platform engineering"],
+  "sources": [
+    { "id": "nodejs-releases", "kind": "github", "url": "https://github.com/nodejs/node" },
+    { "id": "kubernetes-blog", "kind": "rss", "url": "https://kubernetes.io/feed.xml" }
+  ],
+  "windowDays": 7,
+  "maxItemsPerSource": 20,
+  "topN": 5,
+  "schedule": { "cron": "45 7 * * 1", "timeZone": "Europe/Berlin" },
+  "delivery": {
+    "markdown": { "dir": "data/digests" }
+  },
+  "guards": {
+    "input": {
+      "enabled": true,
+      "mode": "any",
+      "checks": { "clefPolicy": true, "graniteRisk": true }
+    },
+    "output": {
+      "enabled": true,
+      "mode": "any",
+      "checks": { "graniteGroundedness": true, "clefRubric": true }
+    }
+  }
+}
