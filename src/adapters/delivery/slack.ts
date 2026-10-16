@@ -1,5 +1,9 @@
 import type { Delivery } from '../../ports/Delivery.js';
-import { NotImplementedError } from '../../shared/errors.js';
+import { failureOneLiner } from './failureNote.js';
+import { redactedError, redactSecrets } from './redact.js';
+import { toSlackMrkdwn } from './slackFormat.js';
+
+const REQUEST_TIMEOUT_MS = 15_000;
 
 export interface SlackOptions {
   /** From .env only. */
@@ -7,7 +11,41 @@ export interface SlackOptions {
   fetch?: typeof fetch;
 }
 
+/** Every spelling of the webhook that an error message could carry: raw, normalized, secret path. */
+function webhookSecrets(webhookUrl: string): string[] {
+  try {
+    const { href, pathname } = new URL(webhookUrl);
+    return [webhookUrl, href, pathname.length > 1 ? pathname : ''];
+  } catch {
+    return [webhookUrl];
+  }
+}
+
 /** Slack incoming webhook (W1-12). */
-export function createSlackDelivery(_options: SlackOptions): Delivery {
-  throw new NotImplementedError('W1-12');
+export function createSlackDelivery(options: SlackOptions): Delivery {
+  const send = options.fetch ?? fetch;
+  const secrets = webhookSecrets(options.webhookUrl);
+
+  async function post(text: string): Promise<void> {
+    let response: Response;
+    try {
+      response = await send(options.webhookUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text }),
+        // Only the configured endpoint may be contacted, so a redirect is a failure.
+        redirect: 'error',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+    } catch (error) {
+      throw redactedError('Slack webhook request failed', error, secrets);
+    }
+    if (!response.ok) throw new Error(`Slack webhook answered HTTP ${String(response.status)}`);
+  }
+
+  return {
+    id: 'slack',
+    sendDigest: (message) => post(toSlackMrkdwn(message.markdown)),
+    sendFailure: (note) => post(toSlackMrkdwn(redactSecrets(failureOneLiner(note), secrets))),
+  };
 }
