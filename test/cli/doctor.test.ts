@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { join } from 'node:path';
+import { describe, expect, it, vi, type Mock } from 'vitest';
 import { doctorCommand, type DoctorIo } from '../../src/cli/doctor.js';
-import type { LoadedConfig } from '../../src/config/load.js';
+import { loadConfig, type LoadedConfig } from '../../src/config/load.js';
 import {
   PROFILES,
   requiredModels,
@@ -16,6 +17,9 @@ import { FakeModelProvider, fixedClock } from '../fakes/index.js';
 
 const MAC: Platform = { os: 'darwin', arch: 'arm64' };
 const LINUX: Platform = { os: 'linux', arch: 'x64' };
+const CONFIG_FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'config');
+const VALID_CONFIG = join(CONFIG_FIXTURES, 'valid.config.json');
+const MISSING_ENV = join(CONFIG_FIXTURES, 'missing.env');
 const DATA_DIR = '/srv/digest/data';
 const ENV_PATH = '/srv/digest/.env';
 const FEED_URL = 'https://example.com/feed.xml';
@@ -52,6 +56,11 @@ interface Setup {
   /** Profile the loader resolved; defaults to the configured profile for `platform`. */
   profile?: ModelProfile;
   platform?: Platform;
+  /**
+   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The io then carries no platform,
+   * as in production, so the command must resolve it from this env.
+   */
+  hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
   health?: Partial<ModelHealth> | ((profile: ModelProfile) => Partial<ModelHealth>);
   /** Mode of the .env file; null when there is no .env. */
   envMode?: number | null;
@@ -69,7 +78,7 @@ interface Harness {
   io: Partial<DoctorIo>;
   text: () => string;
   fetch: ReturnType<typeof vi.fn>;
-  loadConfig: ReturnType<typeof vi.fn>;
+  loadConfig: Mock<DoctorIo['loadConfig']>;
   health: ReturnType<typeof vi.fn>;
 }
 
@@ -83,7 +92,7 @@ function harness(setup: Setup = {}): Harness {
   const profile = setup.profile ?? resolveProfile(config.profile, platform, config.models.writers);
   const loaded: LoadedConfig = {
     config,
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
+    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...setup.hostEnv },
     secrets: setup.secrets ?? {},
     profile,
     configPath: '/srv/digest/digest.config.json',
@@ -99,7 +108,7 @@ function harness(setup: Setup = {}): Harness {
   const provider = new FakeModelProvider({ health });
   const healthSpy = vi.spyOn(provider, 'health');
   const fetchSpy = vi.fn(setup.fetch ?? okFetch());
-  const loadSpy = vi.fn(setup.loadConfig ?? (async () => loaded));
+  const loadSpy = vi.fn<DoctorIo['loadConfig']>(setup.loadConfig ?? (async () => loaded));
   const existing = new Set(setup.existingDirs ?? ['/', '/srv', '/srv/digest', DATA_DIR]);
   const readOnly = new Set(setup.readOnlyDirs ?? []);
   const out: string[] = [];
@@ -108,7 +117,7 @@ function harness(setup: Setup = {}): Harness {
     createProvider: () => provider,
     fetch: fetchSpy,
     clock: fixedClock('2026-10-16T09:00:00Z'),
-    platform,
+    ...(setup.hostEnv ? {} : { platform }),
     envPath: ENV_PATH,
     stat: async (path) => {
       if (setup.envStatError) throw setup.envStatError;
@@ -140,6 +149,22 @@ function resultFor(text: string, symbol: '✓' | '!' | '✗', fragment: string):
   if (index < 0) return undefined;
   const next = lines[index + 1] ?? '';
   return next.trimStart().startsWith('fix:') ? `${lines[index]}\n${next}` : lines[index];
+}
+
+/** Runs `run` while `process` claims to be `platform`; the real values come back afterwards. */
+async function onProcess<T>(platform: Platform, run: () => Promise<T>): Promise<T> {
+  const saved = {
+    platform: Object.getOwnPropertyDescriptor(process, 'platform'),
+    arch: Object.getOwnPropertyDescriptor(process, 'arch'),
+  };
+  Object.defineProperty(process, 'platform', { value: platform.os, configurable: true });
+  Object.defineProperty(process, 'arch', { value: platform.arch, configurable: true });
+  try {
+    return await run();
+  } finally {
+    if (saved.platform) Object.defineProperty(process, 'platform', saved.platform);
+    if (saved.arch) Object.defineProperty(process, 'arch', saved.arch);
+  }
 }
 
 async function runDoctor(setup: Setup = {}): Promise<{ code: number; text: string; h: Harness }> {
@@ -336,6 +361,115 @@ describe('doctorCommand', () => {
       });
 
       expect(resultFor(text, '✗', 'apple silicon:')).toBeDefined();
+    });
+  });
+
+  describe('host platform from the environment', () => {
+    it('takes DIGEST_HOST_OS/DIGEST_HOST_ARCH over a Linux process, so a container on a Mac passes', async () => {
+      const { code, text } = await onProcess(LINUX, () =>
+        runDoctor({ hostEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'arm64' } }),
+      );
+
+      expect(resultFor(text, '✓', 'apple silicon:')).toContain('darwin/arm64');
+      expect(code).toBe(0);
+    });
+
+    it('takes the named host over a Mac process: a Linux host falls back to the untuned profile', async () => {
+      const { code, text } = await onProcess(MAC, () =>
+        runDoctor({
+          platform: LINUX,
+          hostEnv: { DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
+        }),
+      );
+
+      expect(resultFor(text, '!', 'apple silicon:')).toContain('linux/x64');
+      expect(code).toBe(0);
+    });
+
+    it('uses the running process when no host is named', async () => {
+      const { text } = await onProcess(LINUX, () => runDoctor({ platform: LINUX, hostEnv: {} }));
+
+      expect(resultFor(text, '!', 'apple silicon:')).toContain('linux/x64');
+    });
+
+    describe('with the real loader', () => {
+      const realLoader =
+        (hostEnv: Record<string, string>): DoctorIo['loadConfig'] =>
+        (options) =>
+          loadConfig({ ...options, envPath: MISSING_ENV, processEnv: hostEnv });
+
+      it('judges the same Mac host the loader resolved the profile for', async () => {
+        const h = harness({
+          hostEnv: {},
+          loadConfig: realLoader({ DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'arm64' }),
+        });
+
+        await onProcess(LINUX, () => doctorCommand({ config: VALID_CONFIG }, h.io));
+
+        expect(resultFor(h.text(), '✓', 'apple silicon:')).toContain('darwin/arm64');
+      });
+
+      it('judges the same Linux host the loader fell back for', async () => {
+        const h = harness({
+          hostEnv: {},
+          loadConfig: realLoader({ DIGEST_HOST_OS: 'Linux', DIGEST_HOST_ARCH: 'x86_64' }),
+        });
+
+        await onProcess(MAC, () => doctorCommand({ config: VALID_CONFIG }, h.io));
+
+        expect(resultFor(h.text(), '!', 'apple silicon:')).toContain('linux/x64');
+      });
+    });
+
+    it('leaves the platform to the loader instead of passing one', async () => {
+      const h = harness({ hostEnv: { DIGEST_HOST_OS: 'darwin' } });
+
+      await doctorCommand({}, h.io);
+
+      expect(h.loadConfig.mock.calls[0]?.[0].platform).toBeUndefined();
+    });
+
+    it('prints a readable ✗ naming the variable for a bad value, and checks nothing else', async () => {
+      const h = harness({ hostEnv: { DIGEST_HOST_OS: 'plan9' } });
+
+      const code = await doctorCommand({}, h.io);
+
+      expect(code).toBe(1);
+      expect(resultFor(h.text(), '✗', 'config:')).toMatch(
+        /DIGEST_HOST_OS "plan9".*\n\s+fix: .*variable named above/,
+      );
+      expect(h.health).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('think', () => {
+    it('prints the effective think setting for the roles that can send it', async () => {
+      const { text } = await runDoctor();
+
+      expect(resultFor(text, '✓', 'think:')).toBe(
+        '✓ think: classify=default, guardRisk=off, write=default',
+      );
+    });
+
+    it('shows a configured setting over the default', async () => {
+      const { text } = await runDoctor({
+        config: { models: { think: { write: 'high', guardRisk: true, classify: false } } },
+      });
+
+      expect(resultFor(text, '✓', 'think:')).toBe(
+        '✓ think: classify=off, guardRisk=on, write=high',
+      );
+    });
+
+    it('warns when a decision-only role is configured, since decide never sends think', async () => {
+      const { code, text } = await runDoctor({
+        config: { models: { think: { judge: 'low', guardPolicy: false } } },
+      });
+
+      expect(resultFor(text, '!', 'think:')).toMatch(
+        /ignored for guardPolicy, judge.*\n\s+fix: remove those roles/,
+      );
+      expect(code).toBe(0);
     });
   });
 

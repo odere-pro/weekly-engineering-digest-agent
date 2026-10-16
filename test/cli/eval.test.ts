@@ -1,10 +1,11 @@
+import { join } from 'node:path';
 import { describe, expect, it, vi, type Mock } from 'vitest';
 import { assembleMetrics, failedHardGates, type Measurement } from '../../evals/metrics.js';
 import { METRIC_IDS, ScorecardSchema, type MetricId, type Scorecard } from '../../evals/schema.js';
 import type { DigestDeps } from '../../src/core/runDigest.js';
 import { evalCommand, formatScorecard, type EvalCommandIo } from '../../src/cli/eval.js';
-import type { LoadedConfig } from '../../src/config/load.js';
-import { PROFILES } from '../../src/config/profiles.js';
+import { loadConfig, type LoadedConfig } from '../../src/config/load.js';
+import { NON_MAC_FALLBACK, PROFILES, type Platform } from '../../src/config/profiles.js';
 import type { ProfileName } from '../../src/config/schema.js';
 import { DigestError } from '../../src/shared/errors.js';
 import { makeConfig } from '../builders.js';
@@ -44,9 +45,40 @@ interface Harness {
   buildApp: Mock<EvalCommandIo['buildApp']>;
 }
 
+const CONFIG_FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'config');
+const VALID_CONFIG = join(CONFIG_FIXTURES, 'valid.config.json');
+const MISSING_ENV = join(CONFIG_FIXTURES, 'missing.env');
+const MAC: Platform = { os: 'darwin', arch: 'arm64' };
+const LINUX: Platform = { os: 'linux', arch: 'x64' };
+
+interface HarnessOptions {
+  /**
+   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The io then carries no platform,
+   * as in production, so the command must resolve it from this env.
+   */
+  hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
+}
+
+/** Runs `run` while `process` claims to be `platform`; the real values come back afterwards. */
+async function onProcess<T>(platform: Platform, run: () => Promise<T>): Promise<T> {
+  const saved = {
+    platform: Object.getOwnPropertyDescriptor(process, 'platform'),
+    arch: Object.getOwnPropertyDescriptor(process, 'arch'),
+  };
+  Object.defineProperty(process, 'platform', { value: platform.os, configurable: true });
+  Object.defineProperty(process, 'arch', { value: platform.arch, configurable: true });
+  try {
+    return await run();
+  } finally {
+    if (saved.platform) Object.defineProperty(process, 'platform', saved.platform);
+    if (saved.arch) Object.defineProperty(process, 'arch', saved.arch);
+  }
+}
+
 function harness(
   scorecardFor: (profile: ProfileName) => Scorecard = (p) => makeScorecard(p),
   configProfile: ProfileName = 'quality',
+  options: HarnessOptions = {},
 ): Harness {
   const out: string[] = [];
   const err: string[] = [];
@@ -54,7 +86,7 @@ function harness(
   const dirs: string[] = [];
   const loaded: LoadedConfig = {
     config: makeConfig({ profile: configProfile }),
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
+    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...options.hostEnv },
     secrets: {},
     profile: PROFILES[configProfile],
     configPath: '/work/digest.config.json',
@@ -73,7 +105,7 @@ function harness(
     runDigest: () => Promise.reject(new Error('runDigest is not called by the fake')),
     runEval,
     clock: fixedClock('2026-10-16T09:00:00Z'),
-    platform: { os: 'darwin', arch: 'arm64' },
+    ...(options.hostEnv ? {} : { platform: MAC }),
     mkdir: (path) => {
       dirs.push(path);
       return Promise.resolve();
@@ -274,6 +306,84 @@ describe('evalCommand', () => {
       { profile: 'fast', resolved: 'fast', writers: PROFILES.fast.writers },
       { profile: 'light', resolved: 'light', writers: PROFILES.light.writers },
     ]);
+  });
+
+  describe('host platform from the environment', () => {
+    /** The profile each `--profile all` run was built with, as the loader would hand it to buildApp. */
+    async function builtProfiles(h: Harness): Promise<LoadedConfig['profile'][]> {
+      h.buildApp.mockResolvedValue({ deps: {} as DigestDeps, close: () => Promise.resolve() });
+      h.runEval.mockImplementation(async (options, deps) => {
+        await deps.buildApp(options.profile);
+        return makeScorecard(options.profile);
+      });
+      await evalCommand({ profile: 'all' }, h.io);
+      return h.buildApp.mock.calls.map(([loaded]) => loaded.profile);
+    }
+
+    it('takes DIGEST_HOST_OS/DIGEST_HOST_ARCH over a Linux process, so a container on a Mac gets the tuned profiles', async () => {
+      const h = harness(undefined, 'quality', {
+        hostEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'aarch64' },
+      });
+
+      const built = await onProcess(LINUX, () => builtProfiles(h));
+
+      expect(built).toEqual([PROFILES.quality, PROFILES.fast, PROFILES.light]);
+    });
+
+    it('takes the named host over a Mac process: a Linux host gets the untuned fallback', async () => {
+      const h = harness(undefined, 'quality', {
+        hostEnv: { DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
+      });
+
+      const built = await onProcess(MAC, () => builtProfiles(h));
+
+      expect(built).toEqual([
+        { ...NON_MAC_FALLBACK, name: 'quality' },
+        { ...NON_MAC_FALLBACK, name: 'fast' },
+        { ...NON_MAC_FALLBACK, name: 'light' },
+      ]);
+    });
+
+    it('uses the running process when no host is named', async () => {
+      const h = harness(undefined, 'quality', { hostEnv: {} });
+
+      const built = await onProcess(LINUX, () => builtProfiles(h));
+
+      expect(built.map((profile) => profile.requiresAppleSilicon)).toEqual([false, false, false]);
+    });
+
+    it('builds the configured profile for the host the real loader resolved', async () => {
+      const h = harness(undefined, 'quality', { hostEnv: {} });
+      h.buildApp.mockResolvedValue({ deps: {} as DigestDeps, close: () => Promise.resolve() });
+      h.runEval.mockImplementation(async (options, deps) => {
+        await deps.buildApp(options.profile);
+        return makeScorecard(options.profile);
+      });
+      const io: EvalCommandIo = {
+        ...h.io,
+        loadConfig: (options) =>
+          loadConfig({
+            ...options,
+            envPath: MISSING_ENV,
+            processEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'arm64' },
+          }),
+      };
+
+      await onProcess(LINUX, () => evalCommand({ config: VALID_CONFIG }, io));
+
+      expect(h.buildApp.mock.calls.map(([loaded]) => loaded.profile)).toEqual([PROFILES.quality]);
+    });
+
+    it('reports a bad value as an error naming the variable, before running anything', async () => {
+      const h = harness(undefined, 'quality', { hostEnv: { DIGEST_HOST_ARCH: 'sparc' } });
+
+      const code = await evalCommand({}, h.io);
+
+      expect(code).toBe(1);
+      expect(h.err.join('')).toMatch(/DIGEST_HOST_ARCH "sparc"/);
+      expect(h.runEval).not.toHaveBeenCalled();
+      expect(h.files.size).toBe(0);
+    });
   });
 
   it('hands runEval the clock and the digest runner', async () => {

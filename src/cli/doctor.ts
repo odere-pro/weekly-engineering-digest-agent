@@ -1,10 +1,20 @@
 import { constants } from 'node:fs';
 import { access, stat } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { createOllamaProvider } from '../adapters/models/ollama.js';
+import {
+  createOllamaProvider,
+  DEFAULT_THINK,
+  type ThinkSetting,
+} from '../adapters/models/ollama.js';
 import { createGithubReleasesFetcher } from '../adapters/sources/githubReleases.js';
 import { createRssFetcher } from '../adapters/sources/rss.js';
-import { loadConfig, redactSecrets, type LoadedConfig, type LoadOptions } from '../config/load.js';
+import {
+  loadConfig,
+  redactSecrets,
+  resolveHostPlatform,
+  type LoadedConfig,
+  type LoadOptions,
+} from '../config/load.js';
 import {
   isAppleSilicon,
   PROFILES,
@@ -13,7 +23,7 @@ import {
   type Platform,
 } from '../config/profiles.js';
 import type { GuardsConfig } from '../config/schema.js';
-import type { GuardCheckId, Source, SourceKind } from '../core/schemas.js';
+import type { GuardCheckId, Role, Source, SourceKind } from '../core/schemas.js';
 import type { ModelHealth, ModelProvider } from '../ports/ModelProvider.js';
 import type { SourceFetcher } from '../ports/SourceFetcher.js';
 import { systemClock, type Clock } from '../shared/clock.js';
@@ -32,7 +42,8 @@ export interface DoctorIo {
   createProvider: (loaded: LoadedConfig, fetchImpl: typeof fetch) => ModelProvider;
   fetch: typeof fetch;
   clock: Clock;
-  platform: Platform;
+  /** Default: the host named in DIGEST_HOST_OS/DIGEST_HOST_ARCH, else the running process. */
+  platform?: Platform;
   /** The .env file to inspect; also where the loader reads secrets from. */
   envPath: string;
   stat: (path: string) => Promise<{ mode: number }>;
@@ -80,7 +91,6 @@ const defaultIo: DoctorIo = {
     }),
   fetch: (input, init) => globalThis.fetch(input, init),
   clock: systemClock,
-  platform: { os: process.platform, arch: process.arch },
   envPath: '.env',
   stat: async (path) => {
     const { mode } = await stat(path);
@@ -125,8 +135,9 @@ export async function doctorCommand(
   const results: CheckResult[] = [
     ok('config', `loaded ${loaded.value.configPath} (profile ${config.profile})`),
     ...checkOllama(health, loaded.value),
-    checkAppleSilicon(loaded.value, io.platform),
+    checkAppleSilicon(loaded.value, loaded.platform),
     ...checkModels(health, profile),
+    checkThink(loaded.value),
     ...(await checkSources(loaded.value, io)),
     ...checkDelivery(loaded.value),
     await checkEnvFile(io),
@@ -136,23 +147,24 @@ export async function doctorCommand(
   return report(results, io, loaded.value.secrets);
 }
 
+/** `platform` is the one the loader resolved the profile for, so the checks judge the same host. */
 async function tryLoadConfig(
   options: DoctorCommandOptions,
   io: DoctorIo,
-): Promise<{ value: LoadedConfig } | { result: CheckResult }> {
+): Promise<{ value: LoadedConfig; platform: Platform } | { result: CheckResult }> {
   try {
     const value = await io.loadConfig({
       configPath: options.config,
       envPath: io.envPath,
       platform: io.platform,
     });
-    return { value };
+    return { value, platform: io.platform ?? resolveHostPlatform(value.env) };
   } catch (error) {
     return {
       result: fail(
         'config',
         errorMessage(error),
-        'fix the file named above, or run "digest init" to create one',
+        'fix the file or variable named above, or run "digest init" to create a config',
       ),
     };
   }
@@ -261,6 +273,34 @@ function checkModel(
     );
   }
   return ok(label, needsDecision ? 'installed (decision model)' : 'installed');
+}
+
+/**
+ * Roles whose calls can reach `generate`, the only path that sends `think` (classify only in
+ * generate mode). guardPolicy and judge use `decide`, which ignores it.
+ */
+const THINK_ROLES = ['classify', 'guardRisk', 'write'] as const satisfies readonly Role[];
+const DECISION_ONLY_ROLES = ['guardPolicy', 'judge'] as const satisfies readonly Role[];
+
+/** The effective `think` per role: the config, else the adapter default, else the model's own. */
+function checkThink({ config }: LoadedConfig): CheckResult {
+  const label = 'think';
+  const settings = THINK_ROLES.map(
+    (role) => `${role}=${describeThink(config.models.think?.[role] ?? DEFAULT_THINK[role])}`,
+  ).join(', ');
+  const ignored = DECISION_ONLY_ROLES.filter((role) => config.models.think?.[role] !== undefined);
+  if (ignored.length === 0) return ok(label, settings);
+  return warn(
+    label,
+    `${settings}; ignored for ${ignored.join(', ')}, which take no think setting`,
+    'remove those roles from "models" > "think" in digest.config.json',
+  );
+}
+
+function describeThink(setting: ThinkSetting | undefined): string {
+  if (setting === undefined) return 'default';
+  if (typeof setting === 'boolean') return setting ? 'on' : 'off';
+  return setting;
 }
 
 /** Ollama lists an untagged name as ":latest". */

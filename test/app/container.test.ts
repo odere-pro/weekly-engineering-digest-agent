@@ -238,6 +238,21 @@ describe('buildApp wiring', () => {
     expect(deps.model).toBe(vi.mocked(createOllamaProvider).mock.results[0]?.value);
   });
 
+  it('passes models.think to the Ollama provider', async () => {
+    const think = { write: 'low', guardRisk: true, classify: false } as const;
+    const loaded = loadedConfig({ config: { models: { think } } });
+
+    await buildApp(loaded);
+
+    expect(firstCallOptions(createOllamaProvider).think).toEqual(think);
+  });
+
+  it('leaves think undefined when the config has none, so the adapter defaults apply', async () => {
+    await buildApp(loadedConfig());
+
+    expect(firstCallOptions(createOllamaProvider).think).toBeUndefined();
+  });
+
   it('wires one fetcher per source kind', async () => {
     const { deps } = await buildApp(loadedConfig());
 

@@ -45,6 +45,7 @@ function assemble({ config, env, secrets, profile }: LoadedConfig): AppHandle {
     baseUrl: env.OLLAMA_URL,
     profile,
     timeoutsMs: config.models.timeoutsMs,
+    think: config.models.think,
     retries: config.models.retries,
     logger,
   });
