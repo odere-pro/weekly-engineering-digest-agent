@@ -26,10 +26,10 @@ allows commercial use.
 How each row was checked:
 
 - **Hugging Face API metadata and the repo's licence file**, for every model that has one.
-- **The licence layer in the Ollama registry manifest** of the exact tag, which is the text a user
-  receives on `ollama pull`; `ollama show --license <tag>` prints it. Run on the tags already
-  pulled locally: nemotron, strands-decider and clef print the texts described here, `tev1:4b`
-  prints nothing. (clef's registry manifest lists no licence layer, yet the local copy prints
+- **The licence layer in the Ollama registry manifest** of the exact tag: the text a user
+  receives on `ollama pull`; `ollama show --license <tag>` prints it. On the tags pulled
+  locally, nemotron, strands-decider and clef print the texts described here; `tev1:4b` prints
+  nothing. (clef's registry manifest lists no licence layer, yet the local copy prints
   Apache 2.0.)
 - Ollama's own model pages often name no licence (gemma4, qwen3.8, nemotron), so they are not
   used as the source.
@@ -39,9 +39,9 @@ How each row was checked:
 - Secondary sources (RuntimeWire, eWeek) are replaced by the publishers' own pages.
 - **strands-decider:** the base model is confirmed. The model is a LoRA adapter plus a decision
   head on `Qwen/Qwen3.5-2B-Base`, which is Apache 2.0 (Hub licence tag and `LICENSE`). The
-  strands-decider `LICENSE.md` says so itself, and the Ollama package includes a copy of the Qwen
-  Apache 2.0 text as a second licence layer. The spec's guess ("Qwen3.5-4B is Apache 2.0, so the
-  2B likely is too") was right, but it was the 2B base that needed checking.
+  strands-decider `LICENSE.md` says so, and the Ollama package includes the Qwen Apache 2.0 text
+  as a second licence layer. The spec's guess ("Qwen3.5-4B is Apache 2.0, so the 2B likely is
+  too") was right, but it was the 2B base that needed checking.
 - **nemotron-3.5-lightning:** the licence is not one text. See the next section.
 
 ## Nemotron: read before the repo goes public
@@ -58,11 +58,11 @@ for commercial use."
 - **Redistribution:** if you distribute any portion, keep a copy of the agreement and the
   copyright and origin notices that apply. No copyleft, no share-alike.
 - **Patent/copyright litigation:** your rights end if you sue anyone claiming the Model Materials
-  infringe a patent or copyright, unless that was a response to a suit brought against you first.
-- **Outputs:** no restrictions or obligations on outputs.
+  infringe a patent or copyright, unless in response to a suit brought against you first.
+- **Outputs:** no restrictions or obligations.
 - **No** field-of-use limits, acceptable-use policy, trademark clause, guardrail clause or
   indemnity.
-- **As-is:** no warranty; you are responsible for clearing third-party rights in the materials.
+- **As-is:** no warranty; you clear third-party rights in the materials yourself.
 
 ### The discrepancy
 
@@ -75,8 +75,8 @@ different NVIDIA licence**, and it differs between tags:
 | `nemotron-3.5-lightning:latest`, `:30b`             | NVIDIA Open Model License Agreement, last modified October 24, 2025          |
 
 The first matches [the text on nvidia.com](https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-agreement/).
-Neither is OpenMDW 1.1. The Ollama library page for the model names no licence at all. I could not
-tell from public pages why they differ (a conversion by Ollama of a different NVIDIA release, or a
+Neither is OpenMDW 1.1. The Ollama library page for the model names no licence at all. Public
+pages do not say why they differ (a conversion by Ollama of a different NVIDIA release, or a
 licence layer that was not updated). All three texts allow commercial use.
 
 Terms of the **NVIDIA Open Model Agreement** (the one on the `30b-mlx` tag, read in full):
@@ -92,28 +92,28 @@ Terms of the **NVIDIA Open Model Agreement** (the one on the `30b-mlx` tag, read
   OpenMDW).
 - Delaware law, Santa Clara County courts, export and sanctions compliance.
 
-The older **NVIDIA Open Model License Agreement** (`latest`, `30b`) is stricter: your rights end
+The older **NVIDIA Open Model License Agreement** (`latest`, `30b`) is stricter: rights end
 automatically if you bypass or weaken a model guardrail, use must follow NVIDIA's Trustworthy AI
-terms, NVIDIA may update the agreement (you must comply or stop), and it has the same
-indemnity. The plan does not use those tags.
+terms, NVIDIA may update the agreement (comply or stop), and it has the same indemnity. The plan
+does not use those tags.
 
 ## Obligations for this repo
 
-The repo distributes no model weights, so none of the redistribution conditions above are
-triggered by publishing it. They apply to whoever downloads and passes on the weights. What the
-repo should do:
+The repo distributes no model weights, so publishing it triggers none of the redistribution
+conditions above. They apply to whoever downloads and passes on the weights. What the repo
+should do:
 
-1. **Ship tags only.** Do not add weights, quantised copies, or fine-tunes to the repo, the
+1. **Ship tags only.** Do not add weights, quantised copies or fine-tunes to the repo, the
    Docker image or a release. If that ever changes, keep each model's licence text and notices
    with it (Apache 2.0: `LICENSE` and any `NOTICE`; OpenMDW: the agreement and origin notices;
    NVIDIA Open Model Agreement: the agreement and the `NOTICE` line above).
 2. **README table.** Publish the table above (model, licence, commercial use, source) and the
    sentence that users accept each licence when they `ollama pull`. Say the table is a reading of
    public pages, not legal advice, and give the check date.
-3. **Nemotron row.** Do not write only "OpenMDW 1.1" in the README. Suggested wording: "OpenMDW 1.1
-   on NVIDIA's own release; the Ollama build ships the NVIDIA Open Model Agreement. Both allow
+3. **Nemotron row.** Do not write only "OpenMDW 1.1" in the README. Suggested wording: "OpenMDW
+   1.1 on NVIDIA's own release; the Ollama build ships the NVIDIA Open Model Agreement. Both allow
    commercial use. Run `ollama show --license nemotron-3.5-lightning:30b-mlx` for the text you
-   accepted." The spec's table row should be updated the same way.
+   accepted." Update the spec's table row the same way.
 4. **Pin the tag.** Keep the exact tag `nemotron-3.5-lightning:30b-mlx` in the profiles. The
    `latest` and `30b` tags carry the stricter 2025 text, so a user who swaps them in accepts
    different terms.
@@ -126,10 +126,10 @@ repo should do:
 
 - **Which NVIDIA text governs the Ollama build?** Public pages do not say. If it matters, ask
   NVIDIA or Ollama. Until then the README wording in point 3 is accurate under either reading.
-- **strands-decider training data.** The weights are Apache 2.0, but the model's `LICENSE.md` notes
-  that some training sources are ShareAlike (CC BY-SA, SQuAD 2.0, SNLI and others) or have
-  custom terms, and tells readers to check a source's terms before redistributing data built from
-  it. Using the model through Ollama does not redistribute that data. Nothing to do for a
+- **strands-decider training data.** The weights are Apache 2.0, but the model's `LICENSE.md`
+  notes that some training sources are ShareAlike (CC BY-SA, SQuAD 2.0, SNLI and others) or have
+  custom terms, and tells readers to check a source's terms before redistributing data built
+  from it. Using the model through Ollama does not redistribute that data. Nothing to do for a
   tags-only repo, but note it if the weights are ever bundled.
 
 ## Not covered

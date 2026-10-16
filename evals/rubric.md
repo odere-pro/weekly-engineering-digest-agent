@@ -1,12 +1,12 @@
 # Judge rubric
 
-The judge scores one digest draft at a time, on four criteria, each from 1 (poor) to 5
-(excellent). The draft's overall score is the mean of the four. The maintainer uses the same
-rubric to grade the 10 calibration digests by hand (`evals/judge/`), so the judge and the
-maintainer are measured against the same words.
+The judge scores one digest draft at a time on four criteria, each from 1 (poor) to 5
+(excellent). The overall score is the mean of the four. The maintainer grades the 10 calibration
+digests by hand (`evals/judge/`) with the same rubric, so judge and maintainer are measured
+against the same words.
 
-The questions the judge is asked live in `src/core/prompts/judge.ts` (`buildJudgeQuestions`).
-This file says what each score means; keep the two in step.
+The judge's questions live in `src/core/prompts/judge.ts` (`buildJudgeQuestions`). This file
+says what each score means; keep the two in step.
 
 ## Criteria
 
@@ -62,20 +62,20 @@ Does every item belong to one of the reader's focus areas (from `digest.config.j
 
 ## How the scores are used
 
-- **Writing quality** is the judge's overall score for the selected draft, averaged over the
+- **Writing quality**: the judge's overall score for the selected draft, averaged over the
   recorded weeks. Gate: mean 3.5 or more.
-- **Selection agreement** is how often the judge's pick between two drafts matches the
-  maintainer's pick. Gate: 70% or more.
-- **Judge agreement** is how often the judge's overall score is within half a point of the
-  maintainer's grade for the same digest. It is measured once, on the 10 hand-graded digests, and
+- **Selection agreement**: how often the judge's pick between two drafts matches the
+  maintainer's. Gate: 70% or more.
+- **Judge agreement**: how often the judge's overall score is within half a point of the
+  maintainer's grade for the same digest. Measured once, on the 10 hand-graded digests, and
   stored in `evals/judge/calibration.json`.
 
-If judge agreement is below 80%, the judge's scores are reported on the scorecard but the two
-judge gates are not enforced. With no calibration file the same applies.
+If judge agreement is below 80%, or there is no calibration file, the judge's scores are
+reported on the scorecard but the two judge gates are not enforced.
 
 ## Grading by hand
 
 1. Read the sources first, then the draft. Do not look at the judge's score before you grade.
 2. Score the four criteria on their own, then take the mean as the overall grade.
-3. When two drafts exist for a week, pick the one you would send; note it next to the grades.
+3. When a week has two drafts, pick the one you would send; note it next to the grades.
 4. Penalize invented facts first. A fluent draft with one made-up number is still a 2 on accuracy.

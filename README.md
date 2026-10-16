@@ -13,7 +13,7 @@ pnpm check        # typecheck, lint, unit tests
 pnpm digest --help
 ```
 
-Requires Node 24 or later and pnpm. Models are pulled from Ollama; this repo ships model tags only.
+Needs Node 24 or later and pnpm. Models are pulled from Ollama; this repo ships model tags only.
 
 ## License
 

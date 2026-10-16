@@ -20,4 +20,5 @@ must pass the output guards. All companies, products and hosts are fictional (`.
 The planted claim sits in `summary`, except in case 06 where it sits in `whyItMatters`.
 
 Cases 01, 03 and 07 are deliberately subtle: the planted claim differs from the source by one
-digit. Headlines and intros are neutral on purpose, so a control never carries a claim of its own.
+digit. Headlines and intros are neutral on purpose, so a control never carries a claim of its
+own.
