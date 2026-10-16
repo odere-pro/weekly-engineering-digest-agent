@@ -1,5 +1,8 @@
-import type { Logger } from '../shared/telemetry.js';
-import { NotImplementedError } from '../shared/errors.js';
+import { createRequire } from 'node:module';
+import { pino, type Logger as PinoLogger } from 'pino';
+import type PinoPretty from 'pino-pretty';
+import type { LogFields, Logger } from '../shared/telemetry.js';
+import { createRedactor, type Redactor } from './redact.js';
 
 export interface LoggerOptions {
   level: 'debug' | 'info' | 'warn' | 'error';
@@ -11,7 +14,54 @@ export interface LoggerOptions {
   destination?: NodeJS.WritableStream;
 }
 
+const SERVICE_NAME = 'eng-digest';
+const nodeRequire = createRequire(import.meta.url);
+
+type LogLevel = LoggerOptions['level'];
+
+/** pino-pretty is a dev dependency: load it only when pretty output is asked for. */
+function loadPretty(): typeof PinoPretty {
+  try {
+    return nodeRequire('pino-pretty') as typeof PinoPretty;
+  } catch (error) {
+    throw new Error('Pretty logs need the "pino-pretty" package, which is not installed', {
+      cause: error,
+    });
+  }
+}
+
+function writeTo(base: PinoLogger, redactor: Redactor, level: LogLevel): Logger[LogLevel] {
+  return (message, fields) => {
+    if (!base.isLevelEnabled(level)) return;
+    const safeMessage = redactor.text(message);
+    if (fields === undefined) base[level](safeMessage);
+    else base[level](redactor.fields(fields), safeMessage);
+  };
+}
+
+function wrap(base: PinoLogger, redactor: Redactor): Logger {
+  return {
+    debug: writeTo(base, redactor, 'debug'),
+    info: writeTo(base, redactor, 'info'),
+    warn: writeTo(base, redactor, 'warn'),
+    error: writeTo(base, redactor, 'error'),
+    child: (fields: LogFields) => wrap(base.child(redactor.fields(fields)), redactor),
+  };
+}
+
 /** Structured JSON logs to stdout via pino (W1-15). */
-export function createLogger(_options: LoggerOptions): Logger {
-  throw new NotImplementedError('W1-15');
+export function createLogger(options: LoggerOptions): Logger {
+  const destination = options.destination ?? process.stdout;
+  const base = pino(
+    {
+      level: options.level,
+      base: { service: SERVICE_NAME },
+      timestamp: pino.stdTimeFunctions.isoTime,
+      formatters: { level: (label) => ({ level: label }) },
+      // Errors are already flattened (and redacted) by the redactor; pino's own serializer would relabel them.
+      serializers: { err: (value: unknown) => value },
+    },
+    options.pretty === true ? loadPretty()({ destination }) : destination,
+  );
+  return wrap(base, createRedactor(options.redactValues));
 }
