@@ -1,0 +1,107 @@
+# Weekly engineering digest. Needs Docker Compose 2.24 or newer. Two modes for Ollama:
+#
+#   Mac (default): Docker on macOS cannot use the Apple GPU, so the app talks to the Ollama app on
+#     the host. `digest init` writes OLLAMA_URL=http://host.docker.internal:11434 to .env when it
+#     knows the host is a Mac: export DIGEST_HOST_OS=darwin (the shell passes it through).
+#   Linux: `docker compose --profile linux up -d` adds a bundled Ollama and pulls the models once
+#     into the `ollama-models` volume (or set COMPOSE_PROFILES=linux). OLLAMA_URL then defaults to
+#     http://ollama:11434. A value in .env wins, and localhost never works from inside a container.
+#
+# Tracing: `docker compose --profile tracing up -d` adds Jaeger (UI on http://localhost:16686).
+#   Also set OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces in .env or the shell: Compose
+#   cannot turn the variable on by profile, and the app traces only when it is set.
+#
+# Files: digest.config.json and .env are mounted from this folder, so they must exist before the
+#   first run (`touch digest.config.json .env`). The app reads secrets from the mounted .env; there
+#   is no env_file, so secrets stay out of `docker inspect` and `docker compose config`.
+#   Init needs no Ollama: run it as `docker compose run --rm --no-deps digest init`.
+# Linux hosts: create ./data yourself and set DIGEST_UID/DIGEST_GID (in .env or the shell) to your
+#   `id -u`/`id -g`, so the container can write ./data and read a chmod 600 .env.
+# Time zone: the schedule uses the container's zone. Set TZ (for example Europe/Berlin) in .env or
+#   the shell; it defaults to UTC.
+
+name: eng-digest
+
+services:
+  digest:
+    build: .
+    image: eng-digest:local
+    init: true
+    restart: unless-stopped
+    user: '${DIGEST_UID:-1000}:${DIGEST_GID:-1000}'
+    environment:
+      - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
+      - TZ=${TZ:-UTC}
+      # No value: passed through from the shell or .env only when set.
+      - DIGEST_HOST_OS
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+    volumes:
+      - ./data:/app/data
+      - type: bind
+        source: ./digest.config.json
+        target: /app/digest.config.json
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./.env
+        target: /app/.env
+        bind:
+          create_host_path: false
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      ollama:
+        condition: service_healthy
+        required: false
+      model-pull:
+        condition: service_completed_successfully
+        required: false
+
+  ollama:
+    profiles: [linux]
+    image: ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99
+    restart: unless-stopped
+    volumes:
+      - ollama-models:/root/.ollama
+    # NVIDIA GPU (needs the NVIDIA Container Toolkit); without it the models run on the CPU.
+    # gpus: all
+    healthcheck:
+      test: ['CMD', 'ollama', 'list']
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  model-pull:
+    profiles: [linux]
+    image: ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99
+    restart: 'no'
+    entrypoint: ['/bin/sh', '/docker/pull-models.sh']
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      # Set REFRESH_MODELS=1 to pull models that are already present.
+      REFRESH_MODELS: ${REFRESH_MODELS:-}
+    volumes:
+      - ./docker/pull-models.sh:/docker/pull-models.sh:ro
+      - type: bind
+        source: ./digest.config.json
+        target: /app/digest.config.json
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  jaeger:
+    profiles: [tracing]
+    image: jaegertracing/jaeger:2.21.0@sha256:3d0ac795ff98aa04d1be04311d2dac6c25b4bfc8322dc02e53bc5b170c5018c3
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:16686:16686'
+
+volumes:
+  ollama-models:
