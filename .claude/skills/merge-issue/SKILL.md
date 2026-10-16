@@ -33,14 +33,14 @@ For each issue in `review` (the ids given, or all when "all" or empty), in depen
    git log -1 --format=%B <branch> | grep -Eiq 'co-authored-by|generated with' && echo "REJECT"
    ```
 4. Fast-forward: `git merge --ff-only <branch>`.
-5. Set the issue to `status: done` and add `merged: <short sha>` to its notes.
+5. Set the issue to `status: done` and add `merged: <short sha>` under its `## Notes`.
 6. Clean up worktrees from `spawn.sh` (path under `.claude/worktrees/`):
    `git worktree remove "<worktree>" && git branch -d <branch>`.
    For a desktop-session worktree, leave it and offer to archive the session; do so only on yes.
 
 On a rebase conflict, a red gate, a missing signature or out-of-scope files: do not merge. Run
 `git -C "<worktree>" rebase --abort` if needed, set the issue to `status: blocked` with the exact
-reason in `notes`, and continue with the next issue.
+reason under `## Notes`, and continue with the next issue.
 
 After the batch: `pnpm check` on main, then `node "$PLAN/bin/board.mjs"` and report what was
 merged, what is blocked and what is now ready.

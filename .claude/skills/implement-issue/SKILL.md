@@ -19,6 +19,7 @@ git branch --show-current     # must NOT be main
 
 - If the branch is `main`, stop: workers never run on main. Ask the user to start a worktree.
 - Read the issue file fully, then the spec sections it cites in `$PLAN/spec.md`.
+- If its frontmatter says `runs_on: main`, stop: the coordinator runs it on main.
 
 ## 1. Preflight
 
@@ -40,7 +41,7 @@ git branch --show-current     # must NOT be main
 4. Repeat until every acceptance item in the issue is covered by a test.
 
 If you need a change in a frozen file or a new dependency: set `status: blocked`, write the exact
-change in `notes`, and stop. Never work around it.
+change under `## Notes`, and stop. Never work around it.
 
 ## 3. Gate (all must pass)
 
@@ -68,5 +69,5 @@ git verify-commit HEAD   # must say Good signature for odere.pro@gmail.com
 
 ## 5. Hand off
 
-In the issue frontmatter set `status: review`. Append to `notes`: a 2-4 line summary, test count
-and coverage, and any follow-up or contract concern. Then reply with that summary and stop.
+In the issue frontmatter set `status: review`. Append to its `## Notes` section: a 2-4 line summary,
+test count and coverage, and any follow-up or contract concern. Then reply with that summary and stop.

@@ -20,14 +20,14 @@ if no two of them touch the same file.
   `src/config/profiles.ts`, `src/shared/**`, `src/cli/program.ts`, `src/cli/index.ts`,
   `test/fakes/**`, `test/builders.ts`.
 - Need a frozen file changed, or a new dependency? Do not work around it. Set your issue to
-  `status: blocked`, write the exact change in `notes`, and stop. The coordinator changes it on
+  `status: blocked`, write the exact change under the issue's `## Notes`, and stop. The coordinator changes it on
   `main`; you then `git rebase main` and continue.
 - Do not change another module's exported signatures. Stubs already have their final signatures.
 
 ## Issue lifecycle (frontmatter `status`)
 
 `todo` → `in_progress` (worker started) → `review` (one signed commit, gate green) →
-`done` (coordinator fast-forwarded `main`). `blocked` at any point, with the reason in `notes`.
+`done` (coordinator fast-forwarded `main`). `blocked` at any point, with the reason under `## Notes`.
 Workers edit only their own issue file. Only the coordinator sets `done`.
 
 ## Git
