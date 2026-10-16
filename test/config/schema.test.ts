@@ -44,6 +44,18 @@ describe('config schema', () => {
     );
   });
 
+  it('limits focus areas to 25 unique entries', () => {
+    const source = { id: 'x', kind: 'rss', url: 'https://example.com/feed' } as const;
+    const areas = Array.from({ length: 26 }, (_, i) => `area ${i}`);
+    expect(ConfigSchema.safeParse({ focusAreas: areas, sources: [source] }).success).toBe(false);
+    expect(ConfigSchema.safeParse({ focusAreas: ['AI', 'ai'], sources: [source] }).success).toBe(
+      false,
+    );
+    expect(
+      ConfigSchema.safeParse({ focusAreas: areas.slice(0, 25), sources: [source] }).success,
+    ).toBe(true);
+  });
+
   it('parses digest.config.example.json', () => {
     const raw: unknown = JSON.parse(readFileSync('digest.config.example.json', 'utf8'));
     expect(ConfigSchema.safeParse(raw).success).toBe(true);

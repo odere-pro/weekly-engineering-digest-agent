@@ -83,7 +83,15 @@ export const ScheduleSchema = z.object({
 
 export const ConfigSchema = z.object({
   profile: ProfileNameSchema.default('quality'),
-  focusAreas: z.array(z.string().min(1)).min(1),
+  /** Max 25: the classifier asks a choice over these plus "other" (decision models allow 26 options). */
+  focusAreas: z
+    .array(z.string().trim().min(1))
+    .min(1)
+    .max(25)
+    .refine(
+      (a) => new Set(a.map((x) => x.toLowerCase())).size === a.length,
+      'focus areas must be unique',
+    ),
   sources: z
     .array(SourceSchema)
     .min(1)
