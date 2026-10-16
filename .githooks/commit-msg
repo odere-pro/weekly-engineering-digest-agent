@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Reject AI attribution in commit messages. Commits are authored and signed by the maintainer only.
+set -euo pipefail
+
+msg_file="$1"
+
+if grep -Eiq '^[[:space:]]*co-authored-by:.*(claude|anthropic)' "$msg_file" \
+  || grep -Eiq 'noreply@anthropic\.com' "$msg_file" \
+  || grep -Eiq 'generated (with|by) .*claude' "$msg_file"; then
+  echo "commit-msg: AI attribution (Co-Authored-By Claude/Anthropic or 'Generated with Claude') is not allowed." >&2
+  exit 1
+fi
