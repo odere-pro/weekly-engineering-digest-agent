@@ -1,0 +1,794 @@
+[
+  {
+    "id": "bd1136d0fcfd6f13",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+    "title": "The Agent Said It Was Done. The Database Disagreed.",
+    "summary": "",
+    "publishedAt": "2026-10-03T22:56:48.000Z"
+  },
+  {
+    "id": "8ebdd7fd9c2ee1d1",
+    "sourceId": "vllm-releases",
+    "kind": "github",
+    "url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0rc5",
+    "title": "vllm v0.31.0rc5: v0.31.0rc5: [Misc] Add Transformers version upper bound in requirements (#59614)",
+    "summary": "Signed-off-by: Isotr0py Isotr0py@outlook.com Co-authored-by: Harry Mellor 19981378+hmellor@users.noreply.github.com (cherry picked from commit 58b3298 )",
+    "publishedAt": "2026-10-02T22:18:12.000Z"
+  },
+  {
+    "id": "49e0bd1a32097a2c",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-ecs-vpc-lattice-blue-green-deployments",
+    "title": "Amazon ECS adds Amazon VPC Lattice support for blue/green, linear, and canary deployments",
+    "summary": "Amazon Elastic Container Service (Amazon ECS) now supports built-in blue/green, linear, and canary deployment strategies for ECS services using Amazon VPC Lattice. Applications that use VPC Lattice for service-to-service communication across VPCs and AWS accounts can now take advantage of managed traffic shifting natively from Amazon ECS when rolling out updates. With this launch, ECS customers using VPC Lattice can shift traffic in a controlled manner during deployments, choosing how quickly traffic moves based on their confidence in each release: all at once with blue/green, in equal...",
+    "publishedAt": "2026-10-02T20:18:00.000Z"
+  },
+  {
+    "id": "70a54cfa3a468784",
+    "sourceId": "pytorch-blog",
+    "kind": "rss",
+    "url": "https://pytorch.org/blog/building-a-high-performance-and-portable-vllm-linear-backend-with-helion/",
+    "title": "Building a High-Performance and Portable vLLM Linear Backend with Helion",
+    "summary": "TL;DR We integrated Helion into vLLM’s linear backend to explore how an autotuned, high-level kernel DSL can improve LLM inference performance while reducing kernel implementation complexity. A single Helion general... The post Building a High-Performance and Portable vLLM Linear Backend with Helion appeared first on PyTorch.",
+    "publishedAt": "2026-10-02T19:55:07.000Z"
+  },
+  {
+    "id": "3ec723bae493dc86",
+    "sourceId": "pytorch-blog",
+    "kind": "rss",
+    "url": "https://pytorch.org/blog/new-pathway-to-pytorch-certified-associate-ptca-certification/",
+    "title": "New Pathway to PyTorch Certified Associate (PTCA) Certification",
+    "summary": "We’re excited to bring you the new PyTorch Certified Associate (PTCA) Certification Pathway, combining focused learning modules and the PyTorch Certified Associate (PTCA) certification exam together in one structured experience... The post New Pathway to PyTorch Certified Associate (PTCA) Certification appeared first on PyTorch.",
+    "publishedAt": "2026-10-02T19:33:47.000Z"
+  },
+  {
+    "id": "09375ddb03aeb69d",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/aws-health-introduces-version-catalog-software-lifecycle-management",
+    "title": "AWS Health introduces the version catalog for software lifecycle management",
+    "summary": "Today, AWS Health introduces the version catalog which provides a centralized source of lifecycle information for software versions across AWS services. The version catalog helps customers move from reactive to proactive management of version upgrades and end-of-support risk. It is available in the AWS Health Dashboard, and customers on Business Support Plus, Enterprise Support, or Unified Operations can use the AWS Health API to integrate lifecycle data into their operational workflows. Customers running applications on AWS need to stay current with software versions to maintain a strong...",
+    "publishedAt": "2026-10-02T18:09:00.000Z"
+  },
+  {
+    "id": "15f73254c9161610",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571504",
+    "title": "[In preview] Public Preview:  Major version upgrades (MVU) for Azure Database for PostgreSQL elastic clusters",
+    "summary": "MVUs are now available for elastic clusters in Azure Database for PostgreSQL. You can upgrade an existing elastic cluster to a supported newer PostgreSQL version in place without provisioning a replacement cluster, migrating distributed data, or changing",
+    "publishedAt": "2026-10-02T17:35:21.000Z"
+  },
+  {
+    "id": "a95bef6a58d81ce9",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/aurora-dsql-partial-indexes/",
+    "title": "Amazon Aurora DSQL now supports partial indexes",
+    "summary": "Amazon Aurora DSQL now lets you build an index over a specific subset of a table, storing only qualifying rows rather than every row in the entire table, which improves query performance and lowers index storage cost. Many tables hold a small working set alongside a much larger history, such as open orders among years of completed ones. Add a WHERE clause to CREATE INDEX to index just that working set. The index stays small as the table grows, and queries that target those rows read less data. Aurora DSQL uses a partial index for any query whose filter falls within the index's condition....",
+    "publishedAt": "2026-10-02T17:30:00.000Z"
+  },
+  {
+    "id": "48fe2d4e1794fa8b",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-eks-distro-kubernetes-version-1-37",
+    "title": "Amazon EKS and Amazon EKS Distro now support Kubernetes version 1.37",
+    "summary": "Kubernetes version 1.37 introduced several new features and bug fixes, and AWS is excited to announce that you can now use Amazon Elastic Kubernetes Service (EKS) and Amazon EKS Distro to run Kubernetes version 1.37. Starting today, you can create new EKS clusters using version 1.37 and upgrade existing clusters to version 1.37 using the EKS console, the eksctl command line interface, or through an infrastructure-as-code tool. Kubernetes version 1.37 introduces several key improvements, promoting the Metrics API to general availability as metrics.k8s.io/v1. This API provides Pod and node...",
+    "publishedAt": "2026-10-02T17:30:00.000Z"
+  },
+  {
+    "id": "9da796e0d7bbc2af",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/aws-brazil-software-license-distribution/",
+    "title": "AWS Brazil automates distribution of non-Brazilian software product licenses to Brazilian customers",
+    "summary": "AWS Brazil now provides an automated distribution workflow through the AWS Brazil 2P Distribution Program. Eligible non-Brazilian independent software vendors (ISVs) grant AWS Brazil the right to distribute their Software-as-a-Service (SaaS) product licenses, and AWS Brazil distributes them to customers in Brazil. AWS Brazil is the seller of record, invoicing Brazilian customers in Brazilian Reais (BRL) with applicable Brazilian taxes. The distribution authorizations, seller disbursements, withholding tax calculation, invoicing, and seller reporting are automated. Eligible ISVs agree to...",
+    "publishedAt": "2026-10-02T16:30:00.000Z"
+  },
+  {
+    "id": "c38af6e5cae43e23",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/practical-guide-building-gpt-6",
+    "title": "A model guide for the GPT-6 family",
+    "summary": "Learn how startups can choose GPT-6 models, tune reasoning effort, improve prompts and skills, coordinate tools, and prepare workflows for production.",
+    "publishedAt": "2026-10-02T16:15:00.000Z"
+  },
+  {
+    "id": "a63afb565a63f6c3",
+    "sourceId": "openai-agents-python",
+    "kind": "github",
+    "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.23.1",
+    "title": "openai-agents-python v0.23.1",
+    "summary": "0.23.1 (2026-10-02) Bug Fixes restore release tests and refresh required readiness check ( #5278 ) ( 730deb4 ) Release readiness review (v0.23.0 -> TARGET 0a5a08b ) This is a release readiness report done by $final-release-review skill. Diff v0.23.0...0a5a08b Release intent Review mode: final candidate Intended release: patch, 0.23.1 Minimum required release type: patch Versioning verdict: compatible Release call 🟢 GREEN LIGHT TO SHIP this exact candidate. No concrete release-blocking regression was identified. Human approval and normal repository protections still apply. Scope summary 28...",
+    "publishedAt": "2026-10-02T15:36:24.000Z"
+  },
+  {
+    "id": "aacb8ca8a4a96bc0",
+    "sourceId": "google-ai-blog",
+    "kind": "rss",
+    "url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+    "title": "The latest AI news we announced in September 2026",
+    "summary": "Here are Google’s latest AI updates from September 2026",
+    "publishedAt": "2026-10-02T15:00:00.000Z"
+  },
+  {
+    "id": "d2dca955e1b96cac",
+    "sourceId": "terraform-releases",
+    "kind": "github",
+    "url": "https://github.com/hashicorp/terraform/releases/tag/v1.16.5",
+    "title": "terraform v1.16.5",
+    "summary": "1.16.5 (September 30, 2026) BUG FIXES: Fixed a crash that happens when a tainted instance state is seen without a valid status ( #39287 ) resource-identity: fixed an issue where resource identity could be nil during delete ( #39285 )",
+    "publishedAt": "2026-10-02T13:04:00.000Z"
+  },
+  {
+    "id": "1f0363257e3e0b7f",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/opensearch-validation-advisory/",
+    "title": "Amazon OpenSearch Service introduces validation advisory for domain configuration changes",
+    "summary": "Amazon OpenSearch Service now provides validation advisory for domain configuration changes, which helps you make informed decisions about changes that carry risk but can still be applied. Each configuration validation is now classified as either Critical, which blocks the change, or Warning, which gives advisory guidance that you can acknowledge before you proceed. Previously, validation results were limited to pass or block. There was no way to flag changes that would succeed but carry risk. Validation advisory helps you find potential issues without blocking deployments. Examples...",
+    "publishedAt": "2026-10-02T09:35:00.000Z"
+  },
+  {
+    "id": "063178e890f06f4e",
+    "sourceId": "aws-whats-new",
+    "kind": "rss",
+    "url": "https://aws.amazon.com/about-aws/whats-new/2026/10/aws-mcp-server-six-additional-regions/",
+    "title": "The AWS MCP Server is now available in six additional AWS Regions",
+    "summary": "The AWS MCP Server is now available in six additional AWS Regions: Asia Pacific (Singapore), Asia Pacific (Sydney), Asia Pacific (Tokyo), Europe (Ireland), Europe (London), and US West (Oregon). The AWS MCP Server, part of the Agent Toolkit for AWS, is a managed Model Context Protocol server that gives AI coding agents a single interface to AWS APIs, so agents can discover and call AWS services without building and maintaining per-service integrations. With this expansion, customers in these Regions can run the AWS MCP Server closer to their developers with lower latency, and keep request...",
+    "publishedAt": "2026-10-02T08:00:00.000Z"
+  },
+  {
+    "id": "aa2d93de1ae70902",
+    "sourceId": "vllm-releases",
+    "kind": "github",
+    "url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0rc4",
+    "title": "vllm v0.31.0rc4",
+    "summary": "[Bugfix][HiSparse] Fix MTP acceptance collapse under FULL graphs with…",
+    "publishedAt": "2026-10-02T06:06:56.000Z"
+  },
+  {
+    "id": "56c490db040147f1",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+    "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
+    "summary": "",
+    "publishedAt": "2026-10-02T04:01:31.000Z"
+  },
+  {
+    "id": "6890afe569149122",
+    "sourceId": "openai-agents-python",
+    "kind": "github",
+    "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.23.0",
+    "title": "openai-agents-python v0.23.0",
+    "summary": "0.23.0 (2026-10-01) Features mcp: add configurable MCP listing page limits ( #5133 ) ( 9a21ab1 ) sandbox: add opt-in Docker removal protection ( #5116 ) ( ae5803f ) sandbox: allow configuring memory consolidation turns ( #5135 ) ( daa1bcb ) sessions: add an opt-in encrypted history scan budget ( #5118 ) ( a2fdb94 ) Bug Fixes avoid awaiting cleanup during coroutine closure ( #5163 ) ( 719c4e7 ) ci: update and group CodeQL actions together ( #5262 ) ( f76153c ) ci: validate release source before building distributions ( #5220 ) ( 2747c1c ) core/extensions: respect sensitive trace capture for...",
+    "publishedAt": "2026-10-02T01:08:23.000Z"
+  },
+  {
+    "id": "882596cbc7639eb4",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/chatham-financial",
+    "title": "Chatham scales its capital markets expertise with OpenAI",
+    "summary": "Chatham Financial uses Codex and GPT-5.6 to build technology and redesign workflows, cutting trade validation from 30 minutes to under 4.",
+    "publishedAt": "2026-10-02T00:00:00.000Z"
+  },
+  {
+    "id": "13d5481fc82d8664",
+    "sourceId": "opentofu-releases",
+    "kind": "github",
+    "url": "https://github.com/opentofu/opentofu/releases/tag/v1.12.7",
+    "title": "opentofu v1.12.7",
+    "summary": "SECURITY ADVISORIES: When using either a remote-exec or file provisioner to connect to an attacker-controlled SSH server, the server could previously deadlock the connection by sending certain unexpected packet types. ( #4551 ) This addresses the upstream Go security advisories CVE-2026-78662 and CVE-2026-56855 .",
+    "publishedAt": "2026-10-01T18:40:21.000Z"
+  },
+  {
+    "id": "652796545d8fd18c",
+    "sourceId": "docker-blog",
+    "kind": "rss",
+    "url": "https://www.docker.com/blog/docker-cloud-sandboxes-wearedevelopers-recap/",
+    "title": "Trust Docker for the agents you don’t",
+    "summary": "At WeAreDevelopers, Docker introduced Cloud Sandboxes, the open Sandbox Kit specification, and a commitment to bring Kits to the CNCF for neutral governance.",
+    "publishedAt": "2026-10-01T18:26:12.000Z"
+  },
+  {
+    "id": "e3d3555de3a25eac",
+    "sourceId": "opentofu-releases",
+    "kind": "github",
+    "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1",
+    "title": "opentofu v1.13.1",
+    "summary": "BUG FIXES: tofu show -json <planfile> now works again when ephemeral resources are present in the configuration. ( 4623 ). Ephemeral output values are now always re-evaluated during the apply phase, instead of sometimes using stale values from the planning phase. ( #4582 )",
+    "publishedAt": "2026-10-01T17:15:15.000Z"
+  },
+  {
+    "id": "012a850179f6acbb",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=569592",
+    "title": "Retirement: DCsv3 and DCdsv3-series Azure Virtual Machines will be retired on October 31, 2029",
+    "summary": "On October 31, 2029, DCsv3 and DCdsv3-series Azure Linux, Windows and Dedicated Host virtual machines will be retired. After that date, they will no longer be available for use or purchase. Before October 31, 2029, migrate your workloads to one of the fo",
+    "publishedAt": "2026-10-01T17:02:55.000Z"
+  },
+  {
+    "id": "b8087b88cb63ae7f",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/the-eternal-complement",
+    "title": "The eternal complement",
+    "summary": "Advanced AI may matter most for the routine work behind breakthrough ideas. Explore why execution could shape the next economy and the pace of progress.",
+    "publishedAt": "2026-10-01T17:00:00.000Z"
+  },
+  {
+    "id": "637d3dfa247fa816",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/albertsons-reimagining-retail",
+    "title": "How Albertsons Companies is reimagining retail from the inside out",
+    "summary": "Albertsons Cos. is using ChatGPT Enterprise and the OpenAI API to help teams work faster and make grocery shopping easier for millions of customers.",
+    "publishedAt": "2026-10-01T16:00:00.000Z"
+  },
+  {
+    "id": "404444f15a7043fb",
+    "sourceId": "vllm-releases",
+    "kind": "github",
+    "url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0rc3",
+    "title": "vllm v0.31.0rc3: v0.31.0rc3: [Model Runner V2] Support randomized dummy inputs (#58411)",
+    "summary": "Signed-off-by: Robert Shaw robshaw@redhat.com Co-authored-by: Robert Shaw robshaw@redhat.com Co-authored-by: Claude Opus 5.5 noreply@anthropic.com Co-authored-by: mergify[bot] <37929162+mergify[bot]@users.noreply.github.com> Co-authored-by: Nick Hill nickhill123@gmail.com (cherry picked from commit e5e38ba )",
+    "publishedAt": "2026-10-01T07:54:39.000Z"
+  },
+  {
+    "id": "2167384f51e2a446",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/the-den-family-social",
+    "title": "The Den frees up 10-15 hours a week to grow with ChatGPT Work",
+    "summary": "As it opens a new location, the social club prepares grant applications in 2 hours instead of 3 days and liquor-license materials in 3 hours instead of 4 days.",
+    "publishedAt": "2026-10-01T00:00:00.000Z"
+  },
+  {
+    "id": "1b892aefa74eb93f",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571894",
+    "title": "[In preview] Public Preview: SQL performance monitoring for SQL Server on Azure Virtual Machines",
+    "summary": "The public preview of Microsoft-managed performance monitoring for SQL Server on Azure Virtual Machines is now available. You can now monitor SQL Server on Azure Virtual Machines without building custom collection scripts or correlating telemetry across d",
+    "publishedAt": "2026-09-30T21:13:13.000Z"
+  },
+  {
+    "id": "b49099cde7e97e60",
+    "sourceId": "google-deepmind-blog",
+    "kind": "rss",
+    "url": "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/",
+    "title": "Gemini 4 Argon: our next era of frontier intelligence",
+    "summary": "",
+    "publishedAt": "2026-09-30T20:01:45.000Z"
+  },
+  {
+    "id": "ebed89c376dc2dc6",
+    "sourceId": "typescript-releases",
+    "kind": "github",
+    "url": "https://github.com/microsoft/TypeScript/releases/tag/vscode-typescript%2Fv1.0.1",
+    "title": "TypeScript vscode-typescript/v1.0.1",
+    "summary": "Bundles TypeScript 7.0.2 from commit b6eaace .",
+    "publishedAt": "2026-09-30T19:10:17.000Z"
+  },
+  {
+    "id": "5c12c756b39648e7",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573414",
+    "title": "Retirement: NVv3-series Azure Virtual Machines",
+    "summary": "On September 30, 2026, Microsoft Azure retired the Standard_NV12s_v3, Standard_NV12hs_v3, Standard_NV24s_v3, Standard_NV24ms_v3, Standard_NV32ms_v3, and Standard_NV48s_v3 virtual machines (VMs) in the NVv3-series VMs.Any remaining NVv3-series VMs will be",
+    "publishedAt": "2026-09-30T18:26:47.000Z"
+  },
+  {
+    "id": "11141247ba24aee9",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573415",
+    "title": "Retirement: NVv4-series Azure Virtual Machines",
+    "summary": "On September 30, 2026, Microsoft Azure retired the Standard_NV4as_v4, Standard_NV4ahs_v4, Standard_NV8as_v4, Standard_NV8ahs_v4, Standard_NV16as_v4, Standard_NV16ahs_v4, Standard_NV32as_v4, and Standard_NV32ahs_v4 virtual machines (VMs) in the NVv4-series",
+    "publishedAt": "2026-09-30T18:24:01.000Z"
+  },
+  {
+    "id": "a91d3a075b4298ef",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573214",
+    "title": "[In preview] Public Preview: Ubuntu 26.04 support in AKS",
+    "summary": "Teams running Ubuntu node pools on AKS need to stay current with Ubuntu LTS releases, but each OS transition can introduce package footprint, security, and compatibility concerns. Ubuntu 26.04 support introduces the Ubuntu2604 OS SKU using Ubuntu Minimal",
+    "publishedAt": "2026-09-30T17:11:11.000Z"
+  },
+  {
+    "id": "9ef5514972aebf90",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573385",
+    "title": "Announcing: Azure canvases for GitHub Copilot",
+    "summary": "Discover Azure canvases for GitHub Copilot, interactive shared workspaces that bring Azure tools, dashboards, and guided workflows directly alongside your Copilot conversations. Explore Azure resources, analyze costs, and build hosted skills while keeping",
+    "publishedAt": "2026-09-30T17:09:51.000Z"
+  },
+  {
+    "id": "3c504b3d770658d7",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=572346",
+    "title": "Retirement: Dv3, Dsv3, Ev3, and Esv3 Azure VMs",
+    "summary": "As part of the Microsoft Azure VM lifecycle policy, Microsoft is announcing the retirement of the Dv3, Dsv3, Ev3, and Esv3 Azure VM series in public cloud Azure regions. These VMs will enter the End-of-Life lifecycle stage and retire on November 15, 2029.",
+    "publishedAt": "2026-09-30T17:07:30.000Z"
+  },
+  {
+    "id": "a3f2477a7a4c17f8",
+    "sourceId": "transformers-releases",
+    "kind": "github",
+    "url": "https://github.com/huggingface/transformers/releases/tag/v5.18.0",
+    "title": "transformers v5.18.0: Release 5.18.0",
+    "summary": "New Model additions Nemotron 3 Diarization Nemotron 3 Diarization is an open-weight streaming speaker diarization model designed to determine \"who spoke when\" in real-world audio. It supports both streaming and offline inference, handles up to eight speakers, and orders speaker outputs by each speaker's first arrival in the input audio. The model uses the Arrival-Order Speaker Cache (AOSC) 1 and FIFO queue introduced for Streaming Sortformer 1 , 2 . A single checkpoint supports configurable latency profiles, from an 80 ms input buffer to a 30.4 s offline-style buffer, and configurable...",
+    "publishedAt": "2026-09-30T16:46:27.000Z"
+  },
+  {
+    "id": "08aa8115cb5d9c89",
+    "sourceId": "google-deepmind-blog",
+    "kind": "rss",
+    "url": "https://deepmind.google/blog/introducing-synthid-bio/",
+    "title": "Introducing SynthID Bio",
+    "summary": "Proof of concept for watermarking AI-generated proteins while preserving biological function.",
+    "publishedAt": "2026-09-30T15:03:07.000Z"
+  },
+  {
+    "id": "8869e7983f687a81",
+    "sourceId": "opentofu-releases",
+    "kind": "github",
+    "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.0",
+    "title": "opentofu v1.13.0",
+    "summary": "OpenTofu 1.13.0 We're proud to announce that OpenTofu 1.13.0 is now officially available! 🎉 Highlights Windows on ARM64 is now a supported platform Starting with OpenTofu v1.13.0 we are now offering official packages targeting Windows on the ARM64 (also known as \"aarch64\") CPU architecture. Reducing unknowns during planning OpenTofu v1.13 introduces a number of new functions that are all intended to allow module authors to give OpenTofu additional hints about what they know to be true even though OpenTofu cannot infer it automatically. Linting Experiment OpenTofu v1.13 includes some very...",
+    "publishedAt": "2026-09-30T13:57:49.000Z"
+  },
+  {
+    "id": "90249c2a3882c6d3",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/disrupting-a-coordinated-model-distillation-campaign",
+    "title": "Disrupting a coordinated model-distillation campaign",
+    "summary": "Learn how OpenAI disrupted a campaign to extract protected model reasoning and is strengthening defenses against adversarial distillation.",
+    "publishedAt": "2026-09-30T10:30:00.000Z"
+  },
+  {
+    "id": "061338e668ed6974",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/helping-small-businesses-put-ai-to-work",
+    "title": "Helping small businesses put AI to work",
+    "summary": "OpenAI is partnering with America’s SBDC to expand hands-on AI training and local support for small businesses, alongside a new report on how small teams are using AI.",
+    "publishedAt": "2026-09-30T10:00:00.000Z"
+  },
+  {
+    "id": "74c2ff7e2707d1f6",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/open-tts-leaderboard",
+    "title": "Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+    "summary": "",
+    "publishedAt": "2026-09-30T00:00:00.000Z"
+  },
+  {
+    "id": "f7c4b2e8f177486c",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=570800",
+    "title": "Retirement: Functions on Azure Container Apps V1",
+    "summary": "The Functions on Azure Container Apps (ACA) V1 will be retired on September 29, 2027. After this date, existing Functions on ACA V1 Apps will stop running and no longer process requests or event-driven triggers. Action required Review your Azure environme",
+    "publishedAt": "2026-09-29T19:41:09.000Z"
+  },
+  {
+    "id": "8b82903c1b03f2a9",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=572630",
+    "title": "[Launched] Generally Available: Storage optimized Lasv5 and Laosv5 Azure VM series",
+    "summary": "The Laosv5 series and Lasv5 storage optimized VMs, based on the 5th Gen AMD EPYC™ processor (Turin), are now generally available.Lasv5 and Laosv5 VMs have sizes ranging from 2-160 vCPUs, with 8GiB of memory and 720GB of local NVMe disk capacity per vCPU.",
+    "publishedAt": "2026-09-29T19:27:09.000Z"
+  },
+  {
+    "id": "c9f4597c615b023c",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571075",
+    "title": "[In preview] Public Preview: Automatic Zone Placement for Virtual Machine Scale Sets",
+    "summary": "Automatic Zone Placement for VM Scale Sets (Public Preview) enables Azure to automatically select the best availability zones for your scale set based on SKU availability, capacity, and placement requirements. Instead of manually maintaining zone lists fo",
+    "publishedAt": "2026-09-29T19:17:59.000Z"
+  },
+  {
+    "id": "bfc2d4ae0d734309",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=570696",
+    "title": "[Launched] Generally Available: Azure Arc-enabled SQL Server in Germany West Central",
+    "summary": "Azure Arc-enabled SQL Server is now available in Germany West Central, enabling you to connect SQL Server instances to Azure Arc and take advantage of Azure-based inventory, governance, security, assessment, and license management capabilities. Learn more",
+    "publishedAt": "2026-09-29T19:07:44.000Z"
+  },
+  {
+    "id": "2abe2c158bf0b266",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=570763",
+    "title": "[Launched] Generally Available: Azure Arc-enabled SQL Server Available in Italy North",
+    "summary": "Azure Arc-enabled SQL Server is now available in Italy North, enabling you to connect SQL Server instances to Azure Arc and take advantage of Azure-based inventory, governance, security, assessment, and license management capabilities.Learn more.",
+    "publishedAt": "2026-09-29T19:06:50.000Z"
+  },
+  {
+    "id": "156eafb95ad49897",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571909",
+    "title": "[In preview] Public Preview: Azure Database for PostgreSQL Ultra Disk",
+    "summary": "Ultra Disk support is now available in public preview for Azure Database for PostgreSQL flexible server. You can use Azure’s highest-performance managed disk option for I/O-intensive and transaction-heavy PostgreSQL workloads that require consistently low",
+    "publishedAt": "2026-09-29T18:14:46.000Z"
+  },
+  {
+    "id": "35bb365c8abc032f",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571867",
+    "title": "[In preview] Public Preview: SQL Performance Monitoring for Azure SQL Database",
+    "summary": "The public preview of Microsoft-managed performance monitoring for Azure SQL Database is now available. You can now monitor Azure SQL Database without building custom collection scripts or correlating telemetry across disconnected tools. Built-in data co",
+    "publishedAt": "2026-09-29T18:13:31.000Z"
+  },
+  {
+    "id": "46b2157555640169",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571904",
+    "title": "[In preview] Public Preview: Performance monitoring for Azure Arc–enabled SQL Server",
+    "summary": "The preview of performance monitoring for SQL Server enabled by Azure Arc is expanding with more flexible ways to explore and visualize your performance data. You can query Microsoft-managed monitoring data directly through a telemetry endpoint. The built",
+    "publishedAt": "2026-09-29T18:11:15.000Z"
+  },
+  {
+    "id": "2f6359cb8fbfb376",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571643",
+    "title": "[Launched] Generally Available: Azure SQL updates for late-September 2026",
+    "summary": "The following updates and enhancements were made to Azure SQL: Scale larger workloads on Azure SQL Database Hyperscale Premium series with new 160-vCore and 192-vCore options, delivering up to 50% greater compute capacity than the previ",
+    "publishedAt": "2026-09-29T18:05:11.000Z"
+  },
+  {
+    "id": "95908c0302201677",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571783",
+    "title": "[Launched] Generally Available: Azure Database for PostgreSQL Flexible Server supports cross-tenant customer-managed keys (CMK)",
+    "summary": "Azure Database for PostgreSQL Flexible Server now supports cross-tenant customer-managed keys (CMK). You can encrypt your data using keys stored in an Azure Key Vault or Azure Managed HSM that resides in a different Microsoft Entra tenant than your Postgr",
+    "publishedAt": "2026-09-29T17:57:36.000Z"
+  },
+  {
+    "id": "8345d6ba9773457f",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571810",
+    "title": "[In preview] Public preview: Script-based deployment for SQL Server on Linux Azure VM",
+    "summary": "A new deployment experience for SQL Server on Linux Azure Virtual Machines (VMs) replaces legacy marketplace images with automated script-based provisioning. This release provides greater flexibility, simplified management, and improved customization. You",
+    "publishedAt": "2026-09-29T17:52:59.000Z"
+  },
+  {
+    "id": "42860300f32adff0",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571836",
+    "title": "[Launched] Generally Available: SQL Server on Azure Local Disconnected (ALDO)",
+    "summary": "Now you can use ALDO to extend SQL Server support to environments that can’t maintain continuous connectivity to Azure. ALDO is designed for operations in highly regulated, secure, remote, or air-gapped environments, where internet connectivity is restric",
+    "publishedAt": "2026-09-29T17:51:34.000Z"
+  },
+  {
+    "id": "4df5f296d9b0f5bd",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571841",
+    "title": "[Launched] Generally Available: SQL Server support on Azure Local connected mode",
+    "summary": "With SQL Server on Azure Local, you can run SQL Server workloads on Azure Local infrastructure while leveraging Azure services for centralized management, governance, monitoring, security, and licensing experiences. By connecting to Azure through Azure Ar",
+    "publishedAt": "2026-09-29T17:50:20.000Z"
+  },
+  {
+    "id": "518764f18e02e387",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571846",
+    "title": "[In preview] Public Preview: Azure SQL updates for late-September 2026",
+    "summary": "In late September 2026, the following updates and enhancements were made to Azure SQL: Database Hub in Microsoft Fabric is a unified experience for discovering, managing, monitoring, and optimizing databases across SQL Server, Azure SQL,",
+    "publishedAt": "2026-09-29T17:49:15.000Z"
+  },
+  {
+    "id": "8c60afcf71fec2d4",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571852",
+    "title": "[Launched] Generally Available: Database DevOps in SSMS powered by SQL projects",
+    "summary": "In SSMS, you can now use Microsoft.Build.Sql projects to help you implement, manage, and collaborate on database changes, by providing a local definition of the database objects. A SQL database project is a local representation of SQL objects that compris",
+    "publishedAt": "2026-09-29T17:42:47.000Z"
+  },
+  {
+    "id": "7d8c2b3615f147a8",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571857",
+    "title": "[In preview] Public Preview: Azure SQL Database Hyperscale Serverless auto-pause and auto-resume",
+    "summary": "Auto-pause and auto-resume are now available in public preview for Azure SQL Hyperscale databases using the Serverless compute tier. You can configure databases to automatically pause during periods of inactivity and automatically resume when activity ret",
+    "publishedAt": "2026-09-29T17:40:40.000Z"
+  },
+  {
+    "id": "fb113abffff4d402",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571872",
+    "title": "[Launched] Generally Available: SQL Formatter",
+    "summary": "You can now format SQL scripts directly in Visual Studio Code using SQL Formatter for more consistent, readable code. Customizable formatting options help you match your preferred coding style, so you can keep queries tidy without manual reformatting. N",
+    "publishedAt": "2026-09-29T17:39:36.000Z"
+  },
+  {
+    "id": "6eae9f86a2681dc4",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571899",
+    "title": "[Launched] Generally Available: SQL Migration Agent Skills for assessment, migration, and validation",
+    "summary": "SQL Migration Agent Skills help you automate and streamline the end-to-end migration journey from SQL Server to Azure. These reusable AI-powered skills help guide you through assessment, target selection, migration execution, and post-migration validation",
+    "publishedAt": "2026-09-29T17:38:16.000Z"
+  },
+  {
+    "id": "cdc96a3d5bf7dbe5",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=570283",
+    "title": "Retirement: Azure Arc enabled System Center Virtual Machine Manager will be retired September 30, 2029",
+    "summary": "Microsoft is retiring Azure Arc-enabled System Center Virtual Machine Manager (SCVMM) in September 2029. Customers must plan and transition to alternative solutions.What does this mean for you?If you are using Azure Arc-enabled SCVMM for:Azure services an",
+    "publishedAt": "2026-09-29T17:36:13.000Z"
+  },
+  {
+    "id": "58eab3d05fa9dcce",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571795",
+    "title": "[In preview] Public Preview: Migrate directly from Azure Arc to Azure SQL Database, including Hyperscale",
+    "summary": "You can now select Azure SQL Database, including Hyperscale, as a migration target directly from the database migration experience in Azure Arc. The workflow brings Azure Database Migration Service and Self-hosted Integration Runtime setup into the guided",
+    "publishedAt": "2026-09-29T17:34:44.000Z"
+  },
+  {
+    "id": "3a14bd0bca418aac",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573003",
+    "title": "[In preview] Public Preview: Microsoft SQL Agent Skills",
+    "summary": "Microsoft SQL Agent Skills help you get more accurate, product-specific guidance when using AI agents to build, operate, and migrate SQL workloads. You can use these skills with Azure SQL Database, Azure SQL Database container, SQL Server to Azure migrati",
+    "publishedAt": "2026-09-29T17:31:11.000Z"
+  },
+  {
+    "id": "f68bee47137bf68b",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571914",
+    "title": "[In preview] Public Preview: Long-term retention (LTR) v2 for Azure Database for PostgreSQL",
+    "summary": "LTR v2 is the next-generation long-term backup solution for Azure Database for PostgreSQL that moves from logical backups (pg_dump/pg_restore) used in LTR v1 to physical snapshot-based backups integrated with Azure Backup Vaults. With this release, you c",
+    "publishedAt": "2026-09-29T17:28:57.000Z"
+  },
+  {
+    "id": "c28728a4280fae89",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=570046",
+    "title": "Retirement: Microsoft HPC Pack",
+    "summary": "Microsoft is retiring all versions of HPC Pack. End of Support is August 27, 2027. HPC Pack is now entering a one-year retirement period. Microsoft will provide limited, retirement-only support during this period. The scope of this support is defined belo",
+    "publishedAt": "2026-09-29T17:26:50.000Z"
+  },
+  {
+    "id": "f7a54ea7b8e642ef",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=569914",
+    "title": "Retirement: Azure IoT Central will be retired on September 20, 2029",
+    "summary": "Azure IoT Central will be retired on September 20, 2029. You can continue using Azure IoT Central until the retirement date, but we recommend starting your transition planning early.Why is this happening?As Azure IoT evolves, Microsoft is focusing future",
+    "publishedAt": "2026-09-29T17:25:10.000Z"
+  },
+  {
+    "id": "c5a17964a0f6c1a7",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573027",
+    "title": "[Launched] Generally Available: Support for large volume breakthrough mode",
+    "summary": "Large volume breakthrough mode in Azure NetApp Files enables extreme performance and scalability for demanding HPC and EDA workloads. It supports large volumes up to 2PiB, delivering throughput up to 80 GiBps, depending on workload characteristics. Large",
+    "publishedAt": "2026-09-29T17:12:40.000Z"
+  },
+  {
+    "id": "bd75fc82011eacf4",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573032",
+    "title": "[Launched] Generally Available: Storage with cool access enhancement",
+    "summary": "QoS update with cool access enabled on Premium and Ultra service levels improves how Azure NetApp Files balances performance and cost for mixed hot and cool workloads. Throughput automatically adjusts as data moves to cool storage, maintaining hot‑tier pe",
+    "publishedAt": "2026-09-29T17:09:58.000Z"
+  },
+  {
+    "id": "e428dff95a37c528",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=573041",
+    "title": "[In preview] Public Preview : Microsoft entra kerberos authentication for Azure NetApp Files",
+    "summary": "Azure NetApp Files now supports Microsoft Entra Kerberos authentication for SMB volumes. The capability enables users with hybrid or cloud-only identities to authenticate through Microsoft Entra ID using cloud-issued Kerberos tickets. This capability remo",
+    "publishedAt": "2026-09-29T17:07:55.000Z"
+  },
+  {
+    "id": "afa8c33f8eb7996a",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+    "title": "Getting the Source Right, Not Just the Fact: Source-Aware Verification for MCP Agents",
+    "summary": "",
+    "publishedAt": "2026-09-29T13:07:00.000Z"
+  },
+  {
+    "id": "6071f63e21f64254",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/devday-2026-recap",
+    "title": "DevDay 2026 Recap",
+    "summary": "Explore more than 20 announcements from OpenAI DevDay 2026, including GPT-6 Astra, ChatGPT, Codex, APIs, security, and new tools for builders.",
+    "publishedAt": "2026-09-29T10:00:00.000Z"
+  },
+  {
+    "id": "d6b9f5e651b1891e",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/introducing-gpt-6-1-sol",
+    "title": "Introducing GPT-6.1 Sol",
+    "summary": "Meet GPT-6.1 Sol: near-Astra intelligence for coding, computer use, and professional work at one-fifth of Astra’s standard API input and output token prices.",
+    "publishedAt": "2026-09-29T10:00:00.000Z"
+  },
+  {
+    "id": "dec620cb7225d243",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/introducing-dots",
+    "title": "Introducing dots",
+    "summary": "Dots by OpenAI are proactive assistants that can keep working across complex projects and everyday tasks. Learn how dots help you stay in control while work moves forward.",
+    "publishedAt": "2026-09-29T00:00:00.000Z"
+  },
+  {
+    "id": "bbefdaefb76473f7",
+    "sourceId": "ollama-blog",
+    "kind": "rss",
+    "url": "https://ollama.com/blog/ollama-now-supports-jev-style-decision-models",
+    "title": "Ollama now supports Jev-style decision models",
+    "summary": "Ollama now supports decision models, based on TypeSafe's Jev API for fast, typed decisions. Decision models can now be run at no cost with low latency. Based on text, decision models answer yes-or-no questions, choices and scores about it, with a probability for every option.",
+    "publishedAt": "2026-09-29T00:00:00.000Z"
+  },
+  {
+    "id": "fad3e5ad8aef4880",
+    "sourceId": "typescript-releases",
+    "kind": "github",
+    "url": "https://github.com/microsoft/TypeScript/releases/tag/vscode-typescript%2Fv1.0.0",
+    "title": "TypeScript vscode-typescript/v1.0.0",
+    "summary": "vscode-typescript 1.0.0",
+    "publishedAt": "2026-09-28T23:22:40.000Z"
+  },
+  {
+    "id": "5b38fadd41da68fd",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571800",
+    "title": "[Launched] Generally Available: Vector search and vector indexes in Azure SQL",
+    "summary": "Vector search and vector indexes are now generally available in Azure SQL Database. Using the CREATE VECTOR INDEX and VECTOR_SEARCH T-SQL capabilities, you can perform efficient approximate nearest neighbor (ANN) searches for AI scenarios such as semantic",
+    "publishedAt": "2026-09-28T22:07:19.000Z"
+  },
+  {
+    "id": "b2de7fcfb1e831c3",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=572998",
+    "title": "[In preview] Public Preview: Azure SQL Dev Hub",
+    "summary": "Azure SQL Dev Hub gives you a central starting point for building applications with Azure SQL, whether you’re developing directly or using AI agents. You can find guidance for connecting to Azure SQL from .NET, Python, Node.js, and Java, along with resour",
+    "publishedAt": "2026-09-28T22:06:05.000Z"
+  },
+  {
+    "id": "2fc54b690d7b20a2",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
+    "title": "Towards safety cases for frontier AI training",
+    "summary": "Our early guidelines for safety cases in frontier AI training cover technical safeguards, operational practices, and investigating misalignment incidents",
+    "publishedAt": "2026-09-28T19:00:00.000Z"
+  },
+  {
+    "id": "50d71cd52400f551",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/how-we-will-do-better-for-australia",
+    "title": "How we will do better for Australia",
+    "summary": "OpenAI apologises for incidents involving Australian government websites and outlines stronger safeguards and support to strengthen Australia’s cyber defences.",
+    "publishedAt": "2026-09-28T19:00:00.000Z"
+  },
+  {
+    "id": "7ba7170e114ec367",
+    "sourceId": "google-ai-blog",
+    "kind": "rss",
+    "url": "https://blog.google/innovation-and-ai/technology/ai/winner-future-vision-xprize/",
+    "title": "Watch the winning trailer from the Future Vision XPRIZE, The Gifted.",
+    "summary": "Watch the winning trailer from the Future Vision XPRIZE, The Gifted.",
+    "publishedAt": "2026-09-28T19:00:00.000Z"
+  },
+  {
+    "id": "89172758896c16b9",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=571632",
+    "title": "[Launched] Generally Available: Azure SQL Managed Instance updates for late-September 2026",
+    "summary": "In late September 2026, the following updates and enhancements were made to Azure SQL Managed Instance: Use the flexible memory feature in Azure SQL Managed Instance to change the amount of memory allocated to your SQL managed instance withou",
+    "publishedAt": "2026-09-28T18:52:10.000Z"
+  },
+  {
+    "id": "a54e7cfe830efd8b",
+    "sourceId": "azure-updates",
+    "kind": "rss",
+    "url": "https://azure.microsoft.com/updates?id=572968",
+    "title": "[Launched] Generally Available: Luxembourg - Azure Extended Zones",
+    "summary": "We are announcing the general availability of the Luxembourg Azure Extended Zone. Azure Extended Zones are small-footprint extensions of Azure placed in metro areas, industry centers, or specific jurisdictions, to serve low latency and data residency work",
+    "publishedAt": "2026-09-28T17:08:48.000Z"
+  },
+  {
+    "id": "ee4dc087c2001832",
+    "sourceId": "mistral-news",
+    "kind": "rss",
+    "url": "https://mistral.ai/news/hallo-deutschland/",
+    "title": "Hallo, Deutschland!",
+    "summary": "Mistral opens a Munich hub for Physics AI and Industrial AI research, partnering with German industry.",
+    "publishedAt": "2026-09-28T15:57:59.000Z"
+  },
+  {
+    "id": "09d1d26fa19dd694",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/Hcompany/holo4",
+    "title": "Holo4: powering generalist computer-use agents",
+    "summary": "",
+    "publishedAt": "2026-09-28T09:44:05.000Z"
+  },
+  {
+    "id": "0adf5bb2a473897d",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/lenfest-ai-collaborative-expansion",
+    "title": "The Lenfest Institute grows landmark program with expanded OpenAI support",
+    "summary": "OpenAI is expanding the Lenfest AI Collaborative and Fellowship Program with $5 million in funding and up to $5 million in software credits and engineering support.",
+    "publishedAt": "2026-09-28T07:00:00.000Z"
+  },
+  {
+    "id": "833e9419a34f8836",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/form/codex-originals",
+    "title": "Are you a Codex Original?",
+    "summary": "We’re collecting real stories of builders, tinkerers, researchers, and creators who are using Codex to do incredible things. If you want to be a part of the next chapter of the Codex Originals program, tell us more about your story and project below.",
+    "publishedAt": "2026-09-28T00:00:00.000Z"
+  },
+  {
+    "id": "eb674100bb687fff",
+    "sourceId": "openai-news",
+    "kind": "rss",
+    "url": "https://openai.com/index/basis-tax-workbook-with-astra",
+    "title": "Basis completes a tax workbook 2x faster with GPT-6 Astra",
+    "summary": "GPT-6 Astra completed a 50-tab tax workbook twice as fast as GPT-5.6 Sol, and its stronger understanding of user intent gives Basis more confidence in real-world use.",
+    "publishedAt": "2026-09-28T00:00:00.000Z"
+  },
+  {
+    "id": "eb916b5190e37958",
+    "sourceId": "huggingface-blog",
+    "kind": "rss",
+    "url": "https://huggingface.co/blog/rl-environments",
+    "title": "Welcome RL Environments to the hub",
+    "summary": "",
+    "publishedAt": "2026-09-28T00:00:00.000Z"
+  }
+]
