@@ -2,10 +2,11 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createOllamaProvider,
+  DEFAULT_THINK,
   DEFAULT_TIMEOUTS_MS,
   type OllamaProviderOptions,
 } from '../../../src/adapters/models/ollama.js';
-import { PROFILES } from '../../../src/config/profiles.js';
+import { MODEL_TAGS, PROFILES } from '../../../src/config/profiles.js';
 import type { DecideRequest, DecisionQuestion } from '../../../src/ports/ModelProvider.js';
 import { DigestError } from '../../../src/shared/errors.js';
 import type { LogFields, Logger } from '../../../src/shared/telemetry.js';
@@ -280,6 +281,112 @@ describe('generate', () => {
     expect(lines).toContainEqual(
       expect.objectContaining({ level: 'warn', message: 'ollama reply hit the token limit' }),
     );
+  });
+});
+
+describe('think', () => {
+  const GUARD = { role: 'guardRisk', system: 'Judge the text.', prompt: 'Text.' } as const;
+
+  it('defaults guardRisk to think false', async () => {
+    const { provider, calls } = setup(sequence(chatOk));
+
+    await provider.generate(GUARD);
+
+    expect(DEFAULT_THINK).toEqual({ guardRisk: false });
+    expect(calls[0]!.body).toMatchObject({ model: MODEL_TAGS.graniteGuardian, think: false });
+  });
+
+  it('sends no think field for a role without a setting', async () => {
+    const { provider, calls } = setup(sequence(chatOk));
+
+    await provider.generate(WRITE);
+
+    expect(calls[0]!.body).not.toHaveProperty('think');
+  });
+
+  it('sends an override for a role as given', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { think: { write: 'low' } });
+
+    await provider.generate(WRITE);
+
+    expect(calls[0]!.body).toMatchObject({ think: 'low' });
+  });
+
+  it('lets an override turn guardRisk thinking on', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { think: { guardRisk: true } });
+
+    await provider.generate(GUARD);
+
+    expect(calls[0]!.body).toMatchObject({ think: true });
+  });
+
+  it('keeps the guardRisk default when only another role is overridden', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { think: { write: 'high' } });
+
+    await provider.generate(GUARD);
+
+    expect(calls[0]!.body).toMatchObject({ think: false });
+  });
+
+  it('never sends think on a systemone call', async () => {
+    const { provider, calls } = setup(
+      sequence(() => json(200, fixture('systemone-strands-decider.json'))),
+      { think: { classify: true, guardRisk: false } },
+    );
+
+    await provider.decide(DECIDE);
+
+    expect(calls[0]!.body).not.toHaveProperty('think');
+  });
+
+  it('sends an explicit false for a role that has no default', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { think: { write: false } });
+
+    await provider.generate(WRITE);
+
+    expect(calls[0]!.body).toMatchObject({ think: false });
+  });
+
+  it('logs the effective think setting, or default when the role has none', async () => {
+    const { provider, lines } = setup(sequence(chatOk), { think: { write: 'medium' } });
+
+    await provider.generate(GUARD);
+    await provider.generate(WRITE);
+    await provider.generate({ ...WRITE, role: 'classify' });
+
+    const calls = lines.filter((l) => l.message === 'ollama call');
+    expect(calls.map((l) => l.fields.think)).toEqual([false, 'medium', 'default']);
+  });
+
+  it('logs the think setting on failure and token-limit lines too', async () => {
+    const failing = setup(
+      sequence(() => json(400, { error: 'bad request' })),
+      { retries: 0 },
+    );
+    await expect(failing.provider.generate(GUARD)).rejects.toThrow(DigestError);
+    expect(failing.lines.at(-1)).toMatchObject({ level: 'error', fields: { think: false } });
+
+    const cut = setup(
+      sequence(() => ndjson({ message: { content: 'cut' }, done: true, done_reason: 'length' })),
+      { think: { write: 'high' } },
+    );
+    await cut.provider.generate(WRITE);
+    expect(cut.lines).toContainEqual(
+      expect.objectContaining({
+        message: 'ollama reply hit the token limit',
+        fields: expect.objectContaining({ think: 'high' }) as unknown,
+      }),
+    );
+  });
+
+  it('does not log think on a decide call', async () => {
+    const { provider, lines } = setup(
+      sequence(() => json(200, fixture('systemone-strands-decider.json'))),
+    );
+
+    await provider.decide(DECIDE);
+
+    expect(lines[0]!.fields).not.toHaveProperty('think');
   });
 });
 

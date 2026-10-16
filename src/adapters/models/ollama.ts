@@ -12,7 +12,7 @@ import type {
 } from '../../ports/ModelProvider.js';
 import { DigestError, errorMessage } from '../../shared/errors.js';
 import { TimeoutError, withRetry, withTimeout } from '../../shared/retry.js';
-import type { Logger } from '../../shared/telemetry.js';
+import type { LogFields, Logger } from '../../shared/telemetry.js';
 import {
   createOllamaHttp,
   isRetryable,
@@ -30,10 +30,19 @@ import {
   validateQuestions,
 } from './systemone.js';
 
+/** Ollama's `think` request field: on or off, or an effort level for models that have levels. */
+export type ThinkSetting = boolean | 'low' | 'medium' | 'high';
+export type ThinkByRole = Readonly<Partial<Record<Role, ThinkSetting>>>;
+
 export interface OllamaProviderOptions {
   baseUrl: string;
   profile: ModelProfile;
   timeoutsMs?: Partial<Record<Role, number>>;
+  /**
+   * Per-role `think` for generate (/api/chat); a role without a setting keeps the model's own
+   * default. decide (/v1/systemone) ignores it.
+   */
+  think?: ThinkByRole;
   /** Spec: 2 retries with backoff. */
   retries?: number;
   fetch?: typeof fetch;
@@ -48,6 +57,11 @@ export const DEFAULT_TIMEOUTS_MS: Readonly<Record<Role, number>> = {
   judge: 120_000,
   write: 600_000,
 };
+/**
+ * Per-role `think` when `options.think` has none. granite4.1-guardian is a thinking model that
+ * spends ~350 tokens (~65 s) on reasoning before a one-word `<score>`; the guards do not need it.
+ */
+export const DEFAULT_THINK: ThinkByRole = { guardRisk: false };
 const DEFAULT_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 1_000;
 const RETRY_MAX_DELAY_MS = 10_000;
@@ -83,6 +97,8 @@ interface CallSpec {
   role: Role;
   model: string;
   signal: AbortSignal | undefined;
+  /** Extra fields for this call's log lines. */
+  logFields?: LogFields;
   /** One attempt; `signal` combines the caller's signal and the attempt timeout. */
   send: (signal: AbortSignal) => Promise<unknown>;
 }
@@ -116,7 +132,7 @@ async function callOllama<T extends { usage: Usage }>(
   spec: CallSpec,
   parse: (raw: unknown) => T,
 ): Promise<T & { latencyMs: number }> {
-  const log = options.logger.child({ role: spec.role, model: spec.model });
+  const log = options.logger.child({ ...spec.logFields, role: spec.role, model: spec.model });
   const timeoutMs = options.timeoutsMs?.[spec.role] ?? DEFAULT_TIMEOUTS_MS[spec.role];
   const started = performance.now();
   let attempts = 0;
@@ -155,7 +171,15 @@ async function callOllama<T extends { usage: Usage }>(
   }
 }
 
-function chatBody(model: string, request: GenerateRequest): Record<string, unknown> {
+function thinkFor({ options }: Context, role: Role): ThinkSetting | undefined {
+  return options.think?.[role] ?? DEFAULT_THINK[role];
+}
+
+function chatBody(
+  model: string,
+  request: GenerateRequest,
+  think: ThinkSetting | undefined,
+): Record<string, unknown> {
   return {
     model,
     messages: [
@@ -165,6 +189,7 @@ function chatBody(model: string, request: GenerateRequest): Record<string, unkno
     // Streamed so headers arrive early: Node's fetch drops a response whose headers take
     // more than 300 s, which a non-streamed writer reply can exceed.
     stream: true,
+    ...(think === undefined ? {} : { think }),
     ...(request.jsonSchema === undefined ? {} : { format: request.jsonSchema }),
     ...(request.temperature === undefined ? {} : { options: { temperature: request.temperature } }),
   };
@@ -185,18 +210,20 @@ function joinChat(raw: unknown): { text: string; usage: Usage; doneReason: strin
 
 async function generate(context: Context, request: GenerateRequest): Promise<GenerateResult> {
   const model = resolveModel(context.options.profile, request.role, request.model);
-  const body = chatBody(model, request);
+  const think = thinkFor(context, request.role);
+  const body = chatBody(model, request, think);
   const spec: CallSpec = {
     op: 'generate',
     role: request.role,
     model,
     signal: request.signal,
+    logFields: { think: think ?? 'default' },
     send: (signal) => context.http.postStream(CHAT_PATH, body, signal),
   };
   const result = await callOllama(context, spec, joinChat);
   if (result.doneReason === LENGTH_DONE_REASON)
     context.options.logger
-      .child({ role: request.role, model })
+      .child({ role: request.role, model, ...spec.logFields })
       .warn('ollama reply hit the token limit', { outputTokens: result.usage.outputTokens });
   return { model, text: result.text, usage: result.usage, latencyMs: result.latencyMs };
 }
