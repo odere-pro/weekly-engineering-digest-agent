@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { buildProgram } from '../../src/cli/program.js';
 
 describe('CLI program', () => {
@@ -10,13 +10,13 @@ describe('CLI program', () => {
   it('passes the global --config and command flags to the handler', async () => {
     const codes: number[] = [];
     const program = buildProgram((code) => codes.push(code)).exitOverride();
-    // Stubs throw NotImplementedError until their issue lands.
-    await expect(
-      program.parseAsync(['node', 'digest', '--config', 'x.json', 'run', '--dry-run'], {
-        from: 'node',
-      }),
-    ).rejects.toThrow('W1-17');
-    expect(codes).toEqual([]);
+    const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    await program.parseAsync(['node', 'digest', '--config', 'x.json', 'run', '--dry-run'], {
+      from: 'node',
+    });
+    expect(codes).toEqual([1]); // config missing -> DigestError, exit code 1
+    expect(stderr).toHaveBeenCalledWith(expect.stringContaining('x.json'));
+    stderr.mockRestore();
   });
 
   it('rejects a non-numeric --limit', async () => {
