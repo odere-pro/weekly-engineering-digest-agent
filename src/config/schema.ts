@@ -175,5 +175,7 @@ export const EnvSchema = z.object({
    */
   DIGEST_HOST_OS: z.string().min(1).optional(),
   DIGEST_HOST_ARCH: z.string().min(1).optional(),
+  /** Model tag `digest eval` uses to score the winning digests (reported, not gated); unset means no judge scores. */
+  EVAL_JUDGE: z.string().min(1).optional(),
 });
 export type Env = z.infer<typeof EnvSchema>;

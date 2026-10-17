@@ -18,7 +18,7 @@ export interface RunStore {
   readArtifact(runId: string, name: ArtifactName): Promise<string | undefined>;
   saveRunRecord(record: RunRecord): Promise<void>;
   getRunRecord(runId: string): Promise<RunRecord | undefined>;
-  /** URLs sent in the `weeks` weeks before `runId`. */
+  /** URLs delivered in the `weeks` weeks before `runId`: sent weeks and partly delivered weeks alike. */
   sentUrls(runId: string, weeks: number): Promise<Set<string>>;
   /** Most recent first. */
   listRuns(limit?: number): Promise<RunRecord[]>;
