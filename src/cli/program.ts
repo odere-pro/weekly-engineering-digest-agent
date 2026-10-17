@@ -2,6 +2,7 @@
 import { Command, InvalidArgumentError } from 'commander';
 import { doctorCommand } from './doctor.js';
 import { evalCommand } from './eval.js';
+import { feedbackCommand } from './feedback.js';
 import { historyCommand } from './history.js';
 import { initCommand } from './init.js';
 import { runCommand } from './run.js';
@@ -37,8 +38,9 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
   program
     .command('doctor')
     .description('check Ollama, the models, every feed and delivery; print what to fix')
-    .action(async () => {
-      setExitCode(await doctorCommand(withConfig({})));
+    .option('--readiness', 'print the machine summary and a verdict for every profile')
+    .action(async (options: { readiness?: boolean }) => {
+      setExitCode(await doctorCommand(withConfig(options)));
     });
 
   program
@@ -65,6 +67,14 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .option('-n, --limit <count>', 'number of runs', positiveInt)
     .action(async (options: { limit?: number }) => {
       setExitCode(await historyCommand(withConfig(options)));
+    });
+
+  program
+    .command('feedback')
+    .description('turn the ticks in data/runs/<week>/review.md into eval labels')
+    .argument('<week>', 'ISO week id, for example 2026-W43')
+    .action(async (week: string) => {
+      setExitCode(await feedbackCommand(withConfig({ week })));
     });
 
   program
