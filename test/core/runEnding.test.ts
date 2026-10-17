@@ -14,7 +14,7 @@ import {
 import type { RunRecord } from '../../src/core/schemas.js';
 import { DigestError } from '../../src/shared/errors.js';
 import type { LogFields, Logger } from '../../src/shared/telemetry.js';
-import { makeRunRecord } from '../builders.js';
+import { makeClassification, makeDraft, makeItem, makeRunRecord } from '../builders.js';
 import { CapturingDelivery, MemoryRunStore } from '../fakes/index.js';
 
 const WEEK = '2026-W42';
@@ -443,5 +443,82 @@ describe('abortedError', () => {
     controller.abort();
 
     expect(abortedError(controller.signal)?.exitCode).toBe(1);
+  });
+});
+
+describe('endRun: review sheet', () => {
+  const items = [1, 2, 3].map((n) =>
+    makeItem({ id: `r${n}`, title: `Release ${n}`, url: `https://example.com/r/${n}` }),
+  );
+  const files: readonly HeldArtifact[] = [
+    { name: 'items.json', content: JSON.stringify(items) },
+    { name: 'scores.json', content: JSON.stringify(items.map((i) => makeClassification(i.id))) },
+    { name: 'drafts.json', content: JSON.stringify({ drafts: [makeDraft([items[0]!], 'w1')] }) },
+  ];
+  const withWinner = record({ status: 'dry-run', winner: 'w1' });
+  const reviewOf = (store: MemoryRunStore): string | undefined =>
+    store.artifacts.get(`${WEEK}/review.md`);
+
+  it('writes review.md from the held files of a run that reached the write step', async () => {
+    const h = setup(true);
+
+    await endRun(h.ctx, { record: withWinner, artifacts: files }, undefined);
+
+    const sheet = reviewOf(h.store);
+    expect(sheet).toContain('## Picked\n\n- [ ] `r1` | rank 1');
+    expect(sheet).toContain('## Candidates\n\n- [ ] `r2` | rank 2');
+  });
+
+  it('reads the files from the store when the run already wrote them', async () => {
+    const h = setup();
+    for (const { name, content } of files) await h.store.saveArtifact(WEEK, name, content);
+
+    await endRun(h.ctx, { record: record({ status: 'sent', winner: 'w1' }) }, undefined);
+
+    expect(reviewOf(h.store)).toContain('`r1`');
+  });
+
+  it.each([
+    ['no winner', record({ status: 'blocked', winner: null })],
+    ['a winner no draft has', record({ status: 'sent', winner: 'other-writer' })],
+  ])('writes no sheet for %s', async (_name, ended) => {
+    const h = setup();
+
+    await endRun(h.ctx, { record: ended, artifacts: files }, undefined);
+
+    expect(reviewOf(h.store)).toBeUndefined();
+  });
+
+  it('writes no sheet when the earlier record stayed', async () => {
+    const h = setup();
+    h.store.records.set(WEEK, sent);
+
+    await endRun(h.ctx, { record: withWinner, artifacts: files }, sent);
+
+    expect(reviewOf(h.store)).toBeUndefined();
+  });
+
+  it('logs and goes on when a file is missing or broken', async () => {
+    const h = setup();
+    const broken = [{ name: 'items.json', content: 'not json' } as const];
+
+    await expect(
+      endRun(h.ctx, { record: withWinner, artifacts: broken }, undefined),
+    ).resolves.toBeDefined();
+
+    expect(reviewOf(h.store)).toBeUndefined();
+    expect(h.logs.some((l) => l.level === 'warn' && l.message.includes('review sheet'))).toBe(true);
+  });
+
+  it('logs and goes on when the sheet cannot be written', async () => {
+    const h = setup();
+    const save = h.store.saveArtifact.bind(h.store);
+    vi.spyOn(h.store, 'saveArtifact').mockImplementation((id, name, content) =>
+      name === 'review.md' ? Promise.reject(new Error('disk full')) : save(id, name, content),
+    );
+
+    await endRun(h.ctx, { record: withWinner, artifacts: files }, undefined);
+
+    expect(h.logs.some((l) => l.level === 'error' && l.message.includes('review.md'))).toBe(true);
   });
 });

@@ -1,10 +1,19 @@
+import { z } from 'zod';
 import type { Config } from '../config/schema.js';
 import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
 import type { ArtifactName, RunStore } from '../ports/RunStore.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import type { Logger } from '../shared/telemetry.js';
 import { truncate } from '../shared/text.js';
-import type { DeliveryId, RunRecord, StepName } from './schemas.js';
+import { buildReviewSheet } from './reviewSheet.js';
+import {
+  ClassificationSchema,
+  DraftSchema,
+  ItemSchema,
+  type DeliveryId,
+  type RunRecord,
+  type StepName,
+} from './schemas.js';
 
 const SUBJECT_MAX_CHARS = 120;
 
@@ -83,6 +92,7 @@ export async function endRun(
   if (saved) await saveRecord(ctx, record);
   else ctx.logger.warn(kept, { status: record.status });
   const written = saved ? await writeHeld(ctx, artifacts) : new Set<ArtifactName>();
+  if (saved) await writeReviewSheet(ctx, record, artifacts);
   if (failure && saved) await saveErrorFile(ctx, failure, new Date(record.finishedAt));
   await sendOrHoldNote(ctx, note, failure);
   await pruneOldRuns(ctx);
@@ -241,6 +251,48 @@ async function writeHeld(
     }
   }
   return written;
+}
+
+const ItemsFileSchema = z.array(ItemSchema);
+const ScoresFileSchema = z.array(ClassificationSchema);
+const DraftsFileSchema = z.object({ drafts: z.array(DraftSchema) });
+
+/**
+ * Best effort (W7-07): the sheet a reader ticks to say which picks were wrong and which
+ * candidates were missed. Built without a model from the run's files, held or already written.
+ * A run with no winner never reached the write step, so it gets none.
+ */
+async function writeReviewSheet(
+  ctx: EndingContext,
+  record: RunRecord,
+  held: readonly HeldArtifact[],
+): Promise<void> {
+  if (record.winner === null) return;
+  let sheet: string;
+  try {
+    const read = async (name: ArtifactName): Promise<unknown> => {
+      const content =
+        held.findLast((artifact) => artifact.name === name)?.content ??
+        (await ctx.deps.store.readArtifact(ctx.weekId, name));
+      if (content === undefined) throw new Error(`${name} is missing`);
+      return JSON.parse(content);
+    };
+    const items = ItemsFileSchema.parse(await read('items.json'));
+    const classifications = ScoresFileSchema.parse(await read('scores.json'));
+    const { drafts } = DraftsFileSchema.parse(await read('drafts.json'));
+    const winner = drafts.find((draft) => draft.writer === record.winner);
+    if (!winner) throw new Error(`no draft by the winner ${record.winner}`);
+    const pickedIds = winner.digest.items.map((item) => item.itemId);
+    sheet = buildReviewSheet({ weekId: ctx.weekId, items, classifications, pickedIds });
+  } catch (error) {
+    ctx.logger.warn('Could not build the review sheet', { error: errorMessage(error) });
+    return;
+  }
+  try {
+    await ctx.deps.store.saveArtifact(ctx.weekId, 'review.md', sheet);
+  } catch (error) {
+    ctx.logger.error('Could not write review.md', { error: errorMessage(error) });
+  }
 }
 
 /** Best effort: run.json already holds the error; this file only adds the stack. */
