@@ -1,0 +1,1938 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Introducing DiffusionGemma</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="An overview of DiffusionGemma, an exceptionally fast text generation model with up to 4x faster speeds."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Brendan O&#x27;Donoghue, Sebastian Flennerhag"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="DiffusionGemma: 4x faster text generation"/>
+
+<meta property="og:description" content="An overview of DiffusionGemma, an exceptionally fast text generation model with up to 4x faster speeds." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Diffusion_Gemma_Social.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-06-10" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/" />
+<meta name="twitter:title" content="DiffusionGemma: 4x faster text generation"/>
+<meta name="twitter:description" content="An overview of DiffusionGemma, an exceptionally fast text generation model with up to 4x faster speeds." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Diffusion_Gemma_Social.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="85306" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-06-10T16:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Developer tools" />
+  <meta name="authors" content="Brendan O&#x27;Donoghue,Sebastian Flennerhag" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Introducing DiffusionGemma",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - developer tools",
+    "secondary_tags": "undefined",
+    
+      "landing_page_tags": "undefined",
+    
+    
+      "article_name": "DiffusionGemma: 4x faster text generation",
+      "author_name": "Brendan O\u0027Donoghue, Sebastian Flennerhag",
+    
+    "publish_date": "2026-06-10|16:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "128",
+    
+      "content_category": "Products - Developer tools",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">DiffusionGemma: 4x faster text generation</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Jun 10, 2026</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=DiffusionGemma%3A%204x%20faster%20text%20generation%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=DiffusionGemma%3A%204x%20faster%20text%20generation&u=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/&title=DiffusionGemma%3A%204x%20faster%20text%20generation"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=DiffusionGemma%3A%204x%20faster%20text%20generation&body=Check out this article on the Keyword:%0A%0ADiffusionGemma%3A%204x%20faster%20text%20generation%0A%0AAn overview of DiffusionGemma, an exceptionally fast text generation model with up to 4x faster speeds.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Our newest open experimental model delivers up to 4x faster inference on dedicated GPUs and opens the door to exploring speed-critical, interactive local workflows.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Brendan O&#x27;Donoghue</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Research Scientist</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Sebastian Flennerhag</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Research Scientist</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=DiffusionGemma%3A%204x%20faster%20text%20generation%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=DiffusionGemma%3A%204x%20faster%20text%20generation&u=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/&title=DiffusionGemma%3A%204x%20faster%20text%20generation"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=DiffusionGemma%3A%204x%20faster%20text%20generation&body=Check out this article on the Keyword:%0A%0ADiffusionGemma%3A%204x%20faster%20text%20generation%0A%0AAn overview of DiffusionGemma, an exceptionally fast text generation model with up to 4x faster speeds.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="DiffusionGemma"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HeroVisual.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="melv0">Today, we’re introducing DiffusionGemma, an experimental open model that explores text diffusion, an exceptionally fast approach to text generation. Released under an Apache 2.0 license, this 26B Mixture of Experts (MoE) model moves beyond the sequential token-by-token processing of typical autoregressive Large Language Models (LLMs). Instead, it generates entire blocks of text simultaneously, delivering up to 4x faster text generation on GPUs.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Intelligence vs Latency"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="DiffusionGemma: 4x faster text generation"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Intelligence vs Latency"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_3.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_3.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/updated-Intelligence_vs_Latency_.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="melv0">Built upon the industry-leading intelligence-per-parameter of our Gemma 4 family and cutting-edge <a href="https://deepmind.google/models/gemini-diffusion/">Gemini Diffusion research</a>, DiffusionGemma integrates a novel diffusion head designed to maximize generation speed. While autoregressive Gemma 4 models remain the standard for high-quality production outputs, DiffusionGemma is designed for researchers and developers exploring speed-critical, interactive local workflows such as in-line editing, rapid iteration, and generating non-linear text structures.</p><h2 data-block-key="9snc">Unlocking new value for developers</h2><p data-block-key="5d58g">Developers building real-time interactive AI applications often struggle with the latency bottlenecks of local inference. DiffusionGemma addresses these challenges directly, with some key trade-offs:</p><ul><li data-block-key="ed0rq"><b>Blazing fast inference:</b> By shifting the decode bottleneck from memory-bandwidth to compute, DiffusionGemma generates up to 4x faster token output on dedicated GPUs. (1000+ tokens per second on a single NVIDIA H100, 700+ tokens per second on NVIDIA GeForce RTX 5090). 
+
+<a class="superscript"
+    data-ga4-analytics-superscript-click
+    data-tooltip-content-id="footnote-content-1"
+    data-target="inline text"
+    href="#footnote-1"
+    id="footnote-source-1"
+    aria-label="Jump to link reference 1"><sup>1</sup></a>
+</li><li data-block-key="amnfa"><b>Accessible hardware footprint:</b> Operating as a 26B total Mixture of Experts (MoE) model that activates only 3.8B parameters during inference, DiffusionGemma fits comfortably within 18GB VRAM limits of high-end dedicated consumer GPUs when quantized.</li><li data-block-key="7s3f3"><b>Bi-directional attention</b>: Generating 256 tokens in parallel with each forward pass allows every token to attend to all others. This provides significant advantages for non-linear domains such as in-line editing, code infilling, amino acid sequences or mathematical graphs.</li><li data-block-key="4tvec"><b>Intelligent self-correction:</b> The model iteratively refines its own output, allowing it to evaluate the entire text block at once to fix mistakes in real-time.</li><li data-block-key="flcm0"><b>Experimental status &amp; production recommendations:</b> Because it prioritizes speed and parallel layout generation, DiffusionGemma’s overall output quality is lower than standard Gemma 4. For applications that demand maximum quality, we recommend deploying standard Gemma 4.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="DiffusionGemma Benchmark"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="DiffusionGemma: 4x faster text generation"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="DiffusionGemma Benchmark"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_l.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_le.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_le.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_l.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_l.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/diffusiongemma__benchmark__bar_l.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="6qyk6">You can improve DiffusionGemma's performance on specific tasks through fine-tuning. In the example below, <a href="https://unsloth.ai/docs/models/diffusiongemma">Unsloth</a> fine-tuned DiffusionGemma to play Sudoku — a task autoregressive models struggle with because each token depends on future tokens. DiffusionGemma's bi-directional attention makes this much easier.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Fine-tuned DiffusionGemma solving Sudoku."
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="DiffusionGemma: 4x faster text generation"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="6qb5j">Fine-tuned DiffusionGemma solving Sudoku.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Fine-tuned DiffusionGemma solving Sudoku."
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/sudoku_before_after11.gif 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="melv0"><b>Why diffusion for text?</b></h2><p data-block-key="ffd2d">While the AI research community has explored diffusion-based text generation for years, applying it to large models has remained a challenge. DiffusionGemma changes this by shifting how models use hardware.</p><h3 data-block-key="i3a8"><b>The trade-off with traditional models</b></h3><p data-block-key="ft834">Most language models act like a typewriter, generating one token at a time from left to right. In the cloud, this is efficient because servers can batch thousands of user requests together to share the hardware load. But when run locally for a single user, this word-by-word process leaves your dedicated GPU or TPU underutilized — it spends most of its time simply waiting for the next "keystroke."</p><p data-block-key="9eom4">DiffusionGemma reverses this inefficiency. Instead of predicting words sequentially, it drafts an entire 256-token paragraph simultaneously. By giving the computer's processor a larger chunk of work at once, DiffusionGemma utilizes your hardware to its full potential. It upgrades your model inference from a single, sequential typewriter to a massive printing press that stamps the entire block of text simultaneously.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="DiffusionGemma text-to-3D SVG demo by Hugging Face. Step-by-step generation, slowed down for visualization."
+    external-image=""
+    or-mp4-video-title="Huggingface demo"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/dgemma_faster.mp4"
+    section-header="DiffusionGemma: 4x faster text generation"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="6qb5j">DiffusionGemma text-to-3D SVG demo by Hugging Face. Step-by-step generation.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="melv0">This means DiffusionGemma's speedup is designed for local and low-concurrency inference. In high-QPS cloud serving, autoregressive models can be deployed to saturate compute efficiently, so DiffusionGemma's parallel decoding offers diminishing returns and can result in higher serving costs. The throughput advantage is strongest at low-to-medium batch sizes on a single accelerator.</p><h3 data-block-key="fohih"><b>How text diffusion works</b></h3><p data-block-key="f4qtv">Similar to AI image generators that <a href="https://research.google/blog/on-device-diffusion-plugins-for-conditioned-text-to-image-generation/">start with visual static and iteratively refine it</a> into a clear picture, DiffusionGemma applies this to text:</p><ol><li data-block-key="fu930"><b>The canvas:</b> The model starts with a canvas of random placeholder tokens.</li><li data-block-key="cpkjk"><b>Iterative refinement:</b> The model makes multiple passes, locking in correct tokens and using them as context clues to refine the rest.</li><li data-block-key="cphp5"><b>Final polish:</b> The text converges into high-quality output.</li></ol></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="DiffusionGemma Process"
+    external-image=""
+    or-mp4-video-title="Diffusion Process"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Diffusion_Process_3_1.mp4"
+    section-header="DiffusionGemma: 4x faster text generation"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="6qyk6">Because the model can process the whole paragraph while generating, it unlocks new patterns of model behavior, like perfectly closing complex markdown formatting or generating and rendering code in near real-time.</p><h3 data-block-key="58nb9"><b>Get started today</b></h3><ul><li data-block-key="48j6m"><b>Download the weights:</b> Access the experimental model weights (released under a permissive Apache 2.0 license) right now on Hugging Face.</li><li data-block-key="9ej1v"><b>Integrate &amp; learn:</b> Learn more in our <a href="https://developers.googleblog.com/en/diffusiongemma-the-developer-guide">DiffusionGemma developer guide</a>. Or deep dive into <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma">A Visual Guide to DiffusionGemma</a> to understand the mechanics under the hood.</li><li data-block-key="1jg06"><b>Use your favorite development tools:</b> Serve the model efficiently using <a href="https://huggingface.co/collections/mlx-community/diffusiongemma">MLX</a>, <a href="https://vllm-project.github.io/2026/06/10/diffusion-gemma">vLLM</a> (with integration supported by <a href="https://huggingface.co/collections/RedHatAI/diffusiongemma-26b-a4b-it">Red Hat</a>), and <a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it">Hugging Face Transformers</a>. For rapid experimentation, we are releasing a fine-tuning tutorial using <a href="https://github.com/google/hackable_diffusion">Hackable Diffusion</a>, a modular JAX toolbox designed for composability. You can also explore fine-tuning with <a href="https://unsloth.ai/docs/models/diffusiongemma">Unsloth</a> and NVIDIA <a href="https://github.com/NVIDIA-NeMo/Automodel/blob/main/docs/guides/dllm/diffusiongemma.md">NeMo</a>. Additionally, official support for llama.cpp is arriving soon.</li><li data-block-key="2rrl1"><b>Experience optimized performance:</b> We worked with <a href="https://blogs.nvidia.com/blog/rtx-ai-garage-local-gemma-diffusion">NVIDIA</a> to optimize across their hardware stack, ensuring compatibility with consumer setups (quantized for GeForce RTX 5090 and 4090 GPUs) alongside high performance on enterprise systems (Hopper and Blackwell using advanced NVFP4 kernels), including NVIDIA DGX Spark and DGX Station for local deskside deployment, and RTX PRO for AI professionals. Native support for NVFP4 (4-bit floating-point) accelerates compute throughput, allowing the model to run at faster speeds with near-lossless accuracy.</li><li data-block-key="5eqma"><b>Try your way:</b> Run on your desktop dedicated GPU or in the cloud through <a href="https://console.cloud.google.com/agent-platform/publishers/google/model-garden/diffusiongemma">Gemini Enterprise Agent Platform Model Garden</a> or <a href="https://catalog.ngc.nvidia.com/orgs/nim/teams/google/containers/diffusiongemma-26b-a4b-it?version=latest">NVIDIA NIM</a>.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "DiffusionGemma: 4x faster text generation"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+  
+
+
+
+
+
+
+ 
+
+  <uni-footnotes
+    
+      layout="article"
+    
+    >
+    <div class="uni-footnotes__slot" slot="footnotes-slot">
+      
+        <div id="footnote-1"
+          class="uni-footnotes__text">
+          <a class="uni-footnotes__index font-body-m"
+            title="Jump up"
+            href="#footnote-source-1"
+            aria-label="Jump up to link reference 1"
+            data-ga4-analytics-superscript-click
+            data-target="footer">
+            <span>1</span>
+          </a>
+          <div><div class="rich-text"><p data-block-key="hy6cv"><i>Note: Because this speedup relies on exploiting the high arithmetic intensity of accelerators, unified-memory architectures like those in Apple Silicon Macs — which have lower compute-to-memory bandwidth ratios — may not see the same acceleration over autoregressive models like Gemma 4.</i></p></div></div>
+        </div>
+      
+    </div>
+  </uni-footnotes>
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    EmbeddingGemma 2: an open, lightweight multimodal embedding model
+    
+    
+      - By Sahil Dua& Henrique Schechter Vera
+    
+    
+      - Oct 06, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "author_name": "Sahil Dua, Henrique Schechter Vera",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        EmbeddingGemma 2: an open, lightweight multimodal embedding model
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Sahil Dua
+          
+            & 
+            Henrique Schechter Vera
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-real-time-voice-applications-gemini-audio/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Build real-time voice applications with Gemini 3.8 Live and 3.5 Transcribe
+    
+    
+      - By Alisa Fortin& Thor Schaeff
+    
+    
+      - Sep 15, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Build real\u002Dtime voice applications with Gemini 3.8 Live and 3.5 Transcribe",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-real-time-voice-applications-gemini-audio/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Build real\u002Dtime voice applications with Gemini 3.8 Live and 3.5 Transcribe",
+  "author_name": "Alisa Fortin, Thor Schaeff",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-live-api-heade.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-live-api-heade.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-live-api-heade.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Build real-time voice applications with Gemini 3.8 Live and 3.5 Transcribe
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Alisa Fortin
+          
+            & 
+            Thor Schaeff
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/devfest2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    DevFest is back
+    
+    
+      - By Justyna Politanska-Pyszko& Natalie McHugh
+    
+    
+      - Sep 14, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "DevFest is back",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/devfest2026/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "products - developer tools",
+  "article_name": "DevFest is back",
+  "author_name": "Justyna Politanska\u002DPyszko, Natalie McHugh",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/DevFest.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/DevFest.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/DevFest.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        DevFest is back
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Justyna Politanska-Pyszko
+          
+            & 
+            Natalie McHugh
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/google-ai-updates-august-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in August 2026
+    
+    
+      - By News from Google Team
+    
+    
+      - Sep 01, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in August 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/google-ai-updates-august-2026/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in August 2026",
+  "author_name": "News from Google Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/August_AI_Recap_socia.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/August_AI_Recap_socia.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/August_AI_Recap_socia.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in August 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            News from Google Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/antigravity-teamwork-multi-agent/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Pairing Google Antigravity with Gemini 3.7 Flash solves notable multi-agent math and engineering problems.
+    
+    
+    
+      - Aug 31, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Pairing Google Antigravity with Gemini 3.7 Flash solves notable multi\u002Dagent math and engineering problems.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/antigravity-teamwork-multi-agent/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Pairing Google Antigravity with Gemini 3.7 Flash solves notable multi\u002Dagent math and engineering problems.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Teamwork_social.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Teamwork_social.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Teamwork_social.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Pairing Google Antigravity with Gemini 3.7 Flash solves notable multi-agent math and engineering problems.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

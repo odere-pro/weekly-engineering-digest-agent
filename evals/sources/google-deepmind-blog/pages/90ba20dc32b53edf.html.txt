@@ -1,0 +1,3291 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Build with Gemini Omni 1.1 Flash</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Gemini Omni 1.1 Flash brings a new suite of creative controls and generative video capabilities to developers."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Anish Nangia, Alisa Fortin"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Gemini Omni 1.1 Flash lets you build with more control"/>
+
+<meta property="og:description" content="Gemini Omni 1.1 Flash brings a new suite of creative controls and generative video capabilities to developers." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-08-27" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/" />
+<meta name="twitter:title" content="Gemini Omni 1.1 Flash lets you build with more control"/>
+<meta name="twitter:description" content="Gemini Omni 1.1 Flash brings a new suite of creative controls and generative video capabilities to developers." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="86073" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-08-27T16:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Developer tools,Gemini models" />
+  <meta name="authors" content="Anish Nangia,Alisa Fortin" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+          <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap">
+</noscript>
+
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Build with Gemini Omni 1.1 Flash",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - developer tools",
+    "secondary_tags": "Gemini models",
+    
+      "landing_page_tags": "topics - gemini models",
+    
+    
+      "article_name": "Gemini Omni 1.1 Flash lets you build with more control",
+      "author_name": "Anish Nangia, Alisa Fortin",
+    
+    "publish_date": "2026-08-27|16:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "50",
+    
+      "content_category": "Products - Developer tools",
+    
+    "word_count": "medium 300-599",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--green"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Gemini Omni 1.1 Flash lets you build with more control</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Aug 27, 2026</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control&u=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/&title=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control&body=Check out this article on the Keyword:%0A%0AGemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control%0A%0AGemini Omni 1.1 Flash brings a new suite of creative controls and generative video capabilities to developers.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Omni now delivers studio-quality video production, including the ability to extend a scene, first and last frame interpolation, crisp 4K upscaling, faster prototyping, and more.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Anish Nangia</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Alisa Fortin</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control&u=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/&title=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Gemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control&body=Check out this article on the Keyword:%0A%0AGemini%20Omni%201.1%20Flash%20lets%20you%20build%20with%20more%20control%0A%0AGemini Omni 1.1 Flash brings a new suite of creative controls and generative video capabilities to developers.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Text &quot;Gemini Omni 1.1 Flash Available via APIs&quot; surrounded by various images of people and a squirrel"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Omni_1-1_Flash_hero.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Workaround for Safari: Safari fails to resolve linear gradients defined in external SVG sprites when referenced via <use>. Inlining them here makes them available in the DOM for the page. -->
+ 
+
+<div class="audio-player-tts"
+     data-component="uni-audio-player-tts"
+     uni-l10n='{
+       "stop": "Pause article audio description",
+       "play": "Play article audio description",
+       "progress": "Current audio progress minutes with seconds: [[progress]]",
+       "duration": "Duration of the audio minutes with seconds: [[duration]]",
+       "settings": "Click for settings",
+       "timeText": "[[duration]] minutes"
+     }'
+     data-analytics-module='{
+      "module_name": "Audio TTS",
+      "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+     }'
+     data-tts-audios='[
+      
+        {"voice_name": "Umbriel",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86073_umbriel_2026_08_27_17_32_44.mp3",
+        "mimetype": "audio/mpeg"},
+      
+        {"voice_name": "Gacrux",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86073_gacrux_2026_08_27_17_29_15.mp3",
+        "mimetype": "audio/mpeg"}
+      ]'>
+  <audio
+    class="audio-player-tts__player"
+    title="Gemini Omni 1.1 Flash lets you build with more control">
+      <source
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86073_umbriel_2026_08_27_17_32_44.mp3"
+        type="audio/mpeg" />
+      <p>Your browser does not support the audio element.</p>
+  </audio>
+  <div class="audio-player-tts__container"  aria-label="">
+    <div class="audio-player-tts__content">
+      <button class="audio-player-tts__preview-play" aria-label="Play article audio description">
+         
+
+      </button>
+      <div class="audio-player-tts__text-content">
+        <span class="audio-player-tts__text-content--title font-ctas">
+          Listen to article
+        </span>
+        <div class="audio-player-tts__duration font-caption">[[duration]] minutes</div>
+        <span class="audio-player-tts__disclaimer" tabindex="0" role="tooltip" aria-label="This content is generated by Google AI. Generative AI is experimental">
+          <div class="audio-player-tts__disclaimer--copy font-body-s">This content is generated by Google AI. Generative AI is experimental</div>
+           
+
+        </span>
+      </div>
+      <button class="audio-player-tts__pause" aria-label="Pause article audio description">
+         
+
+         
+
+      </button>
+      <div class="audio-player-tts__console">
+        <div class="audio-player-tts__time-bar">
+          <span class="audio-player-tts__current-time font-body-s"></span>
+          <div class="audio-player-tts__timeline-slider-container">
+            <input type="range" class="timeline__slider" max="100" value="0" step="5" aria-valuetext="Audio Slider" aria-label="Audio Slider" tabindex="0" role="slider">
+          </div>
+          <span class="audio-player-tts__duration-time font-body-s"></span>
+        </div>
+        <button class="audio-player-tts__audio-settings" aria-label="Click for settings">
+           
+
+        </button>
+        <div class="audio-player-tts__settings-container">
+          <div class="audio-player-tts__settings--main uni-cta-text">
+            <button class="audio-player-tts__settings--current-voice" aria-label="Click to change voice">
+              <span class="audio-player-tts__settings--current-voice-info">
+                 
+
+                <span>Voice</span>
+              </span>
+              <span class="audio-player-tts__settings--current-voice-next">
+                <span class="audio-player-tts__settings--current-voice-text font-body-s" ></span>
+                 
+
+              </span>
+            </button>
+            <button class="audio-player-tts__settings--current-speed" aria-label="Click to change speed">
+              <span class="audio-player-tts__settings--current-speed-info">
+                   
+
+                  <span>Speed</span>
+                </span>
+                <span class="audio-player-tts__settings--current-speed-next">
+                  <span class="audio-player-tts__settings--current-speed-text font-body-s"></span>
+                   
+
+                </span>
+            </button>
+          </div>
+          <div class="audio-player-tts__settings--voices uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Voice</span></button>
+          </div>
+          <div class="audio-player-tts__settings--speeds uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Speed</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="0.75" aria-label="speed 0.75X"><span>0.75X</span></button>
+            <button class="audio-player-tts__settings-option audio-player-tts__settings-option--selected" data-speed="1" aria-label="speed 1X"><span>1X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="1.5" aria-label="speed 1.5X"><span>1.5X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="2" aria-label="speed 2X"><span>2X</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>We are introducing Gemini Omni 1.1 Flash, a production-ready update for developers that offers improved control over generative video. You can now extend scenes, specify start and end frames for smooth transitions, and generate high-resolution 4K output. Start building today by accessing the model through Google AI Studio or the Gemini Enterprise Agent Platform.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_2">
+            <div class="uni-ai-summary__copy font-h6">
+              <ul>
+<li>"Gemini Omni 1.1 Flash" gives developers better control over generative video projects.</li>
+<li>Extend scenes up to 40 seconds with improved visual consistency and narrative flow.</li>
+<li>Set start and end frames to create smooth, professional camera movements and transitions.</li>
+<li>Use 360p previews to iterate faster and save money during your creative process.</li>
+<li>Upscale your final projects to 4K resolution for a polished, professional look.</li>
+</ul>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_3">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google just released Gemini Omni 1.1 Flash, which gives developers better tools to create and edit videos with AI. It lets you extend video clips, control camera movements, and make high-quality 4K footage. Developers can also create quick, low-resolution drafts to test their ideas faster and cheaper. It’s a big step forward for anyone building creative video software.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+        <div class="uni-ai-summary__explore">
+          <h4 class="uni-ai-summary__explore-title font-h6">
+            Explore other styles:
+          </h4>
+          <ul class="uni-ai-summary__chips">
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="General summary" data-summary-id="ai_summary_1" aria-pressed="true">
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  General summary
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Bullet points" data-summary-id="ai_summary_2" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Bullet points
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Basic explainer" data-summary-id="ai_summary_3" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Basic explainer
+                </span>
+              </button>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="roa64">Today, we’re introducing Gemini Omni 1.1 Flash, a new suite of creative controls and generative video capabilities to support developers. <a href="https://deepmind.google/models/gemini-omni/">Gemini Omni</a> brought real-world reasoning to generative creation, and today’s updates make Omni 1.1 production-ready for professional use via the Gemini API in Google AI Studio.<br/><br/>Whether you’re building generative video workflows, creative tools, or media editing software, these updates make generative video more controllable, faster to iterate on, and polished for real-world deployment. Here’s a look at what’s new:</p><h2 data-block-key="9bp0b">Extend scenes for longer storytelling</h2><p data-block-key="c5b99">Scene extension allows you to take an existing video and continue generating footage seamlessly from where it left off.</p><p data-block-key="cvae8">With Omni 1.1, the model can now analyze up to 10 seconds of prior context — a leap from previous models that only referenced the final second. The result is improved visual consistency and narrative adherence, letting you build longer stories or branch into new creative directions. You can extend videos in 10-second increments up to a total cumulative length of 40 seconds.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="0"
+  accordion-header="Prompt 1: Camera slightly pans and we now see she is talking to a man with curly hair, we see man’s back, he says “I see it too” dramatic music scorePrompt 2: Camera slowly pulls out, forgotten dusty catacombs, dramatic music score.Prompt 3: Camera slowly pulls out, a vast library where shelves and books float weightlessly in a dusty void, dramatic music score."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/omni-flash__capability-video__extend-multi-woman__16x9.mp4_eyMGivX.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A continuous sequence reveals a woman speaking to a man before pulling back through dusty catacombs into a vast, floating library, set to dramatic music."
+  video-title="multi woman"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="zymt5">Prompt 1: Camera slightly pans and we now see she is talking to a man with curly hair, we see man’s back, he says “I see it too” dramatic music score</p><p data-block-key="46d2r">Prompt 2: Camera slowly pulls out, forgotten dusty catacombs, dramatic music score.<br/>Prompt 3: Camera slowly pulls out, a vast library where shelves and books float weightlessly in a dusty void, dramatic music score.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="1"
+  accordion-header="Prompt 1: Continue the video. Execute a cinematic optical dolly-zoom shot. The camera dollies forward while simultaneously zooming out, keeping the character's frozen shocked face locked at the exact same size. The long corridor of stone pillars in the background dramatically stretches and deepens with intense optical perspective distortion. Clean architecture, continuous unbroken shot.Prompt 2: Continue the video. The camera executes a fast mechanical snap-zoom directly into the character's wide eyes. Stylized cinematic camera control.Prompt 3: Continue the video. Time completely freezes into a static moment: the character, their windblown coat. The camera performs a smooth, high-speed 360-degree orbital rotation around the frozen character, showcasing dramatic 3D depth and parallax across the colonnade. Flawless continuity."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/omni-flash__capability-video__extend-multi-cinematography__16x9_25YzzFv.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A woman walks down a hallway and stops. Three alternative paths continue, one with a dolly zoom shot, one with a snap zoom, and one with a time freeze."
+  video-title="cinematography"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="3uvvb">Prompt 1: Continue the video. Execute a cinematic optical dolly-zoom shot. The camera dollies forward while simultaneously zooming out, keeping the character's frozen shocked face locked at the exact same size. The long corridor of stone pillars in the background dramatically stretches and deepens with intense optical perspective distortion. Clean architecture, continuous unbroken shot.</p><p data-block-key="e6b0v">Prompt 2: Continue the video. The camera executes a fast mechanical snap-zoom directly into the character's wide eyes. Stylized cinematic camera control.</p><p data-block-key="e3bn0">Prompt 3: Continue the video. Time completely freezes into a static moment: the character, their windblown coat. The camera performs a smooth, high-speed 360-degree orbital rotation around the frozen character, showcasing dramatic 3D depth and parallax across the colonnade. Flawless continuity.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="2"
+  accordion-header="Prompt 1: The man in the blue sweater replies: "Did your father go out on the boat too?"Prompt 2: The camera pulls back in one continuous movement as he continues his story: "He used to say that this harbour had a soul. And that the boats were a part of us." The music swells."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/omni-flash__capability-video__extend-again-sailor__16x9_xDBiuZX.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="The camera pulls back in one continuous movement as a man in a blue sweater asks if her father went out on the boat too, continuing his story about the harbor having a soul as the music swells."
+  video-title="Sailor"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="zymt5">Prompt 1: The man in the blue sweater replies: "Did your father go out on the boat too?"</p><p data-block-key="6b88d">Prompt 2: The camera pulls back in one continuous movement as he continues his story: "He used to say that this harbour had a soul. And that the boats were a part of us." The music swells.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="3"
+  accordion-header="Prompt 1: The looks directly at the camera and talks about what the final chapter will end with!Prompt 2: He then stands up walks around the desk to the camera and says "what would you choose?""
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/omni-flash__capability-video__extend-again-writer__16x9.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A writer looks directly at the camera to discuss the final chapter before walking around his desk to ask, &quot;What would you choose?&quot;"
+  video-title="extend again"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="zymt5">Prompt 1: The looks directly at the camera and talks about what the final chapter will end with!</p><p data-block-key="9pl0">Prompt 2: He then stands up walks around the desk to the camera and says "what would you choose?"</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="m46dy">Here’s how you can extend your scene with the Gemini API:</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<div
+  data-component="uni-code-block"
+  data-analytics-module='{
+    "module_name": "Code Block",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  data-tooltip-text="Copied"
+  class="uni-code-block"
+  data-lang="py"
+  description="Code to extend a video">
+
+  <div class="uni-page">
+    <div class="uni-grid">
+      <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-4-desktop uni-grid__col--span-6-desktop">
+        <section class="code-block" aria-label="Code to extend a video">
+          <div class="code-block__container">
+            <button class="code-block__copy-btn" aria-label="Copy to clipboard">
+              <uni-icon-component icon-id="uni-icon-content-copy"></uni-icon-component>
+            </button>
+            <pre class="code-block__pre"><code class="language-py font-code-text">from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+    model=&quot;gemini-omni-1.1-flash&quot;,
+    previous_interaction_id=previous_video_interaction.id,
+    input=[
+        {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Continue the scene.&quot;}
+    ],
+    response_format={
+        &quot;resolution&quot;: &quot;360p&quot;,
+    },
+)</code></pre>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="roa64">Specify first and last frames</h2><p data-block-key="dkmbh">Achieve smooth transitions and camera movements by specifying the starting and ending frames of a shot. Omni 1.1 generates continuous video between two keyframes, making it ideal for complex camera orbits, zoom transitions, or seamless looping clips.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="A stylish drummer in a beige suit transitions via a whip-pan to a saxophonist and a spinning ballet dancer, then showing a new looping video with a woman and a TV."
+    external-image=""
+    or-mp4-video-title="first last"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/sm_KW_omni-flash__capability-video__first-last-frame__16x9_1.mp4"
+    section-header="Gemini Omni 1.1 Flash lets you build with more control"
+    
+      poster-image-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/wagtailvideo-8s_bsrvr_thumb.jpg"
+    
+    
+    
+      
+    
+    
+    
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="1lk76">Prompt 1: A close-up low-angle shot of a stylish drummer in a beige suit playing a red drum kit in a grand hall transitions as the camera whip-pans to the side, revealing an older saxophonist playing alongside a ballet dancer spinning in a white outfit under soft purple stage lights. One continuous shot, no jump cuts.</p><p data-block-key="5toq6">Prompt 2: The camera zooms into the TV screen, where we see the same woman and the same scene from the beginning. Seamless video. One continuous shot, no jump cuts.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="yisjn">Draft videos more efficiently in 360p</h2><p data-block-key="den97">Generate lightweight previews in 360p resolution up to 60% faster* and at a third of the cost compared to Omni 1.1’s standard 720p resolution. This is helpful for rapid prototyping, storyboard iteration, and quick rendering in developer platforms.</p><p data-block-key="bcma1"><i><sup>*Up to 60% faster generation based on system throughput of 360p vs. 720p resolution</sup></i></p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Micro-photography of iridescent marine diatoms with intricate glass-like silica shells in amber, copper, turquoise, and violet transitions from a 360p draft to an upscaled 720p view."
+    external-image=""
+    or-mp4-video-title="omniflsh"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/kw_omni-flash__capability-video__draft-360p__16x9__v1_1.mp4"
+    section-header="Gemini Omni 1.1 Flash lets you build with more control"
+    
+      poster-image-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/wagtailvideo-p6i1dcft_thumb.jpg"
+    
+    
+    
+      
+    
+    
+    
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="lh29v">Prompt: A microscopic view of iridescent marine diatoms, displaying intricate, glass-like silica shells with breathtaking natural symmetry. The colors range from deep volcanic amber and warm copper to vibrant turquoise and violet, mimicking the rich palette of earth and ocean. Tiny, delicate structures glow softly against a clean dark field background. High-fidelity scientific imaging, sharp details, organic textures, micro-photography. Maintain the microscope lens effect throughout the entire video.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="yisjn">Upscale up to 4K resolution</h2><p data-block-key="cnk4d">Generate polished, high-resolution 1080p or 4K outputs that are ready for professional production with Omni 1.1.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="3 videos of a fish swimming, a chipmunk in the forest, and maple leaves swaying are upscaled into 4K resolution."
+    external-image=""
+    or-mp4-video-title="upscale"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/sm_KW_omni-flash__capability-video__upscale-4k__16x9.mp4_2.mp4"
+    section-header="Gemini Omni 1.1 Flash lets you build with more control"
+    
+      poster-image-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/wagtailvideo-epfdy4d3_thumb.jpg"
+    
+    
+    
+      
+    
+    
+    
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="nep1c">Prompt 1: Fish swimming, tracking shot</p><p data-block-key="bp0l8">Prompt 2: A little chipmunk darting out of the woods from the left side of the screen and sniffing the air inquisitively before darting out of frame on the right side</p><p data-block-key="atlq8">Prompt 3: Cinematic macro close-up of vibrant golden-orange Japanese maple leaves on a delicate branch, gently rustling and swaying in a soft, rhythmic autumn breeze. Sunlight filters through the translucent foliage, creating a warm, glowing effect. Shallow depth of field, dreamy bokeh background, hyper-detailed textures, photorealistic, 4k.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="170zq">Add video references in your multimodal input</h2><p data-block-key="9afig">Reference up to three seconds of video when crafting your scene, allowing you to maintain visual context and character consistency based on video references.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="A dog, an octopus, and a bear perform classical, hip-hop, and break dance routines respectively, all gathered together in a large, open space."
+    external-image=""
+    or-mp4-video-title="video reference"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/omni-flash__capability-video__video-reference__16x9.mp4"
+    section-header="Gemini Omni 1.1 Flash lets you build with more control"
+    
+      poster-image-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/wagtailvideo-negvzk1x_thumb.jpg"
+    
+    
+    
+      
+    
+    
+    
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="fa6uq">Prompt: Use the three uploaded videos of dancers and replace them with the provided characters. Have them perform their individual dances from the reference videos, all together in the large, open space from the provided image.</p><p data-block-key="38tm7">The dog character dog.png should do the classical dance from dance3.mp4. The octopus octo.png should do the hip hop dance from dance1.mp4, and the bear bear.png should do the breakdance from dance2.mp4. The final result should be one continuous shot with no scene cuts.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="frcy1">Inspiring concepts for what you can build</h2><p data-block-key="70qoj">Here are a few ideas showing how developers can put these new capabilities into action across custom tools and creative workflows.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="0"
+  accordion-header="In this app, you can drop in a first and last frame, generate the transition between them with presets or a prompt box because of Omni's full-context reasoning enabling you to get camera moves that read as real."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/TransitionStudio_Blog_V3.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="In this app interface demonstration, a user generates a realistic camera transition between a first and last frame using presets or a prompt box powered by Omni&#x27;s full-context reasoning."
+  video-title="Transition studio"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="5tae3">In this app, you can drop in a first and last frame, generate the transition between them with presets or a prompt box because of Omni's full-context reasoning enabling you to get camera moves that read as real.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="1"
+  accordion-header="This app moves the camera through the rooms. It arcs, it pushes in, it pulls back. It shows the home in an aspirational state, At the perfect time of day. It adds no furniture or details that don’t exist."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/ListingWalkIn_Blog_V2.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="An app demonstration showcases a home moving smoothly through various rooms with realistic arcs, push-ins, and pull-backs at the ideal time of day, maintaining the existing interior details without adding unneeded furniture."
+  video-title="Listing walk in"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="5tae3">This app moves the camera through the rooms. It arcs, it pushes in, it pulls back. It shows the home in an aspirational state, At the perfect time of day. It adds no furniture or details that don’t exist.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="2"
+  accordion-header="Creators already generate several videos before landing on the right one. The Draft Room makes that exploration cheap and structured: generate 3-4 draft variations in 360p, varying one thing at a time and compare them side by side."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/DraftRoom_Blog_V3.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A video demonstration of the Draft Room interface showing multiple 360p draft variations compared side by side to help creators efficiently explore and find the right video."
+  video-title="Draft Room"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="5tae3">Creators already generate several videos before landing on the right one. The Draft Room makes that exploration cheap and structured: generate 3-4 draft variations in 360p, varying one thing at a time and compare them side by side.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="n0xp8">See how customers are putting Omni Flash in production</h2><p data-block-key="2otev">Our customers are already driving real-world production with Gemini Omni Flash via the Agent Platform API. Explore the videos they've created and hear about how they are using the model below.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="0"
+  accordion-header="Adobe integrated Gemini Omni Flash into Adobe Firefly. Check out this video showcasing its video editing capabilities."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Adobe_demo_YtR5rck.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A fast-paced marketing video from Adobe shows a man transforming his soccer ball into various situations."
+  video-title="updated adb"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="da9at">Adobe integrated Gemini Omni Flash into Adobe Firefly. Check out this video showcasing its video editing capabilities.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="1"
+  accordion-header="“Gemini Omni Flash is one of the strongest video models available in Figma Weave, where the canvas helps creative teams build on every generation — attaching references, branching different versions, and shaping something unique. With extensions, richer reference material, and 4K resolution, Gemini Omni Flash takes teams beyond generating videos to truly directing them.” - Itay Schiff, Creative Director, Figma Weave."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Gemini_Omni_Weave_-_New_Car_aB5raHz.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A UI walkthrough of someone using Figma Weave to edit a video of a car with Gemini Omni."
+  video-title="new car"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="da9at">“Gemini Omni Flash is one of the strongest video models available in Figma Weave, where the canvas helps creative teams build on every generation — attaching references, branching different versions, and shaping something unique. With extensions, richer reference material, and 4K resolution, Gemini Omni Flash takes teams beyond generating videos to truly directing them.” - Itay Schiff, Creative Director, Figma Weave.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="2"
+  accordion-header="“At GMI Cloud, we give creators centralized access to the world’s most capable models. What stands out about Gemini Omni Flash is its accuracy: the details hold up under scrutiny. For customers creating educational and explanatory content, where getting things right is essential, that reliability matters more than any single feature. Omni has made AI video viable for a segment that previously couldn’t rely on it.” - Louisa Guo, VP of Marketing, GMI Cloud."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/GMI_Cloud_I7uqeE8.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A marketing video from GMI Cloud showcasing multiple use cases of Gemini Omni."
+  video-title="gmi cloud"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="da9at">“At GMI Cloud, we give creators centralized access to the world’s most capable models. What stands out about Gemini Omni Flash is its accuracy: the details hold up under scrutiny. For customers creating educational and explanatory content, where getting things right is essential, that reliability matters more than any single feature. Omni has made AI video viable for a segment that previously couldn’t rely on it.” - Louisa Guo, VP of Marketing, GMI Cloud.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="green"
+  
+    shapes='["6-sided-cookie", "8-leaf-clover", "square"]'
+  
+  data-index="3"
+  accordion-header="“Omni Flash fits naturally into how people already use Runway: start with a prompt, an image or a video, then generate or edit from there. It's another way for our users to move quickly between ideas.” – Jamie Umpherson, Chief Creative Officer, Runway."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Omni_Watermarked_2LTQicm.mp4"
+  section-header="Gemini Omni 1.1 Flash lets you build with more control"
+  alt-text="A marketing video from Runway showcasing quick video edits using Gemini Omni."
+  video-title="Omni water"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="da9at">“Omni Flash fits naturally into how people already use Runway: start with a prompt, an image or a video, then generate or edit from there. It's another way for our users to move quickly between ideas.” – Jamie Umpherson, Chief Creative Officer, Runway.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="170zq">Build with Gemini Omni 1.1 Flash Today</h2></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="A table with pricing numbers for the Gemini Omni 1.1 Flash model."
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Gemini Omni 1.1 Flash lets you build with more control"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="pcstg">Pricing table for Gemini Omni 1.1 Flash.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="A table with pricing numbers for the Gemini Omni 1.1 Flash model."
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-ta.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-tab.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-tab.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-ta.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-ta.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-omni-1.1-flash-pricing-ta.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="z4jmp">Omni 1.1 is rolling out across the Google developer ecosystem:</p><ul><li data-block-key="ess7j"><b>Start building in Google AI Studio:</b> Try out Omni 1.1 directly in<a href="https://aistudio.google.com/prompts/new_chat?model=gemini-omni-1.1-flash"> Google AI Studio</a>.</li><li data-block-key="de19u"><b>Build on Gemini Enterprise Agent Platform</b>: Enterprises can build with Omni 1.1 directly via <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/omni-1-1-flash">Agent Platform API</a>.</li><li data-block-key="6psja"><b>Explore the developer documentation:</b> Check out the <a href="https://ai.google.dev/gemini-api/docs/omni">official documentation</a>, the <a href="http://colab.research.google.com/github/google-gemini/cookbook/blob/main/quickstarts/Get_started_Omni.ipynb">cookbook</a> and <a href="https://ai.google.dev/gemini-api/docs/omni#prompt-guide">prompting guides</a> to learn how to integrate scene extensions, video references, and upscaling into your applications.</li></ul><p data-block-key="6k08i">Omni 1.1 is also available to all Google AI Plus, Pro and Ultra subscribers globally in <a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/new-creative-controls-google-flow/">Google Flow</a>, starting today. Scene extension is available to all Google AI Plus, Pro and Ultra subscribers globally in the <a href="https://gemini.google.com/">Gemini app</a>.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<uni-portal portal-id="article-newsletter-portal">
+
+
+<section
+  class="
+    uni-article-newsletter
+    
+      uni-article-newsletter--bottom
+      uni-article-newsletter--neutral
+    
+  "
+  data-component="uni-article-newsletter"
+  data-analytics-module='{
+    "module_name": "Newsletter",
+    "section_header": "Get the latest news from Google in your inbox"
+  }'
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      
+      <div class="uni-article-newsletter__background uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-6-desktop uni-grid__col--start-7-desktop" aria-hidden="true">
+
+        
+        <div
+          class="
+            uni-article-newsletter__shape
+            
+              uni-article-newsletter__shape--pill
+            
+          "
+          aria-hidden="true"
+        ></div>
+      </div>
+      <div class="uni-article-newsletter__inner uni-grid__col--span-12 uni-grid__col--span-6-desktop uni-grid__col--start-1">
+
+        <div class="uni-article-newsletter__form-group">
+          <h2 class="uni-article-newsletter__title font-h3">
+            Get the latest news from Google in your inbox
+          </h2>
+          <p class="uni-article-newsletter__description font-body-m">
+            Sign up for our newsletters with product updates, event information, special offers, and more.
+          </p>
+
+          <div class="uni-article-newsletter__form-container">
+            <div class="uni-article-newsletter__input-group">
+              <uni-newsletter-form
+                class="uni-landing-newsletter-form"
+                action="https://services.google.com/fb/submissions/thekeywordnewsletterprodv2/"
+                method="POST"
+                content-type="blogv2 | article page"
+                cta-override=""
+                data-error-icon-url="/static/blogv2/images/alert_error_form.svg"
+              >
+              </uni-newsletter-form>
+            </div>
+          </div>
+
+          
+
+
+
+
+<div class="uni-landing-newsletter-success is-hidden">
+  <div class="uni-landing-newsletter-success__message">
+    <div class="uni-landing-newsletter-success__logo">
+       
+
+    </div>
+    <div class="uni-landing-newsletter-success__text">
+      <p class="font-body-s">Done. Just one step more.</p>
+      <p
+        class="uni-landing-newsletter-success__text-confirm font-body-xs"
+        id="subscribe_success_label"
+        tabindex="-1"
+        role="text">
+        Check your inbox to confirm your subscription.
+      </p>
+    </div>
+  </div>
+  <p class="uni-landing-newsletter-success__final-text font-body-s">
+    You can also subscribe with a <button class="uni-landing-newsletter-success__different-email uni-anchor">different email address</button>.
+  </p>
+</div>
+
+
+          <p class="uni-article-newsletter__info font-caption">
+            Your information will be used in accordance with <a href="https://policies.google.com/privacy" target="_blank" class="uni-anchor">Google's privacy policy.</a> You may opt out at any time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</uni-portal>
+
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Gemini Omni 1.1 Flash lets you build with more control"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    EmbeddingGemma 2: an open, lightweight multimodal embedding model
+    
+    
+      - By Sahil Dua& Henrique Schechter Vera
+    
+    
+      - Oct 06, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "author_name": "Sahil Dua, Henrique Schechter Vera",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        EmbeddingGemma 2: an open, lightweight multimodal embedding model
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Sahil Dua
+          
+            & 
+            Henrique Schechter Vera
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

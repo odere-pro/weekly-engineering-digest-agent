@@ -1,0 +1,989 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox glue-app-ready keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Introducing Lyria 3.5 in Google Flow Music</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content=""/>
+<meta name="keywords" content="None"/>
+
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."/>
+
+<meta property="og:description" content="Our newest music generation model, Lyria 3.5, delivers significant advancements across musicality, lyrics, and vocal quality, empowering you to craft richer tracks. We’r…" />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Lyria3.5_social.max-1440x810.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/models-and-research/google-labs/lyria-3-5/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-07-29" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/models-and-research/google-labs/lyria-3-5/" />
+<meta name="twitter:title" content="We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."/>
+
+<meta name="twitter:description" content="Our newest music generation model, Lyria 3.5, delivers significant advancements across musicality, lyrics, and vocal quality, empowering you to craft richer tracks. We’r…" />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Lyria3.5_social.max-1440x810.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="85731" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-07-29T16:00:00+00:00" />
+  <meta name="content_type" content="blogv2.shortpostpage" />
+  <meta name="tags" content="Google Labs,Google DeepMind" />
+  <meta name="authors" content="" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+            
+        
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/models-and-research/google-labs/lyria-3-5/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-shortpostpage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Introducing Lyria 3.5 in Google Flow Music",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | Short Post",
+    "primary_tag": "products - google labs",
+    "secondary_tags": "Google DeepMind",
+    
+      "landing_page_tags": "topics - google deepmind",
+    
+    
+      "article_name": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control.",
+      "author_name": "undefined",
+    
+    "publish_date": "2026-07-29|16:00",
+    "hero_media": "none",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "79",
+    
+      "content_category": "undefined",
+    
+    "word_count": "short 0-299",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+  
+
+  <article class="uni-article-wrapper uni-article-wrapper--neutral">
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--shortpost"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."
+  }'>
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--layout-6 uni-article-hero__breadcrumb--short-post">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--layout-6 uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h4">We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control.</h1>
+
+          <div class="uni-article-hero__authors-actions">
+            
+
+            <div class="uni-article-hero__shortpost-actions">
+              
+                <p class="uni-article-hero__date font-body-s">Jul 29, 2026</p>
+              
+              <uni-button-copy-link
+                full-url="https://blog.google/innovation-and-ai/models-and-research/google-labs/lyria-3-5/"
+                section-header="We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."
+                module-name="Hero Menu"
+                label="Copy to clipboard"
+                tooltip-prop="Copied"
+                message-after-copy="Copied to clipboard"></uni-button-copy-link>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider uni-article-hero__divider--short-post">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+    </div>
+  </div>
+</section>
+
+
+    
+      <div class="uni-content uni-blog-article-container article-container__content">
+        <section
+          class="uni-page uni-grid uni-article-paragraph"
+          data-analytics-module='{
+            "module_name": "Paragraph",
+            "section_header": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."
+          }'>
+          <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+            <div class="rich-text"><p data-block-key="s6knr">Our newest music generation model, Lyria 3.5, delivers significant advancements across musicality, lyrics, and vocal quality, empowering you to craft richer tracks. We’re rolling it out today in <a href="http://flowmusic.google/">Google Flow Music</a>, where we want to help you create songs you love, with creative control.</p><p data-block-key="cvrp9">Here's what’s new:</p><ul><li data-block-key="far35"><b>Improved musicality:</b> Create richer, more complex melodic structures that sound more natural.</li><li data-block-key="29gjc"><b>Enhanced lyrics:</b> Generate higher quality lyrics with improved prompt adherence and structural awareness.</li><li data-block-key="4cfbl"><b>Improved vocals:</b> Bring more expression and emotion to your songs with more realistic and emotionally nuanced vocals, plus improved pronunciation.</li><li data-block-key="5stu3"><b>Creative control:</b> More easily control the tempo and duration of your outputs.</li></ul><p data-block-key="1v00q">Try it today in <a href="http://flowmusic.google/">Flow Music</a>.</p></div>
+          </uni-article-paragraph>
+        </section>
+
+      
+        <div class="block-video">
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="0"
+  page-title="We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."
+  thumbnail-alt="Hear a track created with Lyria 3.5"
+  
+  
+  
+  video-id="WQkg3n5bwKQ"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+</div>
+      
+      </div>
+
+  </article>
+
+  
+
+  
+    
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+      template-shortpostpage__tags-container
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control."
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synthid-time-best-inventions/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    TIME has named Google SynthID one of the Best Inventions of 2026.
+    
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "TIME has named Google SynthID one of the Best Inventions of 2026.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synthid-time-best-inventions/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "TIME has named Google SynthID one of the Best Inventions of 2026.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Labs_SynthID_Social1920x1080.png"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        TIME has named Google SynthID one of the Best Inventions of 2026.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/were-powering-european-scientific-discovery-with-advanced-ai-compute-and-frontier-models/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    We’re powering European scientific discovery with advanced AI compute and frontier models.
+    
+    
+      - By Maureen Costello
+    
+    
+      - Oct 14, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "We’re powering European scientific discovery with advanced AI compute and frontier models.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/were-powering-european-scientific-discovery-with-advanced-ai-compute-and-frontier-models/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "We’re powering European scientific discovery with advanced AI compute and frontier models.",
+  "author_name": "Maureen Costello",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        We’re powering European scientific discovery with advanced AI compute and frontier models.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Maureen Costello
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/health/ai-health-research/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Health - 
+    
+    Applying technology to understand and treat disease
+    
+    
+      - By Yossi Matias& Pushmeet Kohli
+    
+    
+      - Oct 12, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - health"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Applying technology to understand and treat disease",
+  "link_url": "https://blog.google/innovation-and-ai/technology/health/ai-health-research/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - health",
+  "article_name": "Applying technology to understand and treat disease",
+  "author_name": "Yossi Matias, Pushmeet Kohli",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Health
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Applying technology to understand and treat disease
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Yossi Matias
+          
+            & 
+            Pushmeet Kohli
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    We&#x27;re making it easier to identify AI-generated content globally.
+    
+    
+      - By Pushmeet Kohli
+    
+    
+      - Oct 07, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "author_name": "Pushmeet Kohli",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        We&#x27;re making it easier to identify AI-generated content globally.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Pushmeet Kohli
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        </div>
+
+         
+
+    </body>
+</html>

@@ -1,0 +1,2197 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Developers can build with Nano Banana Pro (Gemini 3 Pro Image)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Nano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Alisa Fortin, Naina Raisinghani"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Build with Nano Banana Pro, our Gemini 3 Pro Image model"/>
+
+<meta property="og:description" content="Nano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2025-11-20" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/" />
+<meta name="twitter:title" content="Build with Nano Banana Pro, our Gemini 3 Pro Image model"/>
+<meta name="twitter:description" content="Nano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="82678" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2025-11-20T15:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="AI Products,Developer tools,Gemini models" />
+  <meta name="authors" content="Alisa Fortin,Naina Raisinghani" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Developers can build with Nano Banana Pro (Gemini 3 Pro Image)",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - developer tools",
+    "secondary_tags": "AI Products,Gemini models",
+    
+      "landing_page_tags": "products - ai products|topics - gemini models",
+    
+    
+      "article_name": "Build with Nano Banana Pro, our Gemini 3 Pro Image model",
+      "author_name": "Alisa Fortin, Naina Raisinghani",
+    
+    "publish_date": "2025-11-20|15:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "330",
+    
+      "content_category": "Products - Developer tools",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Build with Nano Banana Pro, our Gemini 3 Pro Image model</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model&u=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/&title=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model&body=Check out this article on the Keyword:%0A%0ABuild%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model%0A%0ANano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Here’s how developers can use Nano Banana Pro (Gemini 3 Pro Image), a powerful new image generation and editing model with advanced features and creative control.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Alisa Fortin</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Naina Raisinghani</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model&u=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/&title=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Build%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model&body=Check out this article on the Keyword:%0A%0ABuild%20with%20Nano%20Banana%20Pro%2C%20our%20Gemini%203%20Pro%20Image%20model%0A%0ANano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Image with multiple input-output images with the text Build with Nano Banana Pro in the center"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="a6uvr">Today, we’re releasing <a href="https://blog.google/technology/ai/nano-banana-pro">Nano Banana Pro</a> (Gemini 3 Pro Image), a higher-fidelity model built on <a href="https://blog.google/products/gemini/gemini-3/">Gemini 3 Pro</a> for developers to access studio-quality image generation. This follows our release of <a href="https://developers.googleblog.com/en/introducing-gemini-2-5-flash-image/">Nano Banana</a> (Gemini 2.5 Flash Image) just a few months ago. Since then, we’ve loved seeing the community put its <a href="https://github.com/PicoTrex/Awesome-Nano-Banana-images/blob/main/README_en.md">key features</a> to work — from character consistency to <a href="https://x.com/hsavas/status/1960757462182605059?s=20">photo restoration</a>, and even using its capabilities to make <a href="https://x.com/seezatnap/status/1964010356071629289?s=20">local edits</a> in an infinite canvas.</p><p data-block-key="dr4ns">This state-of-the-art image generation and editing model is starting to roll out in paid preview to build a new wave of intelligent, multimodal applications with the <a href="https://ai.google.dev/gemini-api/docs">Gemini API</a> in <a href="https://ai.studio/banana-pro">Google AI Studio</a> and <a href="https://console.cloud.google.com/vertex-ai/studio/multimodal">Vertex AI</a> for enterprises. This model unlocks high-fidelity images with higher accuracy in text rendering and robust world knowledge, supercharged by the model's ability to use grounding with Google Search to retrieve data based on the user's prompt.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Gemini 3 Pro Image Text to Image AI benchmark bar chart compared to other leading competitors"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="zjga6">Gemini 3 Pro Image excels on Text to Image AI benchmarks.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Gemini 3 Pro Image Text to Image AI benchmark bar chart compared to other leading competitors"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__te.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__tex.width-500.format-webp_415sT68.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__tex.width-800.format-webp_uIkQcuh.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__te.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__te.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-pro-image__benchmarks__te.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="geg2r">We are also expanding the reach of Gemini 3 Pro Image across the developer ecosystem. In <a href="https://antigravity.google/">Google Antigravity</a> — our new agentic development platform — coding agents can now directly leverage these image generation capabilities to generate detailed UI mockups for user review or even new visual assets before implementing in code. Additionally, leading creative platforms are integrating the model, including Adobe and Figma.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="a6uvr">High fidelity and controls</h2><p data-block-key="f6ape">If you’re building advanced tools that require precision, Gemini 3 Pro Image gives you control over the physics (lighting, camera, focus, color grading) and composition of the image to ensure professional-quality outputs.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Image showing a side by side of an input image of the silhouette of a man with scattered sun rays and an output image where the same image with more volumetric lighting using AI"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ez5w7">A silhouette lost in a sea of golden bokeh and morning mist.</p><p data-block-key="bqlj7">Prompt: Replace volumetric lighting with bokeh</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Image showing a side by side of an input image of the silhouette of a man with scattered sun rays and an output image where the same image with more volumetric lighting using AI"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_replacelighting.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="a6uvr">With 2K and 4k resolution available, you can ensure outputs meet resolution standards required for professional production. Effortlessly create cohesive advertisements by combining diverse elements such as product images, logos, and references. Achieve consistent resemblance for up to five individuals, integrate six high-fidelity shots, or blend as many as fourteen standard inputs into a single, polished ad. Try our <a href="http://aistudio.google.com/apps/bundled/product_mockup">demo app</a> that allows you to pair logos with products to create your own mockup designs.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Video showing a demo app with a tshirt getting updated with a logo in spray paint effect"
+    external-image=""
+    or-mp4-video-title="Foundry video RGA"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/AIS_SKU_Foundry_v09_1.mp4"
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="o97y1">Demo app that brings product design to life with reference images. Sequences shortened.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="a6uvr">Improved text rendering and localization</h2><p data-block-key="1s70k">Gemini 3 Pro Image offers a significant leap forward from 2.5 Flash Image, transforming abstract image generation into functional assets. It excels in handling logic and language, and delivers state-of-the-art text rendering, producing clear, accurate text integrated in your images.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Image showing the words Mint, soup, taco, curry, sushi, pasta, apple and pizza rendered using food items with AI"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ez5w7">Creative food photography where each word is artistically spelled out using the actual ingredients associated with that food.</p><p data-block-key="6ca1q">Prompt: Make 8 sophisticated minimalistic logos, each is a fun food word, and make letters from realistic food to express the meaning of this word. composition: a rendering of all logos on a single solid white background</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Image showing the words Mint, soup, taco, curry, sushi, pasta, apple and pizza rendered using food items with AI"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_p.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_p.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/watermarked_s_blob_v1_image_x_t_.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="rpje4">It's also an ideal solution for developing marketing collateral, educational content and numerous other applications. Try the model’s capabilities in our <a href="http://aistudio.google.com/apps/bundled/personalized_comics">comic book generator app</a> in Google AI Studio, where you can create original multi-page comic books featuring you and a friend, complete with advanced text rendering and stylization.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Video showing a demo of two images being uploaded to an app to create a digital comic with text rendered within using AI"
+    external-image=""
+    or-mp4-video-title="AIS comic RGA"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/AIS_Comic_v02.mp4"
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="3z73h">Demo app that creates a comic book in your chosen language based on photos and selected genre. Sequences shortened.</p></div>
+      </div>
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="a6uvr">With Gemini 3 Pro Image, we’ve removed the barrier between image generation and localization logic. This advanced model grasps the semantic context of an image, enabling effortless language changes on elements like menus, signs, or documents utilizing image-to-image generation keeping original artistic style or layout.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Side by side of an input image of a set of cans with text and output image with text on can translated in French using AI"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ez5w7">A beverage campaign concept showcasing accurate translation and rendering of English text into French.</p><p data-block-key="1rshu">Prompt: Translate to French</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Side by side of an input image of a set of cans with text and output image with text on can translated in French using AI"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFr.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFre.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFre.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFr.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFr.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslatecansFr.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="a6uvr">Access to the world’s knowledge</h2><p data-block-key="e1t7v">Gemini 3 Pro Image connects a vast knowledge base to produce more factual assets over previous image generation models. Additionally, when enabled, grounding with Google Search connects the model to real-time web content for data-driven outputs. This is particularly valuable for applications requiring precise representations, such as biological diagrams or historical maps. Try this for yourself with our <a href="https://aistudio.google.com/apps/bundled/info_genius?showPreview=true&amp;showAssistant=true">demo app</a> where you can dynamically create infographics on any topic tailored to your audience.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="An infographic for bike care and maintenance essentials built with a simple text prompt using AI"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ez5w7">Bike care and maintenance infographic generated from a demo app that creates educational infographics.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="An infographic for bike care and maintenance essentials built with a simple text prompt using AI"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/infographic-1763505479307_1.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="a6uvr">Go bananas and start building today</h2><p data-block-key="fiq9n">This new model release incorporates much of the input you have already shared with us, but we aren’t stopping here. To ensure clear provenance in AI-generated media, we have integrated <a href="https://blog.google/technology/ai/ai-image-verification-gemini-app/">SynthID digital watermarks</a> directly into every image created or edited with Gemini 3 Pro Image to denote its AI-generated or edited origin.</p><p data-block-key="705ar">Start by exploring our <a href="https://aistudio.google.com/apps?source=showcase&amp;showcaseTag=nano-banana">collection of apps</a> that use Gemini 3 Pro Image to spark your imagination and see what’s possible. Once you’re inspired, remix these demo apps or integrate the model directly into your own projects via the <a href="http://ai.google.dev/gemini-api/docs">Gemini API</a> in <a href="http://aistudio.google.com/">Google AI Studio</a> and <a href="https://console.cloud.google.com/vertex-ai/studio/multimodal">Vertex AI</a> for enterprise use. For technical details along the way, check out the <a href="https://ai.google.dev/gemini-api/docs/image-generation">documentation</a>, <a href="https://ai.google.dev/gemini-api/docs/image-generation#prompt-guide">prompt guide</a>, <a href="https://colab.sandbox.google.com/github/google-gemini/cookbook/blob/main/quickstarts/Get_Started_Nano_Banana.ipynb#nano-banana-pro">cookbook</a> or visit the <a href="https://discuss.ai.google.dev/">developer forum</a> to get help and share feedback.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="A table showing comparison between Gemini 2 Pro Image and Gemini 2.5 Flash Image models across speed, quality and cost"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ez5w7">Use Gemini 2.5 Flash Image for faster, lower cost image generation, or 3 Pro Image for higher quality image generation, with higher cost and latency.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="A table showing comparison between Gemini 2 Pro Image and Gemini 2.5 Flash Image models across speed, quality and cost"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/image_15_xRZEXLr.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Build with Nano Banana Pro, our Gemini 3 Pro Image model"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    EmbeddingGemma 2: an open, lightweight multimodal embedding model
+    
+    
+      - By Sahil Dua& Henrique Schechter Vera
+    
+    
+      - Oct 06, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "author_name": "Sahil Dua, Henrique Schechter Vera",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        EmbeddingGemma 2: an open, lightweight multimodal embedding model
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Sahil Dua
+          
+            & 
+            Henrique Schechter Vera
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

@@ -1,0 +1,1569 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Developing Gemini 4 Argon responsibly and safely</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Learn more about our approach to safety and security for Gemini 4 Argon."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Anca Dragan, Raluca Ada Popa"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Developing Gemini 4 Argon responsibly and safely"/>
+
+<meta property="og:description" content="Learn more about our approach to safety and security for Gemini 4 Argon." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_light_16-9.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-10-13" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/" />
+<meta name="twitter:title" content="Developing Gemini 4 Argon responsibly and safely"/>
+<meta name="twitter:description" content="Learn more about our approach to safety and security for Gemini 4 Argon." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_light_16-9.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="86591" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-10-13T18:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Gemini models,Safety &amp; Security" />
+  <meta name="authors" content="Anca Dragan,Raluca Ada Popa" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Developing Gemini 4 Argon responsibly and safely",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "topics - safety &amp; security",
+    "secondary_tags": "Gemini models",
+    
+      "landing_page_tags": "topics - gemini models",
+    
+    
+      "article_name": "Developing Gemini 4 Argon responsibly and safely",
+      "author_name": "Anca Dragan, Raluca Ada Popa",
+    
+    "publish_date": "2026-10-13|18:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "3",
+    
+      "content_category": "Topics - Safety &amp; Security",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "no"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--yellow"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Developing Gemini 4 Argon responsibly and safely"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Developing Gemini 4 Argon responsibly and safely</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Oct 13, 2026</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely%20%40google&url=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely&u=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/&title=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely&body=Check out this article on the Keyword:%0A%0ADeveloping%20Gemini%204%20Argon%20responsibly%20and%20safely%0A%0ALearn more about our approach to safety and security for Gemini 4 Argon.%0A%0Ahttps://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Learn more about our approach to safety and security for Gemini 4 Argon.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Anca Dragan</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">VP, AI Safety &amp; Behavior</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Raluca Ada Popa</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Head of Gemini Security, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely%20%40google&url=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely&u=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/&title=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Developing%20Gemini%204%20Argon%20responsibly%20and%20safely&body=Check out this article on the Keyword:%0A%0ADeveloping%20Gemini%204%20Argon%20responsibly%20and%20safely%0A%0ALearn more about our approach to safety and security for Gemini 4 Argon.%0A%0Ahttps://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Gemini 4 Argon logo next to a large white &quot;4&quot;, all on a gradient blue background"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_l.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_l.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_l.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-art_4_lockup_.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Developing Gemini 4 Argon responsibly and safely"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="n9kkc">Gemini 4 Argon is a step forward in what models can do — especially when it comes to deep work in complex, real-world tasks across domains including coding, finance, legal, cybersecurity, and science. Its cyberdefense capabilities are frontier-level and designed to give defenders an advantage over attackers. To maximize its potential, we first wanted cyber defenders to put it to work via our <a href="https://deepmind.google/fairwind-program/">Fairwind Program</a>, while our own security teams used it to scan critical systems inside and outside of Google.</p><p data-block-key="7gjmc">This window of limited access showed why these capabilities matter. For instance, <a href="https://www.wiz.io/scan-for-good">Wiz</a> used Argon to uncover a critical bug in hospital software that previous models had missed, helping protect hundreds of thousands of patient records. Meanwhile, Google’s own security teams used Argon to find and patch bugs across internal software or open-source software. This included fixing foundational vulnerabilities affecting systems globally, which are going through our responsible disclosure process.</p><p data-block-key="91as0">Today, we are beginning to roll out <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/">Argon broadly</a>, as well as expanding our Fairwind Program to additional trusted cyber defenders. To do this well, we grappled with two big questions:</p><ol><li data-block-key="8ndes"><b>How do we build the right safety guardrails?</b> If Argon can help defenders find complex software bugs or help scientists design experiments, how do we stop bad actors from using it to launch cyberattacks or create biological threats? (<i>Misuse</i>)</li><li data-block-key="chmfo"><b>Can we trust the model to do the job the right way?</b> As models become more resourceful problem-solvers, how do we make sure they don’t cut corners, cross boundaries, or make incorrect high-stakes decisions? (<i>Misalignment and Prompt Injection</i>)</li></ol><p data-block-key="6681k">Our <a href="https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf">full Safety and Security Report</a> systematically covers our set of defenses. Below are some highlights from how we approached these two questions for Gemini 4 Argon.</p><h2 data-block-key="a1bef">Misuse prevention across high-risk domains</h2><p data-block-key="1rdf5">The same coding and reasoning improvements that enabled Argon to find and patch vulnerabilities also drove better performance on our cybersecurity tests — solving all 12 of the end-to-end simulated cyberattack scenarios, up from five in our previous generation. In biology evaluations, unguarded versions of the model also showed a much stronger ability to help troubleshoot complex lab procedures step by step. Following our <a href="https://deepmind.google/blog/strengthening-our-frontier-safety-framework/">Frontier Safety Framework</a>, since we saw elevated capabilities in the cyber and biological domains, we put our next-generation set of frontier safeguards in place across both areas.</p><p data-block-key="8gkin">First, when it comes to potentially dangerous requests — from writing exploit code to helping with dangerous biological materials, Argon is significantly better at not fulfilling harmful requests than our previous models. On an adversarial set meant to stress test the model, violations reduced nearly twofold — also significantly better than previous Gemini models. Second, we wrap the model in three layers of real-time protection; this is to prevent determined attackers that might try to jailbreak (i.e. trick) the model by disguising a dangerous request as a harmless story or breaking it into dozens of small questions over several weeks. Here is how these protections work:</p><ul><li data-block-key="amgaq"><b>Input screening:</b> Smaller models check incoming requests and conversation context for malicious intent or dangerous requests.</li><li data-block-key="243um"><b>Internal introspection:</b> Even if a request is cleverly disguised to look harmless, small transformers ("activation probes") read the model’s internal neural signals and are trained to spot when it is activating knowledge about cyberattacks or biological threats.</li><li data-block-key="btfgm"><b>Continuous monitoring:</b> As the model reasons and writes its response across multiple steps, we combine these signals and take action when necessary such as cutting off the agent mid-stream if the responses become problematic.</li></ul><p data-block-key="d0ege">Combining real-time protection, faster fixes for new jailbreaks and enhanced monitoring for recurring misuse has made our systems better at preventing real-world harm. For instance, external bio jailbreak red teaming could only unlock less than 1% of bio sub-tasks we test for.</p><h2 data-block-key="3hunl">Real-time misalignment monitoring</h2><p data-block-key="fjfes">Misalignment can sometimes mean an agent deciding on its own to pursue a goal different to what was intended by the user. Because Argon is much better than earlier models at understanding the environment it is running in, we test carefully for that kind of behavior. For example, we ran realistic "honeypot" tests to see if the model would increase its ability to take covert actions, such as sabotaging safety monitoring. We didn't find any instances of that behavior.</p><p data-block-key="ffdi3">But what we do see in practice today is something much more familiar: an agent trying too hard to finish the job it was given. When a resourceful assistant is told to get a task done and runs into a locked door, it can treat that obstacle as just another puzzle to solve.</p><p data-block-key="d8ra6">This is why we trained Gemini 4 Argon to respect system boundaries, report negative findings honestly, and pause to ask for human confirmation. On coding benchmarks where models have no incentive to hold back, attempts to take a shortcut or cheat on the task dropped to just 2% on Gemini 4 Argon, our best performance for recent Gemini models.</p><p data-block-key="a9e8l">And while this is a major step forward, when a model runs millions of complex tasks, even a rare misstep will eventually show up. As a second line of defense, we built an automated misalignment monitor that reads both the agent’s actions and its internal "scratchpad" (its step-by-step chain of thought) in real time, blocking severe boundary violations before they happen and flagging serious internal cases for human responders. (We continually harden our training and evaluation environments against potential escapes. You can read more about this in our <a href="https://deepmind.google/blog/securing-the-future-of-ai-agents/">agent control roadmap</a>). We run this monitor in our products, on our internal coding agents, during our training runs, and during our capability evaluations.</p><p data-block-key="3khe6">When training tasks were difficult or when training environments were flawed, our monitor caught the model, in rare instances, creatively attempting to game the test. The model attempted to escalate container privileges to alter grading scripts, read answers from the test runner's memory, and in one case it even crashed the evaluation sandbox to avoid getting scored for a failed run. While we use these catches to fix flawed tasks, we do not use them to otherwise intervene with the training process to avoid overfitting to the monitor.</p><p data-block-key="6u9b3">And we always follow one rule: we don’t penalize the model for what it writes in its chain of thought during training<b>.</b> Here’s an example to illustrate why: in a reinforcement learning training run where a shortcut penalty was accidentally applied to the chain of thought, openly discussed shortcuts dropped by 61%, but that did not mean the model took less shortcuts. Instead, the share of shortcuts the model took <i>silently</i> — without mentioning them in its thoughts — more than tripled (from 11.2% to 36.4%). Avoiding thought penalties encourages the model’s reasoning to stay transparent and monitorable.</p><h2 data-block-key="3amcm">Prompt injection resistance</h2><p data-block-key="53j8e">To trust an agent to do the job right, we need to ensure that malicious content the agent comes across cannot trick it to take a harmful action. When agents browse webpages or read code, they can encounter hidden, malicious instructions, or context designed to hijack their task. Through built-in adversarial training and real-time security checks, Argon leads in prompt injection robustness on Gray Swan’s Indirect Prompt Injection (IPI) benchmark, cutting attack success across 15 adaptive attempts to 0.7%.</p><p data-block-key="f2rjf">The above safety and security defenses represent only three categories of our extensive defense-in-depth stack. To learn more about our approach to safety testing and mitigations, read our full <a href="https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf">Gemini 4 Argon Safety and Security Report</a> and see the <a href="https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-4-Argon-Model-Card.pdf">Gemini 4 Argon Model Card</a>.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<uni-portal portal-id="article-newsletter-portal">
+
+
+<section
+  class="
+    uni-article-newsletter
+    
+      uni-article-newsletter--bottom
+      uni-article-newsletter--neutral
+    
+  "
+  data-component="uni-article-newsletter"
+  data-analytics-module='{
+    "module_name": "Newsletter",
+    "section_header": "Get the latest news from Google in your inbox"
+  }'
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      
+      <div class="uni-article-newsletter__background uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-6-desktop uni-grid__col--start-7-desktop" aria-hidden="true">
+
+        
+        <div
+          class="
+            uni-article-newsletter__shape
+            
+              uni-article-newsletter__shape--pill
+            
+          "
+          aria-hidden="true"
+        ></div>
+      </div>
+      <div class="uni-article-newsletter__inner uni-grid__col--span-12 uni-grid__col--span-6-desktop uni-grid__col--start-1">
+
+        <div class="uni-article-newsletter__form-group">
+          <h2 class="uni-article-newsletter__title font-h3">
+            Get the latest news from Google in your inbox
+          </h2>
+          <p class="uni-article-newsletter__description font-body-m">
+            Sign up for our newsletters with product updates, event information, special offers, and more.
+          </p>
+
+          <div class="uni-article-newsletter__form-container">
+            <div class="uni-article-newsletter__input-group">
+              <uni-newsletter-form
+                class="uni-landing-newsletter-form"
+                action="https://services.google.com/fb/submissions/thekeywordnewsletterprodv2/"
+                method="POST"
+                content-type="blogv2 | article page"
+                cta-override=""
+                data-error-icon-url="/static/blogv2/images/alert_error_form.svg"
+              >
+              </uni-newsletter-form>
+            </div>
+          </div>
+
+          
+
+
+
+
+<div class="uni-landing-newsletter-success is-hidden">
+  <div class="uni-landing-newsletter-success__message">
+    <div class="uni-landing-newsletter-success__logo">
+       
+
+    </div>
+    <div class="uni-landing-newsletter-success__text">
+      <p class="font-body-s">Done. Just one step more.</p>
+      <p
+        class="uni-landing-newsletter-success__text-confirm font-body-xs"
+        id="subscribe_success_label"
+        tabindex="-1"
+        role="text">
+        Check your inbox to confirm your subscription.
+      </p>
+    </div>
+  </div>
+  <p class="uni-landing-newsletter-success__final-text font-body-s">
+    You can also subscribe with a <button class="uni-landing-newsletter-success__different-email uni-anchor">different email address</button>.
+  </p>
+</div>
+
+
+          <p class="uni-article-newsletter__info font-caption">
+            Your information will be used in accordance with <a href="https://policies.google.com/privacy" target="_blank" class="uni-anchor">Google's privacy policy.</a> You may opt out at any time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</uni-portal>
+
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Developing Gemini 4 Argon responsibly and safely"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/circle-to-search-android-text-message-scams/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Check if a text message is a scam using Circle to Search.
+    
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Check if a text message is a scam using Circle to Search.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/circle-to-search-android-text-message-scams/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Check if a text message is a scam using Circle to Search.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CTS_check_scam_inline.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CTS_check_scam_inline.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/CTS_check_scam_inline.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Check if a text message is a scam using Circle to Search.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/how-to-set-up-passkey/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Sign in quickly and securely with passkeys.
+    
+    
+    
+      - Oct 08, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Sign in quickly and securely with passkeys.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/how-to-set-up-passkey/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Sign in quickly and securely with passkeys.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/SigninFasterPasskey_s.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/SigninFasterPasskey_s.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/SigninFasterPasskey_s.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Sign in quickly and securely with passkeys.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    We&#x27;re making it easier to identify AI-generated content globally.
+    
+    
+      - By Pushmeet Kohli
+    
+    
+      - Oct 07, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "author_name": "Pushmeet Kohli",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        We&#x27;re making it easier to identify AI-generated content globally.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Pushmeet Kohli
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

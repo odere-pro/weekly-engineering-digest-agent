@@ -1,0 +1,1638 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>The Gemini app gets new image verification features</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Our new Gemini app feature allows you to verify Google AI images and determine whether content was created or edited by AI."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Pushmeet Kohli, Laurie Richardson"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How we’re bringing AI image verification to the Gemini app"/>
+
+<meta property="og:description" content="Our new Gemini app feature allows you to verify Google AI images and determine whether content was created or edited by AI." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Social1920x1080.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2025-11-20" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/" />
+<meta name="twitter:title" content="How we’re bringing AI image verification to the Gemini app"/>
+<meta name="twitter:description" content="Our new Gemini app feature allows you to verify Google AI images and determine whether content was created or edited by AI." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Social1920x1080.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="82682" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2025-11-20T15:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="AI Products,Gemini App,Google DeepMind" />
+  <meta name="authors" content="Pushmeet Kohli,Laurie Richardson" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "The Gemini app gets new image verification features",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - ai products",
+    "secondary_tags": "Gemini App,Google DeepMind",
+    
+      "landing_page_tags": "products - gemini app|topics - google deepmind",
+    
+    
+      "article_name": "How we’re bringing AI image verification to the Gemini app",
+      "author_name": "Pushmeet Kohli, Laurie Richardson",
+    
+    "publish_date": "2025-11-20|15:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "330",
+    
+      "content_category": "Products - AI Products",
+    
+    "word_count": "medium 300-599",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "How we’re bringing AI image verification to the Gemini app"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">How we’re bringing AI image verification to the Gemini app</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Nov 20, 2025</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app%20%40google&url=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app&u=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/&title=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app&body=Check out this article on the Keyword:%0A%0AHow%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app%0A%0AOur new Gemini app feature allows you to verify Google AI images and determine whether content was created or edited by AI.%0A%0Ahttps://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                We are increasing content transparency by introducing the ability to verify if an image was generated or edited by Google AI right in the Gemini app.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+          
+          <a href="https://blog.google/authors/pushmeet-kohli/" class="uni-article-hero__author-link">
+        
+            <p class="uni-article-hero__author-name font-author-name">Pushmeet Kohli</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">VP, Science and Strategic Initiatives, Google DeepMind</p>
+              
+            
+        
+          </a>
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+          
+          <a href="https://blog.google/authors/laurie-richardson/" class="uni-article-hero__author-link">
+        
+            <p class="uni-article-hero__author-name font-author-name">Laurie Richardson</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Vice President, Trust and Safety, Google</p>
+              
+            
+        
+          </a>
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app%20%40google&url=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app&u=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/&title=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=How%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app&body=Check out this article on the Keyword:%0A%0AHow%20we%E2%80%99re%20bringing%20AI%20image%20verification%20to%20the%20Gemini%20app%0A%0AOur new Gemini app feature allows you to verify Google AI images and determine whether content was created or edited by AI.%0A%0Ahttps://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/products/ai-image-verification-gemini-app/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Golden retriever catching frisbee over water. UI overlay shows Google AI watermark detected."
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Labs_SynthID_Keyword_Blog_Header.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "How we’re bringing AI image verification to the Gemini app"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google is launching an AI image verification tool in the Gemini app. You can now upload images to Gemini and ask if they were created or edited using Google AI. Gemini will check for the SynthID watermark to give you more context about the content. Google plans to expand SynthID verification to video and audio and support C2PA content credentials in the future.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_2">
+            <div class="uni-ai-summary__copy font-h6">
+              <ul>
+<li>Google's adding AI image verification to Gemini so you can check if content was AI-generated.</li>
+<li>Gemini uses SynthID, a digital watermark, to detect if an image was made or edited by Google AI.</li>
+<li>Just upload an image to Gemini and ask if it was created with Google AI to get more context.</li>
+<li>Google's expanding SynthID to video and audio, plus adding C2PA metadata to more images.</li>
+<li>They're also working with industry partners to improve content transparency across the web.</li>
+</ul>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+        <div class="uni-ai-summary__explore">
+          <h4 class="uni-ai-summary__explore-title font-h6">
+            Explore other styles:
+          </h4>
+          <ul class="uni-ai-summary__chips">
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="General summary" data-summary-id="ai_summary_1" aria-pressed="true">
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  General summary
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Bullet points" data-summary-id="ai_summary_2" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Bullet points
+                </span>
+              </button>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "How we’re bringing AI image verification to the Gemini app"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="qpndi">At Google, we’ve long invested in ways to provide you with helpful context about information you see online. Now, as generative media becomes increasingly prevalent and high-fidelity, we are deploying tools to help you more easily determine whether the content you're interacting with was created or edited using AI.</p><p data-block-key="69jlk">Starting today, we’re making it easier for everyone to verify if an image was generated with or edited by Google AI right in the Gemini app, using SynthID, our digital watermarking technology that embeds imperceptible signals into AI-generated content.</p><p data-block-key="db7h6">We introduced <a href="https://deepmind.google/models/synthid/">SynthID</a> in 2023. Since then, over 20 billion AI-generated pieces of content have been watermarked using SynthID, and we have been testing our <a href="https://blog.google/technology/ai/google-synthid-ai-content-detector/">SynthID Detector</a>, a verification portal, with journalists and media professionals.</p><h3 data-block-key="9aks8">How it works</h3><p data-block-key="buh9j">If you see an image and want to confirm it has been made by Google AI, upload it to the Gemini app and ask a question such as: <b>"Was this created with Google AI?"</b> or <b>“Is this AI-generated?”</b></p><p data-block-key="bftsj">Gemini will check for the SynthID watermark and use its own reasoning to return a response that gives you more context about the content you encounter online.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="an MP4 showing Gemini identifying watermark"
+    external-image=""
+    or-mp4-video-title="synthid"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/SynthID_Gemini_Asset_1_N3ex4qU.mp4"
+    section-header="How we’re bringing AI image verification to the Gemini app"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "How we’re bringing AI image verification to the Gemini app"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="qpndi">What’s next</h3><p data-block-key="77u5p">This launch builds on our history of providing context about images in <a href="https://blog.google/products/search/about-this-image-google-search/">Google Search</a> and exploring new research innovations like <a href="https://deepmind.google/blog/exploring-the-context-of-online-images-with-backstory/">Backstory</a> from Google DeepMind. Looking ahead, we will continue to invest in more ways to empower you to determine the origin and history of content online. Soon, we’ll expand SynthID verification to support additional formats beyond images, such as video and audio, and bring these capabilities to more surfaces, such as Search.</p><p data-block-key="ehml7">In addition to our own tools, we are collaborating with industry partners to advance content transparency and authenticity standards across our product ecosystem — including YouTube, Search, <a href="https://blog.google/products/pixel/pixel-10-camera-features/">Pixel</a> and <a href="https://blog.google/products/photos/ai-photo-editing-google-photos/">Photos</a> — through our role on the steering committee of the <a href="https://blog.google/technology/ai/google-gen-ai-content-transparency-c2pa/">Coalition for Content Provenance and Authenticity (C2PA)</a>.</p><p data-block-key="9sglg">As part of this, rolling out this week, images generated by <a href="https://blog.google/technology/ai/nano-banana-pro">Nano Banana Pro</a> (Gemini 3 Pro Image) in the <a href="http://gemini.google.com/">Gemini app</a>, <a href="https://cloud.google.com/vertex-ai?e=48754805">Vertex AI</a> and<a href="https://business.google.com/us/google-ads/"> Google Ads</a> will have C2PA metadata embedded, providing further transparency into how these images were created. We look forward to expanding this capability to more products and surfaces in the coming months.</p><p data-block-key="cv3bh">Over time, we will also extend our verification approach to support <a href="https://blog.google/technology/ai/google-gen-ai-content-transparency-c2pa/">C2PA content credentials,</a> meaning you'll be able to check the original source of content created by models and products that exist outside of Google’s ecosystem.</p><p data-block-key="7o6ii">This work is central to our commitment to bold and responsible AI. We look forward to further contributing to the future of AI transparency.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "How we’re bringing AI image verification to the Gemini app"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/shopping/universal-cart-launch/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Shopping - 
+    
+    An intelligent new shopping cart
+    
+    
+      - By Suresh Ganapathy
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="products - shopping"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "An intelligent new shopping cart",
+  "link_url": "https://blog.google/products-and-platforms/products/shopping/universal-cart-launch/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "products - shopping",
+  "article_name": "An intelligent new shopping cart",
+  "author_name": "Suresh Ganapathy",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Shopping
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        An intelligent new shopping cart
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Suresh Ganapathy
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synthid-time-best-inventions/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    TIME has named Google SynthID one of the Best Inventions of 2026.
+    
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "TIME has named Google SynthID one of the Best Inventions of 2026.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synthid-time-best-inventions/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "TIME has named Google SynthID one of the Best Inventions of 2026.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Labs_SynthID_Social1920x1080.png"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        TIME has named Google SynthID one of the Best Inventions of 2026.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/were-powering-european-scientific-discovery-with-advanced-ai-compute-and-frontier-models/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    We’re powering European scientific discovery with advanced AI compute and frontier models.
+    
+    
+      - By Maureen Costello
+    
+    
+      - Oct 14, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "We’re powering European scientific discovery with advanced AI compute and frontier models.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/were-powering-european-scientific-discovery-with-advanced-ai-compute-and-frontier-models/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "We’re powering European scientific discovery with advanced AI compute and frontier models.",
+  "author_name": "Maureen Costello",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ireland-innovation-co.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        We’re powering European scientific discovery with advanced AI compute and frontier models.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Maureen Costello
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/products/gemini-app/gemini-4-argon-availability/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini App - 
+    
+    Gemini 4 Argon comes to the Gemini app.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="products - gemini app"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon comes to the Gemini app.",
+  "link_url": "https://blog.google/innovation-and-ai/products/gemini-app/gemini-4-argon-availability/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "products - gemini app",
+  "article_name": "Gemini 4 Argon comes to the Gemini app.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ArgonDemos_social2.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ArgonDemos_social2.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ArgonDemos_social2.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini App
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon comes to the Gemini app.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/health/ai-health-research/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Health - 
+    
+    Applying technology to understand and treat disease
+    
+    
+      - By Yossi Matias& Pushmeet Kohli
+    
+    
+      - Oct 12, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - health"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Applying technology to understand and treat disease",
+  "link_url": "https://blog.google/innovation-and-ai/technology/health/ai-health-research/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - health",
+  "article_name": "Applying technology to understand and treat disease",
+  "author_name": "Yossi Matias, Pushmeet Kohli",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/ud-blog_Header.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Health
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Applying technology to understand and treat disease
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Yossi Matias
+          
+            & 
+            Pushmeet Kohli
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    We&#x27;re making it easier to identify AI-generated content globally.
+    
+    
+      - By Pushmeet Kohli
+    
+    
+      - Oct 07, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "We\u0027re making it easier to identify AI\u002Dgenerated content globally.",
+  "author_name": "Pushmeet Kohli",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Raccoon_Video_SynthID.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        We&#x27;re making it easier to identify AI-generated content globally.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Pushmeet Kohli
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

@@ -294,6 +294,58 @@ describe('createFetcher', () => {
       ]);
     });
 
+    describe('redirect to another host', () => {
+      const redirecting = (to: string, pages: Record<string, string>) =>
+        vi.fn<typeof fetch>(async (input) => {
+          const url =
+            typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+          if (url === 'https://example.com/new') {
+            return new Response(null, { status: 301, headers: { location: to } });
+          }
+          return new Response(pages[url] ?? '<html></html>', {
+            headers: { 'content-type': 'text/html' },
+          });
+        });
+      const target = 'https://blog.example.net/post';
+      const targetPages = {
+        [target]:
+          '<html><head><meta name="description" content="From the new host."></head></html>',
+      };
+      const run = (collectionHosts: readonly string[] | undefined, fetchImpl: typeof fetch) =>
+        createFetcher(adapterOf([empty('new', '2026-10-12T00:00:00Z')]), {
+          fetch: fetchImpl,
+          ...(collectionHosts ? { collectionHosts } : {}),
+        }).fetch(source, window());
+
+      it('is followed when the target host is in the collection allowlist', async () => {
+        const items = await run(['blog.example.net'], redirecting(target, targetPages));
+        expect(items[0]?.summary).toBe('From the new host.');
+      });
+
+      it('is refused for a host outside the allowlist, leaving the summary empty', async () => {
+        const fetchImpl = redirecting(target, targetPages);
+        const items = await run(['other.example.org'], fetchImpl);
+        expect(items[0]?.summary).toBe('');
+        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(['https://example.com/new']);
+      });
+
+      it('is refused to an allowlisted host over plain http', async () => {
+        const items = await run(
+          ['blog.example.net'],
+          redirecting('http://blog.example.net/post', {}),
+        );
+        expect(items[0]?.summary).toBe('');
+      });
+
+      it('is refused to another port of an allowlisted host', async () => {
+        const items = await run(
+          ['blog.example.net'],
+          redirecting('https://blog.example.net:8443/post', {}),
+        );
+        expect(items[0]?.summary).toBe('');
+      });
+    });
+
     it('is off with enrich: false', async () => {
       const fetchImpl = pageFetch(pages);
       const items = await createFetcher(adapterOf([empty('new', '2026-10-12T00:00:00Z')]), {

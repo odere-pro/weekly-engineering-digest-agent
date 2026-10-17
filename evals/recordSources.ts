@@ -13,7 +13,7 @@ import {
   statusFailure,
   MAX_BODY_BYTES,
 } from '../src/adapters/sources/http.js';
-import { createFetcher } from '../src/adapters/sources/pipeline.js';
+import { createFetcher, hostsOf } from '../src/adapters/sources/pipeline.js';
 import { rssAdapter } from '../src/adapters/sources/rssAdapter.js';
 import { DEFAULT_SOURCES } from '../src/config/defaultSources.js';
 import type { Source } from '../src/core/schemas.js';
@@ -224,7 +224,7 @@ export async function recordPages(
           const reply = await getText(page.url, {
             fetch: fetchImpl,
             label: source.id,
-            allowsRedirectTo: onSite,
+            allowsRedirectTo: sameSiteAs(source.url, ...hostsOf(sources)),
             signal: AbortSignal.timeout(RECORD_TIMEOUT_MS),
             maxBytes: MAX_PAGE_BYTES,
           });

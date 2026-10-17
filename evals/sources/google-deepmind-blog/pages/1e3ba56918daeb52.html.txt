@@ -1,0 +1,2222 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Gemini 3 for developers: New reasoning, agentic capabilities</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Gemini 3 is introducing advanced agentic coding capabilities, plus Google Antigravity, a new agentic development platform."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Logan Kilpatrick"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Start building with Gemini 3"/>
+
+<meta property="og:description" content="Gemini 3 is introducing advanced agentic coding capabilities, plus Google Antigravity, a new agentic development platform." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3_dev-blog_meta-01-dark.width-1300.jpg" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2025-11-18" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/" />
+<meta name="twitter:title" content="Start building with Gemini 3"/>
+<meta name="twitter:description" content="Gemini 3 is introducing advanced agentic coding capabilities, plus Google Antigravity, a new agentic development platform." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3_dev-blog_meta-01-dark.width-1300.jpg" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="82612" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2025-11-18T16:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Developer tools,Gemini models" />
+  <meta name="authors" content="Logan Kilpatrick" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+  <link rel="alternate" hreflang="x-default" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/">
+
+  <link rel="alternate" hreflang="en-us" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/">
+
+  <link rel="alternate" hreflang="ja-jp" href="https://blog.google/intl/ja-jp/company-news/technology/gemini-3-developers/">
+
+  <link rel="alternate" hreflang="zh-hant" href="https://blog.google/intl/zh-tw/products/cloud/gemini-3-developers/">
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Gemini 3 for developers: New reasoning, agentic capabilities",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - developer tools",
+    "secondary_tags": "Gemini models",
+    
+      "landing_page_tags": "topics - gemini models",
+    
+    
+      "article_name": "Start building with Gemini 3",
+      "author_name": "Logan Kilpatrick",
+    
+    "publish_date": "2025-11-18|16:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "332",
+    
+      "content_category": "Products - Developer tools",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Start building with Gemini 3"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Start building with Gemini 3</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Nov 18, 2025</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Start%20building%20with%20Gemini%203%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Start%20building%20with%20Gemini%203&u=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/&title=Start%20building%20with%20Gemini%203"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Start%20building%20with%20Gemini%203&body=Check out this article on the Keyword:%0A%0AStart%20building%20with%20Gemini%203%0A%0AGemini 3 is introducing advanced agentic coding capabilities, plus Google Antigravity, a new agentic development platform.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Whether you’re an experienced developer or a vibe coder, Gemini 3 can help you bring any idea to life.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author uni-article-hero__author--one-author">
+      <div class="uni-article-hero__author-info">
+        
+          
+          <a href="https://blog.google/authors/logan-kilpatrick/" class="uni-article-hero__author-link">
+        
+            <p class="uni-article-hero__author-name font-author-name">Logan Kilpatrick</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Lead, Google AI Studio and the Gemini API</p>
+              
+            
+        
+          </a>
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Start%20building%20with%20Gemini%203%20%40google&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Start%20building%20with%20Gemini%203&u=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/&title=Start%20building%20with%20Gemini%203"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Start%20building%20with%20Gemini%203&body=Check out this article on the Keyword:%0A%0AStart%20building%20with%20Gemini%203%0A%0AGemini 3 is introducing advanced agentic coding capabilities, plus Google Antigravity, a new agentic development platform.%0A%0Ahttps://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-developers/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Build anything with Gemini 3"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/StartBuildingwithGemini_Header.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "Start building with Gemini 3"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google is launching Gemini 3 Pro, their most intelligent model, which outperforms previous versions in AI benchmarks and coding tasks. You can access it through the Gemini API in Google AI Studio and Vertex AI, or try the Google Antigravity platform for agentic development. Start building now and explore its capabilities in multimodal understanding, visual reasoning, and vibe coding.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_2">
+            <div class="uni-ai-summary__copy font-h6">
+              <ul>
+<li>"Start building with Gemini 3" introduces Google's most intelligent model for bringing any idea to life.</li>
+<li>Gemini 3 Pro surpasses previous versions in AI benchmarks and excels at agentic workflows and coding tasks.</li>
+<li>You can use Gemini 3 Pro in Google AI Studio, Vertex AI, and developer tools like Google Antigravity.</li>
+<li>The model unlocks "vibe coding," letting you create apps from natural language prompts in Google AI Studio.</li>
+<li>Gemini 3 Pro excels in multimodal understanding, visual reasoning, and spatial reasoning for various applications.</li>
+</ul>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+        <div class="uni-ai-summary__explore">
+          <h4 class="uni-ai-summary__explore-title font-h6">
+            Explore other styles:
+          </h4>
+          <ul class="uni-ai-summary__chips">
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="General summary" data-summary-id="ai_summary_1" aria-pressed="true">
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  General summary
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Bullet points" data-summary-id="ai_summary_2" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Bullet points
+                </span>
+              </button>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="vnp4s">Today we are introducing Gemini 3, our most intelligent model that can help bring any idea to life. Built on a foundation of state-of-the-art reasoning, Gemini 3 Pro delivers unparalleled results across every major AI benchmark compared to previous versions. It also surpasses 2.5 Pro at coding, mastering both agentic workflows and complex zero-shot tasks.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Benchmarks table with comparison numbers for Gemini 3 Pro, Gemini 2.5 Pro, Claude Sonnet 4.5 and GPT-5.1"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Start building with Gemini 3"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/documents/gemini_3_table_final_HLE_Tools_on.gif"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Benchmarks table with comparison numbers for Gemini 3 Pro, Gemini 2.5 Pro, Claude Sonnet 4.5 and GPT-5.1"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini_3_table_final_HLE_Tools_on_1sXRb4o.gif 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="vnp4s">Gemini 3 Pro fits right into existing production agent and coding workflows, while also enabling new use cases not previously possible. It’s available in preview at $2/million input tokens and $12/million output tokens for prompts 200k tokens or less through the <a href="https://ai.google.dev/gemini-api/docs">Gemini API</a> in Google AI Studio and Vertex AI for enterprises (see <a href="https://ai.google.dev/gemini-api/docs/pricing#gemini-3-pro-preview">pricing</a> for rate limits and full pricing details). Additionally, it can be utilized via your favorite developer tools within the broader ecosystem and is available, with rate limits, free of charge in <a href="https://aistudio.google.com/prompts/new_chat?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Google AI Studio</a>.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="vnp4s">Agentic coding</h2><p data-block-key="5i25e">Developers are spending more and more time creating software with AI at their side. Building on the momentum of Gemini 2.5 Pro and all the feedback, Gemini 3 Pro serves as a new foundation of intelligence for what’s possible with an agentic coding model.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Terminal Bench evaluation charts for Gemini 3 and other AI models"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Start building with Gemini 3"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ea1s6">Gemini 3 Pro scores 54.2% points on Terminal-Bench 2.0, which tests a model’s tool use ability to operate a computer via terminal.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Terminal Bench evaluation charts for Gemini 3 and other AI models"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_be.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_ben.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_ben.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_be.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_be.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_eval_charts_terminal_be.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="vnp4s">You can feel the power of this model come to life in <a href="http://antigravity.google/">Google Antigravity</a>, our new agentic development platform, in addition to<a href="https://geminicli.com/"> Gemini CLI</a>, <a href="https://d.android.com/studio">Android Studio</a>, and other coding products like Cursor, GitHub, JetBrains, Manus, Cline and more.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+ 
+
+
+<uni-block-quote
+  quote="Cline is using Gemini 3 to power autonomous code generation in developers’ IDEs…. Gemini 3 Pro handles complex, long-horizon tasks across entire codebases, maintaining context through multi-file refactors, debugging sessions, and feature implementations. It uses long context far more effectively than Gemini 2.5 Pro and has solved problems that stumped other leading models."
+  section-header="Start building with Gemini 3"
+  
+    author-name="Nik Pash"
+  
+  
+    author-role="Head of AI, Cline"
+  
+  >
+</uni-block-quote>
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="vnp4s">Google Antigravity</h2><p data-block-key="f36ps">To advance how the model and IDE work together, we’re introducing <a href="http://antigravity.google/">Google Antigravity</a> to showcase what’s possible with Gemini 3. It’s an agentic development platform that enables developers to operate at a higher, task-oriented level by managing agents across workspaces, while retaining a familiar AI IDE experience at its core.</p><p data-block-key="1bsuh">It’s a faster way to develop: you act as the architect, collaborating with intelligent agents that operate autonomously across the editor, terminal, and browser. These agents plan and execute complex software tasks, communicating their work with the user via detailed artifacts. This elevates all aspects of development, from building features, UI iteration, and fixing bugs to researching and generating reports. Visit the <a href="http://antigravity.google/">Google Antigravity website</a> to download the public preview at no charge, now available for MacOS, Windows and Linux.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="9"
+  page-title="Start building with Gemini 3"
+  thumbnail-alt="Video showing a whiteboard app being built with multiple agents running in parallel in a desktop IDE."
+  
+  subtitle="&lt;div class=&quot;rich-text&quot;&gt;See multiple agents building in parallel in this multiplayer digital whiteboard app in Google Antigravity.&lt;/div&gt;"
+  
+  video-id="E-Sk9ypHVgI"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="vnp4s">Gemini API</h3><p data-block-key="7m6p">With Gemini 3, we are releasing a client-side bash tool that empowers the model to propose shell commands as part of agentic workflows for tasks such as navigating your local filesystem, driving development processes, and automating system operations. We’re pairing this with a hosted server-side bash tool for multi language code generation and secure prototyping. Available now in the Gemini API for early access partners, with general availability coming soon.</p><p data-block-key="fnle5">Additionally, Gemini hosted tools<a href="https://ai.google.dev/gemini-api/docs/google-search"> Grounding with Google Search</a> and<a href="https://ai.google.dev/gemini-api/docs/url-context"> URL context</a> can now be combined with structured outputs. This is especially powerful for building agentic use cases which involve fetching and extracting data and then outputting them in a specific format for downstream agentic tasks.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="vnp4s">Vibe coding</h2><p data-block-key="fm0o2">Gemini 3 Pro unlocks the true potential of “vibe coding”, where natural language is the only syntax you need. By significantly improving complex instruction following and deep tool use, the model can translate a high-level idea into a fully interactive app with a single prompt. It handles the heavy lifting of multi-step planning and coding details delivering richer visuals and deeper interactivity, allowing you to focus on the creative vision.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Graphic showing 1487 WebDev Arena leaderboard score"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Start building with Gemini 3"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ea1s6">Gemini 3 Pro tops the WebDev Arena leaderboard by scoring an impressive 1487 Elo.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Graphic showing 1487 WebDev Arena leaderboard score"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboar.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboard.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboard.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboar.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboar.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini_3_webdev_arena_leaderboar.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+
+
+ 
+
+
+<uni-block-quote
+  quote="Gemini 3’s remarkable prompt adherence supercharges Emergent’s fullstack app development platform, especially in UI/frontend workflows. We’re seeing incredible results when incorporating Gemini 3’s multi step tool calling into our agentic code development setup."
+  section-header="Start building with Gemini 3"
+  
+    author-name="Madhav Jha"
+  
+  
+    author-role="Cofounder and CTO, Emergent"
+  
+  >
+</uni-block-quote>
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="vnp4s">Google AI Studio</h3><p data-block-key="efcgt">Whether it’s building a game with a single prompt, an interactive landing page from unstructured voice notes, or a full on app from a napkin sketch, developers can bring their idea to life with Gemini 3. With this model, we pushed single prompt generation capabilities further than ever, meaning you can go from idea to AI-powered app with a single prompt, like this <a href="https://aistudio.google.com/app/apps/bundled/synthwave_space?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">retro game</a> built in Google AI Studio.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="15"
+  page-title="Start building with Gemini 3"
+  thumbnail-alt="Video showing a one-shot prompt transitioning into a retro-looking game app"
+  
+  subtitle="&lt;div class=&quot;rich-text&quot;&gt;A zero-shot game built with Gemini 3 Pro in Google AI Studio.&lt;/div&gt;"
+  
+  video-id="Edol3PGrQQE"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="vnp4s">We’ve built Google AI Studio to be your fastest path from a prompt to an AI-native app. <a href="https://ai.studio/build?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Build mode</a> lets you add AI capabilities faster than ever, automatically wiring up the right models and APIs, while features like <a href="https://x.com/GoogleAIStudio/status/1981375306423554490">annotations</a> enable fast and intuitive iteration. You can start building with <a href="https://aistudio.google.com/prompts/new_chat?model=gemini-3-pro-preview?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Gemini 3 in Google AI Studio</a> today.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="vnp4s">Multimodal understanding</h2><p data-block-key="nn2r">Gemini 3 is the best model in the world for complex multimodal understanding and sets new highs on MMMU-Pro for complex image reasoning and Video MMMU for video understanding. Combining its intelligence and a 1 million-token context window, developers can see significant improvements while building key multimodal use cases. To give you more control over latency and cost, you can now <a href="https://ai.google.dev/gemini-api/docs/gemini-3?thinking=dynamic#media_resolution">configure multimodal vision processing</a> with more granularity in the Gemini API based on the visual fidelity required for your application.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="vnp4s">Visual reasoning</h3><p data-block-key="4rq6l">Gemini 3 Pro is best-in-class for document understanding, going beyond simple OCR (Object Character Recognition) to intelligently handle complex document understanding and reasoning.</p><p data-block-key="tp5p">You can see the model’s vision understanding, reasoning and coding capabilities in our demo app that <a href="https://aistudio.google.com/app/apps/bundled/bring_any_idea_to_life?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">brings any idea to life</a> in Google AI Studio.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="19"
+  page-title="Start building with Gemini 3"
+  thumbnail-alt="Video demo of a web app in Google AI Studio that shows multiple images uploaded and turned into interactive web experiences wit AI."
+  
+  subtitle="&lt;div class=&quot;rich-text&quot;&gt;With just an image, Gemini 3 Pro uses its vision understanding, reasoning and coding capabilities to turn it into an interactive web experience.&lt;/div&gt;"
+  
+  video-id="Avx2m5Igugo"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="vnp4s">Spatial reasoning</h3><p data-block-key="17n19">The model’s improved spatial understanding also drives strong performance in embodied reasoning tasks like pointing, trajectory prediction and task progression, unlocking new use cases across autonomous vehicles, XR devices and robotics.</p><p data-block-key="bhg5k">Its spatial reasoning also powers intelligent screen understanding of desktop, mobile and OS screens delivering significant performance improvement for computer use agents. The model also understands the intent of user actions based on mouse movements and screen annotations unlocking novel experiences like this <a href="https://aistudio.google.com/app/apps/bundled/visual_computer?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Visual Computer</a> demo app.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="21"
+  page-title="Start building with Gemini 3"
+  thumbnail-alt="Video demo showing a screen where a user draws strikes over files that trigger the AI to delete those files."
+  
+  subtitle="&lt;div class=&quot;rich-text&quot;&gt;Gemini 3 not only comprehends the user’s hand-drawn instructions but also intelligently acts upon them based on its understanding of the screen and its elements.&lt;/div&gt;"
+  
+  video-id="nrfpu7mor6g"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="vnp4s">Video reasoning</h3><p data-block-key="b04s6">Gemini 3 Pro captures rapid action with high-frame-rate understanding, ensuring developers never miss a critical moment in fast-moving scenes. Beyond speed, long-context recall allows for synthesizing narratives and pinpointing specific details across hours of continuous footage.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+ 
+
+
+<uni-block-quote
+  quote="Across our video agent reasoning and tool calls, Gemini 3 delivers on three critical fronts for Agent Opus: speed, offering an increase of over 32% in speed over our current implementation; precision, demonstrated by its exceptional ability to follow complex instructions and accurately fulfill structured decoding; and reliability, managing long-context reasoning and invoking granular tools without the common pitfalls of hallucination."
+  section-header="Start building with Gemini 3"
+  
+    author-name="Jay Wu"
+  
+  
+    author-role="Cofounder and CTO, OpusClip"
+  
+  >
+</uni-block-quote>
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="vnp4s">Build what’s next, today</h2><p data-block-key="6m0pk">Gemini 3 Pro is now integrated into many developer products and tools to seamlessly fit into your existing workflows and unlock entirely new ways to code.</p><ul><li data-block-key="mhb"><b>Build with the Gemini API:</b> You can integrate Gemini 3 Pro immediately into your applications via Google AI Studio and Vertex AI for Enterprise. To support the model's deeper reasoning capabilities, we’re introducing a new <a href="https://ai.google.dev/gemini-api/docs/gemini-3?thinking=high#thinking_level">thinking level</a> and more granular <a href="https://ai.google.dev/gemini-api/docs/gemini-3?thinking=high#media_resolution">media resolution</a> parameters in the API, along with stricter validation for <a href="https://ai.google.dev/gemini-api/docs/gemini-3?thinking=high#thought_signatures">thought signatures</a>. This update is critical for preserving the model’s thoughts across multi-turn conversations. Check out the <a href="https://ai.google.dev/gemini-api/docs/gemini-3">Developer Guide</a> for the technical breakdown and our <a href="http://ai.google.dev/gemini-api/docs/prompting-strategies#gemini-3">Prompting Guide</a> to learn how to build with Gemini 3 Pro.</li><li data-block-key="3amru"><b>Experience the model’s agentic capabilities:</b> Whether you are adding AI-native features to an Android app, automating workflows through <a href="https://geminicli.com/">Gemini CLI</a> or managing a fleet of autonomous agents in <a href="http://antigravity.google/">Google Antigravity</a>, Gemini 3 Pro provides the reliability needed for complex, agentic architectures.</li><li data-block-key="dltth"><b>Vibe code with Gemini 3 Pro:</b> <a href="https://aistudio.google.com/prompts/new_chat?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Google AI Studio</a> is your fastest path to bring any idea to life. Get started in <a href="https://aistudio.google.com/apps?utm_source=the_keyword&amp;utm_medium=blog&amp;utm_campaign=g3-q4-25">Build mode</a> to generate a fully functional app with a single prompt. And if you need a little inspiration, click “I’m feeling lucky” and let Gemini 3 Pro handle the creative spark and the code implementation simultaneously.</li></ul><p data-block-key="e4gk4">The software landscape is shifting. As AI changes <i>who</i> builds and <i>how</i> they build, we are committed to meeting you where you are — giving you the tools to push the boundaries of what’s possible.</p><p data-block-key="7vfei">This is just the start of the Gemini 3 era but we can’t wait to see what you build with Gemini 3 Pro!</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Start building with Gemini 3"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google DeepMind - 
+    
+    EmbeddingGemma 2: an open, lightweight multimodal embedding model
+    
+    
+      - By Sahil Dua& Henrique Schechter Vera
+    
+    
+      - Oct 06, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - google deepmind"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - google deepmind",
+  "article_name": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+  "author_name": "Sahil Dua, Henrique Schechter Vera",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/embeddinggemma2-banne.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google DeepMind
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        EmbeddingGemma 2: an open, lightweight multimodal embedding model
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Sahil Dua
+          
+            & 
+            Henrique Schechter Vera
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

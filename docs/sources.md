@@ -21,6 +21,8 @@ A source URL may not contain a username or password (`user:pass@host`). The conf
 when it loads, and the error does not repeat the URL. The fetchers refuse such a URL as well.
 Keep secrets in `.env`.
 
+An article page fetched to fill a missing summary may also be redirected to any other host in the list above (same rules: https only, same port); a redirect to any other host leaves the summary empty.
+
 ## How each feed was checked
 
 On **2026-10-16** every URL below was fetched live (GET, redirects followed, 20 s timeout) and

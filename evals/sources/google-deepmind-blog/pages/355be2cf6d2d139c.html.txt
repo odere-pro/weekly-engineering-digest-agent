@@ -1,0 +1,3148 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Introducing Gemini 3.8 Flash and 3.8 Flash Cyber</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Gemini 3.8 Flash and 3.8 Flash Cyber deliver next-generation intelligence for agentic workflows and cybersecurity."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Tulsee Doshi, Raluca Ada Popa"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"/>
+
+<meta property="og:description" content="Gemini 3.8 Flash and 3.8 Flash Cyber deliver next-generation intelligence for agentic workflows and cybersecurity." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__16-9__light.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-09-02" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/" />
+<meta name="twitter:title" content="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"/>
+<meta name="twitter:description" content="Gemini 3.8 Flash and 3.8 Flash Cyber deliver next-generation intelligence for agentic workflows and cybersecurity." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__16-9__light.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="86127" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-09-02T15:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Gemini models" />
+  <meta name="authors" content="Tulsee Doshi,Raluca Ada Popa" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+  <link rel="alternate" hreflang="x-default" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/">
+
+  <link rel="alternate" hreflang="en-us" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/">
+
+  <link rel="alternate" hreflang="es" href="https://blog.google/intl/es-419/actualizaciones-de-producto/3-8-flash-and-3-8-flash-cyber/">
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "topics - gemini models",
+    "secondary_tags": "undefined",
+    
+      "landing_page_tags": "undefined",
+    
+    
+      "article_name": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+      "author_name": "Tulsee Doshi, Raluca Ada Popa",
+    
+    "publish_date": "2026-09-02|15:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "44",
+    
+      "content_category": "Topics - Gemini models",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Introducing Gemini 3.8 Flash and 3.8 Flash Cyber</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Sep 02, 2026</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber%20%40google&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber&u=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/&title=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber&body=Check out this article on the Keyword:%0A%0AIntroducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber%0A%0AGemini 3.8 Flash and 3.8 Flash Cyber deliver next-generation intelligence for agentic workflows and cybersecurity.%0A%0Ahttps://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Our newest Gemini models deliver next-generation intelligence for agentic workflows and cybersecurity.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+          
+          <a href="https://blog.google/authors/tulsee-doshi/" class="uni-article-hero__author-link">
+        
+            <p class="uni-article-hero__author-name font-author-name">Tulsee Doshi</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Senior Director, Product Management</p>
+              
+            
+        
+          </a>
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Raluca Ada Popa</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Gemini Security Lead, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber%20%40google&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber&u=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/&title=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber&body=Check out this article on the Keyword:%0A%0AIntroducing%20Gemini%203.8%20Flash%20and%203.8%20Flash%20Cyber%0A%0AGemini 3.8 Flash and 3.8 Flash Cyber deliver next-generation intelligence for agentic workflows and cybersecurity.%0A%0Ahttps://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="a hero image reading &quot;Gemini 3.8 Flash and 3.8 Flash Cyber&quot;"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__1.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__1.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__1.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8_flash__blog__header__.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="m7vz6">Building on the momentum of <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/">3.7 Flash</a> from three weeks ago and marking our third Flash release in only six weeks, today we’re introducing Gemini 3.8, our best reasoning and coding model yet, at the same speed and low cost of 3.7. Gemini 3.8 introduces 2 variants:</p><ul><li data-block-key="f5req"><b>Gemini 3.8 Flash:</b> our most intelligent workhorse model, delivering significant improvements from 3.7 Flash across software engineering, agentic tasks, and critical, multi-step reasoning in specialized domains. It is available at the same introductory price 
+
+<a class="superscript"
+    data-ga4-analytics-superscript-click
+    data-tooltip-content-id="footnote-content-1"
+    data-target="inline text"
+    href="#footnote-1"
+    id="footnote-source-1"
+    aria-label="Jump to link reference 1"><sup>1</sup></a>
+ as 3.7 Flash at $0.75 per million input tokens and $3.75 per million output tokens.</li><li data-block-key="ac8v2"><b>Gemini 3.8 Flash Cyber:</b> our most capable cybersecurity model with frontier-level performance in vulnerability detection and automated patching, available to trusted defenders through our new <a href="https://deepmind.google/fairwind-program/">Fairwind Program</a>.</li></ul><p data-block-key="bla5l">While tailored for different deployment environments, both of today's releases are powered by the same foundational intelligence, and further accelerated by long-running agentic loops designed to recursively evaluate and refine the underlying models. The significant coding and reasoning gains across this shared core were driven by a number of innovations, including rigorous training in the highly demanding domain of cybersecurity.</p><h2 data-block-key="2s8i1">Gemini 3.8 Flash: built for long-horizon coding and autonomous agents</h2><p data-block-key="9a70s">Gemini 3.8 Flash delivers substantial gains from 3.7 Flash, often approaching the performance of higher-cost frontier models.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="comparison chart showing Gemini 3.8 Flash and other models"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_light_1.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="comparison chart showing Gemini 3.8 Flash and other models"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_l.width-1200.format-webp_2pLdBp5.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_li.width-500.format-webp_FiWaNBr.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_li.width-800.format-webp_nBHyWhs.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_l.width-1200.format-webp_2pLdBp5.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_l.width-1600.format-webp_Wve9Xvj.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash__evals__table_l.width-2000.format-webp_66O8lls.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="7p3ej"><b>On DeepSWE v1.1 (Long-Horizon Software Engineering</b>) 3.8 Flash outperforms most larger frontier models in autonomously solving complex engineering problems end to end, only at a fraction of the cost.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="chart showing Gemini 3.8 Flash DeepSWE v1.1"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe-plot__light.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="chart showing Gemini 3.8 Flash DeepSWE v1.1"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe-.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe-.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__evals__deepswe.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="m7vz6">Additionally, 3.8 Flash exhibits the dependability required for critical enterprise autonomy, across specialized knowledge domains<b>.</b> In quantitative and professional fields that require advanced analysis and reporting, 3.8 Flash outperforms 3.7 Flash and other frontier models in benchmarks like <a href="https://www.vals.ai/benchmarks/fabv2">Vals Finance Agent V2</a> and <a href="https://www.vals.ai/benchmarks/hlab">Harvey's Legal Agent Benchmark</a>. 3.8 Flash also achieves a 54.9% on HLE-Verified, demonstrating its ability to handle multi-step reasoning across STEM, humanities, and professional fields.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="0"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="chart showing Gemini 3.8 Flash Vals Finance Agent v2"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="chart showing Gemini 3.8 Flash Vals Finance Agent v2"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_vals-finan.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_vals-finan.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_vals-fina.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="1"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="a chart showing Gemini 3.8 Flash Harvey&#x27;s Legal Agent Benchmark"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="a chart showing Gemini 3.8 Flash Harvey&#x27;s Legal Agent Benchmark"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_harveys-le.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_harveys-le.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_harveys-l.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="2"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="a chart showing Gemini 3.8 Flash HLE-Verified"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="a chart showing Gemini 3.8 Flash HLE-Verified"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_HLE_light.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_HLE_light.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_HLE_light.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="0vkqt">These performance gains stem from a core design choice: 3.8 Flash works harder. On complex tasks, it exhibits greater diligence — executing extra reasoning steps, and calling tools iteratively. At times, the model might use more tokens to maximize performance, especially at higher effort levels.</p><p data-block-key="937k4">For applications where compute efficiency is the primary constraint, developers can utilize lower effort levels to minimize token overhead or continue to rely on Gemini 3.7 Flash, which remains fully supported for efficiency-first workloads.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="0"
+  accordion-header="Gemini 3.8 Flash built this game with a simple prompt using a looping instruction in Google Antigravity. The game uses puzzles, environmental storytelling, and textures generated with Nano Banana to create an immersive 3D level in which you play a wizard navigating a castle."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Chronomancers_Blog_noVO_V1.mp4"
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="an MP4 showing how Gemini 3.8 Flash built a game"
+  video-title="Chronomancers blog"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="yb8yh">Gemini 3.8 Flash built this game with a simple prompt using a looping instruction in Google Antigravity. The game uses puzzles, environmental storytelling, and textures generated with Nano Banana to create an immersive 3D level in which you play a wizard navigating a castle.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="1"
+  accordion-header="Gemini 3.8 Flash builds a fully functional DOS version of Google Maps in a single prompt in Google Antigravity that is fully playable with locations, directions, and Street View."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/DOSmaps_Blog_V3.mp4"
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="MP4 showing how Gemini 3.8 Flash builds a fully functional DOS version of Google Maps"
+  video-title="DOSmaps"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="klb9x">Gemini 3.8 Flash builds a fully functional DOS version of Google Maps in a single prompt in Google Antigravity that is fully playable with locations, directions, and Street View.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="2"
+  accordion-header="Explore realtime cross-sections, 2D projections, scientific explanations in a topographic map of famous geographical sites built with Gemini 3.8 Flash in Google Antigravity using real datasets from the U.S. Geological Survey."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Google_Gemini_Topo_Map_16x9_v04.mp4"
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="an MP4 showing real-time maps of famous sites built with Gemini 3.8 Flash in Google Antigravity"
+  video-title="Google Gemini Topo Map"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="9zxn8">Explore realtime cross-sections, 2D projections, scientific explanations in a topographic map of famous geographical sites built with Gemini 3.8 Flash in Google Antigravity using real datasets from the U.S. Geological Survey.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="3"
+  accordion-header="Hardware Anatomy is an interactive 3D visualizer built with Gemini 3.8 Flash in Google AI Studio that generates realistic Three.js renderings of physically-proportioned teardowns for hardware devices. It automatically decomposes devices into layers you can explode and inspect with a deconstruction slider."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/HardwareAnatomy_Blog_V1.mp4"
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="MP4 showing Hardware Anatomy, an interactive 3D vizualizer built with Gemini 3.8 Flash in Google AI Studio"
+  video-title="Hardware Anatomy Blog"
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="wb3yr">Hardware Anatomy is an interactive 3D visualizer built with Gemini 3.8 Flash in Google AI Studio that generates realistic Three.js renderings of physically-proportioned teardowns for hardware devices. It automatically decomposes devices into layers you can explode and inspect with a deconstruction slider.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="0vkqt">Gemini 3.8 Flash Cyber: expert cyber performance</h2><p data-block-key="40vqu">Gemini 3.8 Flash Cyber, available to a set of trusted defenders via the <a href="https://blog.google/innovation-and-ai/technology/safety-security/fairwind-program">Fairwind Program</a>, provides a decisive advantage in today’s complex cybersecurity landscape, with the Flash speed and cost that enables quick iteration.</p><h3 data-block-key="a6ebn">Autonomous vulnerability discovery</h3><p data-block-key="aa54h">On the standard industry benchmark for finding vulnerabilities, CyberGym, Gemini 3.8 Flash Cyber demonstrates frontier-level performance in autonomous vulnerability discovery. It surpasses both 3.5 Flash Cyber as well as significantly larger frontier models.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="a chart showing Gemini 3.8 Flash Cyber CyberGym Pass@1"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergym_light.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="a chart showing Gemini 3.8 Flash Cyber CyberGym Pass@1"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergy.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergym.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergym.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergy.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergy.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__cybergy.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="dnxei">To better capture real-world defensive needs which are not limited to just C/C++ codebases like in CyberGym, we also evaluated Gemini 3.8 Flash Cyber against a comprehensive internal benchmark in which the model has to discover a wide range of vulnerabilities across complex codebases spanning 20 programming languages. Here, the model showcases an impressive leap over our previous models and reaches a success rate exceeding 70%.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Chart showing Gemini 3.8 Flash Cyber real world vulnerability discovery"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vulnerability_light.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Chart showing Gemini 3.8 Flash Cyber real world vulnerability discovery"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vuln.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vulne.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vulne.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vuln.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vuln.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-cyber__evals__rw-vuln.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="dnxei">Automated patching</h3><p data-block-key="6a28f">With Gemini 3.8 Flash Cyber, we focused specifically on equipping defenders with expert capabilities that give them an advantage over attackers. This is why we have invested in vulnerability fixing from the start, and prioritized it over offensive capabilities like exploitation.</p><p data-block-key="55sav"><a href="https://cwe-bench.com/#leaderboard">CWE-Bench</a>, run by Collinear, is a challenging external benchmark for patching capabilities. On this benchmark, Gemini 3.8 Flash Cyber is on the Pareto frontier: with a pass@1 of 47.2% compared to a leading frontier model at 47.8%, yet offered at a significantly lower cost.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Chart showing Gemini 3.8 Flash Cyber StaticBench Pass@1 vs Cost Per Rollout"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-bench_light.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Chart showing Gemini 3.8 Flash Cyber StaticBench Pass@1 vs Cost Per Rollout"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-ben.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-benc.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-benc.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-ben.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-ben.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-cyber__evals__cwe-ben.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="dnxei">Real-world impact: securing Google’s code</h3><p data-block-key="7nblu">We’re already using Gemini 3.8 Flash Cyber to secure code across Google. For example:</p><ul><li data-block-key="68nej">The Chrome Security team found that 3.8 Flash Cyber produced 2.6 times more correct patches to vulnerabilities in Chrome than the best commercial models that are much larger.</li><li data-block-key="1kg3h">Wiz found that Gemini 3.8 Flash Cyber achieves +7.5-9.7% higher recall on their internal penetration testing benchmark for a 2.3-5.2x lower cost compared to other leading frontier models.</li><li data-block-key="apdj1">Google’s Cloud Vulnerability Research team leveraged the 3.8 Flash Cyber model to find a critical foundational vulnerability in less than 2 hours, a vulnerability for which research and discovery usually takes months.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="4l9og">What our Fairwind Program partners are saying</h2></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="0"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="quote from David Slater, Founder and Chief Architect, Armadin"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="quote from David Slater, Founder and Chief Architect, Armadin"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__ar.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__ar.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__a.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="1"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="quote from Charlie Sestito, Director, Office of the CTO, Palo Alto Networks"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="quote from Charlie Sestito, Director, Office of the CTO, Palo Alto Networks"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__pa.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__pa.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__p.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="2"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="quote from Mayank Upadhyay, CSTO, Snowflake"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="quote from Mayank Upadhyay, CSTO, Snowflake"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__sn.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__sn.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__s.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="3"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  alt-text="quote from Gal Nagli, Head of Threat Exposure, Wiz"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="quote from Gal Nagli, Head of Threat Exposure, Wiz"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__wi.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__wi.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3-8-flash__testimonial__w.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="a video of Gemini 3.8 Flash Cyber Launch"
+    external-image=""
+    or-mp4-video-title="Cyber Launch video"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/Gemini_3.8_Flash_Cyber_Launch_32Mb_hWy2GEU.mp4"
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+      poster-image-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/wagtailvideo-lh8p7b77_thumb.jpg"
+    
+    
+    
+      
+    
+    
+    
+    
+  >
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="dnxei">Built with safety in mind</h2><p data-block-key="49bap">3.8 Flash ships with safeguards against misuse in the domains of Chemical, Biological, Radiological, and Nuclear (CBRN) and cyber offense, while enabling beneficial use cases, as per our <a href="https://deepmind.google/blog/strengthening-our-frontier-safety-framework/">Frontier Safety Framework</a>. 3.8 Flash Cyber ships with a more permissive set of mitigations for cybersecurity, and as such, is only available to trusted defenders who require a more comprehensive set of cyber capabilities.</p><p data-block-key="6ci2h">Gemini 3.8 models have also made a significant leap in prompt injection robustness as measured by Gray Swan, protecting Gemini model users from prompt-injection related malicious attacks.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="a chart showing Gemini 3.8 Flash Cyber Gray Swan IPI Benchmark"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__light.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="a chart showing Gemini 3.8 Flash Cyber Gray Swan IPI Benchmark"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__l.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__li.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__li.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__l.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__l.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-3.8-flash_evals_attack__l.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="dnxei">Gemini 3.8 Flash and Cyber: get started today</h2><ul><li data-block-key="ebl9k"><b>Developers</b>: Build with 3.8 Flash and explore agent-first workflows in <a href="https://antigravity.google/">Google Antigravity</a> or start building today in the Gemini API via <a href="https://aistudio.google.com/prompts/new_chat?model=gemini-3.8-flash">Google AI Studio</a> and <a href="https://developer.android.com/studio">Android Studio</a>, or generate UIs in <a href="http://stitch.withgoogle.com/">Stitch</a>. Get started with our <a href="https://ai.google.dev/gemini-api/docs/latest-model">developer docs</a>.</li><li data-block-key="5rct3"><b>Enterprises</b>: Access 3.8 Flash in <a href="https://console.cloud.google.com/agent-platform/studio/multimodal?mode=prompt&amp;model=gemini-3.8-flash">Gemini Enterprise.</a></li><li data-block-key="eut3v"><b>Consumers</b>: 3.8 Flash is available to Google AI Pro and Ultra subscribers across the <a href="http://gemini.google.com/">Gemini app</a>, <a href="http://google.com/ai">AI Mode</a> in Google Search and Gemini in <a href="http://sheets.new/">Google Sheets</a>.</li><li data-block-key="fps0p"><b>Cyber:</b> Through our new <a href="https://blog.google/innovation-and-ai/technology/safety-security/fairwind-program">Fairwind Program</a>, we’re providing trusted government authorities, as well as critical infrastructure operators and software maintainers with prioritized access to Gemini 3.8 Flash Cyber. <a href="https://deepmind.google/fairwind-program/">Apply for access</a>.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+  
+
+
+
+
+
+
+ 
+
+  <uni-footnotes
+    
+      layout="article"
+    
+    >
+    <div class="uni-footnotes__slot" slot="footnotes-slot">
+      
+        <div id="footnote-1"
+          class="uni-footnotes__text">
+          <a class="uni-footnotes__index font-body-m"
+            title="Jump up"
+            href="#footnote-source-1"
+            aria-label="Jump up to link reference 1"
+            data-ga4-analytics-superscript-click
+            data-target="footer">
+            <span>1</span>
+          </a>
+          <div><div class="rich-text"><p data-block-key="ex0xj"><i>Introductory price expires on December 31, 2026. Starting January 1, 2027, $1.50/1M input tokens and $7.50/1M output tokens will apply.</i></p></div></div>
+        </div>
+      
+    </div>
+  </uni-footnotes>
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    See what 4 builders are making with Gemini 3.8 Flash
+    
+    
+      - By Lindsey Lanquist
+    
+    
+      - Sep 28, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "See what 4 builders are making with Gemini 3.8 Flash",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "See what 4 builders are making with Gemini 3.8 Flash",
+  "author_name": "Lindsey Lanquist",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        See what 4 builders are making with Gemini 3.8 Flash
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Lindsey Lanquist
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

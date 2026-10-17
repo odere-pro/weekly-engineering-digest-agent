@@ -1,0 +1,2764 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Introducing Agentic Video in Gemini</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="We’re launching agentic video understanding across our latest Gemini models for improved accuracy and lower costs and token usage."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Rohan Doshi, Mario Lučić"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Introducing agentic video understanding with Gemini"/>
+
+<meta property="og:description" content="We’re launching agentic video understanding across our latest Gemini models for improved accuracy and lower costs and token usage." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-header.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2026-09-01" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/" />
+<meta name="twitter:title" content="Introducing agentic video understanding with Gemini"/>
+<meta name="twitter:description" content="We’re launching agentic video understanding across our latest Gemini models for improved accuracy and lower costs and token usage." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-header.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="86108" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2026-09-01T17:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Gemini models" />
+  <meta name="authors" content="Rohan Doshi,Mario Lučić" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+          <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap">
+</noscript>
+
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Introducing Agentic Video in Gemini",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "topics - gemini models",
+    "secondary_tags": "undefined",
+    
+      "landing_page_tags": "undefined",
+    
+    
+      "article_name": "Introducing agentic video understanding with Gemini",
+      "author_name": "Rohan Doshi, Mario Lučić",
+    
+    "publish_date": "2026-09-01|17:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "45",
+    
+      "content_category": "Topics - Gemini models",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--blue"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Introducing agentic video understanding with Gemini</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Sep 01, 2026</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20agentic%20video%20understanding%20with%20Gemini%20%40google&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20agentic%20video%20understanding%20with%20Gemini&u=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/&title=Introducing%20agentic%20video%20understanding%20with%20Gemini"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20agentic%20video%20understanding%20with%20Gemini&body=Check out this article on the Keyword:%0A%0AIntroducing%20agentic%20video%20understanding%20with%20Gemini%0A%0AWe’re launching agentic video understanding across our latest Gemini models for improved accuracy and lower costs and token usage.%0A%0Ahttps://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Our new agentic feature for video analysis cuts token consumption by up to 88%, reduces costs by up to 66%, and boosts quality by up to 7%.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Rohan Doshi</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Senior Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Mario Lučić</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Research Director, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20agentic%20video%20understanding%20with%20Gemini%20%40google&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20agentic%20video%20understanding%20with%20Gemini&u=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/&title=Introducing%20agentic%20video%20understanding%20with%20Gemini"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20agentic%20video%20understanding%20with%20Gemini&body=Check out this article on the Keyword:%0A%0AIntroducing%20agentic%20video%20understanding%20with%20Gemini%0A%0AWe’re launching agentic video understanding across our latest Gemini models for improved accuracy and lower costs and token usage.%0A%0Ahttps://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-agentic-video-in-gemini/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Text &quot;Agentic video understanding&quot; next to the Gemini logo, all on a dark blue background"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-hea.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-hea.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-hea.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-he.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-he.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video___keyword__blog-he.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Workaround for Safari: Safari fails to resolve linear gradients defined in external SVG sprites when referenced via <use>. Inlining them here makes them available in the DOM for the page. -->
+ 
+
+<div class="audio-player-tts"
+     data-component="uni-audio-player-tts"
+     uni-l10n='{
+       "stop": "Pause article audio description",
+       "play": "Play article audio description",
+       "progress": "Current audio progress minutes with seconds: [[progress]]",
+       "duration": "Duration of the audio minutes with seconds: [[duration]]",
+       "settings": "Click for settings",
+       "timeText": "[[duration]] minutes"
+     }'
+     data-analytics-module='{
+      "module_name": "Audio TTS",
+      "section_header": "Introducing agentic video understanding with Gemini"
+     }'
+     data-tts-audios='[
+      
+        {"voice_name": "Umbriel",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86108_umbriel_2026_09_01_17_44_39.mp3",
+        "mimetype": "audio/mpeg"},
+      
+        {"voice_name": "Gacrux",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86108_gacrux_2026_09_01_17_44_35.mp3",
+        "mimetype": "audio/mpeg"}
+      ]'>
+  <audio
+    class="audio-player-tts__player"
+    title="Introducing agentic video understanding with Gemini">
+      <source
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_86108_umbriel_2026_09_01_17_44_39.mp3"
+        type="audio/mpeg" />
+      <p>Your browser does not support the audio element.</p>
+  </audio>
+  <div class="audio-player-tts__container"  aria-label="">
+    <div class="audio-player-tts__content">
+      <button class="audio-player-tts__preview-play" aria-label="Play article audio description">
+         
+
+      </button>
+      <div class="audio-player-tts__text-content">
+        <span class="audio-player-tts__text-content--title font-ctas">
+          Listen to article
+        </span>
+        <div class="audio-player-tts__duration font-caption">[[duration]] minutes</div>
+        <span class="audio-player-tts__disclaimer" tabindex="0" role="tooltip" aria-label="This content is generated by Google AI. Generative AI is experimental">
+          <div class="audio-player-tts__disclaimer--copy font-body-s">This content is generated by Google AI. Generative AI is experimental</div>
+           
+
+        </span>
+      </div>
+      <button class="audio-player-tts__pause" aria-label="Pause article audio description">
+         
+
+         
+
+      </button>
+      <div class="audio-player-tts__console">
+        <div class="audio-player-tts__time-bar">
+          <span class="audio-player-tts__current-time font-body-s"></span>
+          <div class="audio-player-tts__timeline-slider-container">
+            <input type="range" class="timeline__slider" max="100" value="0" step="5" aria-valuetext="Audio Slider" aria-label="Audio Slider" tabindex="0" role="slider">
+          </div>
+          <span class="audio-player-tts__duration-time font-body-s"></span>
+        </div>
+        <button class="audio-player-tts__audio-settings" aria-label="Click for settings">
+           
+
+        </button>
+        <div class="audio-player-tts__settings-container">
+          <div class="audio-player-tts__settings--main uni-cta-text">
+            <button class="audio-player-tts__settings--current-voice" aria-label="Click to change voice">
+              <span class="audio-player-tts__settings--current-voice-info">
+                 
+
+                <span>Voice</span>
+              </span>
+              <span class="audio-player-tts__settings--current-voice-next">
+                <span class="audio-player-tts__settings--current-voice-text font-body-s" ></span>
+                 
+
+              </span>
+            </button>
+            <button class="audio-player-tts__settings--current-speed" aria-label="Click to change speed">
+              <span class="audio-player-tts__settings--current-speed-info">
+                   
+
+                  <span>Speed</span>
+                </span>
+                <span class="audio-player-tts__settings--current-speed-next">
+                  <span class="audio-player-tts__settings--current-speed-text font-body-s"></span>
+                   
+
+                </span>
+            </button>
+          </div>
+          <div class="audio-player-tts__settings--voices uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Voice</span></button>
+          </div>
+          <div class="audio-player-tts__settings--speeds uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Speed</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="0.75" aria-label="speed 0.75X"><span>0.75X</span></button>
+            <button class="audio-player-tts__settings-option audio-player-tts__settings-option--selected" data-speed="1" aria-label="speed 1X"><span>1X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="1.5" aria-label="speed 1.5X"><span>1.5X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="2" aria-label="speed 2X"><span>2X</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google just launched agentic video understanding for Gemini 3.7 Flash, 3.6 Flash, and 3.5 Flash-Lite. This feature allows the model to dynamically scan video segments, which improves accuracy while cutting token usage by up to 88% and costs by up to 66%. You can start using this today by setting your API configuration to "agentic" in Google AI Studio or the Gemini Enterprise Agent Platform.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="xsvr3">Today, we’re launching <a href="https://ai.google.dev/gemini-api/docs/video-understanding#agentic-video-understanding">agentic video understanding</a> across our latest models: Gemini 3.7 Flash, 3.6 Flash and 3.5 Flash-Lite. This new capability improves accuracy while dramatically reducing token usage and costs for video analysis. Similar to <a href="https://blog.google/innovation-and-ai/technology/developers-tools/agentic-vision-gemini-3-flash/">agentic vision</a>, which combines code execution with Gemini models’ native image understanding, agentic video understanding uses Gemini’s native video tools to improve performance and unlock new capabilities for video processing like sub-second moment retrieval, more accurate anomaly detection, precise counting and more.</p><p data-block-key="e2os0">The feature is available today for video uploads and YouTube videos via the Gemini API in Google AI Studio and the Gemini Enterprise Agent Platform.</p><h2 data-block-key="ab9hu">Benchmarks</h2><p data-block-key="dedeo">Unlike current ‘static’ processing, where the model ingests the video at a fixed frames-per-second rate (default 1 FPS, adjustable via API), agentic video understanding pairs the model’s core reasoning with native video tools to dynamically search, scan, and inspect target video segments across visual frames, audio, and transcripts. Across standard video analysis benchmarks, Gemini models with agentic video understanding <b>reduce analysis costs by up to 66% and token consumption by up to 88%, while improving accuracy by up to 7%.</b></p><p data-block-key="6p6eh">These efficiency gains are especially pronounced on long-form video (from 10-minute how-to guides to 90-minute lectures and multi-hour recordings), where static processing forces developers to choose between high token costs or techniques that drop critical details.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Graphs analyzing token efficiency and accuracy gains"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing agentic video understanding with Gemini"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ybo46">Activating agentic video understanding drops token consumption by up to 88% and boosts accuracy by up to 7% with Gemini 3.7 Flash.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Graphs analyzing token efficiency and accuracy gains"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="xsvr3">While these gains span all three supported models, Gemini 3.7 Flash with agentic understanding offers the best possible quality overall and the best combination of quality and cost efficiency, putting it at the accuracy-to-cost pareto frontier among tested models for video understanding.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Graph with &quot;Cost per query&quot; on the x-axis and &quot;Accuracy&quot; on the y-axis"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing agentic video understanding with Gemini"
+    
+    
+    
+    
+      external-link="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.original.png"
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="ybo46">Using agentic video understanding places Gemini 3.7 Flash at the accuracy-to-cost pareto frontier for video analysis.</p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Graph with &quot;Cost per query&quot; on the x-axis and &quot;Accuracy&quot; on the y-axis"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__evals_table2.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="xsvr3">How it works</h2><p data-block-key="m944">Instead of static processing where the model ingests media streams at a fixed frame rate, agentic video understanding enables Gemini to take an active, goal-directed role in determining <i>what</i> to watch, at <i>what</i> speed, and through <i>which</i> modality (frames, audio, or transcript), fetching only the moments and signals needed. While developers could previously do this manually, with agentic video understanding, Gemini can accomplish it through an agentic loop, invoking an internal tool to load the relevant part of the video file, significantly reducing development overheads.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Diagram of the process from Query to Output"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Introducing agentic video understanding with Gemini"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="Diagram of the process from Query to Output"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-1200.format-webp.webp"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-500.format-webp.webp 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-800.format-webp.webp 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video__diagram.width-2000.format-webp.webp 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="xsvr3">Capabilities and use cases</h2><p data-block-key="31ruh">Agentic video understanding transforms how developers can process long-form video content across a variety of demanding applications.</p><ul><li data-block-key="ado4f"><b>Sub-second moment retrieval</b>: Pinpoint split-second state changes and tight cut boundaries that are easily missed at 1 FPS, making precise automated video editing possible.</li><li data-block-key="1qlqt"><b>Long-form needle-in-a-haystack search</b>: Answer complex queries across multi-hour videos without consuming millions of tokens.</li><li data-block-key="4emfi"><b>Anomaly detection</b>: Resample interesting time windows at higher FPS to inspect rapid motion and subtle visual artifacts.</li><li data-block-key="f64tr"><b>Counting action &amp; object</b>: Accurately track repeated physical movements and distinct objects over time.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="0"
+  accordion-header="Token-efficient long-form video analysisSee how Gemini 3.7 Flash performs with and without agentic video understanding on LongVideoBench, a long-form video understanding benchmark. Notice the large token reductions and accuracy improvements."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/SxS_LVBench_with_end_card.mp4"
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="video of side by side comparison of how Gemini 3.7 flash performs with and without agentic video understanding"
+  video-title="SxS LV Bench"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="kydg2"><b><i>Token-efficient long-form video analysis</i></b></p><p data-block-key="cankt"><i>See how Gemini 3.7 Flash performs with and without agentic video understanding on LongVideoBench, a long-form video understanding benchmark. Notice the large token reductions and accuracy improvements.</i></p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="1"
+  accordion-header="Accurate fast action analysis with dynamic FPSWith agentic video understanding, 3.7 Flash is able to accurately count a fast-paced movement by scanning and rewatching the video at different frames per second, as needed."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/AgenticVideo_Jumping_Jacks_Final_1.mp4"
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="a video showing agentic video understanding, 3.7 Flash is able to accurately count a fast-paced movement by scanning and rewatching the video at different frames per second, as needed."
+  video-title="Jumping"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="kydg2"><b><i>Accurate fast action analysis with dynamic FPS</i></b></p><p data-block-key="33rec"><i>With agentic video understanding, 3.7 Flash is able to accurately count a fast-paced movement by scanning and rewatching the video at different frames per second, as needed.</i></p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="2"
+  accordion-header="Token-efficient needle-in-a-haystack searchUsing agentic video understanding, Gemini 3.7 is able to accurately answer complex questions based on the content of the video while consuming a significantly lower number of tokens compared to static analysis."
+>
+  <div slot="content">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Video",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/KW_SxS-needle_Blog_V1.mp4"
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="a video comparing Gemini 3.7 flash with and without agentic video understanding supports"
+  video-title="KW SxS"
+  
+  
+    
+  
+  
+  >
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="kydg2"><b>Token-efficient needle-in-a-haystack search</b></p><p data-block-key="ffckd"><i>Using agentic video understanding, Gemini 3.7 is able to accurately answer complex questions based on the content of the video while consuming a significantly lower number of tokens compared to static analysis.</i></p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="yp63o">Real-world results</h2><p data-block-key="5ar2h">Many of our early access partners saw strong performance while testing with agentic video understanding. Here’s what they have to say:</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="0"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="Quote from Ponder"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Quote from Ponder"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__tes.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="1"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="Quote from Revyl"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Quote from Revyl"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-100.format-webp_IH5FVna.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-500.format-webp_ftfaloY.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__tes.width-1000.format-webp_cCrFcWZ.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="2"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="Quote from Mosaic"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Quote from Mosaic"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-100.format-webp_JwIFAZ5.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-500.format-webp_vjHOv9X.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__tes.width-1000.format-webp_hsgmVv0.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="blue"
+  
+    shapes='["4-sided-cookie", "bun", "square"]'
+  
+  data-index="3"
+  accordion-header=""
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing agentic video understanding with Gemini"
+  alt-text="Quote from Resemble.AI"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Quote from Resemble.AI"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-100.format-webp_HHQ7484.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__test.width-500.format-webp_QiRmq1q.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/agentic-video-understanding__tes.width-1000.format-webp_gnoXZEz.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="kv511">Getting started</h2><p data-block-key="7t9pe">Agentic video understanding is available via the Gemini API in <a href="https://ai.google.dev/gemini-api/docs/video-understanding#agentic-video-understanding">Google AI Studio</a> and <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/video-understanding">Gemini Enterprise Agent Platform</a>, launching across Gemini 3.7 Flash, 3.6 Flash, and 3.5 Flash-Lite. It uses standard Gemini API token pricing with no additional feature fee.</p><p data-block-key="eo4p7">To enable it, simply set processing to "agentic" in the API configuration. Read our <a href="http://ai.dev/learn/agentic-video-understanding-with-gemini">developer guide</a> to get more insights into the feature and how to get started.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<div
+  data-component="uni-code-block"
+  data-analytics-module='{
+    "module_name": "Code Block",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'
+  data-tooltip-text="Copied"
+  class="uni-code-block"
+  data-lang="py"
+  description="Code to get started with agentic video understanding">
+
+  <div class="uni-page">
+    <div class="uni-grid">
+      <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-4-desktop uni-grid__col--span-6-desktop">
+        <section class="code-block" aria-label="Code to get started with agentic video understanding">
+          <div class="code-block__container">
+            <button class="code-block__copy-btn" aria-label="Copy to clipboard">
+              <uni-icon-component icon-id="uni-icon-content-copy"></uni-icon-component>
+            </button>
+            <pre class="code-block__pre"><code class="language-py font-code-text">from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+    model=&quot;gemini-3.7-flash&quot;,
+    input=[
+        {
+            &quot;type&quot;: &quot;video&quot;,
+            &quot;uri&quot;: &quot;https://youtu.be/7Z5Vy9JBANs&quot;,
+            &quot;processing&quot;: &quot;agentic&quot;
+        },
+        {
+            &quot;type&quot;: &quot;text&quot;,
+            &quot;text&quot;: &quot;What are the 3 most important announcements in this keynote?&quot;,
+        },
+    ],
+)
+
+print(interaction.output_text)</code></pre>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="kv511">We are also bringing the efficiency and quality improvements of agentic video understanding to billions of users across Google products. The feature will roll out to all users in the Gemini app across Flash and Flash-Lite models soon. And in the coming months, agentic video understanding will also power YouTube's ‘<a href="https://support.google.com/youtube/answer/14110396?hl=en&amp;co=GENIE.Platform%3DAndroid">Ask YouTube’</a> feature on the video watch page, leveraging Gemini to deliver higher-quality answers grounded in the visuals.</p><p data-block-key="6f4l8"><b><i>Acknowledgement for their contribution to this work:</i></b> <i>Sergi Caelles, Filip Pavetić, Ahmet Iscen, Suhas Yogin, and the Agentic Vision team.</i></p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<uni-portal portal-id="article-newsletter-portal">
+
+
+<section
+  class="
+    uni-article-newsletter
+    
+      uni-article-newsletter--bottom
+      uni-article-newsletter--neutral
+    
+  "
+  data-component="uni-article-newsletter"
+  data-analytics-module='{
+    "module_name": "Newsletter",
+    "section_header": "Get the latest news from Google in your inbox"
+  }'
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      
+      <div class="uni-article-newsletter__background uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-6-desktop uni-grid__col--start-7-desktop" aria-hidden="true">
+
+        
+        <div
+          class="
+            uni-article-newsletter__shape
+            
+              uni-article-newsletter__shape--pill
+            
+          "
+          aria-hidden="true"
+        ></div>
+      </div>
+      <div class="uni-article-newsletter__inner uni-grid__col--span-12 uni-grid__col--span-6-desktop uni-grid__col--start-1">
+
+        <div class="uni-article-newsletter__form-group">
+          <h2 class="uni-article-newsletter__title font-h3">
+            Get the latest news from Google in your inbox
+          </h2>
+          <p class="uni-article-newsletter__description font-body-m">
+            Sign up for our newsletters with product updates, event information, special offers, and more.
+          </p>
+
+          <div class="uni-article-newsletter__form-container">
+            <div class="uni-article-newsletter__input-group">
+              <uni-newsletter-form
+                class="uni-landing-newsletter-form"
+                action="https://services.google.com/fb/submissions/thekeywordnewsletterprodv2/"
+                method="POST"
+                content-type="blogv2 | article page"
+                cta-override=""
+                data-error-icon-url="/static/blogv2/images/alert_error_form.svg"
+              >
+              </uni-newsletter-form>
+            </div>
+          </div>
+
+          
+
+
+
+
+<div class="uni-landing-newsletter-success is-hidden">
+  <div class="uni-landing-newsletter-success__message">
+    <div class="uni-landing-newsletter-success__logo">
+       
+
+    </div>
+    <div class="uni-landing-newsletter-success__text">
+      <p class="font-body-s">Done. Just one step more.</p>
+      <p
+        class="uni-landing-newsletter-success__text-confirm font-body-xs"
+        id="subscribe_success_label"
+        tabindex="-1"
+        role="text">
+        Check your inbox to confirm your subscription.
+      </p>
+    </div>
+  </div>
+  <p class="uni-landing-newsletter-success__final-text font-body-s">
+    You can also subscribe with a <button class="uni-landing-newsletter-success__different-email uni-anchor">different email address</button>.
+  </p>
+</div>
+
+
+          <p class="uni-article-newsletter__info font-caption">
+            Your information will be used in accordance with <a href="https://policies.google.com/privacy" target="_blank" class="uni-anchor">Google's privacy policy.</a> You may opt out at any time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</uni-portal>
+
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Introducing agentic video understanding with Gemini"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    See what 4 builders are making with Gemini 3.8 Flash
+    
+    
+      - By Lindsey Lanquist
+    
+    
+      - Sep 28, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "See what 4 builders are making with Gemini 3.8 Flash",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "See what 4 builders are making with Gemini 3.8 Flash",
+  "author_name": "Lindsey Lanquist",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        See what 4 builders are making with Gemini 3.8 Flash
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Lindsey Lanquist
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

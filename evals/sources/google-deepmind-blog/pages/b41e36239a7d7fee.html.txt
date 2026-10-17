@@ -1,0 +1,3703 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Nano Banana Pro: Gemini 3 Pro Image model from Google DeepMind</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="Nano Banana Pro is our new image generation and editing model from Google DeepMind."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Naina Raisinghani"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Introducing Nano Banana Pro"/>
+
+<meta property="og:description" content="Nano Banana Pro is our new image generation and editing model from Google DeepMind." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananaprohero.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/innovation-and-ai/products/nano-banana-pro/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2025-11-20" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/innovation-and-ai/products/nano-banana-pro/" />
+<meta name="twitter:title" content="Introducing Nano Banana Pro"/>
+<meta name="twitter:description" content="Nano Banana Pro is our new image generation and editing model from Google DeepMind." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananaprohero.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="82677" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2025-11-20T15:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="AI Products,Gemini App,Search,Gemini models" />
+  <meta name="authors" content="Naina Raisinghani" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/innovation-and-ai/products/nano-banana-pro/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+  <link rel="alternate" hreflang="x-default" href="https://blog.google/innovation-and-ai/products/nano-banana-pro/">
+
+  <link rel="alternate" hreflang="en-us" href="https://blog.google/innovation-and-ai/products/nano-banana-pro/">
+
+  <link rel="alternate" hreflang="fr-ca" href="https://blog.google/intl/fr-ca/produits/explorez-obtenez-des-reponses/nano-banana-pro/">
+
+  <link rel="alternate" hreflang="pt-br" href="https://blog.google/intl/pt-br/produtos/explore-e-encontre-respostas/nano-banana-pro/">
+
+  <link rel="alternate" hreflang="es" href="https://blog.google/intl/es-419/actualizaciones-de-producto/informacion/nano-banana-pro/">
+
+  <link rel="alternate" hreflang="th-th" href="https://blog.google/intl/th-th/products/consumer-products/nano-banana-pro/">
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Nano Banana Pro: Gemini 3 Pro Image model from Google DeepMind",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "products - ai products",
+    "secondary_tags": "Gemini models,Gemini App,Search",
+    
+      "landing_page_tags": "topics - gemini models|products - gemini app|products - search",
+    
+    
+      "article_name": "Introducing Nano Banana Pro",
+      "author_name": "Naina Raisinghani",
+    
+    "publish_date": "2025-11-20|15:00",
+    "hero_media": "video",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "330",
+    
+      "content_category": "Products - AI Products",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Introducing Nano Banana Pro</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                  <p class="uni-article-hero__date font-body-s">Nov 20, 2025</p>
+                
+                
+                  <span class="uni-article-hero__meta-aside-divider font-body-s">|</span>
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20Nano%20Banana%20Pro%20%40google&url=https://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20Nano%20Banana%20Pro&u=https://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/products/nano-banana-pro/&title=Introducing%20Nano%20Banana%20Pro"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20Nano%20Banana%20Pro&body=Check out this article on the Keyword:%0A%0AIntroducing%20Nano%20Banana%20Pro%0A%0ANano Banana Pro is our new image generation and editing model from Google DeepMind.%0A%0Ahttps://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/products/nano-banana-pro/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+              <p class="uni-article-hero__abstract font-body-xl">
+                Turn your visions into studio-quality designs with unprecedented control, improved text rendering and enhanced world knowledge.
+              </p>
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author uni-article-hero__author--one-author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Naina Raisinghani</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Product Manager, Google DeepMind</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Introducing%20Nano%20Banana%20Pro%20%40google&url=https://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Introducing%20Nano%20Banana%20Pro&u=https://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/innovation-and-ai/products/nano-banana-pro/&title=Introducing%20Nano%20Banana%20Pro"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Introducing%20Nano%20Banana%20Pro&body=Check out this article on the Keyword:%0A%0AIntroducing%20Nano%20Banana%20Pro%0A%0ANano Banana Pro is our new image generation and editing model from Google DeepMind.%0A%0Ahttps://blog.google/innovation-and-ai/products/nano-banana-pro/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/innovation-and-ai/products/nano-banana-pro/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        <div class="uni-article-hero__youtube-container">
+  <div class="uni-article-hero__aspect-ratio">
+    
+
+
+
+<uni-youtube-player-hero
+  index="0"
+  thumbnail-alt="Nano Banana Pro with generated images around it"
+  component-title="Introducing Nano Banana Pro"
+  video-id="UQsJIo46ZR8"
+  video-type="video"
+  
+    
+    
+    
+    image="nanobananaprohero"
+    video-image-url-lazy="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananaprohero.width-100.format-webp.webp"
+    video-image-url-mobile="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananaprohero.width-700.format-webp.webp"
+    video-image-url-desktop="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananaprohero.width-1000.format-webp.webp"
+  
+  
+  >
+</uni-youtube-player-hero>
+
+
+
+
+
+
+ 
+
+
+
+  </div>
+  
+</div>
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google DeepMind introduces Nano Banana Pro, a new image generation and editing model built on Gemini 3 Pro. You can use it to create accurate visuals with legible text in multiple languages. Try Nano Banana Pro today across Google products like the Gemini app, Google Ads, and Google AI Studio.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_2">
+            <div class="uni-ai-summary__copy font-h6">
+              <ul>
+<li>"Introducing Nano Banana Pro" is all about Google's new state-of-the-art image generation and editing model.</li>
+<li>Nano Banana Pro helps you visualize ideas, create infographics, and turn notes into diagrams with ease.</li>
+<li>Generate images with accurate text in multiple languages, perfect for mockups, posters, and international content.</li>
+<li>Create high-fidelity visuals with consistent branding, advanced creative controls, and up to 4K resolution.</li>
+<li>You can try Nano Banana Pro in Gemini, Google Ads, Workspace, and more, with SynthID watermarks for transparency.</li>
+</ul>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+        <div class="uni-ai-summary__explore">
+          <h4 class="uni-ai-summary__explore-title font-h6">
+            Explore other styles:
+          </h4>
+          <ul class="uni-ai-summary__chips">
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="General summary" data-summary-id="ai_summary_1" aria-pressed="true">
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  General summary
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Bullet points" data-summary-id="ai_summary_2" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Bullet points
+                </span>
+              </button>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="p1j3y">Just a few months ago we released <a href="https://blog.google/products/gemini/updated-image-editing-model/">Nano Banana</a>, our Gemini 2.5 Flash Image model. From <a href="https://x.com/GeminiApp/status/1968693520891351534">restoring old photos</a> to generating <a href="https://x.com/GeminiApp/status/1962647019090256101">mini figurines</a>, Nano Banana was a big step in image editing that empowered casual creators to express their creativity.</p><p data-block-key="dj9n9">Today, we’re introducing <a href="http://deepmind.google/models/gemini-image/pro">Nano Banana Pro (Gemini 3 Pro Image)</a>, our new state-of-the art image generation and editing model. Built on <a href="https://blog.google/products/gemini/gemini-3/">Gemini 3 Pro</a>, Nano Banana Pro uses Gemini’s state-of-the-art reasoning and real-world knowledge to visualize information better than ever before.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="p1j3y">How Nano Banana Pro helps you bring any idea or design to life</h2><p data-block-key="fds6u">Nano Banana Pro can help you visualize any idea and design anything — from prototypes, to representing data as infographics, to turning handwritten notes into diagrams.</p><p data-block-key="clqbt">With Nano Banana Pro, now you can:</p><p data-block-key="9p5o7"><b>Generate more accurate, context-rich visuals based on enhanced reasoning, world knowledge and real-time information</b></p><p data-block-key="56pok">With Gemini 3’s advanced reasoning, Nano Banana Pro doesn’t just create beautiful images, it also helps you create more helpful content. You can get accurate educational explainers to learn more about a new subject, like context-rich infographics and diagrams based on the content you provide or facts from the real world. Nano Banana Pro can also connect to Google Search's vast knowledge base to help you create a quick snapshot for a recipe or visualize real-time information like weather or sports.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="0"
+  accordion-header="An infographic of the common house plant, String of Turtles, with information on origins, care essentials and growth patterns.Prompt: Create an infographic about this plant focusing on interesting information."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Infographic about plants using nano banana pro"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Infographic about plants using nano banana pro"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Plant.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Plant.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Plant.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="1udme">An infographic of the common house plant, String of Turtles, with information on origins, care essentials and growth patterns.</p><p data-block-key="2d19k">Prompt: Create an infographic about this plant focusing on interesting information.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="1"
+  accordion-header="Step-by-step infographic for making Elaichi Chai (cardamom tea), demonstrating the ability to visualize recipes and real-world information.Prompt: Create an infographic that shows how to make elaichi chai"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Infographic about making chai made using Nano Banana Pro"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Infographic about making chai made using Nano Banana Pro"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/World_Knowledge_Elaichi_Chai.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/World_Knowledge_Elaichi_Chai.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/World_Knowledge_Elaichi_Chai.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="0rser">Step-by-step infographic for making Elaichi Chai (cardamom tea), demonstrating the ability to visualize recipes and real-world information.</p><p data-block-key="6r54j">Prompt: Create an infographic that shows how to make elaichi chai</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="2"
+  accordion-header="We used Nano Banana Pro to pull in real-time weather via Search grounding to build a pop-art infographic."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Comic book style weather infographic using Nano Banana Pro"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Comic book style weather infographic using Nano Banana Pro"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Nano_Banana_Pro_WM_Weather_App.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Nano_Banana_Pro_WM_Weather_App.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Nano_Banana_Pro_WM_Weather_App.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="n5g2j">We used Nano Banana Pro to pull in real-time weather via Search grounding to build a pop-art infographic.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="9rajr"><b>Generate better visuals with more accurate, legible text directly in the image in multiple languages</b></p><p data-block-key="arb78">Nano Banana Pro is the best model for creating images with correctly rendered and legible text directly in the image, whether you’re looking for a short tagline, or a long paragraph. Gemini 3 is great at understanding depth and nuance, which unlocks a world of possibilities with image editing and generation — especially with text. Now <a href="https://blog.google/products/gemini/prompting-tips-nano-banana-pro">you can create</a> more detailed text in mockups or posters with a wider variety of textures, fonts and calligraphy. With Gemini’s enhanced multilingual reasoning, you can generate text in multiple languages, or localize and translate your content so you can scale internationally and/or share content more easily with friends and family.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="0"
+  accordion-header="A black and white storyboard sketch showing an establishing shot, medium shot, close-up, and POV shot for a film scene.Prompt: Create a storyboard for this scene"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Storyboard showing four panels for &quot;Urban Astronaut&quot;: establishing shot, medium shot, close-up, and POV shot up city buildings."
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Storyboard showing four panels for &quot;Urban Astronaut&quot;: establishing shot, medium shot, close-up, and POV shot up city buildings."
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Astronaut.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Astronaut.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Astronaut.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="adunf">A black and white storyboard sketch showing an establishing shot, medium shot, close-up, and POV shot for a film scene.</p><p data-block-key="930n8">Prompt: Create a storyboard for this scene</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="1"
+  accordion-header="The word 'BERLIN' integrated into the architecture of a city block, spanning across multiple buildings.Prompt: View of a cozy street in Berlin on a bright sunny day, stark shadows. the old houses are oddly shaped like letters that spell out "BERLIN" Colored in Blue, Red, White and black. The houses still look like houses and the resemblance to letters is subtle."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Berlin street view with facades spelling &quot;BERLIN&quot; in blue, red, white, and black block letters."
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Berlin street view with facades spelling &quot;BERLIN&quot; in blue, red, white, and black block letters."
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananatext-5.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananatext-5.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananatext-5.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="adunf">The word 'BERLIN' integrated into the architecture of a city block, spanning across multiple buildings.</p><p data-block-key="97had">Prompt: View of a cozy street in Berlin on a bright sunny day, stark shadows. the old houses are oddly shaped like letters that spell out "BERLIN" Colored in Blue, Red, White and black. The houses still look like houses and the resemblance to letters is subtle.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="2"
+  accordion-header="Calligraphy inspired by meaning, showcasing the ability to generate expressive text with a wider variety of textures and fonts.Prompt: make 8 minimalistic logos, each is an expressive word, and make letters convey a message or sound visually to express the meaning of this word in a dramatic way. composition: flat vector rendering of all logos in black on a single white background"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Crash, whoosh, shiver, bang, drip, squeeze, roar, wobble in stylized fonts"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Crash, whoosh, shiver, bang, drip, squeeze, roar, wobble in stylized fonts"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM_Text_Render_1.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM_Text_Render_1.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM_Text_Render_1.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="0rser">Calligraphy inspired by meaning, showcasing the ability to generate expressive text with a wider variety of textures and fonts.</p><p data-block-key="5rpn9">Prompt: make 8 minimalistic logos, each is an expressive word, and make letters convey a message or sound visually to express the meaning of this word in a dramatic way. composition: flat vector rendering of all logos in black on a single white background</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="3"
+  accordion-header="A beverage campaign concept showcasing accurate translation and rendering of English text into Korean.Prompt: translate all the English text on the three yellow and blue cans into Korean, while keeping everything else the same"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Cans in English and Korean"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Cans in English and Korean"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslateCans.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslateCans.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_NanoBanana_TranslateCans.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="0rser">A beverage campaign concept showcasing accurate translation and rendering of English text into Korean.</p><p data-block-key="bmak8">Prompt: translate all the English text on the three yellow and blue cans into Korean, while keeping everything else the same</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="4"
+  accordion-header="A graphic design featuring the word 'TYPOGRAPHY' with a retro, screen-printed texture.Prompt: A vibrant, eye-catching "TYPOGRAPHY" design on a textured off-white background. The letters are bold, blocky, extra condensed and create a 3D effect with overlapping layers of bright blue and hot pink, each with a halftone dot pattern, evoking a retro print aesthetic. 16:9 aspect ratio"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="The word &quot;TYPOGRAPHY&quot; in bold, stacked blue and magenta sans-serif text with a halftone/distressed effect."
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="The word &quot;TYPOGRAPHY&quot; in bold, stacked blue and magenta sans-serif text with a halftone/distressed effect."
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananablog.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananablog.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/nanobananablog.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="adunf">A graphic design featuring the word 'TYPOGRAPHY' with a retro, screen-printed texture.</p><p data-block-key="7alvp">Prompt: A vibrant, eye-catching "TYPOGRAPHY" design on a textured off-white background. The letters are bold, blocky, extra condensed and create a 3D effect with overlapping layers of bright blue and hot pink, each with a halftone dot pattern, evoking a retro print aesthetic. 16:9 aspect ratio</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="5"
+  accordion-header="Blending text and texture in a creative way by integrating the phrase into a woodchopping scene.Prompt: Create an image showing the phrase "How much wood would a woodchuck chuck if a woodchuck could chuck wood" made out of wood chucked by a woodchuck."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="&quot;How much wood would a woodchuck chuck if a woodchuck could chuck wood&quot; made out of wood chucked by a woodchuck."
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="&quot;How much wood would a woodchuck chuck if a woodchuck could chuck wood&quot; made out of wood chucked by a woodchuck."
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Text_Rendering_2.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Text_Rendering_2.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Text_Rendering_2.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="je51a">Blending text and texture in a creative way by integrating the phrase into a woodchopping scene.</p><p data-block-key="a0jiv">Prompt: Create an image showing the phrase "How much wood would a woodchuck chuck if a woodchuck could chuck wood" made out of wood chucked by a woodchuck.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="fq01t"><b>Create high-fidelity visuals with upgraded creative capabilities</b></p><ul><li data-block-key="e76g"><b>Consistency by design:</b> With Nano Banana Pro, you can blend more elements than ever before, using up to 14 images and maintaining the consistency and resemblance of up to 5 people. Whether turning sketches into products or blueprints into photorealistic 3D structures, you can now bridge the gap between concept and creation. Apply your desired visual look and feel to your mockups with ease, ensuring your branding remains seamless and consistent across every touchpoint.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="0"
+  accordion-header="Maintaining the consistency of up to 14 inputs, including multiple characters, across a complex composition.Prompt: A medium shot of the 14 fluffy characters sitting squeezed together side-by-side on a worn beige fabric sofa and on the floor. They are all facing forwards, watching a vintage, wooden-boxed television set placed on a low wooden table in front of the sofa. The room is dimly lit, with warm light from a window on the left and the glow from the TV illuminating the creatures' faces and fluffy textures. The background is a cozy, slightly cluttered living room with a braided rug, a bookshelf with old books, and rustic kitchen elements in the background. The overall atmosphere is warm, cozy, and amused."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Fluffy characters watching TV"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Fluffy characters watching TV"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Fluffy-Monsters.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Fluffy-Monsters.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Fluffy-Monsters.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="znmy1">Maintaining the consistency of up to 14 inputs, including multiple characters, across a complex composition.</p><p data-block-key="f8prv">Prompt: A medium shot of the 14 fluffy characters sitting squeezed together side-by-side on a worn beige fabric sofa and on the floor. They are all facing forwards, watching a vintage, wooden-boxed television set placed on a low wooden table in front of the sofa. The room is dimly lit, with warm light from a window on the left and the glow from the TV illuminating the creatures' faces and fluffy textures. The background is a cozy, slightly cluttered living room with a braided rug, a bookshelf with old books, and rustic kitchen elements in the background. The overall atmosphere is warm, cozy, and amused.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="1"
+  accordion-header="Craft lifestyle scenes by combining multiple elements.Prompt: Combine these images into one appropriately arranged cinematic image in 16:9 format and change the dress on the mannequin to the dress in the image"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="combining images of a gown, plants and a chair into one image"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="combining images of a gown, plants and a chair into one image"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Multi-Asset-Fashion.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Multi-Asset-Fashion.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Multi-Asset-Fashion.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="lw2ng">Craft lifestyle scenes by combining multiple elements.</p><p data-block-key="edlpg">Prompt: Combine these images into one appropriately arranged cinematic image in 16:9 format and change the dress on the mannequin to the dress in the image</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="2"
+  accordion-header="Create surreal landscapes by combining multiple input elements.Prompt: Combine these images into one appropriately arranged cinematic image in 16:9 format"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="generation of a futuristic sunset image"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="generation of a futuristic sunset image"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Orange-Sun.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Orange-Sun.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Orange-Sun.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="lw2ng">Create surreal landscapes by combining multiple input elements.</p><p data-block-key="6k66o">Prompt: Combine these images into one appropriately arranged cinematic image in 16:9 format</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="3"
+  accordion-header="A high-fashion editorial shot set in a desert landscape that maintains the consistency and resemblance of the people from the 6 input photos.Prompt: Put these five people and this dog into a single image, they should fit into a stunning award-winning shot in the style if [sic] a fashion editorial. The identity of all five people and their attire and the dog must stay consistent throughout but they can and should be seen from different angles and distances in [sic] as is most natural and suitable to the scene. Make the colour and lighting look natural on them all, they look like they naturally fit into this fashion show."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Generated image of a fashion show from multiple elements"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Generated image of a fashion show from multiple elements"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Tennis.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Tennis.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Final_Tennis.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="knk8a">A high-fashion editorial shot set in a desert landscape that maintains the consistency and resemblance of the people from the 6 input photos.</p><p data-block-key="18qj2">Prompt: Put these five people and this dog into a single image, they should fit into a stunning award-winning shot in the style if [sic] a fashion editorial. The identity of all five people and their attire and the dog must stay consistent throughout but they can and should be seen from different angles and distances in [sic] as is most natural and suitable to the scene. Make the colour and lighting look natural on them all, they look like they naturally fit into this fashion show.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><ul><li data-block-key="fq01t"><b>Studio-quality creative controls:</b> With Nano Banana Pro's new capabilities we are putting advanced creative controls directly into your hands. Select, refine and transform any part of an image with improved localized editing. Adjust camera angles, change the focus and apply sophisticated color grading, or even transform scene lighting (e.g. changing day to night or creating a bokeh effect). Your creations are ready for any platform, from social media to print, thanks to a range of available aspect ratios and available 2K and 4K resolution</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+
+
+<section class="uni-page--fullbleed uni-media-carousel-wrapper"
+  data-analytics-module='{
+    "module_name": "Media Carousel",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  >
+  <uni-media-carousel class="uni-media-carousel uni-page uni-grid" data-shape-context-provider>
+    <uni-media-carousel-viewport slot="viewport" class="uni-media-carousel__viewport">
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="0"
+  accordion-header="Change the look and feel of an image for a range of platforms by adapting the aspect ratio.Prompt: change aspect ratio to 1:1 by reducing background. The character, remains exactly locked in its current position"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="changing the aspect ratio of an image using Nano Banana"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="changing the aspect ratio of an image using Nano Banana"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Aspect-Ratio.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Aspect-Ratio.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Aspect-Ratio.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="oz74i">Change the look and feel of an image for a range of platforms by adapting the aspect ratio.</p><p data-block-key="2lkae">Prompt: change aspect ratio to 1:1 by reducing background. The character, remains exactly locked in its current position</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="1"
+  accordion-header="Lighting and focus controls applied to transform a scene from day to night.Prompt: Turn this scene into nighttime"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="A fox in the snow in the daytime and at night"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="A fox in the snow in the daytime and at night"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Fox.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Fox.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Fox.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="cf338">Lighting and focus controls applied to transform a scene from day to night.</p><p data-block-key="1ud0p">Prompt: Turn this scene into nighttime</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="2"
+  accordion-header="Obscure or enlighten a section of your image with lighting controls to achieve specific dramatic effects.Prompt: Generate an image with an intense chiaroscuro effect. The man should retain his original features and expression. Introduce harsh, directional light, appearing to come from above and slightly to the left, casting deep, defined shadows across the face. Only slivers of light illuminating his eyes and cheekbones, the rest of the face is in deep shadow."
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Changing the lighting on a man&#x27;s face to just show the eyes"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Changing the lighting on a man&#x27;s face to just show the eyes"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Studio-Quality2.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Studio-Quality2.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM-Studio-Quality2.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="oz74i">Obscure or enlighten a section of your image with lighting controls to achieve specific dramatic effects.</p><p data-block-key="a0q9h"><br/>Prompt: Generate an image with an intense chiaroscuro effect. The man should retain his original features and expression. Introduce harsh, directional light, appearing to come from above and slightly to the left, casting deep, defined shadows across the face. Only slivers of light illuminating his eyes and cheekbones, the rest of the face is in deep shadow.</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+        
+
+
+<uni-media-carousel-slide
+  class="uni-media-carousel__slide"
+  data-theme="purple"
+  
+    shapes='["12-sided-cookie", "4-sided-cookie", "square"]'
+  
+  data-index="3"
+  accordion-header="Bring out the details of your composition by adjusting the depth of field or focal point (e.g., focusing on the flowers).Prompt: Focus on the flowers"
+>
+  <div slot="content">
+    
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+<uni-media
+  data-analytics-module='{
+    "module_name": "Media Carousel/Image",
+    "section_header": "Introducing Nano Banana Pro"
+  }'
+  or-mp4-video-url=""
+  section-header="Introducing Nano Banana Pro"
+  alt-text="Changing the focus on an image from a woman in a flower field to the flowers in the foreground"
+  video-title=""
+  
+  
+  
+    autoplay="true"
+  
+  >
+  
+    <div slot="image-slot">
+      <img
+        alt="Changing the focus on an image from a woman in a flower field to the flowers in the foreground"
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM---Flower-Girl.width-100.format-webp.webp"
+        
+          loading="lazy"
+          data-loading='{
+            "mobile": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM---Flower-Girl.width-500.format-webp.webp",
+            "desktop": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/WM---Flower-Girl.width-1000.format-webp.webp"
+          }'
+        
+      >
+    </div>
+  
+</uni-media>
+
+  </div>
+
+  
+    <div slot="caption" class="font-caption">
+      <div class="uni-media-carousel__caption-within">
+        
+
+        
+          <div>
+            <div class="rich-text"><p data-block-key="oz74i">Bring out the details of your composition by adjusting the depth of field or focal point (e.g., focusing on the flowers).</p><p data-block-key="eats9">Prompt: Focus on the flowers</p></div>
+          </div>
+        
+
+        
+      </div>
+    </div>
+  
+</uni-media-carousel-slide>
+
+      
+    </uni-media-carousel-viewport>
+
+    <div slot="controls">
+      <div class="uni-media-carousel__controls-container">
+        <uni-carousel-controls class="uni-media-carousel__controls"></uni-carousel-controls>
+      </div>
+    </div>
+  </uni-media-carousel>
+</section>
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="glnaz">How you can try Nano Banana Pro today</h2><p data-block-key="8nku8">Across our products and services, you now have a choice: the original Nano Banana for fast, fun editing, or Nano Banana Pro for complex compositions requiring the highest quality and visually sophisticated results.</p><ul><li data-block-key="6apmb"><b>Consumers and students</b>: Rolling out globally in the <a href="https://gemini.google/overview/image-generation/">Gemini app</a> when you select ‘Create images’ with the ‘Thinking’ model. Our free-tier users will receive limited free quotas, after which they will revert to the original Nano Banana model. Google AI Plus, Pro and Ultra subscribers receive higher quotas. For AI Mode in Search, Nano Banana Pro is available in the U.S. for Google AI Pro and Ultra subscribers. For <a href="https://notebooklm.google/">NotebookLM</a>, Nano Banana Pro is also available for subscribers globally.</li><li data-block-key="9o45u"><b>Professionals</b>: We're upgrading image generation in <a href="https://business.google.com/us/google-ads/">Google Ads</a> to Nano Banana Pro to put cutting-edge creative and editing power directly into the hands of advertisers globally. It’s also rolling out starting today to <a href="http://workspaceupdates.googleblog.com/2025/11/workspace-nano-banana-pro.html">Workspace customers</a> in <a href="https://slides.new/">Google Slides</a> and <a href="https://vids.new/">Vids</a>.</li><li data-block-key="31su5"><b>Developers and enterprise</b>: Starting to roll out in the <a href="https://blog.google/technology/developers/gemini-3-pro-image-developers">Gemini API and Google AI Studio</a>, and in <a href="http://antigravity.google/">Google Antigravity</a> to create rich UX layouts &amp; mockups; <a href="https://cloud.google.com/blog/products/ai-machine-learning/nano-banana-pro-available-for-enterprise">enterprises</a> can start building in Vertex AI for scaled creation today and it’s coming soon to Gemini Enterprise.</li><li data-block-key="1cneh"><b>Creatives:</b> Starting to roll out to Google AI Ultra subscribers in <a href="http://flow.google/">Flow</a>, our AI filmmaking tool, to give creatives, filmmakers and marketers even more precision and control over their frames and scenes.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h2 data-block-key="glnaz">How to identify AI-generated images in the Gemini app</h2><p data-block-key="5hrnd">We believe it’s critical to know when an image is AI-generated. This is why all media generated by Google’s tools are embedded with our imperceptible <a href="https://deepmind.google/models/synthid/">SynthID</a> digital watermark.</p><p data-block-key="7sr4n">Today, we are putting a powerful verification tool directly in consumers’ hands: you can now upload an image into the Gemini app and simply ask if it was generated by Google AI, thanks to SynthID technology. We are starting with English language prompts for images, and will expand to more languages, audio and video soon.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="Example of AI image detection"
+    external-image=""
+    or-mp4-video-title="synthid nano banana pro"
+    or-mp4-video-url="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/SynthID_Gemini_Asset_1.mp4"
+    section-header="Introducing Nano Banana Pro"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="glnaz">In addition to SynthID, we will maintain a visible watermark (the Gemini sparkle) on images generated by free and Google AI Pro tier users, to make images even more easy to detect as Google AI-generated.</p><p data-block-key="t00d">Recognizing the need for a clean visual canvas for professional work, we will remove the visible watermark from images generated by Google AI Ultra subscribers and within the Google AI Studio developer tool.</p><p data-block-key="17p8e">You can find out more about how we’re increasing transparency in AI content with SynthID in our <a href="https://blog.google/technology/ai/ai-image-verification-gemini-app/">blog post</a>.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+ 
+
+
+<section class="uni-page">
+
+  <uni-related-content-tout class="uni-related-content-tout uni-grid "
+    title="Build with Nano Banana Pro"
+    cta="See more"
+    summary="Nano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model."
+    hideImage="False"
+    eyebrow="Related Article"
+    image-alt-text="Image with multiple input-output images with the text Build with Nano Banana Pro in the center"
+    fullUrl="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+    pageType="articlepage"
+    
+      
+        
+        imageUrl="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-800.format-webp.webp"
+      
+    
+    
+    data-analytics-module='{
+      "module_name": "Related Content Tout",
+      "section_header": "Build with Nano Banana Pro"
+    }'
+    
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+data-ga4-analytics-lead-click='{
+  "event": "article_lead_click",
+  "link_text": "Build with Nano Banana Pro, our Gemini 3 Pro Image model",
+  "link_type": "internal",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/",
+  "article_name": "Build with Nano Banana Pro, our Gemini 3 Pro Image model",
+  "author_name" : "Alisa Fortin, Naina Raisinghani",
+  "page_name": "gemini-3-pro-image-developers",
+  "position": "1",
+  "click_location": "undefined",
+  "primary_tag": "Products \u002D Developer tools",
+  "secondary_tags": "AI Products,Gemini models",
+  "publish_date": "2025-11-20|15:00",
+  "hero_media": "image",
+  "days_since_published": "330",
+  "content_category": "Announcement",
+  "content_type": "article page",
+  "word_count": "664",
+  "has_audio": "no",
+  "has_cta": "no",
+  "has_video": "yes",
+  "has_image": "yes",
+  "has_carousel": "no",
+  "position_maximum": "1",
+  "background_color": "neutral"
+}'
+
+    
+    
+      data-theme-color="neutral"
+    
+  >
+    <div class="uni-related-content-tout__container uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-1-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop"
+      role="group" aria-labelledby="tout-title"
+      >
+      <div class="uni-related-content-tout__content">
+        
+          <p class="uni-related-content-tout__eyebrow font-eyebrow">Related Article</p>
+        
+
+        <h2 id="tout-title" class="uni-related-content-tout__title font-h4">
+          Build with Nano Banana Pro
+        </h2>
+
+        
+          <div class="uni-related-content-tout__summary font-body-s">Nano Banana Pro, or Gemini 3 Pro Image, is our most advanced image generation and editing model.</div>
+        
+
+        
+          <div class="uni-related-content-tout__cta-container">
+            <uni-cta emphasis="low" icon-id-right="arrow-forward"
+              aria-label="See more" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemini-3-pro-image-developers/"
+            >
+              See more
+            </uni-cta>
+          </div>
+        
+      </div>
+      <div class="uni-related-content-tout__image-container">
+        
+          
+            
+            
+            
+
+            <img
+              class="uni-related-content-tout__image"
+              srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-800.format-webp.webp 800w,
+                https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-1600.format-webp.webp 1600w,
+                https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-2200.format-webp.webp 2200w"
+              sizes="(max-width: 1023px) 100vw, 50vw"
+              src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Buildwithnano_hero.width-800.format-webp.webp"
+              alt="Image with multiple input-output images with the text Build with Nano Banana Pro in the center"
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
+            >
+          
+        
+      </div>
+    </div>
+  </uni-related-content-tout>
+
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+ 
+
+
+<section class="uni-page">
+
+  <uni-related-content-tout class="uni-related-content-tout uni-grid "
+    title="Nano Banana Pro prompting tips"
+    cta="See more"
+    summary="Here are some tips for writing more effective prompts for image generation and editing in Gemini using Nano Banana Pro."
+    hideImage="False"
+    eyebrow="Related Article"
+    image-alt-text="Collage of images created with Google AI Nano Banana Pro"
+    fullUrl="https://blog.google/products-and-platforms/products/gemini/prompting-tips-nano-banana-pro/"
+    pageType="articlepage"
+    
+      
+        
+        imageUrl="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/PromptNanoBanana_Hero.width-800.format-webp.webp"
+      
+    
+    
+    data-analytics-module='{
+      "module_name": "Related Content Tout",
+      "section_header": "Nano Banana Pro prompting tips"
+    }'
+    
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+data-ga4-analytics-lead-click='{
+  "event": "article_lead_click",
+  "link_text": "7 tips to get the most out of Nano Banana Pro",
+  "link_type": "internal",
+  "link_url": "https://blog.google/products-and-platforms/products/gemini/prompting-tips-nano-banana-pro/",
+  "article_name": "7 tips to get the most out of Nano Banana Pro",
+  "author_name" : "Bea Alessio",
+  "page_name": "prompting-tips-nano-banana-pro",
+  "position": "1",
+  "click_location": "undefined",
+  "primary_tag": "Products \u002D Gemini App",
+  "secondary_tags": "Gemini models",
+  "publish_date": "2025-11-20|15:00",
+  "hero_media": "image",
+  "days_since_published": "330",
+  "content_category": "Announcement",
+  "content_type": "article page",
+  "word_count": "759",
+  "has_audio": "no",
+  "has_cta": "no",
+  "has_video": "no",
+  "has_image": "yes",
+  "has_carousel": "yes",
+  "position_maximum": "1",
+  "background_color": "neutral"
+}'
+
+    
+    
+      data-theme-color="neutral"
+    
+  >
+    <div class="uni-related-content-tout__container uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-1-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop"
+      role="group" aria-labelledby="tout-title"
+      >
+      <div class="uni-related-content-tout__content">
+        
+          <p class="uni-related-content-tout__eyebrow font-eyebrow">Related Article</p>
+        
+
+        <h2 id="tout-title" class="uni-related-content-tout__title font-h4">
+          Nano Banana Pro prompting tips
+        </h2>
+
+        
+          <div class="uni-related-content-tout__summary font-body-s">Here are some tips for writing more effective prompts for image generation and editing in Gemini using Nano Banana Pro.</div>
+        
+
+        
+          <div class="uni-related-content-tout__cta-container">
+            <uni-cta emphasis="low" icon-id-right="arrow-forward"
+              aria-label="See more" href="https://blog.google/products-and-platforms/products/gemini/prompting-tips-nano-banana-pro/"
+            >
+              See more
+            </uni-cta>
+          </div>
+        
+      </div>
+      <div class="uni-related-content-tout__image-container">
+        
+          
+            
+            
+            
+
+            <img
+              class="uni-related-content-tout__image"
+              srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/PromptNanoBanana_Hero.width-800.format-webp.webp 800w,
+                https://storage.googleapis.com/gweb-uniblog-publish-prod/images/PromptNanoBanana_Hero.width-1600.format-webp.webp 1600w,
+                https://storage.googleapis.com/gweb-uniblog-publish-prod/images/PromptNanoBanana_Hero.width-2200.format-webp.webp 2200w"
+              sizes="(max-width: 1023px) 100vw, 50vw"
+              src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/PromptNanoBanana_Hero.width-800.format-webp.webp"
+              alt="Collage of images created with Google AI Nano Banana Pro"
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
+            >
+          
+        
+      </div>
+    </div>
+  </uni-related-content-tout>
+
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Introducing Nano Banana Pro"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/news/news-ai-pilot-update-publishers/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Google News - 
+    
+    400 publications are now partnering with us on our News AI pilot program.
+    
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="products - google news"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "400 publications are now partnering with us on our News AI pilot program.",
+  "link_url": "https://blog.google/products-and-platforms/products/news/news-ai-pilot-update-publishers/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "products - google news",
+  "article_name": "400 publications are now partnering with us on our News AI pilot program.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Partnering_with_over_.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Partnering_with_over_.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Partnering_with_over_.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Google News
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        400 publications are now partnering with us on our News AI pilot program.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/search/updates-ai-mode-overviews-explore-web/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Search - 
+    
+    More ways to connect with the web from Search
+    
+    
+      - By Hema Budaraju
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - search"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "More ways to connect with the web from Search",
+  "link_url": "https://blog.google/products-and-platforms/products/search/updates-ai-mode-overviews-explore-web/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - search",
+  "article_name": "More ways to connect with the web from Search",
+  "author_name": "Hema Budaraju",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Search_Hero_11msfEh.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Search_Hero_11msfEh.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Search_Hero_11msfEh.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Search
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        More ways to connect with the web from Search
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Hema Budaraju
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/shopping/universal-cart-launch/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Shopping - 
+    
+    An intelligent new shopping cart
+    
+    
+      - By Suresh Ganapathy
+    
+    
+      - Oct 15, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="products - shopping"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "An intelligent new shopping cart",
+  "link_url": "https://blog.google/products-and-platforms/products/shopping/universal-cart-launch/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "products - shopping",
+  "article_name": "An intelligent new shopping cart",
+  "author_name": "Suresh Ganapathy",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/GlobalCart_Hero.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Shopping
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        An intelligent new shopping cart
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Suresh Ganapathy
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/search/frightgeist-halloween-trends-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Search - 
+    
+    Check out this year’s buzziest Halloween trends.
+    
+    
+      - By Jenny Lee
+    
+    
+      - Oct 14, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="products - search"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Check out this year’s buzziest Halloween trends.",
+  "link_url": "https://blog.google/products-and-platforms/products/search/frightgeist-halloween-trends-2026/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "products - search",
+  "article_name": "Check out this year’s buzziest Halloween trends.",
+  "author_name": "Jenny Lee",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HalloweenTrends2026_s.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HalloweenTrends2026_s.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/HalloweenTrends2026_s.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Search
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Check out this year’s buzziest Halloween trends.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Jenny Lee
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/products-and-platforms/products/search/halloween-tips-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Search - 
+    
+    6 ways to trick-or-treat yourself to the ultimate Halloween with Search
+    
+    
+      - By Megan Stoner
+    
+    
+      - Oct 14, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="products - search"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "6 ways to trick\u002Dor\u002Dtreat yourself to the ultimate Halloween with Search",
+  "link_url": "https://blog.google/products-and-platforms/products/search/halloween-tips-2026/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "products - search",
+  "article_name": "6 ways to trick\u002Dor\u002Dtreat yourself to the ultimate Halloween with Search",
+  "author_name": "Megan Stoner",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="aquamarine"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["8-leaf-clover", "ghost-ish", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Frightgeist_BlogHero_.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Frightgeist_BlogHero_.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Frightgeist_BlogHero_.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Search
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        6 ways to trick-or-treat yourself to the ultimate Halloween with Search
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Megan Stoner
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

@@ -7,7 +7,8 @@ import type { Get, RawEntry } from './pipeline.js';
 
 // Some feeds carry no body text for some or all entries (Hugging Face, Node.js, parts of Google
 // DeepMind and Mistral). For those entries the entry's own page is fetched and its first
-// paragraphs are taken. The page is on the feed's host, so no new host is contacted.
+// paragraphs are taken. The entry link must be on the feed's host; a redirect may lead to another
+// host only if the caller's `get` allows it (the pipeline allows the collection allowlist).
 
 /** A page larger than this is not an article worth reading. */
 export const MAX_PAGE_BYTES = 2 * 1024 * 1024;

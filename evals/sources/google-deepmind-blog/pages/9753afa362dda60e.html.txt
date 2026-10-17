@@ -1,0 +1,1914 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html class="no-js glue-flexbox  keyword-blog" lang="en-us" data-locale="en-us" data-version="pr20261009-1701">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Gemini 2.5 Native Audio upgrade, plus text-to-speech model updates</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0" />
+        <meta name="optimize_experiments" content="[]">
+
+        
+  
+
+
+
+
+<!--Article Specific Metadata-->
+<meta name="description" content="An upgraded Gemini 2.5 Native Audio model across Google products and live speech translation in the Google Translate app."/>
+<meta name="keywords" content="None"/>
+<meta name="article-author" content="Bibo Xu, Tara Sainath"/>
+<meta name="robots" content="max-image-preview:large">
+
+<!--Open Graph Metadata-->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Improved Gemini audio models for powerful voice interactions"/>
+
+<meta property="og:description" content="An upgraded Gemini 2.5 Native Audio model across Google products and live speech translation in the Google Translate app." />
+<meta property="og:image" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_meta__dark.width-1300.png" />
+<meta property="og:site_name" content="Google" />
+<meta property="og:url" content="https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/" />
+<meta property="article:publisher" content="https://www.facebook.com/Google/" />
+<meta property="article:published_time" content="2025-12-12" />
+
+<!--Twitter Card Metadata-->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/" />
+<meta name="twitter:title" content="Improved Gemini audio models for powerful voice interactions"/>
+<meta name="twitter:description" content="An upgraded Gemini 2.5 Native Audio model across Google products and live speech translation in the Google Translate app." />
+<meta name="twitter:image:src" content="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_meta__dark.width-1300.png" />
+<meta name="twitter:site" content="@google" />
+
+
+
+ 
+
+
+
+        
+  <meta name="page" content="82933" />
+  <meta name="locale" content="en-us" />
+  <meta name="published_time" content="2025-12-12T17:00:00+00:00" />
+  <meta name="content_type" content="blogv2.articlepage" />
+  <meta name="tags" content="Gemini models" />
+  <meta name="authors" content="Bibo Xu,Tara Sainath" />
+
+
+
+        
+        
+
+        
+        
+  
+  
+   
+
+
+
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
+
+
+        
+        
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701" as="style">
+<noscript>
+  <link rel="stylesheet" href="/static/keyword/css/blog/index.min.css?version=pr20261009-1701">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Flex:400,500|Product+Sans:400&amp;display=swap&amp;lang=en">
+</noscript>
+
+        <link class="deferred-stylesheet" rel="preload" type="text/css" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" as="style">
+<noscript>
+  <link rel="stylesheet" href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css">
+</noscript>
+
+
+        
+        
+        
+
+	
+         
+
+        
+  
+            
+        
+  
+  <link rel="stylesheet" type="text/css" href="/static/keyword/css/print/index.min.css?version=pr20261009-1701" media="print" />
+
+
+        
+
+<link rel="canonical" href="https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"/>
+
+<link rel="icon" type="image/x-icon" href="/static/blogv2/images/favicon.ico?version=pr20261009-1701">
+<link href="/static/blogv2/images/apple-touch-icon.png?version=pr20261009-1701" rel="apple-touch-icon">
+
+
+
+        <meta property="gtm-tag" content="GTM-TRV24V">
+
+
+
+        <!-- https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API -->
+ 
+
+      </head>
+
+    <body class="template-articlepage keyword-blog">
+        
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRV24V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+
+        
+
+
+<div class="data-layer-init-data" data-ga4-analytics='
+  {
+    "event": "dataLayer_initialized",
+    
+      "page_name": "Gemini 2.5 Native Audio upgrade, plus text\u002Dto\u002Dspeech model updates",
+    
+    "experiments": "undefined",
+    "locale": "en-us",
+    "page_type": "blogv2 | article page",
+    "primary_tag": "topics - gemini models",
+    "secondary_tags": "undefined",
+    
+      "landing_page_tags": "undefined",
+    
+    
+      "article_name": "Improved Gemini audio models for powerful voice interactions",
+      "author_name": "Bibo Xu, Tara Sainath",
+    
+    "publish_date": "2025-12-12|17:00",
+    "hero_media": "image",
+    
+      "special_hero": "undefined",
+    
+    "days_since_published": "308",
+    
+      "content_category": "Topics - Gemini models",
+    
+    "word_count": "long 600+",
+    "has_audio": "no",
+    "has_video": "yes"
+  }'>
+</div>
+
+         
+
+         
+
+
+        
+
+
+
+        
+          
+          
+
+
+<div class="uni-nav__content-pusher"></div>
+ 
+
+        
+
+        <main id="jump-content" class="site-content" tabindex="-1">
+            
+    
+    
+
+    <article class="uni-article-wrapper">
+
+    
+
+
+
+
+
+
+ 
+
+
+<section class="uni-article-hero uni-article-hero--neutral"
+  data-analytics-module='{
+    "module_name": "Hero Menu",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+
+  <div class="uni-page--fullbleed uni-article-hero__container">
+    
+    <div class="uni-page">
+      <div class="uni-grid uni-article-hero__header">
+        
+          <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--start-3-desktop uni-grid__col--span-8-desktop uni-article-hero__breadcrumb">
+            
+
+
+    
+
+
+
+
+
+
+
+
+
+  <uni-breadcrumbs class="uni-breadcrumb__container uni-grid__col--span-4 uni-grid__col--span-8-tablet uni-grid__col--start-3-tablet">
+    <button class="uni-breadcrumb__prev-btn hide" aria-label="Previous">
+       
+
+    </button>
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--start"></div>
+     
+    <div class="uni-breadcrumb__focusable uni-breadcrumb__focusable--end"></div>
+    <button class="uni-breadcrumb__next-btn hide" aria-label="Next">
+       
+
+    </button>
+  </uni-breadcrumbs>
+
+
+          </div>
+        
+      </div>
+      
+      <div class="uni-grid uni-article-hero__content-grid">
+        <div class="uni-grid__col--span-4 uni-grid__col--span-12-tablet uni-grid__col--span-8-desktop uni-grid__col--start-3-desktop uni-article-hero__main-content">
+          <h1 class="uni-article-hero__title font-h1">Improved Gemini audio models for powerful voice interactions</h1>
+
+          <div class="uni-article-hero__meta-wrapper">
+            <div class="uni-article-hero__meta-header">
+              
+              <div class="uni-article-hero__meta-aside">
+                
+                
+                
+                  <uni-reading-time class="uni-article-hero__reading-time font-body-s"></uni-reading-time>
+                
+              </div>
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__meta-aside-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-1"
+                  icon-id-right="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                </uni-cta>
+                <div id="article-hero-share-dropdown-1" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions%20%40google&url=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions&u=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/&title=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions&body=Check out this article on the Keyword:%0A%0AImproved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions%0A%0AAn upgraded Gemini 2.5 Native Audio model across Google products and live speech translation in the Google Translate app.%0A%0Ahttps://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+
+
+            
+            
+          </div>
+
+          <hr class="uni-article-hero__divider">
+
+          
+          <div class="uni-article-hero__authors-actions">
+            <div class="uni-article-hero__authors-wrapper">
+              
+                
+
+<div class="uni-article-hero__authors uni-grid">
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Bibo Xu</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Director of Product Management</p>
+              
+            
+        
+      </div>
+    </div>
+  
+    
+    <div class="uni-article-hero__author">
+      <div class="uni-article-hero__author-info">
+        
+            <p class="uni-article-hero__author-name font-author-name">Tara Sainath</p>
+            
+              
+                <p class="uni-article-hero__author-title font-author-info">Distinguished Research Scientist</p>
+              
+            
+        
+      </div>
+    </div>
+  
+</div>
+
+              
+            </div>
+
+            <div class="uni-article-hero__actions-wrapper">
+              <!-- Share Dropdown Menu -->
+              <div class="uni-share-dropdown uni-article-hero__actions-share" data-component="uni-share-dropdown">
+                <uni-cta
+                  emphasis="low"
+                  aria-label="Share"
+                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-controls="article-hero-share-dropdown-2"
+                  icon-id-left="share"
+                  data-ga4-analytics-share-dropdown-click
+                  class="uni-share-dropdown__trigger">
+                  Share
+                </uni-cta>
+                <div id="article-hero-share-dropdown-2" class="uni-share-dropdown__menu " aria-hidden="true">
+  <div class="uni-share-dropdown__menu-inner">
+    <ul class="uni-share-dropdown__menu-link-list uni-social-share">
+      
+
+
+<li>
+  <a aria-label="Share on X"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://twitter.com/intent/tweet?text=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions%20%40google&url=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      target="_blank"
+      data-ga4-method="twitter">
+     
+
+    <span>x.com</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on Facebook"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.facebook.com/sharer/sharer.php?caption=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions&u=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      target="_blank"
+      data-ga4-method="facebook">
+     
+
+    <span>Facebook</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share on LinkedIn"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/&title=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions"
+      target="_blank"
+      data-ga4-method="linkedin">
+     
+
+    <span>LinkedIn</span>
+  </a>
+</li>
+
+<li>
+  <a aria-label="Share with Email"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker"
+      
+        href="mailto:?subject=Improved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions&body=Check out this article on the Keyword:%0A%0AImproved%20Gemini%20audio%20models%20for%20powerful%20voice%20interactions%0A%0AAn upgraded Gemini 2.5 Native Audio model across Google products and live speech translation in the Google Translate app.%0A%0Ahttps://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/"
+      
+      target="_blank"
+      data-ga4-method="email">
+     
+
+    <span>Mail</span>
+  </a>
+</li>
+
+<li data-component="uni-copy-popup-component">
+  <button aria-label="Copy link"
+      class="uni-share-dropdown__menu-link font-ctas uni-click-tracker uni-copy-share"
+      data-ga4-analytics-share-copy-link
+      data-ga4-method="Copy link"
+      data-copy-text="https://blog.google/products-and-platforms/products/gemini/gemini-audio-model-updates/">
+     
+
+    <span>Copy link</span>
+  </button>
+  <div class="uni-share-dropdown__copy-toast" uni-options='{"copyTextButton": "Copied"}' aria-hidden="true" tabindex="-1">
+    <span class="uni-share-dropdown__copy-toast-message font-body-xs" role="status"></span>
+  </div>
+</li>
+
+    </ul>
+  </div>
+</div>
+
+              </div>
+            </div>
+          </div>
+          <hr class="uni-article-hero__divider">
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="uni-article-hero__media-slot">
+      
+        
+
+
+
+
+
+
+
+
+
+
+  
+    <div class="uni-article-hero__image-container">
+      <div class="uni-article-hero__aspect-ratio">
+        <div class="uni-article-hero__image-wrapper">
+          <img
+            alt="Gemini Audio text logo"
+            class="uni-article-hero__image uni-progressive-image--blur"
+            data-component="uni-progressive-image"
+            fetchpriority="high"
+            src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_heade.width-200.format-webp.webp"
+            
+              data-sizes="(max-width: 1023px) 100vw, (max-width: 1440px) 95vw, 1408px"
+              data-srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_heade.width-450.format-webp.webp 450w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_heade.width-900.format-webp.webp 900w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_head.width-1200.format-webp.webp 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_head.width-1600.format-webp.webp 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-audio-flash__keyword_head.width-2200.format-webp.webp 2200w"
+            
+            >
+        </div>
+      </div>
+      
+    </div>
+  
+
+
+ 
+
+
+      
+    </div>
+  </div>
+</section>
+
+    <div class="uni-page uni-grid article-container__ai-box-container">
+      <div class="article-container__ai-box uni-grid__col--layout-6">
+        
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Workaround for Safari: Safari fails to resolve linear gradients defined in external SVG sprites when referenced via <use>. Inlining them here makes them available in the DOM for the page. -->
+ 
+
+<div class="audio-player-tts"
+     data-component="uni-audio-player-tts"
+     uni-l10n='{
+       "stop": "Pause article audio description",
+       "play": "Play article audio description",
+       "progress": "Current audio progress minutes with seconds: [[progress]]",
+       "duration": "Duration of the audio minutes with seconds: [[duration]]",
+       "settings": "Click for settings",
+       "timeText": "[[duration]] minutes"
+     }'
+     data-analytics-module='{
+      "module_name": "Audio TTS",
+      "section_header": "Improved Gemini audio models for powerful voice interactions"
+     }'
+     data-tts-audios='[
+      
+        {"voice_name": "Umbriel",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_82933_umbriel_2025_12_19_19_02_55.wav",
+        "mimetype": "audio/x-wav"},
+      
+        {"voice_name": "Gacrux",
+        "voice_source": "https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_82933_gacrux_2025_12_19_19_04_03.wav",
+        "mimetype": "audio/x-wav"}
+      ]'>
+  <audio
+    class="audio-player-tts__player"
+    title="Improved Gemini audio models for powerful voice interactions">
+      <source
+        src="https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_82933_umbriel_2025_12_19_19_02_55.wav"
+        type="audio/x-wav" />
+      <p>Your browser does not support the audio element.</p>
+  </audio>
+  <div class="audio-player-tts__container"  aria-label="">
+    <div class="audio-player-tts__content">
+      <button class="audio-player-tts__preview-play" aria-label="Play article audio description">
+         
+
+      </button>
+      <div class="audio-player-tts__text-content">
+        <span class="audio-player-tts__text-content--title font-ctas">
+          Listen to article
+        </span>
+        <div class="audio-player-tts__duration font-caption">[[duration]] minutes</div>
+        <span class="audio-player-tts__disclaimer" tabindex="0" role="tooltip" aria-label="This content is generated by Google AI. Generative AI is experimental">
+          <div class="audio-player-tts__disclaimer--copy font-body-s">This content is generated by Google AI. Generative AI is experimental</div>
+           
+
+        </span>
+      </div>
+      <button class="audio-player-tts__pause" aria-label="Pause article audio description">
+         
+
+         
+
+      </button>
+      <div class="audio-player-tts__console">
+        <div class="audio-player-tts__time-bar">
+          <span class="audio-player-tts__current-time font-body-s"></span>
+          <div class="audio-player-tts__timeline-slider-container">
+            <input type="range" class="timeline__slider" max="100" value="0" step="5" aria-valuetext="Audio Slider" aria-label="Audio Slider" tabindex="0" role="slider">
+          </div>
+          <span class="audio-player-tts__duration-time font-body-s"></span>
+        </div>
+        <button class="audio-player-tts__audio-settings" aria-label="Click for settings">
+           
+
+        </button>
+        <div class="audio-player-tts__settings-container">
+          <div class="audio-player-tts__settings--main uni-cta-text">
+            <button class="audio-player-tts__settings--current-voice" aria-label="Click to change voice">
+              <span class="audio-player-tts__settings--current-voice-info">
+                 
+
+                <span>Voice</span>
+              </span>
+              <span class="audio-player-tts__settings--current-voice-next">
+                <span class="audio-player-tts__settings--current-voice-text font-body-s" ></span>
+                 
+
+              </span>
+            </button>
+            <button class="audio-player-tts__settings--current-speed" aria-label="Click to change speed">
+              <span class="audio-player-tts__settings--current-speed-info">
+                   
+
+                  <span>Speed</span>
+                </span>
+                <span class="audio-player-tts__settings--current-speed-next">
+                  <span class="audio-player-tts__settings--current-speed-text font-body-s"></span>
+                   
+
+                </span>
+            </button>
+          </div>
+          <div class="audio-player-tts__settings--voices uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Voice</span></button>
+          </div>
+          <div class="audio-player-tts__settings--speeds uni-cta-text">
+            <button class="audio-player-tts__settings-back" aria-label="Click to go back"> 
+ <span>Speed</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="0.75" aria-label="speed 0.75X"><span>0.75X</span></button>
+            <button class="audio-player-tts__settings-option audio-player-tts__settings-option--selected" data-speed="1" aria-label="speed 1X"><span>1X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="1.5" aria-label="speed 1.5X"><span>1.5X</span></button>
+            <button class="audio-player-tts__settings-option" data-speed="2" aria-label="speed 2X"><span>2X</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        
+          
+            
+
+
+<div class="uni-ai-summary "
+  data-component="uni-ai-generated-summary"
+  data-analytics-module='{
+    "event": "module_impression",
+    "module_name": "ai_summary",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'
+>
+  <div class="uni-ai-summary__btn-container">
+    <button class="uni-ai-summary__btn font-ctas" aria-expanded="false" aria-controls="uni-ai-summary-dropdown">
+      <span class="uni-ai-summary__icon-wrapper">
+         
+
+      </span>
+      <span class="uni-ai-summary__btn-text font-ctas">
+        Read AI-generated summary
+        <span class="uni-ai-summary__icon-wrapper uni-ai-summary__icon-wrapper--chevron">
+           
+
+        </span>
+      </span>
+    </button>
+
+    <div id="uni-ai-summary-dropdown" class="uni-ai-summary__dropdown" aria-hidden="true">
+      <div class="uni-ai-summary__dropdown-inner">
+        
+          <div class="uni-ai-summary__summary active" data-summary-id="ai_summary_1">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google enhanced Gemini 2.5 Flash Native Audio for better live voice agents. Expect sharper function calling, robust instruction following and smoother conversations. Try live speech translation in the Google Translate app beta, rolling out now on Android in the US Mexico and India.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_2">
+            <div class="uni-ai-summary__copy font-h6">
+              <ul>
+<li>"Improved Gemini audio models for powerful voice interactions" enhance live agents and translation.</li>
+<li>Gemini 2.5 Flash Native Audio now has sharper function calling and better instruction following.</li>
+<li>The update allows for smoother conversations by retrieving context from previous turns.</li>
+<li>Live speech translation in Google Translate preserves intonation and handles 70+ languages.</li>
+<li>You can start building voice agents today with Gemini 2.5 Flash Native Audio on Vertex AI.</li>
+</ul>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+          <div class="uni-ai-summary__summary " data-summary-id="ai_summary_3">
+            <div class="uni-ai-summary__copy font-h6">
+              <p>Google made its Gemini AI better at understanding and speaking in conversations. It can now understand instructions better, have smoother conversations, and translate languages in real time. This means AI can help businesses with customer service and people can understand each other better, even if they speak different languages. You can even try out the live translation feature in the Google Translate app.</p>
+            </div>
+            <small class="uni-ai-summary__legal font-body-xs">
+              Summaries were generated by Google AI. Generative AI is experimental.
+            </small>
+          </div>
+        
+
+        
+        <div class="uni-ai-summary__explore">
+          <h4 class="uni-ai-summary__explore-title font-h6">
+            Explore other styles:
+          </h4>
+          <ul class="uni-ai-summary__chips">
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="General summary" data-summary-id="ai_summary_1" aria-pressed="true">
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  General summary
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Bullet points" data-summary-id="ai_summary_2" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Bullet points
+                </span>
+              </button>
+            </li>
+            
+            <li>
+              <button class="uni-ai-summary__chip-btn font-body-s" aria-label="Basic explainer" data-summary-id="ai_summary_3" >
+                
+                   
+
+                
+                <span class="uni-ai-summary__chip-text" aria-hidden="true">
+                  Basic explainer
+                </span>
+              </button>
+            </li>
+            
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+          
+        
+      </div>
+    </div>
+    
+    <section class="uni-container article-container">
+      
+        
+        
+        <div class="uni-content uni-blog-article-container article-container__content"
+            data-reading-time="true"
+            data-component="uni-article-body">
+
+          
+          
+<!--article text-->
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="61bfj">Earlier this week, we introduced greater control over audio generation with an upgrade to our <a href="https://blog.google/technology/developers/gemini-2-5-text-to-speech">Gemini 2.5 Pro and Flash Text-to-Speech models</a>.</p><p data-block-key="12cio">But generating expressive speech is only one side of the conversation. Today, we’re releasing an updated Gemini 2.5 Flash Native Audio for live voice agents. This update improves the model’s ability to handle complex workflows, navigate user instructions, and hold natural conversations.</p><p data-block-key="o2mg">Gemini 2.5 Flash Native Audio is now available across Google products including <a href="https://aistudio.google.com/prompts/new_chat?model=gemini-2.5-flash-native-audio-preview-12-2025">Google AI Studio</a>, <a href="https://cloud.google.com/blog/products/ai-machine-learning/gemini-live-api-available-on-vertex-ai">Vertex AI</a>, and has also started rolling out in <a href="https://gemini.google/overview/gemini-live/">Gemini Live</a> and <a href="https://blog.google/products/search/live-audio-gemini-model-update/">Search Live</a>, bringing the naturalness of native audio to Search Live for the first time. This means you can more effectively brainstorm live with Gemini, get real-time help in Search Live, or build the next generation of enterprise-ready customer service agents.</p><p data-block-key="abqf7">Beyond powering helpful agents, native audio unlocks new possibilities for global communication. We’re introducing live speech translation, a capability that enables streaming speech-to-speech translation for headphones. It preserves the speaker’s intonation, pacing and pitch. This beta experience is rolling out in the <a href="https://blog.google/products/search/gemini-capabilities-translation-upgrades/">Google Translate app</a> starting today.</p><h2 data-block-key="12h0r">Live Voice Agents</h2></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="2"
+  page-title="Improved Gemini audio models for powerful voice interactions"
+  thumbnail-alt="Video introducing the updated Gemini 2.5 Flash Native Audio"
+  
+  subtitle="&lt;div class=&quot;rich-text&quot;&gt;Gemini 2.5 Flash Native Audio is now enabling a wide spectrum of conversational experiences.&lt;/div&gt;"
+  
+  video-id="5eA5aZpVYbs"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="61bfj">To enable the breadth of use cases across surfaces and products, we have improved Gemini 2.5 Native Audio in three key areas:</p><ul><li data-block-key="2mflj"><b>Sharper function calling:</b> We’ve improved the model's reliability when triggering external functions. It can now more accurately identify when to fetch real-time information during a conversation and seamlessly weave that data back into the audio response, without breaking the flow. On <a href="https://github.com/zai-org/ComplexFuncBench?tab=readme-ov-file#citatio">ComplexFuncBench Audio</a>, an eval that captures multi-step function calling with various constraints, Gemini 2.5 Native Audio leads with a score of 71.5%.</li><li data-block-key="f7bio"><b>Robust instruction following:</b> The model is now better at handling complex instructions resulting in higher user satisfaction on content completeness. With a 90% adherence rate to developer instructions (up from 84%), it delivers more reliable outputs.</li><li data-block-key="bp5l4"><b>Smoother conversations:</b> We’ve achieved significant gains in multi-turn conversation quality. Gemini 2.5 Flash Native Audio is able to retrieve context from previous turns more effectively, creating more cohesive conversations.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+
+
+
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+<section class="uni-page uni-grid uni-inline-image-section" data-component="uni-inline-image">
+  <uni-inline-image
+    class="uni-inline-image uni-inline-image--full"
+    alignment="full"
+    alt-text="updated Gemini 2.5 Flash Native Audio’s performance against previous versions and industry competitors"
+    external-image=""
+    or-mp4-video-title=""
+    or-mp4-video-url=""
+    section-header="Improved Gemini audio models for powerful voice interactions"
+    
+    
+    
+    
+    
+    
+      autoplay="true"
+    
+  >
+    
+      <div slot="caption-slot">
+        <div class="rich-text"><p data-block-key="m27h1">The updated Gemini 2.5 Flash Native Audio’s performance against previous versions and industry competitors on <a href="https://github.com/zai-org/ComplexFuncBench?tab=readme-ov-file#citatio">ComplexFuncBench</a></p></div>
+      </div>
+    
+
+    
+      <div slot="image-slot">
+        <img
+          alt="updated Gemini 2.5 Flash Native Audio’s performance against previous versions and industry competitors"
+          src="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif"
+          
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 80vw, 1200px"
+            srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif 500w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif 800w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif 1200w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif 1600w, https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/gemini-audio_blog_light_blue_16x9_v1_25-12-12_1.gif 2000w"
+          
+        >
+      </div>
+    
+  </uni-inline-image>
+</section>
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><h3 data-block-key="61bfj">What customers are saying</h3><p data-block-key="c8rur"><a href="https://cloud.google.com/blog/products/ai-machine-learning/gemini-live-api-available-on-vertex-ai">Google Cloud customers</a> are already using Gemini’s native audio capabilities to drive real business results, from mortgage processing to customer calls.</p><ul><li data-block-key="f9d5j"><i>“Users often forget they’re talking to AI within a minute of using Sidekick, and in some cases have thanked the bot after a long chat…New Live API AI capabilities offered through Gemini [2.5 Flash Native Audio] empower our merchants to win.”</i> – David Wurtz, VP of Product, Shopify</li><li data-block-key="cpoqr"><i>"By integrating the Gemini 2.5 Flash Native Audio model…we've significantly enhanced Mia's capabilities since launching in May 2025. This powerful combination has enabled us to generate over 14,000 loans for our broker partners.</i>" – Jason Bressler, Chief Technology Officer, United Wholesale Mortgage (UWM)</li><li data-block-key="5gvgc"><i>“Working with the Gemini 2.5 Flash Native Audio model through Vertex AI allows Newo.ai AI Receptionists to achieve unmatched conversational intelligence ... .They can identify the main speaker even in noisy settings, switch languages mid-conversation, and sound remarkably natural and emotionally expressive.”</i> – David Yang, Co-founder, Newo.ai</li></ul><h2 data-block-key="7lcen">Live Speech Translation</h2><p data-block-key="9k6cr">Gemini now natively supports new live speech-to-speech translation capabilities designed to handle both continuous listening and two-way conversation.</p><p data-block-key="38f3">With continuous listening, Gemini automatically translates speech in multiple languages into a single target language. This allows you to put headphones in and hear the world around you in your language.</p><p data-block-key="eq38s">For two-way conversation, Gemini’s live speech translation handles translation between two languages in real-time, automatically switching the output language based on who is speaking. For example, if you speak English and want to chat with a Hindi speaker, you’ll hear English translations in real-time in your headphones, while your phone broadcasts Hindi when you’re done speaking.</p><p data-block-key="86q6c">Gemini’s live speech translation has a number of key capabilities that help in the real world:</p><ul><li data-block-key="2afoq"><b>Language coverage</b>: Translates speech in over 70 languages and 2000 language pairs by combining Gemini model’s world knowledge and multilingual capabilities with its native audio capabilities</li><li data-block-key="di844"><b>Style transfer:</b> Captures the nuance of human speech, preserving the speaker’s intonation, pacing and pitch so the translation sounds natural.</li><li data-block-key="bdrko"><b>Multilingual input:</b> Understands multiple languages simultaneously in a single session, helping you follow multilingual conversations without needing to fiddle around with language settings.</li><li data-block-key="alfj9"><b>Auto detection:</b> Identifies the spoken language and begins translation, so you don’t even need to know what language is being spoken to start translating.</li><li data-block-key="4j5i0"><b>Noise robustness</b>: Filters out ambient noise so you can converse comfortably even in loud, outdoor environments.</li></ul></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+  
+    
+  
+    
+
+
+
+<uni-youtube-player-article
+  index="6"
+  page-title="Improved Gemini audio models for powerful voice interactions"
+  thumbnail-alt="Video demo of Gemini&#x27;s live speech-to-speech translation capabilities"
+  
+  
+  
+  video-id="xdPIwgDriTg"
+  video-type="video"
+  
+  
+  >
+</uni-youtube-player-article>
+
+
+
+
+
+
+ 
+
+
+
+  
+
+
+  
+
+  
+    
+
+<section
+  class="uni-page uni-grid uni-article-paragraph"
+  data-analytics-module='{
+    "module_name": "Paragraph",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+  <uni-article-paragraph class="uni-article-paragraph__container uni-grid__col--layout-6">
+    <div class="rich-text"><p data-block-key="61bfj">Starting today, you can try it in a new beta experience in the Google Translate app for <a href="https://blog.google/products/search/gemini-capabilities-translation-upgrades/">real-time translation in your headphones</a> by connecting them to your device and tapping “Live translate.” This experience is rolling out to all Android devices in the US, Mexico and India with support for iOS and more regions coming soon.</p><p data-block-key="nu4n">Based on feedback, we will continue to iterate on this experience and bring it to more Google products including the Gemini API in 2026.</p><h2 data-block-key="6eoc0">Get started today</h2><p data-block-key="d1rrs">Start building voice agents today with Gemini 2.5 Flash Native Audio, now generally available on <a href="https://cloud.google.com/blog/products/ai-machine-learning/gemini-live-api-available-on-vertex-ai">Vertex AI</a> and as preview in <a href="https://ai.google.dev/gemini-api/docs/live">the Gemini API</a>. Try it out in <a href="https://ai.dev/prompts/new_chat?model=gemini-2.5-flash-native-audio-preview-12-2025">Google AI Studio</a>.</p><p data-block-key="2c94r">Gemini 2.5 Flash and 2.5 Pro text-to-speech models are also available via the Gemini API in Google AI Studio. Get started with the <a href="https://ai.google.dev/gemini-api/docs/speech-generation">speech generation docs</a>, explore the <a href="https://ai.google.dev/gemini-api/docs/speech-generation#prompting-guide">prompting guide</a>, or check out the <a href="https://github.com/google-gemini/cookbook/blob/main/quickstarts/Get_started_TTS.ipynb">Gemini API Cookbook</a> to get started.</p></div>
+  </uni-article-paragraph>
+</section>
+
+  
+
+
+          
+          
+
+          
+            
+
+
+<div
+  class="
+    uni-blog-article-tags
+    article-tags
+    uni-page
+    uni-grid
+    
+  "
+  data-component="uni-article-tags"
+  data-analytics-module='{
+    "module_name": "Article Tags",
+    "section_header": "Improved Gemini audio models for powerful voice interactions"
+  }'>
+  <div class="uni-grid__col--layout-8">
+    <div class="uni-blog-article-tags__wrapper">
+      <span class="uni-blog-article-tags__label font-h4">Posted in:</span>
+    </div>
+     
+  </div>
+</div>
+
+          
+        </div>
+      
+    </section>
+  </article>
+  
+
+
+
+
+
+  
+
+  
+    
+
+
+
+
+
+
+
+ 
+
+<uni-related-articles class="uni-related-articles kw-speakable-hidden ga4-carousel"
+  data-analytics-module='{
+    "module_name": "Article Footer Related Stories",
+    "section_header": "Related stories"
+  }'
+  data-shape-context-provider
+>
+  <div class="uni-page">
+    <div class="uni-grid">
+      <h2 class="uni-grid__col--span-12 uni-related-articles__header font-h3">
+        Related stories
+      </h2>
+    </div>
+  </div>
+
+  <div class="uni-page--fullbleed">
+    <uni-carousel>
+      <scrollable-cards-panel-viewport slot="viewport" class="uni-related-articles__viewport" step="1">
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Safety &amp; Security - 
+    
+    Developing Gemini 4 Argon responsibly and safely
+    
+    
+      - By Anca Dragan& Raluca Ada Popa
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="1"
+  data-target="card"
+  data-primaryTag="topics - safety &amp; security"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Developing Gemini 4 Argon responsibly and safely",
+  "link_url": "https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/",
+  "source_content": "Related stories",
+  "related_index": "1",
+  "related_article_tag": "topics - safety &amp; security",
+  "article_name": "Developing Gemini 4 Argon responsibly and safely",
+  "author_name": "Anca Dragan, Raluca Ada Popa",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="yellow"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-leaf-clover", "circle", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp_dyqdnPU.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp_ZFzpuEC.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Safety &amp; Security
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Developing Gemini 4 Argon responsibly and safely
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Anca Dragan
+          
+            & 
+            Raluca Ada Popa
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Developer tools - 
+    
+    Gemini 4 Argon is now available for developers.
+    
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="2"
+  data-target="card"
+  data-primaryTag="products - developer tools"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon is now available for developers.",
+  "link_url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "2",
+  "related_article_tag": "products - developer tools",
+  "article_name": "Gemini 4 Argon is now available for developers.",
+  "author_name": "",
+  "content_type": "blogv2 | Short Post"
+}'
+
+  
+  data-theme-color="green"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["6-sided-cookie", "8-leaf-clover", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon_key-ar.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Developer tools
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon is now available for developers.
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: Built to solve your hardest problems
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Oct 13, 2026
+    
+  "
+  data-index="3"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: Built to solve your hardest problems",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "3",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: Built to solve your hardest problems",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/gemini-4-argon__blog-.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: Built to solve your hardest problems
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      AI - 
+    
+    The latest AI news we announced in September 2026
+    
+    
+      - By Blog Team
+    
+    
+      - Oct 02, 2026
+    
+  "
+  data-index="4"
+  data-target="card"
+  data-primaryTag="topics - ai"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "The latest AI news we announced in September 2026",
+  "link_url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-september-2026/",
+  "source_content": "Related stories",
+  "related_index": "4",
+  "related_article_tag": "topics - ai",
+  "article_name": "The latest AI news we announced in September 2026",
+  "author_name": "Blog Team",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="purple"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["12-sided-cookie", "4-sided-cookie", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/September_AI_Recap_he.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          AI
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        The latest AI news we announced in September 2026
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Blog Team
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    Gemini 4 Argon: our next era of frontier intelligence
+    
+    
+      - By Koray Kavukcuoglu
+    
+    
+      - Sep 30, 2026
+    
+  "
+  data-index="5"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "Gemini 4 Argon: our next era of frontier intelligence",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+  "source_content": "Related stories",
+  "related_index": "5",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "Gemini 4 Argon: our next era of frontier intelligence",
+  "author_name": "Koray Kavukcuoglu",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/g4_30-09-26_key-art_b.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        Gemini 4 Argon: our next era of frontier intelligence
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Koray Kavukcuoglu
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+          
+
+
+
+
+
+
+
+
+<a
+  href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/"
+  class="uni-article-card"
+  aria-label="
+    
+      
+      Gemini models - 
+    
+    See what 4 builders are making with Gemini 3.8 Flash
+    
+    
+      - By Lindsey Lanquist
+    
+    
+      - Sep 28, 2026
+    
+  "
+  data-index="6"
+  data-target="card"
+  data-primaryTag="topics - gemini models"
+  data-image="true"
+  
+    
+
+
+
+
+
+
+data-ga4-analytics-footer-lead-click='{
+  "link_text": "See what 4 builders are making with Gemini 3.8 Flash",
+  "link_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-flash-developers/",
+  "source_content": "Related stories",
+  "related_index": "6",
+  "related_article_tag": "topics - gemini models",
+  "article_name": "See what 4 builders are making with Gemini 3.8 Flash",
+  "author_name": "Lindsey Lanquist",
+  "content_type": "blogv2 | article page"
+}'
+
+  
+  data-theme-color="blue"
+>
+  <div class="uni-article-card__shape-container">
+    <div
+      class="uni-article-card__shape"
+      data-shape-context-consumer='["4-sided-cookie", "bun", "square"]'>
+      
+        
+  
+
+
+<img
+  src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp"
+  alt=""
+
+  
+    class="uni-article-card__img"
+  
+
+  
+    sizes="auto"
+    srcset="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-300x300.format-webp.webp 300w, https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Builders_Gemini_3.8_F.2e16d0ba.fill-600x600.format-webp.webp 600w"
+  
+
+  
+    loading="lazy"
+  
+  />
+
+
+
+
+      
+    </div>
+  </div>
+
+  <div class="uni-article-card__content">
+    <div class="uni-article-card__text">
+      
+      <span
+        class="uni-article-card__eyebrow font-eyebrow"
+        data-target="eyebrow">
+        
+          Gemini models
+        
+      </span>
+      
+      <h3
+        class="uni-article-card__title font-h5"
+        data-target="title">
+        See what 4 builders are making with Gemini 3.8 Flash
+      </h3>
+      
+    </div>
+
+    <div
+      class="uni-article-card__meta"
+      data-target="author">
+      
+        <span class="uni-article-card__author font-author-name">
+          By
+          
+            
+            Lindsey Lanquist
+          
+        </span>
+      
+    </div>
+  </div>
+</a>
+
+
+        
+      </scrollable-cards-panel-viewport>
+
+      <div slot="controls" class="uni-page">
+        <div class="uni-grid">
+          <div class="uni-grid__col--span-4 uni-grid__col--span-6-tablet uni-grid__col--span-4-mobile">
+            <uni-carousel-controls class="uni-related-articles__controls"></uni-carousel-controls>
+          </div>
+        </div>
+      </div>
+    </uni-carousel>
+  <div>
+</uni-related-articles>
+
+  
+
+        </main>
+
+        
+
+          
+            
+          
+        
+        <uni-portal destination portal-id="article-newsletter-portal"></uni-portal>
+        
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+
+ 
+        
+         
+
+        
+        <div id="base-scripts" data-scripts='[
+              { "url": "/static/blogv2/js/csp/gtm.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": true
+                }
+              },
+              { "url": "/static/keyword/js/all/index.js?version=pr20261009-1701",
+                "options": {
+                  "async": false,
+                  "defer": false
+                }
+              },
+              {
+                "url": "https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js",
+                "options": {
+                  "async": false,
+                  "defer": true
+                },
+                "attributes": {
+                  "data-glue-cookie-notification-bar-category": "2B",
+                  "data-glue-cookie-notification-bar-site-id": "blog.google"
+                }
+              }
+            ]'></div>
+        <div class="extra-scripts">
+          
+        
+        <div async data-src="https://cdn.ampproject.org/amp-story-player-v0.js" data-id="amp-cdn"></div>
+      
+        </div>
+
+         
+
+    </body>
+</html>

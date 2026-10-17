@@ -1,4 +1,5 @@
 import type { Item, Source, SourceKind } from '../../core/schemas.js';
+import { DEFAULT_SOURCES } from '../../config/defaultSources.js';
 import { ItemSchema } from '../../core/schemas.js';
 import type { FetchWindow, SourceFetcher } from '../../ports/SourceFetcher.js';
 import { errorMessage } from '../../shared/errors.js';
@@ -115,6 +116,16 @@ export interface FetcherOptions {
   logger?: Logger;
   /** Fetch the entry page when the response carries no text. Default true. */
   enrich?: boolean;
+  /**
+   * Hostnames an article page may redirect to, besides the feed's own host: the collection
+   * allowlist. Defaults to the hosts of `DEFAULT_SOURCES`.
+   */
+  collectionHosts?: readonly string[];
+}
+
+/** The hostnames of these sources, for the redirect rule of article pages. */
+export function hostsOf(sources: readonly Pick<Source, 'url'>[]): string[] {
+  return [...new Set(sources.map(({ url }) => new URL(url).hostname.toLowerCase()))];
 }
 
 /** A raw entry with the item it became. */
@@ -214,21 +225,29 @@ export function createFetcher(adapter: SourceAdapter, options: FetcherOptions = 
   const fetchImpl: typeof fetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
   const maxChars = options.maxSummaryChars ?? DEFAULT_MAX_SUMMARY_CHARS;
   const logger = options.logger ?? noopLogger;
+  const collectionHosts = options.collectionHosts ?? hostsOf(DEFAULT_SOURCES);
   const shouldEnrich = (options.enrich ?? true) && adapter.enrichable !== false;
 
   return {
     kind: adapter.kind,
     async fetch(source, window, signal) {
       const allowsRedirectTo = sameSiteAs(source.url, ...(adapter.redirectHosts ?? []));
-      const get: Get = (url, init = {}) =>
-        getText(url, {
-          fetch: fetchImpl,
-          label: source.id,
-          allowsRedirectTo,
-          headers: init.headers,
-          maxBytes: init.maxBytes,
-          signal: init.signal ?? signal,
-        });
+      const getAllowing =
+        (allowed: (hostname: string) => boolean): Get =>
+        (url, init = {}) =>
+          getText(url, {
+            fetch: fetchImpl,
+            label: source.id,
+            allowsRedirectTo: allowed,
+            headers: init.headers,
+            maxBytes: init.maxBytes,
+            signal: init.signal ?? signal,
+          });
+      const get = getAllowing(allowsRedirectTo);
+      // An article page may be moved to another collected site (deepmind.google to blog.google).
+      const getPage = getAllowing(
+        sameSiteAs(source.url, ...(adapter.redirectHosts ?? []), ...collectionHosts),
+      );
 
       const replies = await adapter.request(source, window, get);
       const entries = replies.flatMap((reply) => adapter.parse(reply, source));
@@ -244,7 +263,7 @@ export function createFetcher(adapter: SourceAdapter, options: FetcherOptions = 
       const enriched = await enrichEntries(
         selected.map(({ entry }) => entry),
         source,
-        { get, logger, signal },
+        { get: getPage, logger, signal },
       );
       return refreshed(enriched, selected, source, maxChars);
     },
