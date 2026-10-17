@@ -69,21 +69,35 @@ fix. Calls are retried twice before a step fails.
    under `guards`. The digest footer will say so. Switch it back on later.
 5. Run again.
 
-One writer failing does not fail the run: the next writer still runs. The run is `blocked` only
-when no draft passes.
+One writer failing does not fail the run: the next writer still runs. When every writer fails, the
+run is `failed` at step `write`, and the reasons are in `drafts.json` under `failures`. The run is
+`blocked` only when drafts exist and none of them passes the checks and guards.
 
 ### Step `deliver`
 
 The winning digest was written, but at least one channel failed. The error names the channels
-that did get the digest.
+that did get the digest, and `deliveredTo` in `run.json` lists them. Their URLs count as sent, so
+next week's digest will not repeat them.
 
 1. Check the channel in `digest doctor`: `email` needs `SMTP_PASSWORD`, `slack` needs
-   `SLACK_WEBHOOK_URL`, both in `.env`.
+   `SLACK_WEBHOOK_URL` (an `https:` URL), both in `.env`.
 2. Check the SMTP host, port and TLS settings under `delivery.email`, and the webhook.
    Slack redirects count as errors.
 3. The winning digest is in `data/runs/<week>/digest.md`. Send it by hand if it is urgent.
-4. Run `digest run --force`. This delivers the week again on **every** channel, so the channels
-   that already got it get it twice.
+4. Run `digest run`. The run does not start over: it sends the saved `digest.md` to the channels
+   that missed it, with no model call, and then marks the week `sent`. `serve` does the same
+   when it catches up. A channel that got the digest does not get it twice.
+5. If the run says `digest.md` is gone or no longer matches the digest the other channels got, it
+   sends nothing. Run `digest run --force` only when you accept a new digest on **every**
+   channel, so the channels that already got the week get a second one.
+
+### `Run aborted before the <step> step: ...`
+
+A caller stopped the run between two steps. In `digest serve` that is the run time limit
+(`run timed out after 3 h`; the next restart catches the week up) or a second stop signal. The
+run keeps what the finished steps did, writes `error.json`, sends the failure note and releases
+the lock. `digest run` never sets a signal, so you only see this from the service. A model call
+that hangs is the usual cause of a timeout: see [Ollama or a model is slow](#ollama-or-a-model-is-slow-or-out-of-memory).
 
 ### Other failures with exit 1 and no run record
 
@@ -101,16 +115,28 @@ Every draft was rejected, so nothing was sent. The note names each writer and th
 rejected it. The same list is under `drafts` in `run.json` (`rejectedBy`) and in the `digest run`
 output (`Rejected draft: <writer> (<checks>)`).
 
-| Check id              | Meaning                                                                            | What to do                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `write`               | The writer failed: timeout, invalid JSON after repair, or fewer than 3 valid items | Check the model and its timeout; see the `write` step above                                |
-| `linkCheck`           | A URL in the draft is not in the collected items                                   | Never turn it off. Run again; if it repeats, keep `run.json` and the draft as an eval case |
-| `formatCheck`         | Wrong item count, a missing part, an em dash, or 500 words or more                 | Run again; if it repeats, try another writer in `models.writers`                           |
-| `graniteGroundedness` | A summary is not backed by its source item                                         | Run again. If it repeats on one writer, replace that writer                                |
-| `clefRubric`          | The draft was off-task, hype or harmful                                            | Run again. If it repeats, read the draft in `drafts.json`                                  |
+| Check id              | Meaning                                                                                                                                                                                       | What to do                                                                                                         |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `write`               | A writer made no draft (timeout, invalid JSON after repair, or fewer than 3 valid items) while another writer's draft was rejected. If every writer fails, the run is `failed`, not `blocked` | Check the model and its timeout; see the `write` step above                                                        |
+| `linkCheck`           | A URL in the draft is not in the collected items, or a character reference names no Unicode character                                                                                         | Never turn it off. Run again; if it repeats, read `rejections` in `drafts.json` and keep the draft as an eval case |
+| `formatCheck`         | Wrong item count, a missing part, an em dash, or 500 words or more                                                                                                                            | Read `rejections` in `drafts.json`. Run again; if it repeats, try another writer in `models.writers`               |
+| `graniteGroundedness` | A summary is not backed by its source item                                                                                                                                                    | Run again. If it repeats on one writer, replace that writer                                                        |
+| `clefRubric`          | The draft was off-task, hype or harmful                                                                                                                                                       | Run again. If it repeats, read the draft in `drafts.json`                                                          |
 
-Then run again with `digest run --force`. A forced run that does not send keeps the old sent
-record, so a week that was sent never looks unsent.
+A draft that fails `linkCheck` or `formatCheck` is not final. When every draft fails them, each
+writer gets one retry, and the prompt lists what was wrong. `drafts.json` has a `rejections` list:
+for each rejected draft, the writer, the attempt (1 is the first draft, 2 is the retry), the check
+ids and the first five problems. A writer with a rejection for attempt 1 and none for attempt 2
+either passed the checks on its retry, or has an entry with `retry: true` under `failures` (the
+retry made no draft, and the first draft stays). The problems quote the model, so they are in
+`drafts.json` and the log only, never in the run record or the failure note.
+
+Then run again with `digest run`. Use `--force` only for a week that was already sent. A forced
+run that does not send keeps the old sent record and that week's files (`digest.md`,
+`drafts.json`, `items.json`, `scores.json`), so a week that was sent never looks unsent. The
+command prints no Digest line then; its last line says why, for example "Kept the sent run
+record; this forced run did not end sent. The week's run folder is unchanged." The same reason is
+in the log.
 
 If a guard blocks good drafts week after week, do not switch it off first. Read the draft in
 `data/runs/<week>/drafts.json`. A guard set to `"mode": "all"` blocks less, but protects less.
@@ -176,8 +202,15 @@ What the lock does not cover:
 ### The scheduler did not run
 
 1. Docker: `docker compose ps` must show `digest` running. Start it with `docker compose up -d`
-   (Linux: add `--profile linux`). `serve` runs the current week at start if its slot has passed
-   and the week has no sent digest.
+   (Linux: add `--profile linux`). `serve` catches up at start: if this week's slot has passed,
+   it runs the week when it has no run, or its last run `failed` or was a `dry-run`. It leaves a
+   week that is `sent`, `quiet` or `blocked` alone. A catch-up of a partly delivered week only
+   sends the missing channels.
+   A run that ends `failed` is tried again at most twice, 30 minutes apart (the log says
+   `The run ended failed; will retry`), and each failed attempt sends its own failure note, so one
+   cause can bring up to three notes. It is not tried again when it hit its 3-hour time limit, or
+   when the error says to use `digest run --force`. After that the week waits for the next
+   restart or a manual `digest run`.
 2. Read the logs for `Scheduler started`: it shows the cron, the time zone and `nextRun`. A
    warning `The schedule has no upcoming run` means `schedule.cron` is wrong.
 3. The container uses the time zone in `schedule.timeZone`. A host timer (launchd, systemd,
@@ -190,21 +223,44 @@ What the lock does not cover:
 (`stop_grace_period` in `docker-compose.yml`). The quality profile took about 59 minutes for a
 week of 131 items on the reference laptop, so 90 minutes leaves about half again. An idle
 container stops at once. A container that is killed anyway leaves a lock; see above. When
-`serve` starts again it runs the current week if that week has no finished run. The leftover lock
-can refuse it for up to 5 minutes; `serve` tries again every 5 minutes for up to 2 hours, so
-nothing needs doing. If your runs take longer than 90 minutes, raise `stop_grace_period` and the
-value that `docker/validate.sh` checks together.
+`serve` starts again it catches up the current week if that week has no run, or its last run
+`failed` or was a dry run. The leftover lock can refuse it for up to 5 minutes; `serve` tries
+again every 5 minutes for up to 2 hours, so nothing needs doing. If your runs take longer than 90
+minutes, raise `stop_grace_period` and the value that `docker/validate.sh` checks together.
+
+To stop sooner, send the stop signal a second time (Ctrl-C twice when `serve` runs in a
+terminal). The running digest then stops after its current step and ends `failed`; a third signal
+ends the process at once. A run that is still going after 3 hours is stopped the same way.
 
 ### Ollama or a model is slow or out of memory
 
 Use a smaller profile in the config (`fast` or `light`), or give `models.writers` a single
 writer. Keep `OLLAMA_MAX_LOADED_MODELS=1`. The largest model is about 19 GB.
 
+### Delivery retries
+
+A send to email or Slack that fails with a network error, a timeout, an HTTP 5xx answer or an SMTP
+4yz reply is tried again twice, after 5 and 10 seconds (the log says
+`Delivery failed with a transient error; will retry`). Any other error, such as a wrong password,
+a Slack 4xx or an SMTP 5yz reply, fails the channel at once. If the first try reached the server
+and only its answer was lost, the message can arrive twice.
+
 ### Feeds
 
 A feed that keeps failing is skipped, not fatal. `digest doctor` shows one `source` line per
 feed. Fix the URL or remove the source from `digest.config.json`. For GitHub rate limits, add a
-`GITHUB_TOKEN` to `.env`.
+`GITHUB_TOKEN` to `.env`. A rate-limited GitHub source is not retried, because GitHub asks you
+to wait longer than a retry would.
+
+A feed that redirects to another host, redirects from https to http, or sends more than 5 MiB
+fails its source, and the error names the host or the size. Put the URL the feed really lives on
+in the config. A source URL may not hold a username or password; the config will not load.
+
+A source that returns no usable item in the window is logged as a warning, `Source returned no
+usable items`. The run record does not list it, and a quiet week looks the same. If a feed stays
+silent for weeks, open it in a browser and check that its format did not change.
+
+An error in `failedSources` is cut to 300 characters.
 
 ### Disk
 

@@ -1,6 +1,8 @@
 # Engineering Digest Agent: System Design
 
-Status: reviewed 2026-10-16. Describes the code on `main` after Wave 1 and W2-01 to W2-03.
+Status: updated 2026-10-17. Describes the code on `main` after the run-semantics work (W2-08,
+W2-11, W2-12), the wave 5 fixes (W5-00 to W5-10) and the wave 6 source, classifier and eval
+changes merged so far (W6-01 to W6-04).
 
 Sources: the product spec, `CLAUDE.md`, `.claude/rules/*` and the code. Where they disagree,
 this document follows the code and lists the gap in section 9. Anything not built is marked
@@ -24,25 +26,32 @@ JSON and Markdown files. AWS is an optional later target (section 7).
 
 ## 2. Business logic
 
-The run is a fixed chain: collect → guardInput → classify → process → write → guardOutput (code
-checks, then output guards) → select → deliver, then a finish phase that saves the run record.
+The run is a fixed chain: collect → guardInput → classify → process → write (drafts, then the
+code checks, with one retry) → guardOutput (the output guards) → select → deliver, then a finish
+phase that saves the run record. A run can also stop between steps when its caller aborts it
+(`RunOptions.signal`, checked before each step, never inside one).
 `src/core/runDigest.ts` owns the chain; each step lives in `src/core/steps/`.
+`src/core/runEnding.ts` ends a run (record, held files, failure note, pruning) and
+`src/core/runResume.ts` finishes the delivery of a partly delivered week (2.9).
 
 ### 2.1 Collection (`steps/collect.ts`, `adapters/sources/*`)
 
-| Rule           | Value                                                                                                                                                                                                                                                                   |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Allowlist      | Only `config.sources` are fetched (default 24: 14 RSS/Atom and 10 GitHub repos, `config/defaultSources.ts`). The source list _is_ the allowlist.                                                                                                                        |
-| Window         | `[now - sinceDays, now]`; `sinceDays` is `--since Nd` (1-31) or `windowDays` (default 7). Relative to the run time, not the ISO week.                                                                                                                                   |
-| Per-source cap | `source.maxItems` or `maxItemsPerSource` (default 20, max 100), newest first. Dropping items before any model call is the biggest speed lever.                                                                                                                          |
-| Fetch policy   | 4 sources at a time; per source a 10 s timeout and 2 retries, exponential backoff from 500 ms.                                                                                                                                                                          |
-| Validation     | Every item is parsed with `ItemSchema`; items outside the window are dropped again (defence in depth).                                                                                                                                                                  |
-| RSS/Atom       | Only entries with an http(s) link and a date. Summary is plain text, cut to 600 chars.                                                                                                                                                                                  |
-| GitHub         | Source URL must be exactly `https://github.com/<owner>/<repo>`. Without a token: the releases Atom feed (about the last 10 releases, prereleases included). With `GITHUB_TOKEN`: the REST API, drafts and prereleases skipped. Release links must stay on `github.com`. |
-| URL normalize  | Lowercase host, no default port, no fragment, no `utm_*`/`ref`/`fbclid`/`gclid`/`mc_cid`/`mc_eid`/`source` params, sorted query, no trailing slash. Item id = first 16 hex chars of SHA-256 of the normalized URL.                                                      |
-| Dedupe         | Same id: the first occurrence wins, so earlier sources in the config take precedence.                                                                                                                                                                                   |
-| Failed sources | Never fail the step. Each is recorded as `{ sourceId, error }` in `run.json`.                                                                                                                                                                                           |
-| Zero items     | The run ends `quiet` and sends a failure note ("no items collected", with the number of failed sources).                                                                                                                                                                |
+| Rule            | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Allowlist       | Only `config.sources` are fetched (default 24: 14 RSS/Atom and 10 GitHub repos, `config/defaultSources.ts`). The source list _is_ the allowlist.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Window          | `[now - sinceDays, now]`; `sinceDays` is `--since Nd` (1-31) or `windowDays` (default 7). Relative to the run time, not the ISO week.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Per-source cap  | `source.maxItems` or `maxItemsPerSource` (default 20, max 100), newest first. Dropping items before any model call is the biggest speed lever.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Fetch policy    | 4 sources at a time; per source a 10 s timeout and 2 retries, exponential backoff from 500 ms. A fetcher throws `FetchError` with a `retryable` flag, and the step retries on it: a timeout, a network error, a 5xx, a 408 or a 429 yes; any other 4xx, a GitHub rate limit, a refused redirect, an oversize body, a feed that does not parse, or a bad URL no.                                                                                                                                                                                                                                                                                               |
+| Redirects, size | A feed fetch follows a redirect only to the source's own host (apex and `www.` count as one; a GitHub source may also go to `api.github.com`). Never from https to http, to another port or to a URL with credentials, and at most 5 hops. `GITHUB_TOKEN` never leaves the source's origin. A body over 5 MiB fails the source. A source URL may not contain a username or password: the config does not load, and the fetchers refuse it too.                                                                                                                                                                                                                |
+| Validation      | Every item is parsed with `ItemSchema`; items outside the window are dropped again (defence in depth).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| RSS/Atom        | Only entries with an http(s) link and a date. The `rel="alternate"` link wins, shown without tracking parameters and fragment; `published` wins over `updated`; a date with no zone is UTC. Summary is plain text from the fullest text the entry carries (`content:encoded`, `content`, `summary`, then `description`), with tags, `<script>` and `<style>` removed in one linear pass and entities decoded, so `Vec&lt;T&gt;` reads `Vec<T>`; cut to 600 chars. One bad entry is skipped, not the source. Entries of one feed that share a link (Google Cloud release notes) get `?entry=<entry id>` on their URL, because the item id comes from the link. |
+| Pipeline        | Every source goes through one pipeline (`adapters/sources/pipeline.ts`): the adapter of its kind requests the response and parses it into raw entries (`rssAdapter.ts`; `githubAtomAdapter.ts` without a token, `githubRestAdapter.ts` with one), one shared step turns them into items, then the list is validated, cut to the window, sorted newest first and capped. `createRssFetcher` and `createGithubReleasesFetcher` keep their names.                                                                                                                                                                                                                |
+| Article pages   | An `rss` entry with no text in the feed gets the first paragraphs of its own page (the first `<article>` or `<main>` without navigation, header, footer, script and style, else `og:description` or the page description). This runs after the window and the cap: at most `maxItems` extra requests per source, 4 at a time, 4 s together out of the source's 10 s, 3 s per page, 2 MiB per page, and only on the feed's own host (the redirect rule). A page that fails leaves its entry as it was. GitHub sources never fetch pages.                                                                                                                       |
+| GitHub          | Source URL must be exactly `https://github.com/<owner>/<repo>`. Without a token: the releases Atom feed (about the last 10 releases, prereleases included). With `GITHUB_TOKEN`: the REST API, drafts and prereleases skipped. Release links must stay on `github.com`.                                                                                                                                                                                                                                                                                                                                                                                       |
+| URL normalize   | Lowercase host, no default port, no fragment, no `utm_*`/`ref`/`fbclid`/`gclid`/`mc_cid`/`mc_eid`/`source` params, sorted query, no trailing slash. Item id = first 16 hex chars of SHA-256 of the normalized URL.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Dedupe          | Same id: the first occurrence wins, so earlier sources in the config take precedence. Each source is cut to its cap again afterwards, newest first.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Failed sources  | Never fail the step. Each is recorded as `{ sourceId, error }` in `run.json`, with the error text cut to 300 chars.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Zero items      | The run ends `quiet` and sends a failure note ("no items collected", with the number of failed sources). A single source that yields no usable item logs the warning `Source returned no usable items`; the run record does not list it.                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ### 2.2 Input guards (`steps/guardInput.ts`, `adapters/guard/*`)
 
@@ -75,6 +84,14 @@ One `decide` call (role `classify`) per item, with four questions:
 A wrong answer type, or an area that is not an option, fails the step. Process applies the
 thresholds later. `scores.json` holds the classifications.
 
+The model sees an item's title, its source id and kind, and its summary, plus the focus areas.
+A run also passes each source's `Source.area` as a hint (`areaHintsOf`, W6-03): a trusted line
+`Source tag: <area>` between the data rule and the item's untrusted block (in the generate
+fallback, a line `Source tag for <id>: <area>` before the blocks). The tag is one line, with
+whitespace collapsed, and a source without an area adds nothing, so its prompt is unchanged. It
+is a hint, not an answer: the model still picks the area itself from the focus areas and `other`,
+and the tag need not match one of them (D15).
+
 The same file has a **generative fallback** (`mode: 'generate'`): 10 items per
 `generateStructured` call, item ids and areas as JSON Schema enums, temperature 0, one retry
 batch for items the model left out, then "not relevant". `runDigest` never selects it (D5).
@@ -84,15 +101,25 @@ batch for items the model left out, then "not relevant". `runDigest` never selec
 1. **Rank**: relevance desc, areaConfidence desc, publishedAt desc, then id, source, title and
    URL as stable tie-breakers. Input order never matters.
 2. **Drop**, first matching reason wins: `sent-before` (normalized URL sent in the last
-   `dedupeWeeks` weeks, default 4, read from earlier `run.json` files with status `sent`) →
-   `duplicate` (same id, or same normalized title from another source; the best-ranked copy
-   stays) → `low-relevance` (< `minRelevance`, default 1.5) → `hype` (> `maxHype`, 0.6) →
+   `dedupeWeeks` weeks, default 4, read from earlier `run.json` files that are `sent` or hold a
+   non-empty `deliveredTo`) → `duplicate` (same id, or from another source the same normalized
+   title, or the same release; the best-ranked copy stays) → `low-relevance` (< `minRelevance`, default 1.5) → `hype` (> `maxHype`, 0.6) →
    `minor-release` (> `maxMinorRelease`, 0.75).
+   - **Same release** means the same product name and version token in the title (`v` stripped,
+     a trailing `.0` folded), with nothing else after the version but a subtitle or an
+     announcement word ("is out", "now available", "on ..."), and no other version in the title.
+     It is narrow on purpose: "Claude 3.5 Sonnet" and "Claude 3.5 Haiku" stay apart. It misses a
+     pair where one title has no version, so the writer prompt also asks for one entry per release.
+     It does merge the same product on two platforms ("Kubernetes 1.34 now available in GKE"
+     and "... in EKS"). The duplicate stage runs before the quality filters, so a best copy that
+     a later filter drops takes its story with it.
 3. **Spread across focus areas**: greedy by rank, but no area takes a third slot while an area
    with fewer than 2 slots still has an item. After that, the least-filled area goes first.
 4. **topN**: 3-5 items (default 5). Fewer than 3 → `quiet`, without a note.
 
-Default thresholds are placeholders until tuned on the 60 labelled classifier cases.
+The default thresholds come from the sweep over the 60 labelled classifier cases (W3-03). They
+were tuned on the `light` profile only. The run record keeps `counts.afterProcess`: the items
+that passed the filters, which is `selected` plus the ones cut as `below-top-n`.
 
 ### 2.5 Writing (`steps/write.ts`, `prompts/write.ts`)
 
@@ -103,13 +130,32 @@ Default thresholds are placeholders until tuned on the 60 labelled classifier ca
   summary, whyItMatters) via `generateStructured()`; the step sets `weekId`.
 - **Provenance**: a digest item survives only if its `itemId` is a selected item, used once; its
   URL is replaced by the source item's URL. The model can name an item but never choose its
-  link. Fewer than 3 items left fails that writer.
+  link, so the schema does not validate the `url` it writes (a bad one costs no repair call).
+  Fewer than 3 items left fails that writer.
+- A title that restates the tag after a colon ("tool v1.2.0: Release v1.2.0") is cut back to
+  "tool v1.2.0".
+- The prompt gives the format limits from `checks/formatCheck.ts` (3-5 items, under 500 words,
+  about 400 as the target), so the two cannot drift. It also asks for one entry per release:
+  two items about the same release become one entry, unless that would leave fewer than 3.
 - A failed writer (timeout, invalid JSON after repair, too few items) is recorded with
-  `rejectedBy: ["write"]`; the next writer still runs.
-- `runDigest` then fixes each draft in code: cut to `topN` items, and replace em dashes with
-  commas (dropped at the ends of a field). `drafts.json` stores the drafts.
+  `rejectedBy: ["write"]`; the next writer still runs. When every writer fails, the run is
+  `failed` at step `write` (D3).
+- The step then fixes each draft in code (`prepareDraft`): cut to `topN` items, and replace em
+  dashes with commas (dropped at the ends of a field). The link and format checks follow (2.6).
+- **One retry (`writeCheckedStep`).** When no draft passes the link or format check, each writer
+  that has a draft gets one more call, in reverse writer order (the last model is still loaded).
+  The prompt is the first prompt plus the problems the checks found, in an untrusted-data block
+  (`check-problems`), format problems first, at most 5, each cut to 200 chars. The problems quote
+  model text, so every URL, `www.` host and `//` link in them is masked as `[url removed]` in the
+  prompt. A writer is retried once per run; a writer with no draft is not retried; a failed retry
+  keeps the writer's first draft and its rejection.
+- `drafts.json` is `{ drafts, failures, rejections }`. `drafts` holds the prepared drafts, with a
+  writer's retried draft in place of its first. `failures` lists writers with no draft; a failed
+  retry has `retry: true`. `rejections` lists each draft the checks rejected: writer, `attempt`
+  (1 first draft, 2 retry), `rejectedBy` and the bounded problems. The same problems go to the log
+  at warn (`Draft failed the checks`). They never go to `run.json` or the failure note.
 
-### 2.6 Per-draft checks and output guards (always-on part in `runDigest.checkDrafts`)
+### 2.6 Per-draft checks and output guards (code checks in `steps/write.ts`, guards in `checkDrafts`)
 
 Each draft on its own:
 
@@ -119,23 +165,36 @@ Each draft on its own:
    normalization, and every URL-like string in every field and in the rendered Markdown
    (Markdown destinations, `href`/`src`, bare URLs, after decoding entities and escapes) must be
    known. Scheme-less or malformed links (`www.`, `//host`, `http:` without `//`) are rejected.
+   So is a numeric character reference past U+10FFFF (`&#x110000;`): it is a problem, not an
+   error, and for the rest of the scan it reads as U+FFFD, so a URL hidden behind valid
+   references is still found.
 3. **Format check** (`checks/formatCheck.ts`): 3-5 items; headline, intro, summaries and
    why-it-matters present; no em dash; under 500 words (link targets do not count).
 4. **Output guards**, only on drafts that passed 2 and 3, with the same `enabled`/`mode`/`checks`
    rules as input:
    - **graniteGroundedness** (role `guardRisk`): one `generate` per digest item, with the source
      item as the document and summary plus why-it-matters as the text. "yes", unparsable
-     output, or a missing source item flags the draft.
+     output, or a missing source item flags the draft. After the items, one more call checks the
+     headline and intro against every source item the digest cites (flags `ungrounded headline
+or intro`; skipped when no cited item has a source, since the missing sources already
+     flag the draft). Item titles are not checked.
    - **clefRubric** (role `guardPolicy`): one `decide` per draft (off-task, hype, harmful);
-     P(yes) > 0.5 flags.
+     P(yes) > 0.5 flags. The format check keeps a draft under 500 words, which is below the state
+     limit of every decision model (3.3), so the whole draft is judged.
 
 Link check and format check have no config switch. If no draft passes, the run ends `blocked`
-and the failure note names each writer and the check ids that rejected it.
+and the failure note names each writer and the check ids that rejected it. The shared guard
+engine (which guards run, and how `any` and `all` combine their verdicts) is `steps/guardRun.ts`;
+both guard steps use it.
 
 ### 2.7 Judge selection (`steps/select.ts`, `prompts/judge.ts`)
 
 - Runs only when the profile has a judge (`judge !== null`) and two or more drafts passed.
   Otherwise the first passing draft in writer order wins, with no scores.
+- If the judge fails (an error, a missing or non-score answer), the first passing draft in
+  writer order wins too: a warning (`judge failed, using the first draft in writer order`), no
+  scores at all, and `SelectOutput.judged` is false. The week is not failed. `Winner chosen`
+  logs `judged`.
 - One `decide` call (role `judge`) per draft, never two drafts in one call (no position bias).
   The state holds the data rule, the rendered draft and only that draft's source items; not the
   writer name.
@@ -154,8 +213,18 @@ and the failure note names each writer and the check ids that rejected it.
 
 - Recipients, the webhook and the file path come from config and `.env` only. A configured
   channel without its secret makes `buildApp` fail with an error naming the variable.
-- `deliver` tries every channel, then fails the step if any failed; the error names the
-  channels that did get the digest.
+- `SLACK_WEBHOOK_URL` must be an `https:` URL. The config refuses `http:`, and the Slack adapter
+  refuses it at send time, with an error that never carries the URL (its path is the secret).
+- `deliver` tries every channel and records the ones that took the digest in
+  `RunRecord.deliveredTo`. If any failed, the step fails and the error names the channels that
+  did get the digest. `sentUrls` is recorded as soon as one channel has the digest.
+- The container wraps every channel (`app/retryingDelivery.ts`, `app/redacting.ts`). A send that
+  fails with a transient error (a network error or timeout, `HTTP 5xx`, an SMTP 4yz reply) is
+  tried again twice, after 5 s and 10 s, for `sendDigest` and `sendFailure` alike; any other
+  error, such as a 4xx, an SMTP 5yz reply or a Slack 429, is final. The adapters throw plain
+  errors, so the kind is read from the message. A retry can send a message twice when the first
+  try reached the server and only its answer was lost. The subject, Markdown and failure message
+  have the known secrets taken out before every send.
 - A failure note goes to every channel after `failed`, `blocked` or a zero-item `quiet` run,
   never in a dry run. Best effort, secrets redacted.
 
@@ -165,30 +234,63 @@ and the failure note names each writer and the check ids that rejected it.
   scheduler can pass a week explicitly.
 - **Idempotency**: a week whose `run.json` has status `sent` is `skipped` (exit 0, nothing saved)
   unless `--force`. Checked before the lock and again under it.
-- **`--force`**: runs and delivers the week again. If the forced run does not end `sent`, the
-  existing sent `run.json` is kept, so the week never looks unsent.
+- **`--force`**: runs the whole week again and delivers to every channel. A run never replaces a
+  record that got further with delivery: a `sent` record is replaced only by a `sent` run, and a
+  partly delivered record only by a run that reached a channel. When the earlier record stays,
+  so do the week's files. Such a run (a week that reached a channel earlier) holds its
+  `items.json`, `scores.json`, `drafts.json` and `digest.md` in memory and writes them, and
+  `error.json`, only if its own record is saved. `RunResult.markdown` is set only when
+  `digest.md` was written, so `digest run` never names a file this run did not write. In that
+  case `RunResult.kept` holds the reason: "Kept the sent run record; this forced run did not end
+  sent" for a sent week, "Kept the partly delivered run record; this run delivered nothing" for a
+  partly delivered one. It is logged at warn, and `digest run` prints it as its last line,
+  `<reason>. The week's run folder is unchanged.`, where the Digest line would be. A resume never
+  keeps, because its record always reached a channel.
 - **`--dry-run`**: no deliver step and no failure note; `digest.md` and `run.json` (status
-  `dry-run`) are still written.
-- **Run lock**: `<dataDir>/digest.lock` holds `{ pid, runId, startedAt }`, created atomically
-  (temp file + hard link). A live, recent lock fails the run with exit 1 and no record. A lock
-  whose pid is dead, older than 6 h, or unreadable is taken over, under a 30 s takeover-guard
-  file so two contenders cannot both take it.
+  `dry-run`) are still written, unless the week already reached a channel (see `--force`).
+- **Partial delivery and resume.** A run that fails in `deliver` after some channels took the
+  digest is `failed` with a non-empty `deliveredTo`. A later run of that week that is not
+  forced and not a dry run does not start over. It skips the health check and every model step
+  and sends the saved `digest.md` to the configured channels not in `deliveredTo`. On success
+  it writes `sent` with `deliveredTo` covering every channel, the old counts, drafts and winner,
+  and the resumed `deliver` timing added; its `startedAt` and `finishedAt` cover the resume.
+  Before it sends, it checks (`verifyDigest`) that the `[Source](url)` links in `digest.md` are
+  exactly `sentUrls`. If `digest.md` is gone or differs, the run fails at `deliver`, sends
+  nothing and says to use `--force`. The check is skipped when no configured channel is missing
+  (the remaining channels were removed from config), and the week is then sealed `sent`. A
+  refused resume returns no digest path.
+- **Run lock**: `<dataDir>/digest.lock` holds `{ pid, runId, startedAt }` plus `hostname`, a
+  per-process `token`, `pidNamespace` (Linux) and `heartbeatAt`. It is created atomically (temp
+  file + hard link), and the holder rewrites `heartbeatAt` every 60 s. A live, recent lock fails
+  the run with exit 1 and no record. A lock is taken over when its pid is gone (checked only
+  where the pid means something: the same host and PID namespace), when the pid was reused by
+  another process, when its heartbeat is 5 min old, when a lock without a heartbeat is 6 h old,
+  or when the file is unreadable. The takeover happens under a 30 s takeover-guard file so two
+  contenders cannot both take it. Each acquire first removes orphaned
+  `digest.lock.<pid>.<uuid>.tmp` and `digest.lock.takeover.<pid>.<uuid>.tmp` files older than
+  10 min (names match exactly; best effort, logged).
 - **Retention**: after every finished run, week folders older than the current week plus
   `keepWeeks` (default 12) lose everything except `digest.md`. Prune errors are only logged.
 
 ### 2.10 Run statuses and exit codes (`core/schemas.ts`)
 
-| Status    | When                                                      | Exit | `run.json`             | Failure note        |
-| --------- | --------------------------------------------------------- | ---- | ---------------------- | ------------------- |
-| `sent`    | winner delivered on every channel                         | 0    | yes                    | no                  |
-| `dry-run` | `--dry-run` and a winner was picked                       | 0    | yes                    | no                  |
-| `skipped` | week already sent, no `--force`                           | 0    | no                     | no                  |
-| `quiet`   | no items collected, or fewer than 3 selected              | 3    | yes                    | only for zero items |
-| `blocked` | every draft rejected by checks, guards, or writer failure | 2    | yes                    | yes                 |
-| `failed`  | health check, a step error, a delivery error              | 1    | yes, plus `error.json` | yes                 |
+| Status    | When                                                                                                 | Exit | `run.json`             | Failure note        |
+| --------- | ---------------------------------------------------------------------------------------------------- | ---- | ---------------------- | ------------------- |
+| `sent`    | winner delivered on every channel                                                                    | 0    | yes                    | no                  |
+| `dry-run` | `--dry-run` and a winner was picked                                                                  | 0    | yes                    | no                  |
+| `skipped` | week already sent, no `--force`                                                                      | 0    | no                     | no                  |
+| `quiet`   | no items collected, or fewer than 3 selected                                                         | 3    | yes                    | only for zero items |
+| `blocked` | drafts exist and every one was rejected by the checks or the guards                                  | 2    | yes                    | yes                 |
+| `failed`  | health check, a step error (also every writer failing), a delivery error on any channel, or an abort | 1    | yes, plus `error.json` | yes                 |
 
 Also exit 1, outside the table: a held lock, an invalid config or `.env`, or a failure to save
 `run.json` (alerted first).
+
+A run whose caller aborts it (`RunOptions.signal`) ends `failed` with `Run aborted before the
+<step> step: <reason>` and releases the lock. The signal is checked before each step, never
+inside one, so the running step finishes first. `digest serve` sets it in two cases: the run
+time limit of 3 h (reason `run timed out after 3 h`) and a second stop signal (8.2). `digest run`
+sets none.
 
 #### Run flow with decision points
 
@@ -200,8 +302,12 @@ flowchart TD
   Q_LOCK -->|"no"| E_LOCK["error: another run in progress, exit 1, no record"]
   Q_LOCK -->|"yes"| Q_SENT2{"Sent meanwhile? (checked again under the lock)"}
   Q_SENT2 -->|"yes, not forced"| S_SKIP
-  Q_SENT2 -->|"no"| Q_HEALTH{"Ollama up and every profile model pulled?"}
-  Q_HEALTH -->|"no"| S_FAIL["failed + note: exit 1"]
+  Q_SENT2 -->|"no"| Q_PART{"Failed week that some channels already got? (not forced, not a dry run)"}
+  Q_PART -->|"yes"| Q_RES{"digest.md found, links match what was sent?"}
+  Q_RES -->|"no"| S_FAIL["failed + note: exit 1"]
+  Q_RES -->|"yes"| DELIVER["deliver on the channels that lack it, every channel when new"]
+  Q_PART -->|"no"| Q_HEALTH{"Ollama up and every model this run uses pulled?"}
+  Q_HEALTH -->|"no"| S_FAIL
   Q_HEALTH -->|"yes"| COLLECT["collect, save items.json"]
   COLLECT --> Q_ITEMS{"Any items?"}
   Q_ITEMS -->|"no"| S_QUIET_N["quiet + note: exit 3"]
@@ -210,18 +316,23 @@ flowchart TD
   CLS --> PROC["process: dedupe, thresholds, rank, area spread, topN"]
   PROC --> Q_MIN{"3 or more items selected?"}
   Q_MIN -->|"no"| S_QUIET["quiet: exit 3"]
-  Q_MIN -->|"yes"| WRITE["write: each writer drafts, save drafts.json"]
-  WRITE --> CHECKS["per draft: render, link check, format check, output guards"]
-  CHECKS --> Q_PASS{"Any draft passed?"}
+  Q_MIN -->|"yes"| WRITE["write: each writer drafts, then link check and format check, save drafts.json"]
+  WRITE --> Q_DRAFT{"Any draft?"}
+  Q_DRAFT -->|"no: every writer failed"| S_FAIL
+  Q_DRAFT -->|"yes"| Q_CODE{"Any draft passed the code checks?"}
+  Q_CODE -->|"no"| RETRY["retry each writer once with the problems found"]
+  Q_CODE -->|"yes"| GUARDS["output guards on the drafts that passed"]
+  RETRY --> GUARDS
+  GUARDS --> Q_PASS{"Any draft passed?"}
   Q_PASS -->|"no"| S_BLOCK["blocked + note: exit 2"]
   Q_PASS -->|"yes"| SELECT["select: judge if 2 or more drafts, save digest.md"]
   SELECT --> Q_DRY{"Dry run?"}
   Q_DRY -->|"yes"| S_DRY["dry-run: exit 0"]
-  Q_DRY -->|"no"| DELIVER["deliver on every channel"]
+  Q_DRY -->|"no"| DELIVER
   DELIVER --> Q_DEL{"All channels OK?"}
   Q_DEL -->|"yes"| S_SENT["sent: exit 0"]
   Q_DEL -->|"no"| S_FAIL
-  ANY["any step throws"] -.-> S_FAIL
+  ANY["any step throws, or the run is aborted between steps"] -.-> S_FAIL
   S_SENT --> FIN["finish: run.json, error.json if failed, note, prune, release lock"]
   S_DRY --> FIN
   S_QUIET --> FIN
@@ -230,9 +341,10 @@ flowchart TD
   S_FAIL --> FIN
 ```
 
-Diamonds are decisions in `runDigest`; rectangles with a status are where the chain stops.
-Every status except `skipped` (and the lock error) goes through the same finish phase, so every
-real run leaves a `run.json`. The dotted edge: any step error becomes `failed`.
+Diamonds are decisions in `runDigest` (the resume branch is in `runResume.ts`); rectangles with a
+status are where the chain stops. Every status except `skipped` (and the lock error) goes
+through the same finish phase, so every real run leaves a `run.json`, unless an earlier record
+of the week got further (2.9). The dotted edge: any step error becomes `failed`.
 
 #### RunStatus as the state of one week
 
@@ -253,10 +365,11 @@ stateDiagram-v2
   RUNNING --> QUIET : no items or fewer than 3
   RUNNING --> BLOCKED : every draft rejected
   RUNNING --> FAILED : health, step or delivery error
-  DRY --> RUNNING : next run
-  QUIET --> RUNNING : next run or catch-up
-  BLOCKED --> RUNNING : next run or catch-up
+  DRY --> RUNNING : next run or catch-up
+  QUIET --> RUNNING : next manual run
+  BLOCKED --> RUNNING : next manual run
   FAILED --> RUNNING : next run or catch-up
+  FAILED --> SENT : rerun delivers the missing channels
   SENT --> SKIPPED : run without force
   SKIPPED --> SENT : record unchanged
   SENT --> RUNNING : run with force
@@ -267,8 +380,10 @@ stateDiagram-v2
 ```
 
 This is the status in `data/runs/<week>/run.json` across runs of the same week. Every status
-except `sent` can run again without `--force`; the scheduler's catch-up does so on start
-(section 8.2). Only `sent` is terminal for normal runs; `skipped` is never written.
+except `sent` can run again without `--force`. The scheduler's catch-up on start (section 8.2)
+runs a week with no record or a `failed` or `dry-run` one, and leaves `sent`, `quiet` and
+`blocked` weeks alone; a manual `digest run` skips only `sent`. Only `sent` is terminal for
+normal runs; `skipped` is never written.
 
 ---
 
@@ -290,7 +405,9 @@ except `sent` can run again without `--force`; the scheduler's catch-up does so 
 
 The input bounds the model calls. With N collected items, K items after the input guards, W
 writers and P drafts past the code checks: up to N clefPolicy, up to 2N granite, K classify, W
-to 2W writer (one repair each), up to 5P groundedness, P rubric and P judge calls, plus retries.
+to 2W writer (one repair each), up to 6P groundedness (one per item and one for the headline and
+intro), P rubric and P judge calls, plus retries. A week where no draft passes the link and
+format checks adds one more writer call per writer that has a draft.
 
 ### 3.2 Roles and profiles (`config/profiles.ts`)
 
@@ -308,7 +425,16 @@ writer tag from the profile as an opaque id. A profile maps roles to Ollama tags
 | min Ollama (in code) | 0.35.1                                             | 0.40.0                           | 0.40.0                        | 0.35.1                   |
 
 - `resolveProfile()` swaps every profile that needs Apple silicon for the non-Mac fallback when
-  the process is not on `darwin/arm64`. All three named profiles need it.
+  the process is not on `darwin/arm64`. All three named profiles need it. `loadConfig` keeps the
+  host it resolved for in `LoadedConfig.platform` (read with `platformOf`), so `doctor` and
+  `eval` judge the same host.
+- `light` has no separate non-Mac fallback (D2): off a Mac it becomes `clef:latest` and
+  `gemma4:31b`, which need far more than 16 GB. `digest doctor` warns about it, and
+  `digest init` says so when you pick `light`.
+- `modelsInUse(profile, guards)` is `requiredModels` without the model of a guard role
+  (`guardPolicy` or `guardRisk`) whose checks are all off; a tag another role still uses stays.
+  The health check at the start of a run and `digest doctor` use it (D4). Model pulls still use
+  `requiredModels`.
 - `models.writers` in config replaces the panel. With 2+ writers the judge is the profile's
   judge, or `clef` if the profile has none. One writer turns the judge off.
 - The judge (clef, Qwen-based) is from a different family than both default writers.
@@ -364,10 +490,22 @@ guardPolicy 60 s, guardRisk and judge 120 s, write 600 s; overridable), retry tw
 (1 s, doubling, max 10 s) only on network errors, timeouts, stream errors and 5xx, and log one
 line per call (role, model, latency, attempts, tokens).
 
-`decide` trims `state` to fit the model (10,000 chars for `strands-decider`, which has a 4K
-context; 48,000 otherwise), keeping the head and a short tail. `generate` streams, so Node's
-fetch does not drop a writer reply whose headers take over 300 s. `health()` reads
-`/api/version` and `/api/tags`.
+`decide` trims `state` to fit the model: the model's budget (10,000 chars for `strands-decider`,
+which has a 4K context; 48,000 otherwise) less the size of the serialized questions, never below
+1,000, keeping the head and a short tail. The warning `decide state trimmed` logs
+`questionChars`. `generate` streams, so Node's fetch does not drop a writer reply whose headers
+take over 300 s. A reply that stops at the token limit (`done_reason: length`) is returned as it
+is, with a warning; with a JSON schema it is an unfinished document, which fails validation
+and goes to the one repair (3.4). `health()` reads `/api/version` and `/api/tags`.
+
+`generate` sends Ollama's `think` setting per role: `models.think` if set, else the adapter
+default (`guardRisk` off, because Granite Guardian spends about 65 s reasoning before a one-word
+answer), else nothing, and the model decides. `decide` ignores `think`. `effectiveThink` is the
+one place that rule lives, and `digest doctor` prints its result for each role.
+
+The container builds the provider in one place, `createModelProvider` (`app/container.ts`: base
+URL, profile, timeouts, `think` and retries from the config). A run uses it, and `digest doctor`
+calls the same function, so the two cannot drift.
 
 granite4.1-guardian is a chat model that answers `<score>yes</score>` or `<score>no</score>`
 with no probabilities, so the granite guards use `generate` and a strict parser.
@@ -377,7 +515,8 @@ with no probabilities, so the granite guards use `generate` and a strict parser.
 `generateStructured(model, request, zodSchema, step)` converts the zod schema to JSON Schema,
 passes it to `generate`, strips an optional code fence, parses and validates. On failure it asks
 the same model once to repair its answer, quoting the validation problems. A second failure
-throws a `DigestError` for that step; the writer step catches it per writer.
+throws a `DigestError` for that step; the writer step catches it per writer. The repair gets the
+same token limit as the first call, so it can be cut short again.
 
 ### 3.5 Untrusted data (`shared/untrusted.ts`)
 
@@ -418,9 +557,10 @@ Mastra agents, tools or memory; no step chooses the next step.
 
 ### 3.9 Where an agent loop could go later (proposal)
 
-- **Bounded revise loop in write** (best candidate): when a draft fails the link, format or
-  rubric check, send the problem list back to the same writer for one or two revisions, like
-  the structured-output repair. Checks stay in code; the loop has a hard cap.
+- **Bounded revise loop in write** (best candidate): a small form is built (W5-06): when every
+  draft fails the link or format check, each writer gets one retry with the problem list (2.5).
+  Still proposed: revisions after a rubric or groundedness flag, and more than one retry. Checks
+  stay in code; the loop keeps a hard cap.
 - **Reading the release page** for thin items: needs network access to a model-chosen URL,
   which breaks the "no tools, allowlisted hosts only" rule. Not recommended.
 - **Follow-up questions or chat**: out of scope in the spec.
@@ -442,7 +582,8 @@ sequenceDiagram
   APP-->>EP: DigestDeps with adapters, logger, tracer
   EP->>RD: runDigest(deps, options)
   RD->>RS: hasSentDigest(week)
-  RD->>RS: acquireLock(week), then hasSentDigest again
+  RD->>RS: acquireLock(week), then getRunRecord again
+  Note over RD,DL: a partly delivered week skips to the deliver step (2.9)
   RD->>MP: health()
   RD->>ST: collect via SourceFetcher per source
   RD->>RS: saveArtifact items.json
@@ -457,8 +598,14 @@ sequenceDiagram
   loop each writer in config order
     ST->>MP: generate (write) with JSON Schema, one repair
   end
+  ST->>ST: prepare, render, link check, format check (code)
+  opt no draft passed the code checks
+    loop each writer that has a draft, last writer first
+      ST->>MP: generate (write) with the problems found, one repair
+    end
+    ST->>ST: check the retried drafts again
+  end
   RD->>RS: saveArtifact drafts.json
-  RD->>ST: render, link check, format check (code)
   RD->>ST: guardOutput
   ST->>GD: checkDraft per draft
   GD->>MP: generate (guardRisk) or decide (guardPolicy)
@@ -495,7 +642,9 @@ vendor, file or cloud; five ports; adapters behind them. Dependencies point inwa
 
 ESLint (`no-restricted-imports`) fails the build if `src/core` or `src/ports` import adapters,
 CLI, scheduler, observability, `config/load`, `node:fs`, `ollama` or `nodemailer`. Only
-`src/app/container.ts` turns config into adapters. Steps are plain async functions with
+`src/app/container.ts` turns config into adapters, and wraps them with the decorators next to
+it in `src/app/`: `retryingDelivery.ts`, `redacting.ts` (delivery and store) and `tracedModel.ts`
+(the model provider). Steps are plain async functions with
 interface deps (ports, `Logger`, `Tracer`, `Clock`), so tests use `test/fakes` and evals swap in
 recorded fetchers without touching the core.
 
@@ -544,9 +693,9 @@ flowchart TB
     APP["app/container.ts: buildApp"]
   end
   subgraph CORE["Core: src/core"]
-    RUN["runDigest.ts"]
+    RUN["runDigest.ts, runEnding.ts, runResume.ts"]
     WF["workflow.ts (Mastra wrapper)"]
-    STEPS["steps: collect, guardInput, classify, process, write, guardOutput, select"]
+    STEPS["steps: collect, guardInput, classify, process, write, guardOutput, select, guardRun (shared engine)"]
     CHK["checks: linkCheck, formatCheck, plus render.ts"]
     STRUCT["structured.ts and prompts"]
   end
@@ -560,7 +709,7 @@ flowchart TB
   subgraph ADAPTERS["Adapters: src/adapters"]
     A_OLL["models/ollama.ts"]
     A_GUARD["guard/clefPolicy.ts, guard/granite.ts"]
-    A_SRC["sources/rss.ts, sources/githubReleases.ts"]
+    A_SRC["sources: pipeline, rssAdapter, githubAtomAdapter, githubRestAdapter, enrich"]
     A_DEL["delivery: markdownFile, smtp, slack"]
     A_STORE["store/fsRunStore.ts"]
   end
@@ -609,7 +758,7 @@ adapter serves every role.
 | `app/container.ts`                             | DI container / composition root          | Hand-written, no DI framework.                                                                                  |
 | `config/load.ts`, `.env`, `digest.config.json` | 12-factor config                         | Secrets and endpoints from the environment (process env wins over `.env`); the rest in one validated JSON file. |
 | ISO week `runId` + `hasSentDigest`             | Idempotency key                          | One sent digest per week; `--force` overrides.                                                                  |
-| `store/runLock.ts`                             | Mutex / file lock                        | Advisory lock file with pid and age-based staleness.                                                            |
+| `store/runLock.ts`                             | Mutex / file lock                        | Advisory lock file with a heartbeat; stale by pid, process token, heartbeat age or file age (2.9).              |
 | `adapters/models/ollama.ts`                    | Inference client                         | Timeouts, retries with backoff, error mapping, usage logging.                                                   |
 | Guards + link and format checks                | Policy / moderation layer                | Switchable guards on models; checks in code that cannot be switched off.                                        |
 | `steps/collect.ts` + fetchers                  | Ingestion                                | Allowlisted pull, bounded and deduplicated.                                                                     |
@@ -621,13 +770,13 @@ adapter serves every role.
 
 ### 4.5 Ports
 
-| Port                                      | Methods                                                                                                          | Local adapter(s)                                                                                              | Test fake (`test/fakes`)                               |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `ModelProvider`                           | `generate(req)`, `decide(req)`, `health()`                                                                       | `createOllamaProvider` (`ollama.ts`, `ollamaHttp.ts`, `systemone.ts`)                                         | `FakeModelProvider`                                    |
-| `InputGuard` / `OutputGuard` (`Guard.ts`) | `id`, `checkItem(item)` / `checkDraft(draft, sources)`                                                           | `createClefPolicyGuard`, `createGraniteRiskGuard` / `createGraniteGroundednessGuard`, `createClefRubricGuard` | `FakeInputGuard`, `FakeOutputGuard`                    |
-| `SourceFetcher`                           | `kind`, `fetch(source, window, signal)`                                                                          | `createRssFetcher`, `createGithubReleasesFetcher`                                                             | `FakeSourceFetcher`                                    |
-| `Delivery`                                | `id` (`markdown`, `email`, `slack`), `sendDigest(msg)`, `sendFailure(note)`                                      | `createMarkdownFileDelivery`, `createSmtpDelivery`, `createSlackDelivery`                                     | `CapturingDelivery`                                    |
-| `RunStore`                                | `acquireLock`, `hasSentDigest`, `saveArtifact`, `saveRunRecord`, `getRunRecord`, `sentUrls`, `listRuns`, `prune` | `createFsRunStore`                                                                                            | `MemoryRunStore` (evals use their own in-memory store) |
+| Port                                      | Methods                                                                                                                          | Local adapter(s)                                                                                              | Test fake (`test/fakes`)                               |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `ModelProvider`                           | `generate(req)`, `decide(req)`, `health()`                                                                                       | `createOllamaProvider` (`ollama.ts`, `ollamaHttp.ts`, `systemone.ts`)                                         | `FakeModelProvider`                                    |
+| `InputGuard` / `OutputGuard` (`Guard.ts`) | `id`, `checkItem(item)` / `checkDraft(draft, sources)`                                                                           | `createClefPolicyGuard`, `createGraniteRiskGuard` / `createGraniteGroundednessGuard`, `createClefRubricGuard` | `FakeInputGuard`, `FakeOutputGuard`                    |
+| `SourceFetcher`                           | `kind`, `fetch(source, window, signal)`                                                                                          | `createRssFetcher`, `createGithubReleasesFetcher`                                                             | `FakeSourceFetcher`                                    |
+| `Delivery`                                | `id` (`markdown`, `email`, `slack`), `sendDigest(msg)`, `sendFailure(note)`                                                      | `createMarkdownFileDelivery`, `createSmtpDelivery`, `createSlackDelivery`                                     | `CapturingDelivery`                                    |
+| `RunStore`                                | `acquireLock`, `hasSentDigest`, `saveArtifact`, `readArtifact`, `saveRunRecord`, `getRunRecord`, `sentUrls`, `listRuns`, `prune` | `createFsRunStore`                                                                                            | `MemoryRunStore` (evals use their own in-memory store) |
 
 `Logger`, `Tracer` and `Clock` in `src/shared` are smaller interfaces with the same role:
 `src/observability` implements the first two; tests inject a fixed clock.
@@ -640,12 +789,13 @@ adapter serves every role.
 
 ```text
 data/
-  digest.lock                  run lock (+ digest.lock.takeover, briefly, during a takeover)
+  digest.lock                  run lock (+ digest.lock.takeover, briefly, during a takeover;
+                               a killed run can leave digest.lock.<pid>.<uuid>.tmp, swept after 10 min)
   runs/
     2026-W43/
       items.json               collected items, after the window, caps and dedupe
       scores.json              one Classification per item that passed the input guards
-      drafts.json              { drafts, failures }: every writer's prepared draft
+      drafts.json              { drafts, failures, rejections }: every writer's prepared draft (2.5)
       digest.md                the winning digest as Markdown
       run.json                 the RunRecord
       error.json               only on failure: step, name, message, time, stack
@@ -660,20 +810,21 @@ become folder or file names. `delivery.markdown.dir` is its own setting, not res
 
 ### 5.2 RunRecord (`run.json`, `RunRecordSchema`)
 
-| Field                     | Meaning                                                                                |
-| ------------------------- | -------------------------------------------------------------------------------------- |
-| `runId`                   | ISO week, e.g. `2026-W43`                                                              |
-| `status`, `dryRun`        | see 2.10                                                                               |
-| `startedAt`, `finishedAt` | ISO timestamps                                                                         |
-| `profile`, `modelsByRole` | profile name and the tag(s) per role (`write` is a list, `judge` may be null)          |
-| `timings[]`               | `{ step, ms }` per step that ran                                                       |
-| `counts`                  | `collected`, `afterGuardInput`, `classified`, `selected`, `digestItems`                |
-| `failedSources[]`         | `{ sourceId, error }`                                                                  |
-| `disabledGuards[]`        | guard check ids that were off or missing                                               |
-| `drafts[]`                | `{ writer, passed, rejectedBy[], score? }`; `score` = `{ writer, score, byCriterion }` |
-| `winner`                  | winning writer tag, or null                                                            |
-| `sentUrls[]`              | URLs delivered this run; read back for cross-week dedupe                               |
-| `error?`                  | `{ message, step? }` on failure                                                        |
+| Field                     | Meaning                                                                                                                                                                                                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runId`                   | ISO week, e.g. `2026-W43`                                                                                                                                                                                                                                                          |
+| `status`, `dryRun`        | see 2.10                                                                                                                                                                                                                                                                           |
+| `startedAt`, `finishedAt` | ISO timestamps                                                                                                                                                                                                                                                                     |
+| `profile`, `modelsByRole` | profile name and the tag(s) per role (`write` is a list, `judge` may be null)                                                                                                                                                                                                      |
+| `timings[]`               | `{ step, ms }` per step that ran                                                                                                                                                                                                                                                   |
+| `counts`                  | `collected`, `afterGuardInput`, `classified`, `afterProcess`, `selected`, `digestItems`. `afterProcess` is the items that passed the process filters (`selected` plus the ones cut as `below-top-n`); it is absent in older records and when the run ended before the process step |
+| `failedSources[]`         | `{ sourceId, error }`                                                                                                                                                                                                                                                              |
+| `disabledGuards[]`        | guard check ids that were off or missing                                                                                                                                                                                                                                           |
+| `drafts[]`                | `{ writer, passed, rejectedBy[], score? }`; `score` = `{ writer, score, byCriterion }`                                                                                                                                                                                             |
+| `winner`                  | winning writer tag, or null                                                                                                                                                                                                                                                        |
+| `sentUrls[]`              | URLs delivered this run, set once any channel took the digest; read back for cross-week dedupe                                                                                                                                                                                     |
+| `deliveredTo[]`           | channels that took the digest (`markdown`, `email`, `slack`); optional, set on a `sent` run and on a partly delivered `failed` run. A `failed` run with a non-empty list is what a rerun resumes (2.9). Such a week counts in cross-week dedupe like a `sent` one                  |
+| `error?`                  | `{ message, step? }` on failure                                                                                                                                                                                                                                                    |
 
 ### 5.3 Kept and pruned
 
@@ -810,8 +961,12 @@ that rejected a draft (`rejectedBy`).
 
 - `docker compose up -d` starts `digest serve`: the in-process scheduler (croner) fires on
   `schedule.cron` (default `45 7 * * 1`, Monday 07:45) in `schedule.timeZone`, catches up a
-  missed week on start, skips a tick while a run is going, and on SIGTERM/SIGINT waits for the
-  running digest before closing.
+  missed week on start (8.2), skips a tick while a run is going, retries a tick that finds the
+  run lock held and a run that ends `failed` (8.2), limits a run to 3 h, and on SIGTERM/SIGINT
+  waits for the running digest before closing. A second signal stops the run after its current
+  step; a third ends the process. Compose gives it `stop_grace_period: 90m`: a measured `quality`
+  run took about 59 min, and the rest is a margin. A run that outlasts it is killed, and the next
+  start takes over its lock within 5 min.
 - One-shot: `docker compose run --rm digest <command>` starts a new container from the same
   image, e.g. `run --dry-run`, `doctor`, `history`, `eval`. `init` needs no Ollama:
   `docker compose run --rm --no-deps digest init`.
@@ -849,8 +1004,9 @@ flowchart TB
 
 Two ways to run on a Mac. Docker mode runs the app in the Linux VM and reaches the Ollama app
 on the host, because Ollama in Docker cannot use the Apple GPU or MLX. Native mode has launchd
-call the CLI directly. In Docker mode the profile currently resolves to the non-Mac fallback
-(D1), so only the native path uses the MLX profiles today.
+call the CLI directly. In Docker mode `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH` (exported by
+`make docker-*`) tell the app that the host is a Mac, so the MLX profiles resolve as they do on
+the host (D1).
 
 ### 6.6 Deployment on Linux
 
@@ -1084,36 +1240,43 @@ runs pages through SNS.
 
 ### 8.1 Security invariants and where they are enforced
 
-| Invariant (spec, `.claude/rules/security.md`) | Enforced by                                                                                                                                                                                                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Item text is data, not instructions           | `wrapUntrusted` + `UNTRUSTED_DATA_RULE` in classify, write, guard and judge prompts; `neutralize()`                                                                                                                                                                            |
-| No model has tools or network                 | `ModelProvider` exposes only `generate`, `decide`, `health`                                                                                                                                                                                                                    |
-| Link check and format check always run        | `runDigest.codeCheck` calls both for every draft; no config field exists                                                                                                                                                                                                       |
-| Only collected URLs                           | write-step provenance (URL replaced by the source URL) plus the link check                                                                                                                                                                                                     |
-| Fixed recipients                              | SMTP `to` copied from config at construction; webhook from `.env`; markdown dir from config. Model text reaches message bodies and the email subject, never an address or path.                                                                                                |
-| Network allowlist                             | sources list; GitHub host checks; Slack `redirect: 'error'`. Gap: feed fetches follow redirects (D14).                                                                                                                                                                         |
-| Secrets never logged or stored                | `SecretsSchema`; logger and tracer redact each secret value (raw, URL-encoded, JSON-escaped); delivery errors rebuilt without `cause`; GitHub token redacted; CLI output redacted; `init` writes `.env` as 0600; `doctor` warns on a readable `.env`; no `env_file` in Compose |
-| Guards switchable, checks not                 | `config.guards`; `disabledGuards` in `run.json` and the digest footer                                                                                                                                                                                                          |
-| Guards fail closed                            | unparsable granite output flags; a missing clef answer is an error                                                                                                                                                                                                             |
-| Container hardening                           | non-root user, `cap_drop: ALL`, `no-new-privileges`, image digests pinned                                                                                                                                                                                                      |
-| Supply chain                                  | frozen lockfile, pinned base images, `pnpm audit --prod --audit-level high` in CI                                                                                                                                                                                              |
+| Invariant (spec, `.claude/rules/security.md`) | Enforced by                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Item text is data, not instructions           | `wrapUntrusted` + `UNTRUSTED_DATA_RULE` in classify, write, guard and judge prompts; `neutralize()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| No model has tools or network                 | `ModelProvider` exposes only `generate`, `decide`, `health`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Link check and format check always run        | `runDigest.codeCheck` calls both for every draft; no config field exists                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Only collected URLs                           | write-step provenance (URL replaced by the source URL) plus the link check                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Fixed recipients                              | SMTP `to` copied from config at construction; webhook from `.env`; markdown dir from config. Model text reaches message bodies and the email subject, never an address or path.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Network allowlist                             | sources list; a feed fetch follows a redirect only to the source's own host (apex = `www.`; `api.github.com` for GitHub sources), never to http, another port or a URL with credentials, at most 5 hops, 5 MiB body cap; a source URL may not hold a username or password; GitHub host checks; Slack `redirect: 'error'` and an `https:` webhook (D14)                                                                                                                                                                                                                                                           |
+| Secrets never logged or stored                | `SecretsSchema`; one redactor (`createRedactor`) serves the logger, the tracer, the config loader and CLI output, and hides each secret value raw, URL-encoded and JSON-escaped, and the path of the Slack webhook; the run record, every artifact, and every digest, subject and failure note are redacted again just before they are saved or sent (`app/redacting.ts`), and a record that no longer fits its schema after redaction is not saved; delivery errors rebuilt without `cause`; GitHub token redacted; `init` writes `.env` as 0600; `doctor` warns on a readable `.env`; no `env_file` in Compose |
+| Guards switchable, checks not                 | `config.guards`; `disabledGuards` in `run.json` and the digest footer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Guards fail closed                            | unparsable granite output flags; a missing clef answer is an error                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Container hardening                           | non-root user, `cap_drop: ALL`, `no-new-privileges`, image digests pinned                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Supply chain                                  | frozen lockfile, pinned base images, `pnpm audit --prod --audit-level high` and a Trivy image scan in CI (Trivy 0.75.0 pinned by digest, run from its own image, fails on HIGH and CRITICAL)                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### 8.2 Resilience
 
-| Concern                        | Mechanism                                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| Feed failure                   | 10 s timeout, 2 retries, backoff from 500 ms; failed source recorded and skipped                                          |
-| Model call failure             | per-role timeout per attempt, 2 retries with backoff (1-10 s) on retryable errors only; 4xx not retried                   |
-| Invalid model JSON             | one repair attempt, then the step (or that writer) fails                                                                  |
-| One writer fails               | the next writer still runs; the run is blocked only if no draft passes                                                    |
-| Ollama down or a model missing | health check before collect; fails in seconds with a fix ("ollama pull ...")                                              |
-| Concurrent runs                | file lock; stale lock (dead pid, older than 6 h, unreadable) taken over under a guard file                                |
-| Crash mid-write                | atomic temp-file + rename writes for every artifact, record and digest                                                    |
-| Missed week                    | `serve` runs the current week on start if its slot passed and it has no sent digest; systemd timers use `Persistent=true` |
-| Overlapping ticks              | croner `protect: true` plus the executor skips a tick while a run is going                                                |
-| Partial delivery               | every channel is tried; the error names the channels that did deliver                                                     |
-| Alerting                       | failure note on every channel, best effort; if `run.json` cannot be saved, a note is sent first, then the run fails       |
-| Telemetry outage               | a failed trace flush is logged and never fails the run                                                                    |
+| Concern                        | Mechanism                                                                                                                                                                                                                                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Feed failure                   | 10 s timeout, 2 retries, backoff from 500 ms, on `FetchError.retryable` (timeouts, network errors, 5xx, 408, 429); failed source recorded and skipped                                                                                                                                                       |
+| Model call failure             | per-role timeout per attempt, 2 retries with backoff (1-10 s) on retryable errors only; 4xx not retried                                                                                                                                                                                                     |
+| Invalid model JSON             | one repair attempt, then the step (or that writer) fails                                                                                                                                                                                                                                                    |
+| One writer fails               | the next writer still runs; every writer failing is `failed` (step `write`); drafts that all fail the checks or guards are `blocked`                                                                                                                                                                        |
+| Ollama down or a model missing | health check before collect; fails in seconds with a fix ("ollama pull ...")                                                                                                                                                                                                                                |
+| Concurrent runs                | file lock with a heartbeat; a stale lock (dead pid, reused pid, heartbeat 5 min old, no-heartbeat lock 6 h old, unreadable) is taken over under a guard file; orphaned temp files are swept                                                                                                                 |
+| Crash mid-write                | atomic temp-file + rename writes for every artifact, record and digest                                                                                                                                                                                                                                      |
+| Missed week                    | `serve` catches up on start if this week's slot passed: it runs a week with no record or a `failed` or `dry-run` one, and skips `sent`, `quiet` and `blocked`; systemd timers use `Persistent=true`                                                                                                         |
+| Overlapping ticks              | croner `protect: true` plus the executor skips a tick while a run is going                                                                                                                                                                                                                                  |
+| Lock held at a tick            | a tick or catch-up that finds the run lock held (a manual `digest run`) retries every 5 min for up to 2 h, then logs an error and gives up; `stop()` cancels a pending retry; other failures are not retried                                                                                                |
+| Partial delivery               | every channel is tried and recorded in `deliveredTo`; a rerun sends the saved digest to the missing channels only (2.9)                                                                                                                                                                                     |
+| Judge failure                  | the first passing draft in writer order wins, with a warning and no scores                                                                                                                                                                                                                                  |
+| Aborted run                    | `RunOptions.signal` is checked before each step; the run ends `failed` and releases the lock. A step in flight finishes first, so a run can overshoot its limit by that step                                                                                                                                |
+| Failed scheduled run           | a tick or catch-up run that returns `failed` is tried again at most twice, 30 min apart, on the same week (`digest serve` asks for it). Not retried: a run that hit its time limit, a refused resume that needs `--force`, or a thrown error (those are logged). Each attempt can send its own failure note |
+| Run time limit                 | each attempt gets a signal that fires after 3 h with `run timed out after 3 h`; the run ends `failed`, releases the lock, and is not retried (a slow or hung model is not a blip, and two more runs would hold the GPU for hours). The next restart catches the week up                                     |
+| Transient delivery failure     | a channel retries twice, after 5 s and 10 s, on network errors, timeouts, HTTP 5xx and SMTP 4yz replies (2.8)                                                                                                                                                                                               |
+| Shutdown                       | the first SIGINT or SIGTERM stops new ticks and waits for the run; a second stops the run after its current step (it ends `failed`); a third ends the process                                                                                                                                               |
+| Alerting                       | failure note on every channel, best effort; if `run.json` cannot be saved, a note is sent first, then the run fails                                                                                                                                                                                         |
+| Telemetry outage               | a failed trace flush is logged and never fails the run                                                                                                                                                                                                                                                      |
 
 ### 8.3 Observability
 
@@ -1121,14 +1284,37 @@ runs pages through SNS.
   `step`. Each model call logs `role`, `model`, `op`, `latencyMs`, `attempts`, `inputTokens`,
   `outputTokens`. Level from `LOG_LEVEL`.
 - **Traces**: OpenTelemetry only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set: one `runDigest` span
-  and one span per step, exported over OTLP/HTTP with a batch processor; Jaeger via the Compose
-  `tracing` profile.
+  and one span per step, and inside the steps one `model.generate` or `model.decide` span per
+  model call (attributes: role, and the model when the caller named one; its length is the
+  latency) with a short `model.usage` span in it (role, model, latency, input and output tokens).
+  No prompt, state, question or answer goes into a span. Exported over OTLP/HTTP with a batch
+  processor; Jaeger via the Compose `tracing` profile.
 - **Run history**: `run.json` per week and `digest history` (week, status, items, duration,
   winner). `digest run` prints a summary with failed sources and rejected drafts.
-- **Health**: `digest doctor` checks config, Ollama version, Apple silicon, every profile model,
-  every source (a 1-day fetch with a 10 s timeout), delivery secrets, the `.env` mode, guards
-  and the data dir, and prints a fix per problem.
-- **Quality**: `digest eval` scorecards under `evals/scorecards`.
+- **Health**: `digest doctor` checks config, Ollama and its version (a development build or a
+  pre-release of the minimum is a warning), Apple silicon (and the heavy fallback of `light` off
+  a Mac), the models the run uses (`modelsInUse`), the `think` setting per role, every source (a
+  1-day fetch with a 10 s timeout), delivery secrets and the markdown folder, the `.env` mode,
+  `.env` values cut at a `#`, guards and the data dir (a file or a dangling symlink there fails),
+  and prints a fix per problem.
+- **Quality**: `digest eval` scorecards under `evals/scorecards`. The replay serves each source up
+  to its production cap (`maxItems`, else `maxItemsPerSource`); a label outside that window is
+  "not visible" and counted in `detail.notVisible`, not a load failure. The format and link
+  metrics carry `byWeek` detail (status and the first problems of each week), stability keeps the
+  item ids of every run, and `guardAttackRecall` (soft gate, 90%) shows how many attack cases the
+  input guards flagged on their own. Two soft metrics check the fetchers against recorded real
+  responses of the 24 default sources in `evals/sources/` (a hand-checked `expected.json` each):
+  `sourceParse` (items parsed over items expected, gate 95%) and `sourceSummaryFill` (parsed items
+  with a summary of at least 40 characters, gate 90%). `pnpm tsx evals/recordSources.ts` records
+  them again, and `--pages` also records the article pages that fill an empty summary. The
+  threshold sweep (`evals/tuneThresholds.ts`) picks on a training split and also
+  scores a held-out one (the two newest weeks, every third classifier case), and warns when
+  filter accuracy, classifier accuracy or false blocks differ by more than 0.1. `digest eval`
+  prints the weeks with problems and the item ids of each stability run, and writes
+  `evals/scorecards/<date>-<profile>.json`, so a second run on the same day overwrites the file.
+  When `EVAL_JUDGE` names a model in the shell, it scores the winning digests of a profile that
+  has no judge; those scores are reported, not gated. `.env` is ignored for it, because the
+  environment schema drops keys it does not know.
 
 ### 8.4 Limits
 
@@ -1140,7 +1326,7 @@ runs pages through SNS.
   feeds fetched at once, at most 25 focus areas, 3-5 digest items, under 500 words.
 - **Small context on the fast/light decision model.** `strands-decider` gets at most 10,000
   characters of state; longer states are trimmed.
-- **Lock expiry.** A run longer than 6 hours can lose its lock to another run.
+- **Lock expiry.** The lock is kept alive by the process's heartbeat, not by the run's progress. A run that is suspended for more than 5 minutes (a sleeping laptop, a paused container) can lose its lock to another run, and then both can write the week's folder. A run that hangs but stays alive keeps its lock. The remaining limits are in the runbook (hard links are required).
 
 ---
 
@@ -1148,30 +1334,30 @@ runs pages through SNS.
 
 ### 9.1 Spec versus code
 
-| #   | Topic                              | Spec says                                                        | Code does                                                                                                                                                                                                                                                      | Suggestion                                                                                                                                     |
-| --- | ---------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Profile inside Docker on a Mac     | Mac mode uses the host Ollama app for the GPU and MLX models     | `loadConfig` resolves the profile from `process.platform`/`arch`, which is `linux` in the container, so every profile becomes the non-Mac fallback (clef, granite, `gemma4:31b`, no judge). `pull-models.sh` documents this; the W1-20 worker reported it too. | Resolved (W2-06, 5403b9e): `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH` override profile resolution, and `make docker-*` exports them.              |
-| D2  | `light` on non-Mac                 | light fits a 16 GB machine                                       | the fallback replaces light too, so a "light" run on Linux or in Docker needs clef (18 GB) and `gemma4:31b`                                                                                                                                                    | A non-Mac light fallback, or a doctor warning.                                                                                                 |
-| D3  | Writer failures                    | "If no draft passes, the run fails"                              | every writer failing (including an Ollama timeout mid-write) ends `blocked`, exit 2                                                                                                                                                                            | Resolved (W2-08, 7f9a988): no draft at all ends `failed` (exit 1, step `write`). Drafts that all fail the guards still end `blocked` (exit 2). |
-| D4  | Disabled guards and missing models | a guard can be switched off "when a model is not installed"      | the health check requires every profile model, including `guardRisk`, whatever the guard config                                                                                                                                                                | Skip models of roles that no enabled guard or step uses.                                                                                       |
-| D5  | Classifier batching                | "score 10 items per call with a strict JSON schema"              | `decide` per item; the 10-item `generate` batch exists but `runDigest` never selects it and config has no switch                                                                                                                                               | Pick one and update the spec, or add a config switch.                                                                                          |
-| D6  | Step order                         | "guard-output and link check → deliver"                          | link and format checks first, then output guards on the drafts that passed, then select                                                                                                                                                                        | Update the spec wording; the code order is cheaper.                                                                                            |
-| D7  | Tracing                            | one span per step and per model call                             | spans for `runDigest` and each step only; model calls are logged, not traced                                                                                                                                                                                   | Wrap `ModelProvider` in a tracing decorator in the container.                                                                                  |
-| D8  | Log fields                         | run id, step, role, model, latency and tokens on every line      | the Ollama adapter gets the root logger at build time, so model-call lines have role, model, latency and tokens but no `runId` or `step`                                                                                                                       | Pass a run-scoped logger, or accept and update the spec.                                                                                       |
-| D9  | Minimum Ollama version             | MLX tags need Ollama 0.40.0+                                     | `quality` (two MLX writers) declares `minOllamaVersion: '0.35.1'`, so `doctor` accepts 0.35.x                                                                                                                                                                  | Resolved (W2-06, 5403b9e): every MLX profile declares 0.40.0.                                                                                  |
-| D10 | Schedule time zone                 | Mondays 07:45, local time zone                                   | `init` does not write `schedule.timeZone`; it defaults to the process zone, and Compose sets `TZ=UTC`, so the Docker default is 07:45 UTC. The ISO week id uses the same zone. OS schedules fire in machine local time.                                        | Resolved (W2-06, 5403b9e): `init` writes the host time zone into `schedule.timeZone`.                                                          |
-| D11 | Model pulls                        | Compose pulls the models for the chosen profile on first start   | only the `linux` profile pulls, and it pulls the fallback set plus `models.writers`; Mac users pull in the host app                                                                                                                                            | Update the spec, or pull the profile set once D1 is fixed.                                                                                     |
-| D12 | One model in memory                | `OLLAMA_MAX_LOADED_MODELS=1`                                     | not set on the Compose `ollama` service and not documented for the Mac app; the code only serializes calls                                                                                                                                                     | Resolved (W2-06, 5403b9e): set on the Compose `ollama` service and in the README.                                                              |
-| D13 | Supply chain                       | CI runs npm audit plus an image scan                             | CI runs `pnpm audit --prod --audit-level high`; no image scan                                                                                                                                                                                                  | Add a scan in CI (or ECR scanning on AWS).                                                                                                     |
-| D14 | Network allowlist                  | only allowlisted hosts are contacted                             | RSS and GitHub fetches use `fetch` defaults and follow redirects to any host (Slack sets `redirect: 'error'`); RSS item links may point to any host                                                                                                            | Decide whether redirects must stay on the source host.                                                                                         |
-| D15 | Source area hint                   | `Source.area` is "a hint for the classifier"                     | it never reaches the classifier: `Item` has no area and the prompts do not use it                                                                                                                                                                              | Pass it into the classify state, or drop the field.                                                                                            |
-| D16 | Judge in evals                     | single-writer profiles: evals still use clef as the judge        | `select` skips the judge when `profile.judge` is null, so writing quality is not measured for `fast` and `light`                                                                                                                                               | Score the winner with `EVAL_JUDGE` inside the eval harness.                                                                                    |
-| D17 | Run artifacts                      | `items.json`, `scores.json`, `digest.md`, `run.json`             | adds `drafts.json` and `error.json`; markdown delivery also writes `data/digests/<week>.md` and `<week>.failed.md`, outside the runs folder, never pruned, not relative to `dataDir`                                                                           | Update the spec; decide whether digests follow `dataDir`.                                                                                      |
-| D18 | Em dashes                          | the format check rejects em dashes                               | `runDigest` rewrites em dashes to commas before the check, so they rarely reject a draft                                                                                                                                                                       | Update the spec.                                                                                                                               |
-| D19 | CLI surface                        | `init`, `run [--since] [--dry-run]`, `eval`, `doctor`, `history` | adds `serve`, `run --force`, `history -n`; `--since` accepts 1d-31d                                                                                                                                                                                            | Update the CLI table.                                                                                                                          |
-| D20 | Exit codes                         | 0 sent, 1 failed, 2 blocked, 3 quiet                             | `dry-run` and `skipped` also exit 0; a held lock exits 1 with no record                                                                                                                                                                                        | Update the spec.                                                                                                                               |
-| D21 | Eval gates                         | every metric in the table has a gate                             | four hard gates fail `digest eval`; the others are "soft" (shown pass or fail, exit code unaffected)                                                                                                                                                           | Confirm this is intended.                                                                                                                      |
-| D22 | AWS entry                          | `src/handlers/lambda.ts`                                         | not present                                                                                                                                                                                                                                                    | Planned.                                                                                                                                       |
+| #   | Topic                              | Spec says                                                        | Code does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Status                                                                                                                                                                                                                              |
+| --- | ---------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Profile inside Docker on a Mac     | Mac mode uses the host Ollama app for the GPU and MLX models     | The loader resolves the profile from the host named by `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH`, else from `process.platform`/`arch`, which is `linux` in a container (every profile then becomes the non-Mac fallback).                                                                                                                                                                                                                                                                     | Resolved (W2-06, 5403b9e): `make docker-*` exports the two variables.                                                                                                                                                               |
+| D2  | `light` on non-Mac                 | light fits a 16 GB machine                                       | The fallback replaces light too, so a "light" run on Linux or in Docker without the host override needs clef (18 GB) and `gemma4:31b`.                                                                                                                                                                                                                                                                                                                                                      | Resolved by documenting (W5-02, 61321fc; README and this document: W5-07). `digest doctor` warns, `digest init` says so, and the README says `light` fits 16 GB only on Apple silicon. There is no separate non-Mac light fallback. |
+| D3  | Writer failures                    | "If no draft passes, the run fails"                              | A write step with no draft at all fails the run (`failed`, exit 1, step `write`). Drafts that exist and are all rejected by the checks or guards end `blocked`, exit 2, including a mix of the two.                                                                                                                                                                                                                                                                                         | Resolved (W2-08, 7f9a988).                                                                                                                                                                                                          |
+| D4  | Disabled guards and missing models | A guard can be switched off "when a model is not installed"      | The run's health check and `digest doctor` require `modelsInUse(profile, guards)`: the model of a guard role whose checks are all off is not required. `pull-models.sh` still pulls the whole fallback set.                                                                                                                                                                                                                                                                                 | Resolved (helper W5-00, 4419508; doctor W5-02, 61321fc; run health check W5-06, 3482989).                                                                                                                                           |
+| D5  | Classifier batching                | "score 10 items per call with a strict JSON schema"              | `decide` per item; the 10-item `generate` batch exists but `runDigest` never selects it and config has no switch.                                                                                                                                                                                                                                                                                                                                                                           | Confirm: keep `decide` per item as the only path, or add a switch. This document follows the code.                                                                                                                                  |
+| D6  | Step order                         | "guard-output and link check → deliver"                          | The write step drafts and runs the link and format checks (with one retry), then the output guards run on the drafts that passed, then select.                                                                                                                                                                                                                                                                                                                                              | Accepted (F54): this document follows the code; the code order is cheaper.                                                                                                                                                          |
+| D7  | Tracing                            | one span per step and per model call                             | Spans for `runDigest` and each step, and a `model.generate` or `model.decide` span per model call with a `model.usage` span inside it (role, model, latency, tokens; never prompt text).                                                                                                                                                                                                                                                                                                    | Resolved (W5-09, be43bc5).                                                                                                                                                                                                          |
+| D8  | Log fields                         | run id, step, role, model, latency and tokens on every line      | the Ollama adapter gets the root logger at build time, so model-call lines have role, model, latency and tokens but no `runId` or `step`                                                                                                                                                                                                                                                                                                                                                    | Open: pass a run-scoped logger, or accept and update the spec.                                                                                                                                                                      |
+| D9  | Minimum Ollama version             | MLX tags need Ollama 0.40.0+                                     | `quality` (two MLX writers) declared `minOllamaVersion: '0.35.1'`, so `doctor` accepted 0.35.x                                                                                                                                                                                                                                                                                                                                                                                              | Resolved (W2-06, 5403b9e): every MLX profile declares 0.40.0.                                                                                                                                                                       |
+| D10 | Schedule time zone                 | Mondays 07:45, local time zone                                   | `init` did not write `schedule.timeZone`; it defaulted to the process zone, and Compose sets `TZ=UTC`. OS schedules fire in machine local time.                                                                                                                                                                                                                                                                                                                                             | Resolved (W2-06, 5403b9e): `init` writes the host time zone into `schedule.timeZone`.                                                                                                                                               |
+| D11 | Model pulls                        | Compose pulls the models for the chosen profile on first start   | Only the `linux` profile pulls, and it pulls the fallback set (`clef:latest`, `granite4.1-guardian:8b`) plus `models.writers` (default `gemma4:31b`). Mac users pull in the host app; `digest doctor` prints the `ollama pull` line for each missing model.                                                                                                                                                                                                                                 | Accepted (F54): this document follows the code.                                                                                                                                                                                     |
+| D12 | One model in memory                | `OLLAMA_MAX_LOADED_MODELS=1`                                     | The code serializes calls. The variable was not set on the Compose `ollama` service or documented for the Mac app.                                                                                                                                                                                                                                                                                                                                                                          | Resolved (W2-06, 5403b9e): set on the Compose `ollama` service and in the README.                                                                                                                                                   |
+| D13 | Supply chain                       | CI runs npm audit plus an image scan                             | CI runs `pnpm audit --prod --audit-level high` and an `image-scan` job: it builds the image and scans it with Trivy 0.75.0 (pinned by digest, run from its own image, no third-party action), failing on HIGH and CRITICAL.                                                                                                                                                                                                                                                                 | Resolved (W5-00, 97e55ad). The job has not run yet: it first runs on the first push, and it may stay red on HIGH findings in the base image that have no fix. Then add `--ignore-unfixed` (and `--scanners vuln`).                  |
+| D14 | Network allowlist                  | only allowlisted hosts are contacted                             | A feed fetch follows a redirect only to the source's own host (apex = `www.`; `api.github.com` for GitHub sources), never from https to http, to another port or to a URL with credentials, at most 5 hops. A body over 5 MiB fails the source. A source URL may not hold a username or password. RSS item links are listed in the digest, never fetched.                                                                                                                                   | Resolved (W5-01, e9fcfc5; credentials W5-10, 094d8d3).                                                                                                                                                                              |
+| D15 | Source area hint                   | `Source.area` is "a hint for the classifier"                     | A run passes each source's `area` to the classifier as a trusted line `Source tag: <area>` (in the `decide` state and in the generate fallback). The classifier still picks the item's area from the focus areas itself. A source without an area gets the same prompt as before. There is no `cloud` focus area, though the 3 cloud sources are about 63% of the recorded volume.                                                                                                          | Resolved (W6-03, 77515b0 and e085050). The effect on the classifier is not measured yet.                                                                                                                                            |
+| D16 | Judge in evals                     | single-writer profiles: evals still use clef as the judge        | `select` skips the judge when `profile.judge` is null. `digest eval` builds an eval judge (`evals/judge/evalJudge.ts`) when `EVAL_JUDGE` names a model in the shell (a value in `.env` is ignored, because the environment schema drops unknown keys): a provider whose profile has that model as its judge, shared by every profile of `--profile all`. The harness then scores each week's winner with it. The scores are reported, not gated, until a calibration exists for that judge. | Resolved in code (W5-04, 6bd9aa5; wiring W5-08, 625be34). Not measured yet: the wave 5 run left `EVAL_JUDGE` unset, so writing quality and selection agreement are still empty.                                                     |
+| D17 | Run artifacts                      | `items.json`, `scores.json`, `digest.md`, `run.json`             | Adds `drafts.json` (`{ drafts, failures, rejections }`) and `error.json`. Markdown delivery also writes `data/digests/<week>.md` and `<week>.failed.md`, outside the runs folder, never pruned, not relative to `dataDir`.                                                                                                                                                                                                                                                                  | Accepted (F54): this document follows the code. Whether digests should follow `dataDir` stays a maintainer choice.                                                                                                                  |
+| D18 | Em dashes                          | the format check rejects em dashes                               | The write step rewrites em dashes to commas (`prepareDraft`) before the checks, and the prompt tells the writer to avoid them, so they rarely reject a draft.                                                                                                                                                                                                                                                                                                                               | Accepted (F54): this document follows the code.                                                                                                                                                                                     |
+| D19 | CLI surface                        | `init`, `run [--since] [--dry-run]`, `eval`, `doctor`, `history` | Adds `serve`, `run --force`, `history -n`; `--since` accepts 1d-31d.                                                                                                                                                                                                                                                                                                                                                                                                                        | Accepted (F54): the README command table follows the code.                                                                                                                                                                          |
+| D20 | Exit codes                         | 0 sent, 1 failed, 2 blocked, 3 quiet                             | `dry-run` and `skipped` also exit 0; a held lock exits 1 with no record.                                                                                                                                                                                                                                                                                                                                                                                                                    | Accepted (F54): see 2.10.                                                                                                                                                                                                           |
+| D21 | Eval gates                         | every metric in the table has a gate                             | Four hard gates fail `digest eval`; the others (including `guardAttackRecall`, `sourceParse` and `sourceSummaryFill`) are "soft" (shown pass or fail, exit code unaffected).                                                                                                                                                                                                                                                                                                                | Confirm this is intended.                                                                                                                                                                                                           |
+| D22 | AWS entry                          | `src/handlers/lambda.ts`                                         | Not present.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Planned: 7.5 keeps it as a proposal.                                                                                                                                                                                                |
 
 ### 9.2 Container gaps (D1 above is the first)
 
@@ -1185,27 +1371,98 @@ runs pages through SNS.
 
 ### 9.3 Open questions
 
-1. **Catch-up on quiet weeks.** Resolved (W2-08, 7f9a988): catch-up skips `sent`, `quiet` and `blocked`
-   weeks and re-runs `failed`, `dry-run` and missing weeks. A manual `digest run` still skips
-   only `sent`.
-2. **Partial delivery.** Resolved (W2-08, 7f9a988): delivery is recorded per channel in
-   `deliveredTo`. A rerun resumes from the saved `digest.md` and sends only to the channels that
-   missed it; it refuses when `digest.md` is gone or its links changed. Still open: `sentUrls()`
-   counts only `sent` records, so a partly delivered week that is never resumed is not deduped
-   the next week.
+1. **Catch-up on quiet weeks.** Resolved (W2-08, 7f9a988): catch-up skips `sent`, `quiet` and
+   `blocked` weeks and re-runs `failed`, `dry-run` and missing weeks. A manual `digest run` still
+   skips only `sent`.
+2. **Partial delivery.** Resolved (W2-08, 7f9a988; follow-ups W2-11, 3f164db, and W5-00, 97e55ad).
+   Delivery is recorded per channel in `deliveredTo`. A rerun resumes from the saved `digest.md`
+   and sends only to the channels that missed it; it refuses when `digest.md` is gone or its
+   links changed. Dry and forced runs no longer replace the week's files once a channel has the
+   digest, which closes the "same links, different wording" gap. A partly delivered week counts
+   in cross-week dedupe like a sent one.
 3. **Retention versus dedupe.** Resolved (429c066): the config loader rejects
    `keepWeeks < dedupeWeeks`.
-4. **GitHub transports differ.** Without a token the Atom feed includes prereleases; with a
-   token the REST API skips them. Adding a token changes the digest.
-5. **Doctor and delivery.** `doctor` checks that delivery secrets are set but does not test the
-   SMTP or Slack connection. Enough?
+4. **GitHub transports differ.** Known limit. Without a token the Atom feed includes
+   prereleases; with a token the REST API skips them. Adding a token changes the digest. No
+   transport is forced.
+5. **Doctor and delivery.** Known limit. `doctor` checks that delivery secrets are set and that
+   the markdown folder is writable, but does not test the SMTP or Slack connection. A wrong host
+   or webhook shows up at the first send.
 6. **Thresholds.** Resolved for the light profile (W3-03): the sweep over the 60 labelled
    classifier cases set `minRelevance` 1.5, `maxHype` 0.6, `maxMinorRelease` 0.75 and
    `guardFlag` 0.35 (filter accuracy 0.767 to 0.867, no false blocks). See
    `evals/thresholds/README.md`. The quality and fast profiles are not measured yet.
-7. **Window versus ISO week.** The window is the last `windowDays` before the run, so a catch-up
-   on Thursday covers Thursday to Thursday, not the ISO week the run is named after. Intended?
-8. **AWS design doc.** The spec says the full AWS design (VPC, IAM, KMS, alarms) "is in @", but
-   the reference is empty and no such document is in the repo.
-9. **Spec open items still open**: final source allowlist, default delivery channel, reference
-   hardware for run times, public repo name and GHCR publishing.
+7. **Window versus ISO week.** Known limit, kept on purpose. The window is the last
+   `windowDays` before the run, so a catch-up on Thursday covers Thursday to Thursday, not the
+   ISO week the run is named after. Cross-week dedupe keeps the overlap from repeating items.
+8. **AWS design doc.** Known limit. The spec says the full AWS design (VPC, IAM, KMS, alarms)
+   "is in @", but the reference is empty and no such document is in the repo. Section 7 is the
+   only AWS design here.
+9. **Spec open items still open** (maintainer decisions): final source allowlist, default
+   delivery channel, reference hardware for run times, public repo name and GHCR publishing.
+
+### 9.4 Closed in wave 5
+
+| Issue | Commit                             | What changed                                                                                                                                                                                                                           |
+| ----- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| W2-11 | 3f164db                            | A dry or forced run no longer replaces the files of a week that reached a channel; a tick that finds the lock held retries for 2 h                                                                                                     |
+| W5-00 | 8e2e1ce, 4419508, 97e55ad, 25c2544 | A bad character reference no longer throws; `truncate` keeps surrogate pairs; `FetchError`; https-only Slack webhook; `modelsInUse`; partly delivered weeks deduped; CI image scan                                                     |
+| W5-01 | e9fcfc5                            | Same-host redirects, 5 MiB cap, shared-link entries, typed retries, empty-source warning, link, date and summary reading                                                                                                               |
+| W5-02 | 61321fc                            | `init` recommends `light` and merges `.env`; new doctor checks; headline and intro groundedness; `decide` state budget; one redactor                                                                                                   |
+| W5-03 | c91eb5e, 195ae2c                   | Link check range guard; same-release dedupe; tag-restating titles; judge failure falls back to the first draft                                                                                                                         |
+| W5-04 | 6bd9aa5                            | Per-week eval detail, stability item ids, production replay cap, guard attack recall, eval judge, calibration tooling                                                                                                                  |
+| W5-05 | 234a9f2                            | Orphaned lock temp files are swept; `stop_grace_period` is 90m                                                                                                                                                                         |
+| W5-06 | 3482989, 27e5db0                   | Draft problems logged and stored; one writer retry; `afterProcess` filled; health check uses `modelsInUse`; guard engine and resume moved out of `runDigest.ts`; `RunOptions.signal`                                                   |
+| W5-08 | 625be34                            | `digest eval` passes an eval judge when `EVAL_JUDGE` is set and prints week problems and item ids; the light baseline after wave 5 (`2026-10-17-light-wave5.json`); a stale live-test assertion fixed                                  |
+| W5-09 | be43bc5                            | Deliveries retry transient errors; a failed scheduled run is retried twice; a 3 h run time limit and a second stop signal abort a run; run records, files and messages are redacted; model calls are traced; one provider construction |
+| W2-12 | 992a8f9                            | `digest run` says why a forced run kept the week's record and folder                                                                                                                                                                   |
+| W5-10 | 7183178, 094d8d3                   | `toPlainText` is linear; a source URL with credentials is rejected                                                                                                                                                                     |
+
+### 9.5 Review findings checked by the wave 5 light run
+
+The "F" numbers are the findings of the 2026-10-17 review. The run is `digest eval --profile light`
+(W5-08, 625be34): 45 minutes, scorecard `evals/scorecards/2026-10-17-light-wave5.json`, every
+guard on, no eval judge. It ran on main at 27e5db0 plus the W5-08 eval changes, so it does not
+include W5-09, W6-02 or W6-03.
+
+| Finding | Topic                               | State                                                                 | Result on `light`                                                                                                                                                                                                                 |
+| ------- | ----------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F1      | Format gate and the writer retry    | Open (code: W5-06, 3482989)                                           | Format 67% to 83% (5 of 6 weeks). 2026-W39 still has no digest: the writer writes `www.docker.com/blog/...` without a scheme in both attempts, and the link check rejects both. The retry did not help. A fix is planned (W5-11). |
+| F8      | Stability reads 0                   | Resolved (W5-04, 6bd9aa5; measured 625be34)                           | Stability 1.33 (gate 4). The scorecard keeps the item ids: runs 1 and 3 share 4 of 5 items, run 2 was blocked and empty.                                                                                                          |
+| F10     | Writing quality unmeasured          | Wired (W5-04, 6bd9aa5; W5-08, 625be34), not run                       | Needs a full replay with `EVAL_JUDGE` set (about 45 minutes plus loading the 18 GB `clef:latest`). Writing quality and selection agreement are still empty.                                                                       |
+| F11     | Replay window wider than production | Resolved (W5-04, 6bd9aa5; measured 625be34)                           | `notVisible` is 1: the 2026-W39 must-exclude label (item 22 of `openai-news`). Must-exclude leaks 0.50, which passes the gate at its limit.                                                                                       |
+| F12     | Guard recall on attacks             | Metric resolved (W5-04, 6bd9aa5; measured 625be34); guard tuning open | Guard attack recall 60%: `clefPolicy` flags 6 of 10, `graniteRisk` none. The soft gate is 90%. Attack handling fell from 100% to 90%: one unflagged attack item reached a digest.                                                 |
+| F42     | Live tests never run                | Resolved (625be34)                                                    | `LIVE_OLLAMA=1` over `test/live`: 11 of 12 passed once (689 s). The one failure was a stale assertion (a dry run records no sent URLs since W2-08), fixed in the test; not run live again.                                        |
+
+### 9.6 Known limits after wave 5
+
+- The Trivy job has not run yet (D13).
+- The headline and intro groundedness call adds one Granite call per digest, and a false "yes"
+  on an editorial intro flags the whole draft. Item titles are not checked.
+- Same-release dedupe is narrow on purpose and merges the same product on two platforms (2.4).
+  The Muse Spark pair that motivated it is not merged by code, because one title has no version;
+  the write prompt covers it.
+- A source that returns nothing is logged, not recorded in `run.json` (the record schema is
+  frozen).
+- After the `?entry=` rule, the newest Google Cloud release-notes days that went out under the
+  bare link can be delivered once more.
+- A retried writer's first draft is not kept in `drafts.json`; its problems are.
+- The abort signal is checked between steps only, because `ModelProvider` takes no signal. The
+  scheduler does not abandon a run that ignores it.
+- Each failed attempt of a scheduled run sends its own failure note, so one cause can produce
+  three notes in about an hour, and the first can say "failed" before a retry succeeds.
+- Retries can duplicate a message: a delivery layer retry after a lost answer, times up to three
+  scheduler attempts. The delivery kind is read from error text, because the adapters flatten
+  their errors.
+- Redaction covers the declared secrets and the Slack webhook path. A password inside
+  `OLLAMA_URL` or the OTLP endpoint is not a declared secret, and is not covered.
+- The GitHub fetcher takes no logger, so only the RSS fetcher logs its per-feed warnings.
+- Two `light` hard gates are red: format (83%) and attack handling (90%). The scorecard does not
+  keep which attack case reached the digest.
+- The `light` groundedness guard flags half of the clean control drafts (false blocks 50%, was
+  0%). The likely cause is the headline and intro call added in W5-02; it is not confirmed,
+  because the scorecard does not store the verdict reasons.
+- The wave 5 scorecard predates W5-09, W6-02 and W6-03, so it does not show what the adapter
+  pipeline, the article pages or the source tag change.
+- `EVAL_JUDGE` is read from the shell only: `.env` goes through a schema that drops it.
+- A fix for the scheme-less writer link (F1) and the groundedness false blocks is planned (W5-11).

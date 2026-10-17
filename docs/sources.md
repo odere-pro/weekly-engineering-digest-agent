@@ -17,6 +17,10 @@ fails that source, and the error names the host. A redirect from https to http i
 so is a chain of more than five. The `GITHUB_TOKEN` is never sent to another origin. A response
 body over 5 MiB fails the source too.
 
+A source URL may not contain a username or password (`user:pass@host`). The config is rejected
+when it loads, and the error does not repeat the URL. The fetchers refuse such a URL as well.
+Keep secrets in `.env`.
+
 ## How each feed was checked
 
 On **2026-10-16** every URL below was fetched live (GET, redirects followed, 20 s timeout) and
@@ -30,7 +34,11 @@ window, so the real count is at least that.
 
 Areas are classifier hints: `ai-models` (labs and model releases), `ai-tooling` (inference,
 frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `cloud` (provider
-"what's new").
+"what's new"). A run passes a source's area to the model as a line `Source tag: <area>` next to
+each of its items. It is a hint only: the classifier still picks the item's area itself, from
+your `focusAreas` or `other`, and the tag need not match one of them. A source without an area
+adds no line. The default focus areas have no cloud area, so a cloud item lands in the closest
+focus area or in `other`.
 
 | id                      | URL                                                              | kind   | area       | why it is in                                                          | last 7 d / 90 d | verified   |
 | ----------------------- | ---------------------------------------------------------------- | ------ | ---------- | --------------------------------------------------------------------- | --------------- | ---------- |
@@ -84,7 +92,10 @@ frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `
   rejected list). Anthropic is covered by `claude-code-releases` only.
 - **Some sources overlap** (`google-ai-blog` and `google-deepmind-blog`, `ollama-blog` and
   `ollama-releases`, `huggingface-blog` and `transformers-releases`). The same story can arrive
-  under two URLs; URL dedupe does not merge them, so the select step may see both.
+  under two URLs, and URL dedupe does not merge them. The process step drops the second item
+  only when both have the same title, or both name the same product and version with nothing
+  else to say (for example "Ollama v0.40.3" and "Ollama 0.40.3 is out"). A pair with no version
+  in one title gets through. The write prompt then asks for one entry per release.
 
 ## How the fetchers read a feed
 
@@ -97,7 +108,9 @@ frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `
 - **Summary.** The fullest text the entry carries (`content:encoded`, then `content`, then
   `summary`, then `description`), with tags and `<script>` and `<style>` text removed and
   entities decoded, so `Vec&lt;T&gt;` in a post reads `Vec<T>`. The text is cut to 600
-  characters. An entry with no text at all gets its page, see below.
+  characters. The cleaning is one linear pass, so a hostile body of 256 KB cannot stall a run. A
+  `<script>` or `<style>` block that never closes drops the text after it. An entry with no text
+  at all gets its page, see below.
 - **One bad entry** is skipped; it does not fail the source. A feed with entries that could not
   be read, or whose entries all lack a usable link or date, gets one warning in the log.
 - **Failures and retries.** A timeout, a network error, a 5xx, a 408 or a 429 is tried again
