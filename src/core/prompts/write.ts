@@ -4,12 +4,6 @@ import type { ScoredItem } from '../schemas.js';
 import { truncate } from '../../shared/text.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../shared/untrusted.js';
 
-/**
- * The format rules come from the format check, so the prompt and the check cannot drift apart.
- * Nothing in src imports them from here any more; the re-export stays only for
- * test/core/checks/formatCheck.test.ts, which pins it (drop both together).
- */
-export { DIGEST_MAX_ITEMS, DIGEST_MIN_ITEMS, DIGEST_WORD_LIMIT };
 /** What the writer aims for, leaving room for the words the renderer adds around each item. */
 export const DIGEST_WORD_TARGET = 400;
 

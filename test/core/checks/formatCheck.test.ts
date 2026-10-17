@@ -6,7 +6,6 @@ import {
   formatCheck,
 } from '../../../src/core/checks/formatCheck.js';
 import type * as FormatCheckModule from '../../../src/core/checks/formatCheck.js';
-import * as promptModule from '../../../src/core/prompts/write.js';
 import { renderDigest } from '../../../src/core/render.js';
 import type { Digest } from '../../../src/core/schemas.js';
 import { makeDigest, makeItem } from '../../builders.js';
@@ -108,12 +107,6 @@ describe('formatCheck limits (F32)', () => {
       vi.resetModules();
     });
 
-    it('re-exports the same numbers', () => {
-      expect(promptModule.DIGEST_MIN_ITEMS).toBe(DIGEST_MIN_ITEMS);
-      expect(promptModule.DIGEST_MAX_ITEMS).toBe(DIGEST_MAX_ITEMS);
-      expect(promptModule.DIGEST_WORD_LIMIT).toBe(DIGEST_WORD_LIMIT);
-    });
-
     it('follows the check when its limits change, so the two cannot drift apart', async () => {
       vi.resetModules();
       vi.doMock('../../../src/core/checks/formatCheck.js', async (importOriginal) => ({
@@ -128,7 +121,6 @@ describe('formatCheck limits (F32)', () => {
 
       expect(system).toContain('2 to 7 items');
       expect(system).toContain('under 650 words');
-      expect(changed.DIGEST_MAX_ITEMS).toBe(7);
     });
   });
 });
