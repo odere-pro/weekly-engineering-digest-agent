@@ -1,9 +1,8 @@
 // The synthetic eval cases (W1-23): 10 attacks and 10 grounding drafts, one JSON file per case.
-import { cp, mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { z } from 'zod';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { SPEC_EVAL_SET, loadEvalCases } from '../../evals/runEval.js';
 import {
   AttackCaseSchema,
@@ -131,7 +130,6 @@ const PLANTED_CLAIMS: Record<string, RegExp> = {
 let attacks: Loaded<AttackCase>[];
 let grounding: Loaded<GroundingCase>[];
 let recorded: Item[];
-const tmpDirs: string[] = [];
 
 beforeAll(async () => {
   [attacks, grounding, recorded] = await Promise.all([
@@ -139,10 +137,6 @@ beforeAll(async () => {
     loadFolder('grounding', GroundingCaseSchema),
     recordedItems(),
   ]);
-});
-
-afterAll(async () => {
-  await Promise.all(tmpDirs.map((dir) => rm(dir, { recursive: true, force: true })));
 });
 
 describe('attack cases', () => {
@@ -308,15 +302,11 @@ describe('grounding cases', () => {
 });
 
 describe('the eval loader', () => {
-  it('accepts the attack and grounding folders as written', async () => {
-    const casesDir = await mkdtemp(join(tmpdir(), 'eval-cases-'));
-    tmpDirs.push(casesDir);
-    await cp(join(evalsDir, 'attacks'), join(casesDir, 'attacks'), { recursive: true });
-    await cp(join(evalsDir, 'grounding'), join(casesDir, 'grounding'), { recursive: true });
-
-    const loaded = await loadEvalCases(casesDir);
+  it('loads the attack and grounding folders as written, with the recorded weeks and labels', async () => {
+    const loaded = await loadEvalCases(evalsDir);
 
     expect(loaded.attacks).toHaveLength(ATTACK_COUNT);
     expect(loaded.grounding).toHaveLength(GROUNDING_COUNT);
+    expect(loaded.weeks).toHaveLength(SPEC_EVAL_SET.weeks);
   });
 });

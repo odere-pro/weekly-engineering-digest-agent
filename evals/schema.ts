@@ -2,7 +2,13 @@
 // The case files under evals/ are written by W1-23, W2-03, W3-01, W3-02 and W3-04; they must parse here.
 import { z } from 'zod';
 import { ProfileNameSchema } from '../src/config/schema.js';
-import { DraftSchema, GuardCheckIdSchema, ItemSchema, WeekIdSchema } from '../src/core/schemas.js';
+import {
+  DraftSchema,
+  GuardCheckIdSchema,
+  ItemSchema,
+  WeekIdSchema,
+  type Draft,
+} from '../src/core/schemas.js';
 
 /** Spec: 5 must-include items per recorded week. */
 export const MUST_INCLUDE_COUNT = 5;
@@ -70,6 +76,15 @@ export const GroundingCaseSchema = z
   );
 export type GroundingCase = z.infer<typeof GroundingCaseSchema>;
 
+/**
+ * The draft without one of its items: every claim left is supported, so it is a clean control.
+ * undefined when that was the only item. Returns a new draft; the original is not touched.
+ */
+export function withoutItem(draft: Draft, itemId: string): Draft | undefined {
+  const items = draft.digest.items.filter((item) => item.itemId !== itemId);
+  return items.length === 0 ? undefined : { ...draft, digest: { ...draft.digest, items } };
+}
+
 /** evals/judge/calibration.json (W3-04): how well the judge agrees with the maintainer. */
 export const JudgeCalibrationSchema = z.object({
   /** Share of hand-graded digests where the judge's score is within half a point of the grade. */
@@ -77,12 +92,19 @@ export const JudgeCalibrationSchema = z.object({
   /** Share of weeks where the judge picked the draft the maintainer picked. */
   selectionAgreement: RatioSchema,
   gradedDigests: z.number().int().min(0).optional(),
+  /** Rank correlation of the hand grades and the judge scores; null when it is undefined. */
+  spearman: z.number().min(-1).max(1).nullable().optional(),
+  /** Mean distance between a hand grade and the judge's score, in points of the 1-5 scale. */
+  meanAbsoluteDifference: z.number().min(0).optional(),
+  /** Model tag of the judge that was calibrated. */
+  judge: z.string().min(1).optional(),
 });
 export type JudgeCalibration = z.infer<typeof JudgeCalibrationSchema>;
 
 export const METRIC_IDS = [
   'linkValidity',
   'attackHandling',
+  'guardAttackRecall',
   'groundedness',
   'format',
   'guardFalseBlocks',
@@ -118,6 +140,17 @@ export type Gate = z.infer<typeof GateSchema>;
 export const MetricUnitSchema = z.enum(['ratio', 'count', 'score', 'ms']);
 export type MetricUnit = z.infer<typeof MetricUnitSchema>;
 
+/**
+ * One week behind a format or link measurement. no-digest: the run produced nothing to check.
+ * `problems` holds the first few messages; `problemCount` is how many there were.
+ */
+export const WeekDetailSchema = z.object({
+  status: z.enum(['ok', 'failed', 'no-digest']),
+  problems: z.array(z.string()),
+  problemCount: z.number().int().min(0),
+});
+export type WeekDetail = z.infer<typeof WeekDetailSchema>;
+
 export const MetricResultSchema = z.object({
   id: MetricIdSchema,
   label: z.string().min(1),
@@ -130,8 +163,36 @@ export const MetricResultSchema = z.object({
   note: z.string().optional(),
   /** Per-guard or per-writer numbers behind `value`. */
   detail: z.record(z.string(), z.number()).optional(),
+  /** Format and link validity: how each replayed week fared and why. */
+  byWeek: z.record(z.string(), WeekDetailSchema).optional(),
+  /** Stability: the digest item ids of each run of the repeated week, the first run included. */
+  itemIdsByRun: z.array(z.array(z.string())).optional(),
 });
 export type MetricResult = z.infer<typeof MetricResultSchema>;
+
+/**
+ * Metrics added after the v0.1.0 baseline was written. A scorecard recorded before them has no
+ * entry; reading it fills one in as "not recorded", so every scorecard has every metric.
+ */
+export const LATER_METRICS = {
+  guardAttackRecall: { label: 'Guard attack recall', unit: 'ratio' },
+} as const satisfies Partial<Record<MetricId, { label: string; unit: MetricUnit }>>;
+const NOT_RECORDED = 'not recorded in this scorecard';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Adds a "not recorded" entry for each later metric a scorecard written earlier lacks. */
+function withLaterMetrics(metrics: unknown): unknown {
+  if (!isRecord(metrics)) return metrics;
+  const missing = Object.entries(LATER_METRICS).filter(([id]) => !(id in metrics));
+  const filled = missing.map(([id, meta]) => [
+    id,
+    { id, ...meta, value: null, gate: { kind: 'none' }, pass: null, note: NOT_RECORDED },
+  ]);
+  return { ...metrics, ...Object.fromEntries(filled) };
+}
 
 export const ScorecardSchema = z
   .object({
@@ -148,7 +209,7 @@ export const ScorecardSchema = z
     judgeAgreement: RatioSchema.nullable(),
     /** Model tag(s) per role that this run used. */
     models: z.record(z.string(), z.union([z.string(), z.array(z.string()), z.null()])),
-    metrics: z.record(MetricIdSchema, MetricResultSchema),
+    metrics: z.preprocess(withLaterMetrics, z.record(MetricIdSchema, MetricResultSchema)),
     /** true when no hard-gate metric failed; `digest eval` exits 1 otherwise. */
     hardGatesPassed: z.boolean(),
     timings: z.object({

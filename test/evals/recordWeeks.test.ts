@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { check, resolveConfig } from 'prettier';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  RECORDED_ITEMS_PER_SOURCE,
   THIN_WEEK_MIN_ITEMS,
   bucketByWeek,
   recordWeeks,
@@ -282,13 +283,13 @@ describe('recordWeeks', () => {
     expect(rssFetcher.calls).toEqual([]);
   });
 
-  it('collects a 7-week window with the cap of 100 for every source', async () => {
+  it('collects a 7-week window with the recorder cap for every source', async () => {
     const { rssFetcher, githubFetcher } = await run({});
 
     const [rssCall] = rssFetcher.calls;
     const [githubCall] = githubFetcher.calls;
-    expect(rssCall?.window.maxItems).toBe(100);
-    expect(githubCall?.window.maxItems).toBe(100);
+    expect(rssCall?.window.maxItems).toBe(RECORDED_ITEMS_PER_SOURCE);
+    expect(githubCall?.window.maxItems).toBe(RECORDED_ITEMS_PER_SOURCE);
     expect(rssCall?.source.id).toBe('feed-a');
     expect(githubCall?.source.id).toBe('repo-b');
     expect(rssCall?.window.until.toISOString()).toBe('2021-01-20T12:00:00.000Z');

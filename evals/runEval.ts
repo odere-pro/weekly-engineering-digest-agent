@@ -28,6 +28,8 @@ import { fixedClock, type Clock } from '../src/shared/clock.js';
 import { DigestError, errorMessage } from '../src/shared/errors.js';
 import { compareWeekIds, isoWeekId, weekStartUtc } from '../src/shared/isoWeek.js';
 import { normalizeUrl, sameUrl } from '../src/shared/url.js';
+import type { EvalJudge } from './judge/evalJudge.js';
+import { judgeWinners, judgedQuality, type JudgedWinners } from './judge/judgeWinners.js';
 import {
   assembleMetrics,
   attackHandling,
@@ -37,6 +39,7 @@ import {
   failedHardGates,
   formatCompliance,
   groundedness,
+  guardAttackRecall,
   guardFalseBlocks,
   linkValidity,
   mustExcludeLeaks,
@@ -52,6 +55,7 @@ import {
   type GroundingOutcome,
   type GuardTally,
   type Measurement,
+  type WeekHits,
 } from './metrics.js';
 import {
   AttackCaseSchema,
@@ -59,6 +63,7 @@ import {
   GroundingCaseSchema,
   JudgeCalibrationSchema,
   WeekLabelsSchema,
+  withoutItem,
   type AttackCase,
   type ClassifierCase,
   type GroundingCase,
@@ -75,11 +80,6 @@ const WEEK_DAYS = 7;
 const STABILITY_RUNS = 3;
 /** Attack items are dated just before the end of the replayed week: newest, so worst case. */
 const ATTACK_LEAD_MS = 1000;
-/**
- * What the recorder asks every feed for. A replay serves a source this many items unless the
- * allowlist caps the source lower, so it sees all that was recorded.
- */
-const RECORDED_ITEMS_PER_SOURCE = 100;
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */
 const REPLAY_TOP_N = 5;
 const URL_IN_TEXT = /https?:\/\/[^\s<>"'`)\]]+/gi;
@@ -110,6 +110,11 @@ export interface EvalDeps {
   runDigest: (deps: DigestDeps, options: RunOptions) => Promise<RunResult>;
   /** Wall clock for dates and timings. Replays use their own fixed clock. */
   clock: Clock;
+  /**
+   * Scores the winning draft of each replayed week when the profile has no judge of its own
+   * (`EVAL_JUDGE`, system-design D16). Without it, writing quality stays unmeasured there.
+   */
+  judge?: EvalJudge;
 }
 
 // --- Loading the eval set -------------------------------------------------------------------
@@ -195,14 +200,7 @@ async function loadWeek(weeksDir: string, weekId: string): Promise<EvalWeek> {
   if (unknown.length > 0) {
     throw new DigestError(`${labelsPath}: ids not in items.json: ${unknown.join(', ')}`);
   }
-  const week = { weekId, items, labels };
-  assertLabelsVisible(week, [], weeksDir);
-  return week;
-}
-
-/** What the replay serves for one source: the allowlist's own cap, else everything recorded. */
-function replayCap(sourceId: string, allowlist: readonly Source[]): number {
-  return allowlist.find((source) => source.id === sourceId)?.maxItems ?? RECORDED_ITEMS_PER_SOURCE;
+  return { weekId, items, labels };
 }
 
 /** Like the real fetchers: a source's newest items first. */
@@ -211,33 +209,21 @@ function newestFirst(items: readonly Item[]): Item[] {
 }
 
 /**
- * A labeled item the replay never serves cannot be recalled or leak, so its label would be
- * silently wrong. Fails when any label sits past the cap of its source (`allowlist` caps; a
- * source it does not list is served in full).
+ * The ids a replay serves: each source's newest items up to the cap production applies to it,
+ * `maxItems` of its own else `maxItemsPerSource`. A label outside this set is "not visible".
  */
-function assertLabelsVisible(week: EvalWeek, allowlist: readonly Source[], weeksDir: string): void {
-  const ranks = new Map<string, { sourceId: string; rank: number }>();
-  const sourceIds = new Set(week.items.map((item) => item.sourceId));
-  for (const sourceId of sourceIds) {
-    const own = week.items.filter((item) => item.sourceId === sourceId);
-    newestFirst(own).forEach((item, index) => ranks.set(item.id, { sourceId, rank: index + 1 }));
+function servedIds(
+  items: readonly Item[],
+  sources: readonly Source[],
+  maxItemsPerSource: number,
+): Set<string> {
+  const served = new Set<string>();
+  for (const sourceId of new Set(items.map((item) => item.sourceId))) {
+    const cap = sources.find((source) => source.id === sourceId)?.maxItems ?? maxItemsPerSource;
+    const own = items.filter((item) => item.sourceId === sourceId);
+    for (const item of newestFirst(own).slice(0, cap)) served.add(item.id);
   }
-  const labeled = [
-    ...week.labels.mustInclude.map((id) => ({ list: 'mustInclude', id })),
-    ...week.labels.mustExclude.map((id) => ({ list: 'mustExclude', id })),
-  ];
-  const unseen = labeled.flatMap(({ list, id }) => {
-    const { sourceId = '', rank = 0 } = ranks.get(id) ?? {};
-    const cap = replayCap(sourceId, allowlist);
-    return rank > cap
-      ? [
-          `${list} ${id} is item ${rank} of ${sourceId}, but the replay serves only its newest ${cap} items`,
-        ]
-      : [];
-  });
-  if (unseen.length > 0) {
-    throw new DigestError(`${join(weeksDir, week.weekId, 'labels.json')}: ${unseen.join('; ')}`);
-  }
+  return served;
 }
 
 async function loadWeeks(weeksDir: string): Promise<EvalWeek[]> {
@@ -378,17 +364,21 @@ function endOfWeek(weekId: string): Date {
 }
 
 /**
- * One source per source id found in the recorded items; the url is never fetched. Each source
- * carries its replay cap, so the pipeline sees what was recorded, not the usual 20 per source.
+ * One source per source id found in the recorded items; the url is never fetched. A source
+ * keeps the `maxItems` the allowlist gives it, and one with none falls back to the config's
+ * `maxItemsPerSource`, so the cap is production's own.
  */
 function sourcesOf(items: readonly Item[], allowlist: readonly Source[]): Source[] {
   const firstOfSource = new Map(items.map((item) => [item.sourceId, item]));
-  return [...firstOfSource.values()].map((item) => ({
-    id: item.sourceId,
-    kind: item.kind,
-    url: item.url,
-    maxItems: replayCap(item.sourceId, allowlist),
-  }));
+  return [...firstOfSource.values()].map((item) => {
+    const maxItems = allowlist.find((source) => source.id === item.sourceId)?.maxItems;
+    return {
+      id: item.sourceId,
+      kind: item.kind,
+      url: item.url,
+      ...(maxItems === undefined ? {} : { maxItems }),
+    };
+  });
 }
 
 function recordedFetchers(items: readonly Item[]): DigestDeps['fetchers'] {
@@ -412,12 +402,14 @@ function recordedFetchers(items: readonly Item[]): DigestDeps['fetchers'] {
 
 interface Replay {
   weekId: string;
-  /** Everything the fetchers served, attack items included. */
+  /** Everything the fetchers served, attack items included: the items the pipeline could see. */
   items: readonly Item[];
   markdown: string | undefined;
   record: RunRecord;
   durationMs: number;
   inputVerdicts: InputVerdict[];
+  /** Ids of the items the replay served. */
+  served: ReadonlySet<string>;
 }
 
 /** A dry run of runDigest on recorded items: no network, no deliveries, every guard on. */
@@ -428,11 +420,13 @@ async function replay(
   items: readonly Item[],
 ): Promise<Replay> {
   const inputVerdicts: InputVerdict[] = [];
+  const sources = sourcesOf(items, app.config.sources);
+  const served = servedIds(items, sources, app.config.maxItemsPerSource);
   const replayDeps: DigestDeps = {
     ...app,
     config: {
       ...app.config,
-      sources: sourcesOf(items, app.config.sources),
+      sources,
       topN: REPLAY_TOP_N,
       guards: GuardsConfigSchema.parse({}),
     },
@@ -448,7 +442,8 @@ async function replay(
   const durationMs = Math.max(0, deps.clock.now().getTime() - startMs);
   return {
     weekId,
-    items,
+    items: items.filter((item) => served.has(item.id)),
+    served,
     markdown: result.markdown,
     record: result.record,
     durationMs,
@@ -535,12 +530,6 @@ async function classifyCases(
   });
 }
 
-/** The draft without its planted item: every claim left is supported, so it is a clean control. */
-function withoutItem(draft: Draft, itemId: string): Draft | undefined {
-  const items = draft.digest.items.filter((item) => item.itemId !== itemId);
-  return items.length === 0 ? undefined : { ...draft, digest: { ...draft.digest, items } };
-}
-
 function tallyOf(verdicts: readonly GuardVerdict[]): Partial<Record<GuardCheckId, GuardTally>> {
   return verdicts.reduce<Partial<Record<GuardCheckId, GuardTally>>>((tallies, verdict) => {
     const before = tallies[verdict.check] ?? { checked: 0, flagged: 0 };
@@ -615,6 +604,8 @@ interface EvalRun {
   attack: AttackReplay | undefined;
   classifier: ClassifierResult[];
   grounding: GroundingResults;
+  /** The eval judge's scores of the winners; undefined when it was never asked. */
+  judged: JudgedWinners | undefined;
 }
 
 function winnerScore(record: RunRecord): number | undefined {
@@ -655,16 +646,24 @@ interface Scoring {
 const calibrationFor = ({ app, cases }: Scoring): JudgeCalibration | null =>
   app.profile.judge === null ? null : cases.calibration;
 
+/** One week for the recall and leak metrics: its labels, its digest and what the replay served. */
+function hitsOf({ week, run }: WeekRun): WeekHits {
+  return {
+    mustInclude: week.labels.mustInclude,
+    mustExclude: week.labels.mustExclude,
+    digestItemIds: idsOf(run),
+    visibleIds: run.served,
+  };
+}
+
 function measure(scoring: Scoring): Record<MetricId, Measurement> {
   const { cases, run, minimums } = scoring;
   const calibration = calibrationFor(scoring);
   const weekSamples = run.weekRuns.map(({ run: r }) => sampleOf(r));
-  const attackSamples = run.attack ? [sampleOf(run.attack.run)] : [];
-  const hits = run.weekRuns.map(({ week, run: r }) => ({
-    mustInclude: week.labels.mustInclude,
-    mustExclude: week.labels.mustExclude,
-    digestItemIds: idsOf(r),
-  }));
+  const attackSamples = run.attack
+    ? [{ ...sampleOf(run.attack.run), label: `${run.attack.run.weekId} (attacks)` }]
+    : [];
+  const hits = run.weekRuns.map(hitsOf);
   const inputTallies = tallyOf(
     run.weekRuns.flatMap(({ run: r }) => r.inputVerdicts.map((v) => v.verdict)),
   );
@@ -673,13 +672,13 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
   const unreviewed = classifierCases > 0 && !cases.classifier.reviewed;
   const weeks = (m: Measurement): Measurement =>
     withCoverage(m, cases.weeks.length, minimums.weeks, 'weeks');
+  const attacks = (m: Measurement): Measurement =>
+    withCoverage(m, cases.attacks.length, minimums.attacks, 'attack cases');
   return {
     linkValidity: weeks(linkValidity([...weekSamples, ...attackSamples])),
-    attackHandling: withCoverage(
-      attackMeasurement(run.attack, run.weekRuns[0]?.run),
-      cases.attacks.length,
-      minimums.attacks,
-      'attack cases',
+    attackHandling: attacks(attackMeasurement(run.attack, run.weekRuns[0]?.run)),
+    guardAttackRecall: attacks(
+      guardAttackRecall(run.attack?.outcomes ?? [], run.attack?.run.record.disabledGuards ?? []),
     ),
     groundedness: withCoverage(
       groundingMeasurement(run.grounding),
@@ -700,13 +699,15 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
       minimums.classifier,
       'classifier cases',
     ),
-    writingQuality: writingQuality(records.flatMap((record) => winnerScore(record) ?? [])),
+    writingQuality: run.judged
+      ? judgedQuality(run.judged)
+      : writingQuality(records.flatMap((record) => winnerScore(record) ?? [])),
     // Measured once on the hand-graded digests (W3-04), not on every eval run.
     selectionAgreement: calibration
       ? { value: calibration.selectionAgreement, note: 'from judge/calibration.json' }
       : { value: null },
     writerWinRate: writerWinRate(records.flatMap((record) => record.winner ?? [])),
-    stability: stability(run.stabilityIds),
+    stability: stability(run.stabilityIds, run.weekRuns[0]?.week.weekId),
     runTime: runTime(run.weekRuns.map(({ run: r }) => r.durationMs)),
   };
 }
@@ -726,7 +727,10 @@ function buildScorecard(scoring: Scoring): Scorecard {
       grounding: cases.grounding.length,
     },
     judgeAgreement,
-    models: modelsByRole(app.profile),
+    models: {
+      ...modelsByRole(app.profile),
+      ...(run.judged ? { evalJudge: run.judged.model } : {}),
+    },
     metrics,
     hardGatesPassed: failedHardGates(metrics).length === 0,
     timings: {
@@ -753,13 +757,18 @@ async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Prom
     first && cases.attacks.length > 0
       ? await replayAttacks(app, deps, first.week, cases.attacks)
       : undefined;
-  return {
-    weekRuns,
-    stabilityIds,
-    attack,
-    classifier: await classifyCases(app, cases.classifier.cases),
-    grounding: await checkGrounding(app, cases.grounding),
-  };
+  const classifier = await classifyCases(app, cases.classifier.cases);
+  const grounding = await checkGrounding(app, cases.grounding);
+  // Last, so the judge model is loaded once, after every replay and every other model call.
+  const judged =
+    deps.judge && app.profile.judge === null
+      ? await judgeWinners(
+          weekRuns.map(({ run }) => run),
+          deps.judge,
+          app.logger,
+        )
+      : undefined;
+  return { weekRuns, stabilityIds, attack, classifier, grounding, judged };
 }
 
 /** Runs the whole eval set on one profile and returns its scorecard. Nothing is written. */
@@ -768,8 +777,6 @@ export async function runEval(options: EvalOptions, deps: EvalDeps): Promise<Sco
   const cases = await loadEvalCases(options.casesDir);
   const handle = await deps.buildApp(options.profile);
   try {
-    const weeksDir = join(options.casesDir, 'weeks');
-    for (const week of cases.weeks) assertLabelsVisible(week, handle.deps.config.sources, weeksDir);
     const run = await evaluate(cases, handle.deps, deps);
     return buildScorecard({
       profile: options.profile,

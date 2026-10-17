@@ -1,15 +1,18 @@
-import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+// The replay window (F11): each source is capped exactly as production caps it, `maxItems` of its
+// own else the config's `maxItemsPerSource`. A labeled item outside that window is "not visible":
+// counted in the detail and left out of recall and leaks.
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { RECORDED_ITEMS_PER_SOURCE } from '../../../evals/recordWeeks.js';
 import { loadEvalCases, runEval, type EvalDeps } from '../../../evals/runEval.js';
 import type { AppHandle } from '../../../src/app/container.js';
 import { DEFAULT_SOURCES } from '../../../src/config/defaultSources.js';
 import { PROFILES } from '../../../src/config/profiles.js';
 import type { DigestDeps } from '../../../src/core/runDigest.js';
-import type { Item, Source } from '../../../src/core/schemas.js';
+import { ItemSchema, type Item, type Source } from '../../../src/core/schemas.js';
 import { collectStep } from '../../../src/core/steps/collect.js';
-import { DigestError } from '../../../src/shared/errors.js';
 import { makeConfig, makeItem, makeRunRecord } from '../../builders.js';
 import {
   FakeModelProvider,
@@ -24,9 +27,7 @@ const WEEK_START_MS = Date.parse('2026-09-28T00:00:00Z');
 const NOON_MS = 12 * 3_600_000;
 const MINUTE_MS = 60_000;
 const DAY_MS = 86_400_000;
-/** Mirrors the recorder: it asks every feed for this many items. */
-const RECORDED_PER_SOURCE = 100;
-/** The usual per-source cap of a config; a replay must not be limited by it. */
+/** The config's per-source cap, which production applies to a source with no cap of its own. */
 const USUAL_CAP = 20;
 const RECORDED_WEEKS_DIR = join(import.meta.dirname, '..', '..', '..', 'evals', 'weeks');
 const NONE = { weeks: 0, attacks: 0, grounding: 0, classifier: 0 };
@@ -48,12 +49,12 @@ async function writeJson(relativePath: string, data: unknown): Promise<void> {
 }
 
 /** `count` items of one source; `<sourceId>-<n>` is the n-th newest, so n is its rank. */
-function feedItems(sourceId: string, count: number): Item[] {
+function feedItems(sourceId: string, count: number, weekStartMs = WEEK_START_MS): Item[] {
   return Array.from({ length: count }, (_, i) =>
     makeItem({
       id: `${sourceId}-${i + 1}`,
       sourceId,
-      publishedAt: new Date(WEEK_START_MS + NOON_MS - i * MINUTE_MS).toISOString(),
+      publishedAt: new Date(weekStartMs + NOON_MS - i * MINUTE_MS).toISOString(),
     }),
   );
 }
@@ -61,13 +62,14 @@ function feedItems(sourceId: string, count: number): Item[] {
 const ids = (sourceId: string, ranks: number[]): string[] =>
   ranks.map((rank) => `${sourceId}-${rank}`);
 
-/** Five must-include picks from `sourceId`, then the given must-exclude ids. */
+/** The week's items, with five must-include picks and the given must-exclude ids. */
 async function writeWeek(
   items: readonly Item[],
   labels: { include: string[]; exclude?: string[] },
+  weekId = WEEK,
 ): Promise<void> {
-  await writeJson(`weeks/${WEEK}/items.json`, items);
-  await writeJson(`weeks/${WEEK}/labels.json`, {
+  await writeJson(`weeks/${weekId}/items.json`, items);
+  await writeJson(`weeks/${weekId}/labels.json`, {
     mustInclude: labels.include,
     mustExclude: labels.exclude ?? [],
   });
@@ -83,11 +85,11 @@ interface Harness {
   firstReplay: () => Item[];
 }
 
-function makeHarness(sources: Source[]): Harness {
+function makeHarness(sources: Source[], maxItemsPerSource = USUAL_CAP): Harness {
   const collected: Item[][] = [];
   const close = vi.fn(() => Promise.resolve());
   const appDeps: DigestDeps = {
-    config: makeConfig({ sources, maxItemsPerSource: USUAL_CAP }),
+    config: makeConfig({ sources, maxItemsPerSource }),
     profile: PROFILES.quality,
     model: new FakeModelProvider(),
     fetchers: {},
@@ -140,41 +142,66 @@ const source = (id: string, maxItems?: number): Source => ({
 
 const idsOf = (items: readonly Item[]): string[] => items.map((item) => item.id);
 
+const evalOptions = () => ({ profile: 'quality' as const, casesDir: root, minimums: NONE });
+
 describe('the replay window', () => {
   it('serves a source with its own maxItems past the usual per-source cap', async () => {
     const items = feedItems('wide-feed', 30);
     await writeWeek(items, { include: ids('wide-feed', [1, 2, 3, 25, 30]) });
     const harness = makeHarness([source('wide-feed', 40)]);
 
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    await runEval(evalOptions(), harness.deps);
 
     expect(idsOf(harness.firstReplay()).toSorted()).toEqual(idsOf(items).toSorted());
   });
 
-  it('serves everything recorded for a source without a maxItems of its own', async () => {
-    const items = [...feedItems('plain-feed', 30), ...feedItems('unlisted-feed', 30)];
-    await writeWeek(items, { include: ids('plain-feed', [1, 2, 3, 25, 30]) });
-    // plain-feed is on the allowlist with no cap; unlisted-feed is not on it at all.
+  it("caps a source with no maxItems at the config's maxItemsPerSource, as production does", async () => {
+    const items = feedItems('plain-feed', 30);
+    await writeWeek(items, { include: ids('plain-feed', [1, 2, 3, 4, 5]) });
     const harness = makeHarness([source('plain-feed')]);
 
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    await runEval(evalOptions(), harness.deps);
 
-    expect(idsOf(harness.firstReplay()).toSorted()).toEqual(idsOf(items).toSorted());
+    expect(idsOf(harness.firstReplay()).toSorted()).toEqual(
+      idsOf(items.slice(0, USUAL_CAP)).toSorted(),
+    );
   });
 
-  it('serves up to the recorder cap and no more per source', async () => {
-    const items = feedItems('huge-feed', RECORDED_PER_SOURCE + 1);
-    await writeWeek(items, { include: ids('huge-feed', [1, 2, 3, 50, RECORDED_PER_SOURCE]) });
-    const harness = makeHarness([source('huge-feed')]);
+  it('caps a recorded source that is not on the allowlist the same way', async () => {
+    const items = [...feedItems('plain-feed', 5), ...feedItems('unlisted-feed', 30)];
+    await writeWeek(items, { include: ids('plain-feed', [1, 2, 3, 4, 5]) });
+    const harness = makeHarness([source('plain-feed')]);
 
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    await runEval(evalOptions(), harness.deps);
 
     const seen = idsOf(harness.firstReplay());
-    expect(seen).toHaveLength(RECORDED_PER_SOURCE);
-    expect(seen).not.toContain(`huge-feed-${RECORDED_PER_SOURCE + 1}`);
+    expect(seen.filter((id) => id.startsWith('unlisted-feed'))).toHaveLength(USUAL_CAP);
+    expect(seen.filter((id) => id.startsWith('plain-feed'))).toHaveLength(5);
   });
 
-  it('breaks a tie on publication time by file order, in the replay and in the label check', async () => {
+  it('follows a changed maxItemsPerSource in the config', async () => {
+    const items = feedItems('plain-feed', 30);
+    await writeWeek(items, { include: ids('plain-feed', [1, 2, 3, 4, 5]) });
+    const harness = makeHarness([source('plain-feed')], 12);
+
+    await runEval(evalOptions(), harness.deps);
+
+    expect(harness.firstReplay()).toHaveLength(12);
+  });
+
+  it("keeps a source's own maxItems when it is smaller than what was recorded", async () => {
+    const items = feedItems('tight-feed', 15);
+    await writeWeek(items, { include: ids('tight-feed', [1, 2, 3, 4, 5]) });
+    const harness = makeHarness([source('tight-feed', 10)]);
+
+    await runEval(evalOptions(), harness.deps);
+
+    expect(idsOf(harness.firstReplay()).toSorted()).toEqual(
+      ids('tight-feed', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).toSorted(),
+    );
+  });
+
+  it('breaks a tie on publication time by file order, in the replay and in which labels are visible', async () => {
     const sameMinute = new Date(WEEK_START_MS + NOON_MS).toISOString();
     const items = Array.from({ length: 12 }, (_, i) =>
       makeItem({ id: `tied-${i + 1}`, sourceId: 'tied-feed', publishedAt: sameMinute }),
@@ -186,104 +213,135 @@ describe('the replay window', () => {
     });
     const harness = makeHarness([source('tied-feed', 10)]);
 
-    await expect(
-      runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps),
-    ).rejects.toThrow(/mustExclude tied-11 is item 11 of tied-feed/);
+    const card = await runEval(evalOptions(), harness.deps);
 
-    await writeWeek(items, { include: ids('tied', [1, 2, 3, 4, 10]), exclude: ids('tied', [5]) });
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
     expect(idsOf(harness.firstReplay())).toEqual(ids('tied', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+    expect(card.metrics.mustExcludeLeaks.detail).toEqual({ notVisible: 1 });
+    expect(card.metrics.mustIncludeRecall.detail).toBeUndefined();
   });
 
-  it("keeps a source's own maxItems when it is smaller than what was recorded", async () => {
-    const items = feedItems('tight-feed', 15);
-    await writeWeek(items, { include: ids('tight-feed', [1, 2, 3, 4, 5]) });
-    const harness = makeHarness([source('tight-feed', 10)]);
+  it('checks the labels against the ids it served, whatever the caps of the sources', async () => {
+    const items = [
+      ...feedItems('a-feed', 25),
+      ...feedItems('b-feed', 25),
+      ...feedItems('c-feed', 8),
+    ];
+    await writeWeek(items, {
+      include: [...ids('a-feed', [1, 2, 20]), ...ids('b-feed', [21, 25])],
+      exclude: [...ids('a-feed', [21]), ...ids('c-feed', [8])],
+    });
+    const harness = makeHarness([source('a-feed'), source('b-feed', 24)]);
 
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    const card = await runEval(evalOptions(), harness.deps);
 
-    expect(idsOf(harness.firstReplay()).toSorted()).toEqual(
-      ids('tight-feed', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).toSorted(),
-    );
+    const served = new Set(idsOf(harness.firstReplay()));
+    // a-feed-21 (cap 20) and b-feed-25 (cap 24) are not served; b-feed-21 and c-feed-8 are.
+    expect(served.has('a-feed-21')).toBe(false);
+    expect(served.has('b-feed-25')).toBe(false);
+    expect(served.has('b-feed-21')).toBe(true);
+    expect(served.has('c-feed-8')).toBe(true);
+    expect(card.metrics.mustIncludeRecall.detail).toEqual({ notVisible: 1 });
+    expect(card.metrics.mustExcludeLeaks.detail).toEqual({ notVisible: 1 });
   });
 });
 
 describe('the recorded weeks', () => {
-  it('replay every labeled item under the default allowlist', async () => {
-    // 2026-W41 mustExclude 59e71a290d09029e is item 26 of aws-whats-new; 2026-W39 mustExclude
-    // d2871d486c61275a is item 22 of openai-news. Both sat past the old cap of 20.
+  /** What production would collect for the week: each source's items up to its cap. */
+  async function expectedServed(weekId: string): Promise<{ recorded: number; served: number }> {
+    const text = await readFile(join(RECORDED_WEEKS_DIR, weekId, 'items.json'), 'utf8');
+    const items = ItemSchema.array().parse(JSON.parse(text));
+    const perSource = new Map<string, number>();
+    for (const item of items) perSource.set(item.sourceId, (perSource.get(item.sourceId) ?? 0) + 1);
+    const served = [...perSource].reduce((sum, [sourceId, count]) => {
+      const cap = DEFAULT_SOURCES.find((s) => s.id === sourceId)?.maxItems ?? USUAL_CAP;
+      return sum + Math.min(count, cap);
+    }, 0);
+    return { recorded: items.length, served };
+  }
+
+  it('are replayed under production caps with the default allowlist', async () => {
+    await cp(RECORDED_WEEKS_DIR, join(root, 'weeks'), { recursive: true });
+    const weekIds = (await readdir(RECORDED_WEEKS_DIR)).sort();
+    const harness = makeHarness([...DEFAULT_SOURCES]);
+
+    await runEval(evalOptions(), harness.deps);
+
+    const expected = await Promise.all(weekIds.map(expectedServed));
+    const replayed = harness.replays().slice(0, weekIds.length);
+    expect(replayed.map((replay) => replay.length)).toEqual(expected.map((e) => e.served));
+    // The cap bites somewhere: a week with a source past its cap serves fewer than it holds.
+    expect(expected.some((e) => e.served < e.recorded)).toBe(true);
+  });
+
+  it('lose one labeled item to the window: 2026-W39 must-exclude d2871d486c61275a', async () => {
+    // It is item 22 of openai-news, past the cap of 20. Every other label is served.
     await cp(RECORDED_WEEKS_DIR, join(root, 'weeks'), { recursive: true });
     const harness = makeHarness([...DEFAULT_SOURCES]);
 
-    await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    const card = await runEval(evalOptions(), harness.deps);
 
-    const { weeks } = await loadEvalCases(root);
-    expect(weeks.length).toBeGreaterThan(0);
-    weeks.forEach((week, index) => {
-      const seen = new Set(idsOf(harness.replays()[index] ?? []));
-      const labeled = [...week.labels.mustInclude, ...week.labels.mustExclude];
-      expect(labeled.filter((id) => !seen.has(id))).toEqual([]);
-    });
+    expect(card.metrics.mustIncludeRecall.detail).toBeUndefined();
+    expect(card.metrics.mustExcludeLeaks.detail).toEqual({ notVisible: 1 });
+    expect(card.metrics.mustExcludeLeaks.note).toContain('1 labeled item(s)');
   });
 });
 
 describe('labels the replay cannot see', () => {
-  it('rejects a label past the recorder cap when the cases are loaded', async () => {
-    const items = feedItems('big-feed', RECORDED_PER_SOURCE + 1);
+  it('load without complaint, however far down their source they sit', async () => {
+    const items = feedItems('big-feed', RECORDED_ITEMS_PER_SOURCE + 1);
     await writeWeek(items, {
       include: ids('big-feed', [1, 2, 3, 4, 5]),
-      exclude: ids('big-feed', [RECORDED_PER_SOURCE + 1]),
+      exclude: ids('big-feed', [RECORDED_ITEMS_PER_SOURCE + 1]),
     });
-
-    const failure = loadEvalCases(root);
-
-    await expect(failure).rejects.toBeInstanceOf(DigestError);
-    await expect(failure).rejects.toThrow(
-      /labels\.json: mustExclude big-feed-101 is item 101 of big-feed, .* newest 100 /,
-    );
-  });
-
-  it('names a must-include label too', async () => {
-    const items = feedItems('big-feed', RECORDED_PER_SOURCE + 1);
-    await writeWeek(items, { include: ids('big-feed', [1, 2, 3, 4, RECORDED_PER_SOURCE + 1]) });
-
-    await expect(loadEvalCases(root)).rejects.toThrow(/mustInclude big-feed-101 is item 101/);
-  });
-
-  it('accepts a label that is exactly at the recorder cap', async () => {
-    const items = feedItems('big-feed', RECORDED_PER_SOURCE + 1);
-    await writeWeek(items, { include: ids('big-feed', [1, 2, 3, 4, RECORDED_PER_SOURCE]) });
 
     const { weeks } = await loadEvalCases(root);
 
     expect(weeks.map((week) => week.weekId)).toEqual([WEEK]);
   });
 
-  it('rejects a label past the maxItems of its configured source before any replay', async () => {
+  it('are counted as not visible, not found and not failed', async () => {
     const items = feedItems('tight-feed', 15);
     await writeWeek(items, {
-      include: ids('tight-feed', [1, 2, 3, 4, 5]),
-      exclude: ids('tight-feed', [12]),
+      include: ids('tight-feed', [1, 2, 3, 4, 12]),
+      exclude: ids('tight-feed', [13]),
     });
     const harness = makeHarness([source('tight-feed', 10)]);
 
-    const failure = runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps);
+    const card = await runEval(evalOptions(), harness.deps);
 
-    await expect(failure).rejects.toBeInstanceOf(DigestError);
-    await expect(failure).rejects.toThrow(
-      /2026-W40.*mustExclude tight-feed-12 is item 12 of tight-feed, .* newest 10 /,
+    expect(harness.runDigest).toHaveBeenCalled();
+    expect(card.metrics.mustIncludeRecall.detail).toEqual({ notVisible: 1 });
+    expect(card.metrics.mustIncludeRecall.note).toBe(
+      '1 labeled item(s) fall outside the replay window: they can be neither found nor leak',
     );
-    expect(harness.runDigest).not.toHaveBeenCalled();
+    expect(card.metrics.mustExcludeLeaks.detail).toEqual({ notVisible: 1 });
     expect(harness.close).toHaveBeenCalledTimes(1);
   });
 
-  it('accepts a label that is exactly at the maxItems of its configured source', async () => {
+  it('count as visible when they sit exactly at the cap of their source', async () => {
     const items = feedItems('tight-feed', 15);
     await writeWeek(items, { include: ids('tight-feed', [1, 2, 3, 4, 10]) });
     const harness = makeHarness([source('tight-feed', 10)]);
 
-    await expect(
-      runEval({ profile: 'quality', casesDir: root, minimums: NONE }, harness.deps),
-    ).resolves.toMatchObject({ weeks: [WEEK] });
+    const card = await runEval(evalOptions(), harness.deps);
+
+    expect(card.metrics.mustIncludeRecall.detail).toBeUndefined();
+  });
+
+  it('add up over the weeks', async () => {
+    await writeWeek(feedItems('tight-feed', 15), {
+      include: ids('tight-feed', [1, 2, 3, 4, 11]),
+    });
+    const nextWeekStart = WEEK_START_MS + 7 * DAY_MS;
+    await writeWeek(
+      feedItems('next-feed', 15, nextWeekStart),
+      { include: ids('next-feed', [1, 2, 3, 12, 13]) },
+      '2026-W41',
+    );
+    const harness = makeHarness([source('tight-feed', 10), source('next-feed', 10)]);
+
+    const card = await runEval(evalOptions(), harness.deps);
+
+    expect(card.metrics.mustIncludeRecall.detail).toEqual({ notVisible: 3 });
   });
 });

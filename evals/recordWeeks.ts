@@ -20,8 +20,11 @@ import { truncate } from '../src/shared/text.js';
 const DAY_MS = 86_400_000;
 const WEEK_MS = 7 * DAY_MS;
 const RECORDED_WEEKS = 6;
-/** Feeds are asked for this many items per source, so no week is cut short by the usual cap. */
-const MAX_ITEMS_PER_SOURCE = 100;
+/**
+ * Feeds are asked for this many items per source, so no week is cut short by the usual cap. The
+ * replay does not serve that many: it caps each source as production does (see runEval.ts).
+ */
+export const RECORDED_ITEMS_PER_SOURCE = 100;
 /** Weeks with fewer items are hard to label; feeds often keep only 10-20 entries. */
 export const THIN_WEEK_MIN_ITEMS = 10;
 const SUMMARY_MAX_CHARS = 200;
@@ -140,10 +143,13 @@ export async function recordWeeks(
   const fetchers = deps.fetchers ?? createDefaultFetchers(resolved.githubToken);
   const collected = await collectStep(
     {
-      sources: resolved.sources.map((source) => ({ ...source, maxItems: MAX_ITEMS_PER_SOURCE })),
+      sources: resolved.sources.map((source) => ({
+        ...source,
+        maxItems: RECORDED_ITEMS_PER_SOURCE,
+      })),
       since: new Date(now.getTime() - (weeks + 1) * WEEK_MS),
       until: now,
-      maxItemsPerSource: MAX_ITEMS_PER_SOURCE,
+      maxItemsPerSource: RECORDED_ITEMS_PER_SOURCE,
     },
     { fetchers, logger: noopLogger, clock, retries: deps.retries },
   );

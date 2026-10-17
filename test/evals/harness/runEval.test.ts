@@ -1156,14 +1156,14 @@ describe('runEval', () => {
       expect(calls[0]?.deps.config.topN).toBe(5);
     });
 
-    it('serves every recorded item whatever the config-wide maxItemsPerSource says', async () => {
+    it('serves each source up to the config-wide maxItemsPerSource, as production does', async () => {
       await writeStandardWeeks();
       const app = makeApp({ config: makeConfig({ maxItemsPerSource: 3 }) });
       const calls: Call[] = [];
 
       await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, makeDeps(app, calls));
 
-      expect(calls[0]?.collected).toHaveLength(6);
+      expect(calls[0]?.collected).toHaveLength(3);
     });
 
     it('records the models of the profile it ran', async () => {

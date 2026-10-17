@@ -10,7 +10,7 @@ import type { Clock } from '../../src/shared/clock.js';
 import { DigestError, errorMessage } from '../../src/shared/errors.js';
 import type { Logger } from '../../src/shared/telemetry.js';
 import type { EvalCases } from '../runEval.js';
-import type { ClassifierCase, WeekLabels } from '../schema.js';
+import { withoutItem, type ClassifierCase, type WeekLabels } from '../schema.js';
 
 // --- Raw outputs ----------------------------------------------------------------------------
 
@@ -245,9 +245,8 @@ function draftSubjects(set: EvalSet): DraftSubject[] {
       value: c.draft,
       sources: c.sources,
     };
-    const items = c.draft.digest.items.filter((item) => item.itemId !== c.plantedItemId);
-    if (items.length === 0) return [planted];
-    const control = { ...c.draft, digest: { ...c.draft.digest, items } };
+    const control = withoutItem(c.draft, c.plantedItemId);
+    if (!control) return [planted];
     return [planted, { ...planted, draft: 'control' as const, value: control }];
   });
 }

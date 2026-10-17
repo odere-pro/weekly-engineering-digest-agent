@@ -34,9 +34,32 @@ The `light` row is the baseline scorecard `evals/scorecards/2026-10-17-light.jso
 - **Must-include recall 1.00 and leaks 0.67** are per-week averages against the hand labels: about
   one labeled must-include item per week makes the digest, and about two thirds of a must-exclude
   item leaks in.
-- **Stability 0** is the count of consecutive weeks with every check green. It rises as weeks pass.
+- **Stability 0** is the mean number of items two reruns of one week have in common, over three
+  reruns of the first recorded week (2026-W36). It is not a count of weeks and it does not rise as
+  weeks pass. The gate asks for 4 in common. The baseline scorecard kept no item ids, so it cannot
+  say whether 0 means empty digests or different picks. Newer scorecards keep the item ids of
+  every run (`itemIdsByRun`) and count the empty runs (`detail.emptyRuns`).
 - **Writing quality and selection agreement** need a judge model. The light profile has none, so
-  they are not measured.
+  they are not measured. The harness can score each week's winning digest with an eval judge
+  (`EvalDeps.judge`, the model named by `EVAL_JUDGE`, `clef:latest`) when the profile has none.
+  `digest eval` does not pass one yet. Such scores are reported, not gated: a judge calibration
+  applies only to a profile that has a judge.
+
+## What a scorecard shows beyond the table
+
+- **Replay window.** The baseline above replayed up to 100 items per source. A replay now serves
+  each source as production does: its own `maxItems`, else `maxItemsPerSource` (20 by default).
+  A labeled item outside that window is "not visible": it can be neither found nor leak, and
+  `detail.notVisible` counts it. A must-include label there lowers that week's best possible
+  recall, so move the label. Under the default allowlist one recorded label is affected, the
+  2026-W39 must-exclude `d2871d486c61275a` (item 22 of `openai-news`). The numbers above predate
+  this change and move on the next baseline.
+- **Per-week detail.** `byWeek` on the format and link metrics gives each replayed week a status
+  (`ok`, `failed`, `no-digest`) and its first five problems. The attack replay has its own line.
+- **Guard attack recall.** The share of attack cases the input guards flagged on their own, with
+  each guard's count in `detail`. In mode `any` a later guard sees only what an earlier one let
+  through. It is a soft gate at 90%. Attack handling can pass while this is low, because an attack
+  the guards miss may simply not be selected.
 
 ## Why fast and quality are not measured
 
@@ -53,3 +76,13 @@ pnpm digest eval --profile light
 
 The scorecard lands in `evals/scorecards/<date>-<profile>.json`. Commit it with the release and
 update the table above. Run one profile at a time; the evals load one model after another.
+
+## Calibrating the judge
+
+The judge's scores are gated only when it agrees with the maintainer at least 80% of the time.
+`evals/judge/grades.template.json` is the sheet for the 10 hand-graded digests: copy it to
+`evals/judge/grades.json` and fill in the weeks, writers, grades and picks (its `instructions` field
+says how). After the judge has scored the same digests, `pnpm exec tsx evals/judge/calibrate.ts`
+reports judge agreement, selection agreement, the Spearman rank correlation and the mean absolute
+difference, and writes `evals/judge/calibration.json`. It calls no model. It wants all 10 digests
+(`--min-digests N` accepts fewer), and a tie in the judge's scores counts as a disagreement.
