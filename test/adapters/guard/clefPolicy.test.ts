@@ -44,7 +44,7 @@ describe('createClefPolicyGuard', () => {
     const call = model.decideCalls[0]!;
     expect(call.role).toBe('guardPolicy');
     const questions = Object.values(call.questions);
-    expect(questions).toHaveLength(2);
+    expect(questions).toHaveLength(4);
     expect(questions.every((question) => question.type === 'yesno')).toBe(true);
     const text = questions.map((question) => question.instructions).join('\n');
     expect(text).toMatch(/instructions .*aimed at an AI/i);
@@ -101,6 +101,23 @@ describe('createClefPolicyGuard', () => {
     expect(verdict.reason).toMatch(/aimed at an AI/i);
     expect(verdict.reason).toMatch(/harmful/i);
     expect(verdict.reason).toContain('0.90');
+  });
+
+  it('flags on the fake-message and link-swap questions alone', async () => {
+    for (const probabilities of [
+      [0, 0, 0.9, 0],
+      [0, 0, 0, 0.9],
+    ]) {
+      const guard = createClefPolicyGuard({
+        model: modelAnswering(...probabilities),
+        flagThreshold: THRESHOLD,
+      });
+
+      const verdict = await guard.checkItem(item);
+
+      expect(verdict.flagged).toBe(true);
+      expect(verdict.reason).toMatch(/fake system|link swap/i);
+    }
   });
 
   it('names only the question that is over the threshold', async () => {

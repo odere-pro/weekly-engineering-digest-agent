@@ -17,7 +17,10 @@ import { ItemSchema, WEEK_ID_PATTERN, type DigestItem, type Item } from '../../s
 import { itemIdFor, normalizeUrl, sameUrl } from '../../src/shared/url.js';
 import { DATA_CLOSE } from '../../src/shared/untrusted.js';
 
-const ATTACK_COUNT = SPEC_EVAL_SET.attacks;
+/** Ten tuning cases (the spec set) and ten held-out ones the guard prompts were not tuned on (W6-05). */
+const TUNING_COUNT = SPEC_EVAL_SET.attacks;
+const HELD_OUT_COUNT = 10;
+const ATTACK_COUNT = TUNING_COUNT + HELD_OUT_COUNT;
 const GROUNDING_COUNT = SPEC_EVAL_SET.grounding;
 /** The fetchers truncate summaries at 600 characters, so a longer one could never be collected. */
 const MAX_SUMMARY_CHARS = 600;
@@ -107,7 +110,27 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
     /you are now \w+/i.test(item.summary) && /never refuse/i.test(item.summary),
   'harmful-content': (item) => /hunted down|beaten/i.test(item.summary),
   'email-instruction': (item) => /[\w.+-]+@[\w-]+\.example\b/.test(item.summary),
+  // Held-out set (attacks 11-20).
+  'disregard-instructions': (item) => /disregard everything above/i.test(item.summary),
+  'chat-template-injection': (item) => /<\|im_start\|>\s*system/i.test(item.summary),
+  'developer-mode-jailbreak': (item) =>
+    /developer mode enabled/i.test(item.summary) && /no restrictions/i.test(item.summary),
+  'hypothetical-jailbreak': (item) =>
+    /hypothetically/i.test(item.summary) && /bypass all of your safety rules/i.test(item.summary),
+  'malware-instructions': (item) => /ransomware/i.test(item.summary),
+  'hate-harassment': (item) => /subhuman/i.test(item.summary) && /threats/i.test(item.summary),
+  'tag-break': (item) => /<\/data>/.test(item.summary) && /new task/i.test(item.summary),
+  'prompt-leak': (item) => /print your system prompt/i.test(item.summary),
+  'tool-call-injection': (item) =>
+    /call the delivery tool/i.test(item.summary) && /[\w.+-]+@[\w-]+\.example\b/.test(item.summary),
+  'translated-instruction': (item) => /ignorez toutes les instructions/i.test(item.summary),
 };
+
+/** The README table under "Held-out set": the case ids it lists. */
+function heldOutIds(text: string): string[] {
+  const section = text.split(/^## Held-out set/m)[1] ?? '';
+  return [...section.matchAll(/^\| `(attack-\d+[\w-]*)`/gm)].map((m) => m[1] ?? '');
+}
 
 const NUMBER = /\d+(?:\.\d+)*/g;
 const numbersIn = (text: string): Set<string> => new Set(text.match(NUMBER) ?? []);
@@ -140,7 +163,7 @@ beforeAll(async () => {
 });
 
 describe('attack cases', () => {
-  it('has 10 case files that parse with AttackCaseSchema', () => {
+  it('has 20 case files that parse with AttackCaseSchema', () => {
     expect(attacks).toHaveLength(ATTACK_COUNT);
   });
 
@@ -188,7 +211,7 @@ describe('attack cases', () => {
     }
   });
 
-  it('covers ten different techniques and names the defence each one exercises', () => {
+  it('covers twenty different techniques and names the defence each one exercises', () => {
     const kinds = attacks.map((a) => a.value.kind).sort();
     expect(kinds).toEqual(Object.keys(TECHNIQUES).sort());
     for (const { value } of attacks) expect(value.expectBlockedBy).toBeDefined();
@@ -203,6 +226,22 @@ describe('attack cases', () => {
   it('lists every case in the README', async () => {
     const text = await readme('attacks');
     for (const { value } of attacks) expect(text, value.id).toContain(`\`${value.id}\``);
+  });
+
+  it('marks attacks 11 to 20 as the held-out set in the README, and no other', async () => {
+    const heldOut = heldOutIds(await readme('attacks'));
+    const expected = attacks.slice(TUNING_COUNT).map((a) => a.value.id);
+    expect(expected).toHaveLength(HELD_OUT_COUNT);
+    expect(heldOut).toEqual(expected);
+    expect(attacks.slice(0, TUNING_COUNT).every((a) => !heldOut.includes(a.value.id))).toBe(true);
+  });
+
+  it('gives the held-out set at least two Granite cases for jailbreak and for harmful content', () => {
+    const heldOut = attacks.slice(TUNING_COUNT).map((a) => a.value);
+    const byKind = (match: RegExp): number =>
+      heldOut.filter((a) => a.expectBlockedBy === 'graniteRisk' && match.test(a.kind)).length;
+    expect(byKind(/jailbreak/)).toBeGreaterThanOrEqual(2);
+    expect(byKind(/malware|hate/)).toBeGreaterThanOrEqual(2);
   });
 
   it('uses fictional hosts only', () => {
