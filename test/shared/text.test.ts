@@ -37,6 +37,100 @@ describe('text helpers', () => {
     });
   });
 
+  describe('markup', () => {
+    it('strips tags that carry attributes and span lines', () => {
+      expect(toPlainText('<a\n  href="https://x.test/?a=1&amp;b=2"\n>link</a> after')).toBe(
+        'link after',
+      );
+    });
+
+    it('drops script and style blocks whatever their case or attributes', () => {
+      const html = 'a<SCRIPT type="text/x">1 < 2</Script>b<style media="all">p{}</style>c';
+      expect(toPlainText(html)).toBe('a b c');
+    });
+
+    it('drops every block, not only the first', () => {
+      expect(toPlainText('<script>1</script>x<script>2</script>y<style>3</style>z')).toBe('x y z');
+    });
+
+    it('drops everything after a script block that is never closed', () => {
+      expect(toPlainText('before <script>alert(1) <b>after</b>')).toBe('before');
+    });
+
+    it('drops everything after a style block that is never closed', () => {
+      expect(toPlainText('before <STYLE>p { color: red } after')).toBe('before');
+    });
+
+    it('drops everything after a script tag that never ends', () => {
+      expect(toPlainText('before <script src="x" after')).toBe('before');
+    });
+
+    it('keeps what comes after the first block when the second is never closed', () => {
+      expect(toPlainText('a<style>x</style>b<script>y c')).toBe('a b');
+    });
+
+    it('does not treat a tag that only starts with the word script or style as a block', () => {
+      expect(toPlainText('<style-guide>keep</style-guide> <scripted>this</scripted>')).toBe(
+        'keep this',
+      );
+    });
+
+    it('keeps text before a stray "<" and still strips the tag after it', () => {
+      expect(toPlainText('x < y <b>z</b>')).toBe('x < y z');
+    });
+
+    it('leaves "<>" and a "<" with no closing ">" as text', () => {
+      expect(toPlainText('a <> b')).toBe('a <> b');
+      expect(toPlainText('<<< hi')).toBe('<<< hi');
+    });
+
+    it('decodes an escaped tag to text without stripping it', () => {
+      expect(toPlainText('Vec&lt;T&gt; and &lt;b&gt;')).toBe('Vec<T> and <b>');
+    });
+
+    it('returns an empty string for markup with no text', () => {
+      expect(toPlainText('<br><script>x</script><style>y</style>')).toBe('');
+    });
+  });
+
+  describe('hostile input', () => {
+    const SIZE = 256 * 1024;
+    const MAX_MS = 500;
+
+    function repeated(unit: string): string {
+      return unit.repeat(Math.ceil(SIZE / unit.length)).slice(0, SIZE);
+    }
+
+    const hostile: ReadonlyArray<readonly [string, string]> = [
+      ['"<" only', repeated('<')],
+      ['"<" and letters, never closed', repeated('<a')],
+      ['"<" and spaces, never closed', repeated('< ')],
+      ['"<a " with no ">"', repeated('<a ')],
+      ['unclosed <script>', repeated('<script>')],
+      ['unclosed <style>', repeated('<style>')],
+      ['"<script" with no ">"', repeated('<script ')],
+      ['"<script>" opened, ">" far away', `${repeated('<script ')}>`],
+      ['empty script blocks', repeated('<script></script>')],
+      ['script blocks with long bodies', repeated(`<script>${'x'.repeat(100)}</script>`)],
+      ['close tags without openers', repeated('</script>')],
+      ['one long unclosed tag', `<a ${'x'.repeat(SIZE)}`],
+      ['"&" runs', repeated('&')],
+      ['"&#x" runs', repeated('&#x')],
+      ['one long entity name', `&${'a'.repeat(SIZE)}`],
+      ['whitespace only', repeated(' \n\t')],
+    ];
+
+    it.each(hostile)('reads %s in linear time', (_name, input) => {
+      const startedAt = performance.now();
+      toPlainText(input);
+      expect(performance.now() - startedAt).toBeLessThan(MAX_MS);
+    });
+
+    it('still strips a tag at the very end of a large text', () => {
+      expect(toPlainText(`${'word '.repeat(50_000)}<b>end</b>`).endsWith('word end')).toBe(true);
+    });
+  });
+
   describe('truncate and surrogate pairs', () => {
     const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
 

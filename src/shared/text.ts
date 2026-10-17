@@ -30,10 +30,56 @@ function decodeEntities(text: string): string {
   });
 }
 
+/**
+ * Where the block that opens at `openAt` ends, just after its closing tag; -1 when it never
+ * closes. The `>` of the opening tag and the closing tag are each searched for once, forward,
+ * so a long run of openers costs one scan, not one per opener.
+ */
+function blockEnd(html: string, openAt: number, close: RegExp): number {
+  const openingTagEnd = html.indexOf('>', openAt);
+  if (openingTagEnd < 0) return -1;
+  close.lastIndex = openingTagEnd + 1;
+  const closing = close.exec(html);
+  return closing ? closing.index + closing[0].length : -1;
+}
+
+/**
+ * Replaces each `<script>` and `<style>` block, text included, with a space. Whatever follows a
+ * block that never closes is dropped, as a browser does: it is script or style text, not prose.
+ * One pass, so hostile input (the worst case is a long run of unclosed openers) stays linear;
+ * a lazy `[\s\S]*?` regex would rescan to the end of the text for every opener.
+ */
+function withoutBlocks(html: string): string {
+  const open = /<(script|style)(?=[\s/>])/gi;
+  const closeScript = /<\/script>/gi;
+  const closeStyle = /<\/style>/gi;
+  const kept: string[] = [];
+  let from = 0;
+  for (;;) {
+    open.lastIndex = from;
+    const opener = open.exec(html);
+    if (!opener) return [...kept, html.slice(from)].join('');
+    kept.push(html.slice(from, opener.index), ' ');
+    const [, name = ''] = opener;
+    const end = blockEnd(
+      html,
+      opener.index,
+      name.toLowerCase() === 'script' ? closeScript : closeStyle,
+    );
+    if (end < 0) return kept.join('');
+    from = end;
+  }
+}
+
+/**
+ * A tag: "<", then anything but a bracket, then ">". Excluding "<" from the body means a failed
+ * attempt never reads past the next "<", so no character is scanned twice.
+ */
+const TAG = /<[^<>]+>/g;
+
 /** HTML or Markdown-ish feed content to one line of plain text. */
 export function toPlainText(html: string): string {
-  const withoutBlocks = html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, ' ');
-  const withoutTags = withoutBlocks.replace(/<[^>]+>/g, ' ');
+  const withoutTags = withoutBlocks(html).replace(TAG, ' ');
   return decodeEntities(withoutTags).replace(/\s+/g, ' ').trim();
 }
 
