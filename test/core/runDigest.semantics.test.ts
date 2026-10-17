@@ -357,6 +357,7 @@ describe('runDigest: resuming a partly delivered week', () => {
       'deliver',
     ]);
     expect(h.store.records.get(WEEK)).toEqual(first.record);
+    expect(first.markdown).toBe(SAVED_DIGEST);
     expect(JSON.parse(h.store.artifacts.get(`${WEEK}/error.json`) ?? '{}')).toMatchObject({
       step: 'deliver',
     });
@@ -435,11 +436,34 @@ describe('runDigest: resuming a partly delivered week', () => {
       const message = result.record.error?.message ?? '';
       expect(message).toBe(`${reason}; run with --force to send a new digest to every channel`);
       expect(h.store.records.get(WEEK)).toEqual(result.record);
+      expect(result.markdown).toBeUndefined();
       expect(digestCounts(h)).toEqual([0, 0, 0]);
       expect(modelCalls(h)).toBe(0);
       for (const delivery of h.deliveries) {
         expect(delivery.failures).toEqual([{ weekId: WEEK, step: 'deliver', message }]);
       }
+    },
+  );
+
+  it.each<[string, string | undefined]>([
+    ['gone', undefined],
+    ['replaced by another digest', SAVED_DIGEST.replace('runner-2', 'runner-9')],
+  ])(
+    'marks the week sent without a check when no channel is missing and digest.md is %s',
+    async (_name, saved) => {
+      const h = setup({ channels: ['markdown'] });
+      partlyDelivered(h, { deliveredTo: ['markdown', 'slack'] });
+      if (saved === undefined) h.store.artifacts.delete(`${WEEK}/digest.md`);
+      else h.store.artifacts.set(`${WEEK}/digest.md`, saved);
+
+      const result = await h.run();
+
+      expect(result.exitCode).toBe(ExitCode.Sent);
+      expect(result.record).toMatchObject({ status: 'sent', deliveredTo: ['markdown', 'slack'] });
+      expect(result.record.error).toBeUndefined();
+      expect(result.markdown).toBeUndefined();
+      expect(digestCounts(h)).toEqual([0]);
+      expect(h.store.records.get(WEEK)).toEqual(result.record);
     },
   );
 
@@ -479,8 +503,168 @@ describe('runDigest: resuming a partly delivered week', () => {
     expect(modelCalls(h)).toBeGreaterThan(0);
     expect(digestCounts(h)).toEqual([0, 0, 0]);
     expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe(SAVED_DIGEST);
     expect(warnings(h)).toContain(
       'Kept the partly delivered run record; this run delivered nothing',
     );
+  });
+});
+
+const FILES = ['items.json', 'scores.json', 'drafts.json', 'digest.md'] as const;
+/** What the week's files held when it reached a channel. */
+const EARLIER = {
+  'items.json': '["items of the first run"]\n',
+  'scores.json': '["scores of the first run"]\n',
+  'drafts.json': '["drafts of the first run"]\n',
+  'digest.md': SAVED_DIGEST,
+} as const;
+
+function seedFiles(h: Harness, digest: string = SAVED_DIGEST): void {
+  for (const name of FILES) h.store.artifacts.set(`${WEEK}/${name}`, EARLIER[name]);
+  h.store.artifacts.set(`${WEEK}/digest.md`, digest);
+}
+
+/** A week that every channel took. */
+function sentWeek(h: Harness): RunRecord {
+  const record = makeRunRecord({
+    runId: WEEK,
+    status: 'sent',
+    sentUrls: SAVED_URLS,
+    deliveredTo: [...ALL_CHANNELS],
+  });
+  h.store.records.set(WEEK, record);
+  seedFiles(h);
+  return record;
+}
+
+function filesOf(h: Harness): Record<string, string | undefined> {
+  return Object.fromEntries(
+    [...FILES, 'error.json'].map((name) => [name, h.store.artifacts.get(`${WEEK}/${name}`)]),
+  );
+}
+
+const EARLIER_FILES = { ...EARLIER, 'error.json': undefined };
+
+describe('runDigest: a run that must not replace files a channel already got', () => {
+  it('leaves a sent week alone and prints no digest path in a forced dry run', async () => {
+    const h = setup();
+    const previous = sentWeek(h);
+
+    const result = await h.run({ force: true, dryRun: true });
+
+    expect(result.record.status).toBe('dry-run');
+    expect(result.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual(EARLIER_FILES);
+    expect(warnings(h)).toContain('Kept the sent run record; this forced run did not send');
+  });
+
+  it('leaves a sent week alone when a forced run fails before any channel', async () => {
+    const h = setup({
+      write: () => {
+        throw new Error('Timed out after 30 ms');
+      },
+    });
+    const previous = sentWeek(h);
+
+    const result = await h.run({ force: true });
+
+    expect(result.record).toMatchObject({ status: 'failed', error: { step: 'write' } });
+    expect(result.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual(EARLIER_FILES);
+  });
+
+  it('leaves a sent week alone when a forced run delivers to no channel', async () => {
+    const h = setup();
+    const previous = sentWeek(h);
+    for (const delivery of h.deliveries) delivery.failWith = new Error('offline');
+
+    const result = await h.run({ force: true });
+
+    expect(result.record.status).toBe('failed');
+    expect(result.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual(EARLIER_FILES);
+  });
+
+  it('leaves a sent week alone when a forced run reaches only some channels', async () => {
+    const h = setup();
+    const previous = sentWeek(h);
+    h.channel('email').failWith = new Error('SMTP 451');
+
+    const result = await h.run({ force: true });
+
+    expect(result.record).toMatchObject({ status: 'failed', deliveredTo: ['markdown', 'slack'] });
+    expect(result.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual(EARLIER_FILES);
+  });
+
+  it('replaces the files and returns the digest when a forced run ends sent', async () => {
+    const h = setup();
+    sentWeek(h);
+
+    const result = await h.run({ force: true });
+
+    expect(result.record.status).toBe('sent');
+    const files = filesOf(h);
+    expect(files['digest.md']).toBe(result.markdown);
+    expect(result.markdown).not.toBe(SAVED_DIGEST);
+    for (const name of ['items.json', 'scores.json', 'drafts.json'] as const) {
+      expect(files[name]).not.toBe(EARLIER[name]);
+    }
+    expect(files['error.json']).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toEqual(result.record);
+  });
+
+  it('leaves a partly delivered week alone in a dry run, so a resume sends what the others got', async () => {
+    const h = setup();
+    const urls = h.items.map((item) => item.url);
+    const saved = `# ${HEADLINE}\n\n_Week ${WEEK}_\n\n## 1. Saved wording\n\n${urls
+      .map((url) => `[Source](${url})`)
+      .join('\n\n')}\n`;
+    const previous = partlyDelivered(h, { sentUrls: urls });
+    seedFiles(h, saved);
+
+    const dry = await h.run({ dryRun: true });
+
+    expect(dry.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual({ ...EARLIER_FILES, 'digest.md': saved });
+
+    const resumed = await h.run();
+
+    expect(resumed.record.status).toBe('sent');
+    expect(h.channel('email').digests).toEqual([
+      { weekId: WEEK, subject: SUBJECT, markdown: saved },
+    ]);
+  });
+
+  it('replaces the files when a forced run reaches a channel of a partly delivered week', async () => {
+    const h = setup();
+    partlyDelivered(h);
+    seedFiles(h);
+    h.channel('email').failWith = new Error('SMTP 451');
+
+    const result = await h.run({ force: true });
+
+    expect(result.record).toMatchObject({ status: 'failed', deliveredTo: ['markdown', 'slack'] });
+    expect(result.markdown).not.toBe(SAVED_DIGEST);
+    expect(filesOf(h)['digest.md']).toBe(result.markdown);
+    expect(JSON.parse(filesOf(h)['error.json'] ?? '{}')).toMatchObject({ step: 'deliver' });
+    expect(h.store.records.get(WEEK)).toEqual(result.record);
+  });
+
+  it('writes the files as it goes when the earlier run reached no channel', async () => {
+    const h = setup();
+    h.store.records.set(WEEK, makeRunRecord({ runId: WEEK, status: 'failed' }));
+    seedFiles(h);
+
+    const result = await h.run();
+
+    expect(result.record.status).toBe('sent');
+    expect(filesOf(h)['digest.md']).toBe(result.markdown);
+    expect(filesOf(h)['items.json']).not.toBe(EARLIER['items.json']);
   });
 });

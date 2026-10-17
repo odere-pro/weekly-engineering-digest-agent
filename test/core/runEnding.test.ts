@@ -3,8 +3,10 @@ import {
   endRun,
   failureNote,
   forEachDelivery,
+  reachedAChannel,
   recordError,
   type EndingContext,
+  type HeldArtifact,
 } from '../../src/core/runEnding.js';
 import type { RunRecord } from '../../src/core/schemas.js';
 import { DigestError } from '../../src/shared/errors.js';
@@ -93,6 +95,107 @@ describe('endRun: which record stays', () => {
     expect(h.store.records.get(WEEK)).toBe(expected === SAVED ? next : previous);
     const warned = h.logs.filter((line) => line.level === 'warn').map((line) => line.message);
     expect(warned).toEqual(expected === SAVED ? [] : [expected]);
+  });
+});
+
+const held: readonly HeldArtifact[] = [
+  { name: 'items.json', content: '[]\n' },
+  { name: 'digest.md', content: '# New wording\n' },
+];
+const sent = record({ status: 'sent' });
+const writtenFiles = (store: MemoryRunStore): string[] => [...store.artifacts.keys()].sort();
+
+describe('endRun: artifacts held for the record', () => {
+  it('writes them once the record is saved, and says which', async () => {
+    const h = setup();
+    const order: string[] = [];
+    const saveRecord = h.store.saveRunRecord.bind(h.store);
+    vi.spyOn(h.store, 'saveRunRecord').mockImplementation((next) => {
+      order.push('record');
+      return saveRecord(next);
+    });
+    const saveArtifact = h.store.saveArtifact.bind(h.store);
+    vi.spyOn(h.store, 'saveArtifact').mockImplementation((runId, name, content) => {
+      order.push(name);
+      return saveArtifact(runId, name, content);
+    });
+
+    const written = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
+
+    expect(order).toEqual(['record', 'items.json', 'digest.md']);
+    expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe('# New wording\n');
+    expect(written).toEqual(new Set(['items.json', 'digest.md']));
+  });
+
+  it('writes nothing when the earlier record stays: no artifact, no error.json', async () => {
+    const h = setup();
+    h.store.records.set(WEEK, sent);
+    h.store.artifacts.set(`${WEEK}/digest.md`, '# Sent wording\n');
+    const failure = { error: new Error('delivery failed'), step: 'deliver' as const };
+    const note = failureNote(WEEK, failure);
+
+    const written = await endRun(h.ctx, { record: partly, failure, note, artifacts: held }, sent);
+
+    expect(written).toEqual(new Set());
+    expect(h.store.records.get(WEEK)).toBe(sent);
+    expect(writtenFiles(h.store)).toEqual([`${WEEK}/digest.md`]);
+    expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe('# Sent wording\n');
+    // The failure is still reported: the person running the week needs to know.
+    for (const delivery of h.deliveries) expect(delivery.failures).toEqual([note]);
+  });
+
+  it('keeps a partly delivered week files too when a run delivered nothing', async () => {
+    const h = setup();
+    h.store.records.set(WEEK, partly);
+
+    const written = await endRun(
+      h.ctx,
+      { record: record({ status: 'dry-run' }), artifacts: held },
+      partly,
+    );
+
+    expect(written).toEqual(new Set());
+    expect(writtenFiles(h.store)).toEqual([]);
+  });
+
+  it('logs a held artifact that cannot be saved and still writes the others', async () => {
+    const h = setup();
+    const saveArtifact = h.store.saveArtifact.bind(h.store);
+    vi.spyOn(h.store, 'saveArtifact').mockImplementation((runId, name, content) =>
+      name === 'items.json'
+        ? Promise.reject(new Error('EROFS'))
+        : saveArtifact(runId, name, content),
+    );
+
+    const written = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
+
+    expect(written).toEqual(new Set(['digest.md']));
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({
+        level: 'error',
+        message: 'Could not write items.json',
+        fields: { error: 'EROFS' },
+      }),
+    );
+  });
+
+  it('writes nothing held when the record cannot be saved', async () => {
+    const h = setup();
+    vi.spyOn(h.store, 'saveRunRecord').mockRejectedValue(new Error('disk full'));
+
+    await expect(endRun(h.ctx, { record: sent, artifacts: held }, undefined)).rejects.toThrow(
+      DigestError,
+    );
+
+    expect(writtenFiles(h.store)).toEqual([]);
+  });
+
+  it('has nothing to write when the run held no artifacts', async () => {
+    const h = setup();
+
+    const written = await endRun(h.ctx, { record: sent }, undefined);
+
+    expect(written).toEqual(new Set());
   });
 });
 
@@ -195,6 +298,15 @@ describe('endRun: error file, note and pruning', () => {
 });
 
 describe('runEnding helpers', () => {
+  it.each<[string, RunRecord | undefined, boolean]>([
+    ['no record', undefined, false],
+    ['a failed record that reached no channel', record({ status: 'failed' }), false],
+    ['a sent record', record({ status: 'sent' }), true],
+    ['a partly delivered record', partly, true],
+  ])('says whether %s reached a channel', (_name, given, expected) => {
+    expect(reachedAChannel(given)).toBe(expected);
+  });
+
   it('turns a failure into the record error', () => {
     expect(recordError({ error: new Error('timed out'), step: 'write' })).toEqual({
       message: 'timed out',

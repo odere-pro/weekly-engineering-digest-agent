@@ -27,6 +27,14 @@ export type CronFactory = (
   handler: () => Promise<void>,
 ) => CronJob;
 
+/** How a tick that meets a held run lock tries again, e.g. a manual `digest run` still going. */
+export interface LockRetry {
+  /** Wait between tries. Zero turns retrying off. */
+  everyMs: number;
+  /** Stop retrying this long after the first try. Zero turns retrying off. */
+  forMs: number;
+}
+
 export interface SchedulerOptions {
   cron: string;
   timeZone: string;
@@ -35,6 +43,8 @@ export interface SchedulerOptions {
   runStatus: (weekId: string) => Promise<RunStatus | undefined>;
   clock: Clock;
   logger: Logger;
+  /** Default: every 5 minutes for 2 hours. */
+  lockRetry?: LockRetry;
   /** Default: croner. */
   cronFactory?: CronFactory;
 }
@@ -42,9 +52,9 @@ export interface SchedulerOptions {
 export interface SchedulerHandle {
   /** Next scheduled run, if any. */
   nextRun(): Date | null;
-  /** Stops future ticks. A run already in flight keeps going; see `whenIdle`. */
+  /** Stops future ticks and cancels a pending retry. A run already in flight keeps going. */
   stop(): void;
-  /** Resolves when no run is in flight (at once when none is). */
+  /** Resolves when no run is in flight or waiting to retry (at once when none is). */
   whenIdle(): Promise<void>;
 }
 
@@ -53,13 +63,21 @@ type Execute = (weekId: string, trigger: Trigger) => Promise<void>;
 
 interface Executor {
   execute: Execute;
+  /** True while a digest is being built; false while a retry waits. */
   isRunning(): boolean;
+  /** Cancels a pending retry; a later lock-held failure does not start another. */
+  stop(): void;
   whenIdle(): Promise<void>;
 }
+
+/** The run lock is held by another process; the store adapter reports it with this message. */
+const LOCK_HELD_PREFIX = 'Another run is in progress';
+const MINUTE_MS = 60_000;
 
 /** Catch-up leaves a week that ended this way alone; a failed or dry-run week runs again. */
 const SETTLED: ReadonlySet<RunStatus> = new Set<RunStatus>(['sent', 'quiet', 'blocked']);
 const HOUR_MS = 3_600_000;
+const DEFAULT_LOCK_RETRY: LockRetry = { everyMs: 5 * MINUTE_MS, forMs: 2 * HOUR_MS };
 /** The furthest a time zone's local Monday 00:00 can lie before Monday 00:00 UTC (UTC+14). */
 const MAX_UTC_OFFSET_MS = 14 * HOUR_MS;
 
@@ -83,7 +101,9 @@ export async function startScheduler(options: SchedulerOptions): Promise<Schedul
     nextRun: () => job.nextRun(clock.now()),
     stop: () => {
       job.stop();
-      if (executor.isRunning()) logger.info('Scheduler stopped; the running digest finishes first');
+      const running = executor.isRunning();
+      executor.stop();
+      if (running) logger.info('Scheduler stopped; the running digest finishes first');
     },
     whenIdle: () => executor.whenIdle(),
   };
@@ -112,10 +132,34 @@ function createJob(
 }
 
 /** Runs one week at a time and never throws: a failed run is logged and the service stays up. */
-function createExecutor({ run, logger }: SchedulerOptions): Executor {
+function createExecutor({
+  run,
+  logger,
+  lockRetry = DEFAULT_LOCK_RETRY,
+}: SchedulerOptions): Executor {
+  const canRetry = lockRetry.everyMs > 0 && lockRetry.forMs > 0;
+  const maxRetries = canRetry ? Math.floor(lockRetry.forMs / lockRetry.everyMs) : 0;
   let current: Promise<void> | undefined;
+  let cancelWait: (() => void) | undefined;
+  let stopped = false;
 
-  async function runOnce(weekId: string, trigger: Trigger): Promise<void> {
+  /** Resolves true when the time has passed, false when stop() cancelled the wait. */
+  function wait(ms: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        cancelWait = undefined;
+        resolve(true);
+      }, ms);
+      cancelWait = () => {
+        clearTimeout(timer);
+        cancelWait = undefined;
+        resolve(false);
+      };
+    });
+  }
+
+  /** Returns the lock-held error when another run holds the lock; logs every other outcome. */
+  async function runOnce(weekId: string, trigger: Trigger): Promise<DigestError | undefined> {
     try {
       const result = await run(weekId);
       logger.info('Scheduled run finished', {
@@ -125,7 +169,39 @@ function createExecutor({ run, logger }: SchedulerOptions): Executor {
         exitCode: result.exitCode,
       });
     } catch (error) {
+      if (isLockHeld(error)) return error;
       logger.error('Scheduled run failed', { weekId, trigger, error: errorMessage(error) });
+    }
+    return undefined;
+  }
+
+  /** A tick that meets the lock tries again every `everyMs`, up to `maxRetries` times. */
+  async function runWithRetries(weekId: string, trigger: Trigger): Promise<void> {
+    for (let retries = 0; ; retries += 1) {
+      const held = await runOnce(weekId, trigger);
+      if (held === undefined) return;
+      if (!stopped && retries >= maxRetries) {
+        logger.error('Scheduled run gave up: another run kept the lock', {
+          weekId,
+          trigger,
+          retries,
+          error: held.message,
+        });
+        return;
+      }
+      if (!stopped) {
+        logger.warn('Another run holds the lock; will retry', {
+          weekId,
+          trigger,
+          retry: retries + 1,
+          ofMax: maxRetries,
+          inMs: lockRetry.everyMs,
+        });
+      }
+      if (stopped || !(await wait(lockRetry.everyMs))) {
+        logger.info('Retry cancelled: the scheduler stopped', { weekId, trigger });
+        return;
+      }
     }
   }
 
@@ -134,7 +210,7 @@ function createExecutor({ run, logger }: SchedulerOptions): Executor {
       logger.warn('Skipped a scheduled run: the previous run is still going', { weekId, trigger });
       return Promise.resolve();
     }
-    const finished = runOnce(weekId, trigger).finally(() => {
+    const finished = runWithRetries(weekId, trigger).finally(() => {
       current = undefined;
     });
     current = finished;
@@ -142,9 +218,17 @@ function createExecutor({ run, logger }: SchedulerOptions): Executor {
   };
   return {
     execute,
-    isRunning: () => current !== undefined,
+    isRunning: () => current !== undefined && cancelWait === undefined,
+    stop: () => {
+      stopped = true;
+      cancelWait?.();
+    },
     whenIdle: () => current ?? Promise.resolve(),
   };
+}
+
+function isLockHeld(error: unknown): error is DigestError {
+  return error instanceof DigestError && error.message.startsWith(LOCK_HELD_PREFIX);
 }
 
 /** Runs the current week now if its slot has passed and the week has not settled. */

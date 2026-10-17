@@ -1,6 +1,7 @@
 // W2-08: delivery is recorded per channel. A run that reached some channels fails with exit 1,
 // and the next run of the week sends the saved digest.md to the other channels only, on the
 // real run store, with no model at all.
+import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
 import { ExitCode, type DeliveryId, type RunRecord } from '../../src/core/schemas.js';
@@ -158,10 +159,14 @@ describe('integration: rerunning a partly delivered week', () => {
   );
 
   it(
-    'refuses to send a digest that a dry run replaced, until --force sends a new one everywhere',
+    'keeps every file of the week through a dry run that would write another digest, and the next run sends it',
     async () => {
-      const partial = await failOnEmail();
-      // This time the model reads v3.0.0 as the patch release, so the digest links other items.
+      await failOnEmail();
+      const files = ['items.json', 'scores.json', 'drafts.json', 'digest.md'];
+      const read = (): Promise<(string | undefined)[]> =>
+        Promise.all(files.map((name) => readTextIfExists(runFile(dataDir(), WEEK, name))));
+      const before = await read();
+      // This time the model reads v3.0.0 as the patch release, so the dry run picks other items.
       const preview = createWorld({
         now: RERUN,
         dataDir: dataDir(),
@@ -171,13 +176,41 @@ describe('integration: rerunning a partly delivered week', () => {
           return { ...valid(), [QUESTION_IDS.minorRelease]: { type: 'yesno', probability: minor } };
         },
       });
-      await runCli(preview, { dryRun: true });
+
+      const dry = await runCli(preview, { dryRun: true });
+
+      expect(dry.exitCode).toBe(ExitCode.Sent);
+      expect(modelCalls(preview)).toBeGreaterThan(0);
+      expect(await read()).toEqual(before);
+      // `digest run` names the digest file whenever the run wrote one.
+      expect(dry.stdout).not.toMatch(/^Digest\s/m);
+
+      const rerun = createWorld({ now: RERUN, dataDir: dataDir() });
+      const cli = await runCli(rerun);
+
+      expect(cli.exitCode).toBe(ExitCode.Sent);
+      expect(channel(rerun, 'email').digests).toEqual([
+        { weekId: WEEK, subject: SUBJECT, markdown: before[3] },
+      ]);
+      expect(modelCalls(rerun)).toBe(0);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'refuses a digest.md that no longer matches what was sent, until --force sends a new one everywhere',
+    async () => {
+      const partial = await failOnEmail();
+      // Someone put another digest in the week's folder.
+      const other = `# Another week\n\n[Source](https://example.com/other)\n`;
+      await writeFile(runFile(dataDir(), WEEK, 'digest.md'), other, 'utf8');
 
       const rerun = createWorld({ now: RERUN, dataDir: dataDir() });
       const refused = await runCli(rerun);
 
       expect(refused.exitCode).toBe(ExitCode.Failed);
       expect(refused.stderr).toContain('run with --force to send a new digest to every channel');
+      expect(refused.stdout).not.toMatch(/^Digest\s/m);
       expect(digestsSent(rerun)).toEqual([0, 0, 0]);
       expect(modelCalls(rerun)).toBe(0);
       const record = await readRunJson(dataDir(), WEEK);
@@ -188,6 +221,27 @@ describe('integration: rerunning a partly delivered week', () => {
 
       expect(cli.exitCode).toBe(ExitCode.Sent);
       expect(digestsSent(forced)).toEqual([1, 1, 1]);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'leaves a sent week as it was when a forced run fails everywhere, and names no digest file',
+    async () => {
+      const first = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      await runCli(first);
+      const digest = await readTextIfExists(runFile(dataDir(), WEEK, 'digest.md'));
+      const sent = await readRunJson(dataDir(), WEEK);
+      const forced = createWorld({ now: RERUN, dataDir: dataDir() });
+      for (const delivery of forced.deliveries) delivery.failWith = new Error('offline');
+
+      const cli = await runCli(forced, { force: true });
+
+      expect(cli.exitCode).toBe(ExitCode.Failed);
+      expect(cli.stdout).not.toMatch(/^Digest\s/m);
+      expect(await readTextIfExists(runFile(dataDir(), WEEK, 'digest.md'))).toBe(digest);
+      expect(await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'))).toBeUndefined();
+      expect(await readRunJson(dataDir(), WEEK)).toEqual(sent);
     },
     TEST_TIMEOUT_MS,
   );

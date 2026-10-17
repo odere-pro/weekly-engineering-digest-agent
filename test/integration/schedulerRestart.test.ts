@@ -3,7 +3,7 @@
 // by hand and a clock the test controls.
 import { hostname } from 'node:os';
 import { Cron } from 'croner';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
 import { runDigest } from '../../src/core/runDigest.js';
 import { ExitCode } from '../../src/core/schemas.js';
@@ -11,6 +11,7 @@ import type { Clock } from '../../src/shared/clock.js';
 import {
   startScheduler,
   type CronFactory,
+  type LockRetry,
   type SchedulerHandle,
 } from '../../src/scheduler/scheduler.js';
 import { FakeOutputGuard } from '../fakes/index.js';
@@ -97,9 +98,10 @@ function healthGate(): Gate {
 }
 
 /** The service's wiring from `digest serve`: runDigest per week, the store for catch-up. */
-function start(world: World, cron: ManualCron): Promise<SchedulerHandle> {
+function start(world: World, cron: ManualCron, lockRetry?: LockRetry): Promise<SchedulerHandle> {
   const { schedule } = world.deps.config;
   return startScheduler({
+    ...(lockRetry && { lockRetry }),
     cron: schedule.cron,
     timeZone: schedule.timeZone,
     run: (weekId) => runDigest(world.deps, { weekId }),
@@ -339,6 +341,45 @@ describe('integration: scheduler catch-up', () => {
       );
       expect(digestsSent(manual)).toEqual([0, 0, 0]);
       expect(digestsSent(service)).toEqual([1, 1, 1]);
+      expect(await lockExists(dataDir())).toBe(false);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'retries a Monday tick that met a manual run, and sends the week once the lock is free',
+    async () => {
+      const gate = healthGate();
+      // `digest run --dry-run` in another process holds the lock when Monday's tick comes. Both
+      // processes read the same clock, so the lock's heartbeat is fresh.
+      const manual = createWorld({
+        now: MONDAY_BEFORE_SLOT,
+        dataDir: dataDir(),
+        model: gate.model,
+      });
+      const service = createWorld({ now: MONDAY_BEFORE_SLOT, dataDir: dataDir() });
+      const cron = manualCron();
+      const scheduler = await start(service, cron, { everyMs: 20, forMs: 5_000 });
+      const dry = runCli(manual, { dryRun: true });
+      try {
+        await gate.entered;
+        const tick = cron.tick();
+        await vi.waitFor(() => {
+          expect(messages(service)).toContain('Another run holds the lock; will retry');
+        });
+        gate.open();
+        await dry;
+        await tick;
+      } finally {
+        gate.open();
+        await dry;
+        scheduler.stop();
+      }
+
+      expect(digestsSent(manual)).toEqual([0, 0, 0]);
+      expect(digestsSent(service)).toEqual([1, 1, 1]);
+      expect(await readRunJson(dataDir(), WEEK)).toMatchObject({ status: 'sent' });
+      expect(messages(service)).not.toContain('Scheduled run gave up: another run kept the lock');
       expect(await lockExists(dataDir())).toBe(false);
     },
     TEST_TIMEOUT_MS,

@@ -1,6 +1,6 @@
 import type { Config } from '../config/schema.js';
 import type { Delivery, FailureNote } from '../ports/Delivery.js';
-import type { RunStore } from '../ports/RunStore.js';
+import type { ArtifactName, RunStore } from '../ports/RunStore.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import type { Logger } from '../shared/telemetry.js';
 import type { RunRecord, StepName } from './schemas.js';
@@ -24,11 +24,22 @@ export interface Failure {
   readonly step?: StepName;
 }
 
+/** A run file a run built but has not written; see `Ending.artifacts`. */
+export interface HeldArtifact {
+  readonly name: ArtifactName;
+  readonly content: string;
+}
+
 /** How a run ends: the record to save, the failure behind it and the note to send. */
 export interface Ending {
   readonly record: RunRecord;
   readonly failure?: Failure;
   readonly note?: FailureNote;
+  /**
+   * Run files held back because an earlier record of the week reached a channel, so they go to
+   * the store only when `record` replaces it. Later entries replace earlier ones of the same name.
+   */
+  readonly artifacts?: readonly HeldArtifact[];
 }
 
 export interface DeliveryFailure {
@@ -37,21 +48,25 @@ export interface DeliveryFailure {
 }
 
 /**
- * Ends a run (W2-08): the record, error.json, the failure note, pruning. `previous` is the
- * week's record before this run; it may stay (see `keepReason`). Throws only when the record
- * cannot be saved, after a note says so.
+ * Ends a run (W2-08): the record, the held artifacts, error.json, the failure note, pruning.
+ * `previous` is the week's record before this run; it may stay (see `keepReason`), and then the
+ * held artifacts and error.json are dropped with this run's record, so they never describe a run
+ * whose record was not saved. Returns the held artifacts that were written, none when the earlier
+ * record stayed. Throws only when the record cannot be saved, after a note says so.
  */
 export async function endRun(
   ctx: EndingContext,
-  { record, failure, note }: Ending,
+  { record, failure, note, artifacts = [] }: Ending,
   previous: RunRecord | undefined,
-): Promise<void> {
-  await saveRecord(ctx, record, previous);
-  if (failure) await saveErrorFile(ctx, failure, new Date(record.finishedAt));
+): Promise<ReadonlySet<ArtifactName>> {
+  const saved = await saveRecord(ctx, record, previous);
+  const written = saved ? await writeHeld(ctx, artifacts) : new Set<ArtifactName>();
+  if (failure && saved) await saveErrorFile(ctx, failure, new Date(record.finishedAt));
   await sendFailureNote(ctx, note);
   await pruneOldRuns(ctx);
   const { status, winner, counts } = record;
   ctx.logger.info('Run finished', { status, winner, counts });
+  return written;
 }
 
 export function recordError(failure: Failure): NonNullable<RunRecord['error']> {
@@ -83,19 +98,20 @@ export function toJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-/** A record that cannot be saved is alerted, then thrown. */
+/** True when the record was saved, false when the earlier one stayed. Alerts, then throws, when it cannot be saved. */
 async function saveRecord(
   ctx: EndingContext,
   record: RunRecord,
   previous: RunRecord | undefined,
-): Promise<void> {
+): Promise<boolean> {
   const reason = keepReason(previous, record);
   if (reason) {
     ctx.logger.warn(reason, { status: record.status });
-    return;
+    return false;
   }
   try {
     await ctx.deps.store.saveRunRecord(record);
+    return true;
   } catch (error) {
     const outcome = record.error ? `failed: ${record.error.message}` : `ended ${record.status}`;
     const message = `Could not save the run record (${errorMessage(error)}); the run ${outcome}`;
@@ -120,8 +136,26 @@ function keepReason(previous: RunRecord | undefined, record: RunRecord): string 
     : undefined;
 }
 
-function reachedAChannel(record: RunRecord | undefined): boolean {
+/** A sent record, or a failed one that some channel took: the week must not be sent from scratch. */
+export function reachedAChannel(record: RunRecord | undefined): boolean {
   return record?.status === 'sent' || (record?.deliveredTo?.length ?? 0) > 0;
+}
+
+/** Best effort, like error.json: a file that cannot be written is logged and left out of the result. */
+async function writeHeld(
+  ctx: EndingContext,
+  artifacts: readonly HeldArtifact[],
+): Promise<ReadonlySet<ArtifactName>> {
+  const written = new Set<ArtifactName>();
+  for (const { name, content } of artifacts) {
+    try {
+      await ctx.deps.store.saveArtifact(ctx.weekId, name, content);
+      written.add(name);
+    } catch (error) {
+      ctx.logger.error(`Could not write ${name}`, { error: errorMessage(error) });
+    }
+  }
+  return written;
 }
 
 /** Best effort: run.json already holds the error; this file only adds the stack. */

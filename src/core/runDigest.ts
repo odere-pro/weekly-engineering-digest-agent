@@ -3,7 +3,7 @@ import { modelsByRole, requiredModels, type ModelProfile } from '../config/profi
 import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
 import type { InputGuard, OutputGuard } from '../ports/Guard.js';
 import type { ModelHealth, ModelProvider } from '../ports/ModelProvider.js';
-import type { RunLock, RunStore } from '../ports/RunStore.js';
+import type { ArtifactName, RunLock, RunStore } from '../ports/RunStore.js';
 import type { SourceFetcher } from '../ports/SourceFetcher.js';
 import type { Clock } from '../shared/clock.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
@@ -18,10 +18,12 @@ import {
   endRun,
   failureNote,
   forEachDelivery,
+  reachedAChannel,
   recordError,
   toJson,
   type DeliveryFailure,
   type Failure,
+  type HeldArtifact,
 } from './runEnding.js';
 import {
   WEEK_ID_PATTERN,
@@ -78,7 +80,8 @@ export interface RunOptions {
 export interface RunResult {
   record: RunRecord;
   exitCode: ExitCode;
-  /** Markdown of the winning digest, when one was produced. */
+  /** The digest.md this run wrote or, on a resume, sent. None when no digest was made, or when
+   * the week's earlier files stayed (`RunContext.holdArtifacts`). */
   markdown?: string;
 }
 
@@ -108,6 +111,11 @@ interface RunContext {
   readonly logger: Logger;
   /** Input then output checks that are off this run, in config order. */
   readonly disabledGuards: readonly GuardCheckId[];
+  /**
+   * The week's earlier record reached a channel, and the files it left are what a resume sends.
+   * This run then holds its files in the chain state; `endRun` writes them if its record is saved.
+   */
+  readonly holdArtifacts: boolean;
 }
 
 /** A draft that passed the code checks, with the exact Markdown that was checked. */
@@ -140,6 +148,8 @@ interface ChainState {
   /** Channels that took the digest, in the order they took it. */
   readonly deliveredTo: readonly DeliveryId[];
   readonly timings: RunRecord['timings'];
+  /** Files built but not written; see `RunContext.holdArtifacts`. */
+  readonly held: readonly HeldArtifact[];
   readonly settled?: Settled;
 }
 
@@ -167,6 +177,7 @@ const EMPTY_STATE: ChainState = {
   sentUrls: [],
   deliveredTo: [],
   timings: [],
+  held: [],
 };
 
 /** Carries the state the failed step started from, so the record keeps what ran before it. */
@@ -207,7 +218,8 @@ export async function runDigest(deps: DigestDeps, options: RunOptions = {}): Pro
       if (previous?.status === 'sent' && !options.force) return skipped(ctx);
       const partDelivered = options.force || ctx.dryRun ? undefined : await saved(ctx, previous);
       if (partDelivered) return await resume(ctx, partDelivered);
-      return await finish(ctx, await runChain(ctx), previous);
+      const chainCtx = { ...ctx, holdArtifacts: reachedAChannel(previous) };
+      return await finish(chainCtx, await runChain(chainCtx), previous);
     } finally {
       await releaseLock(ctx, lock);
     }
@@ -241,6 +253,7 @@ function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     dryRun: options.dryRun ?? false,
     logger: deps.logger.child({ runId: weekId }),
     disabledGuards: plannedDisabledGuards(deps),
+    holdArtifacts: false,
   };
 }
 
@@ -283,17 +296,21 @@ async function saved(
  * The record keeps the previous run's results, with the new outcome, channels and deliver timing.
  */
 async function resume(ctx: RunContext, part: PartDelivered): Promise<RunResult> {
-  const { previous, deliveredTo, markdown } = part;
+  const { previous, deliveredTo } = part;
   const missing = ctx.deps.deliveries.filter((delivery) => !deliveredTo.includes(delivery.id));
   ctx.logger.info('Resuming the delivery of the saved digest', {
     deliveredTo,
     channels: missing.map((delivery) => delivery.id),
   });
+  // With every configured channel served there is nothing to send, so digest.md does not matter.
+  const verdict = missing.length > 0 ? verifyDigest(part) : undefined;
   const start: ChainState = { ...EMPTY_STATE, deliveredTo };
   const { state, failure } = await settle(ctx, () =>
     timed(ctx, 'deliver', start, async (_ctx, from, logger) => {
-      const digest = sameDigest(part);
-      const message = digestMessage(ctx.weekId, HEADLINE_LINE.exec(digest)?.[1] ?? '', digest);
+      if (verdict === undefined) return from;
+      if (!verdict.ok) throw verdict.error;
+      const { markdown } = verdict;
+      const message = digestMessage(ctx.weekId, HEADLINE_LINE.exec(markdown)?.[1] ?? '', markdown);
       return deliverDigest({ channels: missing, message, urls: previous.sentUrls }, from, logger);
     }),
   );
@@ -312,26 +329,36 @@ async function resume(ctx: RunContext, part: PartDelivered): Promise<RunResult> 
     { record, failure, note: failure && failureNote(ctx.weekId, failure) },
     previous,
   );
-  return { record, exitCode: exitCodeFor(record.status), markdown };
+  // The digest is only named when it was sent, or tried, to a channel.
+  return {
+    record,
+    exitCode: exitCodeFor(record.status),
+    markdown: verdict?.ok ? verdict.markdown : undefined,
+  };
 }
 
+type Verdict =
+  | { readonly ok: true; readonly markdown: string }
+  | { readonly ok: false; readonly error: DigestError };
+
 /**
- * The saved digest, when its links are exactly the URLs the other channels got. A dry or forced
- * run since then may have replaced it; sending that would split the week, so a person decides.
+ * The saved digest, when its links are exactly the URLs the other channels got. Held artifacts
+ * keep a dry or forced run from replacing digest.md once a channel has it, so this is a backstop:
+ * a person decides when it fails, because sending anything else would split the week.
  */
-function sameDigest({ previous, deliveredTo, markdown }: PartDelivered): string {
+function verifyDigest({ previous, deliveredTo, markdown }: PartDelivered): Verdict {
   const redo = 'run with --force to send a new digest to every channel';
-  if (markdown === undefined) {
-    throw new DigestError(`The partly delivered digest.md is gone; ${redo}`, { step: 'deliver' });
-  }
+  const refuse = (message: string): Verdict => ({
+    ok: false,
+    error: new DigestError(`${message}; ${redo}`, { step: 'deliver' }),
+  });
+  if (markdown === undefined) return refuse('The partly delivered digest.md is gone');
   const links = new Set(Array.from(markdown.matchAll(SOURCE_LINE), (match) => match[1]));
   const sent = new Set(previous.sentUrls);
   if (links.size !== sent.size || [...sent].some((url) => !links.has(url))) {
-    const channels = deliveredTo.join(', ');
-    const message = `digest.md no longer matches the digest ${channels} got; ${redo}`;
-    throw new DigestError(message, { step: 'deliver' });
+    return refuse(`digest.md no longer matches the digest ${deliveredTo.join(', ')} got`);
   }
-  return markdown;
+  return { ok: true, markdown };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -438,17 +465,31 @@ function withTag(name: string): string {
   return name.includes(':') ? name : `${name}:latest`;
 }
 
+/** Writes a run file now, or holds it for `endRun` when the week's files must stay as they are. */
+async function keepArtifact(
+  ctx: RunContext,
+  state: ChainState,
+  name: ArtifactName,
+  content: string,
+): Promise<ChainState> {
+  if (!ctx.holdArtifacts) {
+    await ctx.deps.store.saveArtifact(ctx.weekId, name, content);
+    return state;
+  }
+  return { ...state, held: [...state.held, { name, content }] };
+}
+
 async function collect(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
-  const { config, fetchers, clock, store } = ctx.deps;
+  const { config, fetchers, clock } = ctx.deps;
   const until = ctx.startedAt;
   const since = new Date(until.getTime() - ctx.sinceDays * DAY_MS);
   const { items, failedSources } = await collectStep(
     { sources: config.sources, since, until, maxItemsPerSource: config.maxItemsPerSource },
     { fetchers, logger, clock },
   );
-  await store.saveArtifact(ctx.weekId, 'items.json', toJson(items));
+  const held = await keepArtifact(ctx, state, 'items.json', toJson(items));
   logger.info('Collected items', { items: items.length, failedSources: failedSources.length });
-  const next = { ...state, collected: items, failedSources };
+  const next = { ...held, collected: items, failedSources };
   if (items.length > 0) return next;
   const failed = failedSources.length > 0;
   const detail = failed
@@ -469,11 +510,11 @@ async function guardInput(ctx: RunContext, state: ChainState, logger: Logger): P
 }
 
 async function classify(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
-  const { model, config, store } = ctx.deps;
+  const { model, config } = ctx.deps;
   const scored = await classifyStep(state.kept, { model, focusAreas: config.focusAreas, logger });
   const classifications = scored.map((item) => item.classification);
-  await store.saveArtifact(ctx.weekId, 'scores.json', toJson(classifications));
-  return { ...state, scored };
+  const held = await keepArtifact(ctx, state, 'scores.json', toJson(classifications));
+  return { ...held, scored };
 }
 
 async function selectItems(
@@ -497,7 +538,7 @@ async function selectItems(
 }
 
 async function write(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
-  const { model, profile, config, store } = ctx.deps;
+  const { model, profile, config } = ctx.deps;
   const { drafts, failures } = await writeStep(state.selected, {
     model,
     writers: profile.writers,
@@ -506,9 +547,9 @@ async function write(ctx: RunContext, state: ChainState, logger: Logger): Promis
     logger,
   });
   const written = drafts.map((draft) => prepareDraft(draft, config.topN));
-  await store.saveArtifact(ctx.weekId, 'drafts.json', toJson({ drafts: written, failures }));
+  const held = await keepArtifact(ctx, state, 'drafts.json', toJson({ drafts: written, failures }));
   const failed = failures.map((failure) => rejected(failure.writer, [WRITE_FAILED]));
-  const next = { ...state, written, drafts: failed };
+  const next = { ...held, written, drafts: failed };
   if (written.length > 0) return next;
   // Names writers only: a writer's error can quote the model's reply. drafts.json has it.
   const writers = failures.map((failure) => failure.writer).join(', ');
@@ -607,7 +648,7 @@ function blocked(drafts: readonly DraftOutcome[]): Settled {
 
 /** The judge runs only when the profile has one and two or more drafts passed. */
 async function pickWinner(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
-  const { model, profile, config, store } = ctx.deps;
+  const { model, profile, config } = ctx.deps;
   const [first, ...others] = state.passed;
   if (!first) throw new DigestError('select ran without a passing draft', { step: 'select' });
   const judged =
@@ -621,9 +662,9 @@ async function pickWinner(ctx: RunContext, state: ChainState, logger: Logger): P
   const winner = state.passed.find((entry) => entry.draft === judged.winner);
   if (!winner)
     throw new DigestError('The judge picked a draft it was not given', { step: 'select' });
-  await store.saveArtifact(ctx.weekId, 'digest.md', winner.markdown);
+  const held = await keepArtifact(ctx, state, 'digest.md', winner.markdown);
   logger.info('Winner chosen', { writer: winner.draft.writer, judged: judged.scores.length > 0 });
-  return { ...state, winner, drafts: withScores(state.drafts, judged.scores) };
+  return { ...held, winner, drafts: withScores(state.drafts, judged.scores) };
 }
 
 function withScores(
@@ -695,9 +736,17 @@ async function finish(
   outcome: ChainOutcome,
   previous: RunRecord | undefined,
 ): Promise<RunResult> {
+  const { failure, state } = outcome;
   const record = buildRecord(ctx, outcome, statusOf(ctx, outcome), ctx.deps.clock.now());
-  await endRun(ctx, { record, failure: outcome.failure, note: noteFor(ctx, outcome) }, previous);
-  return { record, exitCode: exitCodeFor(record.status), markdown: outcome.state.winner?.markdown };
+  const written = await endRun(
+    ctx,
+    { record, failure, note: noteFor(ctx, outcome), artifacts: state.held },
+    previous,
+  );
+  // `digest run` prints digest.md's path whenever markdown is set: only for a file this run wrote.
+  const digestWritten = !ctx.holdArtifacts || written.has('digest.md');
+  const markdown = digestWritten ? state.winner?.markdown : undefined;
+  return { record, exitCode: exitCodeFor(record.status), markdown };
 }
 
 function statusOf(ctx: RunContext, outcome: ChainOutcome): RunStatus {
