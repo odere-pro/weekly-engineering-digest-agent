@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { DeliveryError } from '../../../src/adapters/delivery/deliveryError.js';
 import { createSlackDelivery } from '../../../src/adapters/delivery/slack.js';
 
 const WEBHOOK = 'https://hooks.slack.test/services/T000/B000/s3cr3tT0ken';
@@ -164,6 +165,81 @@ describe('createSlackDelivery', () => {
       await expect(
         createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest(message),
       ).rejects.toThrow(/socket hang up/);
+    });
+  });
+
+  describe('typed errors', () => {
+    it.each([404, 429, 500, 503])(
+      'carries the HTTP status %i of a refused post',
+      async (status) => {
+        const fetchMock = vi.fn<typeof fetch>(() => Promise.resolve(new Response('', { status })));
+        const delivery = createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock });
+
+        const digestError = await delivery.sendDigest(message).catch((caught: unknown) => caught);
+        const failureError = await delivery
+          .sendFailure({ weekId: '2026-W42', message: 'boom' })
+          .catch((caught: unknown) => caught);
+
+        for (const error of [digestError, failureError]) {
+          expect(error).toBeInstanceOf(DeliveryError);
+          expect((error as DeliveryError).status).toBe(status);
+          expect((error as DeliveryError).message).toBe(`Slack webhook answered HTTP ${status}`);
+        }
+      },
+    );
+
+    it('carries the connection code fetch hides on the cause, and a redacted cause', async () => {
+      const cause = Object.assign(new Error(`connect ECONNREFUSED for ${WEBHOOK}`), {
+        code: 'ECONNREFUSED',
+      });
+      const fetchMock = vi.fn<typeof fetch>(() =>
+        Promise.reject(new TypeError('fetch failed', { cause })),
+      );
+
+      const error = await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock })
+        .sendDigest(message)
+        .catch((caught: unknown) => caught);
+
+      expect(error).toBeInstanceOf(DeliveryError);
+      const delivery = error as DeliveryError;
+      expect(delivery.code).toBe('ECONNREFUSED');
+      expect(delivery.status).toBeUndefined();
+      expect((delivery.cause as Error).message).toBe('connect ECONNREFUSED for [redacted]');
+    });
+
+    it('names the inner errors of a refused dual-stack connection', async () => {
+      const refused = (address: string): Error =>
+        Object.assign(new Error(`connect ECONNREFUSED ${address}:443`), { code: 'ECONNREFUSED' });
+      const aggregate = Object.assign(new AggregateError([refused('::1'), refused('127.0.0.1')]), {
+        code: 'ECONNREFUSED',
+      });
+      const fetchMock = vi.fn<typeof fetch>(() =>
+        Promise.reject(new TypeError('fetch failed', { cause: aggregate })),
+      );
+
+      const error = await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock })
+        .sendFailure({ weekId: '2026-W42', message: 'boom' })
+        .catch((caught: unknown) => caught);
+
+      expect((error as DeliveryError).code).toBe('ECONNREFUSED');
+      expect(((error as DeliveryError).cause as Error).message).toBe(
+        'connect ECONNREFUSED ::1:443; connect ECONNREFUSED 127.0.0.1:443',
+      );
+    });
+
+    it('has no connection code for a timeout of the whole request', async () => {
+      const fetchMock = vi.fn<typeof fetch>(() =>
+        Promise.reject(
+          new DOMException('The operation was aborted due to timeout', 'TimeoutError'),
+        ),
+      );
+
+      const error = await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock })
+        .sendDigest(message)
+        .catch((caught: unknown) => caught);
+
+      expect((error as DeliveryError).code).toBeUndefined();
+      expect((error as DeliveryError).status).toBeUndefined();
     });
   });
 

@@ -7,6 +7,7 @@ import {
   createGraniteGroundednessGuard,
   createGraniteRiskGuard,
 } from '../../src/adapters/guard/granite.js';
+import { DeliveryError } from '../../src/adapters/delivery/deliveryError.js';
 import { createMarkdownFileDelivery } from '../../src/adapters/delivery/markdownFile.js';
 import { createSlackDelivery } from '../../src/adapters/delivery/slack.js';
 import { createSmtpDelivery } from '../../src/adapters/delivery/smtp.js';
@@ -539,7 +540,11 @@ describe('buildApp delivery retry and redaction', () => {
   it('tries a delivery again after a transient error', async () => {
     vi.useFakeTimers();
     try {
-      const flaky = flakyDelivery('slack', new Error('Slack webhook answered HTTP 503'), 2);
+      const flaky = flakyDelivery(
+        'slack',
+        new DeliveryError('Slack webhook answered HTTP 503', { status: 503 }),
+        2,
+      );
       vi.mocked(createSlackDelivery).mockReturnValueOnce(flaky.delivery);
       const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
 
@@ -557,7 +562,11 @@ describe('buildApp delivery retry and redaction', () => {
   it('gives up after two retries and throws the last error', async () => {
     vi.useFakeTimers();
     try {
-      const flaky = flakyDelivery('slack', new Error('Slack webhook answered HTTP 503'), 99);
+      const flaky = flakyDelivery(
+        'slack',
+        new DeliveryError('Slack webhook answered HTTP 503', { status: 503 }),
+        99,
+      );
       vi.mocked(createSlackDelivery).mockReturnValueOnce(flaky.delivery);
       const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
 

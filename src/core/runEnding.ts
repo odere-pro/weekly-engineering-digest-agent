@@ -13,6 +13,14 @@ export interface EndingContext {
   readonly weekId: string;
   /** A dry run sends no failure note. */
   readonly dryRun: boolean;
+  /**
+   * False holds back the failure note of a run that failed, for a caller that will try the run
+   * again (`RunOptions.notifyFailure`). Default true. The note is sent anyway when no retry can
+   * follow: the failure says the run was told to stop, or that only `digest run --force` can
+   * clear it (see `isUnretriable`), and when the run record could not be saved. A held note is
+   * the caller's to send (`sendHeldNote`) if the retry it waited for does not happen.
+   */
+  readonly notifyFailure?: boolean;
   readonly logger: Logger;
   readonly deps: {
     readonly store: RunStore;
@@ -76,7 +84,7 @@ export async function endRun(
   else ctx.logger.warn(kept, { status: record.status });
   const written = saved ? await writeHeld(ctx, artifacts) : new Set<ArtifactName>();
   if (failure && saved) await saveErrorFile(ctx, failure, new Date(record.finishedAt));
-  await sendFailureNote(ctx, note);
+  await sendOrHoldNote(ctx, note, failure);
   await pruneOldRuns(ctx);
   const { status, winner, counts } = record;
   ctx.logger.info('Run finished', { status, winner, counts });
@@ -107,6 +115,9 @@ export async function forEachDelivery(
   return failures;
 }
 
+/** What the failure of a run whose signal fired starts with; `abortedError` writes it. */
+const ABORTED_PREFIX = 'Run aborted';
+
 /**
  * The failure of a run whose signal fired (W5-06, F46): `next` is the step it was about to start.
  * Runs check the signal between steps, never inside one. Nothing when the signal has not fired.
@@ -117,7 +128,7 @@ export function abortedError(
 ): DigestError | undefined {
   if (!signal?.aborted) return undefined;
   const where = next === undefined ? '' : ` before the ${next} step`;
-  return new DigestError(`Run aborted${where}: ${errorMessage(signal.reason)}`, {
+  return new DigestError(`${ABORTED_PREFIX}${where}: ${errorMessage(signal.reason)}`, {
     step: next,
     cause: signal.reason,
   });
@@ -170,6 +181,17 @@ export function toJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+/**
+ * The run record could not be saved. `endRun` has already sent a note saying so, so a caller that
+ * held back an earlier attempt's note must not send that one as well.
+ */
+export class RecordNotSavedError extends DigestError {
+  constructor(message: string, options: { cause?: unknown } = {}) {
+    super(message, options);
+    this.name = 'RecordNotSavedError';
+  }
+}
+
 /** Alerts, then throws, when the record cannot be saved. */
 async function saveRecord(ctx: EndingContext, record: RunRecord): Promise<void> {
   try {
@@ -179,7 +201,7 @@ async function saveRecord(ctx: EndingContext, record: RunRecord): Promise<void> 
     const message = `Could not save the run record (${errorMessage(error)}); the run ${outcome}`;
     ctx.logger.error('Could not save the run record', { error: errorMessage(error) });
     await sendFailureNote(ctx, { weekId: ctx.weekId, message });
-    throw new DigestError(message, { cause: error });
+    throw new RecordNotSavedError(message, { cause: error });
   }
 }
 
@@ -239,14 +261,80 @@ async function saveErrorFile(ctx: EndingContext, failure: Failure, at: Date): Pr
   }
 }
 
-/** Best effort: a channel that cannot take the note is logged, the run outcome stands. */
-async function sendFailureNote(ctx: EndingContext, note: FailureNote | undefined): Promise<void> {
+/** What a resume that only `digest run --force` can clear says; see `runResume.ts`. */
+const NEEDS_FORCE = '--force';
+
+/** True for the message of a failure that no retry can clear: a person has to run with --force. */
+export function needsForce(message: string | undefined): boolean {
+  return message?.includes(NEEDS_FORCE) ?? false;
+}
+
+/**
+ * True for the recorded error of a failure that no retry follows: the run was told to stop (a
+ * timeout, a second signal) or only `digest run --force` can clear it. Such a run sends its note
+ * whatever `notifyFailure` says. It goes by the error, never by the run's signal, so a caller
+ * that reads the run's record decides exactly as the run did.
+ */
+export function isUnretriable(message: string | undefined): boolean {
+  return needsForce(message) || (message?.startsWith(ABORTED_PREFIX) ?? false);
+}
+
+/** Whether the note of this failure waits for a retry: only a run that failed, and can be retried. */
+function holdsNote(ctx: EndingContext, failure: Failure | undefined): boolean {
+  if (ctx.notifyFailure !== false || failure === undefined) return false;
+  return !isUnretriable(errorMessage(failure.error));
+}
+
+/**
+ * The note that ends a run: sent, or held back for a caller that will try the run again (see
+ * `holdsNote`). `failure` is the run's failure, if it failed. A dry run sends none either way.
+ */
+async function sendOrHoldNote(
+  ctx: EndingContext,
+  note: FailureNote | undefined,
+  failure: Failure | undefined,
+): Promise<void> {
   if (!note || ctx.dryRun) return;
-  const failures = await forEachDelivery(ctx.deps.deliveries, (delivery) =>
-    delivery.sendFailure(note),
-  );
+  if (!holdsNote(ctx, failure)) return sendFailureNote(ctx, note);
+  ctx.logger.info('Failure note held back: notifyFailure is off for this run', {
+    step: failure?.step,
+  });
+}
+
+/**
+ * Sends the note a failed run held back (`notifyFailure: false`) once its caller knows no retry
+ * will follow. It is the note the run would have sent: the week, and the step and message in the
+ * record. Best effort, like every failure note. A record of a dry run sends none.
+ */
+export async function sendHeldNote(
+  { deliveries, logger }: { readonly deliveries: readonly Delivery[]; readonly logger: Logger },
+  weekId: string,
+  record: RunRecord,
+): Promise<void> {
+  if (record.dryRun) return;
+  const { error } = record;
+  const note = failureNote(weekId, {
+    error: error?.message ?? 'The run ended failed',
+    step: error?.step,
+  });
+  await broadcastNote(deliveries, logger, note);
+}
+
+/** Best effort: a channel that cannot take the note is logged, the run outcome stands. */
+async function sendFailureNote(ctx: EndingContext, note: FailureNote): Promise<void> {
+  if (ctx.dryRun) return;
+  await broadcastNote(ctx.deps.deliveries, ctx.logger, note);
+}
+
+/** Every channel gets the note; the ones that fail are logged and do not stop the others. */
+async function broadcastNote(
+  deliveries: readonly Delivery[],
+  logger: Logger,
+  note: FailureNote,
+): Promise<void> {
+  const failures = await forEachDelivery(deliveries, (delivery) => delivery.sendFailure(note));
   for (const failure of failures) {
-    ctx.logger.error('Could not send the failure note', {
+    logger.error('Could not send the failure note', {
       delivery: failure.id,
       error: failure.error,
     });

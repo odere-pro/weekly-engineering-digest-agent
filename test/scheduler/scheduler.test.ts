@@ -37,6 +37,8 @@ function mockLogger(): MockLogger {
 }
 
 const runResult: RunResult = { record: makeRunRecord(), exitCode: ExitCode.Sent };
+/** What a run is called with after the week: its signal, and notifyFailure (no failed retry here). */
+const ATTEMPT = [expect.any(AbortSignal), { notifyFailure: true }] as const;
 
 interface Harness {
   options: SchedulerOptions;
@@ -122,7 +124,7 @@ describe('startScheduler tick', () => {
 
     await calls[0]?.handler();
 
-    expect(run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
+    expect(run).toHaveBeenCalledExactlyOnceWith('2026-W42', ...ATTEMPT);
   });
 
   it('reads the week in the configured time zone', async () => {
@@ -136,7 +138,7 @@ describe('startScheduler tick', () => {
 
     await calls[0]?.handler();
 
-    expect(run).toHaveBeenCalledWith('2026-W43', expect.any(AbortSignal));
+    expect(run).toHaveBeenCalledWith('2026-W43', ...ATTEMPT);
   });
 
   it('logs a failed run and does not throw', async () => {
@@ -324,7 +326,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
+      expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', ...ATTEMPT);
     });
     expect(h.runStatus).toHaveBeenCalledWith('2026-W42');
   });
@@ -335,7 +337,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
+      expect(h.run).toHaveBeenCalledWith('2026-W42', ...ATTEMPT);
     });
   });
 
@@ -372,7 +374,7 @@ describe('startScheduler catch-up', () => {
       await start(h.options);
 
       await vi.waitFor(() => {
-        expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
+        expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', ...ATTEMPT);
       });
     },
   );
@@ -394,7 +396,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
+      expect(h.run).toHaveBeenCalledWith('2026-W42', ...ATTEMPT);
     });
   });
 
@@ -405,7 +407,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
+      expect(h.run).toHaveBeenCalledWith('2026-W42', ...ATTEMPT);
     });
   });
 
@@ -419,7 +421,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W12', expect.any(AbortSignal));
+      expect(h.run).toHaveBeenCalledWith('2026-W12', ...ATTEMPT);
     });
   });
 
@@ -509,7 +511,7 @@ describe('startScheduler with the real cron', () => {
 
     await vi.advanceTimersByTimeAsync(46 * 60_000);
 
-    expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
+    expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', ...ATTEMPT);
   });
 });
 
@@ -544,7 +546,7 @@ describe('startScheduler lock retry', () => {
     await tick;
 
     expect(h.run).toHaveBeenCalledTimes(2);
-    expect(h.run).toHaveBeenLastCalledWith('2026-W42', expect.any(AbortSignal));
+    expect(h.run).toHaveBeenLastCalledWith('2026-W42', ...ATTEMPT);
     expect(h.logger.info).toHaveBeenCalledWith(
       expect.stringContaining('finished'),
       expect.objectContaining({ weekId: '2026-W42', trigger: 'schedule' }),

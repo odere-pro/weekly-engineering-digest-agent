@@ -1,4 +1,9 @@
 import { describe, expect, it, vi, type Mock } from 'vitest';
+import {
+  DeliveryError,
+  type DeliveryErrorFacts,
+} from '../../src/adapters/delivery/deliveryError.js';
+import { redactedError } from '../../src/adapters/delivery/redact.js';
 import { isTransientDeliveryError, withDeliveryRetry } from '../../src/app/retryingDelivery.js';
 import type { Delivery, DigestMessage, FailureNote } from '../../src/ports/Delivery.js';
 import type { Logger } from '../../src/shared/telemetry.js';
@@ -40,83 +45,125 @@ function retrying(inner: Delivery, options: { retries?: number } = {}) {
   return { delivery: withDeliveryRetry(inner, { logger, sleep, ...options }), sleep, logger };
 }
 
+/** A delivery error as the adapters throw it: only the typed facts, no helpful text. */
+function failed(facts: DeliveryErrorFacts, message = 'Delivery failed'): DeliveryError {
+  return new DeliveryError(message, facts);
+}
+
 describe('isTransientDeliveryError', () => {
   it.each([
-    ['a Slack 5xx', 'Slack webhook answered HTTP 503'],
-    ['a Slack gateway error', 'Slack webhook answered HTTP 502'],
-    ['a refused connection', 'Slack webhook request failed: fetch failed'],
-    ['a reset connection', 'SMTP delivery failed: read ECONNRESET'],
-    ['a refused SMTP port', 'SMTP delivery failed: connect ECONNREFUSED 127.0.0.1:587'],
-    [
-      'a name that did not resolve',
-      'SMTP delivery failed: getaddrinfo ENOTFOUND smtp.example.test',
-    ],
-    ['a temporary DNS failure', 'SMTP delivery failed: getaddrinfo EAI_AGAIN smtp.example.test'],
-    ['an unreachable host', 'SMTP delivery failed: connect EHOSTUNREACH 10.0.0.9:587'],
-    ['an undici socket error', 'Slack webhook request failed: UND_ERR_SOCKET'],
-    ['a fetch timeout', 'Slack webhook request failed: The operation was aborted due to timeout'],
-    ['an SMTP connection timeout', 'SMTP delivery failed: Connection timeout'],
-    ['an SMTP greeting timeout', 'SMTP delivery failed: Greeting never received'],
-    ['a socket timeout', 'SMTP delivery failed: Socket timeout'],
-    ['a connect timeout', 'SMTP delivery failed: connect timed out'],
-    ['a socket hang up', 'Slack webhook request failed: socket hang up'],
-    ['a closed connection', 'SMTP delivery failed: Connection closed unexpectedly'],
-    ['a dropped TLS handshake', 'SMTP delivery failed: Client network socket disconnected'],
-    ['an SMTP 4yz reply (try again later)', 'SMTP delivery failed: Mail command failed: 451 4.3.0'],
-    ['an SMTP 4yz reply to the message', 'SMTP delivery failed: Message failed: 421 Try later'],
-    [
-      'a greylisted recipient (4yz)',
-      "SMTP delivery failed: Can't send mail - all recipients were rejected: 450 4.2.0 Greylisted",
-    ],
-    [
-      'a temporary login failure (4yz)',
-      'SMTP delivery failed: Invalid login: 454 4.7.0 Temporary authentication failure',
-    ],
-    [
-      'one recipient deferred (4yz)',
-      'SMTP delivery failed: Message failed for recipient a@b.test: 452 4.2.2 Mailbox full',
-    ],
-    ['a connection error with no reason', 'SMTP delivery failed: '],
-    ['a request error with no reason', 'Slack webhook request failed:'],
-  ])('retries %s', (_name, message) => {
-    expect(isTransientDeliveryError(new Error(message))).toBe(true);
+    ['a Slack rate limit', { status: 429 }],
+    ['a Slack 500', { status: 500 }],
+    ['a gateway error', { status: 502 }],
+    ['a Slack 503', { status: 503 }],
+    ['a gateway timeout', { status: 504 }],
+    ['the last 5xx status', { status: 599 }],
+    ['a refused connection', { code: 'ECONNREFUSED' }],
+    ['a name that did not resolve', { code: 'ENOTFOUND' }],
+    ['a temporary DNS failure', { code: 'EAI_AGAIN' }],
+    ['an unreachable host', { code: 'EHOSTUNREACH' }],
+    ['an unreachable network', { code: 'ENETUNREACH' }],
+    ['an undici connect timeout', { code: 'UND_ERR_CONNECT_TIMEOUT' }],
+    ['a refused SMTP connection', { code: 'ESOCKET', originalCode: 'ECONNREFUSED' }],
+    ['an SMTP host that did not resolve', { code: 'EDNS', originalCode: 'ENOTFOUND' }],
+    ['an SMTP DNS failure with no system code', { code: 'EDNS' }],
+    ['an SMTP connect timeout', { code: 'ETIMEDOUT', timeoutType: 'CONNECT_TIMEOUT' }],
+    ['an SMTP greeting timeout', { code: 'ETIMEDOUT', timeoutType: 'GREETING_TIMEOUT' }],
+    ['an SMTP TLS upgrade timeout', { code: 'ETIMEDOUT', timeoutType: 'UPGRADE_TIMEOUT' }],
+    ['an SMTP 421 (service closing)', { code: 'ECONNECTION', responseCode: 421 }],
+    ['an SMTP 450 (mailbox busy)', { code: 'EENVELOPE', responseCode: 450 }],
+    ['an SMTP 451 (local error)', { code: 'EMESSAGE', responseCode: 451 }],
+  ])('retries %s', (_name, facts) => {
+    expect(isTransientDeliveryError(failed(facts))).toBe(true);
   });
 
   it.each([
-    ['a Slack 4xx', 'Slack webhook answered HTTP 404'],
-    ['a Slack rate limit', 'Slack webhook answered HTTP 429'],
-    ['a bad Slack URL', 'Slack webhook URL must use https'],
-    ['a refused login', 'SMTP delivery failed: Invalid login: 535 5.7.8 Bad credentials'],
+    ['a reset connection (the body may have gone)', { code: 'ECONNRESET' }],
+    ['a reset SMTP socket', { code: 'ESOCKET', originalCode: 'ECONNRESET' }],
+    ['a broken pipe', { code: 'EPIPE' }],
+    ['an aborted connection', { code: 'ECONNABORTED' }],
+    ['an undici socket error', { code: 'UND_ERR_SOCKET' }],
+    ['an undici headers timeout (the body was sent)', { code: 'UND_ERR_HEADERS_TIMEOUT' }],
+    ['an undici body timeout', { code: 'UND_ERR_BODY_TIMEOUT' }],
+    ['a timeout of unknown phase', { code: 'ETIMEDOUT' }],
     [
-      'an SMTP 5yz reply (permanent)',
-      'SMTP delivery failed: Mail command failed: 550 No such user',
+      'an SMTP socket timeout (after the body)',
+      { code: 'ETIMEDOUT', timeoutType: 'SOCKET_TIMEOUT' },
     ],
-    [
-      'all recipients rejected',
-      "SMTP delivery failed: Can't send mail - all recipients were rejected",
-    ],
-    [
-      'a permanent reply that says timeout',
-      'SMTP delivery failed: Message failed: 554 5.7.1 Rejected, timeout exceeded',
-    ],
-    [
-      'a permanent login failure that says timed out',
-      'SMTP delivery failed: Invalid login: 535 5.7.8 Session timed out',
-    ],
-    ['a path that says timeout', "ENOENT: no such file or directory, open '/data/timeout/a.md'"],
-    ['a port in a failure', 'SMTP delivery failed: Unsupported option on port :587'],
-    ['a missing folder permission', "EACCES: permission denied, open '/out/2026-W42.md'"],
-    ['a full disk', 'ENOSPC: no space left on device, write'],
-    ['an invalid week id', 'Cannot deliver to a file: invalid week id "x"'],
-    ['an HTTP number that is not a status', 'Slack webhook sent 5000 bytes'],
-  ])('does not retry %s', (_name, message) => {
-    expect(isTransientDeliveryError(new Error(message))).toBe(false);
+    ['a closed SMTP connection', { code: 'ECONNECTION' }],
+    ['an SMTP socket error', { code: 'ESOCKET' }],
+    ['a TLS failure', { code: 'ETLS' }],
+    ['a refused login (code only)', { code: 'EAUTH' }],
+    ['a Slack 400', { status: 400 }],
+    ['a Slack 403', { status: 403 }],
+    ['a Slack 404', { status: 404 }],
+    ['a Slack 410', { status: 410 }],
+    ['a redirect', { status: 302 }],
+    ['an HTTP 451 (legal), which is not an SMTP reply', { status: 451 }],
+    ['the status just below 5xx', { status: 499 }],
+    ['an SMTP 452 (storage full)', { code: 'EENVELOPE', responseCode: 452 }],
+    ['an SMTP 454 (temporary auth failure)', { code: 'EAUTH', responseCode: 454 }],
+    ['an SMTP 535 (bad login)', { code: 'EAUTH', responseCode: 535 }],
+    ['an SMTP 550 (no such user)', { code: 'EENVELOPE', responseCode: 550 }],
+    ['an SMTP 554', { code: 'EMESSAGE', responseCode: 554 }],
+    ['an answer, whatever the code says', { status: 404, code: 'ECONNREFUSED' }],
+    ['a reply, whatever the code says', { responseCode: 550, code: 'ECONNREFUSED' }],
+    ['a folder that is not writable', { code: 'EACCES' }],
+    ['a missing folder', { code: 'ENOENT' }],
+    ['a full disk', { code: 'ENOSPC' }],
+    ['an error with no facts', {}],
+  ])('does not retry %s', (_name, facts) => {
+    expect(isTransientDeliveryError(failed(facts))).toBe(false);
   });
 
-  it('reads the message of anything thrown', () => {
-    expect(isTransientDeliveryError('Slack webhook answered HTTP 500')).toBe(true);
-    expect(isTransientDeliveryError({ code: 'ECONNRESET' })).toBe(false);
+  it('reads the code the way fetch reports it, on the cause', () => {
+    const cause = Object.assign(new Error('connect ECONNREFUSED ::1:9'), { code: 'ECONNREFUSED' });
+
+    expect(isTransientDeliveryError(new TypeError('fetch failed', { cause }))).toBe(true);
+  });
+
+  it('reads a raw nodemailer error that no adapter wrapped', () => {
+    const raw = Object.assign(new Error('Message failed: 451'), {
+      code: 'EMESSAGE',
+      responseCode: 451,
+    });
+
+    expect(isTransientDeliveryError(raw)).toBe(true);
+  });
+
+  it('does not read the message: only the typed facts decide', () => {
+    expect(isTransientDeliveryError(new Error('Slack webhook answered HTTP 503'))).toBe(false);
+    expect(isTransientDeliveryError(new Error('connect ECONNREFUSED 127.0.0.1:587'))).toBe(false);
+    expect(isTransientDeliveryError(new Error('SMTP delivery failed: 451 4.3.0 Try later'))).toBe(
+      false,
+    );
+    expect(isTransientDeliveryError(failed({ code: 'ECONNRESET' }, 'connect ECONNREFUSED'))).toBe(
+      false,
+    );
+    expect(isTransientDeliveryError(failed({}, 'Slack webhook answered HTTP 429'))).toBe(false);
+  });
+
+  it('does not retry a timeout of the whole request, which may have sent the body', () => {
+    const timeout = new DOMException('The operation was aborted due to timeout', 'TimeoutError');
+
+    expect(isTransientDeliveryError(timeout)).toBe(false);
+  });
+
+  it('does not retry something thrown that is not an error', () => {
+    expect(isTransientDeliveryError('Slack webhook answered HTTP 500')).toBe(false);
     expect(isTransientDeliveryError(undefined)).toBe(false);
+    expect(isTransientDeliveryError(null)).toBe(false);
+  });
+
+  it('treats an error that went through redactedError as it treats the original', () => {
+    const original = Object.assign(new Error('connect ECONNREFUSED'), {
+      code: 'ESOCKET',
+      originalCode: 'ECONNREFUSED',
+    });
+
+    expect(isTransientDeliveryError(redactedError('SMTP delivery failed', original, []))).toBe(
+      true,
+    );
   });
 });
 
@@ -138,7 +185,9 @@ describe('withDeliveryRetry', () => {
 
   it('tries a transient failure again, with the same message', async () => {
     const inner = flaky();
-    inner.sendDigest.mockRejectedValueOnce(new Error('Slack webhook answered HTTP 503'));
+    inner.sendDigest.mockRejectedValueOnce(
+      failed({ status: 503 }, 'Slack webhook answered HTTP 503'),
+    );
     const { delivery, logger } = retrying(inner);
 
     await delivery.sendDigest(MESSAGE);
@@ -159,7 +208,12 @@ describe('withDeliveryRetry', () => {
 
   it('retries twice with a growing wait, then throws the last error', async () => {
     const inner = flaky('email');
-    inner.sendDigest.mockRejectedValue(new Error('SMTP delivery failed: Connection timeout'));
+    inner.sendDigest.mockRejectedValue(
+      failed(
+        { code: 'ETIMEDOUT', timeoutType: 'CONNECT_TIMEOUT' },
+        'SMTP delivery failed: Connection timeout',
+      ),
+    );
     const { delivery, sleep } = retrying(inner);
 
     await expect(delivery.sendDigest(MESSAGE)).rejects.toThrow('Connection timeout');
@@ -170,7 +224,7 @@ describe('withDeliveryRetry', () => {
 
   it('does not retry a failure that cannot be a blip', async () => {
     const inner = flaky();
-    inner.sendDigest.mockRejectedValue(new Error('Slack webhook answered HTTP 404'));
+    inner.sendDigest.mockRejectedValue(failed({ status: 404 }, 'Slack webhook answered HTTP 404'));
     const { delivery, sleep } = retrying(inner);
 
     await expect(delivery.sendDigest(MESSAGE)).rejects.toThrow('HTTP 404');
@@ -181,7 +235,7 @@ describe('withDeliveryRetry', () => {
 
   it('retries a failure note the same way', async () => {
     const inner = flaky();
-    inner.sendFailure.mockRejectedValueOnce(new Error('fetch failed'));
+    inner.sendFailure.mockRejectedValueOnce(failed({ code: 'ECONNREFUSED' }, 'fetch failed'));
     const { delivery, logger } = retrying(inner);
 
     await delivery.sendFailure(NOTE);
@@ -194,9 +248,52 @@ describe('withDeliveryRetry', () => {
     );
   });
 
+  it('logs the typed facts of the error it retries, not only its text', async () => {
+    const inner = flaky('email');
+    inner.sendDigest.mockRejectedValueOnce(
+      failed({ code: 'EMESSAGE', responseCode: 451 }, 'SMTP delivery failed: Message failed'),
+    );
+    const { delivery, logger } = retrying(inner);
+
+    await delivery.sendDigest(MESSAGE);
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('will retry'),
+      expect.objectContaining({ code: 'EMESSAGE', responseCode: 451, status: undefined }),
+    );
+  });
+
+  it.each([
+    ['a reset connection', { code: 'ECONNRESET' }],
+    ['a socket timeout after the body', { code: 'ETIMEDOUT', timeoutType: 'SOCKET_TIMEOUT' }],
+    ['a request timeout', {}],
+  ])('sends once and throws on %s: the message may already be out', async (_name, facts) => {
+    const inner = flaky('email');
+    inner.sendDigest.mockRejectedValue(failed(facts, 'it dropped'));
+    inner.sendFailure.mockRejectedValue(failed(facts, 'it dropped'));
+    const { delivery, sleep } = retrying(inner);
+
+    await expect(delivery.sendDigest(MESSAGE)).rejects.toThrow('it dropped');
+    await expect(delivery.sendFailure(NOTE)).rejects.toThrow('it dropped');
+
+    expect(inner.sendDigest).toHaveBeenCalledTimes(1);
+    expect(inner.sendFailure).toHaveBeenCalledTimes(1);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it('throws the error as the adapter made it, facts and cause included', async () => {
+    const inner = flaky();
+    const cause = failed({ code: 'ECONNREFUSED' }, 'inner');
+    const error = new DeliveryError('Slack webhook answered HTTP 404', { status: 404, cause });
+    inner.sendDigest.mockRejectedValue(error);
+    const { delivery } = retrying(inner);
+
+    await expect(delivery.sendDigest(MESSAGE)).rejects.toBe(error);
+  });
+
   it('takes the retry count from the options', async () => {
     const inner = flaky();
-    inner.sendDigest.mockRejectedValue(new Error('fetch failed'));
+    inner.sendDigest.mockRejectedValue(failed({ code: 'ECONNREFUSED' }, 'fetch failed'));
     const { delivery } = retrying(inner, { retries: 0 });
 
     await expect(delivery.sendDigest(MESSAGE)).rejects.toThrow('fetch failed');
@@ -208,7 +305,7 @@ describe('withDeliveryRetry', () => {
     vi.useFakeTimers();
     try {
       const inner = flaky();
-      inner.sendDigest.mockRejectedValueOnce(new Error('fetch failed'));
+      inner.sendDigest.mockRejectedValueOnce(failed({ code: 'ECONNREFUSED' }, 'fetch failed'));
       const delivery = withDeliveryRetry(inner, { logger: mockLogger() });
 
       const sending = delivery.sendDigest(MESSAGE);

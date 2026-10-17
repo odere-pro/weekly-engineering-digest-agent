@@ -1,6 +1,7 @@
 import { buildApp, type AppHandle } from '../app/container.js';
 import { loadConfig, type LoadedConfig } from '../config/load.js';
 import { runDigest } from '../core/runDigest.js';
+import { sendHeldNote } from '../core/runEnding.js';
 import {
   DEFAULT_FAILED_RETRY,
   startScheduler,
@@ -78,12 +79,19 @@ async function serveUntilSignal(
   const scheduler = await io.startScheduler({
     cron,
     timeZone,
-    run: (weekId, limit) =>
-      io.runDigest(deps, { weekId, signal: AbortSignal.any([limit, quitNow.signal]) }),
+    run: (weekId, limit, attempt) =>
+      io.runDigest(deps, {
+        weekId,
+        signal: AbortSignal.any([limit, quitNow.signal]),
+        // False on an attempt the scheduler will retry: one failure note per failed week.
+        notifyFailure: attempt?.notifyFailure,
+      }),
     runStatus: async (weekId) => (await deps.store.getRunRecord(weekId))?.status,
     clock: deps.clock,
     logger: deps.logger,
     failedRetry: DEFAULT_FAILED_RETRY,
+    // The note an attempt held back goes out here if its retry never runs.
+    onGiveUp: (weekId, lastResult) => sendHeldNote(deps, weekId, lastResult.record),
   });
   const nextRun = scheduler.nextRun();
   if (nextRun === null) {

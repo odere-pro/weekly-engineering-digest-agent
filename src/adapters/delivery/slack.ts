@@ -1,4 +1,5 @@
 import type { Delivery } from '../../ports/Delivery.js';
+import { DeliveryError } from './deliveryError.js';
 import { failureOneLiner } from './failureNote.js';
 import { redactedError, redactSecrets } from './redact.js';
 import { toSlackMrkdwn } from './slackFormat.js';
@@ -50,7 +51,11 @@ export function createSlackDelivery(options: SlackOptions): Delivery {
     } catch (error) {
       throw redactedError('Slack webhook request failed', error, secrets);
     }
-    if (!response.ok) throw new Error(`Slack webhook answered HTTP ${String(response.status)}`);
+    if (!response.ok) {
+      throw new DeliveryError(`Slack webhook answered HTTP ${String(response.status)}`, {
+        status: response.status,
+      });
+    }
   }
 
   return {

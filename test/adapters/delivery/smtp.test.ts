@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { DeliveryError } from '../../../src/adapters/delivery/deliveryError.js';
 import {
   createSmtpDelivery,
   type SmtpOptions,
@@ -194,6 +195,71 @@ describe('createSmtpDelivery', () => {
       const mail = sendMail.mock.calls[0]?.[0] as { text: string };
       expect(mail.text).toContain('Ollama is not reachable');
       expect(mail.text).not.toContain('undefined');
+    });
+  });
+
+  describe('typed errors', () => {
+    function nodemailerError(message: string, props: Record<string, unknown>): Error {
+      return Object.assign(new Error(message), props);
+    }
+
+    async function sendFailing(error: unknown, which: 'digest' | 'note' = 'digest') {
+      const { sendMail, createTransport } = fakeTransport();
+      sendMail.mockRejectedValue(error);
+      const delivery = createSmtpDelivery({ ...baseOptions, createTransport });
+      const sent =
+        which === 'digest'
+          ? delivery.sendDigest(message)
+          : delivery.sendFailure({ weekId: '2026-W42', message: 'boom' });
+      return (await sent.catch((caught: unknown) => caught)) as DeliveryError;
+    }
+
+    it('keeps the code, the system code under it and the command of a refused connection', async () => {
+      const error = await sendFailing(
+        nodemailerError('connect ECONNREFUSED 127.0.0.1:587', {
+          code: 'ESOCKET',
+          originalCode: 'ECONNREFUSED',
+          command: 'CONN',
+        }),
+      );
+
+      expect(error).toBeInstanceOf(DeliveryError);
+      expect(error.code).toBe('ESOCKET');
+      expect(error.originalCode).toBe('ECONNREFUSED');
+    });
+
+    it('keeps which timeout hit', async () => {
+      const error = await sendFailing(
+        nodemailerError('Connection timeout', {
+          code: 'ETIMEDOUT',
+          timeoutType: 'CONNECT_TIMEOUT',
+        }),
+      );
+
+      expect(error.code).toBe('ETIMEDOUT');
+      expect(error.timeoutType).toBe('CONNECT_TIMEOUT');
+    });
+
+    it('keeps the SMTP reply code of a server answer, for a failure note too', async () => {
+      const error = await sendFailing(
+        nodemailerError('Message failed: 451 4.3.0 Try again', {
+          code: 'EMESSAGE',
+          responseCode: 451,
+          command: 'DATA',
+        }),
+        'note',
+      );
+
+      expect(error.responseCode).toBe(451);
+      expect(error.code).toBe('EMESSAGE');
+    });
+
+    it('keeps a cause with the password removed from it', async () => {
+      const error = await sendFailing(
+        new Error('send failed', { cause: new Error(`AUTH with ${PASSWORD} refused`) }),
+      );
+
+      expect((error.cause as Error).message).toBe('AUTH with [redacted] refused');
     });
   });
 });

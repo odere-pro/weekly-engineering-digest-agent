@@ -134,7 +134,11 @@ describe('scheduler failed-run retry', () => {
     await tick;
 
     expect(h.run).toHaveBeenCalledTimes(2);
-    expect(h.run).toHaveBeenLastCalledWith('2026-W42', expect.any(AbortSignal));
+    // This scheduler has no onGiveUp to send a held note, so every attempt sends its own
+    // (test/scheduler/scheduler.giveUp.test.ts covers the held note).
+    expect(h.run).toHaveBeenLastCalledWith('2026-W42', expect.any(AbortSignal), {
+      notifyFailure: true,
+    });
     expect(h.logger.error).not.toHaveBeenCalled();
   });
 

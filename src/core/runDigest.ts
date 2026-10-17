@@ -79,6 +79,15 @@ export interface RunOptions {
    * (a timeout message), never copy model or feed text into it.
    */
   signal?: AbortSignal;
+  /**
+   * Default true. False holds back the failure note of a run that fails, for a caller that will
+   * run the week again (the scheduler, on every attempt but the last). The record and error.json
+   * are written either way. The note is sent anyway when no retry can follow: the run's failure
+   * says it was told to stop (`signal`), or that only `digest run --force` can clear it
+   * (`isUnretriable`). A note that stays held is the caller's to send, with `sendHeldNote`, if
+   * the retry it waited for does not happen.
+   */
+  notifyFailure?: boolean;
 }
 
 export interface RunResult {
@@ -104,6 +113,8 @@ interface RunContext {
   readonly sinceDays: number;
   readonly startedAt: Date;
   readonly signal?: AbortSignal;
+  /** See `RunOptions.notifyFailure`. */
+  readonly notifyFailure: boolean;
   /** Bound to the run id. */
   readonly logger: Logger;
   /** Input then output checks that are off this run, in config order. */
@@ -239,6 +250,7 @@ function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     sinceDays,
     dryRun: options.dryRun ?? false,
     signal: options.signal,
+    notifyFailure: options.notifyFailure ?? true,
     logger: deps.logger.child({ runId: weekId }),
     disabledGuards: plannedDisabledGuards(deps),
     holdArtifacts: false,
