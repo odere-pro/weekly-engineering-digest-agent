@@ -22,7 +22,7 @@ describe('config schema', () => {
           checks: { graniteGroundedness: true, clefRubric: true },
         },
       },
-      models: { retries: 2 },
+      models: { retries: 2, rescoreWithWriter: false },
     });
   });
 
@@ -97,6 +97,12 @@ describe('config schema', () => {
   it('accepts a think setting per role', () => {
     const config = makeConfig({ models: { think: { guardRisk: false, write: 'low' } } });
     expect(config.models.think).toEqual({ guardRisk: false, write: 'low' });
+  });
+
+  it('accepts the writer rescoring flag and keeps it off by default', () => {
+    expect(makeConfig().models.rescoreWithWriter).toBe(false);
+    expect(makeConfig({ models: { rescoreWithWriter: true } }).models.rescoreWithWriter).toBe(true);
+    expect(() => makeConfig({ models: { rescoreWithWriter: 'yes' as never } })).toThrow();
   });
 
   it('defaults the time zone to the local one', () => {

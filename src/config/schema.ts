@@ -86,6 +86,11 @@ export const ModelOverridesSchema = z.object({
   think: z
     .partialRecord(RoleSchema, z.union([z.boolean(), z.enum(['low', 'medium', 'high'])]))
     .optional(),
+  /**
+   * Score the items that pass the decider's filter once more with the writer model (W6-08).
+   * Off by default; the light re-baseline decides whether it stays on.
+   */
+  rescoreWithWriter: z.boolean().default(false),
 });
 
 export const ScheduleSchema = z.object({
