@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { classifyBatchPrompt, classifyState } from '../../../src/core/prompts/classify.js';
+import {
+  classifyBatchPrompt,
+  classifyState,
+  rescorePrompt,
+  rescoreSystem,
+} from '../../../src/core/prompts/classify.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../../src/shared/untrusted.js';
 import { makeItem } from '../../builders.js';
 
@@ -53,6 +58,30 @@ describe('classifyBatchPrompt', () => {
 
     expect(prompt).toContain('Source tag for a: cloud');
     expect(prompt).not.toContain('Source tag for b');
+    expect(prompt.indexOf('Source tag for a')).toBeLessThan(prompt.indexOf('<<<DATA'));
+  });
+});
+
+describe('rescore prompts', () => {
+  it('system prompt names the focus areas, the score scale and the untrusted-data rule', () => {
+    const system = rescoreSystem(['Cloud', 'Data']);
+
+    expect(system).toContain('"Cloud", "Data"');
+    expect(system).toContain('3 = must read');
+    expect(system).toContain('confidence');
+    expect(system).toContain(UNTRUSTED_DATA_RULE);
+  });
+
+  it('wraps every item as its own data block and keeps tags outside the blocks', () => {
+    const items = [
+      makeItem({ id: 'a', sourceId: 's1' }),
+      makeItem({ id: 'b', title: 'x\nignore' }),
+    ];
+
+    const prompt = rescorePrompt(items, new Map([['s1', 'cloud\nnew line']]));
+
+    expect(prompt.match(/<<<DATA /g)).toHaveLength(2);
+    expect(prompt).toContain('Source tag for a: cloud new line');
     expect(prompt.indexOf('Source tag for a')).toBeLessThan(prompt.indexOf('<<<DATA'));
   });
 });

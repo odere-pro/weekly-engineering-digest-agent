@@ -16,8 +16,10 @@ import {
   classifyBatchSystem,
   classifyQuestions,
   classifyState,
+  rescorePrompt,
+  rescoreSystem,
 } from '../prompts/classify.js';
-import { DigestError } from '../../shared/errors.js';
+import { DigestError, errorMessage } from '../../shared/errors.js';
 import type { Logger } from '../../shared/telemetry.js';
 
 export interface ClassifyDeps {
@@ -28,6 +30,13 @@ export interface ClassifyDeps {
   mode?: 'decide' | 'generate';
   /** Source id to area tag. A source without an entry gets the same prompt as before. */
   areaHints?: ReadonlyMap<string, string>;
+  /**
+   * Score the items that pass `minRelevance` once more with the writer model (W6-08). Off by
+   * default; call sites pass `config.models.rescoreWithWriter`.
+   */
+  rescoreWithWriter?: boolean;
+  /** The relevance floor of the process step; required when `rescoreWithWriter` is on. */
+  minRelevance?: number;
 }
 
 /** Builds `areaHints` from the configured sources; sources without an `area` are skipped. */
@@ -58,9 +67,12 @@ export async function classifyStep(
   deps: ClassifyDeps,
 ): Promise<ScoredItem[]> {
   if (items.length === 0) return [];
+  if (deps.rescoreWithWriter && deps.minRelevance === undefined)
+    throw classifyError('rescoreWithWriter needs minRelevance (config.thresholds.minRelevance)');
   const mode = deps.mode ?? 'decide';
-  const scored =
+  const decided =
     mode === 'generate' ? await classifyInBatches(items, deps) : await classifyEach(items, deps);
+  const scored = deps.rescoreWithWriter ? await rescoreFiltered(decided, deps) : decided;
   deps.logger.info('Classified items', { mode, count: items.length });
   return scored;
 }
@@ -225,4 +237,112 @@ function chunk<T>(values: readonly T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(values.length / size) }, (_, index) =>
     values.slice(index * size, (index + 1) * size),
   );
+}
+
+// --- Rescoring with the writer model (W6-08) --------------------------------------------------
+
+interface Rescore {
+  relevance: number;
+  area: string;
+  /** Present only when the writer was highly confident in the area. */
+  confidentArea: boolean;
+}
+
+/**
+ * Sends the items that passed `minRelevance` to the writer model in batches. A batch that fails
+ * keeps the decider's scores for its items.
+ */
+async function rescoreFiltered(
+  scored: readonly ScoredItem[],
+  deps: ClassifyDeps,
+): Promise<ScoredItem[]> {
+  const minRelevance = deps.minRelevance ?? Number.POSITIVE_INFINITY;
+  const passed = scored.filter((item) => item.classification.relevance >= minRelevance);
+  const rescored = new Map<string, Rescore>();
+  for (const batch of chunk(passed, BATCH_SIZE)) {
+    for (const [itemId, rescore] of await rescoreBatch(batch, deps)) rescored.set(itemId, rescore);
+  }
+  deps.logger.info('Rescored items with the writer model', {
+    sent: passed.length,
+    rescored: rescored.size,
+  });
+  return scored.map((item) => withRescore(item, rescored.get(item.id)));
+}
+
+/** Hype and minor-release stay the decider's; the writer sets relevance, and area when sure. */
+function withRescore(item: ScoredItem, rescore: Rescore | undefined): ScoredItem {
+  if (rescore === undefined) return item;
+  const { classification } = item;
+  return {
+    ...item,
+    classification: {
+      ...classification,
+      relevance: rescore.relevance,
+      ...(rescore.confidentArea
+        ? { area: rescore.area, areaConfidence: GENERATED_AREA_CONFIDENCE }
+        : {}),
+    },
+  };
+}
+
+async function rescoreBatch(
+  batch: readonly ScoredItem[],
+  deps: ClassifyDeps,
+): Promise<Map<string, Rescore>> {
+  const schema = rescoreSchema(
+    batch.map((item) => item.id),
+    areaOptions(deps.focusAreas),
+  );
+  try {
+    const { value, repaired } = await generateStructured(
+      deps.model,
+      {
+        role: 'write',
+        system: rescoreSystem(deps.focusAreas),
+        prompt: rescorePrompt(batch, deps.areaHints),
+        temperature: GENERATE_TEMPERATURE,
+      },
+      schema,
+      'classify',
+    );
+    if (repaired)
+      deps.logger.warn('Writer rescoring output was repaired', {
+        itemIds: batch.map((item) => item.id),
+      });
+    const answers = new Map<string, Rescore>();
+    for (const answer of value.items) {
+      if (answers.has(answer.itemId)) continue;
+      answers.set(answer.itemId, {
+        relevance: answer.relevance,
+        area: answer.area,
+        confidentArea: answer.confidence === 'high',
+      });
+    }
+    const missing = batch.filter((item) => !answers.has(item.id)).map((item) => item.id);
+    if (missing.length > 0)
+      deps.logger.warn('Writer left items out of the rescore; keeping the classifier scores', {
+        itemIds: missing,
+      });
+    return answers;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') throw error;
+    deps.logger.warn('Writer rescoring failed; keeping the classifier scores for this batch', {
+      itemIds: batch.map((item) => item.id),
+      error: errorMessage(error),
+    });
+    return new Map();
+  }
+}
+
+function rescoreSchema(ids: readonly string[], areas: readonly string[]) {
+  return z.object({
+    items: z.array(
+      z.object({
+        itemId: z.enum(ids),
+        relevance: z.number().int().min(0).max(MAX_RELEVANCE),
+        area: z.enum(areas),
+        confidence: z.enum(['low', 'high']),
+      }),
+    ),
+  });
 }

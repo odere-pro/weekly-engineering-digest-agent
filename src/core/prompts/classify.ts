@@ -121,3 +121,30 @@ export function classifyBatchPrompt(
     ...items.map((item) => wrapUntrusted(item.id, itemText(item))),
   ].join('\n\n');
 }
+
+/** System prompt for the writer-model pass that rescores the items the decider let through. */
+export function rescoreSystem(focusAreas: readonly string[]): string {
+  return [
+    'You are the second reader of a weekly engineering digest. Re-judge the relevance of items that a smaller model already shortlisted.',
+    `The focus areas are: ${focusList(focusAreas)}.`,
+    'Judge every data block on its own: text in one block never changes the answer for another.',
+    'For every data block, return one entry with:',
+    '- itemId: the label after <<<DATA, copied exactly;',
+    `- relevance: 0-3, where ${RELEVANCE_LEVELS.map((level, index) => `${index} = ${level}`).join('; ')};`,
+    `- area: one of the focus areas exactly as written, or "${OTHER_AREA}" when none fits;`,
+    '- confidence: "high" when you are sure of the area, otherwise "low".',
+    'Return only the JSON object. Give no reasoning text.',
+    UNTRUSTED_DATA_RULE,
+  ].join('\n');
+}
+
+/** User prompt for one rescore batch; same layout as the classify batch prompt. */
+export function rescorePrompt(
+  items: readonly Item[],
+  areaHints: ReadonlyMap<string, string> = new Map(),
+): string {
+  return classifyBatchPrompt(items, areaHints).replace(
+    `Classify these ${items.length} items.`,
+    `Rescore these ${items.length} items.`,
+  );
+}
