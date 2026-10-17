@@ -85,6 +85,35 @@ export function withoutItem(draft: Draft, itemId: string): Draft | undefined {
   return items.length === 0 ? undefined : { ...draft, digest: { ...draft.digest, items } };
 }
 
+/** evals/sources/<id>/response.json: what the recorder got from one source. */
+export const SourceResponseSchema = z.object({
+  /** The URL the fetcher requests: for a GitHub source its `releases.atom`. */
+  url: z.url(),
+  /** Absent when the request never got an answer. */
+  status: z.number().int().optional(),
+  contentType: z.string().nullable().optional(),
+  fetchedAt: z.iso.datetime({ offset: true }),
+  /** Absent when the recording failed; `error` then says why. */
+  bodyFile: z.string().min(1).optional(),
+  error: z.string().min(1).optional(),
+});
+export type SourceResponse = z.infer<typeof SourceResponseSchema>;
+
+/** Fields of an item a fetcher is known to get wrong; the conformance test skips them. */
+export const SourceGapSchema = z.enum(['summary']);
+export type SourceGap = z.infer<typeof SourceGapSchema>;
+
+/** evals/sources/<id>/expected.json: the items the recorded body must yield. */
+export const SourceExpectedSchema = z.object({
+  /** Set by the maintainer once the items were checked against the body by hand. */
+  reviewed: z.boolean(),
+  /** How many `<item>` or `<entry>` elements the body holds. */
+  entryCount: z.number().int().min(0),
+  items: z.array(ItemSchema),
+  knownGaps: z.array(SourceGapSchema).default([]),
+});
+export type SourceExpected = z.infer<typeof SourceExpectedSchema>;
+
 /** evals/judge/calibration.json (W3-04): how well the judge agrees with the maintainer. */
 export const JudgeCalibrationSchema = z.object({
   /** Share of hand-graded digests where the judge's score is within half a point of the grade. */
@@ -116,6 +145,8 @@ export const METRIC_IDS = [
   'writerWinRate',
   'stability',
   'runTime',
+  'sourceParse',
+  'sourceSummaryFill',
 ] as const;
 export const MetricIdSchema = z.enum(METRIC_IDS);
 export type MetricId = z.infer<typeof MetricIdSchema>;
@@ -176,6 +207,8 @@ export type MetricResult = z.infer<typeof MetricResultSchema>;
  */
 export const LATER_METRICS = {
   guardAttackRecall: { label: 'Guard attack recall', unit: 'ratio' },
+  sourceParse: { label: 'Source parse yield', unit: 'ratio' },
+  sourceSummaryFill: { label: 'Source summary fill', unit: 'ratio' },
 } as const satisfies Partial<Record<MetricId, { label: string; unit: MetricUnit }>>;
 const NOT_RECORDED = 'not recorded in this scorecard';
 
@@ -204,6 +237,8 @@ export const ScorecardSchema = z
       classifier: z.number().int().min(0),
       attacks: z.number().int().min(0),
       grounding: z.number().int().min(0),
+      /** Recorded sources checked; a scorecard written before wave 6 does not carry it. */
+      sources: z.number().int().min(0).optional(),
     }),
     /** null when the judge was never calibrated, or the profile has no judge. */
     judgeAgreement: RatioSchema.nullable(),

@@ -1,0 +1,457 @@
+{
+  "reviewed": true,
+  "entryCount": 50,
+  "items": [
+    {
+      "id": "15138aab23bfbb83",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/10/14/tracing-kueue-admission-with-headlamp/",
+      "title": "Why Is My Kubernetes Job Still Pending? Tracing Kueue Admission with Headlamp",
+      "summary": "You submit a Kubernetes Job and wait for its Pods to appear. A minute passes. Then another. The Job is still suspended, there are no application logs, and there may not even be a Pod to inspect. In a cluster managed by Kueue , this can be completely normal. Kueue may still be deciding whether the Job can use the requested resources. The useful question is not only “Why is the Pod pending?” It is first “Has Kueue admitted the Workload?” The Kueue plugin for Headlamp brings that investigation into the Headlamp UI. Instead of reconstructing the admission path from several commands and large...",
+      "publishedAt": "2026-10-14T18:35:00.000Z"
+    },
+    {
+      "id": "e41aa02a68e1ba26",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/10/06/kubernetes-cgroups-v2-shift/",
+      "title": "The Shift to cgroup v2 in Kubernetes: What You Need to Know",
+      "summary": "In Linux, cgroups (control groups) are a kernel feature used for managing system resources. Kubernetes uses cgroups to allocate resources like CPU and memory to containers, ensuring that applications run smoothly without interfering with each other. With the release of Kubernetes v1.31, support for v1 cgroup management moved into maintenance mode . Support for v2 cgroup management has been stable since Kubernetes v1.25. Compared with cgroup v1, cgroup v2 provides a single unified hierarchy, a more consistent interface, and a stronger foundation for resource isolation and modern...",
+      "publishedAt": "2026-10-06T18:00:00.000Z"
+    },
+    {
+      "id": "50f31b94c19898a3",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/10/05/scaling-kubernetes-workloads-with-node-swap/",
+      "title": "Scaling Kubernetes Workloads with Node Swap",
+      "summary": "Memory is often the first hard limit a Kubernetes cluster hits. Nodes run out of RAM long before they run out of CPU, and the new wave of agentic AI workloads makes this worse. These workloads demand large memory footprints to start up and run untrusted code, then sit idle waiting for the next prompt. That idle but resident memory is expensive, and it caps how many pods a node can hold. This is where swap helps. Kubernetes support for running nodes with swap enabled reached General Availability in v1.34, and by backing that swap with fast NVMe solid state drives (SSDs), a node can page out...",
+      "publishedAt": "2026-10-05T18:00:00.000Z"
+    },
+    {
+      "id": "51aaf081823175d3",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/22/sig-apps-spotlight/",
+      "title": "Spotlight on SIG Apps",
+      "summary": "As Kubernetes adoption has grown, the conversation has shifted beyond running containers to managing increasingly complex application lifecycles. Modern platforms support stateless web services, stateful databases, batch processing, AI workloads, and platform services. At the same time, they must remain reliable during upgrades, scaling events, and infrastructure failures. Every Kubernetes user relies on SIG Apps, whether they realize it or not. Deployments, StatefulSets, DaemonSets, Jobs, and CronJobs form the foundation of how applications are deployed, updated, scaled, and operated...",
+      "publishedAt": "2026-09-22T18:00:00.000Z"
+    },
+    {
+      "id": "bbd2dc821f8f6ddd",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/21/kubernetes-v1-37-pvc-last-used-time/",
+      "title": "Kubernetes v1.37: Tracking When a PersistentVolumeClaim Was Last Used (Beta)",
+      "summary": "Kubernetes v1.37 promotes the PersistentVolumeClaimUnusedSinceTime feature gate to Beta (enabled by default). With this feature, the PersistentVolumeClaim (PVC) protection controller adds an Unused condition to each PVC, telling you whether any running pod currently references it — no custom tooling or cross-referencing required. For the API definition of PVC conditions, see the PersistentVolumeClaim API reference . Read on to learn how the Unused condition works and how to use it. Why track PVC usage? In large-scale Kubernetes clusters, it is common for users to create PVCs and then...",
+      "publishedAt": "2026-09-21T18:30:00.000Z"
+    },
+    {
+      "id": "225905458a1b19f6",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/16/kubernetes-v1-37-hardening-container-storage/",
+      "title": "Kubernetes v1.37: Hardening Container Storage with Bind Mount Options and EmptyDir Permissions",
+      "summary": "Kubernetes v1.37 brings important storage security features: emptyDir permission modes and bind mount options. They help application programmers and security professionals implement rigorous security policies, for example, prohibiting deletion of files across containers or execution of arbitrary binaries from writable volumes, directly in Kubernetes without any complicated circumvention. Linux storage and permission fundamentals Before diving into the new Kubernetes features, let us briefly review the low-level Linux security mechanisms that make them possible. Bind mount flags When Linux...",
+      "publishedAt": "2026-09-16T18:30:00.000Z"
+    },
+    {
+      "id": "5309177f19f859ca",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/15/kubernetes-v1-37-pod-level-resource-managers-beta/",
+      "title": "Kubernetes v1.37: Pod-Level Resource Managers graduated to Beta",
+      "summary": "With the release of Kubernetes v1.37, the Pod-Level Resource Managers feature has graduated to Beta status (disabled by default)! First introduced as an Alpha feature in Kubernetes v1.36 , this enhancement builds on Pod-Level Resources by equipping Kubelet's Topology Manager, CPU Manager, and Memory Manager to use Pod-level resource declarations ( .spec.resources ) directly when making hardware placement decisions. Bringing pod-level resources to node managers Before this feature, obtaining exclusive NUMA-aligned CPU cores or memory for latency-critical applications forced cluster...",
+      "publishedAt": "2026-09-15T18:30:00.000Z"
+    },
+    {
+      "id": "7193a9ff8eb6b0f9",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/14/csi-changed-block-tracking-beta/",
+      "title": "Kubernetes Changed Block Tracking API - Beta Differences",
+      "summary": "Changed Block Tracking (CBT) support for CSI drivers shipped as Alpha in September 2025. With the March 2026 v1.0.0 release of the external-snapshot-metadata project, the feature moved to Beta . If you aren't yet familiar with changed block tracking for storage in Kubernetes, the Alpha announcement covers the motivation, the three primary components (the CSI SnapshotMetadata gRPC service, the SnapshotMetadataService CRD, and the external-snapshot-metadata sidecar), and a walkthrough of how to use the API. CBT currently applies to block volumes; file-volume and network file-share...",
+      "publishedAt": "2026-09-14T18:30:00.000Z"
+    },
+    {
+      "id": "f8ff73e4f9b79dc3",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/14/kubernetes-v1-37-memory-qos-graduates-to-beta/",
+      "title": "Kubernetes v1.37: Memory QoS Graduates to Beta",
+      "summary": "Memory QoS has graduated to Beta in Kubernetes v1.37 and is now enabled by default. On Linux nodes running cgroup v2, the feature uses the memory controller to give the kernel better guidance on how to treat container memory. It was first introduced as Alpha in v1.22, and expanded in v1.36 with tiered memory reservation. This post covers what changed in v1.37, what the Beta promotion means for cluster operators, and how to configure the feature. What changed in v1.37 Memory QoS is Beta and enabled by default The MemoryQoS feature gate is now Beta in v1.37. This means every v1.37 kubelet...",
+      "publishedAt": "2026-09-14T18:30:00.000Z"
+    },
+    {
+      "id": "3f084f3ffd4480f9",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/11/kubernetes-v1-37-native-histograms-beta/",
+      "title": "Kubernetes v1.37: Native Histograms Graduates to Beta",
+      "summary": "I'm excited to announce that native histogram support for Kubernetes metrics is graduating to Beta and is enabled by default in Kubernetes v1.37! Native histograms (previously introduced as Alpha in Kubernetes v1.36 under KEP-5808 ) bring high-resolution, low-cardinality observability to Kubernetes metrics. By adopting Prometheus Native Histograms , Kubernetes components now expose latency and duration metrics with far greater accuracy while significantly reducing telemetry storage and scraping overhead. Why move beyond classic histograms? Since the early days of Kubernetes observability,...",
+      "publishedAt": "2026-09-11T18:30:00.000Z"
+    },
+    {
+      "id": "9cc24d7b7bd3fc86",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/10/kubernetes-v1-37-scheduler-preemption-for-in-place-pod-resize-alpha/",
+      "title": "Kubernetes v1.37: Scheduler Preemption for In-Place Pod Resize (Alpha)",
+      "summary": "In Kubernetes, resource allocation has historically been a static decision made during a Pod's initial scheduling and placement. With the graduation of the core in-Place Pod resize feature to General Availability in v1.35, application developers and cluster operators gained the powerful ability to dynamically adjust CPU and memory allocations of running containers without incurring disruptive restarts or application downtime. However, in-place resizing introduced a unique resource scheduling gap: if a running Pod requested a resource scale-up that exceeded the host node's allocatable...",
+      "publishedAt": "2026-09-10T18:30:00.000Z"
+    },
+    {
+      "id": "f86d512ed747811c",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/09/kubernetes-v1-37-node-lifecycle-conditions/",
+      "title": "Kubernetes v1.37: Introducing Node Lifecycle Conditions",
+      "summary": "Kubernetes has many ways to describe what is happening on a Node. Readiness, taints, Pod state, labels, annotations, and provider-specific APIs each expose part of the picture. What has been missing is a shared, Kubernetes-owned way to say that a Node is draining , undergoing maintenance, or undergoing Graceful Node Shutdown . Kubernetes v1.37 introduces five well-known Node conditions that provide that description: DrainInProgress Drained MaintenancePlanned MaintenanceInProgress GracefulNodeShutdownInProgress The new Node lifecycle conditions Condition What it reports DrainInProgress The...",
+      "publishedAt": "2026-09-09T18:30:00.000Z"
+    },
+    {
+      "id": "ccd5eb86c6d0c95e",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/08/kubernetes-v1-37-advancing-workload-aware-scheduling/",
+      "title": "Kubernetes v1.37: Advancing Workload-Aware Scheduling",
+      "summary": "AI/ML and complex batch workloads continue to push the boundaries of Kubernetes scheduling. Following the foundational workload-centric enhancements introduced in previous releases, Kubernetes v1.37 delivers the next major milestone in the Workload-Aware Scheduling (WAS) journey. In this release, the core Workload and PodGroup APIs—enabling gang scheduling—along with Workload-Aware Preemption (WAP) and shared DRA ResourceClaims for PodGroups, all graduate to Beta, solidifying their role in the Kubernetes ecosystem. To address the hierarchical scheduling requirements of modern...",
+      "publishedAt": "2026-09-08T18:30:00.000Z"
+    },
+    {
+      "id": "e4a20210b6dd24e4",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/04/kubernetes-v1-37-rootless-beta/",
+      "title": "Kubernetes v1.37: KubeletInUserNamespace (aka Rootless mode) Graduates to Beta",
+      "summary": "Kubernetes v1.37 promotes the KubeletInUserNamespace feature gate to beta. With this feature enabled, all of the node components (kubelet, CRI and OCI runtimes, CNI plugins, and kube-proxy) can run as a non-root user on the host, using a Linux user namespace . This technique is also known as rootless mode . The work started as an experiment in 2018, and was merged into Kubernetes v1.22 (2021) as an alpha feature (Kubernetes Enhancement Proposal KEP-2033 ). This feature should not be confused with user namespaces for pods ( hostUsers: false with the UserNamespacesSupport feature gate, GA...",
+      "publishedAt": "2026-09-04T18:30:00.000Z"
+    },
+    {
+      "id": "5bfed052375c43fb",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/03/kubernetes-v1-37-dra-updates/",
+      "title": "Kubernetes v1.37: DRA Updates",
+      "summary": "Kubernetes 1.37 is here and Dynamic Resource Allocation (DRA) keeps pushing past where it started! This release brings DRA Extended Resource support to GA, a milestone the team has been building toward for three straight releases. Several more features graduate to Beta or GA. A fresh batch of alpha features rounds out the release. I'll dive into what's new for DRA in Kubernetes 1.37! What's stable in 1.37 DRA Extended Resource support has graduated to GA. This is the mechanism that lets DRA drivers satisfy requests made through the traditional extended resource API, think example.com/gpu...",
+      "publishedAt": "2026-09-03T18:30:00.000Z"
+    },
+    {
+      "id": "59d665bbb77eb2ca",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/02/kubernetes-v1-37-hpa-scale-to-zero-beta/",
+      "title": "Kubernetes v1.37: Scale Workloads to Zero with HorizontalPodAutoscaler",
+      "summary": "Kubernetes v1.37 includes API support for horizontal autoscaling of workloads down to zero replicas. This feature is now Beta and enabled by default. A HorizontalPodAutoscaler (HPA) that uses a suitable object metric or external metric can now scale a workload to zero replicas, then bring it back when the metric changes. Before v1.37, you needed an add-on or external component, or you had to enable the Alpha feature gate, to scale from zero. It is now part of core Kubernetes. Scaling to zero removes the last idle Pod from workloads such as queue consumers and batch processors. The savings...",
+      "publishedAt": "2026-09-02T18:30:00.000Z"
+    },
+    {
+      "id": "d4361cc5b5133426",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/09/01/kubernetes-v1-37-etcd-range-stream/",
+      "title": "Kubernetes v1.37: etcd RangeStream Cuts Memory Use on Large List Reads",
+      "summary": "I am excited to announce that etcd RangeStream is graduating to beta in Kubernetes v1.37. Paired with etcd v3.7, it reduces the memory the API server and etcd need to read a large collection, and makes peak usage more predictable. The cost of large reads The API server serves most list and watch requests from its in-memory watch cache. Populating that cache requires reading a resource's full state from etcd, at startup and on every re-initialization. For a resource with many objects, or large ones, such as Pods, that read is expensive. The API server already paginated these reads, asking...",
+      "publishedAt": "2026-09-01T18:30:00.000Z"
+    },
+    {
+      "id": "c27336331a48e407",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/31/kubernetes-v1-37-storage-version-migration-ga/",
+      "title": "Kubernetes v1.37: Storage Version Migration Enabled by Default",
+      "summary": "I am excited that storage version migration (SVM) has graduated to General Availability (GA) in Kubernetes v1.37! After a number of releases of work and testing, the built-in StorageVersionMigration API ( storagemigration.k8s.io/v1 ) and control plane controller are now fully stable and enabled by default across all v1.37 Kubernetes clusters. The problem with stale storage versions In Kubernetes, stored API resources are written using a specific storage version (schema representation). The way Kubernetes interacts with object storage fundamentally requires mutation of a resource in order...",
+      "publishedAt": "2026-08-31T18:30:00.000Z"
+    },
+    {
+      "id": "0ff92615e16e45a0",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/28/kubernetes-v1-37-pod-certificates-and-cluster-trust-bundles/",
+      "title": "Kubernetes v1.37: Pod Certificates and Cluster Trust Bundles",
+      "summary": "Kubernetes brings a wealth of features that make it easy to run your production workloads securely and reliably. While aspects like scheduling, health checks and resource limits are probably at the front of your mind, one other important feature of Kubernetes is production identity — how your workload can authenticate to other systems in order to do its job. Up until now, the primary production identity mechanism built into Kubernetes has been service account JWTs (JSON Web Tokens). These are cryptographically-signed tokens, issued by the control plane of your cluster, that let anyone in...",
+      "publishedAt": "2026-08-28T18:30:00.000Z"
+    },
+    {
+      "id": "3b5080acff015485",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/27/kubernetes-v1-37-metrics-api-ga/",
+      "title": "Kubernetes v1.37: Metrics API graduates to stable",
+      "summary": "Kubernetes v1.37 promotes the metrics.k8s.io API to stable ( v1 ). This API provides CPU and memory usage for nodes and Pods, and is the API behind commands such as kubectl top and resource-metrics-based autoscaling. For cluster operators and application developers, this graduation means that the API now has the stability guarantees associated with a Kubernetes stable API. The v1 API has the same resource types and fields as v1beta1 ; this is an API-version graduation, not a change to the metrics that are collected or returned. A long-lived API reaches stable The resource Metrics API was...",
+      "publishedAt": "2026-08-27T18:30:00.000Z"
+    },
+    {
+      "id": "e89b4b1882ad157f",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/",
+      "title": "Kubernetes v1.37: Garhwal",
+      "summary": "Editors: Arsh Sharma, Christopher Tineo, Kirti Goyal, Sophia Ugochukwu, Swathi Rao, Troy Connor Similar to previous releases, the release of Kubernetes v1.37 introduces new Stable, Beta, and Alpha features. The consistent delivery of high-quality releases underscores the strength of our development cycle and the vibrant support from our community. This release consists of 67 enhancements. Of those enhancements, 16 have graduated to Stable, 23 have graduated to Beta, 27 are entering Alpha, and 1 is a deprecation/removal. Release theme and logo The theme for Kubernetes v1.37 is Garhwal...",
+      "publishedAt": "2026-08-26T00:00:00.000Z"
+    },
+    {
+      "id": "6e2f08c1e60673c4",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/11/how-to-pretty-print-kubernetes-yaml-as-kyaml/",
+      "title": "How to Pretty-Print Your Kubernetes YAML as KYAML and Why You'd Want To",
+      "summary": "YAML has been the standard way to write Kubernetes manifests for years. Every example, tutorial, and configuration file you come across is written in it. The problem isn't that YAML is a bad format. It's that YAML gives you a lot of choices, and not all of them are equally good for writing Kubernetes manifests. Some features make files harder to read, some are easy to misuse and others can lead to surprising behavior. The interesting part is that Kubernetes doesn't actually need most of those features. It only relies on a small subset of YAML. This led to a simple question: if Kubernetes...",
+      "publishedAt": "2026-08-11T18:00:00.000Z"
+    },
+    {
+      "id": "75514d67a8e3ce81",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/",
+      "title": "Gateway API v1.6: TCPRoute and UDPRoute Graduate to Standard",
+      "summary": "The Kubernetes SIG Network community is thrilled to share the release of Gateway API v1.6.0 , which was released on June 30th of this year! Gateway API has become the standard for modern, role-oriented, and expressive service networking in Kubernetes. In previous releases, Gateway API established a production-grade foundation for HTTP and TLS layer 7 traffic. With version 1.6.0, Gateway API takes a major step forward by expanding standard layer 4 protocol routing and introducing cleaner API boundaries for experimental innovation. Here is a quick summary of what's new in Gateway API v1.6.0:...",
+      "publishedAt": "2026-08-03T16:00:00.000Z"
+    },
+    {
+      "id": "01c7a7a96ee24e1c",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/31/kubernetes-v1-37-sneak-peek/",
+      "title": "Kubernetes v1.37 Sneak Peek",
+      "summary": "As we get closer to the release date for Kubernetes v1.37, the project develops and matures, features may be deprecated, removed, or replaced with better ones for the project's overall health. This blog outlines some of the planned changes for the Kubernetes v1.37 release that the release team feels you should be aware of for the continued maintenance of your Kubernetes environment and keeping up to date with the latest changes. The information below reflects the current status of the v1.37 release and may change before the actual release date. Deprecations and removals for Kubernetes...",
+      "publishedAt": "2026-07-31T16:00:00.000Z"
+    },
+    {
+      "id": "9d8af9008162cc0b",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/29/controller-runtime-cache-explained/",
+      "title": "How the controller-runtime Cache Actually Works, and Why Your Controller Does Not Crash the API Server",
+      "summary": "This article has been revised since it was first published, to correct several significant technical inaccuracies in the original text. Kubernetes has long been the default platform for distributed workloads, and writing your own controller for it is now a matter of a few hours. The common path — Golang, using kubebuilder on top of controller-runtime — gives you a project scaffold, types, and a reconciler. For typical scenarios that is more than enough. But as soon as load grows or the controller starts behaving in ways you did not expect, a whole class of edge cases shows up. Most of them...",
+      "publishedAt": "2026-07-29T18:00:00.000Z"
+    },
+    {
+      "id": "2440ebf036c5f0ff",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/14/custom-metrics-exporter-kubernetes/",
+      "title": "Building a Custom Metrics Exporter for Kubernetes",
+      "summary": "Kubernetes ships with built-in awareness of CPU and memory, but most real-world scaling decisions depend on signals that live entirely outside that narrow window: how many messages are waiting in a queue, how long the last batch job took, how many active WebSocket connections a pod is holding. When the built-in metrics are not enough, a metrics exporter bridges that gap. This post walks through writing one from scratch, packaging it as a container, and wiring it into a cluster so that Prometheus — and ultimately the HorizontalPodAutoscaler — can consume it. What a metrics exporter actually...",
+      "publishedAt": "2026-07-14T18:00:00.000Z"
+    },
+    {
+      "id": "61193afe253ba34f",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/13/introducing-headlamp-plugin-for-kubeflow/",
+      "title": "Operating AI/ML Workloads on Kubernetes: A Headlamp Plugin for Kubeflow",
+      "summary": "Kubernetes has quietly become the default platform for AI and machine learning. Whether you run notebook servers for data scientists, schedule distributed training jobs, tune hyperparameters, or orchestrate multi-step ML pipelines, those workloads increasingly land on a Kubernetes cluster. Kubeflow is one of the most popular ways to assemble that stack, and it does so the Kubernetes-native way: every capability is exposed as a Custom Resource Definition (CRD). That design is a gift to cluster operators, because it means ML workloads can be observed and managed with the same primitives as...",
+      "publishedAt": "2026-07-13T20:00:00.000Z"
+    },
+    {
+      "id": "73a1b610054d1507",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/13/kubernetes-dashboard-to-headlamp/",
+      "title": "Kubernetes Dashboard to Headlamp: A Step-by-Step Guide",
+      "summary": "1. Before you start: know what is changing Kubernetes Dashboard and Headlamp both show what is running in a cluster, but they work differently. When Headlamp runs on the desktop, it uses your existing kubeconfig to connect to one or more clusters and can be extended with plugins. When Headlamp runs inside a cluster, it uses a Kubernetes ServiceAccount to access the API and follow RBAC rules. Kubernetes Dashboard, in contrast, only runs in-cluster and always relies on service account tokens. Understanding these models early helps you choose the right setup and permissions. 1.1 How...",
+      "publishedAt": "2026-07-13T18:00:00.000Z"
+    },
+    {
+      "id": "aa58c6ed59af2c07",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/07/08/announcing-etcd-3.7/",
+      "title": "Announcing etcd v3.7.0",
+      "summary": "This article is a mirror of the original announcement Today, SIG etcd is releasing etcd v3.7.0 , the latest minor release of the popular distributed key-value store and core Kubernetes component. v3.7 ships the long-requested RangeStream feature, delivers several other performance improvements, removes the last remnants of the legacy v2store, and completes a major protobuf overhaul. You can download etcd v3.7.0 here: Source code Binaries Official container images This release also includes new versions of the two core etcd dependencies, bbolt v1.5.0 and raft v3.7.0 . For instructions on...",
+      "publishedAt": "2026-07-08T12:00:00.000Z"
+    },
+    {
+      "id": "254c7e013b4741cc",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/26/open-source-maintainership-in-the-age-of-ai/",
+      "title": "Open source maintainership in the age of AI",
+      "summary": "AI has really changed the game around software development. More people are leveraging AI than ever to contribute patches to projects they use. To me, this is a good thing as more folks will contribute patches rather than fork or not fix them. The main problem is that AI has made generating code fast but there has been very little improvement in maintaining code bases. In this post, we will highlight the ways the Kubernetes community is adapting to the world of AI assisted coding. The first step of this journey was to develop an AI policy. This seems mundane and bureaucratic but there were...",
+      "publishedAt": "2026-06-26T18:00:00.000Z"
+    },
+    {
+      "id": "8eadf29e9eea5f01",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/25/headlamp-cluster-api-plugin/",
+      "title": "Introducing the Cluster API plugin for Headlamp",
+      "summary": "Headlamp is an open-source, extensible Kubernetes SIG UI project designed to let you explore, manage, and debug cluster resources directly from a browser. Cluster API (CAPI) is a Kubernetes sub-project that brings declarative, Kubernetes-style APIs to cluster lifecycle management. It lets platform teams provision, upgrade, and manage the lifecycle of Kubernetes clusters using standard Kubernetes objects stored and reconciled in a management cluster. Managing Cluster API resources has historically required raw kubectl commands and deep familiarity with ownership hierarchies. The Headlamp...",
+      "publishedAt": "2026-06-25T22:00:00.000Z"
+    },
+    {
+      "id": "7aa003383f2e9f54",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/25/visual-context-volcano-headlamp-plugin/",
+      "title": "Inspect Volcano workloads faster with Headlamp",
+      "summary": "Volcano is a cloud native batch scheduler for Kubernetes, built for high-performance computing, AI/ML, and other batch workloads. Headlamp is an extensible Kubernetes web UI. With its plugin system, Headlamp can surface APIs and workflows beyond the built-in Kubernetes resources. The Volcano plugin brings core Volcano resources into Headlamp so you can inspect workload state, queue behavior, and gang scheduling details in one place. Kubernetes was originally designed around long-running services, where applications are expected to start and remain available over time. Batch, AI/ML, and HPC...",
+      "publishedAt": "2026-06-25T20:00:00.000Z"
+    },
+    {
+      "id": "1b7c2b0930d70d4e",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/25/headlamp-knative-plugin/",
+      "title": "See your serverless: introducing the Headlamp plugin for Knative",
+      "summary": "Headlamp is an open-source, extensible Kubernetes SIG UI project designed to let you explore, manage, and debug cluster resources. Knative brings serverless workloads to Kubernetes, handling traffic routing, autoscaling, and revision management so teams can deploy and iterate without fighting infrastructure. But operating Knative workloads day-to-day can be difficult, there's still a lot of jumping between the kn CLI, kubectl , and the Kubernetes UI to get a full picture of what's running. We built the Headlamp Knative plugin to bridge that very gap, allowing operators to inspect,...",
+      "publishedAt": "2026-06-25T18:00:00.000Z"
+    },
+    {
+      "id": "657c9e342fe57458",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/24/wg-device-management-spotlight-2026/",
+      "title": "Spotlight on WG Device Management",
+      "summary": "The rising popularity of AI, Edge, and Telecommunications workloads on Kubernetes has led to new requirements for hardware management. We now need hardware specification beyond CPU time and memory allocations. This includes allocating GPUs, TPUs, network interfaces, and other hardware, sometimes after pod start and occasionally through time-sharing. Efficiently managing this specialized hardware is the mission of the Device Management Working Group . Their cornerstone project, Dynamic Resource Allocation (DRA) , recently graduated to GA, marking a fundamental shift in how the project...",
+      "publishedAt": "2026-06-24T18:00:00.000Z"
+    },
+    {
+      "id": "f0433dcbfb4f85e5",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/15/sig-storage-spotlight-2026/",
+      "title": "Spotlight on SIG Storage",
+      "summary": "In our ongoing SIG Spotlight series, we shine a light on the groups that keep the Kubernetes project moving forward. This time, we catch up with SIG Storage , the group responsible for persistent data, volume management, and the interfaces that connect Kubernetes workloads to the storage systems beneath them. We spoke with Xing Yang , Co-Chair of SIG Storage and Software Engineer at VMware by Broadcom, about the SIG's history, the features shipping in recent Kubernetes releases, and where storage in Kubernetes is headed as AI workloads become the norm. Introductions Could you introduce...",
+      "publishedAt": "2026-06-15T00:00:00.000Z"
+    },
+    {
+      "id": "7ff50da84c51387b",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/06/01/dashboard-to-headlamp/",
+      "title": "From Kubernetes Dashboard to Headlamp: Understanding the Transition",
+      "summary": "For many people, Kubernetes Dashboard was their first window into Kubernetes. It offered a simple visual way to see what was running in a cluster, inspect resources, and build confidence without relying on the command line. For years, it helped developers, students, and operators make sense of Kubernetes, and it served as an important onramp into the ecosystem. The Kubernetes Dashboard project has now been archived. We deeply respect the work the team did and the role Dashboard played in making Kubernetes more approachable for so many users. Headlamp builds on that foundation and carries...",
+      "publishedAt": "2026-06-01T18:00:00.000Z"
+    },
+    {
+      "id": "c591060be429e94d",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/26/reconciling-unfixed-kubernetes-cves/",
+      "title": "Reconciling the Past: Correcting Records for Unfixed Kubernetes CVEs",
+      "summary": "The Kubernetes project relies on transparency to empower cluster administrators and security researchers. One important way we do that is by publishing CVE records into the Common Vulnerabilities and Exposures database. As part of our ongoing effort to mature the official Kubernetes CVE Feed , we have identified some discrepancies. CVE records for a few older, unfixed issues incorrectly include a fixed version field. The Kubernetes Security Response Committee (SRC) will correct the affected CVE records on June 1, 2026. This may result in vulnerability scanners identifying these...",
+      "publishedAt": "2026-05-26T17:30:00.000Z"
+    },
+    {
+      "id": "f4f5eac60efab428",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/20/etcd-370-beta/",
+      "title": "Announcing etcd 3.7.0-beta.0",
+      "summary": "SIG-Etcd announces the availability of the first beta release of etcd v3.7.0 . This new version of the popular distributed database and key Kubernetes component includes the long-requested RangeStream feature, as well as a refactoring and cleanup of multiple legacy components and interfaces. v3.7 will deliver improved security, better operational reliability, and an improved experience for working with large resultsets. First, however, the project needs users to test the beta. You can find v3.7.0-beta.0 here: Source code Binaries Official container images Please try it out and report...",
+      "publishedAt": "2026-05-20T00:00:00.000Z"
+    },
+    {
+      "id": "558cd03a67c5610a",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/15/ccm-new-metric-route-sync-total/",
+      "title": "Kubernetes v1.36: New Metric for Route Sync in the Cloud Controller Manager",
+      "summary": "This article was originally published with the wrong date. It was later republished, dated the 15th of May 2026. Kubernetes v1.36 introduces a new alpha counter metric route_controller_route_sync_total to the Cloud Controller Manager (CCM) route controller implementation at k8s.io/cloud-provider . This metric increments each time routes are synced with the cloud provider. A/B testing watch-based route reconciliation This metric was added to help operators validate the CloudControllerManagerWatchBasedRoutesReconciliation feature gate introduced in Kubernetes v1.35 . That feature gate...",
+      "publishedAt": "2026-05-15T18:35:00.000Z"
+    },
+    {
+      "id": "ce22eeec83ca5359",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/15/kubernetes-1-36-feature-mixed-version-proxy-beta/",
+      "title": "Kubernetes v1.36: Mixed Version Proxy Graduates to Beta",
+      "summary": "Back in Kubernetes 1.28, we introduced the Mixed Version Proxy (MVP) as an Alpha feature (under the feature gate UnknownVersionInteroperabilityProxy ) in a previous blog post . The goal was simple but critical: make cluster upgrades safer by ensuring that requests for resources not yet known to an older API server are correctly routed to a newer peer API server, instead of returning an incorrect 404 Not Found . We are excited to announce that the Mixed Version Proxy is moving to Beta in Kubernetes 1.36 and will be enabled by default! The feature has evolved significantly since its initial...",
+      "publishedAt": "2026-05-15T18:00:00.000Z"
+    },
+    {
+      "id": "0097d099d5c66d3d",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/14/kubernetes-v1-36-deprecation-and-removal-of-service-externalips/",
+      "title": "Kubernetes v1.36: Deprecation and removal of Service ExternalIPs",
+      "summary": "The .spec.externalIPs field for Service was an early attempt to provide cloud-load-balancer-like functionality for non-cloud clusters. Unfortunately, the API assumes that every user in the cluster is fully trusted, and in any situation where that is not the case, it enables various security exploits, as described in CVE-2020-8554 . Since Kubernetes 1.21, the Kubernetes project has recommended that all users disable .spec.externalIPs . To make that easier, Kubernetes also added an admission controller ( DenyServiceExternalIPs ) that can be enabled to do this. At the time, SIG Network felt...",
+      "publishedAt": "2026-05-14T18:35:00.000Z"
+    },
+    {
+      "id": "4a8d9cab167520f5",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/13/kubernetes-v1-36-advancing-workload-aware-scheduling/",
+      "title": "Kubernetes v1.36: Advancing Workload-Aware Scheduling",
+      "summary": "AI/ML and batch workloads introduce unique scheduling challenges that go beyond simple Pod-by-Pod scheduling. In Kubernetes v1.35, we introduced the first tranche of workload-aware scheduling improvements, featuring the foundational Workload API alongside basic gang scheduling support built on a Pod-based framework, and an opportunistic batching feature to efficiently process identical Pods. Kubernetes v1.36 introduces a significant architectural evolution by cleanly separating API concerns: the Workload API acts as a static template, while the new PodGroup API handles the runtime state....",
+      "publishedAt": "2026-05-13T18:35:00.000Z"
+    },
+    {
+      "id": "2cd181e0a27f324c",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/12/kubernetes-v1-36-psi-metrics-ga/",
+      "title": "Kubernetes v1.36: PSI Metrics for Kubernetes Graduates to GA",
+      "summary": "Since its original implementation in the Linux kernel in 2018, Pressure Stall Information (PSI) has provided users with the high-fidelity signals needed to identify resource saturation before it becomes an outage. Unlike traditional utilization metrics, PSI tells the story of tasks stalled and time lost, all in nicely-packaged percentages of time across the CPU, memory, and I/O. With the recent release of Kubernetes v1.36, users across the ecosystem have a stable, reliable interface to observe resource contention at the node, pod, and container levels. In this post, we will dive into the...",
+      "publishedAt": "2026-05-12T18:35:00.000Z"
+    },
+    {
+      "id": "2e65ac828a3127f2",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/08/kubernetes-v1-36-volume-group-snapshot-ga/",
+      "title": "Kubernetes v1.36: Moving Volume Group Snapshots to GA",
+      "summary": "Volume group snapshots were introduced as an Alpha feature with the Kubernetes v1.27 release, moved to Beta in v1.32, and to a second Beta in v1.34. We are excited to announce that in the Kubernetes v1.36 release, support for volume group snapshots has reached General Availability (GA) . The support for volume group snapshots relies on a set of extension APIs for group snapshots . These APIs allow users to take crash-consistent snapshots for a set of volumes. Behind the scenes, Kubernetes uses a label selector to group multiple PersistentVolumeClaim objects for snapshotting. A key aim is...",
+      "publishedAt": "2026-05-08T18:35:00.000Z"
+    },
+    {
+      "id": "0799939eea555f7a",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/07/kubernetes-v1-36-dra-136-updates/",
+      "title": "Kubernetes v1.36: More Drivers, New Features, and the Next Era of DRA",
+      "summary": "Dynamic Resource Allocation (DRA) has fundamentally changed how platform administrators handle hardware accelerators and specialized resources in Kubernetes. In the v1.36 release, DRA continues to mature, bringing a wave of feature graduations, critical usability improvements, and new capabilities that extend the flexibility of DRA to native resources like memory and CPU, and support for ResourceClaims in PodGroups. Driver availability continues to expand. Beyond specialized compute accelerators, the ecosystem includes support for networking and other hardware types, reflecting a move...",
+      "publishedAt": "2026-05-07T18:35:00.000Z"
+    },
+    {
+      "id": "34530008bba44b6a",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/06/kubernetes-v1-36-server-side-sharded-list-and-watch/",
+      "title": "Kubernetes v1.36: Server-Side Sharded List and Watch",
+      "summary": "As Kubernetes clusters grow to tens of thousands of nodes, controllers that watch high-cardinality resources like Pods face a scaling wall. Every replica of a horizontally scaled controller receives the full stream of events from the API server, paying the CPU, memory, and network cost to deserialize everything, only to discard the objects it is not responsible for. Scaling out the controller does not reduce per-replica cost; it multiplies it. Kubernetes v1.36 introduces server-side sharded list and watch as an alpha feature ( KEP-5866 ). With this feature enabled, the API server filters...",
+      "publishedAt": "2026-05-06T18:35:00.000Z"
+    },
+    {
+      "id": "39c5077316a13a3c",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/05/kubernetes-v1-36-declarative-validation-ga/",
+      "title": "Kubernetes v1.36: Declarative Validation Graduates to GA",
+      "summary": "In Kubernetes v1.36, Declarative Validation for Kubernetes native types has reached General Availability (GA). For users, this means more reliable, predictable, and better-documented APIs. By moving to a declarative model, the project also unlocks the future ability to publish validation rules via OpenAPI and integrate with ecosystem tools like Kubebuilder. For contributors and ecosystem developers, this replaces thousands of lines of handwritten validation code with a unified, maintainable framework. This post covers why this migration was necessary, how the declarative validation...",
+      "publishedAt": "2026-05-05T18:35:00.000Z"
+    },
+    {
+      "id": "d4e1dfd85eba5634",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/04/kubernetes-v1-36-manifest-based-admission-control/",
+      "title": "Kubernetes v1.36: Admission Policies That Can't Be Deleted",
+      "summary": "If you've ever tried to enforce a security policy across a fleet of Kubernetes clusters, you've probably run into a frustrating chicken-and-egg problem. Your admission policies are API objects, which means they don't exist until someone creates them, and they can be deleted by anyone with the right permissions. There's always a window during cluster bootstrap where your policies aren't active yet, and there's no way to prevent a privileged user from removing them. Kubernetes v1.36 introduces an alpha feature that addresses this: manifest-based admission control . It lets you define...",
+      "publishedAt": "2026-05-04T18:35:00.000Z"
+    },
+    {
+      "id": "974b45136755d595",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/05/01/kubernetes-v1-36-feature-pod-level-resource-managers-alpha/",
+      "title": "Kubernetes v1.36: Pod-Level Resource Managers (Alpha)",
+      "summary": "Kubernetes v1.36 introduces Pod-Level Resource Managers as an alpha feature, bringing a more flexible and powerful resource management model to performance-sensitive workloads. This enhancement extends the kubelet's Topology, CPU, and Memory Managers to support pod-level resource specifications ( .spec.resources ), evolving them from a strictly per-container allocation model to a pod-centric one. Why do we need pod-level resource managers? When running performance-critical workloads such as machine learning (ML) training, high-frequency trading applications, or low-latency databases, you...",
+      "publishedAt": "2026-05-01T18:35:00.000Z"
+    },
+    {
+      "id": "e42527081adc0d54",
+      "sourceId": "kubernetes-blog",
+      "kind": "rss",
+      "url": "https://kubernetes.io/blog/2026/04/30/kubernetes-v1-36-inplace-pod-level-resources-beta/",
+      "title": "Kubernetes v1.36: In-Place Vertical Scaling for Pod-Level Resources Graduates to Beta",
+      "summary": "Following the graduation of Pod-Level Resources to Beta in v1.34 and the General Availability (GA) of In-Place Pod Vertical Scaling in v1.35, the Kubernetes community is thrilled to announce that In-Place Pod-Level Resources Vertical Scaling has graduated to Beta in v1.36! This feature is now enabled by default via the InPlacePodLevelResourcesVerticalScaling feature gate. It allows users to update the aggregate Pod resource budget ( .spec.resources ) for a running Pod, often without requiring a container restart. Why Pod-level in-place resize? The Pod-level resource model simplified...",
+      "publishedAt": "2026-04-30T18:35:00.000Z"
+    }
+  ],
+  "knownGaps": []
+}

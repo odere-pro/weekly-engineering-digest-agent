@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Archive: 2026 - GitHub Changelog</title>
+	<atom:link href="https://github.blog/changelog/feed/" rel="self" type="application/rss+xml" />
+	<link>https://github.blog/changelog/</link>
+	<description>Updates, ideas, and inspiration from GitHub to help developers build and design software.</description>
+	<lastBuildDate>Fri, 16 Oct 2026 22:08:46 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=7.1.3</generator>
+
+<image>
+	<url>https://github.blog/wp-content/uploads/2019/01/cropped-github-favicon-512.png?fit=32%2C32</url>
+	<title>Archive: 2026 - GitHub Changelog</title>
+	<link>https://github.blog/changelog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+<site xmlns="com-wordpress:feed-additions:1">153214340</site>	<item>
+		<title>Open source license compliance generally available</title>
+		<link>https://github.blog/changelog/2026-10-16-open-source-license-compliance-generally-available</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Fri, 16 Oct 2026 14:00:32 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-13-open-source-license-compliance-generally-available</guid>
+
+					<description><![CDATA[<p>Enterprises can now manage their dependencies&#8217; licenses at scale with sophisticated, ruleset-based checks that enforce a centralized policy. Open source license compliance is now generally available for GitHub Enterprise Cloud&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-16-open-source-license-compliance-generally-available">Open source license compliance generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>Enterprises can now manage their dependencies&rsquo; licenses at scale with sophisticated, ruleset-based checks that enforce a centralized policy. Open source license compliance is now generally available for GitHub Enterprise Cloud customers, including data-resident GHEC, for repositories with GitHub Code Security enabled.</p>
+<h2 id="how-it-works" id="how-it-works" ><a class="heading-link" href="#how-it-works">How it works<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Open source license compliance expands on the capabilities of the <a href="https://github.com/actions/dependency-review-action">dependency review action</a> by introducing an enterprise-wide license policy. The policy is activated by targeting repositories with a ruleset that uses a new <code>Require license compliance results before merging</code> condition, similar to the existing code scanning conditions. When developers open pull requests that add or modify dependencies, license checks automatically ensure each new or changed dependency has an acceptable license. The feature annotates the pull request with a message about each noncompliant dependencies. These annotations must be addressed by removing or replacing the dependency, amending the license policy, or creating package exceptions.</p>
+<p>Open source license compliance introduces a new predefined enterprise role, <code>Enterprise Open-Source License Manager</code>. Assign this role to individuals or teams who should review and approve closure requests. Policy managers receive email notifications about pending requests and can review them from the enterprise console.</p>
+<h2 id="whats-new-and-improved" id="whats-new-and-improved" ><a class="heading-link" href="#whats-new-and-improved">What&rsquo;s new and improved<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Since the public preview release in June, we&rsquo;ve made several improvements:</p>
+<ul>
+<li>License information is now available for GitHub Enterprise Cloud data residency customers. This not only enables the license compliance feature, but also populates the dependency graph and Software Bill of Materials (SBOM) exports with license data.</li>
+<li>License policy changes now emit audit log events, for integration with external systems of record.</li>
+<li>There are new API endpoints for downloading, updating, and replacing the enterprise license policy.</li>
+<li>There is also a new API endpoint for checking whether packages comply with policy. This enables coding agents to avoid recommending or incorporating packages which violate an organization&rsquo;s license usage policy.</li>
+</ul>
+<h2 id="how-to-try-it" id="how-to-try-it" ><a class="heading-link" href="#how-to-try-it">How to try it<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>For detailed setup instructions, see <a href="https://docs.github.com/enterprise-cloud@latest/code-security/concepts/supply-chain-security/open-source-license-compliance">About open source license compliance</a>.</p>
+<p>For information about API endpoints see <a href="https://docs.github.com/rest/dependency-graph?apiVersion=2026-03-10">REST API endpoints for dependency-graph</a></p>
+<p>Join the discussion within <a href="https://github.com/orgs/community/discussions/categories/code-security">GitHub Community</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-16-open-source-license-compliance-generally-available">Open source license compliance generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[supply chain security]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99491</post-id>	</item>
+		<item>
+		<title>Xcode 27 runner image generally available</title>
+		<link>https://github.blog/changelog/2026-10-15-xcode-27-runner-image-generally-available</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Fri, 16 Oct 2026 04:36:30 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-xcode-27-runner-image-generally-available</guid>
+
+					<description><![CDATA[<p>You can now use the generally available Xcode 27 runner image to build and test your Apple applications in GitHub Actions. Previously in public preview, this GitHub-hosted image runs on&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-xcode-27-runner-image-generally-available">Xcode 27 runner image generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>You can now use the generally available Xcode 27 runner image to build and test your Apple applications in GitHub Actions. Previously in public preview, this GitHub-hosted image runs on macOS 27 and includes the Xcode 27 toolchain and Apple SDKs.</p>
+<h2 id="xcode-based-images" id="xcode-based-images" ><a class="heading-link" href="#xcode-based-images">Xcode-based images<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Each image supports one major Xcode version rather than targeting a specific operating system version. This makes it easier to select the toolchain your project needs and know what each runner provides.</p>
+<h2 id="get-started" id="get-started" ><a class="heading-link" href="#get-started">Get started<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>To use the image, set your workflow&rsquo;s <code>runs-on:</code> value to one of these labels:</p>
+<ul>
+<li><code>xcode-27</code></li>
+<li><code>xcode-27-xlarge</code></li>
+</ul>
+<p>If you already use these labels, you don&rsquo;t need to change your workflows. The image is available on Apple Silicon (arm64) runners only, not Intel runners.</p>
+<p>To view the installed software or report an issue, visit the <a href="https://github.com/actions/runner-images">runner-images repository</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-xcode-27-runner-image-generally-available">Xcode 27 runner image generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[actions]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99569</post-id>	</item>
+		<item>
+		<title>Multi-repository support and other improvements for GitHub in Slack and Teams</title>
+		<link>https://github.blog/changelog/2026-10-15-copilot-in-slack-and-teams-adds-model-and-repository-updates</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Fri, 16 Oct 2026 02:16:35 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-copilot-in-slack-and-teams-adds-model-and-repository-updates</guid>
+
+					<description><![CDATA[<p>@GitHub in Slack and Teams now supports working across multiple repositories in a single conversation. Whether you&#8217;re creating issues, opening pull requests, or investigating bugs, you can work across repositories&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-copilot-in-slack-and-teams-adds-model-and-repository-updates">Multi-repository support and other improvements for GitHub in Slack and Teams</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p><video width="100%" loop controls autoplay muted src="https://github.com/user-attachments/assets/5bf084af-f90e-4f06-b4d3-bb44ac5b5098"><br>
+</video></p>
+<p>@GitHub in Slack and Teams now supports working across multiple repositories in a single conversation. Whether you&rsquo;re creating issues, opening pull requests, or investigating bugs, you can work across repositories without switching conversations.</p>
+<p>For example, you can ask @GitHub to:</p>
+<p><strong>Create issues from conversations:</strong> &ldquo;@GitHub Create an issue in github/issues to track this bug, using the context from this thread.&rdquo;<br>
+<strong>Make code changes:</strong> &ldquo;@GitHub Fix this bug in our frontend repository and open a PR with the changes.&rdquo;<br>
+<strong>Track your PRs:</strong> &ldquo;@GitHub Show me all my open PRs across repositories and highlight which ones need my attention.&rdquo;<br>
+<strong>Investigate bugs:</strong> &ldquo;@GitHub Investigate this issue using the code in our frontend and backend repositories.&rdquo;</p>
+<p>You can do all of this directly from Slack or Teams, without switching repositories or starting a new conversation.</p>
+<h3 id="additional-improvements" id="additional-improvements" ><a class="heading-link" href="#additional-improvements">Additional improvements<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h3>
+<p>We&rsquo;ve also made several improvements to GitHub in Slack and Microsoft Teams:</p>
+<p><strong>More natural conversations:</strong> Mention @GitHub anywhere in your message, not just at the beginning.<br>
+<strong>Smoother repository switching:</strong> Move between repositories more easily during a conversation.<br>
+<strong>Better Slack conversation context:</strong> @GitHub can use shared Slack messages and threads as context, making it easier to reference discussions without copying and pasting details.<br>
+<strong>Improved reliability:</strong> We&rsquo;ve made several improvements to reduce errors, improve task startup, and help @GitHub recover more smoothly from interruptions in Slack and Teams.</p>
+<p>Join the discussion within the <a href="https://github.com/orgs/community/discussions/210411">GitHub Community</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-copilot-in-slack-and-teams-adds-model-and-repository-updates">Multi-repository support and other improvements for GitHub in Slack and Teams</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Improvement]]></category>
+<category domain="changelog-label"><![CDATA[collaboration tools]]></category>
+<category domain="changelog-label"><![CDATA[copilot]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99561</post-id>	</item>
+		<item>
+		<title>Download GitHub Code Quality license usage as a CSV</title>
+		<link>https://github.blog/changelog/2026-10-15-download-github-code-quality-license-usage-as-a-csv</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Thu, 15 Oct 2026 20:11:26 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-download-github-code-quality-license-usage-as-a-csv</guid>
+
+					<description><![CDATA[<p>You can now download a CSV report of your GitHub Code Quality license usage to reconcile your license count with your own records. The report includes: Each active committer who&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-download-github-code-quality-license-usage-as-a-csv">Download GitHub Code Quality license usage as a CSV</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>You can now download a CSV report of your GitHub Code Quality license usage to reconcile your license count with your own records.</p>
+<p>The report includes:</p>
+<ul>
+<li>Each active committer who consumes a Code Quality license.</li>
+<li>The repositories that received their commits in the last 90 days.</li>
+<li>Whether each committer is unique to a single repository or organization.</li>
+</ul>
+<p>Use the unique committer details to identify where disabling Code Quality could free up licenses for the next billing period without changing your current license charge.</p>
+<p>To download your report, go to the <strong>Billing and licensing</strong> page in your organization or enterprise, open <strong>Licensing</strong>, and download the CSV from the Code Quality card.</p>
+<p>CSV downloads are available on GitHub Team and GitHub Enterprise Cloud.</p>
+<p>For details, see <a href="https://docs.github.com/enterprise-cloud@latest/code-security/how-tos/maintain-quality-code/view-and-manage-cost">Viewing and managing GitHub Code Quality costs</a>.</p>
+<p>Join the discussion in <a href="https://github.com/orgs/community/discussions/201460">GitHub Community</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-download-github-code-quality-license-usage-as-a-csv">Download GitHub Code Quality license usage as a CSV</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Improvement]]></category>
+<category domain="changelog-label"><![CDATA[account management]]></category>
+<category domain="changelog-label"><![CDATA[application security]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99549</post-id>	</item>
+		<item>
+		<title>Upcoming deprecation of selected GitHub Copilot models in mid-November</title>
+		<link>https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Thu, 15 Oct 2026 19:35:13 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november</guid>
+
+					<description><![CDATA[<p>We will deprecate the following models across all GitHub Copilot experiences (including Copilot Chat, inline edits, ask and agent modes, and code completions) on November 16th, 2026: Model Deprecation date&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november">Upcoming deprecation of selected GitHub Copilot models in mid-November</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>We will deprecate the following models across all GitHub Copilot experiences (including Copilot Chat, inline edits, ask and agent modes, and code completions) on November 16th, 2026:</p>
+<div data-target="content-table-wrap.container" class="content-table-wrap"><content-table-wrap><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Deprecation date</th>
+<th>Suggested alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Opus 4.8*</td>
+<td>2026-11-16</td>
+<td>Claude Opus 5.5</td>
+</tr>
+<tr>
+<td>Claude Opus 5</td>
+<td>2026-11-16</td>
+<td>Claude Opus 5.5</td>
+</tr>
+<tr>
+<td>GPT-5.6 Terra</td>
+<td>2026-11-16</td>
+<td>GPT-6.1 Sol or GPT-6 Luna</td>
+</tr>
+</tbody>
+</table></content-table-wrap></div>
+<p>*Claude Opus 4.8 will remain available to individual GitHub Copilot subscribers on annual plans so they retain an Opus offering. The deprecation of Claude Opus 4.8 does not apply to these customers.</p>
+<p>Please update your workflows and integrations to use the supported models before this date. Under default model enablement, the suggested alternatives are automatically enabled for Copilot Enterprise and Copilot Business customers unless an administrator has turned off the global default or explicitly disabled the model. If you&rsquo;ve turned off the global default, you can enable access to the alternative models through their model policies in Copilot settings.</p>
+<p>Once enabled, users will see the model in the Copilot Chat model selector in supported GitHub Copilot experiences.</p>
+<p>No action is required to remove the models after they have been deprecated.</p>
+<p>GitHub Enterprise customers with questions or concerns are encouraged to contact their account team for assistance.</p>
+<h3 id="share-your-feedback" id="share-your-feedback" ><a class="heading-link" href="#share-your-feedback">Share your feedback<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h3>
+<p>To learn more about the models available in Copilot, see <a href="https://docs.github.com/copilot/reference/ai-models/supported-models?utm_source=model-release-announcement&amp;utm_medium=changelog&amp;utm_campaign=newmodels">our documentation on supported models</a>.</p>
+<p>Join the <a href="https://github.com/orgs/community/discussions/categories/copilot-conversations?utm_source=model-release-announcement&amp;utm_medium=changelog&amp;utm_campaign=newmodels">GitHub Community</a> to share your feedback.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-upcoming-deprecation-of-selected-github-copilot-models-in-mid-november">Upcoming deprecation of selected GitHub Copilot models in mid-November</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Retired]]></category>
+<category domain="changelog-label"><![CDATA[copilot]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99544</post-id>	</item>
+		<item>
+		<title>AI Scan for pull requests generally available</title>
+		<link>https://github.blog/changelog/2026-10-15-ai-scan-for-pull-requests-generally-available</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Thu, 15 Oct 2026 15:04:51 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-ai-scan-for-pull-requests-generally-available</guid>
+
+					<description><![CDATA[<p>Code scanning AI Scan for pull requests is now generally available. It complements CodeQL by finding vulnerabilities in pull request changes for languages and frameworks that CodeQL does not currently&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-ai-scan-for-pull-requests-generally-available">AI Scan for pull requests generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>Code scanning AI Scan for pull requests is now generally available. It complements CodeQL by finding vulnerabilities in pull request changes for languages and frameworks that CodeQL does not currently cover, including PHP, Shell/Bash, Terraform configuration (HCL), Dockerfiles, JSP for Java, Blazor for C#, and more.</p>
+<h2 id="how-it-works" id="how-it-works" ><a class="heading-link" href="#how-it-works">How it works<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>AI Scan runs automatically on pull requests when code scanning and the repository&rsquo;s effective AI Scan setting are enabled. Findings appear alongside CodeQL results on the <strong>Conversation</strong> and <strong>Files changed</strong> tabs, with an &ldquo;AI&rdquo; indicator to distinguish them from CodeQL alerts. Findings can include an explanation of the security risk and a suggested autofix.</p>
+<p>AI Scan findings are advisory. They do not fail the code scanning check and cannot block pull request merges through ruleset requirements. AI Scan does not run on pull requests from forks or pull requests created by Dependabot.</p>
+<h2 id="availability" id="availability" ><a class="heading-link" href="#availability">Availability<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>AI Scan is available for public repositories owned by organizations or personal accounts. For private and internal organization-owned repositories, GitHub Code Security or GitHub Advanced Security is required. A GitHub Copilot license is not required.</p>
+<h2 id="billing" id="billing" ><a class="heading-link" href="#billing">Billing<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>AI Scan for pull requests consumes Code Security AI Credits. AI Credit usage is displayed in the &ldquo;AI usage&rdquo; section of enterprise billing and licensing as the &ldquo;Advanced Security&rdquo; product. You can also set SKU-level budgets for Code Security AI Credits. Learn more about <a href="https://docs.github.com/enterprise-cloud@latest/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises">usage-based billing</a>.</p>
+<p>Learn more about <a href="https://docs.github.com/enterprise-cloud@latest/code-security/concepts/code-scanning/ai-powered-security-detections">AI Scan for pull requests</a> and <a href="https://docs.github.com/billing/concepts/product-billing/github-advanced-security#how-ai-feature-usage-is-billed">billing for GitHub Advanced Security AI features</a>.</p>
+<p>Join the discussion in the <a href="https://github.com/orgs/community/discussions/201543">AI Scan Community discussion</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-ai-scan-for-pull-requests-generally-available">AI Scan for pull requests generally available</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[application security]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99524</post-id>	</item>
+		<item>
+		<title>Agentic autofix for code scanning alerts general availability</title>
+		<link>https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Thu, 15 Oct 2026 13:49:20 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability</guid>
+
+					<description><![CDATA[<p>Agentic autofix for code scanning alerts is now generally available. It remediates alerts by working across your codebase the way a developer would: it explores relevant files, proposes a fix,&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability">Agentic autofix for code scanning alerts general availability</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>Agentic autofix for code scanning alerts is now generally available. It remediates alerts by working across your codebase the way a developer would: it explores relevant files, proposes a fix, and reruns CodeQL to confirm the fix closes the alert before opening a pull request for your review. Agentic autofix is available to GitHub Code Security and GitHub Advanced Security customers on GitHub Enterprise Cloud, including GitHub Enterprise Cloud with data residency.</p>
+<h2 id="how-it-works" id="how-it-works" ><a class="heading-link" href="#how-it-works">How it works<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>When you assign a code scanning alert to Copilot, it:</p>
+<ul>
+<li>Explores relevant files across your codebase.</li>
+<li>Generates a proposed fix.</li>
+<li>Validates the fix works by rerunning CodeQL.</li>
+<li>Iterates if needed, then opens a draft pull request ready for your review.</li>
+</ul>
+<p>The pull request includes a summary of the fix, why it closes the alert, and the validation steps Copilot took to confirm that it works. When the pull request containing the fix is ready, you can instruct Copilot to make further changes to it by commenting on the pull request or interacting with the session in the <strong>Agents</strong> tab of your repository.</p>
+<h2 id="how-to-use-it" id="how-to-use-it" ><a class="heading-link" href="#how-to-use-it">How to use it<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>When enabled, agentic autofix replaces the free <strong>Generate Fix</strong> option on individual code scanning alerts with an <strong>Assign to Copilot</strong> button.</p>
+<p>You can use agentic autofix:</p>
+<ul>
+<li>From any code scanning alert on the repository&rsquo;s default branch, by assigning the alert to Copilot.</li>
+<li>In the list of security alerts in your repository or security campaign, by selecting up to 25 alerts for Copilot to fix together in a single pull request.</li>
+<li>Via the <a href="https://docs.github.com/enterprise-cloud@latest/rest/code-scanning/code-scanning?apiVersion=2026-03-10#update-a-code-scanning-alert">Update a Code Scanning Alert REST API</a> by setting <code>assignees</code> to <code>["copilot-swe-agent[bot]"]</code>.</li>
+</ul>
+<p>Agentic autofix supports code scanning alerts on the repository&rsquo;s default branch. Alerts detected only on pull requests or other branches cannot be assigned to Copilot.</p>
+<h2 id="access" id="access" ><a class="heading-link" href="#access">Access<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Agentic autofix requires an enterprise administrator to enable access to it via the new &ldquo;Agentic autofix&rdquo; policy in Advanced Security policies.</p>
+<p>Once the policy is enabled by an enterprise administrator, an organization or repository administrator can turn on agentic autofix in the Code Security settings for the organization or the repository.</p>
+<p>Access also requires a Copilot billing method to be defined.</p>
+<h2 id="billing" id="billing" ><a class="heading-link" href="#billing">Billing<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Agentic autofix for code scanning alerts consumes AI Credits from your Code Security budget and GitHub Actions minutes. AI Credit usage will be displayed in the &ldquo;AI usage&rdquo; section of enterprise billing and licensing as the &ldquo;Advanced Security&rdquo; product. You can also set SKU level budgets for Code Security AI credits. Learn more about <a href="https://docs.github.com/enterprise-cloud@latest/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises">Copilot usage-based billing</a>.</p>
+<h2 id="learn-more" id="learn-more" ><a class="heading-link" href="#learn-more">Learn more<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Learn more about <a href="https://docs.github.com/enterprise-cloud@latest/code-security/concepts/code-scanning/autofix-for-code-scanning">agentic autofix in the documentation</a>.</p>
+<p>Join the discussion within the <a href="https://github.com/orgs/community/discussions/209845">GitHub Community</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability">Agentic autofix for code scanning alerts general availability</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[application security]]></category>
+<category domain="changelog-label"><![CDATA[copilot]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99519</post-id>	</item>
+		<item>
+		<title>Email notifications for repository push events have been retired</title>
+		<link>https://github.blog/changelog/2026-10-15-email-notifications-for-repository-push-events-have-been-retired</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Thu, 15 Oct 2026 13:42:19 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-15-email-notifications-for-repository-push-events-have-been-retired</guid>
+
+					<description><![CDATA[<p>As of October 15, 2026, email notifications for repository push events have been retired and are no longer sent. We shut down this feature to help prevent spam and abuse.&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-email-notifications-for-repository-push-events-have-been-retired">Email notifications for repository push events have been retired</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>As of October 15, 2026, email notifications for repository push events have been retired and are no longer sent.</p>
+<p>We shut down this feature to help prevent spam and abuse. Because recipients didn&rsquo;t have to consent before receiving these emails, the feature could be misused to send unwanted messages through GitHub&rsquo;s email infrastructure.</p>
+<p>To continue sending email notifications for repository push events, you can use a <a href="https://docs.github.com/actions/using-workflows/events-that-trigger-workflows#push">GitHub Actions workflow triggered by push events</a> to send emails through your own SMTP server or email provider.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-15-email-notifications-for-repository-push-events-have-been-retired">Email notifications for repository push events have been retired</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Retired]]></category>
+<category domain="changelog-label"><![CDATA[community engagement]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99517</post-id>	</item>
+		<item>
+		<title>HydraFusion updates and new Max option</title>
+		<link>https://github.blog/changelog/2026-10-14-hydrafusion-updates-and-new-max-option</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Wed, 14 Oct 2026 20:01:35 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-14-hydrafusion-updates-and-new-max-option</guid>
+
+					<description><![CDATA[<p>HydraFusion has an updated model pool, improved orchestration workflows, and introduces HydraFusion Max. Both HydraFusion and HydraFusion Max are available across VS Code, the GitHub Copilot app, and GitHub Copilot&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-14-hydrafusion-updates-and-new-max-option">HydraFusion updates and new Max option</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>HydraFusion has an updated model pool, improved orchestration workflows, and introduces HydraFusion Max. Both HydraFusion and HydraFusion Max are available across VS Code, the GitHub Copilot app, and GitHub Copilot CLI and remain in research preview.</p>
+<p>HydraFusion orchestrates multiple models to produce a single response, bringing together their strengths so you don&rsquo;t have to choose an individual model for each task.</p>
+<h2 id="whats-new-in-hydrafusion" id="whats-new-in-hydrafusion" ><a class="heading-link" href="#whats-new-in-hydrafusion">What&rsquo;s new in HydraFusion<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<ul>
+<li><strong>Latest frontier models:</strong> HydraFusion and HydraFusion Max draw from a pool that now includes Claude Opus 5.5, GPT-6 Astra, GPT-6.1 Sol, and GPT-6 Luna. The models used for each task vary based on the orchestration workflow.</li>
+<li><strong>Reasoning effort tailored to each step:</strong> Previously, HydraFusion only used each model&rsquo;s default reasoning effort. With this update, it explicitly tailors effort to each stage, using medium effort for initial drafts and high effort for review. This keeps drafting efficient while dedicating deeper reasoning to checking and improving the work.</li>
+<li><strong>Optimized Cascade and Critique workflows:</strong>
+<ul>
+<li><strong>Cascade:</strong> Previously used an initial model to solve the task, with escalation to a stronger model when needed. It can now include a judging step that inspects the initial work and requests a repair only when needed.</li>
+<li><strong>Critique:</strong> Previously relied heavily on text summaries. It now relies more on tools to inspect the actual workspace directly. Critique now also uses parallel critic models to inspect work.</li>
+</ul>
+</li>
+</ul>
+<h2 id="introducing-hydrafusion-max" id="introducing-hydrafusion-max" ><a class="heading-link" href="#introducing-hydrafusion-max">Introducing HydraFusion Max<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>HydraFusion Max is built on the same architecture and uses the same workflow techniques as HydraFusion, but is tuned for frontier capability on more demanding tasks. It applies higher reasoning efforts where depth and thoroughness matter most, while still using orchestration to consider token efficiency.</p>
+<div data-target="content-table-wrap.container" class="content-table-wrap"><content-table-wrap><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Typical use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HydraFusion</strong></td>
+<td>Balanced approach with moderate token savings.</td>
+<td>Agentic tasks that require a balance of speed, cost, and performance.</td>
+</tr>
+<tr>
+<td><strong>HydraFusion Max</strong></td>
+<td>Frontier capability for more demanding tasks, with token efficiency considered through orchestration.</td>
+<td>Tasks requiring the deepest possible reasoning and most thorough analysis.</td>
+</tr>
+</tbody>
+</table></content-table-wrap></div>
+<p>Both options are supported across all three clients, so you can access the latest HydraFusion experience whether you work in VS Code, the GitHub Copilot app, or the terminal.</p>
+<p>HydraFusion and HydraFusion Max are available on Copilot Pro, Pro+, Business, and Enterprise plans with experimental or preview features enabled, subject to your organization&rsquo;s model policies.</p>
+<p>Learn more in the <a href="https://docs.github.com/en/early-access/copilot/hydrafusion">HydraFusion documentation</a>.</p>
+<p>Share your feedback in the <a href="https://github.com/orgs/community/discussions/206492">HydraFusion discussion</a>.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-14-hydrafusion-updates-and-new-max-option">HydraFusion updates and new Max option</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[copilot]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99513</post-id>	</item>
+		<item>
+		<title>GitHub Actions workflow lockfiles in public preview</title>
+		<link>https://github.blog/changelog/2026-10-14-github-actions-workflow-lockfiles-in-public-preview</link>
+		
+		<dc:creator><![CDATA[Allison]]></dc:creator>
+		<pubDate>Wed, 14 Oct 2026 13:49:15 +0000</pubDate>
+				<guid isPermaLink="false">https://github.blog/changelog/2026-10-12-github-actions-workflow-lockfiles-in-public-preview</guid>
+
+					<description><![CDATA[<p>GitHub Actions workflow dependency lockfiles are now in public preview for GitHub Enterprise Cloud, GitHub Enterprise Cloud with data residency, Team, and Free plans. Tags and branches can move after&#8230;</p>
+<p>The post <a href="https://github.blog/changelog/2026-10-14-github-actions-workflow-lockfiles-in-public-preview">GitHub Actions workflow lockfiles in public preview</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></description>
+										<content:encoded><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p>GitHub Actions workflow dependency lockfiles are now in public preview for GitHub Enterprise Cloud, GitHub Enterprise Cloud with data residency, Team, and Free plans. Tags and branches can move after you review a workflow, so a later run might execute different code. Lockfiles let you keep those references in your workflow while running the exact commits you locked.</p>
+<p><em>Editor&rsquo;s note (October 14th, 2026): Updated which plans have access to this public preview.</em></p>
+<p>If an action is compromised, a moved tag or branch can introduce malicious code into your workflow without a change to your repository. Lockfiles help protect against unexpected dependency changes by keeping workflow runs tied to the commits you locked. Locking does not determine whether the dependency itself is safe, so review dependencies before locking them.</p>
+<p>Install the <code>gh actions-lock</code> extension for the GitHub CLI to create and maintain your workflow lockfile. With the extension, you can:</p>
+<ul>
+<li><strong>Pin your dependencies:</strong> Generate <code>.github/workflows/actions.lock</code> with reviewable commits for actions and their transitive dependencies, as well as reusable workflow dependencies.</li>
+<li><strong>Adopt locking gradually:</strong> Onboard workflows individually. Once onboarded, a workflow must have lockfile entries for its dependencies, and GitHub Actions runs the recorded commits.</li>
+<li><strong>Keep workflow runs consistent:</strong> GitHub Actions requires each dependency of an onboarded workflow to be in the lockfile and uses its recorded commit, even if a tag or branch moves.</li>
+<li><strong>Check for stale lockfiles:</strong> Verify that the lockfile is up to date without modifying files, including in a CI check.</li>
+</ul>
+<p>The <strong>Require lockfile</strong> policy is also available in public preview. Enterprise, organization, and repository administrators can require workflows to use lockfiles across their enterprise, organization, or repository.</p>
+<h2 id="keep-locked-dependencies-up-to-date-with-dependabot" id="keep-locked-dependencies-up-to-date-with-dependabot" ><a class="heading-link" href="#keep-locked-dependencies-up-to-date-with-dependabot">Keep locked dependencies up to date with Dependabot<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>Dependabot helps you keep your GitHub Actions dependencies up to date. When it opens a version update for an action in a workflow that is already onboarded, it also regenerates the matching lockfile entry in the same pull request, keeping the updated workflow reference and its locked commit in sync without additional configuration. Read more about <a href="https://docs.github.com/code-security/concepts/supply-chain-security/dependabot-version-updates#updates-for-actions">Dependabot updates for actions</a>.</p>
+<h2 id="get-started" id="get-started" ><a class="heading-link" href="#get-started">Get started<span class="heading-hash pl-2 text-italic text-bold" aria-hidden="true"></span></a></h2>
+<p>To get started, install the extension from the <a href="https://github.com/github/gh-actions-lock">public gh-actions-lock repository</a>, then review and commit the generated lockfile and workflow changes.</p>
+<p>For more details and links to setup instructions, see <a href="https://docs.github.com/actions/concepts/security/workflow-dependency-lockfiles">workflow dependency lockfiles</a> in GitHub Docs.</p>
+<p>Share feedback in the <a href="https://github.com/orgs/community/discussions/194494">existing community discussion</a> or <a href="https://github.com/github/gh-actions-lock/issues">open an issue in the gh-actions-lock repository</a>.</p>
+<p>Thank you to the community members who helped shape this preview through testing and feedback, with special thanks to Andrew Nesbitt, Fran&ccedil;ois Proulx, Jesse Houwing, and William Woodruff for their close collaboration and iteration on this solution over the past year.</p>
+</body></html>
+<p>The post <a href="https://github.blog/changelog/2026-10-14-github-actions-workflow-lockfiles-in-public-preview">GitHub Actions workflow lockfiles in public preview</a> appeared first on <a href="https://github.blog">The GitHub Blog</a>.</p>
+]]></content:encoded>
+					
+		
+		
+		<category domain="changelog-type"><![CDATA[Release]]></category>
+<category domain="changelog-label"><![CDATA[actions]]></category>
+<post-id xmlns="com-wordpress:feed-additions:1">99443</post-id>	</item>
+	</channel>
+</rss>

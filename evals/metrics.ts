@@ -23,6 +23,7 @@ import {
   type MetricUnit,
   type WeekDetail,
 } from './schema.js';
+import type { SourceResult } from './sourceEval.js';
 
 /** Spec: below this agreement with the maintainer the judge's scores are reported, not gated. */
 export const JUDGE_AGREEMENT_MIN = 0.8;
@@ -69,6 +70,9 @@ export const GATES: Readonly<Record<MetricId, Gate>> = {
   writerWinRate: { kind: 'none' },
   stability: soft('atLeast', 4),
   runTime: { kind: 'none' },
+  // Wave 6: the input side of the digest. Soft, so a weak source shows up red without failing.
+  sourceParse: soft('atLeast', 0.95),
+  sourceSummaryFill: soft('atLeast', 0.9),
 };
 
 const METRIC_META: Readonly<Record<MetricId, { label: string; unit: MetricUnit }>> = {
@@ -86,6 +90,8 @@ const METRIC_META: Readonly<Record<MetricId, { label: string; unit: MetricUnit }
   writerWinRate: { label: 'Writer win rate', unit: 'ratio' },
   stability: { label: 'Stability', unit: 'count' },
   runTime: { label: 'Run time', unit: 'ms' },
+  sourceParse: LATER_METRICS.sourceParse,
+  sourceSummaryFill: LATER_METRICS.sourceSummaryFill,
 };
 
 /** One metric's number. `value` is null when the eval set had nothing to measure it with. */
@@ -617,4 +623,52 @@ export function assembleMetrics(
 /** Hard gates that did not pass. Any entry makes `digest eval` exit with code 1. */
 export function failedHardGates(metrics: Readonly<Record<MetricId, MetricResult>>): MetricId[] {
   return METRIC_IDS.filter((id) => metrics[id].gate.kind === 'hard' && metrics[id].pass === false);
+}
+
+// --- Sources (W6-01) ----------------------------------------------------------------------
+
+interface SourceCounts {
+  sourceId: string;
+  good: number;
+  total: number;
+}
+
+/** Pooled ratio, a ratio per source in `detail`, and the sources below the gate in the note. */
+function sourceMeasurement(counts: readonly SourceCounts[], gate: Gate): Measurement {
+  const measuredSources = counts.filter(({ total }) => total > 0);
+  const total = measuredSources.reduce((sum, c) => sum + c.total, 0);
+  if (total === 0) return { value: null };
+  const ratios = measuredSources.map((c) => [c.sourceId, Math.min(1, c.good / c.total)] as const);
+  const below = ratios.filter(([, ratio]) => evaluateGate(gate, ratio, null).pass === false);
+  return {
+    value: Math.min(1, measuredSources.reduce((sum, c) => sum + c.good, 0) / total),
+    detail: Object.fromEntries(ratios),
+    ...(below.length > 0 ? { note: `below the gate: ${below.map(([id]) => id).join(', ')}` } : {}),
+  };
+}
+
+/** Items parsed over items expected, over every recorded source. */
+export function sourceParse(results: readonly SourceResult[]): Measurement {
+  const measurement = sourceMeasurement(
+    results.map((r) => ({ sourceId: r.sourceId, good: r.parsed, total: r.expected })),
+    GATES.sourceParse,
+  );
+  const threw = results.filter((r) => r.error !== undefined).map((r) => r.sourceId);
+  if (threw.length === 0) return measurement;
+  const note = [measurement.note, `fetcher failed: ${threw.join(', ')}`]
+    .filter((part): part is string => part !== undefined)
+    .join('; ');
+  return { ...measurement, note };
+}
+
+/** Parsed items with a summary of at least 40 characters over items parsed. */
+export function sourceSummaryFill(results: readonly SourceResult[]): Measurement {
+  return sourceMeasurement(
+    results.map((r) => ({
+      sourceId: r.sourceId,
+      good: r.parsed - r.emptySummary,
+      total: r.parsed,
+    })),
+    GATES.sourceSummaryFill,
+  );
 }

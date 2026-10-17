@@ -1,0 +1,97 @@
+{
+  "reviewed": true,
+  "entryCount": 10,
+  "items": [
+    {
+      "id": "ad81c0b4930729b9",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.20.1",
+      "title": "transformers v5.20.1: Release v5.20.1",
+      "summary": "Release v5.20.1 Special surprise including the new model Beam from Reflection AI 🥳 Beam is a token-efficient, frontier-scale model focused on coding and agentic use cases. It is built for teams that want to run a powerful model on their own hardware, infrastructure, or cloud, and customize it to their specific needs. Links: Documentation Fix small bug in auto mappings ( #49664 ) by @yonigozlan in #49664 Some real patch fixes We broke loading models on older torch versions 😢 should be fixed now. But here is the full list of fixes Fix HunYuan-VL image assignment during batched generation (...",
+      "publishedAt": "2026-10-16T13:02:29.000Z"
+    },
+    {
+      "id": "75bb450ac9abb666",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.20.0",
+      "title": "transformers v5.20.0: Release v5.20.0",
+      "summary": "Release v5.20.0 New Model additions Muse Spark Open Muse Spark Open is a multimodal mixture-of-experts model from Meta that takes text, images, audio, and video as input and generates text. It has 816B total parameters (42B active per token) and a context window of up to 1,048,576 tokens shared across modalities. It is trained for agentic coding tasks such as multi-file editing, debugging, and tool use. Checkpoints are available in BF16 and NVFP4 formats. Links: Documentation | Blog Post Add Muse Spark Open ( #49644 ) by @guarin in #49644 Ling 3.0 Ling 3.0 Flash is a hybrid...",
+      "publishedAt": "2026-10-15T18:05:36.000Z"
+    },
+    {
+      "id": "beb274ef00cc9345",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.19.0",
+      "title": "transformers v5.19.0: Release v5.19.0",
+      "summary": "Release v5.19.0 New Model additions EmbeddingGemma2 EmbeddingGemma 2 is a multimodal embedding model from Google built on the Gemma 4 architecture. It encodes text, images, audio, and video, individually or combined in one input, into a shared 768-dimensional vector space for cross-modal retrieval, semantic similarity, clustering, and classification. It uses Matryoshka Representation Learning, so embeddings can be truncated to 512, 256, or 128 dimensions. It also offers configurable visual and video token budgets, and unused vision or audio towers can be disabled at load time to save...",
+      "publishedAt": "2026-10-06T16:39:23.000Z"
+    },
+    {
+      "id": "a3f2477a7a4c17f8",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.18.0",
+      "title": "transformers v5.18.0: Release 5.18.0",
+      "summary": "New Model additions Nemotron 3 Diarization Nemotron 3 Diarization is an open-weight streaming speaker diarization model designed to determine \"who spoke when\" in real-world audio. It supports both streaming and offline inference, handles up to eight speakers, and orders speaker outputs by each speaker's first arrival in the input audio. The model uses the Arrival-Order Speaker Cache (AOSC) 1 and FIFO queue introduced for Streaming Sortformer 1 , 2 . A single checkpoint supports configurable latency profiles, from an 80 ms input buffer to a 30.4 s offline-style buffer, and configurable...",
+      "publishedAt": "2026-09-30T16:46:27.000Z"
+    },
+    {
+      "id": "c6a70b623b520248",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.17.0",
+      "title": "transformers v5.17.0: Release 5.17.0",
+      "summary": "Release v5.17.0 New Model additions HYV4 Hy4-Preview is a 780B-parameter mixture-of-experts language model that activates 49B parameters per token. Each MoE layer holds 256 routed experts plus one always-active shared expert and routes every token to 8 of them. The context window is 1M tokens. The architecture combines four features: Multi-head Latent Attention (MLA) compresses keys and values into a low-rank latent ( kv_lora_rank ) that kv_b_proj expands back to one key/value per query head. DeepSeek Sparse Attention (DSA) selects index_topk keys per query with a lightweight indexer....",
+      "publishedAt": "2026-09-10T12:03:18.000Z"
+    },
+    {
+      "id": "05e49555d6885421",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.16.0",
+      "title": "transformers v5.16.0: Release: v5.16.0",
+      "summary": "Release v5.16.0 New Model additions Qwen4-Exp Qwen4-Exp builds on Qwen3.5's hybrid text and multimodal architecture with three key components: GatedResidual (GR), Qwen Sparse Attention (QSA), and Per-Layer Embedding (PLE). GR is a Qwen-developed residual architecture that combines Hyper-Connection with GatedNorm. It mixes multiple residual streams with fine-grained elementwise gating before each attention and Mixture-of-Experts (MoE) block, then controls how much of the block output is injected back into each stream. QSA uses multiple query heads to score compressed key blocks, selects the...",
+      "publishedAt": "2026-08-26T15:03:33.000Z"
+    },
+    {
+      "id": "d4b5c908f621053b",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.16.1",
+      "title": "transformers v5.16.1: Release v5.16.1",
+      "summary": "Release v5.16.1 This is a special release as we include GLM! (and a few small fixes) GLM-5.3-Flash GLM-5.3-Flash, the first natively multimodal model in the GLM-5 series. With 320B total parameters and just 18B active parameters, it outperforms GLM-5.2 across benchmarks and real-world workloads at one-tenth the price, while approaching Claude Opus 4.8 on coding and agentic benchmarks. GLM-5.3-Flash starts from a newly trained base model, with its architecture and training recipe redesigned around capability and efficiency. For the first time in the GLM series, we introduce a hybrid...",
+      "publishedAt": "2026-08-26T14:50:01.000Z"
+    },
+    {
+      "id": "7df98f84a450158b",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.15.1",
+      "title": "transformers v5.15.1: Patch release: v5.15.1",
+      "summary": "Patch release v5.15.1 This patch most notably solves a few issues with DFlash and MTP candidate generators, as well as an issue where images could sometimes not be processed on accelerator if using Lanczos filter. It contains the following commits: Fix DFlash candidate token device mismatch with device_map=\"auto\" ( #47877 ) by @sywangyi and @Cyrilvallez Align logit distributions for CandidateGenerators using sampling ( #48007 ) by @Cyrilvallez Fix MTP config when mlp_layer_types is absent ( #48015 ) by @Cyrilvallez Fallback from 'lanczos' to 'bicubic' when on cuda ( #48026 ) by...",
+      "publishedAt": "2026-08-19T10:50:47.000Z"
+    },
+    {
+      "id": "c07a67b182a2b19f",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.15.0",
+      "title": "transformers v5.15.0: Release: v5.15.0",
+      "summary": "Release v5.15.0 New Model additions Meta Muse Glimmer Muse Glimmer, released today, is Meta’s new multimodal model, especially designed for agentic use cases. Distilled from Muse to 30B parameters, and released under the Apache 2.0 license, it can be deployed to local setups for privacy-aware applications such as coding, document analysis, personal assistants, Claw- or Hermes-like setups. Muse Glimmer is a dense 30B parameter model consisting of: 2B ViT-style encoder for vision (Perception Encoder) 28B parameter text decoder We're covering it in the following blogpost:...",
+      "publishedAt": "2026-08-10T10:28:13.000Z"
+    },
+    {
+      "id": "e711876fcc1e0f35",
+      "sourceId": "transformers-releases",
+      "kind": "github",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.14.1",
+      "title": "transformers v5.14.1: Patch release: v5.14.1",
+      "summary": "Patch release v5.14.1 This patch solves a few issues which appeared when integrating Inkling model, most notably an issue affecting models using EncoderDecoderCache during assisted generation. It also fixes an issue that could appear during prefill with StaticCache and sdpa without padding for Inkling which uses a position_bias. It contains the following commits: Fix sdpa prefill with position_bias ( #47359 ) by @Cyrilvallez Fix assisted decoding for models with EncoderDecoder cache & OlmoHybrid ( #47361 ) by @Cyrilvallez [FP8] Bump kernels version ( #47344 ) by @vasqu Fix deepgemm on...",
+      "publishedAt": "2026-07-16T09:41:36.000Z"
+    }
+  ],
+  "knownGaps": []
+}

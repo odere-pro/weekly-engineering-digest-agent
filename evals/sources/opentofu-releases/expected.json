@@ -1,0 +1,97 @@
+{
+  "reviewed": true,
+  "entryCount": 10,
+  "items": [
+    {
+      "id": "589019a4062cd057",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.12.8",
+      "title": "opentofu v1.12.8",
+      "summary": "SECURITY ADVISORIES: Previous versions of OpenTofu could potentially experience excessive CPU usage if connecting to an attacker-controlled HTTP2 server while installing dependencies in tofu init . ( #4700 ) BUG FIXES: Lifecycle destroy will no longer crash when given an expression with references ( #4648 )",
+      "publishedAt": "2026-10-14T16:20:20.000Z"
+    },
+    {
+      "id": "13d5481fc82d8664",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.12.7",
+      "title": "opentofu v1.12.7",
+      "summary": "SECURITY ADVISORIES: When using either a remote-exec or file provisioner to connect to an attacker-controlled SSH server, the server could previously deadlock the connection by sending certain unexpected packet types. ( #4551 ) This addresses the upstream Go security advisories CVE-2026-78662 and CVE-2026-56855 .",
+      "publishedAt": "2026-10-01T18:40:21.000Z"
+    },
+    {
+      "id": "e3d3555de3a25eac",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1",
+      "title": "opentofu v1.13.1",
+      "summary": "BUG FIXES: tofu show -json <planfile> now works again when ephemeral resources are present in the configuration. ( 4623 ). Ephemeral output values are now always re-evaluated during the apply phase, instead of sometimes using stale values from the planning phase. ( #4582 )",
+      "publishedAt": "2026-10-01T17:15:15.000Z"
+    },
+    {
+      "id": "8869e7983f687a81",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.0",
+      "title": "opentofu v1.13.0",
+      "summary": "OpenTofu 1.13.0 We're proud to announce that OpenTofu 1.13.0 is now officially available! 🎉 Highlights Windows on ARM64 is now a supported platform Starting with OpenTofu v1.13.0 we are now offering official packages targeting Windows on the ARM64 (also known as \"aarch64\") CPU architecture. Reducing unknowns during planning OpenTofu v1.13 introduces a number of new functions that are all intended to allow module authors to give OpenTofu additional hints about what they know to be true even though OpenTofu cannot infer it automatically. Linting Experiment OpenTofu v1.13 includes some very...",
+      "publishedAt": "2026-09-30T13:57:49.000Z"
+    },
+    {
+      "id": "941d07bd48dba6bf",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.0-rc1",
+      "title": "opentofu v1.13.0-rc1",
+      "summary": "The v1.13.x release series is supported until August 1 2027 . 1.13.0 (Unreleased) UPGRADE NOTES: The \"winrm\" connection type for provisioners is no longer supported. ( #4012 ) This connection type was deprecated in OpenTofu v1.12, and now removed in v1.13. Some of the upstream libraries OpenTofu was using to implement these features are no longer maintained, so it's not viable for us to offer this anymore. Modern Windows versions now support OpenSSH , and so we suggest that anyone currently relying on WinRM plan to migrate to using SSH instead. The base64gzip function now generates results...",
+      "publishedAt": "2026-09-17T15:24:48.000Z"
+    },
+    {
+      "id": "46d32feab8b5d29f",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.0-beta1",
+      "title": "opentofu v1.13.0-beta1",
+      "summary": "The v1.13.x release series is supported until August 1 2027 . 1.13.0 (Unreleased) UPGRADE NOTES: The \"winrm\" connection type for provisioners is no longer supported. ( #4012 ) This connection type was deprecated in OpenTofu v1.12, and now removed in v1.13. Some of the upstream libraries OpenTofu was using to implement these features are no longer maintained, so it's not viable for us to offer this anymore. Modern Windows versions now support OpenSSH , and so we suggest that anyone currently relying on WinRM plan to migrate to using SSH instead. The base64gzip function now generates results...",
+      "publishedAt": "2026-08-27T18:01:40.000Z"
+    },
+    {
+      "id": "49238c306f442f1b",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.12.6",
+      "title": "opentofu v1.12.6",
+      "summary": "SECURITY ADVISORIES: When interacting with OCI Distribution registries for module or provider package installation, earlier versions of OpenTofu could incorrectly resend credentials intended for the original origin to the target of an HTTP redirect. ( #4422 ) When interacting with an attacker-controlled remote state backend or provider/module registry, tofu init in earlier versions of OpenTofu could potentially cause high CPU usage and/or high memory usage resolving crafted relative URLs in the API responses. ( #4472 ) Full Changelog : v1.12.5...v1.12.6",
+      "publishedAt": "2026-08-19T11:40:07.000Z"
+    },
+    {
+      "id": "cf29eb498d5e978f",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.11.14",
+      "title": "opentofu v1.11.14",
+      "summary": "SECURITY ADVISORIES: When interacting with OCI Distribution registries for module or provider package installation, previous versions of OpenTofu could incorrectly resend credentials intended for the original origin to the target of an HTTP redirect. ( #4423 ) When interacting with an attacker-controlled remote state backend or provider/module registry, tofu init in earlier versions of OpenTofu could potentially cause high CPU usage and/or high memory usage resolving crafted relative URLs in the API responses. ( #4473 ) Note This is the final patch release planned for the OpenTofu v1.11...",
+      "publishedAt": "2026-08-19T11:39:12.000Z"
+    },
+    {
+      "id": "c42dc20c81fac271",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.12.5",
+      "title": "opentofu v1.12.5",
+      "summary": "SECURITY ADVISORIES: Previous releases in the v1.12 series could be affected by several vulnerabilities: The Encrypted Client Hello implementation (which is used by OpenTofu through the go stdlib) would leak the pre-shared key identities during the handshake, allowing a passive network observer who can collect handshakes to de-anonymize the hostname of the server, even when ECH was being used. This is fixed now by ( #4363 ) BUG FIXES: Fixed bug where implicit moves and provider address changes would incorrectly cause providers.MovedResourceState to be used in place of...",
+      "publishedAt": "2026-07-21T11:39:19.000Z"
+    },
+    {
+      "id": "7f70b7421eb0c170",
+      "sourceId": "opentofu-releases",
+      "kind": "github",
+      "url": "https://github.com/opentofu/opentofu/releases/tag/v1.11.13",
+      "title": "opentofu v1.11.13",
+      "summary": "SECURITY ADVISORIES: Previous releases in the v1.11 series could be affected by several vulnerabilities: The Encrypted Client Hello implementation (which is used by OpenTofu through the go stdlib) would leak the pre-shared key identities during the handshake, allowing a passive network observer who can collect handshakes to de-anonymize the hostname of the server, even when ECH was being used. This is fixed now by ( #4363 ) BUG FIXES: Fixed bug where implicit moves and provider address changes would incorrectly cause providers.MovedResourceState to be used in place of...",
+      "publishedAt": "2026-07-21T11:39:02.000Z"
+    }
+  ],
+  "knownGaps": []
+}

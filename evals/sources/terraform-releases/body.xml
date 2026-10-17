@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:https://github.com/hashicorp/terraform/releases</id>
+  <link type="text/html" rel="alternate" href="https://github.com/hashicorp/terraform/releases"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/hashicorp/terraform/releases.atom"/>
+  <title>Release notes from terraform</title>
+  <updated>2026-10-14T09:53:53Z</updated>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.17.0-rc2</id>
+    <updated>2026-10-14T10:37:18Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.17.0-rc2"/>
+    <title>v1.17.0-rc2</title>
+    <content type="html">&lt;h2&gt;1.17.0-rc2 (October 14, 2026)&lt;/h2&gt;
+&lt;p&gt;NEW FEATURES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Terraform now supports variables and locals in provider requirements (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39153&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39153/hovercard&quot;&gt;#39153&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A new &lt;code&gt;-minimal-refresh&lt;/code&gt; planning option has been added, which will only refresh resources that have proposed changes. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/35290&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/35290/hovercard&quot;&gt;#35290&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;policy: Terraform Policy is now generally available. The &lt;code&gt;-policies&lt;/code&gt; flag for &lt;code&gt;plan&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;, and &lt;code&gt;query&lt;/code&gt; no longer requires an experimental build or the &lt;code&gt;-allow-experimental-features&lt;/code&gt; flag. Query policies evaluate resources discovered by list blocks and report human-readable or JSON results. See &lt;a href=&quot;https://developer.hashicorp.com/terraform/policy&quot; rel=&quot;nofollow&quot;&gt;https://developer.hashicorp.com/terraform/policy&lt;/a&gt; for more information. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38970&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38970/hovercard&quot;&gt;#38970&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;command/init: Enrich log messages with provider versions (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38918&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38918/hovercard&quot;&gt;#38918&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Add mock_provider support for ephemeral resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38928&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38928/hovercard&quot;&gt;#38928&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;command/login: display warning after successful login if user is subject to an organization&#39;s TTL policy&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;funcs: pow and log no longer panic when result is not a number (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38912&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38912/hovercard&quot;&gt;#38912&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ephemeral: Terraform will now use and display diagnostics raised when &lt;em&gt;renewing&lt;/em&gt; an ephemeral resource. This may cause warnings to appear that previously were lost. We expect that any error diagnostics that were previously lost would have caused confusing downstream errors, so we do not anticipate this change to be breaking. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38989&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38989/hovercard&quot;&gt;#38989&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Deterministic dependency ordering in cleanup graph (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38247&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38247/hovercard&quot;&gt;#38247&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: report Unknown and N/A results for policy evaluations of discovered resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39058&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39058/hovercard&quot;&gt;#39058&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: &lt;code&gt;terraform query -policies&lt;/code&gt; now rejects a path that is not a directory, instead of passing it on to the policy engine (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39238&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39238/hovercard&quot;&gt;#39238&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;funcs: The &lt;code&gt;log&lt;/code&gt; and &lt;code&gt;pow&lt;/code&gt; functions now raise errors when they return +/- Infinity, as this result is not usable in downstream code. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39304&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39304/hovercard&quot;&gt;#39304&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;show: Read variable values from the plan file when showing a local plan (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39362&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39362/hovercard&quot;&gt;#39362&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;version: JSON output now includes a new &lt;code&gt;format_version&lt;/code&gt; field, which will enable safer future changes of the command&#39;s JSON output format. It is assumed existing tooling ignores unknown fields and therefore this change should not be breaking in itself but we advice consumers to pay attention to &lt;code&gt;format_version&lt;/code&gt; in future releases and/or use latest version of hashicorp/terraform-json &amp;amp; hashicorp/terraform-exec which does. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38930&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38930/hovercard&quot;&gt;#38930&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Previous Releases&lt;/h2&gt;
+&lt;p&gt;For information on prior major and minor releases, refer to their changelogs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.16/CHANGELOG.md&quot;&gt;v1.16&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.15/CHANGELOG.md&quot;&gt;v1.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.14/CHANGELOG.md&quot;&gt;v1.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.13/CHANGELOG.md&quot;&gt;v1.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.12/CHANGELOG.md&quot;&gt;v1.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.11/CHANGELOG.md&quot;&gt;v1.11&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.10/CHANGELOG.md&quot;&gt;v1.10&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.9/CHANGELOG.md&quot;&gt;v1.9&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.8/CHANGELOG.md&quot;&gt;v1.8&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.7/CHANGELOG.md&quot;&gt;v1.7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.6/CHANGELOG.md&quot;&gt;v1.6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.5/CHANGELOG.md&quot;&gt;v1.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.4/CHANGELOG.md&quot;&gt;v1.4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.3/CHANGELOG.md&quot;&gt;v1.3&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.2/CHANGELOG.md&quot;&gt;v1.2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.1/CHANGELOG.md&quot;&gt;v1.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.0/CHANGELOG.md&quot;&gt;v1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.15/CHANGELOG.md&quot;&gt;v0.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.14/CHANGELOG.md&quot;&gt;v0.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.13/CHANGELOG.md&quot;&gt;v0.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.12/CHANGELOG.md&quot;&gt;v0.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.11/CHANGELOG.md&quot;&gt;v0.11 and earlier&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.6</id>
+    <updated>2026-10-14T09:31:54Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.6"/>
+    <title>v1.16.6</title>
+    <content type="html">&lt;h2&gt;1.16.6 (October 14, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;cloud: &lt;code&gt;terraform init&lt;/code&gt; can now find workspaces selected by key/value tags whose keys contain uppercase letters. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39306&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39306/hovercard&quot;&gt;#39306&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Allow module under test to use deprecated outputs. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39207&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/39207/hovercard&quot;&gt;#39207&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prevent a HTTP/2 resource exhaustion via CVE-2026-78669. Exploitation would require a compromised (untrusted) provider/module registry. Such a threat is considered to be outside the perimeter of Terraform core security guarantees. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39375&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39375/hovercard&quot;&gt;#39375&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.17.0-rc1</id>
+    <updated>2026-10-07T19:46:06Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.17.0-rc1"/>
+    <title>v1.17.0-rc1</title>
+    <content type="html">&lt;h2&gt;1.17.0-rc1 (October 07, 2026)&lt;/h2&gt;
+&lt;p&gt;NEW FEATURES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Terraform now supports variables and locals in provider requirements (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39153&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39153/hovercard&quot;&gt;#39153&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A new &lt;code&gt;-minimal-refresh&lt;/code&gt; planning option has been added, which will only refresh resources that have proposed changes. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/35290&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/35290/hovercard&quot;&gt;#35290&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;policy: Terraform Policy is now generally available. The &lt;code&gt;-policies&lt;/code&gt; flag for &lt;code&gt;plan&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;, and &lt;code&gt;query&lt;/code&gt; no longer requires an experimental build or the &lt;code&gt;-allow-experimental-features&lt;/code&gt; flag. Query policies evaluate resources discovered by list blocks and report human-readable or JSON results. See &lt;a href=&quot;https://developer.hashicorp.com/terraform/policy&quot; rel=&quot;nofollow&quot;&gt;https://developer.hashicorp.com/terraform/policy&lt;/a&gt; for more information. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38970&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38970/hovercard&quot;&gt;#38970&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;command/init: Enrich log messages with provider versions (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38918&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38918/hovercard&quot;&gt;#38918&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Add mock_provider support for ephemeral resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38928&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38928/hovercard&quot;&gt;#38928&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;command/login: display warning after successful login if user is subject to an organization&#39;s TTL policy&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;funcs: pow and log no longer panic when result is not a number (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38912&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38912/hovercard&quot;&gt;#38912&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ephemeral: Terraform will now use and display diagnostics raised when &lt;em&gt;renewing&lt;/em&gt; an ephemeral resource. This may cause warnings to appear that previously were lost. We expect that any error diagnostics that were previously lost would have caused confusing downstream errors, so we do not anticipate this change to be breaking. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38989&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38989/hovercard&quot;&gt;#38989&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Deterministic dependency ordering in cleanup graph (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38247&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38247/hovercard&quot;&gt;#38247&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: report Unknown and N/A results for policy evaluations of discovered resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39058&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39058/hovercard&quot;&gt;#39058&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: &lt;code&gt;terraform query -policies&lt;/code&gt; now rejects a path that is not a directory, instead of passing it on to the policy engine (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39238&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39238/hovercard&quot;&gt;#39238&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;version: JSON output now includes a new &lt;code&gt;format_version&lt;/code&gt; field, which will enable safer future changes of the command&#39;s JSON output format. It is assumed existing tooling ignores unknown fields and therefore this change should not be breaking in itself but we advice consumers to pay attention to &lt;code&gt;format_version&lt;/code&gt; in future releases and/or use latest version of hashicorp/terraform-json &amp;amp; hashicorp/terraform-exec which does. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38930&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38930/hovercard&quot;&gt;#38930&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Previous Releases&lt;/h2&gt;
+&lt;p&gt;For information on prior major and minor releases, refer to their changelogs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.16/CHANGELOG.md&quot;&gt;v1.16&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.15/CHANGELOG.md&quot;&gt;v1.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.14/CHANGELOG.md&quot;&gt;v1.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.13/CHANGELOG.md&quot;&gt;v1.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.12/CHANGELOG.md&quot;&gt;v1.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.11/CHANGELOG.md&quot;&gt;v1.11&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.10/CHANGELOG.md&quot;&gt;v1.10&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.9/CHANGELOG.md&quot;&gt;v1.9&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.8/CHANGELOG.md&quot;&gt;v1.8&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.7/CHANGELOG.md&quot;&gt;v1.7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.6/CHANGELOG.md&quot;&gt;v1.6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.5/CHANGELOG.md&quot;&gt;v1.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.4/CHANGELOG.md&quot;&gt;v1.4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.3/CHANGELOG.md&quot;&gt;v1.3&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.2/CHANGELOG.md&quot;&gt;v1.2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.1/CHANGELOG.md&quot;&gt;v1.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.0/CHANGELOG.md&quot;&gt;v1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.15/CHANGELOG.md&quot;&gt;v0.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.14/CHANGELOG.md&quot;&gt;v0.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.13/CHANGELOG.md&quot;&gt;v0.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.12/CHANGELOG.md&quot;&gt;v0.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.11/CHANGELOG.md&quot;&gt;v0.11 and earlier&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.5</id>
+    <updated>2026-10-02T13:04:00Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.5"/>
+    <title>v1.16.5</title>
+    <content type="html">&lt;h2&gt;1.16.5 (September 30, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Fixed a crash that happens when a tainted instance state is seen without a valid status (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39287&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39287/hovercard&quot;&gt;#39287&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;resource-identity: fixed an issue where resource identity could be nil during delete (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39285&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/39285/hovercard&quot;&gt;#39285&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.17.0-beta2</id>
+    <updated>2026-09-23T15:48:24Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.17.0-beta2"/>
+    <title>v1.17.0-beta2</title>
+    <content type="html">&lt;h2&gt;1.17.0-beta2 (September 23, 2026)&lt;/h2&gt;
+&lt;p&gt;NEW FEATURES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Terraform now supports variables and locals in provider requirements (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39153&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39153/hovercard&quot;&gt;#39153&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A new &lt;code&gt;-minimal-refresh&lt;/code&gt; planning option has been added, which will only refresh resources that have proposed changes. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/35290&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/35290/hovercard&quot;&gt;#35290&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;policy: Terraform Policy is now generally available. The &lt;code&gt;-policies&lt;/code&gt; flag for &lt;code&gt;plan&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;, and &lt;code&gt;query&lt;/code&gt; no longer requires an experimental build or the &lt;code&gt;-allow-experimental-features&lt;/code&gt; flag. Query policies evaluate resources discovered by list blocks and report human-readable or JSON results. See &lt;a href=&quot;https://developer.hashicorp.com/terraform/policy&quot; rel=&quot;nofollow&quot;&gt;https://developer.hashicorp.com/terraform/policy&lt;/a&gt; for more information. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38970&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38970/hovercard&quot;&gt;#38970&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;command/init: Enrich log messages with provider versions (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38918&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38918/hovercard&quot;&gt;#38918&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Add mock_provider support for ephemeral resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38928&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38928/hovercard&quot;&gt;#38928&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;command/login: display warning after successful login if user is subject to an organization&#39;s TTL policy&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;funcs: pow and log no longer panic when result is not a number (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38912&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38912/hovercard&quot;&gt;#38912&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ephemeral: Terraform will now use and display diagnostics raised when &lt;em&gt;renewing&lt;/em&gt; an ephemeral resource. This may cause warnings to appear that previously were lost. We expect that any error diagnostics that were previously lost would have caused confusing downstream errors, so we do not anticipate this change to be breaking. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38989&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38989/hovercard&quot;&gt;#38989&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Deterministic dependency ordering in cleanup graph (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38247&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38247/hovercard&quot;&gt;#38247&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: report Unknown and N/A results for policy evaluations of discovered resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39058&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39058/hovercard&quot;&gt;#39058&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: &lt;code&gt;terraform query -policies&lt;/code&gt; now rejects a path that is not a directory, instead of passing it on to the policy engine (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39238&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39238/hovercard&quot;&gt;#39238&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;version: JSON output now includes a new &lt;code&gt;format_version&lt;/code&gt; field, which will enable safer future changes of the command&#39;s JSON output format. It is assumed existing tooling ignores unknown fields and therefore this change should not be breaking in itself but we advice consumers to pay attention to &lt;code&gt;format_version&lt;/code&gt; in future releases and/or use latest version of hashicorp/terraform-json &amp;amp; hashicorp/terraform-exec which does. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38930&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38930/hovercard&quot;&gt;#38930&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Previous Releases&lt;/h2&gt;
+&lt;p&gt;For information on prior major and minor releases, refer to their changelogs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.16/CHANGELOG.md&quot;&gt;v1.16&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.15/CHANGELOG.md&quot;&gt;v1.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.14/CHANGELOG.md&quot;&gt;v1.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.13/CHANGELOG.md&quot;&gt;v1.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.12/CHANGELOG.md&quot;&gt;v1.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.11/CHANGELOG.md&quot;&gt;v1.11&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.10/CHANGELOG.md&quot;&gt;v1.10&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.9/CHANGELOG.md&quot;&gt;v1.9&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.8/CHANGELOG.md&quot;&gt;v1.8&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.7/CHANGELOG.md&quot;&gt;v1.7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.6/CHANGELOG.md&quot;&gt;v1.6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.5/CHANGELOG.md&quot;&gt;v1.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.4/CHANGELOG.md&quot;&gt;v1.4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.3/CHANGELOG.md&quot;&gt;v1.3&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.2/CHANGELOG.md&quot;&gt;v1.2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.1/CHANGELOG.md&quot;&gt;v1.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.0/CHANGELOG.md&quot;&gt;v1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.15/CHANGELOG.md&quot;&gt;v0.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.14/CHANGELOG.md&quot;&gt;v0.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.13/CHANGELOG.md&quot;&gt;v0.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.12/CHANGELOG.md&quot;&gt;v0.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.11/CHANGELOG.md&quot;&gt;v0.11 and earlier&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.4</id>
+    <updated>2026-09-23T12:44:16Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.4"/>
+    <title>v1.16.4</title>
+    <content type="html">&lt;h2&gt;1.16.4 (September 23, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Fixed an issue where Terraform fails when rendering policy evaluation outcomes for older versions of Terraform Enterprise (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39095&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39095/hovercard&quot;&gt;#39095&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;stacks: Fix invalid deferred error triggered by provider returning a deferral when a resource also has an unknown count/for_each. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39237&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39237/hovercard&quot;&gt;#39237&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.3</id>
+    <updated>2026-09-16T14:33:39Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.3"/>
+    <title>v1.16.3</title>
+    <content type="html">&lt;h2&gt;1.16.3 (September 16, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Fix handling of destroy=false around create_before_destroy instances (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39169&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39169/hovercard&quot;&gt;#39169&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fix function result comparison when there are multiple marks (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39170&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39170/hovercard&quot;&gt;#39170&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Filter logic for marks could cause values with multiple marks to erroneously fail validations (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39171&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39171/hovercard&quot;&gt;#39171&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fix issue with import provider resolution (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39185&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39185/hovercard&quot;&gt;#39185&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.17.0-beta1</id>
+    <updated>2026-09-09T17:13:24Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.17.0-beta1"/>
+    <title>v1.17.0-beta1</title>
+    <content type="html">&lt;h2&gt;1.17.0-beta1 (September 09, 2026)&lt;/h2&gt;
+&lt;p&gt;NEW FEATURES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Terraform now supports variables and locals in provider requirements (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39153&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39153/hovercard&quot;&gt;#39153&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A new &lt;code&gt;-minimal-refresh&lt;/code&gt; planning option has been added, which will only refresh resources that have proposed changes. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/35290&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/35290/hovercard&quot;&gt;#35290&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;policy: Terraform Policy is now generally available. The &lt;code&gt;-policies&lt;/code&gt; flag for &lt;code&gt;plan&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;, and &lt;code&gt;init&lt;/code&gt; no longer requires the &lt;code&gt;-allow-experimental-features&lt;/code&gt; flag. See &lt;a href=&quot;https://developer.hashicorp.com/terraform/policy&quot; rel=&quot;nofollow&quot;&gt;https://developer.hashicorp.com/terraform/policy&lt;/a&gt; for more information. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38970&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38970/hovercard&quot;&gt;#38970&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;command/init: Enrich log messages with provider versions (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38918&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38918/hovercard&quot;&gt;#38918&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Add mock_provider support for ephemeral resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38928&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38928/hovercard&quot;&gt;#38928&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;command/login: display warning after successful login if user is subject to an organization&#39;s TTL policy&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;funcs: pow and log no longer panic when result is not a number (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38912&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38912/hovercard&quot;&gt;#38912&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ephemeral: Terraform will now use and display diagnostics raised when &lt;em&gt;renewing&lt;/em&gt; an ephemeral resource. This may cause warnings to appear that previously were lost. We expect that any error diagnostics that were previously lost would have caused confusing downstream errors, so we do not anticipate this change to be breaking. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38989&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38989/hovercard&quot;&gt;#38989&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;test: Deterministic dependency ordering in cleanup graph (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38247&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38247/hovercard&quot;&gt;#38247&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;query: report Unknown and N/A results for policy evaluations of discovered resources (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39058&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39058/hovercard&quot;&gt;#39058&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;version: JSON output now includes a new &lt;code&gt;format_version&lt;/code&gt; field, which will enable safer future changes of the command&#39;s JSON output format. It is assumed existing tooling ignores unknown fields and therefore this change should not be breaking in itself but we advice consumers to pay attention to &lt;code&gt;format_version&lt;/code&gt; in future releases and/or use latest version of hashicorp/terraform-json &amp;amp; hashicorp/terraform-exec which does. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38930&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38930/hovercard&quot;&gt;#38930&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Previous Releases&lt;/h2&gt;
+&lt;p&gt;For information on prior major and minor releases, refer to their changelogs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.16/CHANGELOG.md&quot;&gt;v1.16&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.15/CHANGELOG.md&quot;&gt;v1.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.14/CHANGELOG.md&quot;&gt;v1.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.13/CHANGELOG.md&quot;&gt;v1.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.12/CHANGELOG.md&quot;&gt;v1.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.11/CHANGELOG.md&quot;&gt;v1.11&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.10/CHANGELOG.md&quot;&gt;v1.10&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.9/CHANGELOG.md&quot;&gt;v1.9&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.8/CHANGELOG.md&quot;&gt;v1.8&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.7/CHANGELOG.md&quot;&gt;v1.7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.6/CHANGELOG.md&quot;&gt;v1.6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.5/CHANGELOG.md&quot;&gt;v1.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.4/CHANGELOG.md&quot;&gt;v1.4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.3/CHANGELOG.md&quot;&gt;v1.3&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.2/CHANGELOG.md&quot;&gt;v1.2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.1/CHANGELOG.md&quot;&gt;v1.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v1.0/CHANGELOG.md&quot;&gt;v1.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.15/CHANGELOG.md&quot;&gt;v0.15&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.14/CHANGELOG.md&quot;&gt;v0.14&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.13/CHANGELOG.md&quot;&gt;v0.13&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.12/CHANGELOG.md&quot;&gt;v0.12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hashicorp/terraform/blob/v0.11/CHANGELOG.md&quot;&gt;v0.11 and earlier&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.2</id>
+    <updated>2026-09-09T13:22:31Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.2"/>
+    <title>v1.16.2</title>
+    <content type="html">&lt;h2&gt;1.16.2 (September 9, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fix panic in module installation when encoutering invalid module calls (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39129&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39129/hovercard&quot;&gt;#39129&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/17728164/v1.16.1</id>
+    <updated>2026-09-02T14:49:32Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/hashicorp/terraform/releases/tag/v1.16.1"/>
+    <title>v1.16.1</title>
+    <content type="html">&lt;h2&gt;1.16.1 (September 2, 2026)&lt;/h2&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;cloud: Fixed a bug causing the CLI to pause indefinitely after a run task failure with pending policy evaluations (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38751&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38751/hovercard&quot;&gt;#38751&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Support referencing modules containing dynamic sources in Terraform Test (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38950&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38950/hovercard&quot;&gt;#38950&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;stacks: Fixed validation to ensure the provider versions in the lock file and configuration are compatible. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/38829&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/38829/hovercard&quot;&gt;#38829&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fix panic when import identity references sensitive value (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39013&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/39013/hovercard&quot;&gt;#39013&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;import: Fixed a bug where import blocks would be ignored when multiple imports targeted different instances of a resource config using &lt;code&gt;for_each&lt;/code&gt; or &lt;code&gt;count&lt;/code&gt;. (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39068&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/hashicorp/terraform/issues/39068/hovercard&quot;&gt;#39068&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;state show: Fix a panic when given an attribute path instead of a resource instance address (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39087&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39087/hovercard&quot;&gt;#39087&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fix create_before_destroy ordering in some combinations of changes (&lt;a href=&quot;https://github.com/hashicorp/terraform/issues/39091&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/hashicorp/terraform/pull/39091/hovercard&quot;&gt;#39091&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>hc-github-team-es-release-engineering</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/82989873?s=60&amp;v=4"/>
+  </entry>
+</feed>

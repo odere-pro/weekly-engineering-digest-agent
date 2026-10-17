@@ -249,6 +249,7 @@ describe('loadEvalCases', () => {
       attacks: [],
       grounding: [],
       calibration: null,
+      sources: [],
     });
   });
 

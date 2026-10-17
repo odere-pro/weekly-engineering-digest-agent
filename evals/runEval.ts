@@ -40,6 +40,8 @@ import {
   formatCompliance,
   groundedness,
   guardAttackRecall,
+  sourceParse,
+  sourceSummaryFill,
   guardFalseBlocks,
   linkValidity,
   mustExcludeLeaks,
@@ -57,6 +59,14 @@ import {
   type Measurement,
   type WeekHits,
 } from './metrics.js';
+import {
+  defaultFetcherFactories,
+  evaluateSources,
+  loadSourceRecordings,
+  type SourceFetcherFactories,
+  type SourceRecording,
+  type SourceResult,
+} from './sourceEval.js';
 import {
   AttackCaseSchema,
   ClassifierCasesFileSchema,
@@ -115,6 +125,8 @@ export interface EvalDeps {
    * (`EVAL_JUDGE`, system-design D16). Without it, writing quality stays unmeasured there.
    */
   judge?: EvalJudge;
+  /** Fetchers run over the source recordings. Default: the real RSS and GitHub fetchers. */
+  sourceFetchers?: SourceFetcherFactories;
 }
 
 // --- Loading the eval set -------------------------------------------------------------------
@@ -131,6 +143,7 @@ export interface EvalCases {
   attacks: AttackCase[];
   grounding: GroundingCase[];
   calibration: JudgeCalibration | null;
+  sources: SourceRecording[];
 }
 
 function isNotFound(error: unknown): boolean {
@@ -293,6 +306,7 @@ export async function loadEvalCases(casesDir: string): Promise<EvalCases> {
     grounding: await loadCaseDir(join(casesDir, 'grounding'), GroundingCaseSchema, 'grounding'),
     calibration:
       (await readJson(join(casesDir, 'judge', 'calibration.json'), JudgeCalibrationSchema)) ?? null,
+    sources: await loadSourceRecordings(join(casesDir, 'sources')),
   };
 }
 
@@ -606,6 +620,8 @@ interface EvalRun {
   grounding: GroundingResults;
   /** The eval judge's scores of the winners; undefined when it was never asked. */
   judged: JudgedWinners | undefined;
+  /** One result per recorded source; measured before any model call. */
+  sources: SourceResult[];
 }
 
 function winnerScore(record: RunRecord): number | undefined {
@@ -677,6 +693,8 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
   return {
     linkValidity: weeks(linkValidity([...weekSamples, ...attackSamples])),
     attackHandling: attacks(attackMeasurement(run.attack, run.weekRuns[0]?.run)),
+    sourceParse: sourceParse(run.sources),
+    sourceSummaryFill: sourceSummaryFill(run.sources),
     guardAttackRecall: attacks(
       guardAttackRecall(run.attack?.outcomes ?? [], run.attack?.run.record.disabledGuards ?? []),
     ),
@@ -725,6 +743,7 @@ function buildScorecard(scoring: Scoring): Scorecard {
       classifier: cases.classifier.cases.length,
       attacks: cases.attacks.length,
       grounding: cases.grounding.length,
+      sources: cases.sources.length,
     },
     judgeAgreement,
     models: {
@@ -743,6 +762,11 @@ function buildScorecard(scoring: Scoring): Scorecard {
 }
 
 async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Promise<EvalRun> {
+  // First, and without a model: the recordings need none.
+  const sources = await evaluateSources(
+    cases.sources,
+    deps.sourceFetchers ?? defaultFetcherFactories,
+  );
   // One thing at a time: a single model is loaded at a time on the eval machine.
   const weekRuns: WeekRun[] = [];
   for (const week of cases.weeks) {
@@ -768,7 +792,7 @@ async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Prom
           app.logger,
         )
       : undefined;
-  return { weekRuns, stabilityIds, attack, classifier, grounding, judged };
+  return { weekRuns, stabilityIds, attack, classifier, grounding, judged, sources };
 }
 
 /** Runs the whole eval set on one profile and returns its scorecard. Nothing is written. */

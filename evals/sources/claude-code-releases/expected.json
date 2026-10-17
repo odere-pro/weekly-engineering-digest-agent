@@ -1,0 +1,97 @@
+{
+  "reviewed": true,
+  "entryCount": 10,
+  "items": [
+    {
+      "id": "9951decf1ff354d0",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.302",
+      "title": "claude-code v2.1.302",
+      "summary": "What's changed Added CLAUDE_CODE_AUTO_MODE_MODEL to choose the model the client-side auto mode classifier uses; it does not change the model for server-side auto mode Added an Idle compaction row to /config for turning idle compaction off or back on; the notices shown after an idle compaction now say how to turn it off Added a notice to /design-sync and /design-login that standalone Claude Design (claude.ai/design) closes by December 14, 2026 Fixed a \"Prompt is too long\" error when stopping a turn while the conversation was being compacted Fixed requests failing with \"diagnostics: Extra...",
+      "publishedAt": "2026-10-16T20:53:06.000Z"
+    },
+    {
+      "id": "dca7cce8dcd1782c",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.301",
+      "title": "claude-code v2.1.301",
+      "summary": "What's changed Added CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS so unattended retry mode ( CLAUDE_CODE_RETRY_WATCHDOG ) ends a request at a usage limit that resets too far away instead of waiting Added OpenTelemetry tracing guidance to the claude-api skill, including setting up trace destinations with the ant CLI Added the % motion to vim mode: jump to the matching bracket, alone or with d/c/y Added rows to a mod's Input : a text field of several lines in the terminal, where Enter submits and Shift+Enter or a backslash before Enter starts a new line Added classifier_verdict and...",
+      "publishedAt": "2026-10-15T19:22:06.000Z"
+    },
+    {
+      "id": "5dc7e9d03eb17a01",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.300",
+      "title": "claude-code v2.1.300",
+      "summary": "What's changed Added virtualText to a mod's prompt decorations: text drawn in the prompt box that never enters the draft or the submitted prompt Added cache_creation_5m_tokens and cache_creation_1h_tokens to the OpenTelemetry api_request event, splitting cache writes by lifetime Added $.ui.view({ agentId }) for mods: shows an agent's transcript in the main view when you ask, and $.ui.view({}) goes back Added a dir prop on a mod's Text for right-to-left text: on Windows and in VS Code's terminal its rows read in that direction and sit flush right Added /advisor on Claude Platform on AWS; no...",
+      "publishedAt": "2026-10-14T18:24:25.000Z"
+    },
+    {
+      "id": "fd1cb9e783625459",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.299",
+      "title": "claude-code v2.1.299",
+      "summary": "What's changed Added CLAUDE_CODE_DISABLE_FILE_MENTIONS environment variable: Claude gets the paths of @ file mentions to read with its file tools, not the files' contents Added idle compaction in the terminal: a 200K+ token conversation left idle for about 54 minutes is compacted before its one-hour prompt cache expires, so your next message doesn't reprocess it all Added CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS to change idle compaction's 200K-token minimum; \"idleCompaction\": false in settings.json turns it off. Both need v2.1.290 or later Added $.prompt.media so a prompt.submit hook of a mod...",
+      "publishedAt": "2026-10-14T02:49:42.000Z"
+    },
+    {
+      "id": "e75aaf1e12900808",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.296",
+      "title": "claude-code v2.1.296",
+      "summary": "What's changed Added a code key to the Claude apps gateway's managed.policies[] : the same settings as cli , also applied in Claude Desktop's Code tab; beside desktop , it turns on Claude Desktop's gateway mode Added autoCompactWindow to subagent frontmatter and --agents definitions, so a subagent can auto-compact earlier than the main conversation's window Added CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL to run every workflow agent on one model while other subagents keep theirs Added CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS environment variable to set a longer maximum delay for the backoff when...",
+      "publishedAt": "2026-10-09T19:28:59.000Z"
+    },
+    {
+      "id": "92349bd4a8c11233",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.295",
+      "title": "claude-code v2.1.295",
+      "summary": "What's changed Added onFailure: \"block\" for command and HTTP hooks: a hook that can't start, times out, or exits with an unexpected code blocks the action instead of letting it through Added Program Status Protocol (OSC 7501) support: terminals that implement it can show whether Claude Code is working, waiting on you, or done Added quoted text to the /copy picker, so a drafted message copies without its > markers Added a warning to claude plugin install , enable , disable and marketplace add when the settings file they write to does not load Added a line on stderr, when it is a terminal,...",
+      "publishedAt": "2026-10-08T19:48:38.000Z"
+    },
+    {
+      "id": "0dfdf17053d5d17a",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.294",
+      "title": "claude-code v2.1.294",
+      "summary": "What's changed Fixed prompt and agent hooks written as instructions (such as \"Block commands that...\") allowing what they should block Improved how prompt hooks on Stop and SubagentStop written as instructions (such as \"Carry on if the build is broken\") are judged, so Claude is less likely to stop early",
+      "publishedAt": "2026-10-08T05:03:54.000Z"
+    },
+    {
+      "id": "0ba886b07133e21d",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.293",
+      "title": "claude-code v2.1.293",
+      "summary": "What's changed Added Claude Haiku 5.5 ( claude-haiku-5-5 ), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K) Added agentType to the subagentStatusLine payload, so scripts can tell custom subagent types apart Added isDeferred to $.tool.register for mods: false lists the tool's schema in the prompt from the start instead of behind tool search Fixed Claude sometimes treating its own last actions before a context compaction as done after it, and retracting or redoing finished work Fixed a memory leak where an HTTP MCP...",
+      "publishedAt": "2026-10-07T18:10:20.000Z"
+    },
+    {
+      "id": "0c734930a759f57a",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.292",
+      "title": "claude-code v2.1.292",
+      "summary": "What's changed Added --marketplace <source> to claude plugin install : adds the marketplace if needed, under the same policy checks as claude plugin marketplace add , then installs the plugin from it Added an effort parameter to the Agent tool, so Claude runs a sub-agent at the effort level you ask for Added CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS environment variable to set a longer base delay for the backoff when retrying an overloaded (529) request Added prompt.autocomplete , an event a mod hooks to add its own rows to the prompt box's autocomplete list Added prompt caching to...",
+      "publishedAt": "2026-10-06T18:59:30.000Z"
+    },
+    {
+      "id": "bb63a15b856259f7",
+      "sourceId": "claude-code-releases",
+      "kind": "github",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.291",
+      "title": "claude-code v2.1.291",
+      "summary": "What's changed Fixed a regression in 2.1.290 where cloud sessions could drop answers to permission prompts Fixed a regression in 2.1.288 where the last messages of a session could be lost when quitting",
+      "publishedAt": "2026-10-06T03:55:19.000Z"
+    }
+  ],
+  "knownGaps": []
+}

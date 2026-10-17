@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:https://github.com/opentofu/opentofu/releases</id>
+  <link type="text/html" rel="alternate" href="https://github.com/opentofu/opentofu/releases"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/opentofu/opentofu/releases.atom"/>
+  <title>Release notes from opentofu</title>
+  <updated>2026-10-14T15:31:53Z</updated>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.12.8</id>
+    <updated>2026-10-14T16:20:20Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.12.8"/>
+    <title>v1.12.8</title>
+    <content type="html">&lt;p&gt;SECURITY ADVISORIES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Previous versions of OpenTofu could potentially experience excessive CPU usage if connecting to an attacker-controlled HTTP2 server while installing dependencies in &lt;code&gt;tofu init&lt;/code&gt;. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4700&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4700/hovercard&quot;&gt;#4700&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Lifecycle destroy will no longer crash when given an expression with references (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4648&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4648/hovercard&quot;&gt;#4648&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.13.1</id>
+    <updated>2026-10-01T17:15:15Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.13.1"/>
+    <title>v1.13.1</title>
+    <content type="html">&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;tofu show -json &amp;lt;planfile&amp;gt;&lt;/code&gt; now works again when ephemeral resources are present in the configuration. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4623&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4623/hovercard&quot;&gt;4623&lt;/a&gt;).&lt;/li&gt;
+&lt;li&gt;Ephemeral output values are now always re-evaluated during the apply phase, instead of sometimes using stale values from the planning phase. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4582&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4582/hovercard&quot;&gt;#4582&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.12.7</id>
+    <updated>2026-10-01T18:40:21Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.12.7"/>
+    <title>v1.12.7</title>
+    <content type="html">&lt;p&gt;SECURITY ADVISORIES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;When using either a &lt;code&gt;remote-exec&lt;/code&gt; or &lt;code&gt;file&lt;/code&gt; provisioner to connect to an attacker-controlled SSH server, the server could previously deadlock the connection by sending certain unexpected packet types. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4551&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4551/hovercard&quot;&gt;#4551&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;This addresses the upstream Go security advisories &lt;a href=&quot;https://www.cve.org/CVERecord?id=CVE-2026-78662&quot; rel=&quot;nofollow&quot;&gt;CVE-2026-78662&lt;/a&gt; and &lt;a href=&quot;https://pkg.go.dev/vuln/GO-2026-6355&quot; rel=&quot;nofollow&quot;&gt;CVE-2026-56855&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.13.0</id>
+    <updated>2026-09-30T13:57:49Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.13.0"/>
+    <title>v1.13.0</title>
+    <content type="html">&lt;h1&gt;OpenTofu 1.13.0&lt;/h1&gt;
+&lt;p&gt;We&#39;re proud to announce that OpenTofu 1.13.0 is now officially available! 🎉&lt;/p&gt;
+&lt;h2&gt;Highlights&lt;/h2&gt;
+&lt;h3&gt;Windows on ARM64 is now a supported platform&lt;/h3&gt;
+&lt;p&gt;Starting with OpenTofu v1.13.0 we are now offering official packages targeting Windows on the ARM64 (also known as &quot;aarch64&quot;) CPU architecture.&lt;/p&gt;
+&lt;h3&gt;Reducing unknowns during planning&lt;/h3&gt;
+&lt;p&gt;OpenTofu v1.13 introduces a number of new functions that are all intended to allow module authors to give OpenTofu additional hints about what they know to be true even though OpenTofu cannot infer it automatically.&lt;/p&gt;
+&lt;h3&gt;Linting Experiment&lt;/h3&gt;
+&lt;p&gt;OpenTofu v1.13 includes some very early work towards built-in &quot;linting&quot; features in OpenTofu, although we are hoping to eventually incorporate other similar needs such as policy enforcement into a single comprehensive feature.&lt;/p&gt;
+&lt;h3&gt;Symbol Libraries Experiment&lt;/h3&gt;
+&lt;p&gt;We&#39;re considering a new kind of artifact called a &quot;Symbol Library&quot;, which is a reusable collection of values, functions, and type aliases that can be imported from all of the same source types that are already supported for modules.&lt;/p&gt;
+&lt;h2&gt;Compatibility Notes&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;base64gzip&lt;/code&gt; produces results that are equivalent but &lt;em&gt;not&lt;/em&gt; byte-for-byte identical to previous versions, this is due to a required golang version upgrade&lt;/li&gt;
+&lt;li&gt;WinRM is no longer supported for provisioners&lt;/li&gt;
+&lt;li&gt;macOS: Requires macOS 13 Ventura or later&lt;/li&gt;
+&lt;li&gt;OpenTofu v1.13 will be the last series that includes official releases for 32 bit CPUs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/opentofu/opentofu/blob/v1.13/CHANGELOG.md&quot;&gt;Full Changelog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://opentofu.org/blog/opentofu-1-13-0&quot; rel=&quot;nofollow&quot;&gt;Blog Post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Thank you for your continued support and testing of the OpenTofu project!&lt;/p&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.13.0-rc1</id>
+    <updated>2026-09-17T15:24:48Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.13.0-rc1"/>
+    <title>v1.13.0-rc1</title>
+    <content type="html">&lt;p&gt;The v1.13.x release series is supported until &lt;strong&gt;August 1 2027&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2&gt;1.13.0 (Unreleased)&lt;/h2&gt;
+&lt;p&gt;UPGRADE NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The &quot;winrm&quot; connection type for provisioners is no longer supported. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4012&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4012/hovercard&quot;&gt;#4012&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;This connection type was deprecated in OpenTofu v1.12, and now removed in v1.13. Some of the upstream libraries OpenTofu was using to implement these features are no longer maintained, so it&#39;s not viable for us to offer this anymore.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse&quot; rel=&quot;nofollow&quot;&gt;Modern Windows versions now support OpenSSH&lt;/a&gt;, and so we suggest that anyone currently relying on WinRM plan to migrate to using SSH instead.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;base64gzip&lt;/code&gt; function now generates results that are equivalent to &lt;em&gt;but not equal to&lt;/em&gt; the results from previous releases, as a result of a new optimized DEFLATE compression implementation.&lt;/p&gt;
+&lt;p&gt;If you use this function as part of an argument to a managed resource then OpenTofu is likely to propose to update or replace the instances of that resource, depending on how the provider responds to the differing base64 data. The new compressed form should nonetheless still decompress to the same sequence of bytes.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenTofu on macOS now requires macOS 13 Ventura or later. Earlier versions are no longer supported.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenTofu v1.13 is the final release series that will include official builds for 32-bit CPU architectures (&lt;code&gt;*_386&lt;/code&gt; and &lt;code&gt;*_arm&lt;/code&gt; platforms).&lt;/p&gt;
+&lt;p&gt;If you are currently relying on our official releases of OpenTofu on one of these platforms then we suggest that you begin planning to migrate to running OpenTofu on a 64-bit CPU architecture (&lt;code&gt;*_amd64&lt;/code&gt; or &lt;code&gt;*_arm64&lt;/code&gt; platforms) before the v1.13 series reaches end-of-life.&lt;/p&gt;
+&lt;p&gt;Third parties may continue to offer their own OpenTofu builds targeting platforms that we don&#39;t officially support. This only affects the official packages published directly by the OpenTofu project in this repository&#39;s release artifacts.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;There are various minor changes to the robustness of file format and wire format parsers in the SSH client implementation used for remote provisioners.&lt;/p&gt;
+&lt;p&gt;This may cause certain invalid input that was previously accepted to now be rejected, in an attempt to better match the expectations of other implementations of these protocols and formats.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;EXPERIMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Symbol Libraries are now available as an experimental feature (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4052&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4052/hovercard&quot;&gt;#4052&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;This new feature adds the capaibility to define re-usable functions and types in hcl-lang based libraries. As this introduces a drastically different way of building modules and sharing functionality, we are looking for early feedback on the design of the language and how it integrates into OpenTofu workflows. If you are interested in this functionality, you can enable to experiment by adding the appropriate experiment to the experiments list in the language block. As it is experimental, it is subject to change before it is marked as stable and should not be relied upon in production.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Basic linting support introduced (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4310&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4310/hovercard&quot;&gt;#4310&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;The linting support can be enabled by using the &lt;code&gt;-lint&lt;/code&gt; flag on the supported commands. By doing so, OpenTofu will run the selected linting rules against the configuration given to OpenTofu and will show warning diagnostics if any issue is found. The functionality is marked as experimental because this is just a first iteration and we want to see how users interact with it and how useful they find it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows on ARM64 is now an officially-supported platform for OpenTofu itself, though this new platform may not be supported by all available provider plugins. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4450&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4450/hovercard&quot;&gt;#4450&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;New function &lt;code&gt;convert&lt;/code&gt; allows converting a given value to a specified type constraint. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4449&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4449/hovercard&quot;&gt;#4449&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Various new functions named with the prefix &lt;code&gt;assume...&lt;/code&gt; allow authors to give OpenTofu additional hints about what&#39;s expected as the final result of an unknown value, potentially allowing more information to be known during the planning phase. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4449&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4449/hovercard&quot;&gt;#4449&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;OpenTofu now uses Unicode 17 algorithms and tables for all string processing that is based on Unicode specifications. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4478&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4478/hovercard&quot;&gt;#4478&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;gcp_kms&lt;/code&gt; encryption key provider now supports an optional &lt;code&gt;additional_authenticated_data&lt;/code&gt; as part of the encryption and decryption operations. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4287&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4287/hovercard&quot;&gt;#4287&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;aws_kms&lt;/code&gt; encryption key provider now supports an &lt;code&gt;encryption_context&lt;/code&gt; field, allowing key-value string pairs to be passed to AWS KMS with every &lt;code&gt;GenerateDataKey&lt;/code&gt; and &lt;code&gt;Decrypt&lt;/code&gt; call. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4298&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4298/hovercard&quot;&gt;#4298&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;cidrsubnets&lt;/code&gt; function now supports prefix extensions greater than 32 bits when the base CIDR block uses an IPv6 address. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4042&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4042/hovercard&quot;&gt;#4042&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;openbao&lt;/code&gt; encryption key provider now accepts a new &lt;code&gt;associated_data&lt;/code&gt; argument, allowing a base64-encoded value to be passed to OpenBao on every data key generation and decryption call. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4365&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4365/hovercard&quot;&gt;#4365&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When installing provider and module packages from OCI Distribution registries, OpenTofu now tracks separate transient credentials for each repository to support registry implementations that issue repository-scoped tokens.  (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/3316&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/3316/hovercard&quot;&gt;#3316&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;providers lock&lt;/code&gt; command now supports the argument &lt;code&gt;-oci-mirror&lt;/code&gt;. The functionality mimics that of the field &lt;code&gt;repository_template&lt;/code&gt; of &lt;code&gt;oci_mirror&lt;/code&gt;-block in &lt;a href=&quot;https://opentofu.org/docs/cli/config/config-file/#provider-installation&quot; rel=&quot;nofollow&quot;&gt;&lt;code&gt;provider_installation&lt;/code&gt;&lt;/a&gt; with the exception of using a URI template instead of a HCL one.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt; no longer prints the explanatory paragraph that followed the &quot;No changes. Your infrastructure matches the configuration.&quot; message, since it only restated that message in more words. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4340&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4340/hovercard&quot;&gt;#4340&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;local-exec&lt;/code&gt; provisioner now automatically sets the &lt;code&gt;TRACEPARENT&lt;/code&gt; environment variable in child processes when OpenTelemetry tracing is active, following the W3C Trace Context specification. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4014&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4014/hovercard&quot;&gt;#4014&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When OpenTelemetry trace collection is active, OpenTofu now copies any log lines generated by the OpenTelemetry libraries into its own debug log stream that you can activate using the &lt;code&gt;TF_LOG&lt;/code&gt; environment variable. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4285&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4285/hovercard&quot;&gt;#4285&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;errored.tfstate&lt;/code&gt; is now produced if OpenTofu encounters a Go runtime panic. This file will be a partial state and is intended for aiding in recovery from a hard crash. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4064&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4064/hovercard&quot;&gt;#4064&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;On Windows systems, OpenTofu uses a heuristic to detect when it seems to be running in a legacy terminal emulator that uses a named pipe instead of a true pseudoterminal, such as with Cygwin and MSYS. This heuristic is now updated to be more reliable on recent versions of Windows that report slightly different names for those pipes. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4459&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4459/hovercard&quot;&gt;#4459&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu init&lt;/code&gt; in our official releases when running on a 32-bit CPU architecture now warns about our plan to stop publishing official builds for these platforms starting in OpenTofu v1.14. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4018&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4018/hovercard&quot;&gt;#4018&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Saved plan files now include the provider schemas needed to render the plan, so &lt;code&gt;tofu show&lt;/code&gt; on a plan file no longer needs to launch the providers where possible. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4490&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4490/hovercard&quot;&gt;#4490&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu test&lt;/code&gt; now supports instances in test resource overrides, including wildcards. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4067&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4067/hovercard&quot;&gt;#4067&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The built-in function &lt;code&gt;contains&lt;/code&gt; now accepts &lt;code&gt;null&lt;/code&gt; as its second argument, to test whether a collection contains any null values. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4043&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4043/hovercard&quot;&gt;#4043&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;merge&lt;/code&gt; no longer fails when its only argument is a null value of an object type. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4043&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4043/hovercard&quot;&gt;#4043&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;cidrhost&lt;/code&gt; no longer returns a &quot;panic&quot; error when called with an out-of-range host number represented in more than 64 bits. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4056&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4056/hovercard&quot;&gt;#4056&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;templatestring&lt;/code&gt; no longer returns a &quot;panic&quot; error when its &lt;code&gt;vars&lt;/code&gt; argument is a wholly sensitive collection; the result is marked sensitive instead. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4430&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4430/hovercard&quot;&gt;#4430&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu workspace new&lt;/code&gt; now includes a hint to use &lt;code&gt;tofu workspace select&lt;/code&gt; when the given workspace name already exists, instead of just reporting that it already exists. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4428&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4428/hovercard&quot;&gt;#4428&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu apply -json&lt;/code&gt; now emits periodic &lt;code&gt;apply_progress&lt;/code&gt; heartbeat messages for the full duration of a resource operation, instead of stopping after the first one. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4318&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4318/hovercard&quot;&gt;#4107&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;provisioner output is no longer suppressed when &lt;code&gt;-show-sensitive&lt;/code&gt; is passed. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/3927&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/3927/hovercard&quot;&gt;#3927&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;In the &lt;code&gt;azurerm&lt;/code&gt; backend&#39;s OpenID Connect authorization method, when &lt;code&gt;audience&lt;/code&gt; is provided as a query parameter in the URL, it will be passed through instead of being overwritten by a default value. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4037&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4037/hovercard&quot;&gt;#4037&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Using &lt;code&gt;-backend=false&lt;/code&gt; during &lt;code&gt;tofu init&lt;/code&gt; now skips reading the local encrypted state (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4077&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4077/hovercard&quot;&gt;#4077&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Fixed span error status not being set on module fetch failure path during &lt;code&gt;tofu init&lt;/code&gt;, so observability tools now correctly identify failed spans. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4169&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4169/hovercard&quot;&gt;#4169&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When using OpenTelemetry tracing, the TRACESTATE log message no longer incorrectly prints the TRACEPARENT value. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4168&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4168/hovercard&quot;&gt;#4168&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Fix rendering of plans where a nested block&#39;s replacement is unknown. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4256&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4256/hovercard&quot;&gt;#4256&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;removed&lt;/code&gt; blocks with an invalid &lt;code&gt;from&lt;/code&gt; address and a destroy provisioner now report a configuration error instead of crashing. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4321&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4321/hovercard&quot;&gt;#4321&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan -out&lt;/code&gt; no longer fails when the plan includes a resource with &lt;code&gt;lifecycle { destroy = false }&lt;/code&gt; that needs replacement, which previously errored with &lt;code&gt;invalid change action ForgetThenCreate&lt;/code&gt;. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4324&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4324/hovercard&quot;&gt;#4324&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;connection.script_path&lt;/code&gt; is escaped correctly not allowing anymore additional commands to be executed on the remote host together with the script path indicated by the argument. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4330&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4330/hovercard&quot;&gt;#4330&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt;: Fixed Incorrect warnings produced for &lt;code&gt;tofu plan -replace=ADDR&lt;/code&gt;. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4368&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4368/hovercard&quot;&gt;#4368&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt;: Performance improved for large depends_on chains. (&lt;a href=&quot;https://github.com/opentofu/opentofu/4465&quot;&gt;#4465&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;SSH connections through an HTTP proxy now report a connection error instead of crashing when the proxy fails to answer the CONNECT request. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4358&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4358/hovercard&quot;&gt;#4358&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.13.0-beta1</id>
+    <updated>2026-08-27T18:01:40Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.13.0-beta1"/>
+    <title>v1.13.0-beta1</title>
+    <content type="html">&lt;p&gt;The v1.13.x release series is supported until &lt;strong&gt;August 1 2027&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2&gt;1.13.0 (Unreleased)&lt;/h2&gt;
+&lt;p&gt;UPGRADE NOTES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The &quot;winrm&quot; connection type for provisioners is no longer supported. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4012&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4012/hovercard&quot;&gt;#4012&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;This connection type was deprecated in OpenTofu v1.12, and now removed in v1.13. Some of the upstream libraries OpenTofu was using to implement these features are no longer maintained, so it&#39;s not viable for us to offer this anymore.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse&quot; rel=&quot;nofollow&quot;&gt;Modern Windows versions now support OpenSSH&lt;/a&gt;, and so we suggest that anyone currently relying on WinRM plan to migrate to using SSH instead.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;base64gzip&lt;/code&gt; function now generates results that are equivalent to &lt;em&gt;but not equal to&lt;/em&gt; the results from previous releases, as a result of a new optimized DEFLATE compression implementation.&lt;/p&gt;
+&lt;p&gt;If you use this function as part of an argument to a managed resource then OpenTofu is likely to propose to update or replace the instances of that resource, depending on how the provider responds to the differing base64 data. The new compressed form should nonetheless still decompress to the same sequence of bytes.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenTofu on macOS now requires macOS 13 Ventura or later. Earlier versions are no longer supported.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenTofu v1.13 is the final release series that will include official builds for 32-bit CPU architectures (&lt;code&gt;*_386&lt;/code&gt; and &lt;code&gt;*_arm&lt;/code&gt; platforms).&lt;/p&gt;
+&lt;p&gt;If you are currently relying on our official releases of OpenTofu on one of these platforms then we suggest that you begin planning to migrate to running OpenTofu on a 64-bit CPU architecture (&lt;code&gt;*_amd64&lt;/code&gt; or &lt;code&gt;*_arm64&lt;/code&gt; platforms) before the v1.13 series reaches end-of-life.&lt;/p&gt;
+&lt;p&gt;Third parties may continue to offer their own OpenTofu builds targeting platforms that we don&#39;t officially support. This only affects the official packages published directly by the OpenTofu project in this repository&#39;s release artifacts.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;There are various minor changes to the robustness of file format and wire format parsers in the SSH client implementation used for remote provisioners.&lt;/p&gt;
+&lt;p&gt;This may cause certain invalid input that was previously accepted to now be rejected, in an attempt to better match the expectations of other implementations of these protocols and formats.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;EXPERIMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Symbol Libraries are now available as an experimental feature (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4052&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4052/hovercard&quot;&gt;#4052&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;This new feature adds the capaibility to define re-usable functions and types in hcl-lang based libraries. As this introduces a drastically different way of building modules and sharing functionality, we are looking for early feedback on the design of the language and how it integrates into OpenTofu workflows. If you are interested in this functionality, you can enable to experiment by adding the appropriate experiment to the experiments list in the language block. As it is experimental, it is subject to change before it is marked as stable and should not be relied upon in production.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Basic linting support introduced (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4310&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4310/hovercard&quot;&gt;#4310&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;The linting support can be enabled by using the &lt;code&gt;-lint&lt;/code&gt; flag on the supported commands. By doing so, OpenTofu will run the selected linting rules against the configuration given to OpenTofu and will show warning diagnostics if any issue is found. The functionality is marked as experimental because this is just a first iteration and we want to see how users interact with it and how useful they find it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ENHANCEMENTS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows on ARM64 is now an officially-supported platform for OpenTofu itself, though this new platform may not be supported by all available provider plugins. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4450&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4450/hovercard&quot;&gt;#4450&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;New function &lt;code&gt;convert&lt;/code&gt; allows converting a given value to a specified type constraint. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4449&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4449/hovercard&quot;&gt;#4449&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Various new functions named with the prefix &lt;code&gt;assume...&lt;/code&gt; allow authors to give OpenTofu additional hints about what&#39;s expected as the final result of an unknown value, potentially allowing more information to be known during the planning phase. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4449&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4449/hovercard&quot;&gt;#4449&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;OpenTofu now uses Unicode 17 algorithms and tables for all string processing that is based on Unicode specifications. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4478&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4478/hovercard&quot;&gt;#4478&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;gcp_kms&lt;/code&gt; encryption key provider now supports an optional &lt;code&gt;additional_authenticated_data&lt;/code&gt; as part of the encryption and decryption operations. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4287&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4287/hovercard&quot;&gt;#4287&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;aws_kms&lt;/code&gt; encryption key provider now supports an &lt;code&gt;encryption_context&lt;/code&gt; field, allowing key-value string pairs to be passed to AWS KMS with every &lt;code&gt;GenerateDataKey&lt;/code&gt; and &lt;code&gt;Decrypt&lt;/code&gt; call. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4298&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4298/hovercard&quot;&gt;#4298&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;cidrsubnets&lt;/code&gt; function now supports prefix extensions greater than 32 bits when the base CIDR block uses an IPv6 address. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4042&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4042/hovercard&quot;&gt;#4042&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;openbao&lt;/code&gt; encryption key provider now accepts a new &lt;code&gt;associated_data&lt;/code&gt; argument, allowing a base64-encoded value to be passed to OpenBao on every data key generation and decryption call. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4365&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4365/hovercard&quot;&gt;#4365&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When installing provider and module packages from OCI Distribution registries, OpenTofu now tracks separate transient credentials for each repository to support registry implementations that issue repository-scoped tokens.  (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/3316&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/3316/hovercard&quot;&gt;#3316&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;providers lock&lt;/code&gt; command now supports the argument &lt;code&gt;-oci-mirror&lt;/code&gt;. The functionality mimics that of the field &lt;code&gt;repository_template&lt;/code&gt; of &lt;code&gt;oci_mirror&lt;/code&gt;-block in &lt;a href=&quot;https://opentofu.org/docs/cli/config/config-file/#provider-installation&quot; rel=&quot;nofollow&quot;&gt;&lt;code&gt;provider_installation&lt;/code&gt;&lt;/a&gt; with the exception of using a URI template instead of a HCL one.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt; no longer prints the explanatory paragraph that followed the &quot;No changes. Your infrastructure matches the configuration.&quot; message, since it only restated that message in more words. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4340&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4340/hovercard&quot;&gt;#4340&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;local-exec&lt;/code&gt; provisioner now automatically sets the &lt;code&gt;TRACEPARENT&lt;/code&gt; environment variable in child processes when OpenTelemetry tracing is active, following the W3C Trace Context specification. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4014&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4014/hovercard&quot;&gt;#4014&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When OpenTelemetry trace collection is active, OpenTofu now copies any log lines generated by the OpenTelemetry libraries into its own debug log stream that you can activate using the &lt;code&gt;TF_LOG&lt;/code&gt; environment variable. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4285&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4285/hovercard&quot;&gt;#4285&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;errored.tfstate&lt;/code&gt; is now produced if OpenTofu encounters a Go runtime panic. This file will be a partial state and is intended for aiding in recovery from a hard crash. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4064&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4064/hovercard&quot;&gt;#4064&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;On Windows systems, OpenTofu uses a heuristic to detect when it seems to be running in a legacy terminal emulator that uses a named pipe instead of a true pseudoterminal, such as with Cygwin and MSYS. This heuristic is now updated to be more reliable on recent versions of Windows that report slightly different names for those pipes. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4459&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4459/hovercard&quot;&gt;#4459&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu init&lt;/code&gt; in our official releases when running on a 32-bit CPU architecture now warns about our plan to stop publishing official builds for these platforms starting in OpenTofu v1.14. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4018&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4018/hovercard&quot;&gt;#4018&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Saved plan files now include the provider schemas needed to render the plan, so &lt;code&gt;tofu show&lt;/code&gt; on a plan file no longer needs to launch the providers where possible. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4490&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4490/hovercard&quot;&gt;#4490&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu test&lt;/code&gt; now supports instances in test resource overrides, including wildcards. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4067&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4067/hovercard&quot;&gt;#4067&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The built-in function &lt;code&gt;contains&lt;/code&gt; now accepts &lt;code&gt;null&lt;/code&gt; as its second argument, to test whether a collection contains any null values. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4043&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4043/hovercard&quot;&gt;#4043&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;merge&lt;/code&gt; no longer fails when its only argument is a null value of an object type. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4043&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4043/hovercard&quot;&gt;#4043&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;cidrhost&lt;/code&gt; no longer returns a &quot;panic&quot; error when called with an out-of-range host number represented in more than 64 bits. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4056&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4056/hovercard&quot;&gt;#4056&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The built-in function &lt;code&gt;templatestring&lt;/code&gt; no longer returns a &quot;panic&quot; error when its &lt;code&gt;vars&lt;/code&gt; argument is a wholly sensitive collection; the result is marked sensitive instead. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4430&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4430/hovercard&quot;&gt;#4430&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu workspace new&lt;/code&gt; now includes a hint to use &lt;code&gt;tofu workspace select&lt;/code&gt; when the given workspace name already exists, instead of just reporting that it already exists. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4428&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4428/hovercard&quot;&gt;#4428&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu apply -json&lt;/code&gt; now emits periodic &lt;code&gt;apply_progress&lt;/code&gt; heartbeat messages for the full duration of a resource operation, instead of stopping after the first one. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4318&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4318/hovercard&quot;&gt;#4107&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;provisioner output is no longer suppressed when &lt;code&gt;-show-sensitive&lt;/code&gt; is passed. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/3927&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/3927/hovercard&quot;&gt;#3927&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;In the &lt;code&gt;azurerm&lt;/code&gt; backend&#39;s OpenID Connect authorization method, when &lt;code&gt;audience&lt;/code&gt; is provided as a query parameter in the URL, it will be passed through instead of being overwritten by a default value. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4037&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4037/hovercard&quot;&gt;#4037&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Using &lt;code&gt;-backend=false&lt;/code&gt; during &lt;code&gt;tofu init&lt;/code&gt; now skips reading the local encrypted state (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4077&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4077/hovercard&quot;&gt;#4077&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Fixed span error status not being set on module fetch failure path during &lt;code&gt;tofu init&lt;/code&gt;, so observability tools now correctly identify failed spans. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4169&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4169/hovercard&quot;&gt;#4169&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When using OpenTelemetry tracing, the TRACESTATE log message no longer incorrectly prints the TRACEPARENT value. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4168&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4168/hovercard&quot;&gt;#4168&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Fix rendering of plans where a nested block&#39;s replacement is unknown. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4256&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4256/hovercard&quot;&gt;#4256&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;removed&lt;/code&gt; blocks with an invalid &lt;code&gt;from&lt;/code&gt; address and a destroy provisioner now report a configuration error instead of crashing. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4321&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4321/hovercard&quot;&gt;#4321&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan -out&lt;/code&gt; no longer fails when the plan includes a resource with &lt;code&gt;lifecycle { destroy = false }&lt;/code&gt; that needs replacement, which previously errored with &lt;code&gt;invalid change action ForgetThenCreate&lt;/code&gt;. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4324&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4324/hovercard&quot;&gt;#4324&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;connection.script_path&lt;/code&gt; is escaped correctly not allowing anymore additional commands to be executed on the remote host together with the script path indicated by the argument. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4330&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4330/hovercard&quot;&gt;#4330&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt;: Fixed Incorrect warnings produced for &lt;code&gt;tofu plan -replace=ADDR&lt;/code&gt;. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4368&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4368/hovercard&quot;&gt;#4368&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofu plan&lt;/code&gt;: Performance improved for large depends_on chains. (&lt;a href=&quot;https://github.com/opentofu/opentofu/4465&quot;&gt;#4465&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;SSH connections through an HTTP proxy now report a connection error instead of crashing when the proxy fails to answer the CONNECT request. (&lt;a href=&quot;https://github.com/opentofu/opentofu/issues/4358&quot; data-hovercard-type=&quot;issue&quot; data-hovercard-url=&quot;/opentofu/opentofu/issues/4358/hovercard&quot;&gt;#4358&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.12.6</id>
+    <updated>2026-08-19T11:40:07Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.12.6"/>
+    <title>v1.12.6</title>
+    <content type="html">&lt;h2&gt;SECURITY ADVISORIES:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;When interacting with OCI Distribution registries for module or provider package installation, earlier versions of OpenTofu could incorrectly resend credentials intended for the original origin to the target of an HTTP redirect. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4422&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4422/hovercard&quot;&gt;#4422&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When interacting with an attacker-controlled remote state backend or provider/module registry, &lt;code&gt;tofu init&lt;/code&gt; in earlier versions of OpenTofu could potentially cause high CPU usage and/or high memory usage resolving crafted relative URLs in the API responses. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4472&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4472/hovercard&quot;&gt;#4472&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Full Changelog&lt;/strong&gt;: &lt;a class=&quot;commit-link&quot; href=&quot;https://github.com/opentofu/opentofu/compare/v1.12.5...v1.12.6&quot;&gt;&lt;tt&gt;v1.12.5...v1.12.6&lt;/tt&gt;&lt;/a&gt;&lt;/p&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.11.14</id>
+    <updated>2026-08-19T11:39:12Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.11.14"/>
+    <title>v1.11.14</title>
+    <content type="html">&lt;h2&gt;SECURITY ADVISORIES:&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;When interacting with OCI Distribution registries for module or provider package installation, previous versions of OpenTofu could incorrectly resend credentials intended for the original origin to the target of an HTTP redirect. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4423&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4423/hovercard&quot;&gt;#4423&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;When interacting with an attacker-controlled remote state backend or provider/module registry, &lt;code&gt;tofu init&lt;/code&gt; in earlier versions of OpenTofu could potentially cause high CPU usage and/or high memory usage resolving crafted relative URLs in the API responses. (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4473&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4473/hovercard&quot;&gt;#4473&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;markdown-alert markdown-alert-note&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg data-component=&quot;Octicon&quot; class=&quot;octicon octicon-info mr-2&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;Note&lt;/p&gt;&lt;p&gt;This is the final patch release planned for the OpenTofu v1.11 series. We recommend upgrading to a newer release series as soon as possible.&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Full Changelog&lt;/strong&gt;: &lt;a class=&quot;commit-link&quot; href=&quot;https://github.com/opentofu/opentofu/compare/v1.11.13...v1.11.14&quot;&gt;&lt;tt&gt;v1.11.13...v1.11.14&lt;/tt&gt;&lt;/a&gt;&lt;/p&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.12.5</id>
+    <updated>2026-07-21T11:39:19Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.12.5"/>
+    <title>v1.12.5</title>
+    <content type="html">&lt;p&gt;SECURITY ADVISORIES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Previous releases in the v1.12 series could be affected by several vulnerabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Encrypted Client Hello implementation (which is used by OpenTofu through the go stdlib) would leak the pre-shared key identities during the handshake,&lt;br&gt;
+allowing a passive network observer who can collect handshakes to de-anonymize the hostname of the server, even when ECH was being used.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is fixed now by (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4363&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4363/hovercard&quot;&gt;#4363&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fixed bug where implicit moves and provider address changes would incorrectly cause providers.MovedResourceState to be used in place of providers.UpgradeResourceState (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4375&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4375/hovercard&quot;&gt;#4375&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Full Changelog&lt;/strong&gt;: &lt;a class=&quot;commit-link&quot; href=&quot;https://github.com/opentofu/opentofu/compare/v1.12.4...v1.12.5&quot;&gt;&lt;tt&gt;v1.12.4...v1.12.5&lt;/tt&gt;&lt;/a&gt;&lt;/p&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:Repository/679421146/v1.11.13</id>
+    <updated>2026-07-21T11:39:02Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/opentofu/opentofu/releases/tag/v1.11.13"/>
+    <title>v1.11.13</title>
+    <content type="html">&lt;p&gt;SECURITY ADVISORIES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Previous releases in the v1.11 series could be affected by several vulnerabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Encrypted Client Hello implementation (which is used by OpenTofu through the go stdlib) would leak the pre-shared key identities during the handshake,&lt;br&gt;
+allowing a passive network observer who can collect handshakes to de-anonymize the hostname of the server, even when ECH was being used.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is fixed now by (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4363&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4363/hovercard&quot;&gt;#4363&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;BUG FIXES:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fixed bug where implicit moves and provider address changes would incorrectly cause providers.MovedResourceState to be used in place of providers.UpgradeResourceState (&lt;a href=&quot;https://github.com/opentofu/opentofu/pull/4375&quot; data-hovercard-type=&quot;pull_request&quot; data-hovercard-url=&quot;/opentofu/opentofu/pull/4375/hovercard&quot;&gt;#4375&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Full Changelog&lt;/strong&gt;: &lt;a class=&quot;commit-link&quot; href=&quot;https://github.com/opentofu/opentofu/compare/v1.11.12...v1.11.13&quot;&gt;&lt;tt&gt;v1.11.12...v1.11.13&lt;/tt&gt;&lt;/a&gt;&lt;/p&gt;</content>
+    <author>
+      <name>github-actions[bot]</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/in/15368?s=60&amp;v=4"/>
+  </entry>
+</feed>
