@@ -1,0 +1,54 @@
+{
+  "weekId": "2026-W42",
+  "title": "Week 2026-W42: 5 releases, 1 needs action",
+  "headline": "One Ollama fix needs action this week; the rest can wait.",
+  "groups": [
+    {
+      "urgency": "act-now",
+      "label": "Act now",
+      "items": [
+        {
+          "title": "Ollama v0.13.0",
+          "url": "https://github.com/ollama/ollama/releases/tag/v0.13.0",
+          "whatChanged": "Fixes a crash when a model is larger than the available VRAM.",
+          "action": "Upgrade before the next scheduled run."
+        }
+      ]
+    },
+    {
+      "urgency": "worth-a-look",
+      "label": "Worth a look",
+      "items": [
+        {
+          "title": "Docker Desktop 4.50 & Compose 2.40",
+          "url": "https://docs.docker.com/desktop/release-notes/",
+          "whatChanged": "Compose watch now rebuilds only the services whose files changed.",
+          "action": "develop with Compose watch."
+        },
+        {
+          "title": "vLLM v0.11.2",
+          "url": "https://github.com/vllm-project/vllm/releases/tag/v0.11.2",
+          "whatChanged": "Drops support for Node < 20 tooling and adds a prefix-cache metric.",
+          "action": "serve models with vLLM."
+        }
+      ]
+    },
+    {
+      "urgency": "good-to-know",
+      "label": "Good to know",
+      "items": [
+        {
+          "title": "LangGraph 1.1",
+          "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.1.0",
+          "whatChanged": "Adds typed checkpoints for long-running graphs."
+        },
+        {
+          "title": "Node.js 24.11.0",
+          "url": "https://nodejs.org/en/blog/release/v24.11.0",
+          "whatChanged": "Routine LTS update with security fixes already shipped last week."
+        }
+      ]
+    }
+  ],
+  "footer": "Guards off this run: input guard."
+}

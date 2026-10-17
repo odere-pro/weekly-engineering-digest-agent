@@ -1,5 +1,6 @@
 import { createTransport } from 'nodemailer';
-import type { Delivery } from '../../ports/Delivery.js';
+import type { Delivery, DigestMessage } from '../../ports/Delivery.js';
+import { renderEmailHtml, renderEmailText } from './emailRender.js';
 import { failureTitle } from './failureNote.js';
 import { redactedError, redactSecrets } from './redact.js';
 
@@ -23,7 +24,12 @@ export interface MailMessage {
   to: string[];
   subject: string;
   text: string;
+  /** With `text`, nodemailer sends multipart/alternative. */
+  html?: string;
 }
+
+/** What varies between mails; the sender and recipients are fixed by the options. */
+type MailContent = Pick<MailMessage, 'subject' | 'text' | 'html'>;
 
 /** The slice of a nodemailer transport this adapter uses. */
 export interface MailTransport {
@@ -62,9 +68,9 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
     socketTimeout: SOCKET_TIMEOUT_MS,
   });
 
-  async function send(subject: string, text: string): Promise<void> {
+  async function send(content: MailContent): Promise<void> {
     try {
-      await transport.sendMail({ from: options.from, to: recipients, subject, text });
+      await transport.sendMail({ ...content, from: options.from, to: recipients });
     } catch (error) {
       throw redactedError('SMTP delivery failed', error, [options.password]);
     }
@@ -72,11 +78,21 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
 
   return {
     id: 'email',
-    sendDigest: (message) => send(message.subject, message.markdown),
+    sendDigest: (message) => send(digestContent(message)),
     sendFailure: (note) => {
       const title = failureTitle(note);
       const reason = redactSecrets(note.message, [options.password]);
-      return send(title, `${title}.\n\n${reason}\n`);
+      return send({ subject: title, text: `${title}.\n\n${reason}\n` });
     },
   };
+}
+
+/**
+ * With a view the mail carries a text part and an html part (multipart/alternative), both
+ * rendered from the view. Without one it is today's text-only mail with the Markdown as body.
+ */
+function digestContent(message: DigestMessage): MailContent {
+  const { view, subject } = message;
+  if (!view) return { subject, text: message.markdown };
+  return { subject, text: renderEmailText(view), html: renderEmailHtml(view) };
 }

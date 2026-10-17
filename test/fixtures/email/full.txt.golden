@@ -1,0 +1,34 @@
+Week 2026-W42: 5 releases, 1 needs action
+
+One Ollama fix needs action this week; the rest can wait.
+
+🔴 Act now
+
+- Ollama v0.13.0
+  What changed: Fixes a crash when a model is larger than the available VRAM.
+  What to do: Upgrade before the next scheduled run.
+  https://github.com/ollama/ollama/releases/tag/v0.13.0
+
+🟡 Worth a look
+
+- Docker Desktop 4.50 & Compose 2.40
+  What changed: Compose watch now rebuilds only the services whose files changed.
+  Relevant if you: develop with Compose watch.
+  https://docs.docker.com/desktop/release-notes/
+
+- vLLM v0.11.2
+  What changed: Drops support for Node < 20 tooling and adds a prefix-cache metric.
+  Relevant if you: serve models with vLLM.
+  https://github.com/vllm-project/vllm/releases/tag/v0.11.2
+
+⚪ Good to know
+
+- LangGraph 1.1
+  What changed: Adds typed checkpoints for long-running graphs.
+  https://github.com/langchain-ai/langgraph/releases/tag/1.1.0
+
+- Node.js 24.11.0
+  What changed: Routine LTS update with security fixes already shipped last week.
+  https://nodejs.org/en/blog/release/v24.11.0
+
+Guards off this run: input guard.
