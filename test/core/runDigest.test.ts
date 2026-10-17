@@ -604,15 +604,14 @@ describe('runDigest: select', () => {
     expect(result.record.drafts.every((draft) => draft.passed && !draft.score)).toBe(true);
   });
 
-  it('fails the run when the judge gives no usable answer', async () => {
+  it('falls back to the first passing draft in writer order when the judge gives no usable answer', async () => {
     const h = setup({ judgeLevels: [] });
 
-    const result = await h.run();
+    const result = await h.run({ dryRun: true });
 
-    expect(result.exitCode).toBe(ExitCode.Failed);
-    expect(result.record).toMatchObject({ status: 'failed', error: { step: 'select' } });
-    expect(sentDigests(h)).toEqual([]);
-    expect(sentNotes(h)).toHaveLength(2);
+    expect(result.exitCode).toBe(ExitCode.Sent);
+    expect(result.record).toMatchObject({ status: 'dry-run', winner: WRITER_A });
+    expect(result.record.drafts.every((draft) => draft.passed && !draft.score)).toBe(true);
   });
 });
 
