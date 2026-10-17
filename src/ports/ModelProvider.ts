@@ -72,6 +72,8 @@ export interface GenerateRequest {
   /** JSON Schema the output must match (Ollama structured outputs). */
   jsonSchema?: Readonly<Record<string, unknown>>;
   temperature?: number;
+  /** Sampling seed, so two runs of one week can produce the same text (W7-03). */
+  seed?: number;
   signal?: AbortSignal;
 }
 

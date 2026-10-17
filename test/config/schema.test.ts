@@ -22,7 +22,7 @@ describe('config schema', () => {
           checks: { graniteGroundedness: true, clefRubric: true },
         },
       },
-      models: { retries: 2, rescoreWithWriter: false },
+      models: { retries: 2, rescoreWithWriter: false, seed: 42 },
     });
   });
 
@@ -103,6 +103,21 @@ describe('config schema', () => {
     expect(makeConfig().models.rescoreWithWriter).toBe(false);
     expect(makeConfig({ models: { rescoreWithWriter: true } }).models.rescoreWithWriter).toBe(true);
     expect(() => makeConfig({ models: { rescoreWithWriter: 'yes' as never } })).toThrow();
+  });
+
+  it('accepts a sampling seed and defaults it to 42', () => {
+    expect(makeConfig().models.seed).toBe(42);
+    expect(makeConfig({ models: { seed: 7 } }).models.seed).toBe(7);
+    expect(() => makeConfig({ models: { seed: -1 } })).toThrow();
+    expect(() => makeConfig({ models: { seed: 1.5 } })).toThrow();
+  });
+
+  it('accepts a temperature per role within 0..2 and none by default', () => {
+    expect(makeConfig().models.temperature).toBeUndefined();
+    const config = makeConfig({ models: { temperature: { write: 0.2, classify: 0 } } });
+    expect(config.models.temperature).toEqual({ write: 0.2, classify: 0 });
+    expect(() => makeConfig({ models: { temperature: { write: 2.5 } } })).toThrow();
+    expect(() => makeConfig({ models: { temperature: { chat: 0.1 } as never } })).toThrow();
   });
 
   it('defaults the time zone to the local one', () => {

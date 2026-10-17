@@ -91,6 +91,13 @@ export const ModelOverridesSchema = z.object({
    * Off by default; the light re-baseline decides whether it stays on.
    */
   rescoreWithWriter: z.boolean().default(false),
+  /** Sampling seed sent with every generate call, so a rerun of a week repeats itself (W7-03). */
+  seed: z.number().int().min(0).default(42),
+  /**
+   * Sampling temperature per role. Unset roles use the adapter default (W7-03): write 0.2,
+   * every other role 0.
+   */
+  temperature: z.partialRecord(RoleSchema, z.number().min(0).max(2)).optional(),
 });
 
 export const ScheduleSchema = z.object({
