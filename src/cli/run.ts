@@ -15,6 +15,8 @@ export interface RunCommandOptions {
   since?: string;
   dryRun?: boolean;
   force?: boolean;
+  /** Sampling seed for this run; overrides `models.seed`. */
+  seed?: number;
 }
 
 /** Everything the command touches outside itself; tests replace it, `digest run` uses the defaults. */
@@ -66,7 +68,8 @@ export async function runCommand(
   };
   try {
     const sinceDays = parseSince(options.since);
-    const loaded = await io.loadConfig({ configPath: options.config });
+    const seed = parseSeed(options.seed);
+    const loaded = withSeed(await io.loadConfig({ configPath: options.config }), seed);
     secrets = loaded.secrets;
     const app = await io.buildApp(loaded);
     try {
@@ -84,6 +87,24 @@ export async function runCommand(
     report.err(`${errorMessage(error)}\n`);
     return error instanceof DigestError ? error.exitCode : ExitCode.Failed;
   }
+}
+
+/** The seed is a whole number of 0 or more; commander checks it too, library callers may not. */
+function parseSeed(seed: number | undefined): number | undefined {
+  if (seed === undefined) return undefined;
+  if (!Number.isSafeInteger(seed) || seed < 0) {
+    throw new DigestError(`Invalid --seed "${seed}". Use a whole number of 0 or more.`);
+  }
+  return seed;
+}
+
+/** A new LoadedConfig whose models.seed is `seed`; the loaded one stays as it was. */
+function withSeed(loaded: LoadedConfig, seed: number | undefined): LoadedConfig {
+  if (seed === undefined) return loaded;
+  return {
+    ...loaded,
+    config: { ...loaded.config, models: { ...loaded.config.models, seed } },
+  };
 }
 
 /** "7d" is 7 days. Undefined means "use the configured window". */

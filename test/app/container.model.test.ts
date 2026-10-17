@@ -169,6 +169,8 @@ describe('createModelProvider', () => {
       timeoutsMs: { write: 900_000 },
       think: { write: 'low' },
       retries: 4,
+      seed: 42,
+      temperature: undefined,
       logger: noopLogger,
       fetch: fetchImpl,
     });

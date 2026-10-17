@@ -35,6 +35,7 @@ import {
 /** Ollama's `think` request field: on or off, or an effort level for models that have levels. */
 export type ThinkSetting = boolean | 'low' | 'medium' | 'high';
 export type ThinkByRole = Readonly<Partial<Record<Role, ThinkSetting>>>;
+export type TemperatureByRole = Readonly<Partial<Record<Role, number>>>;
 
 export interface OllamaProviderOptions {
   baseUrl: string;
@@ -45,6 +46,13 @@ export interface OllamaProviderOptions {
    * default. decide (/v1/systemone) ignores it.
    */
   think?: ThinkByRole;
+  /**
+   * Sampling seed sent with every generate call that carries none of its own (W7-03). Unset sends
+   * no seed.
+   */
+  seed?: number;
+  /** Per-role temperature overrides; a request's own temperature still wins. */
+  temperature?: TemperatureByRole;
   /** Spec: 2 retries with backoff. */
   retries?: number;
   fetch?: typeof fetch;
@@ -64,6 +72,17 @@ export const DEFAULT_TIMEOUTS_MS: Readonly<Record<Role, number>> = {
  * spends ~350 tokens (~65 s) on reasoning before a one-word `<score>`; the guards do not need it.
  */
 export const DEFAULT_THINK: ThinkByRole = { guardRisk: false };
+/**
+ * Per-role sampling temperature when neither the request nor the config sets one (W7-03): a little
+ * warmth for the writer, none for the roles that score, classify or guard.
+ */
+export const DEFAULT_TEMPERATURE: Readonly<Record<Role, number>> = {
+  write: 0.2,
+  classify: 0,
+  guardPolicy: 0,
+  guardRisk: 0,
+  judge: 0,
+};
 const DEFAULT_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 1_000;
 const RETRY_MAX_DELAY_MS = 10_000;
@@ -185,11 +204,29 @@ export function effectiveThink(
   return configured?.[role] ?? DEFAULT_THINK[role];
 }
 
+/**
+ * The temperature generate sends for `role`: the configured one, else the adapter default. A
+ * request's own temperature wins over both. The one place that rule lives, so the run record shows
+ * what a run sends.
+ */
+export function effectiveTemperature(
+  configured: TemperatureByRole | undefined,
+  role: Role,
+): number {
+  return configured?.[role] ?? DEFAULT_TEMPERATURE[role];
+}
+
 function chatBody(
   model: string,
   request: GenerateRequest,
   think: ThinkSetting | undefined,
+  sampling: { temperature: number; seed: number | undefined },
 ): Record<string, unknown> {
+  const seed = request.seed ?? sampling.seed;
+  const options = {
+    temperature: request.temperature ?? sampling.temperature,
+    ...(seed === undefined ? {} : { seed }),
+  };
   return {
     model,
     messages: [
@@ -201,7 +238,7 @@ function chatBody(
     stream: true,
     ...(think === undefined ? {} : { think }),
     ...(request.jsonSchema === undefined ? {} : { format: request.jsonSchema }),
-    ...(request.temperature === undefined ? {} : { options: { temperature: request.temperature } }),
+    options,
   };
 }
 
@@ -221,7 +258,10 @@ function joinChat(raw: unknown): { text: string; usage: Usage; doneReason: strin
 async function generate(context: Context, request: GenerateRequest): Promise<GenerateResult> {
   const model = resolveModel(context.options.profile, request.role, request.model);
   const think = effectiveThink(context.options.think, request.role);
-  const body = chatBody(model, request, think);
+  const body = chatBody(model, request, think, {
+    temperature: effectiveTemperature(context.options.temperature, request.role),
+    seed: context.options.seed,
+  });
   const spec: CallSpec = {
     op: 'generate',
     role: request.role,

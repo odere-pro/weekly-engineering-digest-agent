@@ -5,6 +5,7 @@ import {
   createOllamaProvider,
   DEFAULT_THINK,
   DEFAULT_TIMEOUTS_MS,
+  effectiveTemperature,
   effectiveThink,
   type OllamaProviderOptions,
 } from '../../../src/adapters/models/ollama.js';
@@ -175,6 +176,7 @@ describe('generate', () => {
         { role: 'user', content: 'Summarize.' },
       ],
       stream: true,
+      options: { temperature: 0.2 },
     });
   });
 
@@ -368,6 +370,59 @@ describe('effectiveThink', () => {
     expect(calls.map((call) => (call.body as { think?: unknown }).think)).toEqual(
       (['classify', 'guardRisk'] as const).map((role) => effectiveThink(think, role)),
     );
+  });
+});
+
+describe('sampling', () => {
+  it.each([
+    ['write', 0.2],
+    ['classify', 0],
+    ['guardPolicy', 0],
+    ['guardRisk', 0],
+    ['judge', 0],
+  ] as const)('defaults the %s temperature to %s', async (role, temperature) => {
+    const { provider, calls } = setup(sequence(chatOk));
+
+    await provider.generate({ role, system: 's', prompt: 'p', model: 'any:model' });
+
+    expect((calls[0]!.body as { options: unknown }).options).toEqual({ temperature });
+  });
+
+  it('sends the provider seed when the request has none', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { seed: 42 });
+
+    await provider.generate(WRITE);
+
+    expect(calls[0]!.body).toMatchObject({ options: { seed: 42, temperature: 0.2 } });
+  });
+
+  it('sends no seed when none is set anywhere', async () => {
+    const { provider, calls } = setup(sequence(chatOk));
+
+    await provider.generate(WRITE);
+
+    expect((calls[0]!.body as { options: object }).options).not.toHaveProperty('seed');
+  });
+
+  it('lets the request seed and temperature win, including a temperature of 0', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { seed: 42, temperature: { write: 0.9 } });
+
+    await provider.generate({ ...WRITE, seed: 5, temperature: 0 });
+
+    expect(calls[0]!.body).toMatchObject({ options: { seed: 5, temperature: 0 } });
+  });
+
+  it('applies a configured per-role temperature over the default', async () => {
+    const { provider, calls } = setup(sequence(chatOk), { temperature: { write: 0.7 } });
+
+    await provider.generate(WRITE);
+
+    expect(calls[0]!.body).toMatchObject({ options: { temperature: 0.7 } });
+  });
+
+  it('exposes the temperature a role sends', () => {
+    expect(effectiveTemperature(undefined, 'write')).toBe(0.2);
+    expect(effectiveTemperature({ write: 0 }, 'write')).toBe(0);
   });
 });
 

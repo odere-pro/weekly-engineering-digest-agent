@@ -8,13 +8,14 @@ import {
   createGraniteGroundednessGuard,
   createGraniteRiskGuard,
 } from '../adapters/guard/granite.js';
-import { createOllamaProvider } from '../adapters/models/ollama.js';
+import { createOllamaProvider, effectiveTemperature } from '../adapters/models/ollama.js';
 import { createGithubReleasesFetcher } from '../adapters/sources/githubReleases.js';
 import { createRssFetcher } from '../adapters/sources/rss.js';
 import { createFsRunStore } from '../adapters/store/fsRunStore.js';
 import type { LoadedConfig } from '../config/load.js';
 import type { Config, Secrets } from '../config/schema.js';
 import type { DigestDeps } from '../core/runDigest.js';
+import { RoleSchema } from '../core/schemas.js';
 import type { Delivery } from '../ports/Delivery.js';
 import type { ModelProvider } from '../ports/ModelProvider.js';
 import { createLogger } from '../observability/logger.js';
@@ -58,9 +59,21 @@ export function createModelProvider(
     timeoutsMs: config.models.timeoutsMs,
     think: config.models.think,
     retries: config.models.retries,
+    seed: config.models.seed,
+    temperature: config.models.temperature,
     logger: extras.logger,
     fetch: extras.fetch,
   });
+}
+
+/** The seed and the temperature each role's calls send, as the run record keeps them. */
+export function samplingOf(
+  models: Pick<Config['models'], 'seed' | 'temperature'>,
+): NonNullable<DigestDeps['sampling']> {
+  const temperatureByRole = Object.fromEntries(
+    RoleSchema.options.map((role) => [role, effectiveTemperature(models.temperature, role)]),
+  );
+  return { seed: models.seed, temperatureByRole };
 }
 
 function assemble(loaded: LoadedConfig): AppHandle {
@@ -97,6 +110,7 @@ function assemble(loaded: LoadedConfig): AppHandle {
     ),
     logger,
     clock: systemClock,
+    sampling: samplingOf(config.models),
   };
   // Last, so a failure while building anything above never leaves a tracer registered. The model
   // and the guards were built before it: their spans reach it through the deferred tracer.

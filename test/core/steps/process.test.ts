@@ -645,6 +645,24 @@ describe('processStep top N', () => {
   });
 });
 
+describe('processStep exact pick (W7-03)', () => {
+  it('returns exactly topN items when more survive, tied items in publishedAt then id order', () => {
+    const items = ['e', 'd', 'c', 'b', 'a'].map((id, index) =>
+      scored(
+        id,
+        { area: `area-${id}` },
+        { publishedAt: index < 2 ? '2026-10-12T09:00:00Z' : '2026-10-10T09:00:00Z' },
+      ),
+    );
+
+    const first = run(items, { topN: 4 });
+    const second = run([...items].reverse(), { topN: 4 });
+
+    expect(ids(first.selected)).toEqual(['d', 'e', 'a', 'b']);
+    expect(ids(second.selected)).toEqual(ids(first.selected));
+  });
+});
+
 describe('processStep area spread', () => {
   const inArea = (id: string, relevance: number, area: string): ScoredItem =>
     scored(id, { relevance, area });

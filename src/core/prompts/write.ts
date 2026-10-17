@@ -14,12 +14,13 @@ export interface WritePrompt {
 
 const ROLE = [
   'You write a weekly digest for senior engineers who build with AI models and run platforms.',
-  'You pick the releases that matter most this week and explain each one plainly.',
+  "You explain this week's top releases plainly. The code has already chosen which ones.",
 ].join(' ');
 
 const OUTPUT_RULES = [
   'Output rules:',
-  `- Pick ${DIGEST_MIN_ITEMS} to ${DIGEST_MAX_ITEMS} items from the data, the ones that matter most for the focus areas. Use no other items.`,
+  '- Write one entry per item in the data, in the order given. Use no other items and do not reorder them.',
+  `- A digest has ${DIGEST_MIN_ITEMS} to ${DIGEST_MAX_ITEMS} items; the data already holds that many.`,
   '- For each item, copy itemId and url exactly as they appear in the data. Never invent or change them.',
   `- One entry per release. If two items describe the same release or product (for example a project's release notes and a cloud vendor's availability post), write one entry for it, using the itemId of the better source, and fold the other item's facts into its summary. If that would leave fewer than ${DIGEST_MIN_ITEMS} entries, keep them as separate entries.`,
   '- title: the item title, shortened if it is long. Replace any em dash in it with a colon. Name a version or release tag once: "tool v1.2.0", not "tool v1.2.0: Release v1.2.0".',
@@ -34,7 +35,7 @@ const OUTPUT_RULES = [
 ].join('\n');
 
 const WORKED_EXAMPLE = [
-  `Example. It shows one item for brevity; your digest has ${DIGEST_MIN_ITEMS} to ${DIGEST_MAX_ITEMS}. Never copy the example item.`,
+  `Example. It shows one item for brevity; your digest has one entry per item you are given. Never copy the example item.`,
   'Input item:',
   'id: ex-7f3a',
   'title: Runner 2.4 adds ephemeral GPU runners',

@@ -95,6 +95,34 @@ describe('runCommand: wiring', () => {
     });
   });
 
+  it('lets --seed override models.seed for the app it builds', async () => {
+    const h = harness();
+
+    await runCommand({ seed: 7 }, h.deps);
+
+    const built = h.buildApp.mock.calls[0]![0];
+    expect(built.config.models.seed).toBe(7);
+    expect(h.loaded.config.models.seed).toBe(42);
+  });
+
+  it('keeps the configured seed without --seed', async () => {
+    const h = harness();
+
+    await runCommand({}, h.deps);
+
+    expect(h.buildApp.mock.calls[0]![0]).toBe(h.loaded);
+  });
+
+  it.each([-1, 1.5, Number.NaN])('exits 1 with a message for --seed %s', async (seed) => {
+    const h = harness();
+
+    const code = await runCommand({ seed }, h.deps);
+
+    expect(code).toBe(1);
+    expect(text(h.err)).toMatch(/Invalid --seed/);
+    expect(h.buildApp).not.toHaveBeenCalled();
+  });
+
   it('passes --since, --dry-run and --force to runDigest', async () => {
     const h = harness();
 

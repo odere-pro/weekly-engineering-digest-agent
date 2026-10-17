@@ -252,6 +252,7 @@ describe('buildApp wiring', () => {
       profile: loaded.profile,
       timeoutsMs: { write: 900_000 },
       retries: 4,
+      seed: 42,
       logger: ANY_LOGGER,
     });
   });
@@ -388,5 +389,36 @@ describe('AppHandle.close', () => {
     await expect(app.close()).resolves.toBeUndefined();
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('collector unreachable'));
+  });
+});
+
+describe('buildApp sampling', () => {
+  it('records the seed and the temperature every role sends', async () => {
+    const loaded = loadedConfig({ config: { models: { seed: 9, temperature: { write: 0.5 } } } });
+
+    const { deps } = await buildApp(loaded);
+
+    expect(deps.sampling).toEqual({
+      seed: 9,
+      temperatureByRole: { classify: 0, guardPolicy: 0, guardRisk: 0, write: 0.5, judge: 0 },
+    });
+  });
+
+  it('records the defaults: seed 42 and a writer at 0.2', async () => {
+    const { deps } = await buildApp(loadedConfig());
+
+    expect(deps.sampling?.seed).toBe(42);
+    expect(deps.sampling?.temperatureByRole.write).toBe(0.2);
+  });
+
+  it('passes the configured seed and per-role temperature to the adapter', async () => {
+    const loaded = loadedConfig({ config: { models: { seed: 7, temperature: { write: 0.5 } } } });
+
+    await buildApp(loaded);
+
+    expect(firstCallOptions(createOllamaProvider)).toMatchObject({
+      seed: 7,
+      temperature: { write: 0.5 },
+    });
   });
 });

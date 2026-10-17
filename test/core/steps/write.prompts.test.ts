@@ -64,7 +64,8 @@ describe('buildWritePrompt', () => {
 
   it('states the output rules', () => {
     const { system } = buildWritePrompt(makeItems(), FOCUS_AREAS);
-    expect(system).toContain(`${DIGEST_MIN_ITEMS} to ${DIGEST_MAX_ITEMS} items`);
+    expect(system).toMatch(/one entry per item in the data, in the order given/i);
+    expect(system).not.toMatch(/pick \d+ to \d+/i);
     expect(system).toContain(`under ${DIGEST_WORD_LIMIT} words`);
     expect(system).toContain(`aim for about ${DIGEST_WORD_TARGET}`);
     expect(system).toMatch(/copy .*itemId.* and .*url.* exactly/i);
