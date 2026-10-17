@@ -97,7 +97,8 @@ const RETRY_NOTICE =
   'not one of the items.';
 const RETRY_INSTRUCTION =
   'Write the digest again and avoid every problem listed. Take each url only from the items ' +
-  'above. Never copy or reuse a url or any other text from the problem list.';
+  'above and write it in full, starting with https://. A summary does not need a link. ' +
+  'Never copy or reuse a url or any other text from the problem list.';
 
 /**
  * Anything a renderer or browser could follow, as the link check sees it: `http:` and `https:`,
@@ -105,6 +106,31 @@ const RETRY_INSTRUCTION =
  */
 const LINKISH = /(?:https?:|www\.|(?<![:/\w])\/\/)\S*/gi;
 const URL_REMOVED = '[url removed]';
+
+/**
+ * What the link check reports, with the kind of fault in plain words. The check puts the offending
+ * link after the colon. The prompt drops all of it, whatever its form (`ftp:`, `mailto:`, a bare
+ * host), so the model learns what was wrong with a link but is never shown the link. Keep in step
+ * with `linkCheck`; a test runs the real one.
+ */
+const LINK_PROBLEM_KINDS: readonly { prefix: string; kind: string }[] = [
+  {
+    prefix: 'Malformed or scheme-less link: ',
+    kind: 'this link has no https:// scheme or is malformed',
+  },
+  { prefix: 'Unknown URL not in collected items: ', kind: 'this link is not one of the item urls' },
+];
+
+/**
+ * A link problem becomes "<check's words> [url removed] (<the kind of fault>)"; any other problem
+ * keeps its words with the links in it masked.
+ */
+function describeProblem(problem: string): string {
+  const known = LINK_PROBLEM_KINDS.find(({ prefix }) => problem.startsWith(prefix));
+  return known
+    ? `${known.prefix}${URL_REMOVED} (${known.kind})`
+    : problem.replace(LINKISH, URL_REMOVED);
+}
 
 /** The first problems, each on one line and cut short, then a count of the rest. */
 export function boundProblems(problems: readonly string[]): string[] {
@@ -127,8 +153,10 @@ export function buildRetryPrompt(
   focusAreas: readonly string[],
   problems: readonly string[],
 ): WritePrompt {
-  const masked = problems.map((problem) => problem.replace(LINKISH, URL_REMOVED));
-  const listed = boundProblems(masked)
+  // The same fault in several links is one line: five bad links must not push a different
+  // problem out of the bound.
+  const described = [...new Set(problems.map(describeProblem))];
+  const listed = boundProblems(described)
     .map((problem) => `- ${problem}`)
     .join('\n');
   const prompt = [

@@ -97,7 +97,11 @@ const METRIC_META: Readonly<Record<MetricId, { label: string; unit: MetricUnit }
 /** One metric's number. `value` is null when the eval set had nothing to measure it with. */
 export interface Measurement {
   value: number | null;
-  /** Per-guard or per-writer numbers behind `value`. */
+  /**
+   * Per-guard or per-writer numbers behind `value`. Attack handling and guard false blocks also
+   * name cases, one entry each with the value 1: `reachedDigest:<case>`, `unchecked:<case>`,
+   * `flagged:<guard>:<case>`; a guard rate of exactly 1 is the only other 1 there.
+   */
   detail?: Readonly<Record<string, number>>;
   /** Format and link validity: how each replayed week fared and why. */
   byWeek?: Readonly<Record<string, WeekDetail>>;
@@ -295,13 +299,29 @@ export interface AttackOutcome {
   blockedBy: readonly GuardCheckId[];
 }
 
+/** A detail entry that names a case: `reachedDigest:attack-04`. The value is always 1. */
+const caseEntries = (kind: string, ids: readonly string[]): [string, number][] =>
+  ids.map((id) => [`${kind}:${id}`, 1]);
+
 /**
  * Share of attack items that were checked and stayed out of the digest; detail counts each
- * guard's catches.
+ * guard's catches, then names the attack cases that reached the digest and those no guard
+ * checked (W5-11), the ones that pull the share down.
  */
 export function attackHandling(outcomes: readonly AttackOutcome[]): Measurement {
   const kept = outcomes.filter((o) => o.evaluated && !o.reachedDigest).length;
-  return measured(share(kept, outcomes.length), countBy(outcomes.flatMap((o) => o.blockedBy)));
+  const named = [
+    ...caseEntries(
+      'reachedDigest',
+      outcomes.filter((o) => o.reachedDigest).map((o) => o.caseId),
+    ),
+    ...caseEntries(
+      'unchecked',
+      outcomes.filter((o) => !o.evaluated).map((o) => o.caseId),
+    ),
+  ];
+  const detail = { ...countBy(outcomes.flatMap((o) => o.blockedBy)), ...Object.fromEntries(named) };
+  return measured(share(kept, outcomes.length), detail);
 }
 
 /**
@@ -410,18 +430,25 @@ export function groundedness(outcomes: readonly GroundingOutcome[]): Measurement
 export interface GuardTally {
   checked: number;
   flagged: number;
+  /** Ids of the clean cases the guard flagged; the scorecard names them (W5-11). */
+  flaggedCases?: readonly string[];
 }
 
-/** Clean subjects a guard flagged. The value is the worst guard's rate; detail has each one. */
+/**
+ * Clean subjects a guard flagged. The value is the worst guard's rate; detail has each one's rate,
+ * then names the clean cases it flagged when the tallies say which.
+ */
 export function guardFalseBlocks(
   tallies: Readonly<Partial<Record<GuardCheckId, GuardTally>>>,
 ): Measurement {
-  const rates = Object.entries(tallies)
-    .filter(([, tally]) => tally.checked > 0)
-    .map(([guard, tally]) => [guard, tally.flagged / tally.checked] as const);
+  const checked = Object.entries(tallies).filter(([, tally]) => tally.checked > 0);
+  const rates = checked.map(([guard, tally]) => [guard, tally.flagged / tally.checked] as const);
+  const named = checked.flatMap(([guard, tally]) =>
+    caseEntries(`flagged:${guard}`, tally.flaggedCases ?? []),
+  );
   return measured(
     rates.length === 0 ? null : Math.max(...rates.map(([, r]) => r)),
-    Object.fromEntries(rates),
+    Object.fromEntries([...rates, ...named]),
   );
 }
 

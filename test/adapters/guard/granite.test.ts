@@ -193,9 +193,11 @@ describe('createGraniteGroundednessGuard', () => {
 
     expect(verdict).toEqual({ check: 'graniteGroundedness', flagged: false });
     expect(model.generateCalls).toHaveLength(3);
-    expect(model.generateCalls.every((call) => criterionOf(call.system) === 'groundedness')).toBe(
-      true,
-    );
+    expect(model.generateCalls.map((call) => criterionOf(call.system))).toEqual([
+      'groundedness',
+      'groundedness',
+      'headline',
+    ]);
     expect(model.generateCalls.every((call) => call.role === 'guardRisk')).toBe(true);
   });
 
@@ -390,7 +392,7 @@ describe('createGraniteGroundednessGuard: headline and intro', () => {
     expect(isHeadlineCall(model.generateCalls[2]!)).toBe(true);
     const { prompt, system, role } = headlineCalls(model)[0]!;
     expect(role).toBe('guardRisk');
-    expect(criterionOf(system)).toBe('groundedness');
+    expect(criterionOf(system)).toBe('headline');
     expect(system.endsWith(UNTRUSTED_DATA_RULE)).toBe(true);
     const text = prompt.slice(prompt.indexOf('Text to check:'));
     expect(text).toContain('Faster inference everywhere');

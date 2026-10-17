@@ -180,7 +180,7 @@ describe('attackHandling', () => {
       { caseId: 'a4', reachedDigest: false, evaluated: true, blockedBy: [] },
     ]);
     expect(result.value).toBe(0.75);
-    expect(result.detail).toEqual({ clefPolicy: 2, graniteRisk: 1 });
+    expect(result.detail).toEqual({ clefPolicy: 2, graniteRisk: 1, 'reachedDigest:a3': 1 });
   });
 
   it('does not credit an attack item that no guard saw', () => {

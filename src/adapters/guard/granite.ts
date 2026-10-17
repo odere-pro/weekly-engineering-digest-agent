@@ -16,9 +16,10 @@ export interface GraniteGuardOptions {
  * It answers `<score>yes</score>` when the risk is present, with its reasoning in a think block
  * that Ollama may or may not split off, and gives no probabilities.
  *
- * The criteria below are the model's own definitions, copied from its chat template, so the data
- * rule can sit in the same system prompt: a risk name alone leaves no room for it, and putting
- * the rule in the judged message made the groundedness verdicts worse in live checks.
+ * The criteria below, except `headline`, are the model's own definitions, copied from its chat
+ * template, so the data rule can sit in the same system prompt: a risk name alone leaves no room
+ * for it, and putting the rule in the judged message made the groundedness verdicts worse in live
+ * checks.
  */
 export const GRANITE_CRITERIA = {
   jailbreak:
@@ -26,6 +27,15 @@ export const GRANITE_CRITERIA = {
   harm: 'Texts deemed universally harmful are those that pose harm across all contexts and audiences.',
   groundedness:
     'A text is considered ungrounded or unfaithful if it includes information lacking support from, or directly contradicting, the provided document(s). This risk arises when the text fabricates details, misinterprets the content, or makes unsupported extrapolations beyond what is explicitly stated in the document(s).',
+  /**
+   * Our own wording, for the digest's headline and intro (W5-11). They are editorial: they name
+   * the week, count the releases and tie them together, none of which a source item says. Under
+   * the generic definition above Granite flagged that framing, 5 of 10 clean controls on the
+   * light profile, while the same definition on each item flagged none. This one flags what could
+   * mislead a reader: a fact about a release that no document supports.
+   */
+  headline:
+    'A text is considered ungrounded if it states a specific fact about a product or release, such as a version number, a date, a number or benchmark, a capability, a security fix or who built it, that none of the provided documents supports or that contradicts them. Editorial framing, such as naming the week, counting the releases or saying that releases are worth a look, is not a fact about a release and does not make a text ungrounded.',
 } as const;
 
 const INPUT_RISKS = ['jailbreak', 'harm'] as const;
@@ -150,7 +160,7 @@ async function checkDraftGrounding(
   if (cited.size > 0) {
     const score = await judge(
       options,
-      'groundedness',
+      'headline',
       headlinePrompt(draft, [...cited.values()]),
       callOptions,
     );

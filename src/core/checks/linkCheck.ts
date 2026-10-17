@@ -8,8 +8,12 @@ const BARE_URL = /https?:\/\/(?:[^\s<>"'`()[\]]|\([^\s()]*\))+/gi;
 /** Markdown link destination `](dest)`; allows one level of balanced parentheses. */
 const MD_DESTINATION = /\]\(\s*<?((?:[^\s()<>]|\([^\s()]*\))*)>?[^)]*\)/g;
 const HTML_DESTINATION = /\b(?:href|src)\s*=\s*["']?([^\s"'>]+)/gi;
-/** Forms that browsers or renderers resolve as links but that are not `scheme://`. */
-const MALFORMED_LINK = /(?:\bhttps?:(?!\/\/)|\bwww\.|(?<![:/\w])\/\/[^\s/])\S*/gi;
+/**
+ * Forms that browsers or renderers resolve as links but that are not `scheme://`. The `www.` of
+ * a full `http(s)://www.host` url is not one of them: BARE_URL reads that url whole and it must
+ * be a collected one. Any other `www.` is, `ftp://www.host` and `https:/www.host` included.
+ */
+const MALFORMED_LINK = /(?:\bhttps?:(?!\/\/)|(?<!\bhttps?:\/\/)\bwww\.|(?<![:/\w])\/\/[^\s/])\S*/gi;
 /** The lookbehind makes each run of punctuation one attempt; `/[.,;:!?]+$/` is quadratic on a long run. */
 const TRAILING_PUNCTUATION = /(?<![.,;:!?])[.,;:!?]+$/;
 
@@ -77,9 +81,14 @@ function captures(text: string, pattern: RegExp): string[] {
 
 /**
  * Every URL-like thing in `text`; a non-empty `rejected` or `invalid` entry is never acceptable.
- * `invalid` lists numeric character references outside the Unicode range.
+ * `invalid` lists numeric character references outside the Unicode range. A full url that is
+ * collected is judged as a whole and left out of the malformed-link search: a `www.` in its host,
+ * path or query is part of that url (W5-11).
  */
-function linkCandidates(text: string): {
+function linkCandidates(
+  text: string,
+  isKnown: (url: string) => boolean,
+): {
   urls: string[];
   rejected: string[];
   invalid: string[];
@@ -90,7 +99,10 @@ function linkCandidates(text: string): {
     ...captures(decoded, HTML_DESTINATION),
   ];
   const bare = (decoded.match(BARE_URL) ?? []).map((u) => u.replace(TRAILING_PUNCTUATION, ''));
-  const rejected = (decoded.match(MALFORMED_LINK) ?? []).map((u) =>
+  const outsideKnown = decoded.replace(BARE_URL, (url) =>
+    isKnown(url.replace(TRAILING_PUNCTUATION, '')) ? ' ' : url,
+  );
+  const rejected = (outsideKnown.match(MALFORMED_LINK) ?? []).map((u) =>
     u.replace(TRAILING_PUNCTUATION, ''),
   );
   return { urls: [...destinations, ...bare], rejected, invalid: invalidReferences(text) };
@@ -107,7 +119,7 @@ export function linkCheck(digest: Digest, markdown: string, items: readonly Item
     if (!isKnown(item.url)) problems.add(`Unknown URL not in collected items: ${item.url}`);
   }
   for (const text of [...digestTexts(digest), markdown]) {
-    const { urls, rejected, invalid } = linkCandidates(text);
+    const { urls, rejected, invalid } = linkCandidates(text, isKnown);
     for (const url of urls.filter((u) => !isKnown(u))) {
       problems.add(`Unknown URL not in collected items: ${url}`);
     }
