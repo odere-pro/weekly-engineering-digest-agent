@@ -6,6 +6,7 @@ import {
 } from '../../../src/core/steps/guardOutput.js';
 import type { Draft, GuardCheckId, GuardVerdict, Item } from '../../../src/core/schemas.js';
 import type { OutputGuard } from '../../../src/ports/Guard.js';
+import { DigestError } from '../../../src/shared/errors.js';
 import { makeConfig, makeDraft, makeItem } from '../../builders.js';
 import { FakeOutputGuard, noopLogger } from '../../fakes/index.js';
 
@@ -80,6 +81,25 @@ class ThrowingGuard implements OutputGuard {
   checkDraft(draft: Draft): Promise<GuardVerdict> {
     this.calls.push(draft);
     return Promise.reject(this.error);
+  }
+}
+
+/** Takes two microtask turns per call, so calls overlap whenever the step lets them. */
+class OverlapGuard implements OutputGuard {
+  peak = 0;
+  private inFlight = 0;
+  constructor(
+    readonly id: GuardCheckId,
+    private readonly flag: (draft: Draft) => boolean = () => false,
+  ) {}
+
+  async checkDraft(draft: Draft): Promise<GuardVerdict> {
+    this.inFlight += 1;
+    this.peak = Math.max(this.peak, this.inFlight);
+    await Promise.resolve();
+    await Promise.resolve();
+    this.inFlight -= 1;
+    return { check: this.id, flagged: this.flag(draft) };
   }
 }
 
@@ -359,6 +379,62 @@ describe('guardOutputStep', () => {
       for (const text of [...texts, a.digest.headline]) {
         expect(logged()).not.toContain(text);
       }
+    });
+  });
+
+  describe('concurrency', () => {
+    it('checks up to deps.concurrency drafts at once within a guard', async () => {
+      const guard = new OverlapGuard('graniteGroundedness');
+      const config = outputConfig({ checks: { clefRubric: false } });
+
+      await guardOutputStep(drafts(5), SOURCES, { ...makeDeps([guard], config), concurrency: 3 });
+
+      expect(guard.peak).toBe(3);
+    });
+
+    it('gives the same passed, rejected and verdicts at every limit', async () => {
+      const list = drafts(6);
+      const [a, b, c] = list as [Draft, Draft, Draft, ...Draft[]];
+      const run = (concurrency: number) =>
+        guardOutputStep(list, SOURCES, {
+          ...makeDeps([
+            new OverlapGuard('graniteGroundedness', flagging(a, c)),
+            new OverlapGuard('clefRubric', flagging(b)),
+          ]),
+          concurrency,
+        });
+
+      const serial = await run(1);
+
+      expect(await run(3)).toEqual(serial);
+      expect(writers(serial.rejected.map((entry) => entry.draft))).toEqual([
+        a.writer,
+        b.writer,
+        c.writer,
+      ]);
+    });
+
+    it('rejects a limit that is not a whole number of at least 1, before any call', async () => {
+      const granite = new FakeOutputGuard('graniteGroundedness');
+
+      await expect(
+        guardOutputStep(drafts(2), SOURCES, { ...makeDeps([granite]), concurrency: 1.5 }),
+      ).rejects.toThrow(DigestError);
+
+      expect(granite.calls).toEqual([]);
+    });
+
+    it('rejects with the error of a failing call at a higher limit and starts no later guard', async () => {
+      const error = new Error('ollama unreachable');
+      const granite = new ThrowingGuard('graniteGroundedness', error);
+      const clef = new FakeOutputGuard('clefRubric');
+
+      await expect(
+        guardOutputStep(drafts(4), SOURCES, { ...makeDeps([granite, clef]), concurrency: 2 }),
+      ).rejects.toBe(error);
+
+      expect(granite.calls).toHaveLength(2);
+      expect(clef.calls).toEqual([]);
     });
   });
 

@@ -8,6 +8,8 @@ export interface GuardOutputDeps {
   guards: readonly OutputGuard[];
   config: GuardsConfig['output'];
   logger: Logger;
+  /** Most drafts one guard checks at once; GUARD_CONCURRENCY when absent. */
+  concurrency?: number;
 }
 
 export interface GuardOutputOutput {
@@ -24,7 +26,7 @@ export async function guardOutputStep(
 ): Promise<GuardOutputOutput> {
   const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
   const checks = active.map((guard) => (draft: Draft) => guard.checkDraft(draft, sources));
-  const { kept, dropped } = await applyGuards(drafts, checks, deps.config.mode);
+  const { kept, dropped } = await applyGuards(drafts, checks, deps.config.mode, deps.concurrency);
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('output guards rejected draft', {
       writer: subject.writer,

@@ -4,8 +4,10 @@ import {
   type GuardInputDeps,
   type GuardInputOutput,
 } from '../../../src/core/steps/guardInput.js';
+import { GUARD_CONCURRENCY } from '../../../src/core/steps/guardRun.js';
 import type { GuardCheckId, GuardVerdict, Item } from '../../../src/core/schemas.js';
 import type { InputGuard } from '../../../src/ports/Guard.js';
+import { DigestError } from '../../../src/shared/errors.js';
 import { makeConfig, makeItem } from '../../builders.js';
 import { FakeInputGuard, noopLogger } from '../../fakes/index.js';
 
@@ -67,6 +69,25 @@ class ThrowingGuard implements InputGuard {
   checkItem(item: Item): Promise<GuardVerdict> {
     this.calls.push(item);
     return Promise.reject(this.error);
+  }
+}
+
+/** Takes two microtask turns per call, so calls overlap whenever the step lets them. */
+class OverlapGuard implements InputGuard {
+  peak = 0;
+  private inFlight = 0;
+  constructor(
+    readonly id: GuardCheckId,
+    private readonly flag: (item: Item) => boolean = () => false,
+  ) {}
+
+  async checkItem(item: Item): Promise<GuardVerdict> {
+    this.inFlight += 1;
+    this.peak = Math.max(this.peak, this.inFlight);
+    await Promise.resolve();
+    await Promise.resolve();
+    this.inFlight -= 1;
+    return { check: this.id, flagged: this.flag(item) };
   }
 }
 
@@ -323,6 +344,66 @@ describe('guardInputStep', () => {
       await guardInputStep(items(3), makeDeps([probe], config));
 
       expect(maxInFlight).toBe(1);
+    });
+
+    it('checks no more items at once than GUARD_CONCURRENCY when deps give no limit', async () => {
+      const guard = new OverlapGuard('clefPolicy');
+      const config = inputConfig({ checks: { graniteRisk: false } });
+
+      await guardInputStep(items(6), makeDeps([guard], config));
+
+      expect(guard.peak).toBe(Math.min(GUARD_CONCURRENCY, 6));
+    });
+
+    it('checks up to deps.concurrency items at once within a guard', async () => {
+      const guard = new OverlapGuard('clefPolicy');
+      const config = inputConfig({ checks: { graniteRisk: false } });
+
+      await guardInputStep(items(6), { ...makeDeps([guard], config), concurrency: 3 });
+
+      expect(guard.peak).toBe(3);
+    });
+
+    it('gives the same kept, dropped and verdicts at every limit', async () => {
+      const list = items(7);
+      const [a, b, c, d] = list as [Item, Item, Item, Item, ...Item[]];
+      const run = (concurrency: number) =>
+        guardInputStep(list, {
+          ...makeDeps([
+            new OverlapGuard('clefPolicy', flagging(a, d)),
+            new OverlapGuard('graniteRisk', flagging(b, c)),
+          ]),
+          concurrency,
+        });
+
+      const serial = await run(1);
+
+      expect(await run(2)).toEqual(serial);
+      expect(await run(4)).toEqual(serial);
+      expect(ids(serial.dropped.map((entry) => entry.item))).toEqual([a.id, b.id, c.id, d.id]);
+    });
+
+    it('rejects a limit that is not a whole number of at least 1, before any call', async () => {
+      const clef = new FakeInputGuard('clefPolicy');
+
+      await expect(
+        guardInputStep(items(2), { ...makeDeps([clef]), concurrency: 0 }),
+      ).rejects.toThrow(DigestError);
+
+      expect(clef.calls).toEqual([]);
+    });
+
+    it('rejects with the error of a failing call at a higher limit and starts no later guard', async () => {
+      const error = new Error('ollama unreachable');
+      const clef = new ThrowingGuard('clefPolicy', error);
+      const granite = new FakeInputGuard('graniteRisk');
+
+      await expect(
+        guardInputStep(items(5), { ...makeDeps([clef, granite]), concurrency: 2 }),
+      ).rejects.toBe(error);
+
+      expect(clef.calls).toHaveLength(2);
+      expect(granite.calls).toEqual([]);
     });
   });
 

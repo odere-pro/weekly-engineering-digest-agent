@@ -9,6 +9,8 @@ export interface GuardInputDeps {
   guards: readonly InputGuard[];
   config: GuardsConfig['input'];
   logger: Logger;
+  /** Most items one guard checks at once; GUARD_CONCURRENCY when absent. */
+  concurrency?: number;
 }
 
 export interface GuardInputOutput {
@@ -25,7 +27,7 @@ export async function guardInputStep(
 ): Promise<GuardInputOutput> {
   const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
   const checks = active.map((guard) => (item: Item) => guard.checkItem(item));
-  const { kept, dropped } = await applyGuards(items, checks, deps.config.mode);
+  const { kept, dropped } = await applyGuards(items, checks, deps.config.mode, deps.concurrency);
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('input guards dropped item', {
       itemId: subject.id,
