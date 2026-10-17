@@ -4,6 +4,7 @@ import {
   type Classification,
   type Item,
   type ScoredItem,
+  type Source,
 } from '../schemas.js';
 import type { DecisionAnswer, ModelProvider } from '../../ports/ModelProvider.js';
 import { generateStructured } from '../structured.js';
@@ -25,6 +26,17 @@ export interface ClassifyDeps {
   logger: Logger;
   /** decide: one decision call per item (default). generate: JSON batches of 10 (fallback). */
   mode?: 'decide' | 'generate';
+  /** Source id to area tag. A source without an entry gets the same prompt as before. */
+  areaHints?: ReadonlyMap<string, string>;
+}
+
+/** Builds `areaHints` from the configured sources; sources without an `area` are skipped. */
+export function areaHintsOf(sources: readonly Source[]): ReadonlyMap<string, string> {
+  return new Map(
+    sources.flatMap((source): [string, string][] =>
+      source.area === undefined ? [] : [[source.id, source.area]],
+    ),
+  );
 }
 
 /** Spec: score 10 items per call when the classifier generates JSON. */
@@ -61,7 +73,7 @@ async function classifyEach(items: readonly Item[], deps: ClassifyDeps): Promise
   for (const item of items) {
     const { answers } = await deps.model.decide({
       role: 'classify',
-      state: classifyState(item),
+      state: classifyState(item, deps.areaHints?.get(item.sourceId)),
       questions,
     });
     scored.push({ ...item, classification: fromAnswers(item.id, answers, areas) });
@@ -163,7 +175,7 @@ async function scoreBatch(batch: readonly Item[], deps: ClassifyDeps): Promise<C
     {
       role: 'classify',
       system: classifyBatchSystem(deps.focusAreas),
-      prompt: classifyBatchPrompt(batch),
+      prompt: classifyBatchPrompt(batch, deps.areaHints),
       temperature: GENERATE_TEMPERATURE,
     },
     schema,

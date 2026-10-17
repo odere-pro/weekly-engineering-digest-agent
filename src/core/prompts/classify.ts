@@ -74,9 +74,19 @@ function itemText(item: Item): string {
   ].join('\n');
 }
 
-/** The decide() state for one item: the data rule, then the item as an untrusted block. */
-export function classifyState(item: Item): string {
-  return `${UNTRUSTED_DATA_RULE}\n\n${wrapUntrusted(item.id, itemText(item))}`;
+/** A hint comes from config, but one line it stays: line breaks would let it add instructions. */
+function tagText(area: string): string {
+  return area.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * The decide() state for one item: the data rule, an optional trusted source tag, then the item
+ * as an untrusted block.
+ */
+export function classifyState(item: Item, areaHint?: string): string {
+  const text = tagText(areaHint ?? '');
+  const tag = text === '' ? '' : `Source tag: ${text}\n\n`;
+  return `${UNTRUSTED_DATA_RULE}\n\n${tag}${wrapUntrusted(item.id, itemText(item))}`;
 }
 
 /** System prompt for the generate fallback that scores a batch of items as JSON. */
@@ -97,9 +107,17 @@ export function classifyBatchSystem(focusAreas: readonly string[]): string {
 }
 
 /** User prompt for one batch: every item as its own untrusted block, labeled with its id. */
-export function classifyBatchPrompt(items: readonly Item[]): string {
+export function classifyBatchPrompt(
+  items: readonly Item[],
+  areaHints: ReadonlyMap<string, string> = new Map(),
+): string {
+  const tags = items.flatMap((item) => {
+    const text = tagText(areaHints.get(item.sourceId) ?? '');
+    return text === '' ? [] : [`Source tag for ${tagText(item.id)}: ${text}`];
+  });
   return [
     `Classify these ${items.length} items.`,
+    ...(tags.length > 0 ? [tags.join('\n')] : []),
     ...items.map((item) => wrapUntrusted(item.id, itemText(item))),
   ].join('\n\n');
 }

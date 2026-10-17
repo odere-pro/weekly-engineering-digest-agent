@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { classifyStep, type ClassifyDeps } from '../../../src/core/steps/classify.js';
+import { areaHintsOf, classifyStep, type ClassifyDeps } from '../../../src/core/steps/classify.js';
 import type { Item } from '../../../src/core/schemas.js';
 import type {
   DecideRequest,
@@ -552,5 +552,67 @@ describe('classifyStep in generate mode', () => {
       10, 10, 5, 10, 10, 5,
     ]);
     expect(scored.every((item) => item.classification.relevance === 2)).toBe(true);
+  });
+});
+
+describe('area hints', () => {
+  it('puts the source tag in the state of an item whose source has a hint', async () => {
+    const model = new FakeModelProvider({ decide: () => answersFor() });
+    const hinted = makeItem({ sourceId: 'vllm' });
+    const plain = makeItem({ sourceId: 'other' });
+
+    await classifyStep(
+      [hinted, plain],
+      makeDeps(model, { areaHints: new Map([['vllm', 'ai-tooling']]) }),
+    );
+
+    expect(model.decideCalls[0]?.state).toContain('Source tag: ai-tooling');
+    expect(model.decideCalls[1]?.state).not.toContain('Source tag');
+  });
+
+  it('sends the same state as before when no hints are given', async () => {
+    const withMap = new FakeModelProvider({ decide: () => answersFor() });
+    const without = new FakeModelProvider({ decide: () => answersFor() });
+    const item = makeItem();
+
+    await classifyStep([item], makeDeps(withMap, { areaHints: new Map() }));
+    await classifyStep([item], makeDeps(without));
+
+    expect(withMap.decideCalls[0]?.state).toBe(without.decideCalls[0]?.state);
+  });
+
+  it('does not change the questions or the area options', async () => {
+    const withHint = new FakeModelProvider({ decide: () => answersFor() });
+    const without = new FakeModelProvider({ decide: () => answersFor() });
+    const item = makeItem({ sourceId: 'vllm' });
+
+    await classifyStep(
+      [item],
+      makeDeps(withHint, { areaHints: new Map([['vllm', 'not-a-focus-area']]) }),
+    );
+    await classifyStep([item], makeDeps(without));
+
+    expect(withHint.decideCalls[0]?.questions).toEqual(without.decideCalls[0]?.questions);
+  });
+
+  it('puts the tags in the generate-mode prompt too', async () => {
+    const model = new FakeModelProvider({ generate: (request) => answerBatch(request) });
+    const item = makeItem({ sourceId: 'vllm' });
+
+    await classifyStep(
+      [item],
+      makeDeps(model, { mode: 'generate', areaHints: new Map([['vllm', 'platform']]) }),
+    );
+
+    expect(model.generateCalls[0]?.prompt).toContain(`Source tag for ${item.id}: platform`);
+  });
+
+  it('areaHintsOf maps source ids to areas and skips sources without one', () => {
+    const hints = areaHintsOf([
+      { id: 'a', kind: 'rss', url: 'https://example.com/a.xml', area: 'cloud' },
+      { id: 'b', kind: 'github', url: 'https://github.com/o/r' },
+    ]);
+
+    expect([...hints]).toEqual([['a', 'cloud']]);
   });
 });
