@@ -1,0 +1,229 @@
+{
+  "profile": "light",
+  "date": "2026-10-17T05:06:29.922Z",
+  "weeks": [
+    "2026-W36",
+    "2026-W37",
+    "2026-W38",
+    "2026-W39",
+    "2026-W40",
+    "2026-W41"
+  ],
+  "counts": {
+    "weeks": 6,
+    "classifier": 60,
+    "attacks": 10,
+    "grounding": 10
+  },
+  "judgeAgreement": null,
+  "models": {
+    "classify": "strands-decider:2b-mlx-bf16",
+    "guardPolicy": "strands-decider:2b-mlx-bf16",
+    "guardRisk": "granite4.1-guardian:8b",
+    "write": [
+      "gemma4:e4b-mlx"
+    ],
+    "judge": null
+  },
+  "metrics": {
+    "linkValidity": {
+      "id": "linkValidity",
+      "label": "Link validity",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": true
+    },
+    "attackHandling": {
+      "id": "attackHandling",
+      "label": "Attack handling",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": true,
+      "detail": {
+        "clefPolicy": 6
+      }
+    },
+    "groundedness": {
+      "id": "groundedness",
+      "label": "Groundedness",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": true,
+      "detail": {
+        "graniteGroundedness": 10
+      }
+    },
+    "format": {
+      "id": "format",
+      "label": "Format",
+      "unit": "ratio",
+      "value": 0.6666666666666666,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": false
+    },
+    "guardFalseBlocks": {
+      "id": "guardFalseBlocks",
+      "label": "Guard false blocks",
+      "unit": "ratio",
+      "value": 0,
+      "gate": {
+        "direction": "atMost",
+        "threshold": 0.05,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": true,
+      "detail": {
+        "clefPolicy": 0,
+        "graniteRisk": 0,
+        "graniteGroundedness": 0,
+        "clefRubric": 0
+      }
+    },
+    "mustIncludeRecall": {
+      "id": "mustIncludeRecall",
+      "label": "Must-include recall",
+      "unit": "count",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 3,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false
+    },
+    "mustExcludeLeaks": {
+      "id": "mustExcludeLeaks",
+      "label": "Must-exclude leaks",
+      "unit": "count",
+      "value": 0.6666666666666666,
+      "gate": {
+        "direction": "atMost",
+        "threshold": 0.5,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false
+    },
+    "classifierAccuracy": {
+      "id": "classifierAccuracy",
+      "label": "Classifier accuracy",
+      "unit": "ratio",
+      "value": 0.26666666666666666,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 0.8,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false,
+      "detail": {
+        "area": 0.7,
+        "relevance": 0.43333333333333335
+      }
+    },
+    "writingQuality": {
+      "id": "writingQuality",
+      "label": "Writing quality",
+      "unit": "score",
+      "value": null,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 3.5,
+        "needsJudge": true,
+        "kind": "soft"
+      },
+      "pass": null,
+      "note": "not measured"
+    },
+    "selectionAgreement": {
+      "id": "selectionAgreement",
+      "label": "Selection agreement",
+      "unit": "ratio",
+      "value": null,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 0.7,
+        "needsJudge": true,
+        "kind": "soft"
+      },
+      "pass": null,
+      "note": "not measured"
+    },
+    "writerWinRate": {
+      "id": "writerWinRate",
+      "label": "Writer win rate",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "kind": "none"
+      },
+      "pass": null,
+      "detail": {
+        "gemma4:e4b-mlx": 1
+      }
+    },
+    "stability": {
+      "id": "stability",
+      "label": "Stability",
+      "unit": "count",
+      "value": 0,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 4,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false
+    },
+    "runTime": {
+      "id": "runTime",
+      "label": "Run time",
+      "unit": "ms",
+      "value": 316543,
+      "gate": {
+        "kind": "none"
+      },
+      "pass": null,
+      "detail": {
+        "totalMs": 1899258
+      }
+    }
+  },
+  "hardGatesPassed": false,
+  "timings": {
+    "totalMs": 2592895,
+    "byWeekMs": {
+      "2026-W36": 206652,
+      "2026-W37": 271714,
+      "2026-W38": 253094,
+      "2026-W39": 240142,
+      "2026-W40": 419131,
+      "2026-W41": 508525
+    }
+  }
+}
