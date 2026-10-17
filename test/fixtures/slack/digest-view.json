@@ -1,0 +1,49 @@
+{
+  "weekId": "2026-W42",
+  "title": "Week 2026-W42: 4 releases, 1 needs action",
+  "headline": "Ollama 0.9 changes a default; Vitest 5 and Node 24.1 are worth a look.",
+  "groups": [
+    {
+      "urgency": "act-now",
+      "label": "Act now",
+      "items": [
+        {
+          "title": "Ollama 0.9",
+          "url": "https://github.com/ollama/ollama/releases/tag/v0.9.0",
+          "whatChanged": "The default context window grows from 2k to 4k tokens.",
+          "action": "Pin num_ctx in your Modelfiles before upgrading."
+        }
+      ]
+    },
+    {
+      "urgency": "worth-a-look",
+      "label": "Worth a look",
+      "items": [
+        {
+          "title": "Vitest 5.0",
+          "url": "https://vitest.dev/blog/vitest-5",
+          "whatChanged": "Browser mode is stable and the default runner is faster.",
+          "action": "Teams testing UI components should try it."
+        },
+        {
+          "title": "Node 24.1",
+          "url": "https://nodejs.org/en/blog/release/v24.1.0?ref=digest&utm=weekly",
+          "whatChanged": "Security fixes for the HTTP parser.",
+          "action": "Everyone running Node 24 in production."
+        }
+      ]
+    },
+    {
+      "urgency": "good-to-know",
+      "label": "Good to know",
+      "items": [
+        {
+          "title": "pnpm 10.34",
+          "url": "https://github.com/pnpm/pnpm/releases/tag/v10.34.0",
+          "whatChanged": "Fixes a lockfile race & clearer install logs."
+        }
+      ]
+    }
+  ],
+  "footer": "Guards off this week: granite-guardian."
+}

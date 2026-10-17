@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { toSlackMrkdwn } from '../../../src/adapters/delivery/slackFormat.js';
+import { escapeSlack, toSlackMrkdwn } from '../../../src/adapters/delivery/slackFormat.js';
+
+describe('escapeSlack', () => {
+  it('escapes &, < and > and leaves other text alone', () => {
+    expect(escapeSlack('a & b <!channel> c > d')).toBe('a &amp; b &lt;!channel&gt; c &gt; d');
+    expect(escapeSlack('plain *text* with "quotes"')).toBe('plain *text* with "quotes"');
+  });
+
+  it('escapes an & first, so an entity-like input is not read back as a different character', () => {
+    expect(escapeSlack('&lt;')).toBe('&amp;lt;');
+  });
+});
 
 describe('toSlackMrkdwn', () => {
   it('turns [text](url) into <url|text>', () => {

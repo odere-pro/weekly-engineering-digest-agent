@@ -2,9 +2,13 @@ import type { Delivery } from '../../ports/Delivery.js';
 import { DeliveryError } from './deliveryError.js';
 import { failureOneLiner } from './failureNote.js';
 import { redactedError, redactSecrets } from './redact.js';
+import { toSlackBlocks, type SlackMessage } from './slackBlocks.js';
 import { toSlackMrkdwn } from './slackFormat.js';
 
 const REQUEST_TIMEOUT_MS = 15_000;
+
+/** Blocks when the digest was laid out, plain mrkdwn text otherwise (and for failure notes). */
+type SlackPayload = SlackMessage | { text: string };
 
 export interface SlackOptions {
   /** From .env only. */
@@ -35,15 +39,18 @@ export function createSlackDelivery(options: SlackOptions): Delivery {
   const send = options.fetch ?? fetch;
   const secrets = webhookSecrets(options.webhookUrl);
 
-  async function post(text: string): Promise<void> {
-    // The message must not carry the URL: its path is the secret.
+  async function post(payload: SlackPayload): Promise<void> {
     if (!isHttps(options.webhookUrl)) throw new Error('Slack webhook URL must use https');
     let response: Response;
     try {
       response = await send(options.webhookUrl, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text }),
+        // The message must not carry the URL: its path is the secret. We never add it, and this
+        // removes it from any text that echoes it. A Slack webhook URL (https host, then
+        // /services/T../B../token) has no character that JSON or Slack escaping rewrites, so the
+        // serialized body still contains it verbatim and stays valid JSON after the replacement.
+        body: redactSecrets(JSON.stringify(payload), secrets),
         // Only the configured endpoint may be contacted, so a redirect is a failure.
         redirect: 'error',
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -60,7 +67,9 @@ export function createSlackDelivery(options: SlackOptions): Delivery {
 
   return {
     id: 'slack',
-    sendDigest: (message) => post(toSlackMrkdwn(message.markdown)),
-    sendFailure: (note) => post(toSlackMrkdwn(redactSecrets(failureOneLiner(note), secrets))),
+    sendDigest: (message) =>
+      post(message.view ? toSlackBlocks(message.view) : { text: toSlackMrkdwn(message.markdown) }),
+    sendFailure: (note) =>
+      post({ text: toSlackMrkdwn(redactSecrets(failureOneLiner(note), secrets)) }),
   };
 }

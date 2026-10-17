@@ -1,6 +1,10 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { DeliveryError } from '../../../src/adapters/delivery/deliveryError.js';
 import { createSlackDelivery } from '../../../src/adapters/delivery/slack.js';
+import { toSlackBlocks } from '../../../src/adapters/delivery/slackBlocks.js';
+import type { DigestView } from '../../../src/ports/Delivery.js';
 
 const WEBHOOK = 'https://hooks.slack.test/services/T000/B000/s3cr3tT0ken';
 const SECRET_PATH = '/services/T000/B000/s3cr3tT0ken';
@@ -19,6 +23,11 @@ function okFetch(): FetchMock {
 
 function bodyOf(init: RequestInit | undefined): unknown {
   return typeof init?.body === 'string' ? JSON.parse(init.body) : undefined;
+}
+
+function postedBody(fetchMock: FetchMock): string {
+  const body = fetchMock.mock.calls[0]?.[1]?.body;
+  return typeof body === 'string' ? body : '';
 }
 
 function postedText(fetchMock: FetchMock): string {
@@ -165,6 +174,108 @@ describe('createSlackDelivery', () => {
       await expect(
         createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest(message),
       ).rejects.toThrow(/socket hang up/);
+    });
+  });
+
+  describe('sendDigest with a laid-out view', () => {
+    const view: DigestView = JSON.parse(
+      readFileSync(
+        join(import.meta.dirname, '..', '..', 'fixtures', 'slack', 'digest-view.json'),
+        'utf8',
+      ),
+    ) as DigestView;
+    const withView = { ...message, view };
+
+    it('POSTs { text, blocks } built from the view, not the Markdown', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest(withView);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [url, init] = fetchMock.mock.calls[0]!;
+      expect(url).toBe(WEBHOOK);
+      expect(init?.method).toBe('POST');
+      expect(init?.redirect).toBe('error');
+      expect(new Headers(init?.headers).get('content-type')).toBe('application/json');
+      const body = bodyOf(init) as { text: string; blocks: { type: string }[] };
+      expect(Object.keys(body).toSorted()).toEqual(['blocks', 'text']);
+      expect(body).toEqual(toSlackBlocks(view));
+      expect(body.blocks[0]?.type).toBe('header');
+      expect(JSON.stringify(body)).not.toContain('Ollama** shipped');
+    });
+
+    it('still posts the Markdown conversion when there is no view', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest(message);
+
+      expect(bodyOf(fetchMock.mock.calls[0]?.[1])).toEqual({
+        text: '*Digest*\n\n*Ollama* shipped <https://example.com/a|0.9>\n',
+      });
+    });
+
+    it('never puts the webhook url in the posted message, even when collected text echoes it', async () => {
+      const fetchMock = okFetch();
+      const echoing: DigestView = {
+        ...view,
+        headline: `see ${WEBHOOK}`,
+        groups: [
+          {
+            urgency: 'act-now',
+            label: 'Act now',
+            items: [
+              {
+                title: SECRET_PATH,
+                url: WEBHOOK,
+                whatChanged: `posted to ${WEBHOOK}`,
+                action: `then ${WEBHOOK}`,
+              },
+            ],
+          },
+        ],
+      };
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest({
+        ...message,
+        view: echoing,
+      });
+
+      const posted = postedBody(fetchMock);
+      expect(posted).not.toContain('s3cr3tT0ken');
+      expect(posted).not.toContain(SECRET_PATH);
+      expect(posted).toContain('[redacted]');
+      expect(() => JSON.parse(posted) as unknown).not.toThrow();
+    });
+
+    it('does not add the webhook url to an ordinary digest', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest(withView);
+
+      const posted = postedBody(fetchMock);
+      expect(posted).not.toContain('hooks.slack.test');
+      expect(posted).not.toContain('[redacted]');
+    });
+
+    it('refuses a non-https webhook without contacting it', async () => {
+      const fetchMock = okFetch();
+      const delivery = createSlackDelivery({
+        webhookUrl: 'http://hooks.slack.test/services/T000/B000/s3cr3tT0ken',
+        fetch: fetchMock,
+      });
+
+      await expect(delivery.sendDigest(withView)).rejects.toThrow(/slack.*https/i);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('reports a refused post as a typed error without the webhook url', async () => {
+      const fetchMock = vi.fn<typeof fetch>(() =>
+        Promise.resolve(new Response('invalid_blocks', { status: 400 })),
+      );
+
+      const error = await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock })
+        .sendDigest(withView)
+        .catch((caught: unknown) => caught);
+
+      expect(error).toBeInstanceOf(DeliveryError);
+      expect((error as DeliveryError).status).toBe(400);
+      expect((error as DeliveryError).message).not.toContain('s3cr3tT0ken');
     });
   });
 

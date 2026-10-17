@@ -1,0 +1,45 @@
+{
+  "text": "Week 2026-W42: 4 releases, 1 needs action\nOllama 0.9 changes a default; Vitest 5 and Node 24.1 are worth a look.",
+  "blocks": [
+    {
+      "type": "header",
+      "text": { "type": "plain_text", "text": "Week 2026-W42: 4 releases, 1 needs action" }
+    },
+    {
+      "type": "context",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "Ollama 0.9 changes a default; Vitest 5 and Node 24.1 are worth a look."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*🔴 Act now*\n• *<https://github.com/ollama/ollama/releases/tag/v0.9.0|Ollama 0.9>*: The default context window grows from 2k to 4k tokens.\n→ Pin num_ctx in your Modelfiles before upgrading."
+      }
+    },
+    { "type": "divider" },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*🟡 Worth a look*\n• *<https://vitest.dev/blog/vitest-5|Vitest 5.0>*: Browser mode is stable and the default runner is faster.\n→ Teams testing UI components should try it.\n• *<https://nodejs.org/en/blog/release/v24.1.0?ref=digest&amp;utm=weekly|Node 24.1>*: Security fixes for the HTTP parser.\n→ Everyone running Node 24 in production."
+      }
+    },
+    { "type": "divider" },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*⚪ Good to know*\n• *<https://github.com/pnpm/pnpm/releases/tag/v10.34.0|pnpm 10.34>*: Fixes a lockfile race &amp; clearer install logs."
+      }
+    },
+    {
+      "type": "context",
+      "elements": [{ "type": "mrkdwn", "text": "Guards off this week: granite-guardian." }]
+    }
+  ]
+}

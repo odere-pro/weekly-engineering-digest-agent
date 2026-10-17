@@ -4,7 +4,7 @@ const MARKDOWN_LINK = /!?\[([^\]\n]{1,200})\]\((https?:\/\/(?:[^()\s|]|\([^()\s|
 const BOLD = /\*\*(.+?)\*\*/g;
 
 /** Slack reads these three characters as markup, so collected text must not carry them raw. */
-function escapeSlack(text: string): string {
+export function escapeSlack(text: string): string {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
