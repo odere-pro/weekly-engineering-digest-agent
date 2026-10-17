@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { runDigest } from '../../src/core/runDigest.js';
+import { KEPT_SENT_REASON } from '../../src/core/runEnding.js';
 import { ExitCode } from '../../src/core/schemas.js';
 import type { ModelProvider } from '../../src/ports/ModelProvider.js';
 import {
@@ -199,9 +200,8 @@ describe('integration: running a week twice', () => {
       expect(forced.record.status).toBe('failed');
       expect(await runJsonText()).toBe(recordBefore);
       expect(await world.store.hasSentDigest(WEEK)).toBe(true);
-      expect(world.logs.map((line) => line.message)).toContain(
-        'Kept the sent run record; this forced run did not send',
-      );
+      expect(forced.kept).toBe(KEPT_SENT_REASON);
+      expect(world.logs.map((line) => line.message)).toContain(KEPT_SENT_REASON);
       expect(digestsSent(world)).toEqual([1, 1, 1]);
       // The failure is still reported to every channel.
       for (const delivery of world.deliveries) {

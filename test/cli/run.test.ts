@@ -296,6 +296,51 @@ describe('runCommand: summary', () => {
     expect(text(h.out)).not.toContain('digest.md');
   });
 
+  it('says why the week kept its files, under the summary, and names no digest path', async () => {
+    const kept = 'Kept the sent run record; this forced run did not end sent';
+    const h = harness({
+      ...sentResult({ status: 'dry-run', dryRun: true }),
+      markdown: undefined,
+      kept,
+    });
+
+    await runCommand({ force: true, dryRun: true }, h.deps);
+
+    const lines = text(h.out).trimEnd().split('\n');
+    expect(lines.at(-1)).toBe(`${kept}. The week's run folder is unchanged.`);
+    expect(lines).toContain('Dry run: nothing was sent.');
+    expect(text(h.out)).not.toContain('digest.md');
+    expect(text(h.err)).toBe('');
+  });
+
+  it('prints the reason on stdout and the error of a failed forced run on stderr', async () => {
+    const kept = 'Kept the partly delivered run record; this run delivered nothing';
+    const h = harness({
+      record: makeRunRecord({
+        runId: '2026-W43',
+        status: 'failed',
+        error: { step: 'write', message: 'Every writer failed' },
+      }),
+      exitCode: ExitCode.Failed,
+      kept,
+    });
+
+    const code = await runCommand({ force: true }, h.deps);
+
+    expect(code).toBe(1);
+    expect(text(h.out)).toContain(`${kept}. The week's run folder is unchanged.`);
+    expect(text(h.err)).toBe('Error (step: write): Every writer failed\n');
+  });
+
+  it('prints no keep note when the run saved its record', async () => {
+    const h = harness();
+
+    await runCommand({}, h.deps);
+
+    expect(text(h.out)).not.toContain('Kept');
+    expect(text(h.out)).not.toContain('unchanged');
+  });
+
   it('shows no winner and no digest path for a quiet week', async () => {
     const h = harness({
       record: makeRunRecord({ runId: '2026-W43', status: 'quiet', winner: null }),

@@ -87,6 +87,9 @@ export interface RunResult {
   /** The digest.md this run wrote or, on a resume, sent. None when no digest was made, or when
    * the week's earlier files stayed (`RunContext.holdArtifacts`). */
   markdown?: string;
+  /** Why the week's earlier record and files stayed instead of this run's; none when this run's
+   * record was saved. `digest run` prints it, as there is no digest path to show then. */
+  kept?: string;
 }
 
 const WORKFLOW_ID = 'digest';
@@ -599,7 +602,7 @@ async function finish(
 ): Promise<RunResult> {
   const { failure, state } = outcome;
   const record = buildRecord(ctx, outcome, statusOf(ctx, outcome), ctx.deps.clock.now());
-  const written = await endRun(
+  const { written, kept } = await endRun(
     ctx,
     { record, failure, note: noteFor(ctx, outcome), artifacts: state.held },
     previous,
@@ -607,7 +610,7 @@ async function finish(
   // `digest run` prints digest.md's path whenever markdown is set: only for a file this run wrote.
   const digestWritten = !ctx.holdArtifacts || written.has('digest.md');
   const markdown = digestWritten ? state.winner?.markdown : undefined;
-  return { record, exitCode: exitCodeFor(record.status), markdown };
+  return { record, exitCode: exitCodeFor(record.status), markdown, ...(kept && { kept }) };
 }
 
 function statusOf(ctx: RunContext, outcome: ChainOutcome): RunStatus {

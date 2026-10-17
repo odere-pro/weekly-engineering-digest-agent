@@ -74,7 +74,7 @@ describe('endRun: which record stays', () => {
       'a sent record, by a partly delivered one',
       record({ status: 'sent' }),
       partly,
-      'Kept the sent run record; this forced run did not send',
+      'Kept the sent run record; this forced run did not end sent',
     ],
     [
       'a partly delivered record, by a dry run',
@@ -93,8 +93,9 @@ describe('endRun: which record stays', () => {
     const h = setup();
     if (previous) h.store.records.set(WEEK, previous);
 
-    await endRun(h.ctx, { record: next }, previous);
+    const ended = await endRun(h.ctx, { record: next }, previous);
 
+    expect(ended.kept).toBe(expected);
     expect(h.store.records.get(WEEK)).toBe(expected === SAVED ? next : previous);
     const warned = h.logs.filter((line) => line.level === 'warn').map((line) => line.message);
     expect(warned).toEqual(expected === SAVED ? [] : [expected]);
@@ -123,11 +124,12 @@ describe('endRun: artifacts held for the record', () => {
       return saveArtifact(runId, name, content);
     });
 
-    const written = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
+    const ended = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
 
     expect(order).toEqual(['record', 'items.json', 'digest.md']);
     expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe('# New wording\n');
-    expect(written).toEqual(new Set(['items.json', 'digest.md']));
+    expect(ended.written).toEqual(new Set(['items.json', 'digest.md']));
+    expect(ended).not.toHaveProperty('kept');
   });
 
   it('writes nothing when the earlier record stays: no artifact, no error.json', async () => {
@@ -137,9 +139,14 @@ describe('endRun: artifacts held for the record', () => {
     const failure = { error: new Error('delivery failed'), step: 'deliver' as const };
     const note = failureNote(WEEK, failure);
 
-    const written = await endRun(h.ctx, { record: partly, failure, note, artifacts: held }, sent);
+    const { written, kept } = await endRun(
+      h.ctx,
+      { record: partly, failure, note, artifacts: held },
+      sent,
+    );
 
     expect(written).toEqual(new Set());
+    expect(kept).toBe('Kept the sent run record; this forced run did not end sent');
     expect(h.store.records.get(WEEK)).toBe(sent);
     expect(writtenFiles(h.store)).toEqual([`${WEEK}/digest.md`]);
     expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe('# Sent wording\n');
@@ -151,13 +158,14 @@ describe('endRun: artifacts held for the record', () => {
     const h = setup();
     h.store.records.set(WEEK, partly);
 
-    const written = await endRun(
+    const { written, kept } = await endRun(
       h.ctx,
       { record: record({ status: 'dry-run' }), artifacts: held },
       partly,
     );
 
     expect(written).toEqual(new Set());
+    expect(kept).toBe('Kept the partly delivered run record; this run delivered nothing');
     expect(writtenFiles(h.store)).toEqual([]);
   });
 
@@ -170,7 +178,7 @@ describe('endRun: artifacts held for the record', () => {
         : saveArtifact(runId, name, content),
     );
 
-    const written = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
+    const { written } = await endRun(h.ctx, { record: sent, artifacts: held }, partly);
 
     expect(written).toEqual(new Set(['digest.md']));
     expect(h.logs).toContainEqual(
@@ -196,7 +204,7 @@ describe('endRun: artifacts held for the record', () => {
   it('has nothing to write when the run held no artifacts', async () => {
     const h = setup();
 
-    const written = await endRun(h.ctx, { record: sent }, undefined);
+    const { written } = await endRun(h.ctx, { record: sent }, undefined);
 
     expect(written).toEqual(new Set());
   });

@@ -45,6 +45,14 @@ export interface Ending {
   readonly artifacts?: readonly HeldArtifact[];
 }
 
+/** What ending a run reports back to the run. */
+export interface Ended {
+  /** The held artifacts that were written; none when the week's earlier record stayed. */
+  readonly written: ReadonlySet<ArtifactName>;
+  /** Why the week's earlier record stayed instead of this run's (see `keepReason`); else absent. */
+  readonly kept?: string;
+}
+
 export interface DeliveryFailure {
   readonly id: Delivery['id'];
   readonly error: string;
@@ -54,22 +62,25 @@ export interface DeliveryFailure {
  * Ends a run (W2-08): the record, the held artifacts, error.json, the failure note, pruning.
  * `previous` is the week's record before this run; it may stay (see `keepReason`), and then the
  * held artifacts and error.json are dropped with this run's record, so they never describe a run
- * whose record was not saved. Returns the held artifacts that were written, none when the earlier
- * record stayed. Throws only when the record cannot be saved, after a note says so.
+ * whose record was not saved. Returns the held artifacts that were written and, when the earlier
+ * record stayed, why. Throws only when the record cannot be saved, after a note says so.
  */
 export async function endRun(
   ctx: EndingContext,
   { record, failure, note, artifacts = [] }: Ending,
   previous: RunRecord | undefined,
-): Promise<ReadonlySet<ArtifactName>> {
-  const saved = await saveRecord(ctx, record, previous);
+): Promise<Ended> {
+  const kept = keepReason(previous, record);
+  const saved = kept === undefined;
+  if (saved) await saveRecord(ctx, record);
+  else ctx.logger.warn(kept, { status: record.status });
   const written = saved ? await writeHeld(ctx, artifacts) : new Set<ArtifactName>();
   if (failure && saved) await saveErrorFile(ctx, failure, new Date(record.finishedAt));
   await sendFailureNote(ctx, note);
   await pruneOldRuns(ctx);
   const { status, winner, counts } = record;
   ctx.logger.info('Run finished', { status, winner, counts });
-  return written;
+  return saved ? { written } : { written, kept };
 }
 
 export function recordError(failure: Failure): NonNullable<RunRecord['error']> {
@@ -159,20 +170,10 @@ export function toJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-/** True when the record was saved, false when the earlier one stayed. Alerts, then throws, when it cannot be saved. */
-async function saveRecord(
-  ctx: EndingContext,
-  record: RunRecord,
-  previous: RunRecord | undefined,
-): Promise<boolean> {
-  const reason = keepReason(previous, record);
-  if (reason) {
-    ctx.logger.warn(reason, { status: record.status });
-    return false;
-  }
+/** Alerts, then throws, when the record cannot be saved. */
+async function saveRecord(ctx: EndingContext, record: RunRecord): Promise<void> {
   try {
     await ctx.deps.store.saveRunRecord(record);
-    return true;
   } catch (error) {
     const outcome = record.error ? `failed: ${record.error.message}` : `ended ${record.status}`;
     const message = `Could not save the run record (${errorMessage(error)}); the run ${outcome}`;
@@ -182,19 +183,20 @@ async function saveRecord(
   }
 }
 
+/** Why a sent week's record stayed: the run may still have reached some channels, then failed. */
+export const KEPT_SENT_REASON = 'Kept the sent run record; this forced run did not end sent';
+export const KEPT_PARTLY_REASON =
+  'Kept the partly delivered run record; this run delivered nothing';
+
 /**
  * A run never replaces a record that got further with delivery. A sent week that looked unsent
  * would be sent again; a partly delivered one that lost its channels would resend to them.
  */
 function keepReason(previous: RunRecord | undefined, record: RunRecord): string | undefined {
   if (previous?.status === 'sent') {
-    return record.status === 'sent'
-      ? undefined
-      : 'Kept the sent run record; this forced run did not send';
+    return record.status === 'sent' ? undefined : KEPT_SENT_REASON;
   }
-  return reachedAChannel(previous) && !reachedAChannel(record)
-    ? 'Kept the partly delivered run record; this run delivered nothing'
-    : undefined;
+  return reachedAChannel(previous) && !reachedAChannel(record) ? KEPT_PARTLY_REASON : undefined;
 }
 
 /** A sent record, or a failed one that some channel took: the week must not be sent from scratch. */

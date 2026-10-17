@@ -2,6 +2,7 @@
 // channel, and a rerun of a partly delivered week only finishes the delivery.
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from '../../src/core/runDigest.js';
+import { KEPT_PARTLY_REASON, KEPT_SENT_REASON } from '../../src/core/runEnding.js';
 import {
   ExitCode,
   RunRecordSchema,
@@ -331,6 +332,7 @@ describe('runDigest: resuming a partly delivered week', () => {
     expectValidRecord(result.record);
     expect(h.store.records.get(WEEK)).toEqual(result.record);
     expect(result.markdown).toBe(SAVED_DIGEST);
+    expect(result.kept).toBeUndefined();
     expect(h.deliveries.flatMap((d) => d.failures)).toEqual([]);
     expect(h.store.isLocked).toBe(false);
   });
@@ -504,9 +506,8 @@ describe('runDigest: resuming a partly delivered week', () => {
     expect(digestCounts(h)).toEqual([0, 0, 0]);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe(SAVED_DIGEST);
-    expect(warnings(h)).toContain(
-      'Kept the partly delivered run record; this run delivered nothing',
-    );
+    expect(result.kept).toBe(KEPT_PARTLY_REASON);
+    expect(warnings(h)).toContain(KEPT_PARTLY_REASON);
   });
 });
 
@@ -554,9 +555,10 @@ describe('runDigest: a run that must not replace files a channel already got', (
 
     expect(result.record.status).toBe('dry-run');
     expect(result.markdown).toBeUndefined();
+    expect(result.kept).toBe(KEPT_SENT_REASON);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(filesOf(h)).toEqual(EARLIER_FILES);
-    expect(warnings(h)).toContain('Kept the sent run record; this forced run did not send');
+    expect(warnings(h)).toContain(KEPT_SENT_REASON);
   });
 
   it('leaves a sent week alone when a forced run fails before any channel', async () => {
@@ -571,6 +573,7 @@ describe('runDigest: a run that must not replace files a channel already got', (
 
     expect(result.record).toMatchObject({ status: 'failed', error: { step: 'write' } });
     expect(result.markdown).toBeUndefined();
+    expect(result.kept).toBe(KEPT_SENT_REASON);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(filesOf(h)).toEqual(EARLIER_FILES);
   });
@@ -584,6 +587,7 @@ describe('runDigest: a run that must not replace files a channel already got', (
 
     expect(result.record.status).toBe('failed');
     expect(result.markdown).toBeUndefined();
+    expect(result.kept).toBe(KEPT_SENT_REASON);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(filesOf(h)).toEqual(EARLIER_FILES);
   });
@@ -597,6 +601,22 @@ describe('runDigest: a run that must not replace files a channel already got', (
 
     expect(result.record).toMatchObject({ status: 'failed', deliveredTo: ['markdown', 'slack'] });
     expect(result.markdown).toBeUndefined();
+    expect(result.kept).toBe(KEPT_SENT_REASON);
+    expect(h.store.records.get(WEEK)).toBe(previous);
+    expect(filesOf(h)).toEqual(EARLIER_FILES);
+  });
+
+  it('leaves a partly delivered week alone when a forced run delivers to no channel', async () => {
+    const h = setup();
+    const previous = partlyDelivered(h);
+    seedFiles(h);
+    for (const delivery of h.deliveries) delivery.failWith = new Error('offline');
+
+    const result = await h.run({ force: true });
+
+    expect(result.record.status).toBe('failed');
+    expect(result.markdown).toBeUndefined();
+    expect(result.kept).toBe(KEPT_PARTLY_REASON);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(filesOf(h)).toEqual(EARLIER_FILES);
   });
@@ -608,6 +628,7 @@ describe('runDigest: a run that must not replace files a channel already got', (
     const result = await h.run({ force: true });
 
     expect(result.record.status).toBe('sent');
+    expect(result.kept).toBeUndefined();
     const files = filesOf(h);
     expect(files['digest.md']).toBe(result.markdown);
     expect(result.markdown).not.toBe(SAVED_DIGEST);
@@ -630,12 +651,14 @@ describe('runDigest: a run that must not replace files a channel already got', (
     const dry = await h.run({ dryRun: true });
 
     expect(dry.markdown).toBeUndefined();
+    expect(dry.kept).toBe(KEPT_PARTLY_REASON);
     expect(h.store.records.get(WEEK)).toBe(previous);
     expect(filesOf(h)).toEqual({ ...EARLIER_FILES, 'digest.md': saved });
 
     const resumed = await h.run();
 
     expect(resumed.record.status).toBe('sent');
+    expect(resumed.kept).toBeUndefined();
     expect(h.channel('email').digests).toEqual([
       { weekId: WEEK, subject: SUBJECT, markdown: saved },
     ]);
@@ -651,6 +674,7 @@ describe('runDigest: a run that must not replace files a channel already got', (
 
     expect(result.record).toMatchObject({ status: 'failed', deliveredTo: ['markdown', 'slack'] });
     expect(result.markdown).not.toBe(SAVED_DIGEST);
+    expect(result.kept).toBeUndefined();
     expect(filesOf(h)['digest.md']).toBe(result.markdown);
     expect(JSON.parse(filesOf(h)['error.json'] ?? '{}')).toMatchObject({ step: 'deliver' });
     expect(h.store.records.get(WEEK)).toEqual(result.record);
@@ -664,6 +688,7 @@ describe('runDigest: a run that must not replace files a channel already got', (
     const result = await h.run();
 
     expect(result.record.status).toBe('sent');
+    expect(result.kept).toBeUndefined();
     expect(filesOf(h)['digest.md']).toBe(result.markdown);
     expect(filesOf(h)['items.json']).not.toBe(EARLIER['items.json']);
   });

@@ -81,6 +81,7 @@ export async function resumeDelivery(
     deliveredTo: [...shipped.deliveredTo],
     ...(failure && { error: recordError(failure) }),
   };
+  // The record always reached a channel, so the earlier one never stays and `endRun` keeps nothing.
   await endRun(
     ctx,
     { record, failure, note: failure && failureNote(ctx.weekId, failure) },

@@ -4,6 +4,7 @@
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
+import { KEPT_SENT_REASON } from '../../src/core/runEnding.js';
 import { ExitCode, type DeliveryId, type RunRecord } from '../../src/core/schemas.js';
 import type { CapturingDelivery } from '../fakes/index.js';
 import { connectionRefused } from './fakeOllama.js';
@@ -239,9 +240,37 @@ describe('integration: rerunning a partly delivered week', () => {
 
       expect(cli.exitCode).toBe(ExitCode.Failed);
       expect(cli.stdout).not.toMatch(/^Digest\s/m);
+      expect(cli.stdout).toContain(`${KEPT_SENT_REASON}. The week's run folder is unchanged.`);
       expect(await readTextIfExists(runFile(dataDir(), WEEK, 'digest.md'))).toBe(digest);
       expect(await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'))).toBeUndefined();
       expect(await readRunJson(dataDir(), WEEK)).toEqual(sent);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'tells the person why a forced dry run on a sent week printed no digest, and changes no file',
+    async () => {
+      const first = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      await runCli(first);
+      const files = ['items.json', 'scores.json', 'drafts.json', 'digest.md', 'run.json'];
+      const read = (): Promise<(string | undefined)[]> =>
+        Promise.all(files.map((name) => readTextIfExists(runFile(dataDir(), WEEK, name))));
+      const before = await read();
+      expect(before.every((text) => text !== undefined)).toBe(true);
+      const preview = createWorld({ now: RERUN, dataDir: dataDir() });
+
+      const cli = await runCli(preview, { force: true, dryRun: true });
+
+      expect(cli.exitCode).toBe(ExitCode.Sent);
+      expect(modelCalls(preview)).toBeGreaterThan(0);
+      expect(digestsSent(preview)).toEqual([0, 0, 0]);
+      expect(cli.stdout).toMatch(/Status\s+dry-run/);
+      expect(cli.stdout).not.toMatch(/^Digest\s/m);
+      const lines = cli.stdout.trimEnd().split('\n');
+      expect(lines.at(-1)).toBe(`${KEPT_SENT_REASON}. The week's run folder is unchanged.`);
+      expect(await read()).toEqual(before);
+      expect(await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'))).toBeUndefined();
     },
     TEST_TIMEOUT_MS,
   );
