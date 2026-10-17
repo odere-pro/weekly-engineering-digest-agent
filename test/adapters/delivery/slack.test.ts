@@ -122,6 +122,42 @@ describe('createSlackDelivery', () => {
       ).rejects.toThrow(/slack/i);
     });
 
+    it('refuses a non-https webhook without contacting it', async () => {
+      const fetchMock = okFetch();
+      const httpWebhook = 'http://hooks.slack.test/services/T000/B000/s3cr3tT0ken';
+      const delivery = createSlackDelivery({ webhookUrl: httpWebhook, fetch: fetchMock });
+
+      const digestError = await delivery.sendDigest(message).catch((e: unknown) => e);
+      const failureError = await delivery
+        .sendFailure({ weekId: '2026-W42', step: 'write', message: 'boom' })
+        .catch((e: unknown) => e);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      for (const error of [digestError, failureError]) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toMatch(/slack.*https/i);
+        expect((error as Error).message).not.toContain(SECRET_PATH);
+        expect((error as Error).message).not.toContain('s3cr3tT0ken');
+      }
+    });
+
+    it('refuses a webhook url that is not a url at all', async () => {
+      const fetchMock = okFetch();
+      await expect(
+        createSlackDelivery({ webhookUrl: 'not-a-url', fetch: fetchMock }).sendDigest(message),
+      ).rejects.toThrow(/slack.*https/i);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('accepts an https webhook in any letter case', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({
+        webhookUrl: 'HTTPS://Hooks.Slack.Test/services/T000/B000/s3cr3tT0ken',
+        fetch: fetchMock,
+      }).sendDigest(message);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
     it('reports a non-Error rejection', async () => {
       const fetchMock = vi.fn<typeof fetch>().mockRejectedValue('socket hang up');
 

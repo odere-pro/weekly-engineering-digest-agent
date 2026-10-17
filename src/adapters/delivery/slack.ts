@@ -21,12 +21,22 @@ function webhookSecrets(webhookUrl: string): string[] {
   }
 }
 
-/** Slack incoming webhook (W1-12). */
+function isHttps(webhookUrl: string): boolean {
+  try {
+    return new URL(webhookUrl).protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/** Slack incoming webhook (W1-12). Refuses to post to anything but https. */
 export function createSlackDelivery(options: SlackOptions): Delivery {
   const send = options.fetch ?? fetch;
   const secrets = webhookSecrets(options.webhookUrl);
 
   async function post(text: string): Promise<void> {
+    // The message must not carry the URL: its path is the secret.
+    if (!isHttps(options.webhookUrl)) throw new Error('Slack webhook URL must use https');
     let response: Response;
     try {
       response = await send(options.webhookUrl, {

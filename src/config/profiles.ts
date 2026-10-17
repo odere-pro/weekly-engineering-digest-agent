@@ -1,6 +1,6 @@
 // Model profiles from the spec. A profile maps each role to an Ollama tag; code only asks for roles.
 import type { Role } from '../core/schemas.js';
-import type { ProfileName } from './schema.js';
+import type { GuardsConfig, ProfileName } from './schema.js';
 
 export interface ModelProfile {
   name: ProfileName;
@@ -118,6 +118,39 @@ export function modelsForRole(profile: ModelProfile, role: Role): readonly strin
 /** Every distinct tag a profile needs; used by doctor and model pulls. */
 export function requiredModels(profile: ModelProfile): string[] {
   const tags = [profile.classify, profile.guardPolicy, profile.guardRisk, ...profile.writers];
+  if (profile.judge) tags.push(profile.judge);
+  return [...new Set(tags)];
+}
+
+/**
+ * The guard roles that no enabled check uses. The mapping follows the guard adapters: the Clef
+ * checks (clefPolicy, clefRubric) ask the guardPolicy role, the Granite checks (graniteRisk,
+ * graniteGroundedness) ask guardRisk. A check runs when its section and the check are both on.
+ */
+function unusedGuardRoles(guards: GuardsConfig): ReadonlySet<'guardPolicy' | 'guardRisk'> {
+  const { input, output } = guards;
+  const policyInUse =
+    (input.enabled && input.checks.clefPolicy) || (output.enabled && output.checks.clefRubric);
+  const riskInUse =
+    (input.enabled && input.checks.graniteRisk) ||
+    (output.enabled && output.checks.graniteGroundedness);
+  const unused = new Set<'guardPolicy' | 'guardRisk'>();
+  if (!policyInUse) unused.add('guardPolicy');
+  if (!riskInUse) unused.add('guardRisk');
+  return unused;
+}
+
+/**
+ * The tags a run with these guard settings loads: `requiredModels` without the models of guard
+ * roles whose checks are all off. A tag another role still uses stays. Meant for doctor and the
+ * model health check, so a switched-off guard does not demand a model pull.
+ */
+export function modelsInUse(profile: ModelProfile, guards: GuardsConfig): string[] {
+  const unused = unusedGuardRoles(guards);
+  const tags = [profile.classify];
+  if (!unused.has('guardPolicy')) tags.push(profile.guardPolicy);
+  if (!unused.has('guardRisk')) tags.push(profile.guardRisk);
+  tags.push(...profile.writers);
   if (profile.judge) tags.push(profile.judge);
   return [...new Set(tags)];
 }

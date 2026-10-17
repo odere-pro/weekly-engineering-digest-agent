@@ -97,6 +97,32 @@ describe('config schema', () => {
     expect(ConfigSchema.safeParse(raw).success).toBe(true);
   });
 
+  describe('SLACK_WEBHOOK_URL', () => {
+    const parse = (value: string) => SecretsSchema.safeParse({ SLACK_WEBHOOK_URL: value });
+
+    it('accepts an https webhook', () => {
+      expect(parse('https://hooks.slack.com/services/T000/B000/XXXX').success).toBe(true);
+    });
+
+    it('rejects an http webhook, which would send the secret path in clear text', () => {
+      expect(parse('http://hooks.slack.com/services/T000/B000/XXXX').success).toBe(false);
+    });
+
+    it('rejects other schemes and text that is not a URL', () => {
+      expect(parse('ftp://hooks.slack.com/services/T000/B000/XXXX').success).toBe(false);
+      expect(parse('not-a-url').success).toBe(false);
+    });
+
+    it('does not echo the rejected value in the error', () => {
+      const result = parse('http://hooks.slack.com/services/T000/B000/s3cr3t');
+      expect(JSON.stringify(result.error?.issues)).not.toContain('s3cr3t');
+    });
+
+    it('stays optional', () => {
+      expect(SecretsSchema.safeParse({}).success).toBe(true);
+    });
+  });
+
   it('separates secrets from env settings', () => {
     expect(SECRET_KEYS).toEqual(['SMTP_PASSWORD', 'SLACK_WEBHOOK_URL', 'GITHUB_TOKEN']);
     expect(SecretsSchema.parse({})).toEqual({});

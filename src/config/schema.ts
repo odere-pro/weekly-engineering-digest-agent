@@ -138,7 +138,8 @@ export type ConfigInput = z.input<typeof ConfigSchema>;
 /** Secrets: .env only, never logged, never written to run records or traces. */
 export const SecretsSchema = z.object({
   SMTP_PASSWORD: z.string().min(1).optional(),
-  SLACK_WEBHOOK_URL: z.url().optional(),
+  /** https only: the secret path in the URL must not travel in clear text. */
+  SLACK_WEBHOOK_URL: z.url({ protocol: /^https$/ }).optional(),
   GITHUB_TOKEN: z.string().min(1).optional(),
 });
 export type Secrets = z.infer<typeof SecretsSchema>;

@@ -171,6 +171,8 @@ export const RunRecordSchema = z.object({
     collected: z.number().int().min(0),
     afterGuardInput: z.number().int().min(0),
     classified: z.number().int().min(0),
+    /** Items left after the process step. Absent in older records. */
+    afterProcess: z.number().int().min(0).optional(),
     selected: z.number().int().min(0),
     digestItems: z.number().int().min(0),
   }),
