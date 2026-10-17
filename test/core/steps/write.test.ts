@@ -1,12 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { formatCheck } from '../../../src/core/checks/formatCheck.js';
 import {
-  buildWritePrompt,
   DIGEST_MAX_ITEMS,
   DIGEST_MIN_ITEMS,
   DIGEST_WORD_LIMIT,
-  DIGEST_WORD_TARGET,
-} from '../../../src/core/prompts/write.js';
+  formatCheck,
+} from '../../../src/core/checks/formatCheck.js';
+import { buildWritePrompt, DIGEST_WORD_TARGET } from '../../../src/core/prompts/write.js';
 import { renderDigest } from '../../../src/core/render.js';
 import type { Digest, DigestItem, ScoredItem } from '../../../src/core/schemas.js';
 import { writeStep, type WriteDeps } from '../../../src/core/steps/write.js';
@@ -116,6 +115,22 @@ describe('buildWritePrompt', () => {
     expect(system).toMatch(/why it matters/i);
   });
 
+  it('asks for one entry per release and to merge items that cover the same release (F5)', () => {
+    const { system } = buildWritePrompt(makeItems(), FOCUS_AREAS);
+
+    expect(system).toMatch(/one entry per release/i);
+    expect(system).toMatch(/same release/i);
+    expect(system).toMatch(/fold|merge/i);
+    expect(system).toContain(`fewer than ${DIGEST_MIN_ITEMS} entries`);
+  });
+
+  it('asks for a version or tag to be named once in a title (F32)', () => {
+    const { system } = buildWritePrompt(makeItems(), FOCUS_AREAS);
+
+    expect(system).toMatch(/title:[^\n]*(version|tag)[^\n]*once/i);
+    expect(system).toContain('v1.2.0: Release v1.2.0');
+  });
+
   it('includes one short worked example and uses no em dash itself', () => {
     const { system, prompt } = buildWritePrompt(makeItems(), FOCUS_AREAS);
     expect(system).toMatch(/example/i);
@@ -155,6 +170,54 @@ describe('prompt limits', () => {
     const tooLong = { ...digest, intro: words(DIGEST_WORD_LIMIT - DIGEST_WORD_TARGET + 20) };
     expect(check(tooLong).problems).toContainEqual(
       expect.stringContaining(`under ${DIGEST_WORD_LIMIT} words`),
+    );
+  });
+});
+
+describe('writeStep titles (F32)', () => {
+  async function titleOf(drafted: string): Promise<string | undefined> {
+    const items = makeItems(3);
+    const first = makeDigestItem(items[0]!, { title: drafted });
+    const rest = items.slice(1).map((item) => makeDigestItem(item));
+    const model = scripted({ 'writer-a': [body([first, ...rest])] });
+
+    const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    return result.drafts[0]?.digest.items[0]?.title;
+  }
+
+  it.each([
+    ['transformers v5.20.0: Release v5.20.0', 'transformers v5.20.0'],
+    ['transformers v5.20.0: v5.20.0', 'transformers v5.20.0'],
+    ['kubernetes v1.34: Version 1.34', 'kubernetes v1.34'],
+    ['foo 1.2.0-rc1: Release 1.2.0-rc1', 'foo 1.2.0-rc1'],
+    ['Release v5.20.0: Release v5.20.0', 'Release v5.20.0'],
+  ])('collapses a title that only restates its own release tag: %s', async (title, expected) => {
+    expect(await titleOf(title)).toBe(expected);
+  });
+
+  it.each([
+    'Kubernetes v1.34: Of Wind & Will',
+    'foo v2.0.0: Release v2.0.1',
+    'Runner 2.4 adds ephemeral GPU runners',
+    'Node.js 22: Release notes',
+    'transformers v5.20.0 adds Muse Spark Open',
+  ])('leaves a title that says something new alone: %s', async (title) => {
+    expect(await titleOf(title)).toBe(title);
+  });
+
+  it('stays fast on a hostile title made of dots', async () => {
+    const started = performance.now();
+
+    const title = await titleOf(`tool v1.0.0: ${'.'.repeat(80_000)}x`);
+
+    expect(performance.now() - started).toBeLessThan(1_000);
+    expect(title).toContain('tool v1.0.0');
+  });
+
+  it('only looks at the first colon', async () => {
+    expect(await titleOf('tool v1.0.0: Release v1.0.0: the big one')).toBe(
+      'tool v1.0.0: Release v1.0.0: the big one',
     );
   });
 });
@@ -207,6 +270,90 @@ describe('writeStep', () => {
     expect(result.drafts[0]?.digest.items.map((item) => item.url)).toEqual(
       items.map((item) => item.url),
     );
+  });
+
+  it.each([
+    ['is not a URL', 'not a url at all'],
+    ['is relative', '/releases/tag/v1'],
+    ['is empty', ''],
+  ])(
+    'does not repair a draft whose model url %s, since the url is replaced anyway',
+    async (_name, url) => {
+      const items = makeItems(3);
+      const drafted = items.map((item) => makeDigestItem(item, { url }));
+      const model = scripted({ 'writer-a': [body(drafted)] });
+
+      const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+      expect(model.generateCalls).toHaveLength(1);
+      expect(result.failures).toEqual([]);
+      expect(result.drafts[0]?.digest.items.map((item) => item.url)).toEqual(
+        items.map((item) => item.url),
+      );
+    },
+  );
+
+  it('accepts an item whose url the model sent as null', async () => {
+    const items = makeItems(3);
+    const drafted = items.map((item) => ({ ...makeDigestItem(item), url: null }));
+    const model = scripted({
+      'writer-a': [JSON.stringify({ headline: 'H', intro: 'I', items: drafted })],
+    });
+
+    const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    expect(model.generateCalls).toHaveLength(1);
+    expect(result.drafts[0]?.digest.items.map((item) => item.url)).toEqual(
+      items.map((item) => item.url),
+    );
+  });
+
+  it('still rejects a digest with no items', async () => {
+    const items = makeItems(3);
+    const model = scripted({ 'writer-a': [body([]), body([])] });
+
+    const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    expect(result.drafts).toEqual([]);
+    expect(result.failures[0]?.error).toMatch(/failed validation/);
+  });
+
+  it('accepts an item the model sent without a url and sets the source url', async () => {
+    const items = makeItems(3);
+    const drafted = items.map((item) => {
+      const { url: _omitted, ...rest } = makeDigestItem(item);
+      return rest as DigestItem;
+    });
+    const model = scripted({ 'writer-a': [body(drafted)] });
+
+    const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    expect(model.generateCalls).toHaveLength(1);
+    expect(result.drafts[0]?.digest.items.map((item) => item.url)).toEqual(
+      items.map((item) => item.url),
+    );
+  });
+
+  it('does not ask the model for a valid url in the schema it sends', async () => {
+    const items = makeItems(3);
+    const model = new FakeModelProvider({ generate: () => bodyFor(items) });
+
+    await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    const schema = JSON.stringify(model.generateCalls[0]?.jsonSchema);
+    expect(schema).not.toContain('"format":"uri"');
+    expect(schema).not.toMatch(/"required":\[[^\]]*"url"/);
+  });
+
+  it('still repairs a draft when another field is invalid', async () => {
+    const items = makeItems(3);
+    const broken = items.map((item) => makeDigestItem(item, { whyItMatters: '' }));
+    const model = scripted({ 'writer-a': [body(broken), bodyFor(items)] });
+
+    const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
+
+    expect(model.generateCalls).toHaveLength(2);
+    expect(result.drafts).toHaveLength(1);
   });
 
   it('removes items with an unknown itemId and keeps the rest in order', async () => {

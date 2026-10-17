@@ -318,6 +318,252 @@ describe('processStep duplicates', () => {
   });
 });
 
+describe('processStep same release in different sources (F5)', () => {
+  const release = (id: string, sourceId: string, title: string, relevance = 2.5): ScoredItem =>
+    scored(id, { relevance }, { sourceId, title });
+
+  it('keeps one entry when two sources announce the same product and version (Muse Spark Open)', () => {
+    const hub = release(
+      'hub',
+      'huggingface-blog',
+      'Muse Spark Open 1.0 is now on Hugging Face',
+      2.4,
+    );
+    const aws = release(
+      'aws',
+      'aws-whats-new',
+      'Announcing Muse Spark Open v1.0 on Amazon SageMaker JumpStart',
+      2.9,
+    );
+
+    const out = run([hub, aws]);
+
+    expect(ids(out.selected)).toEqual(['aws']);
+    expect(out.dropped).toEqual([{ itemId: 'hub', reason: 'duplicate' }]);
+  });
+
+  it('keeps the highest-scored one whatever the input order', () => {
+    const low = release('low', 'blog-a', 'Muse Spark Open 1.0 arrives', 2.1);
+    const high = release('high', 'blog-b', 'Muse Spark Open 1.0 now available', 2.8);
+
+    expect(ids(run([low, high]).selected)).toEqual(['high']);
+    expect(ids(run([high, low]).selected)).toEqual(['high']);
+  });
+
+  it('collapses three sources to the best one', () => {
+    const out = run([
+      release('a', 's1', 'Kubernetes 1.34 is out', 2.2),
+      release('b', 's2', 'Kubernetes v1.34: Of Wind & Will', 2.9),
+      release('c', 's3', 'Introducing Kubernetes 1.34', 2.5),
+    ]);
+
+    expect(ids(out.selected)).toEqual(['b']);
+    expect(out.dropped).toEqual([
+      { itemId: 'c', reason: 'duplicate' },
+      { itemId: 'a', reason: 'duplicate' },
+    ]);
+  });
+
+  it('matches a GitHub release title against a blog post for the same tag', () => {
+    const github = release(
+      'gh',
+      'transformers-releases',
+      'transformers v5.20.0: Release v5.20.0',
+      2.3,
+    );
+    const blog = release('blog', 'huggingface-blog', 'Transformers 5.20.0 is out', 2.7);
+
+    const out = run([github, blog]);
+
+    expect(ids(out.selected)).toEqual(['blog']);
+    expect(out.dropped).toEqual([{ itemId: 'gh', reason: 'duplicate' }]);
+  });
+
+  it('treats a trailing .0 as the same version', () => {
+    const tag = release('tag', 'ollama-releases', 'ollama v0.12.0', 2.2);
+    const post = release('post', 'ollama-blog', 'Ollama 0.12 is out', 2.6);
+
+    expect(ids(run([tag, post]).selected)).toEqual(['post']);
+  });
+
+  it('folds Unicode forms and punctuation in the product name', () => {
+    const plain = release('plain', 's1', 'Claude Code 2.1.5 released', 2.2);
+    const dashed = release('dashed', 's2', '\uFF43laude-code v2.1.5', 2.6);
+
+    expect(ids(run([plain, dashed]).selected)).toEqual(['dashed']);
+  });
+
+  it.each([
+    ['another version of the same product', 'Kubernetes 1.34 is out', 'Kubernetes 1.35 is out'],
+    ['another product with the same version', 'Alpha 2.0 is out', 'Beta 2.0 is out'],
+    ['a prerelease of the same version', 'Tool 1.2.0-rc1 is out', 'Tool 1.2.0 is out'],
+    ['a patch release', 'Tool 1.2 is out', 'Tool 1.2.1 is out'],
+    ['a different prefix before the product', 'Meta Muse Spark Open 1.0', 'Muse Spark Open 1.0'],
+  ])('keeps both for %s', (_name, first, second) => {
+    const out = run([release('one', 's1', first), release('two', 's2', second)]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+    expect(out.dropped).toEqual([]);
+  });
+
+  it.each([
+    ['model variants', 'Claude 3.5 Sonnet', 'Claude 3.5 Haiku'],
+    [
+      'model variants after an announcement',
+      'Gemini 2.5 Pro is generally available',
+      'Gemini 2.5 Flash-Lite is now in preview',
+    ],
+    ['model sizes', 'Llama 3.1 405B', 'Llama 3.1 8B'],
+    ['model sizes with a hyphenated name', 'GPT-4.1 mini', 'GPT-4.1 nano'],
+    ['model specializations', 'Qwen 2.5 Coder', 'Qwen 2.5 VL'],
+    ['support in two libraries', 'Python 3.13 support in numpy', 'Python 3.13 support in pandas'],
+    [
+      'release notes and a security advisory',
+      'Kubernetes 1.34 release notes',
+      'Kubernetes 1.34 security advisory',
+    ],
+    ['a migration guide and the release', 'Foo 1.2 to 1.3 migration guide', 'Foo 1.2 released'],
+    [
+      'the release and a benchmark against another version',
+      'Postgres 17.1',
+      'Postgres 17.1 vs 16.5 benchmark',
+    ],
+    [
+      'a version heading and a different product',
+      'Whats new in 2.0 for LangChain',
+      'Whats new in 2.0 for LlamaIndex',
+    ],
+  ])('keeps both for %s sharing a prefix and version (%s / %s)', (_name, first, second) => {
+    const out = run([release('one', 's1', first), release('two', 's2', second)]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+    expect(out.dropped).toEqual([]);
+  });
+
+  it('ignores a title that names a second version, such as an upgrade path', () => {
+    const out = run([
+      release('one', 's1', 'Foo 1.2 is out, replacing 1.1'),
+      release('two', 's2', 'Foo 1.2 is out'),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+  });
+
+  it.each([
+    ['nothing after the version', 'Tool 6.1', 'Tool 6.1 is out'],
+    ['an announcement verb', 'Tool 6.1 ships today', 'Tool 6.1 released'],
+    ['a subtitle after a colon', 'Tool 6.1: Fast Lane', 'Tool 6.1 is available'],
+    ['a subtitle after a dash', 'Tool 6.1 - Fast Lane', 'Tool 6.1 is available'],
+    ['only punctuation after the version', 'Tool 6.1.', 'Tool 6.1 is available'],
+    ['a platform the release landed on', 'Tool 6.1 on Platform A', 'Tool 6.1 now in Platform B'],
+    ['the same version repeated in a subtitle', 'tool v6.1.0: Release v6.1.0', 'Tool 6.1 is out'],
+  ])('merges when the title has %s', (_name, first, second) => {
+    const out = run([release('one', 's1', first, 2.2), release('two', 's2', second, 2.8)]);
+
+    expect(ids(out.selected)).toEqual(['two']);
+    expect(out.dropped).toEqual([{ itemId: 'one', reason: 'duplicate' }]);
+  });
+
+  it('does not read a version out of text that only starts like one', () => {
+    const out = run([
+      release('one', 's1', 'Tool 1.2.3abc is out'),
+      release('two', 's2', 'Tool 1.2.3abc ships'),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+  });
+
+  it('stays fast on hostile titles', () => {
+    const hostile = [
+      `Tool ${'1.'.repeat(50_000)}x is out`,
+      `Tool 1.2${'-'.repeat(50_000)}`,
+      `Tool 1${'.0'.repeat(50_000)} is out`,
+      `${'v1.2 '.repeat(20_000)}is out`,
+    ];
+    const started = performance.now();
+
+    run(hostile.map((title, i) => release(`h${i}`, `s${i}`, title)));
+
+    expect(performance.now() - started).toBeLessThan(1_000);
+  });
+
+  it('does not merge on a shared name without a version token', () => {
+    const out = run([
+      release('hub', 's1', 'Muse Spark Open lands on Hugging Face'),
+      release('aws', 's2', 'Muse Spark Open now available on Amazon SageMaker JumpStart'),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['aws', 'hub']);
+  });
+
+  it('leaves the original smoke pair to the writer: no version in the cloud post', () => {
+    const out = run([
+      release('gh', 'transformers-releases', 'transformers v5.20.0: Release v5.20.0'),
+      release(
+        'aws',
+        'aws-whats-new',
+        'Muse Spark Open model now available on Amazon SageMaker JumpStart',
+      ),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['aws', 'gh']);
+  });
+
+  it('does not merge two items of the same source', () => {
+    const out = run([
+      release('one', 'feed', 'Tool 3.1 is out'),
+      release('two', 'feed', 'Tool 3.1 migration guide'),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+  });
+
+  it.each([
+    ['a title that is only a version', 'v1.2.0', 'Release 1.2.0'],
+    ['a version with filler words only', 'Version 2.0', 'New 2.0'],
+    ['plain integers and years', 'Python 3 turns 2026', 'Python 3 turns 2026 again'],
+  ])('has no release key for %s', (_name, first, second) => {
+    const out = run([release('one', 's1', first), release('two', 's2', second)]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+  });
+
+  it('does not read a version out of a longer word or number', () => {
+    const out = run([
+      release('one', 's1', 'Tool build1.2.3 notes'),
+      release('two', 's2', 'Tool build1.2.3 changes'),
+    ]);
+
+    expect(ids(out.selected).sort()).toEqual(['one', 'two']);
+  });
+
+  it('runs after sent-before, so a sent copy does not hide a fresh one', () => {
+    const sent = scored(
+      'sent',
+      { relevance: 3 },
+      { sourceId: 's1', title: 'Tool 4.0 is out', url: 'https://example.com/sent' },
+    );
+    const fresh = release('fresh', 's2', 'Tool v4.0 released', 2);
+
+    const out = run([sent, fresh], { sentUrls: new Set(['https://example.com/sent']) });
+
+    expect(ids(out.selected)).toEqual(['fresh']);
+    expect(out.dropped).toEqual([{ itemId: 'sent', reason: 'sent-before' }]);
+  });
+
+  it('does not modify its input', () => {
+    const items = Object.freeze([
+      Object.freeze(release('a', 's1', 'Tool 5.0 is out')),
+      Object.freeze(release('b', 's2', 'Tool 5.0 ships')),
+    ]);
+    const snapshot = structuredClone(items);
+
+    run(items);
+
+    expect(items).toEqual(snapshot);
+  });
+});
+
 describe('processStep ranking', () => {
   it('ranks by relevance descending', () => {
     const out = run([

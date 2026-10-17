@@ -1,11 +1,10 @@
 // Writer prompt (W1-09). Every writer in the panel gets the same system and user prompt.
+import { DIGEST_MAX_ITEMS, DIGEST_MIN_ITEMS, DIGEST_WORD_LIMIT } from '../checks/formatCheck.js';
 import type { ScoredItem } from '../schemas.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../shared/untrusted.js';
 
-/** Format rules from the spec; the format check enforces the same numbers. */
-export const DIGEST_MIN_ITEMS = 3;
-export const DIGEST_MAX_ITEMS = 5;
-export const DIGEST_WORD_LIMIT = 500;
+/** The format rules come from the format check, so the prompt and the check cannot drift apart. */
+export { DIGEST_MAX_ITEMS, DIGEST_MIN_ITEMS, DIGEST_WORD_LIMIT };
 /** What the writer aims for, leaving room for the words the renderer adds around each item. */
 export const DIGEST_WORD_TARGET = 400;
 
@@ -23,7 +22,8 @@ const OUTPUT_RULES = [
   'Output rules:',
   `- Pick ${DIGEST_MIN_ITEMS} to ${DIGEST_MAX_ITEMS} items from the data, the ones that matter most for the focus areas. Use no other items.`,
   '- For each item, copy itemId and url exactly as they appear in the data. Never invent or change them.',
-  '- title: the item title, shortened if it is long. Replace any em dash in it with a colon.',
+  `- One entry per release. If two items describe the same release or product (for example a project's release notes and a cloud vendor's availability post), write one entry for it, using the itemId of the better source, and fold the other item's facts into its summary. If that would leave fewer than ${DIGEST_MIN_ITEMS} entries, keep them as separate entries.`,
+  '- title: the item title, shortened if it is long. Replace any em dash in it with a colon. Name a version or release tag once: "tool v1.2.0", not "tool v1.2.0: Release v1.2.0".',
   "- area: the item's area as given in the data.",
   '- summary: one or two plain sentences on what shipped or changed. Facts from the data only.',
   '- whyItMatters: why it matters, in one concrete sentence: what a team can now do, stop doing or must change.',

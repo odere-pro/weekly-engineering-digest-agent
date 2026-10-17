@@ -1,7 +1,8 @@
 import { ExitCode, type Draft, type Item, type JudgeScore } from '../schemas.js';
-import type { DecisionAnswer, ModelProvider } from '../../ports/ModelProvider.js';
-import { DigestError } from '../../shared/errors.js';
+import type { DecideRequest, DecisionAnswer, ModelProvider } from '../../ports/ModelProvider.js';
+import { DigestError, errorMessage } from '../../shared/errors.js';
 import type { Logger } from '../../shared/telemetry.js';
+import { truncate } from '../../shared/text.js';
 import {
   buildJudgeQuestions,
   buildJudgeState,
@@ -21,8 +22,13 @@ export interface SelectDeps {
 
 export interface SelectOutput {
   winner: Draft;
-  /** Empty when only one draft passed (judge skipped). */
+  /** Empty when the judge did not decide: one draft passed, or the judge failed. */
   scores: JudgeScore[];
+  /**
+   * True when the judge's scores picked the winner (same as `scores` being non-empty). False when
+   * only one draft passed, or when the judge failed and the first draft in writer order won.
+   */
+  judged: boolean;
 }
 
 interface JudgedDraft {
@@ -30,10 +36,16 @@ interface JudgedDraft {
   score: JudgeScore;
 }
 
+/** A judge error can carry a long server message; the warning keeps its start. */
+const LOGGED_ERROR_MAX_CHARS = 300;
+
 /** Overall scores closer than this are a tie; absorbs floating-point noise from averaging. */
 const SCORE_TIE_EPSILON = 1e-9;
 
-/** Judge scores each passing draft separately; highest wins (W1-10). */
+/**
+ * Judge scores each passing draft separately; highest wins (W1-10). If the judge fails or gives
+ * an unusable answer, the first draft in writer order wins, with a warning and no scores (F33).
+ */
 export async function selectStep(
   drafts: readonly Draft[],
   sources: readonly Item[],
@@ -48,21 +60,60 @@ export async function selectStep(
   }
   if (others.length === 0) {
     deps.logger.info('one draft passed, judge skipped', { writer: first.writer });
-    return { winner: first, scores: [] };
+    return { winner: first, scores: [], judged: false };
   }
-  const judged = await judgeOneByOne(drafts, sources, deps);
-  return { winner: pickWinner(judged, deps.writerOrder), scores: judged.map((j) => j.score) };
+  // Building the judge's input is plain code: a bug there should fail loudly, not look like an outage.
+  const prepared = prepareJudgeCalls(drafts, sources, deps);
+  const questions = buildJudgeQuestions(deps.focusAreas);
+  try {
+    const judged = await judgeOneByOne(prepared, questions, deps);
+    return {
+      winner: pickWinner(judged, deps.writerOrder),
+      scores: judged.map((j) => j.score),
+      judged: true,
+    };
+  } catch (error) {
+    return fallBackToWriterOrder(drafts, error, deps);
+  }
 }
 
-/** One judge call per draft, in turn: a draft never shares a call with another. */
-async function judgeOneByOne(
+/** The judge could not decide: the draft whose writer comes first in config order wins. */
+function fallBackToWriterOrder(
+  drafts: readonly Draft[],
+  error: unknown,
+  deps: SelectDeps,
+): SelectOutput {
+  const rank = writerRank(deps.writerOrder);
+  const winner = drafts.reduce((best, draft) =>
+    rank(draft.writer) < rank(best.writer) ? draft : best,
+  );
+  deps.logger.warn('judge failed, using the first draft in writer order', {
+    writer: winner.writer,
+    error: truncate(errorMessage(error), LOGGED_ERROR_MAX_CHARS),
+  });
+  return { winner, scores: [], judged: false };
+}
+
+/** Position in config order; writers the config does not list come after all that it does. */
+function writerRank(writerOrder: readonly string[]): (writer: string) => number {
+  return (writer) => {
+    const index = writerOrder.indexOf(writer);
+    return index === -1 ? Number.POSITIVE_INFINITY : index;
+  };
+}
+
+interface PreparedDraft {
+  draft: Draft;
+  /** What the judge sees: this draft and only its own source items. */
+  state: string;
+}
+
+function prepareJudgeCalls(
   drafts: readonly Draft[],
   sources: readonly Item[],
   deps: SelectDeps,
-): Promise<JudgedDraft[]> {
-  const questions = buildJudgeQuestions(deps.focusAreas);
-  const judged: JudgedDraft[] = [];
-  for (const draft of drafts) {
+): PreparedDraft[] {
+  return drafts.map((draft) => {
     const { found, missingCount } = resolveDraftSources(draft, sources);
     if (missingCount > 0) {
       deps.logger.warn('draft cites items that were not collected', {
@@ -70,11 +121,19 @@ async function judgeOneByOne(
         missingCount,
       });
     }
-    const result = await deps.model.decide({
-      role: 'judge',
-      state: buildJudgeState(draft, found),
-      questions,
-    });
+    return { draft, state: buildJudgeState(draft, found) };
+  });
+}
+
+/** One judge call per draft, in turn: a draft never shares a call with another. */
+async function judgeOneByOne(
+  prepared: readonly PreparedDraft[],
+  questions: DecideRequest['questions'],
+  deps: SelectDeps,
+): Promise<JudgedDraft[]> {
+  const judged: JudgedDraft[] = [];
+  for (const { draft, state } of prepared) {
+    const result = await deps.model.decide({ role: 'judge', state, questions });
     const score = toJudgeScore(draft.writer, result.answers);
     deps.logger.info('draft scored', { writer: score.writer, score: score.score });
     judged.push({ draft, score });
@@ -116,10 +175,7 @@ function toRating(
 
 /** Highest overall score; a tie goes to the writer listed first in config. */
 function pickWinner(judged: readonly JudgedDraft[], writerOrder: readonly string[]): Draft {
-  const rank = (writer: string): number => {
-    const index = writerOrder.indexOf(writer);
-    return index === -1 ? Number.POSITIVE_INFINITY : index;
-  };
+  const rank = writerRank(writerOrder);
   const beats = (challenger: JudgedDraft, best: JudgedDraft): boolean => {
     const gap = challenger.score.score - best.score.score;
     if (Math.abs(gap) > SCORE_TIE_EPSILON) return gap > 0;

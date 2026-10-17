@@ -486,56 +486,214 @@ describe('selectStep: ties', () => {
   });
 });
 
-describe('selectStep: bad judge output and inputs', () => {
-  it('rejects when the judge leaves a rubric question unanswered', async () => {
-    const [alpha, beta] = [candidate('alpha'), candidate('beta')] as const;
+describe('selectStep: judge fallback (F33)', () => {
+  const pair = () => [candidate('alpha'), candidate('beta')] as const;
+
+  function failingJudge(message = 'ollama is down'): FakeModelProvider {
+    return new FakeModelProvider({
+      decide: () => {
+        throw new Error(message);
+      },
+    });
+  }
+
+  function spyLogger() {
+    const warn = vi.fn();
+    return { warn, logger: { ...noopLogger, warn } };
+  }
+
+  it('picks the first draft in writer order when the judge call fails', async () => {
+    const [alpha, beta] = pair();
+    const { warn, logger } = spyLogger();
+
+    const result = await selectStep(
+      [beta.draft, alpha.draft],
+      allItems([alpha, beta]),
+      makeDeps(failingJudge(), { logger }),
+    );
+
+    expect(result.winner).toBe(alpha.draft);
+    expect(result.scores).toEqual([]);
+    expect(result.judged).toBe(false);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/judge failed/i),
+      expect.objectContaining({ writer: 'alpha', error: 'ollama is down' }),
+    );
+  });
+
+  it('falls back when the judge leaves a rubric question unanswered', async () => {
+    const [alpha, beta] = pair();
     const model = new FakeModelProvider({
       decide: () => ({ accuracy: scoreAnswer(2), clarity: scoreAnswer(2) }),
     });
+    const { warn, logger } = spyLogger();
 
-    await expect(
-      selectStep([alpha.draft, beta.draft], allItems([alpha, beta]), makeDeps(model)),
-    ).rejects.toMatchObject({ name: 'DigestError', step: 'select' });
+    const result = await selectStep(
+      [alpha.draft, beta.draft],
+      allItems([alpha, beta]),
+      makeDeps(model, { logger }),
+    );
+
+    expect(result.winner).toBe(alpha.draft);
+    expect(result.judged).toBe(false);
+    expect(warn).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ error: expect.stringMatching(/whyItMatters/) as string }),
+    );
   });
 
-  it('rejects when a rubric question comes back with a non-score answer', async () => {
-    const [alpha, beta] = [candidate('alpha'), candidate('beta')] as const;
+  it('falls back when a rubric question comes back with a non-score answer', async () => {
+    const [alpha, beta] = pair();
     const model = new FakeModelProvider({
-      decide: () => ({
-        ...answersFor(levels(2)),
-        clarity: { type: 'yesno', probability: 0.5 },
-      }),
+      decide: () => ({ ...answersFor(levels(2)), clarity: { type: 'yesno', probability: 0.5 } }),
     });
+    const { warn, logger } = spyLogger();
 
-    await expect(
-      selectStep([alpha.draft, beta.draft], allItems([alpha, beta]), makeDeps(model)),
-    ).rejects.toThrow(/clarity/);
+    const result = await selectStep(
+      [alpha.draft, beta.draft],
+      allItems([alpha, beta]),
+      makeDeps(model, { logger }),
+    );
+
+    expect(result.winner).toBe(alpha.draft);
+    expect(result.scores).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ error: expect.stringMatching(/clarity/) as string }),
+    );
   });
 
-  it('rejects when a score level is not a finite number', async () => {
-    const [alpha, beta] = [candidate('alpha'), candidate('beta')] as const;
+  it('falls back when a score level is not a finite number', async () => {
+    const [alpha, beta] = pair();
     const model = new FakeModelProvider({
       decide: () => ({ ...answersFor(levels(2)), accuracy: scoreAnswer(Number.NaN) }),
     });
 
-    await expect(
-      selectStep([alpha.draft, beta.draft], allItems([alpha, beta]), makeDeps(model)),
-    ).rejects.toThrow(/accuracy/);
+    const result = await selectStep(
+      [alpha.draft, beta.draft],
+      allItems([alpha, beta]),
+      makeDeps(model),
+    );
+
+    expect(result.winner).toBe(alpha.draft);
+    expect(result.judged).toBe(false);
   });
 
-  it('passes judge failures on to the caller', async () => {
-    const [alpha, beta] = [candidate('alpha'), candidate('beta')] as const;
+  it('returns no scores at all when the judge fails on a later draft', async () => {
+    const entries = [candidate('alpha'), candidate('beta'), candidate('gamma')];
+    let calls = 0;
     const model = new FakeModelProvider({
       decide: () => {
-        throw new Error('ollama is down');
+        calls += 1;
+        if (calls === 2) throw new Error('timed out');
+        return answersFor(levels(4));
       },
     });
 
-    await expect(
-      selectStep([alpha.draft, beta.draft], allItems([alpha, beta]), makeDeps(model)),
-    ).rejects.toThrow('ollama is down');
+    const result = await selectStep(
+      entries.map((entry) => entry.draft),
+      allItems(entries),
+      makeDeps(model),
+    );
+
+    expect(calls).toBe(2);
+    expect(result.scores).toEqual([]);
+    expect(result.winner.writer).toBe('alpha');
+    expect(result.judged).toBe(false);
   });
 
+  it('uses writer order, not arrival order, and puts unknown writers last', async () => {
+    const [stranger, gamma, beta] = [
+      candidate('stranger'),
+      candidate('gamma'),
+      candidate('beta'),
+    ] as const;
+
+    const result = await selectStep(
+      [stranger.draft, gamma.draft, beta.draft],
+      allItems([stranger, gamma, beta]),
+      makeDeps(failingJudge()),
+    );
+
+    expect(result.winner.writer).toBe('beta');
+  });
+
+  it('keeps the arrival order between unknown writers', async () => {
+    const [one, two] = [candidate('stranger-one'), candidate('stranger-two')] as const;
+
+    const result = await selectStep(
+      [one.draft, two.draft],
+      allItems([one, two]),
+      makeDeps(failingJudge()),
+    );
+
+    expect(result.winner.writer).toBe('stranger-one');
+  });
+
+  it('keeps a long judge error out of the log in full and never logs draft text', async () => {
+    const [alpha, beta] = pair();
+    const { warn, logger } = spyLogger();
+
+    await selectStep(
+      [alpha.draft, beta.draft],
+      allItems([alpha, beta]),
+      makeDeps(failingJudge('x'.repeat(5_000)), { logger }),
+    );
+
+    const fields = warn.mock.calls[0]?.[1] as { error: string };
+    expect(fields.error.length).toBeLessThanOrEqual(300);
+    expect(JSON.stringify(warn.mock.calls)).not.toContain('Headline written by');
+  });
+
+  it('reports judged: true with a score per draft when the judge works', async () => {
+    const [alpha, beta] = pair();
+    const model = judgeBy({ alpha: levels(2), beta: levels(3) });
+
+    const result = await selectStep(
+      [alpha.draft, beta.draft],
+      allItems([alpha, beta]),
+      makeDeps(model),
+    );
+
+    expect(result.judged).toBe(true);
+    expect(result.scores).toHaveLength(2);
+  });
+
+  it('reports judged: false for a lone draft, where the judge is skipped', async () => {
+    const only = candidate('alpha');
+    const { warn, logger } = spyLogger();
+
+    const result = await selectStep(
+      [only.draft],
+      only.items,
+      makeDeps(new FakeModelProvider(), { logger }),
+    );
+
+    expect(result.judged).toBe(false);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('does not hide a bug outside the judge call behind the fallback', async () => {
+    const [alpha, beta] = pair();
+    const model = judgeBy({ alpha: levels(2), beta: levels(3) });
+    const brokenSources = undefined as unknown as Item[];
+
+    await expect(
+      selectStep([alpha.draft, beta.draft], brokenSources, makeDeps(model)),
+    ).rejects.toBeInstanceOf(TypeError);
+    expect(model.decideCalls).toEqual([]);
+  });
+
+  it('still fails the run when no draft passed', async () => {
+    await expect(selectStep([], [], makeDeps(failingJudge()))).rejects.toMatchObject({
+      name: 'DigestError',
+      exitCode: ExitCode.Blocked,
+    });
+  });
+});
+
+describe('selectStep: inputs', () => {
   it('does not modify its inputs', async () => {
     const [alpha, beta] = [candidate('alpha'), candidate('beta')] as const;
     const drafts = Object.freeze([alpha.draft, beta.draft]);
