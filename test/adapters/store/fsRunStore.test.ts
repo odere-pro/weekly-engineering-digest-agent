@@ -134,6 +134,13 @@ describe('artifacts', () => {
     await expect(readdir(root)).resolves.toEqual([]);
   });
 
+  it('accepts review.md, the reader sheet W7-07 writes next to the digest', async () => {
+    const store = makeStore();
+    await store.saveArtifact('2026-W42', 'review.md', '# Review');
+
+    await expect(store.readArtifact('2026-W42', 'review.md')).resolves.toBe('# Review');
+  });
+
   it('reads a saved artifact back, and undefined for one never saved', async () => {
     const store = makeStore();
     await store.saveArtifact('2026-W42', 'digest.md', '# Digest');

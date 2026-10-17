@@ -1,7 +1,7 @@
 import type { RunRecord } from '../core/schemas.js';
 
 export type ArtifactName =
-  'items.json' | 'scores.json' | 'drafts.json' | 'digest.md' | 'error.json';
+  'items.json' | 'scores.json' | 'drafts.json' | 'digest.md' | 'review.md' | 'error.json';
 
 export interface RunLock {
   release(): Promise<void>;

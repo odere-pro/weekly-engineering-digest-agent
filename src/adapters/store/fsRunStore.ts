@@ -32,6 +32,7 @@ const ARTIFACT_NAMES: ReadonlySet<string> = new Set<ArtifactName>([
   'scores.json',
   'drafts.json',
   'digest.md',
+  'review.md',
   'error.json',
 ]);
 
