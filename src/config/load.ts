@@ -28,11 +28,8 @@ export interface LoadedConfig {
   secrets: Secrets;
   profile: ModelProfile;
   configPath: string;
-  /**
-   * The machine the profile was resolved for. `loadConfig` always sets it; it is optional only so
-   * that configs built by hand (tests) need not name one, and `platformOf` fills the gap.
-   */
-  platform?: Platform;
+  /** The machine the profile was resolved for. */
+  platform: Platform;
 }
 
 /** Reads and validates digest.config.json and .env with readable errors (W1-14). */
@@ -49,9 +46,9 @@ export async function loadConfig(options: LoadOptions = {}): Promise<LoadedConfi
   return { config, env, secrets, profile, configPath, platform };
 }
 
-/** The platform the profile was resolved for; recomputed from the environment for a hand-built config. */
-export function platformOf(loaded: Pick<LoadedConfig, 'env' | 'platform'>): Platform {
-  return loaded.platform ?? resolveHostPlatform(loaded.env);
+/** The platform the profile was resolved for. */
+export function platformOf(loaded: Pick<LoadedConfig, 'platform'>): Platform {
+  return loaded.platform;
 }
 
 /**

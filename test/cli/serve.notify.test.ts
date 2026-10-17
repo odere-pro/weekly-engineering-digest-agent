@@ -57,6 +57,7 @@ function setup() {
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: {},
     profile: PROFILES.quality,
+    platform: { os: 'darwin', arch: 'arm64' },
     configPath: '/work/digest.config.json',
   };
   const handle: SchedulerHandle = {

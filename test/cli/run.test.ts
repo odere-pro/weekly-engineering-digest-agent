@@ -54,6 +54,7 @@ function harness(result: RunResult | Error = sentResult()): Harness {
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: {},
     profile: PROFILES.quality,
+    platform: { os: 'darwin', arch: 'arm64' },
     configPath: '/work/digest.config.json',
   };
   // The command only hands the deps to runDigest; a sentinel is enough to check it does.

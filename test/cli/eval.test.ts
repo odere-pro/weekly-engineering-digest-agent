@@ -65,11 +65,11 @@ const LINUX: Platform = { os: 'linux', arch: 'x64' };
 
 interface HarnessOptions {
   /**
-   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The loaded config then carries no
-   * platform (a config built by hand), so the command must resolve it from this env.
+   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. They are only part of the loaded
+   * env: the command judges `platform`, whatever these say.
    */
   hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
-  /** The platform the loader resolved the profile for; defaults to a Mac unless `hostEnv` is set. */
+  /** The platform the loader resolved the profile for; defaults to a Mac. */
   platform?: Platform;
   /** OLLAMA_URL as the loader read it; defaults to the schema's default. */
   ollamaUrl?: string;
@@ -134,7 +134,7 @@ function harness(
     secrets: options.secrets ?? {},
     profile: PROFILES[configProfile],
     configPath: '/work/digest.config.json',
-    ...(options.platform || !options.hostEnv ? { platform: options.platform ?? MAC } : {}),
+    platform: options.platform ?? MAC,
   };
   const loadConfig = vi.fn<EvalCommandIo['loadConfig']>(() => Promise.resolve(loaded));
   const buildApp = vi.fn<EvalCommandIo['buildApp']>(() =>
@@ -338,30 +338,6 @@ describe('evalCommand', () => {
       return h.buildApp.mock.calls.map(([loaded]) => loaded.profile);
     }
 
-    it('takes DIGEST_HOST_OS/DIGEST_HOST_ARCH over a Linux process, so a container on a Mac gets the tuned profiles', async () => {
-      const h = harness(undefined, 'quality', {
-        hostEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'aarch64' },
-      });
-
-      const built = await onProcess(LINUX, () => builtProfiles(h));
-
-      expect(built).toEqual([PROFILES.quality, PROFILES.fast, PROFILES.light]);
-    });
-
-    it('takes the named host over a Mac process: a Linux host gets the untuned fallback', async () => {
-      const h = harness(undefined, 'quality', {
-        hostEnv: { DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
-      });
-
-      const built = await onProcess(MAC, () => builtProfiles(h));
-
-      expect(built).toEqual([
-        { ...NON_MAC_FALLBACK, name: 'quality' },
-        { ...NON_MAC_FALLBACK, name: 'fast' },
-        { ...NON_MAC_FALLBACK, name: 'light' },
-      ]);
-    });
-
     it('judges the platform the loader resolved, not one recomputed from the environment', async () => {
       const h = harness(undefined, 'quality', {
         platform: LINUX,
@@ -375,14 +351,6 @@ describe('evalCommand', () => {
         { ...NON_MAC_FALLBACK, name: 'fast' },
         { ...NON_MAC_FALLBACK, name: 'light' },
       ]);
-    });
-
-    it('uses the running process when no host is named', async () => {
-      const h = harness(undefined, 'quality', { hostEnv: {} });
-
-      const built = await onProcess(LINUX, () => builtProfiles(h));
-
-      expect(built.map((profile) => profile.requiresAppleSilicon)).toEqual([false, false, false]);
     });
 
     it('builds the configured profile for the host the real loader resolved', async () => {
@@ -408,9 +376,18 @@ describe('evalCommand', () => {
     });
 
     it('reports a bad value as an error naming the variable, before running anything', async () => {
-      const h = harness(undefined, 'quality', { hostEnv: { DIGEST_HOST_ARCH: 'sparc' } });
+      const h = harness(undefined, 'quality', { hostEnv: {} });
+      const io: EvalCommandIo = {
+        ...h.io,
+        loadConfig: (options) =>
+          loadConfig({
+            ...options,
+            envPath: MISSING_ENV,
+            processEnv: { DIGEST_HOST_ARCH: 'sparc' },
+          }),
+      };
 
-      const code = await evalCommand({}, h.io);
+      const code = await evalCommand({ config: VALID_CONFIG }, io);
 
       expect(code).toBe(1);
       expect(h.err.join('')).toMatch(/DIGEST_HOST_ARCH "sparc"/);

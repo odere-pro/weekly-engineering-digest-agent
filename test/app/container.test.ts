@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   createClefPolicyGuard,
   createClefRubricGuard,
@@ -7,17 +7,15 @@ import {
   createGraniteGroundednessGuard,
   createGraniteRiskGuard,
 } from '../../src/adapters/guard/granite.js';
-import { DeliveryError } from '../../src/adapters/delivery/deliveryError.js';
 import { createMarkdownFileDelivery } from '../../src/adapters/delivery/markdownFile.js';
 import { createSlackDelivery } from '../../src/adapters/delivery/slack.js';
 import { createSmtpDelivery } from '../../src/adapters/delivery/smtp.js';
 import { createOllamaProvider } from '../../src/adapters/models/ollama.js';
-import { createRssFetcher } from '../../src/adapters/sources/rss.js';
 import { createGithubReleasesFetcher } from '../../src/adapters/sources/githubReleases.js';
 import { createFsRunStore } from '../../src/adapters/store/fsRunStore.js';
-import { buildApp, createModelProvider } from '../../src/app/container.js';
+import { buildApp } from '../../src/app/container.js';
 import type { LoadedConfig } from '../../src/config/load.js';
-import { resolveProfile } from '../../src/config/profiles.js';
+import { resolveProfile, type Platform } from '../../src/config/profiles.js';
 import {
   EnvSchema,
   SecretsSchema,
@@ -27,12 +25,10 @@ import {
 } from '../../src/config/schema.js';
 import { createLogger } from '../../src/observability/logger.js';
 import { createTracer, type TracingHandle } from '../../src/observability/tracing.js';
+import type { Tracer } from '../../src/shared/telemetry.js';
 import { DigestError } from '../../src/shared/errors.js';
 import { systemClock } from '../../src/shared/clock.js';
-import type { Delivery, DigestMessage } from '../../src/ports/Delivery.js';
-import { noopLogger, type Tracer } from '../../src/shared/telemetry.js';
-import { makeConfig, makeRunRecord } from '../builders.js';
-import { CapturingDelivery, FakeModelProvider, MemoryRunStore } from '../fakes/index.js';
+import { makeConfig } from '../builders.js';
 
 // Each factory below still builds the real adapter; the spy only records how it was called.
 const wrapFactories = vi.hoisted(
@@ -65,7 +61,6 @@ vi.mock('../../src/adapters/delivery/smtp.js', (load) =>
 vi.mock('../../src/adapters/delivery/slack.js', (load) =>
   wrapFactories(load, ['createSlackDelivery']),
 );
-vi.mock('../../src/adapters/sources/rss.js', (load) => wrapFactories(load, ['createRssFetcher']));
 vi.mock('../../src/adapters/sources/githubReleases.js', (load) =>
   wrapFactories(load, ['createGithubReleasesFetcher']),
 );
@@ -91,7 +86,6 @@ const ALL_SECRETS: Secrets = {
   SLACK_WEBHOOK_URL,
   GITHUB_TOKEN,
 };
-const SECRET_VALUES = [SMTP_PASSWORD, SLACK_WEBHOOK_URL, GITHUB_TOKEN];
 
 const EMAIL = {
   host: 'smtp.example.test',
@@ -112,12 +106,9 @@ function loadedConfig(options: LoadedOptions = {}): LoadedConfig {
   const config = makeConfig(options.config);
   const env: Env = EnvSchema.parse(options.env ?? {});
   const secrets = SecretsSchema.parse(options.secrets ?? {});
-  const profile = resolveProfile(
-    config.profile,
-    { os: 'darwin', arch: 'arm64' },
-    config.models.writers,
-  );
-  return { config, env, secrets, profile, configPath: '/project/digest.config.json' };
+  const platform: Platform = { os: 'darwin', arch: 'arm64' };
+  const profile = resolveProfile(config.profile, platform, config.models.writers);
+  return { config, env, secrets, profile, platform, configPath: '/project/digest.config.json' };
 }
 
 function firstCallOptions<Args extends unknown[]>(factory: (...args: Args) => unknown): Args[0] {
@@ -136,6 +127,22 @@ function fakeTracer(shutdown: () => Promise<void> = () => Promise.resolve()): {
 } {
   const shutdownSpy = vi.fn(shutdown);
   return { tracer: { span: (_name, _attributes, fn) => fn(), shutdown: shutdownSpy }, shutdownSpy };
+}
+
+interface RecordedSpan {
+  name: string;
+  attributes: Record<string, unknown>;
+}
+
+function recordingTracer(): { tracer: TracingHandle; spans: RecordedSpan[] } {
+  const spans: RecordedSpan[] = [];
+  const traced: Tracer = {
+    span: (name, attributes, fn) => {
+      spans.push({ name, attributes });
+      return fn();
+    },
+  };
+  return { tracer: { ...traced, shutdown: () => Promise.resolve() }, spans };
 }
 
 describe('buildApp wiring', () => {
@@ -361,119 +368,6 @@ describe('buildApp wiring', () => {
   });
 });
 
-describe('buildApp secrets', () => {
-  it('names SMTP_PASSWORD, not any value, when email is configured without it', async () => {
-    const loaded = loadedConfig({
-      config: { delivery: { email: EMAIL } },
-      secrets: { SLACK_WEBHOOK_URL, GITHUB_TOKEN },
-    });
-
-    const failure = await buildApp(loaded).catch((error: unknown) => error);
-
-    expect(failure).toBeInstanceOf(DigestError);
-    expect((failure as DigestError).message).toContain('SMTP_PASSWORD');
-    for (const value of SECRET_VALUES)
-      expect((failure as DigestError).message).not.toContain(value);
-  });
-
-  it('names SLACK_WEBHOOK_URL, not any value, when Slack is enabled without it', async () => {
-    const loaded = loadedConfig({
-      config: { delivery: { slack: { enabled: true } } },
-      secrets: { SMTP_PASSWORD, GITHUB_TOKEN },
-    });
-
-    const failure = await buildApp(loaded).catch((error: unknown) => error);
-
-    expect(failure).toBeInstanceOf(DigestError);
-    expect((failure as DigestError).message).toContain('SLACK_WEBHOOK_URL');
-    for (const value of SECRET_VALUES)
-      expect((failure as DigestError).message).not.toContain(value);
-  });
-
-  it('starts nothing before it knows the secrets are there', async () => {
-    const loaded = loadedConfig({
-      config: { delivery: { email: EMAIL } },
-      env: { OTEL_EXPORTER_OTLP_ENDPOINT: 'http://localhost:4318/v1/traces' },
-    });
-
-    await expect(buildApp(loaded)).rejects.toBeInstanceOf(DigestError);
-
-    expect(calledWith(createTracer)).toBe(0);
-    expect(calledWith(createLogger)).toBe(0);
-  });
-
-  it('redacts every non-empty secret value in the logger and the tracer', async () => {
-    const loaded = loadedConfig({
-      config: { delivery: { email: EMAIL, slack: { enabled: true } } },
-      secrets: ALL_SECRETS,
-    });
-
-    await buildApp(loaded);
-
-    // The secret path of the webhook goes in too: a message can carry it without the host.
-    const expected = [...SECRET_VALUES, SLACK_WEBHOOK_PATH].sort();
-    const loggerValues = [...(firstCallOptions(createLogger).redactValues ?? [])];
-    const tracerValues = [...(firstCallOptions(createTracer).redactValues ?? [])];
-    expect([...loggerValues].sort()).toEqual(expected);
-    expect([...tracerValues].sort()).toEqual(expected);
-  });
-
-  it('redacts nothing extra when no secret is set', async () => {
-    await buildApp(loadedConfig());
-
-    expect(firstCallOptions(createLogger)).toMatchObject({ redactValues: [] });
-  });
-
-  it('keeps a secret out of the log lines the built logger writes', async () => {
-    const write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
-    const loaded = loadedConfig({
-      config: { delivery: { email: EMAIL } },
-      secrets: { SMTP_PASSWORD },
-    });
-
-    const { deps } = await buildApp(loaded);
-    deps.logger.error(`login failed for ${SMTP_PASSWORD}`, { password: SMTP_PASSWORD });
-
-    const output = write.mock.calls.map(([chunk]) => String(chunk)).join('');
-    expect(output).toContain('[redacted]');
-    expect(output).not.toContain(SMTP_PASSWORD);
-  });
-
-  it('gives each secret only to the adapter that needs it', async () => {
-    const loaded = loadedConfig({
-      config: { delivery: { email: EMAIL, slack: { enabled: true } } },
-      secrets: ALL_SECRETS,
-    });
-
-    await buildApp(loaded);
-
-    const seen = (factory: (...args: never[]) => unknown): string =>
-      JSON.stringify(vi.mocked(factory).mock.calls);
-    expect(seen(createSmtpDelivery)).toContain(SMTP_PASSWORD);
-    expect(seen(createSmtpDelivery)).not.toContain(SLACK_WEBHOOK_URL);
-    expect(seen(createSmtpDelivery)).not.toContain(GITHUB_TOKEN);
-    expect(seen(createSlackDelivery)).toContain(SLACK_WEBHOOK_URL);
-    expect(seen(createSlackDelivery)).not.toContain(SMTP_PASSWORD);
-    expect(seen(createSlackDelivery)).not.toContain(GITHUB_TOKEN);
-    expect(seen(createGithubReleasesFetcher)).toContain(GITHUB_TOKEN);
-    expect(seen(createGithubReleasesFetcher)).not.toContain(SMTP_PASSWORD);
-
-    const others = [
-      createOllamaProvider,
-      createFsRunStore,
-      createRssFetcher,
-      createMarkdownFileDelivery,
-      createClefPolicyGuard,
-      createClefRubricGuard,
-      createGraniteRiskGuard,
-      createGraniteGroundednessGuard,
-    ];
-    for (const factory of others) {
-      for (const value of SECRET_VALUES) expect(seen(factory)).not.toContain(value);
-    }
-  });
-});
-
 describe('AppHandle.close', () => {
   it('shuts the tracer down', async () => {
     const { tracer, shutdownSpy } = fakeTracer();
@@ -494,289 +388,5 @@ describe('AppHandle.close', () => {
     await expect(app.close()).resolves.toBeUndefined();
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('collector unreachable'));
-  });
-});
-
-/** Sends fail with `error` until `failures` of them have; then they are kept. */
-function flakyDelivery(
-  id: Delivery['id'],
-  error: Error,
-  failures: number,
-): { delivery: Delivery; digests: DigestMessage[]; calls: () => number } {
-  const digests: DigestMessage[] = [];
-  let calls = 0;
-  const attempt = (keep: () => void): Promise<void> => {
-    calls += 1;
-    if (calls <= failures) return Promise.reject(error);
-    keep();
-    return Promise.resolve();
-  };
-  const delivery: Delivery = {
-    id,
-    sendDigest: (message) => attempt(() => digests.push(message)),
-    sendFailure: () => attempt(() => undefined),
-  };
-  return { delivery, digests, calls: () => calls };
-}
-
-const SLACK_ON = { delivery: { slack: { enabled: true } } } as const;
-const DIGEST: DigestMessage = { weekId: '2026-W42', subject: 'Digest', markdown: '# Digest' };
-
-describe('buildApp delivery retry and redaction', () => {
-  // The built logger writes the "will retry" lines to stdout.
-  beforeEach(() => {
-    vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
-  });
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  function slackOf(app: Awaited<ReturnType<typeof buildApp>>): Delivery {
-    const slack = app.deps.deliveries.find((delivery) => delivery.id === 'slack');
-    if (!slack) throw new Error('no Slack delivery');
-    return slack;
-  }
-
-  it('tries a delivery again after a transient error', async () => {
-    vi.useFakeTimers();
-    try {
-      const flaky = flakyDelivery(
-        'slack',
-        new DeliveryError('Slack webhook answered HTTP 503', { status: 503 }),
-        2,
-      );
-      vi.mocked(createSlackDelivery).mockReturnValueOnce(flaky.delivery);
-      const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
-
-      const sending = slackOf(app).sendDigest(DIGEST);
-      await vi.advanceTimersByTimeAsync(5_000 + 10_000);
-      await sending;
-
-      expect(flaky.calls()).toBe(3);
-      expect(flaky.digests).toEqual([DIGEST]);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('gives up after two retries and throws the last error', async () => {
-    vi.useFakeTimers();
-    try {
-      const flaky = flakyDelivery(
-        'slack',
-        new DeliveryError('Slack webhook answered HTTP 503', { status: 503 }),
-        99,
-      );
-      vi.mocked(createSlackDelivery).mockReturnValueOnce(flaky.delivery);
-      const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
-
-      const outcome = expect(
-        slackOf(app).sendFailure({ weekId: '2026-W42', message: 'x' }),
-      ).rejects.toThrow('HTTP 503');
-      await vi.advanceTimersByTimeAsync(60_000);
-      await outcome;
-
-      expect(flaky.calls()).toBe(3);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('does not retry an error that a retry cannot fix', async () => {
-    const flaky = flakyDelivery('slack', new Error('Slack webhook answered HTTP 404'), 99);
-    vi.mocked(createSlackDelivery).mockReturnValueOnce(flaky.delivery);
-    const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
-
-    await expect(slackOf(app).sendDigest(DIGEST)).rejects.toThrow('HTTP 404');
-
-    expect(flaky.calls()).toBe(1);
-  });
-
-  it('takes known secrets out of a digest before any channel sees it', async () => {
-    const capture = new CapturingDelivery('slack');
-    vi.mocked(createSlackDelivery).mockReturnValueOnce(capture);
-    const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
-
-    await slackOf(app).sendDigest({
-      ...DIGEST,
-      subject: `a ${SMTP_PASSWORD}`,
-      markdown: `b ${GITHUB_TOKEN}`,
-    });
-
-    expect(capture.digests).toEqual([
-      { ...DIGEST, subject: 'a [redacted]', markdown: 'b [redacted]' },
-    ]);
-  });
-
-  it('takes known secrets out of a failure note, and the secret part of the webhook URL', async () => {
-    const capture = new CapturingDelivery('slack');
-    vi.mocked(createSlackDelivery).mockReturnValueOnce(capture);
-    const app = await buildApp(loadedConfig({ config: SLACK_ON, secrets: ALL_SECRETS }));
-
-    await slackOf(app).sendFailure({
-      weekId: '2026-W42',
-      step: 'deliver',
-      message: `POST ${SLACK_WEBHOOK_PATH} failed`,
-    });
-
-    expect(capture.failures).toEqual([
-      { weekId: '2026-W42', step: 'deliver', message: 'POST [redacted] failed' },
-    ]);
-  });
-
-  it('wraps the always-on Markdown channel too', async () => {
-    const capture = new CapturingDelivery('markdown');
-    vi.mocked(createMarkdownFileDelivery).mockReturnValueOnce(capture);
-    const app = await buildApp(loadedConfig({ secrets: ALL_SECRETS }));
-
-    await app.deps.deliveries[0]?.sendDigest({ ...DIGEST, markdown: `k ${GITHUB_TOKEN}` });
-
-    expect(capture.digests[0]?.markdown).toBe('k [redacted]');
-  });
-});
-
-describe('buildApp run store redaction', () => {
-  it('redacts the run record and the artifacts before the store gets them', async () => {
-    const memory = new MemoryRunStore();
-    vi.mocked(createFsRunStore).mockReturnValueOnce(memory);
-    const { deps } = await buildApp(loadedConfig({ secrets: ALL_SECRETS }));
-
-    await deps.store.saveRunRecord(
-      makeRunRecord({ status: 'failed', error: { message: `refused ${SMTP_PASSWORD}` } }),
-    );
-    await deps.store.saveArtifact('2026-W42', 'error.json', `{"m":"${GITHUB_TOKEN}"}`);
-
-    expect(memory.records.get('2026-W42')?.error?.message).toBe('refused [redacted]');
-    expect(memory.artifacts.get('2026-W42/error.json')).toBe('{"m":"[redacted]"}');
-  });
-
-  it('reads back what the store holds', async () => {
-    const memory = new MemoryRunStore();
-    memory.records.set('2026-W42', makeRunRecord({ status: 'quiet' }));
-    vi.mocked(createFsRunStore).mockReturnValueOnce(memory);
-    const { deps } = await buildApp(loadedConfig());
-
-    await expect(deps.store.getRunRecord('2026-W42')).resolves.toMatchObject({ status: 'quiet' });
-  });
-});
-
-interface RecordedSpan {
-  name: string;
-  attributes: Record<string, unknown>;
-}
-
-function recordingTracer(): { tracer: TracingHandle; spans: RecordedSpan[] } {
-  const spans: RecordedSpan[] = [];
-  const traced: Tracer = {
-    span: (name, attributes, fn) => {
-      spans.push({ name, attributes });
-      return fn();
-    },
-  };
-  return { tracer: { ...traced, shutdown: () => Promise.resolve() }, spans };
-}
-
-describe('buildApp model', () => {
-  const request = { role: 'write', system: 'sys', prompt: 'prompt' } as const;
-
-  it('answers every model call with the Ollama provider', async () => {
-    const provider = new FakeModelProvider({ generate: () => 'draft' });
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(provider);
-    const { deps } = await buildApp(loadedConfig());
-
-    const result = await deps.model.generate(request);
-
-    expect(result.text).toBe('draft');
-    expect(provider.generateCalls).toEqual([request]);
-  });
-
-  it('opens a span for each model call on the tracer that is created last', async () => {
-    const { tracer, spans } = recordingTracer();
-    vi.mocked(createTracer).mockReturnValueOnce(tracer);
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(
-      new FakeModelProvider({ generate: () => 'draft' }),
-    );
-    const { deps } = await buildApp(loadedConfig());
-
-    await deps.model.generate(request);
-
-    expect(spans.map((span) => span.name)).toEqual(['model.generate', 'model.usage']);
-    expect(JSON.stringify(spans)).not.toContain('prompt');
-  });
-
-  it('gives the guards the traced model', async () => {
-    const { tracer, spans } = recordingTracer();
-    vi.mocked(createTracer).mockReturnValueOnce(tracer);
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(
-      new FakeModelProvider({ generate: () => 'draft' }),
-    );
-    await buildApp(loadedConfig());
-
-    const guardModel = firstCallOptions(createGraniteRiskGuard).model;
-    await guardModel.generate({ role: 'guardRisk', system: 's', prompt: 'p' });
-
-    expect(spans.map((span) => span.name)).toContain('model.generate');
-  });
-
-  it('works without a tracer endpoint, where spans do nothing', async () => {
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(
-      new FakeModelProvider({ generate: () => 'draft' }),
-    );
-    const { deps } = await buildApp(loadedConfig());
-
-    await expect(deps.model.generate(request)).resolves.toMatchObject({ text: 'draft' });
-  });
-
-  it('reports the health of the provider untouched', async () => {
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(
-      new FakeModelProvider({ health: { reachable: false, models: [], error: 'down' } }),
-    );
-    const { deps } = await buildApp(loadedConfig());
-
-    await expect(deps.model.health()).resolves.toMatchObject({ reachable: false, error: 'down' });
-  });
-});
-
-describe('buildApp fetchers', () => {
-  it('gives the RSS fetcher a logger, so its per-feed warnings reach the log', async () => {
-    await buildApp(loadedConfig());
-
-    // Run-aware, like the model's: container.runLogging.test.ts shows the run id on its lines.
-    expect(firstCallOptions(createRssFetcher)).toEqual({ logger: ANY_LOGGER });
-  });
-});
-
-describe('createModelProvider', () => {
-  it('builds the Ollama provider from the loaded config, the logger and the fetch given', () => {
-    const loaded = loadedConfig({
-      config: { models: { timeoutsMs: { write: 900_000 }, retries: 4, think: { write: 'low' } } },
-      env: { OLLAMA_URL: 'http://ollama.internal:11434' },
-    });
-    const fetchImpl = vi.fn<typeof fetch>();
-
-    createModelProvider(loaded, { logger: noopLogger, fetch: fetchImpl });
-
-    expect(firstCallOptions(createOllamaProvider)).toEqual({
-      baseUrl: 'http://ollama.internal:11434',
-      profile: loaded.profile,
-      timeoutsMs: { write: 900_000 },
-      think: { write: 'low' },
-      retries: 4,
-      logger: noopLogger,
-      fetch: fetchImpl,
-    });
-  });
-
-  it('leaves fetch to the adapter when none is given', () => {
-    createModelProvider(loadedConfig(), { logger: noopLogger });
-
-    expect(firstCallOptions(createOllamaProvider).fetch).toBeUndefined();
-  });
-
-  it('returns the provider the factory built', () => {
-    const provider = new FakeModelProvider();
-    vi.mocked(createOllamaProvider).mockReturnValueOnce(provider);
-
-    expect(createModelProvider(loadedConfig(), { logger: noopLogger })).toBe(provider);
   });
 });

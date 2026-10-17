@@ -491,15 +491,16 @@ describe('platformOf', () => {
   const env = { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' } as const;
 
   it('returns the platform the loader resolved', () => {
-    expect(platformOf({ env: { ...env, DIGEST_HOST_OS: 'linux' }, platform: mac })).toEqual(mac);
+    expect(platformOf({ platform: mac })).toEqual(mac);
   });
 
-  it('resolves it from the environment for a config built by hand', () => {
-    const resolved = platformOf({
+  it('does not look at the host variables in the environment again', () => {
+    const loaded = {
       env: { ...env, DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
-    });
+      platform: mac,
+    };
 
-    expect(resolved).toEqual(linux);
+    expect(platformOf(loaded)).toEqual(mac);
   });
 });
 

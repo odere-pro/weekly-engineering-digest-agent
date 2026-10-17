@@ -68,7 +68,7 @@ interface Setup {
   platform?: Platform;
   /**
    * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The io then carries no platform,
-   * as in production, so the command must resolve it from this env.
+   * as in production, so the command judges the one on the loaded config.
    */
   hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
   /** The platform the loader reports on the loaded config (`LoadedConfig.platform`). */
@@ -155,10 +155,7 @@ function harness(setup: Setup = {}): Harness {
     secrets: setup.secrets ?? {},
     profile,
     configPath: '/srv/digest/digest.config.json',
-    // As the real loader does: it reports the platform it was handed, else the one it resolved.
-    ...(setup.loadedPlatform || !setup.hostEnv
-      ? { platform: setup.loadedPlatform ?? platform }
-      : {}),
+    platform: setup.loadedPlatform ?? platform,
   };
   const healthOverride =
     typeof setup.health === 'function' ? setup.health(profile) : (setup.health ?? {});
@@ -501,33 +498,6 @@ describe('doctorCommand', () => {
   });
 
   describe('host platform from the environment', () => {
-    it('takes DIGEST_HOST_OS/DIGEST_HOST_ARCH over a Linux process, so a container on a Mac passes', async () => {
-      const { code, text } = await onProcess(LINUX, () =>
-        runDoctor({ hostEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'arm64' } }),
-      );
-
-      expect(resultFor(text, '✓', 'apple silicon:')).toContain('darwin/arm64');
-      expect(code).toBe(0);
-    });
-
-    it('takes the named host over a Mac process: a Linux host falls back to the untuned profile', async () => {
-      const { code, text } = await onProcess(MAC, () =>
-        runDoctor({
-          platform: LINUX,
-          hostEnv: { DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
-        }),
-      );
-
-      expect(resultFor(text, '!', 'apple silicon:')).toContain('linux/x64');
-      expect(code).toBe(0);
-    });
-
-    it('uses the running process when no host is named', async () => {
-      const { text } = await onProcess(LINUX, () => runDoctor({ platform: LINUX, hostEnv: {} }));
-
-      expect(resultFor(text, '!', 'apple silicon:')).toContain('linux/x64');
-    });
-
     describe('with the real loader', () => {
       const realLoader =
         (hostEnv: Record<string, string>): DoctorIo['loadConfig'] =>
@@ -555,6 +525,19 @@ describe('doctorCommand', () => {
 
         expect(resultFor(h.text(), '!', 'apple silicon:')).toContain('linux/x64');
       });
+
+      it('prints a readable ✗ naming the variable for a bad value, and checks nothing else', async () => {
+        const h = harness({ hostEnv: {}, loadConfig: realLoader({ DIGEST_HOST_OS: 'plan9' }) });
+
+        const code = await doctorCommand({ config: VALID_CONFIG }, h.io);
+
+        expect(code).toBe(1);
+        expect(resultFor(h.text(), '✗', 'config:')).toMatch(
+          /DIGEST_HOST_OS "plan9".*\n\s+fix: .*variable named above/,
+        );
+        expect(h.health).not.toHaveBeenCalled();
+        expect(h.fetch).not.toHaveBeenCalled();
+      });
     });
 
     it('judges the platform on the loaded config, not one recomputed from the environment', async () => {
@@ -575,18 +558,6 @@ describe('doctorCommand', () => {
       await doctorCommand({}, h.io);
 
       expect(h.loadConfig.mock.calls[0]?.[0].platform).toBeUndefined();
-    });
-
-    it('prints a readable ✗ naming the variable for a bad value, and checks nothing else', async () => {
-      const h = harness({ hostEnv: { DIGEST_HOST_OS: 'plan9' } });
-
-      const code = await doctorCommand({}, h.io);
-
-      expect(code).toBe(1);
-      expect(resultFor(h.text(), '✗', 'config:')).toMatch(
-        /DIGEST_HOST_OS "plan9".*\n\s+fix: .*variable named above/,
-      );
-      expect(h.health).not.toHaveBeenCalled();
     });
   });
 

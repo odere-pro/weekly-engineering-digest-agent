@@ -33,6 +33,7 @@ function harness(records: readonly RunRecord[] = []): Harness {
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: {},
     profile: PROFILES.quality,
+    platform: { os: 'darwin', arch: 'arm64' },
     configPath: '/work/digest.config.json',
   };
   const loadConfig = vi.fn<HistoryCommandDeps['loadConfig']>(() => Promise.resolve(loaded));

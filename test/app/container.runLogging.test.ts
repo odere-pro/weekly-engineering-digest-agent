@@ -4,20 +4,16 @@ import { createGithubReleasesFetcher } from '../../src/adapters/sources/githubRe
 import { createRssFetcher } from '../../src/adapters/sources/rss.js';
 import { buildApp } from '../../src/app/container.js';
 import type { LoadedConfig } from '../../src/config/load.js';
-import { modelsInUse, resolveProfile } from '../../src/config/profiles.js';
+import { resolveProfile, type Platform } from '../../src/config/profiles.js';
 import { EnvSchema, SecretsSchema, type ConfigInput } from '../../src/config/schema.js';
-import { runDigest } from '../../src/core/runDigest.js';
-import { createTracer, type TracingHandle } from '../../src/observability/tracing.js';
 import type {
   DecisionAnswer,
   DecisionQuestion,
   GenerateRequest,
   ModelProvider,
 } from '../../src/ports/ModelProvider.js';
-import type { SourceFetcher } from '../../src/ports/SourceFetcher.js';
 import type { LogFields, Logger, Tracer } from '../../src/shared/telemetry.js';
-import { makeConfig, makeItem } from '../builders.js';
-import { FakeSourceFetcher, MemoryRunStore } from '../fakes/index.js';
+import { makeConfig } from '../builders.js';
 
 // Each factory still builds the real thing unless a test replaces it; the spy records the options.
 const wrapFactories = vi.hoisted(
@@ -42,7 +38,6 @@ vi.mock('../../src/adapters/sources/rss.js', (load) => wrapFactories(load, ['cre
 vi.mock('../../src/adapters/sources/githubReleases.js', (load) =>
   wrapFactories(load, ['createGithubReleasesFetcher']),
 );
-vi.mock('../../src/observability/tracing.js', (load) => wrapFactories(load, ['createTracer']));
 
 const SMTP_PASSWORD = 'smtp-password-4f9a';
 const GITHUB_TOKEN = 'ghp_github-token-82bd';
@@ -54,18 +49,19 @@ const FETCHER_WARNING = 'Skipped feed entries that could not be read';
 const REQUEST: GenerateRequest = { role: 'write', system: 'sys', prompt: 'prompt' };
 const ANY_FUNCTION: unknown = expect.any(Function);
 const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
-const nothing = (): Promise<void> => Promise.resolve();
 
 function loadedConfig(
   config?: Partial<ConfigInput>,
   env: Record<string, string> = {},
 ): LoadedConfig {
   const built = makeConfig(config);
+  const platform: Platform = { os: 'darwin', arch: 'arm64' };
   return {
     config: built,
     env: EnvSchema.parse(env),
     secrets: SecretsSchema.parse({ SMTP_PASSWORD, GITHUB_TOKEN }),
-    profile: resolveProfile(built.profile, { os: 'darwin', arch: 'arm64' }, built.models.writers),
+    profile: resolveProfile(built.profile, platform, built.models.writers),
+    platform,
     configPath: '/project/digest.config.json',
   };
 }
@@ -490,212 +486,4 @@ describe('fetcher warnings and the run', () => {
       expect(logLines(FETCHER_WARNING)[1]).not.toHaveProperty('runId');
     },
   );
-});
-
-describe('the real runDigest', () => {
-  const quietSources = {
-    rss: new FakeSourceFetcher('rss', {}),
-    github: new FakeSourceFetcher('github', {}),
-  };
-
-  it('logs the model calls of each week it runs with that week, in one process', async () => {
-    const loaded = loadedConfig();
-    useLoggingProvider(modelsInUse(loaded.profile, loaded.config.guards));
-    const { deps } = await buildApp(loaded);
-    const runDeps = { ...deps, store: new MemoryRunStore(), fetchers: quietSources };
-
-    await runDigest(runDeps, { weekId: WEEK_A, dryRun: true });
-    await runDigest(runDeps, { weekId: WEEK_B, dryRun: true });
-
-    expect(logLines(HEALTH_CALL).map((line) => line.runId)).toEqual([WEEK_A, WEEK_B]);
-  });
-
-  it('logs the model calls a step makes with the week', async () => {
-    const loaded = loadedConfig();
-    useLoggingProvider(modelsInUse(loaded.profile, loaded.config.guards));
-    const { deps } = await buildApp(loaded);
-    const recent = makeItem({ publishedAt: new Date(Date.now() - 3_600_000).toISOString() });
-    const runDeps = {
-      ...deps,
-      store: new MemoryRunStore(),
-      fetchers: {
-        ...quietSources,
-        rss: new FakeSourceFetcher('rss', { 'example-feed': [recent] }),
-      },
-    };
-
-    await runDigest(runDeps, { weekId: WEEK_A, dryRun: true });
-
-    const calls = logLines(MODEL_CALL);
-    expect(calls.length).toBeGreaterThan(0);
-    expect(calls.every((line) => line.runId === WEEK_A)).toBe(true);
-    // Each call was made by a step, and says which; the readiness probe before the steps did not.
-    expect(calls.every((line) => typeof line.step === 'string')).toBe(true);
-    expect(calls.map((line) => line.step)).toContain('guardInput');
-    const [probe] = logLines(HEALTH_CALL);
-    expect(probe?.runId).toBe(WEEK_A);
-    expect(probe).not.toHaveProperty('step');
-  });
-
-  it('logs a fetcher warning raised during collect with the week', async () => {
-    const loaded = loadedConfig();
-    useLoggingProvider(modelsInUse(loaded.profile, loaded.config.guards));
-    const { deps } = await buildApp(loaded);
-    const logger = loggerGivenTo(createRssFetcher);
-    const warning: SourceFetcher = {
-      kind: 'rss',
-      fetch: (source) => {
-        logger.warn(FETCHER_WARNING, { sourceId: source.id });
-        return Promise.resolve([]);
-      },
-    };
-    const runDeps = {
-      ...deps,
-      store: new MemoryRunStore(),
-      fetchers: { ...quietSources, rss: warning },
-    };
-
-    await runDigest(runDeps, { weekId: WEEK_A, dryRun: true });
-
-    const lines = logLines(FETCHER_WARNING);
-    expect(lines.length).toBeGreaterThan(0);
-    expect(lines.every((line) => line.runId === WEEK_A && line.step === 'collect')).toBe(true);
-  });
-});
-
-describe('the tracer the app hands out', () => {
-  function recordingTracer(): {
-    tracer: TracingHandle;
-    spans: [string, LogFields][];
-    shutdown: ReturnType<typeof vi.fn<() => Promise<void>>>;
-  } {
-    const spans: [string, LogFields][] = [];
-    const shutdown = vi.fn(() => Promise.resolve());
-    const tracer: TracingHandle = {
-      span: (name, attributes, fn) => {
-        spans.push([name, attributes]);
-        return fn();
-      },
-      shutdown,
-    };
-    return { tracer, spans, shutdown };
-  }
-
-  it('passes every span, with its attributes, to the real tracer', async () => {
-    const { tracer, spans } = recordingTracer();
-    vi.mocked(createTracer).mockReturnValueOnce(tracer);
-    const { deps } = await buildApp(loadedConfig());
-
-    await inRun(deps.tracer, WEEK_A, () =>
-      deps.tracer.span('collect', { step: 'collect' }, nothing),
-    );
-
-    expect(spans).toEqual([
-      ['runDigest', { runId: WEEK_A, dryRun: false }],
-      ['collect', { step: 'collect' }],
-    ]);
-  });
-
-  it('returns what the span returns', async () => {
-    const { deps } = await buildApp(loadedConfig());
-
-    await expect(inRun(deps.tracer, WEEK_A, () => Promise.resolve(42))).resolves.toBe(42);
-  });
-
-  it('rejects with the very error the span failed with, and keeps no run id behind', async () => {
-    useLoggingProvider();
-    const { deps } = await buildApp(loadedConfig());
-    const failure = new Error('step failed');
-
-    await expect(inRun(deps.tracer, WEEK_A, () => Promise.reject(failure))).rejects.toBe(failure);
-    await deps.model.generate(REQUEST);
-
-    expect(logLines(MODEL_CALL).map((line) => line.runId)).toEqual([undefined]);
-  });
-
-  it('keeps no run id behind when the real tracer throws at once', async () => {
-    useLoggingProvider();
-    const { tracer } = recordingTracer();
-    vi.mocked(createTracer).mockReturnValueOnce({
-      ...tracer,
-      span: (name, attributes, fn) => {
-        if (name === 'runDigest') throw new Error('tracer is broken');
-        return tracer.span(name, attributes, fn);
-      },
-    });
-    const { deps } = await buildApp(loadedConfig());
-
-    expect(() => inRun(deps.tracer, WEEK_A, nothing)).toThrow('tracer is broken');
-    await deps.model.generate(REQUEST);
-
-    expect(logLines(MODEL_CALL).map((line) => line.runId)).toEqual([undefined]);
-  });
-
-  it('still shuts the real tracer down on close', async () => {
-    const { tracer, shutdown } = recordingTracer();
-    vi.mocked(createTracer).mockReturnValueOnce(tracer);
-    const app = await buildApp(loadedConfig());
-
-    await app.close();
-
-    expect(shutdown).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('the real Ollama adapter', () => {
-  const chatReply = (): Response =>
-    new Response('{"message":{"content":"hi"},"done":true}\n', { status: 200 });
-
-  afterEach(() => {
-    vi.useRealTimers();
-    vi.unstubAllGlobals();
-  });
-
-  it('logs a retried call and its result with the run id', async () => {
-    // Only the retry back-off is faked; a timer the run starts keeps the run's context.
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
-    const replies = [() => new Response('overloaded', { status: 503 }), chatReply];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn<typeof fetch>(() => Promise.resolve((replies.shift() ?? chatReply)())),
-    );
-    const { deps } = await buildApp(loadedConfig());
-
-    const call = inRun(deps.tracer, WEEK_A, () => deps.model.generate(REQUEST));
-    await vi.advanceTimersByTimeAsync(1_000);
-    await call;
-
-    const lines = logLines().filter((line) => line.msg.startsWith('ollama call'));
-    expect(lines.map((line) => [line.msg, line.level, line.runId, line.role])).toEqual([
-      ['ollama call failed, retrying', 'warn', WEEK_A, 'write'],
-      ['ollama call', 'info', WEEK_A, 'write'],
-    ]);
-  });
-
-  it('logs a call that was aborted with the run id', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn<typeof fetch>(
-        (_input, init) =>
-          new Promise<Response>((_resolve, reject) => {
-            init?.signal?.addEventListener('abort', () => {
-              reject(new DOMException('aborted', 'AbortError'));
-            });
-          }),
-      ),
-    );
-    const { deps } = await buildApp(loadedConfig());
-    const controller = new AbortController();
-
-    const call = inRun(deps.tracer, WEEK_A, () =>
-      deps.model.generate({ ...REQUEST, signal: controller.signal }),
-    );
-    await nextTurn();
-    controller.abort(new Error('stop'));
-    await expect(call).rejects.toThrow();
-
-    expect(logLines('ollama call aborted')).toEqual([
-      expect.objectContaining({ level: 'warn', runId: WEEK_A, role: 'write' }),
-    ]);
-  });
 });

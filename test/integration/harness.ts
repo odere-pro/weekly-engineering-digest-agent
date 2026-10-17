@@ -468,6 +468,7 @@ export async function runCli(world: World, options: RunCommandOptions = {}): Pro
         env: { OLLAMA_URL, LOG_LEVEL: 'info' },
         secrets: {},
         profile: PROFILE,
+        platform: { os: 'darwin', arch: 'arm64' },
         configPath: join(world.dataDir, 'digest.config.json'),
       }),
     buildApp: () => Promise.resolve(app),
