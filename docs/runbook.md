@@ -14,8 +14,11 @@ read files under `./data` on the host. Without Docker, use `pnpm digest` or `nod
 3. After a failure, also open `data/runs/<week>/error.json` (step, message, time, stack).
 4. Run `digest doctor`. It checks Ollama, models, feeds, delivery, `.env`, guards and the data
    dir, and prints a `fix:` line for each problem.
-5. Logs are JSON on stdout. In Docker: `docker compose logs digest`. Each line has `runId` and
-   `step`. Set `LOG_LEVEL=debug` in `.env` for more.
+5. Logs are JSON on stdout. In Docker: `docker compose logs digest`. Lines of a run, its model
+   calls and its feed fetches have the week as `runId`, and a line from inside a step also has
+   `step`. In `digest serve`, filter by `runId` to follow one week and by `step` to follow one
+   step. Lines of the scheduler, the delivery retries and the store have neither. Set
+   `LOG_LEVEL=debug` in `.env` for more.
 6. Fix the cause, then run again (`digest run`, or `digest run --force` if the week was sent).
 
 ## What each status means
@@ -33,6 +36,10 @@ The alert is a short failure note on every delivery channel: a file `<week>.fail
 Markdown folder (default `data/digests`), and the email or Slack message if those are set. Email
 and Slack notes are titled "Weekly digest `<week>` failed at `<step>`". It is best effort: a
 channel that cannot take the note is only logged. No note is sent in a dry run.
+
+A week that `digest serve` tries again sends one note, from its last attempt (see
+[The scheduler did not run](#the-scheduler-did-not-run)). The attempts before it log
+`Failure note held back: notifyFailure is off for this run`. `digest run` sends its note at once.
 
 ## Failed (exit 1)
 
@@ -91,6 +98,10 @@ next week's digest will not repeat them.
    sends nothing. Run `digest run --force` only when you accept a new digest on **every**
    channel, so the channels that already got the week get a second one.
 
+A channel that fails after the message may have been sent (a reset, a timeout) fails the run
+without a delivery retry. The resume then sends to that channel again, so that channel can get the
+digest twice. See [Delivery retries](#delivery-retries).
+
 ### `Run aborted before the <step> step: ...`
 
 A caller stopped the run between two steps. In `digest serve` that is the run time limit
@@ -118,13 +129,17 @@ output (`Rejected draft: <writer> (<checks>)`).
 | Check id              | Meaning                                                                                                                                                                                       | What to do                                                                                                         |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `write`               | A writer made no draft (timeout, invalid JSON after repair, or fewer than 3 valid items) while another writer's draft was rejected. If every writer fails, the run is `failed`, not `blocked` | Check the model and its timeout; see the `write` step above                                                        |
-| `linkCheck`           | A URL in the draft is not in the collected items, or a character reference names no Unicode character                                                                                         | Never turn it off. Run again; if it repeats, read `rejections` in `drafts.json` and keep the draft as an eval case |
+| `linkCheck`           | A URL in the draft is not in the collected items, a link has no `https://` scheme, or a character reference names no Unicode character                                                        | Never turn it off. Run again; if it repeats, read `rejections` in `drafts.json` and keep the draft as an eval case |
 | `formatCheck`         | Wrong item count, a missing part, an em dash, or 500 words or more                                                                                                                            | Read `rejections` in `drafts.json`. Run again; if it repeats, try another writer in `models.writers`               |
-| `graniteGroundedness` | A summary is not backed by its source item                                                                                                                                                    | Run again. If it repeats on one writer, replace that writer                                                        |
+| `graniteGroundedness` | A summary is not backed by its source item, or the headline or intro states a fact about a release that no cited source supports                                                              | Run again. If it repeats on one writer, replace that writer                                                        |
 | `clefRubric`          | The draft was off-task, hype or harmful                                                                                                                                                       | Run again. If it repeats, read the draft in `drafts.json`                                                          |
 
-A draft that fails `linkCheck` or `formatCheck` is not final. When every draft fails them, each
-writer gets one retry, and the prompt lists what was wrong. `drafts.json` has a `rejections` list:
+A draft that fails `linkCheck` or `formatCheck` is not final. Before the checks, the write step
+adds `https://` to a bare link (`www.host/path` or `//host/path`) that names a collected item
+exactly (the log says `Added https:// to links the writer left bare`); any other bare link is
+rejected. When every draft fails the checks, each writer gets one retry, and the prompt lists
+what was wrong. For a bad link it says the kind of fault (no `https://` scheme, or not one of the
+item urls) and shows no link. `drafts.json` has a `rejections` list:
 for each rejected draft, the writer, the attempt (1 is the first draft, 2 is the retry), the check
 ids and the first five problems. A writer with a rejection for attempt 1 and none for attempt 2
 either passed the checks on its retry, or has an entry with `retry: true` under `failures` (the
@@ -207,10 +222,15 @@ What the lock does not cover:
    week that is `sent`, `quiet` or `blocked` alone. A catch-up of a partly delivered week only
    sends the missing channels.
    A run that ends `failed` is tried again at most twice, 30 minutes apart (the log says
-   `The run ended failed; will retry`), and each failed attempt sends its own failure note, so one
-   cause can bring up to three notes. It is not tried again when it hit its 3-hour time limit, or
-   when the error says to use `digest run --force`. After that the week waits for the next
-   restart or a manual `digest run`.
+   `The run ended failed; will retry`). The week sends one failure note, from its last attempt:
+   an attempt that will be tried again holds its note back (`Failure note held back: ...`). It is
+   not tried again when it hit its 3-hour time limit, or when the error says to use
+   `digest run --force`; such a run sends its note at once. After that the week waits for the
+   next restart or a manual `digest run`.
+   If the retry never happens, the held note is sent once at that point (the log says
+   `Sending the failure note held back for a retry that will not run`). That happens when the
+   service is stopped while the retry waits, when the lock stays held until the retries run out,
+   and when the retry throws an error instead of running.
 2. Read the logs for `Scheduler started`: it shows the cron, the time zone and `nextRun`. A
    warning `The schedule has no upcoming run` means `schedule.cron` is wrong.
 3. The container uses the time zone in `schedule.timeZone`. A host timer (launchd, systemd,
@@ -232,18 +252,37 @@ To stop sooner, send the stop signal a second time (Ctrl-C twice when `serve` ru
 terminal). The running digest then stops after its current step and ends `failed`; a third signal
 ends the process at once. A run that is still going after 3 hours is stopped the same way.
 
+If you stop the service while a failed week waits for its retry, the held failure note is sent at
+once and the retry does not run. The next start runs that week again, because a failed week is not
+settled. That run sends its own note if it fails too.
+
 ### Ollama or a model is slow or out of memory
 
 Use a smaller profile in the config (`fast` or `light`), or give `models.writers` a single
 writer. Keep `OLLAMA_MAX_LOADED_MODELS=1`. The largest model is about 19 GB.
 
+A guard checks one item at a time (`GUARD_CONCURRENCY` in `src/core/steps/guardRun.ts` is 1). On
+the `light` profile, 2 and 4 calls at once were no faster, because Ollama served them one after
+another. If your setup runs requests in parallel, you can time a higher value. Do not go above
+`OLLAMA_NUM_PARALLEL`: the extra calls queue in Ollama and can time out while they wait.
+
 ### Delivery retries
 
-A send to email or Slack that fails with a network error, a timeout, an HTTP 5xx answer or an SMTP
-4yz reply is tried again twice, after 5 and 10 seconds (the log says
-`Delivery failed with a transient error; will retry`). Any other error, such as a wrong password,
-a Slack 4xx or an SMTP 5yz reply, fails the channel at once. If the first try reached the server
-and only its answer was lost, the message can arrive twice.
+A send to email or Slack is tried again twice, after 5 and 10 seconds (the log says
+`Delivery failed with a transient error; will retry`), but only when the error shows that the
+message was not sent:
+
+- a failure while connecting (connection refused, unknown host, DNS failure, host or network
+  unreachable, or a connect, greeting or TLS-upgrade timeout);
+- an HTTP 429 or 5xx answer from Slack;
+- an SMTP 421, 450 or 451 reply.
+
+Any other error fails the channel at once: a wrong password, a Slack 4xx, an SMTP 5yz reply, a
+reset or a timeout after the message was written, and the 15 second timeout of a Slack request.
+The kind is read from the error's code and status, not from its text. A failed channel fails the
+run (step `deliver`), and the run's own retry or your next `digest run` sends to that channel
+again. So a message can still arrive twice: when the server took it and then answered 429, 5xx,
+or an SMTP 421, 450 or 451 reply, or when a reset or a timeout hid that it was taken.
 
 ### Feeds
 
@@ -261,6 +300,22 @@ usable items`. The run record does not list it, and a quiet week looks the same.
 silent for weeks, open it in a browser and check that its format did not change.
 
 An error in `failedSources` is cut to 300 characters.
+
+### `digest eval` stops before the replay
+
+`digest eval` reads `EVAL_JUDGE` from `.env` or the shell (the shell wins). It is the model tag
+that scores the winning digests of a profile that has no judge. Before the replay, it asks Ollama
+for its models. It exits 1 and replays nothing when the tag cannot be used:
+
+- `Cannot check the eval judge "<tag>" (EVAL_JUDGE)`: Ollama is not reachable, or its model list
+  could not be read. The message gives the reason. Start Ollama or fix `OLLAMA_URL`.
+- `The eval judge "<tag>" (EVAL_JUDGE) is not installed in Ollama`: run `ollama pull <tag>`, or
+  set `EVAL_JUDGE` to a tag that `ollama list` shows. `digest eval` never pulls a model.
+- `The eval judge "<tag>" (EVAL_JUDGE) is installed, but it is not a decision model`: set
+  `EVAL_JUDGE` to a decision model, for example `clef:latest`.
+
+Without `EVAL_JUDGE` the check does not run, and a profile with no judge of its own gets no
+writing-quality scores.
 
 ### Disk
 

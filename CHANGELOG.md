@@ -20,8 +20,17 @@ below comes after it.
 - **Scheduler:** a scheduled or catch-up run that ends `failed` is tried again at most twice,
   30 minutes apart. A run that hit its time limit, or that only `digest run --force` can finish,
   is not tried again.
-- **Delivery retry:** an email or Slack send that fails with a network error, a timeout or a 5xx
-  answer is tried again twice (after 5 and 10 seconds).
+- **One failure note per week:** a week that fails in `digest serve` sends one note, from its last
+  attempt, not one per attempt. `RunOptions.notifyFailure` (default true) lets a caller hold the
+  note of a failed run back. The scheduler holds it on every attempt it will retry, and
+  `SchedulerOptions.onGiveUp` sends it once if the retry never runs: the service is stopped, the
+  lock stays held, or the retry throws. A run that was told to stop, or that needs `--force`,
+  sends its note at once.
+- **Delivery retry:** an email or Slack send is tried again twice (after 5 and 10 seconds), but
+  only when the failure shows that nothing was sent: a failure while connecting, an HTTP 429 or
+  5xx answer, or an SMTP 421, 450 or 451 reply. A reset or a timeout after the message was
+  written is not retried. A message can still arrive twice when the server took it and then
+  answered with one of those errors.
 - **Traces:** one `model.generate` or `model.decide` span per model call, with a `model.usage`
   span inside it (role, model, latency, tokens). No prompt or answer text.
 - **Forced runs:** `digest run` says why a forced run kept the week's record and folder. The
@@ -30,24 +39,35 @@ below comes after it.
   not writable, a development build or a pre-release of the minimum Ollama version, an unquoted
   `.env` value cut at a `#`, and a warning that `light` off a Mac uses the heavy fallback.
 - **Groundedness:** the Granite guard also checks the headline and intro against the sources the
-  digest cites.
+  digest cites. It uses its own criterion for them: a made-up fact about a release is ungrounded,
+  and editorial framing is not.
 - **Logs:** a warning when a source yields no usable item, and a `questionChars` field in the
-  `decide state trimmed` warning.
+  `decide state trimmed` warning. The GitHub fetcher warns once per source about releases it
+  skipped, like the RSS fetcher, and `pnpm eval:record` prints skipped feed entries as `WARNING:`
+  lines in its report.
 - **CI:** an `image-scan` job (Trivy 0.75.0, pinned by digest, fails on HIGH and CRITICAL). It has
   not run yet.
 - **Evals:** per-week detail (`byWeek`) on the format and link metrics, the item ids of every
   stability run, a `guardAttackRecall` metric (soft gate, 90%), an optional eval judge for
   profiles without one, and `evals/judge/` with a grading sheet and a calibration check.
 - **Eval judge:** `digest eval` scores the winning digests of a profile that has no judge when
-  `EVAL_JUDGE` names a model in the shell. `.env` is ignored for it, because the environment
-  schema drops keys it does not know. It has not run against a real judge yet. `digest eval` also prints the weeks with problems and the item ids of each stability
-  run.
+  `EVAL_JUDGE` names a model. Set it in `.env` or the shell (the shell wins). Before the replay,
+  `digest eval` checks that Ollama lists the tag as a decision model. A typo or a missing model
+  now fails at once with a clear message, not after the replay. It never pulls a model. This has
+  not run against a real judge yet. `digest eval` also prints the weeks with problems and the
+  item ids of each stability run.
+- **Scorecard case names:** the `attackHandling` detail names the attack case that reached the
+  digest (`reachedDigest:<case>`) and the ones no guard checked (`unchecked:<case>`). The
+  `guardFalseBlocks` detail can name the clean cases a guard flagged (`flagged:<guard>:<case>`),
+  but the eval runner does not pass the case ids yet. Old scorecards still load.
 - **Light scorecard after wave 5:** `evals/scorecards/2026-10-17-light-wave5.json`, next to the
   v0.1.0 one. The hard gates are still red: format 83% (was 67%) and attack handling 90% (was
-  100%). Guard false blocks are 50% (was 0%), probably from the new headline and intro check.
+  100%). Guard false blocks are 50% (was 0%), from the new headline and intro check. The causes
+  of the format and false-block results are fixed (see Fixed); the scorecard has not been re-run.
 - **Adapter pipeline:** every source goes through one pipeline, and an `rss` entry with no text
-  in the feed gets the first paragraphs of its own page (same host only, 4 seconds per source).
-  Summary text comes from `content:encoded`, then `content`, `summary` and `description`.
+  in the feed gets the first paragraphs of its own page (the page may redirect to the feed's own
+  host or to a host of the default source list; 4 seconds per source). Summary text comes from
+  `content:encoded`, then `content`, `summary` and `description`.
   `pnpm tsx evals/recordSources.ts --pages` records the pages.
 - **Source evals:** the real response of each default source is recorded in `evals/sources/`
   (`pnpm tsx evals/recordSources.ts`), with a hand-checked list of the items it must yield. Two
@@ -57,8 +77,11 @@ below comes after it.
 - **Classifier source tag:** a run passes each source's `area` to the classifier as a line
   `Source tag: <area>`. It is a hint: the classifier still picks the area itself, from your focus
   areas. Its effect is not measured yet.
-- **Internals:** `FetchError`, `modelsInUse`, `LoadedConfig.platform`, `effectiveThink`, and
-  `counts.afterProcess` in the run record (filled by the run).
+- **Internals:** `FetchError`, `DeliveryError`, `modelsInUse`, `LoadedConfig.platform`,
+  `effectiveThink`, and `counts.afterProcess` in the run record (filled by the run).
+  `applyGuards` takes a limit for calls in flight per guard (`GUARD_CONCURRENCY`, default 1, so
+  the behaviour is unchanged), and `guardInput` and `guardOutput` take an optional `concurrency`.
+  `toJudgeScore` is exported from the select step and is the only implementation.
 
 ### Changed
 
@@ -95,9 +118,29 @@ below comes after it.
   third ends the process.
 - **Logs and doctor:** the RSS fetcher logs its per-feed warnings. `digest doctor` builds its
   model provider the same way a run does (`createModelProvider`).
+- **Run id on logs:** model-call lines (and the retry and abort lines of the Ollama adapter) and
+  the fetcher warnings now carry the `runId`, and the `step` when they come from inside a step.
+  The weeks of one `digest serve` process, and the steps of one week, can be told apart.
+- **Delivery errors:** a failed email or Slack send keeps its error code, HTTP status or SMTP
+  reply and a redacted copy of its causes. The text names the code when it hides it, as in
+  `fetch failed (ECONNREFUSED)`.
+- **Guards:** a guard checks one item at a time, as before. The limit is now a named constant,
+  `GUARD_CONCURRENCY`, and stays 1. On the `light` profile limits 2 and 4 gave the same verdicts
+  and were no faster, because Ollama served the calls one at a time.
 
 ### Fixed
 
+- The link check no longer rejects a collected URL that has `www.` in it, such as
+  `https://www.docker.com/blog/...`. It read the `www.` as a link without a scheme. This bug, and
+  not the writer, left 2026-W39 without a digest in the wave 5 scorecard. A bare `www.host`,
+  `//host` or `https:host` link is still rejected.
+- The write step adds `https://` to a link the writer left bare when it names a collected item
+  (`www.host/path` or `//host/path`). The retry prompt now says what is wrong with a link (no
+  `https://` scheme, or not one of the item urls) and still shows no link.
+- The groundedness guard no longer flags clean drafts for their headline and intro. It judges them
+  with its own criterion instead of Granite's generic one. On `light`, clean control drafts flagged
+  by groundedness went from 5 of 10 to 0 of 10, and all 10 groundedness attack drafts are still
+  caught. This is a targeted check, not a full eval.
 - Entries of one feed that share a link (Google Cloud release notes) are no longer collapsed into
   one item. They get `?entry=<entry id>` on their URL.
 - One bad feed entry no longer fails its source, and the empty GitHub Atom feed is recognized by
@@ -116,9 +159,19 @@ below comes after it.
 
 ### Known limits
 
-- Two hard gates are red on `light`: format (83%) and attack handling (90%), and the groundedness
-  guard flags half of the clean control drafts. A fix is planned. `quality` and `fast` are still
-  not measured.
+- The `light` scorecard is still the one from wave 5. In it, format (83%) and attack handling
+  (90%) are red, and the groundedness guard flagged half of the clean control drafts. Two causes
+  are fixed since then (see Fixed): the 2026-W39 failure was a link check bug, and the groundedness
+  false blocks came from the headline and intro check. The attack miss (one attack item reached a
+  digest) is not fixed. A full `light` re-baseline has not been run, so no new `light` numbers are
+  published. `quality` and `fast` are still not measured.
+- A targeted replay of the recorded weeks after the groundedness change still blocked some real
+  drafts, for an ungrounded item or an ungrounded headline. So "0 of 10 clean controls flagged"
+  does not mean no real draft is blocked. The re-baseline will show the real rate.
+- The link check does not look at autolinks with a scheme other than `http` or `https`
+  (`<ftp://host/x>`, `<javascript:...>`, `<mailto:...>`). It also accepts a collected URL with
+  extra tracking parameters or a fragment, because it ignores both when it compares, and they can
+  hold a second URL. The review of the link check found these; they are not fixed yet.
 
 ## [0.1.0] - 2026-10-17
 

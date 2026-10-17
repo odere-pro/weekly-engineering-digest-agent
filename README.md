@@ -8,8 +8,9 @@ guards, picks the items that matter, writes the digest with a panel of models, c
 result, and delivers it as Markdown, email or Slack.
 
 > Status: v0.1.0 plus the fixes listed under "Unreleased" in [`CHANGELOG.md`](CHANGELOG.md). Only
-> the `light` profile has a baseline, and two of its hard gates are red: format and attack
-> handling (see [Profiles](#profiles)). The package is not published to npm; install from a clone.
+> the `light` profile has a baseline, and in it two hard gates are red: format and attack
+> handling. Two causes were fixed after that baseline and it has not been re-run (see
+> [Profiles](#profiles)). The package is not published to npm; install from a clone.
 
 Contents: [Install](#install) · [Commands](#commands) · [Configuration](#configuration) ·
 [Profiles](#profiles) · [Model licences](#model-licences) · [Guards](#guards) ·
@@ -89,9 +90,11 @@ passed, it catches up: it runs the week at once when the week has no run, or its
 `failed` or was a `dry-run`. It leaves a week that is `sent`, `quiet` or `blocked` alone. When a
 tick finds the run lock held, for example by a manual `digest run`, it tries again every 5
 minutes for up to 2 hours. A run that ends `failed` is tried again at most twice, 30 minutes
-apart, unless it hit its time limit or only `digest run --force` can finish the week. A run may
-take 3 hours; then it is stopped after its current step and ends `failed`. On stop it waits for a
-running digest to finish (up to 90 minutes in Compose). A second stop signal (Ctrl-C twice)
+apart, unless it hit its time limit or only `digest run --force` can finish the week. A week that
+fails and is tried again sends one failure note, from its last attempt. A run may take 3 hours;
+then it is stopped after its current step and ends `failed`. On stop it waits for a running digest
+to finish (up to 90 minutes in Compose). If the stop comes while a retry waits, the held failure
+note is sent at once, and the next start runs the week again. A second stop signal (Ctrl-C twice)
 stops the digest after its current step, and a third ends the process.
 
 ### Node CLI
@@ -143,8 +146,12 @@ was already sent or partly delivered as they were. `digest run` then prints no D
 last line says why, for example "Kept the sent run record; this forced run did not end sent. The
 week's run folder is unchanged."
 
-Email and Slack sends that fail with a network error, a timeout or a 5xx answer are tried again
-twice (after 5 and 10 seconds). A retry can deliver a message twice when only the answer was lost.
+An email or Slack send is tried again twice (after 5 and 10 seconds), but only when the failure
+shows that nothing was sent: a failure while connecting, an HTTP 429 or 5xx answer, or an SMTP
+421, 450 or 451 reply. A reset or a timeout after the message was written is not retried and
+fails the channel, because the message may have arrived. The run then ends `failed`, and its
+resume (the service's retry, or `digest run`) sends to that channel again. So a message can
+still arrive twice.
 
 `init --yes` accepts the defaults without asking and recommends the `light` profile. It refuses to
 overwrite an existing config (exit 1). Without `--yes`, `init` asks before it overwrites the
@@ -164,11 +171,12 @@ file cannot be merged safely, such as a value that spans lines, `init` stops and
 `digest eval` exits 1 when a hard gate fails, otherwise 0. It prints the weeks with problems and
 the item ids of each stability run, and writes `evals/scorecards/<date>-<profile>.json` (a second
 run on the same day overwrites it). To score the winning digests of a profile that has no judge,
-set `EVAL_JUDGE=<model tag>` in the shell, for example
-`EVAL_JUDGE=clef:latest pnpm digest eval --profile light`. `EVAL_JUDGE` is read from the shell
-only: a value in `.env` is ignored, because the environment schema drops keys it does not know. A
-typo in the tag shows only after the replay, so check it with `ollama list` first. `digest history`
-exits 0, or 1 on a config error. `digest serve` exits 0 after a stop signal.
+set `EVAL_JUDGE=<model tag>` in `.env` or in the shell (the shell wins), for example
+`EVAL_JUDGE=clef:latest pnpm digest eval --profile light`. Before the replay starts, `digest eval`
+checks that Ollama lists the tag as a decision model. If not, it exits 1 with a message that says
+why, and it replays nothing. It never pulls a model: run `ollama pull <tag>` yourself, or set
+`EVAL_JUDGE` to a tag that `ollama list` shows. `digest history` exits 0, or 1 on a config error.
+`digest serve` exits 0 after a stop signal.
 
 ### Run statuses
 
@@ -245,6 +253,7 @@ picks each item's area itself, from your `focusAreas`.
 | `GITHUB_TOKEN`                       | Optional. Higher GitHub rate limits; uses the REST API instead of the Atom feed                                                |
 | `OLLAMA_URL`                         | Default `http://localhost:11434`. `init` sets it for Docker on a Mac. In Docker never use `localhost`                          |
 | `LOG_LEVEL`                          | `debug`, `info` (default), `warn` or `error`                                                                                   |
+| `EVAL_JUDGE`                         | Optional. The model tag `digest eval` uses to score the winning digests of a profile that has no judge                         |
 | `OTEL_EXPORTER_OTLP_ENDPOINT`        | Set it to turn on OpenTelemetry traces                                                                                         |
 | `DIGEST_HOST_OS`, `DIGEST_HOST_ARCH` | The OS and CPU of the machine that runs Ollama, when the app runs in a container on a different one. `make docker-*` sets them |
 | `TZ`, `DIGEST_UID`, `DIGEST_GID`     | Docker only. Time zone of the container, and the user the container runs as                                                    |
@@ -272,21 +281,24 @@ you must set it yourself.
 
 A profile maps each role to an Ollama model tag. Set it with `"profile"` in the config.
 
-| Profile   | Classify and policy guard     | Risk guard               | Writers                                            | Judge         | Memory                                  | Speed                             | Quality                                                                                  |
-| --------- | ----------------------------- | ------------------------ | -------------------------------------------------- | ------------- | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------- |
-| `quality` | `clef:latest`                 | `granite4.1-guardian:8b` | `gemma4:31b-mlx`, `nemotron-3.5-lightning:30b-mlx` | `clef:latest` | about 32 GB RAM, 40 GB disk             | not measured yet                  | not measured yet                                                                         |
-| `fast`    | `strands-decider:2b-mlx-bf16` | `granite4.1-guardian:8b` | `nemotron-3.5-lightning:30b-mlx`                   | none          | not measured yet                        | not measured yet                  | not measured yet                                                                         |
-| `light`   | `strands-decider:2b-mlx-bf16` | `granite4.1-guardian:8b` | `gemma4:e4b-mlx`                                   | none          | fits in 16 GB RAM on Apple silicon only | 320 s per replayed week (average) | 2 of 4 hard gates pass; format (83%) and attack handling (90%) are red; false blocks 50% |
+| Profile   | Classify and policy guard     | Risk guard               | Writers                                            | Judge         | Memory                                  | Speed                             | Quality                                                                                                    |
+| --------- | ----------------------------- | ------------------------ | -------------------------------------------------- | ------------- | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `quality` | `clef:latest`                 | `granite4.1-guardian:8b` | `gemma4:31b-mlx`, `nemotron-3.5-lightning:30b-mlx` | `clef:latest` | about 32 GB RAM, 40 GB disk             | not measured yet                  | not measured yet                                                                                           |
+| `fast`    | `strands-decider:2b-mlx-bf16` | `granite4.1-guardian:8b` | `nemotron-3.5-lightning:30b-mlx`                   | none          | not measured yet                        | not measured yet                  | not measured yet                                                                                           |
+| `light`   | `strands-decider:2b-mlx-bf16` | `granite4.1-guardian:8b` | `gemma4:e4b-mlx`                                   | none          | fits in 16 GB RAM on Apple silicon only | 320 s per replayed week (average) | wave 5 scorecard: 2 of 4 hard gates pass; format (83%) and attack handling (90%) are red; false blocks 50% |
 
 - Only `light` has a baseline: `digest eval --profile light` on 2026-10-17, after the wave 5
   fixes (`evals/scorecards/2026-10-17-light-wave5.json`; the v0.1.0 scorecard
   `2026-10-17-light.json` stays for comparison). Two of the four hard gates are red. Format passes
-  in 5 of 6 replayed weeks (83%, was 67%): in 2026-W39 the writer repeats a link without a scheme
-  in both attempts, so the retry does not help. Attack handling is 90% (was 100%): one attack
-  item that no guard flagged reached a digest. The guards flag 6 of 10 attacks. The groundedness
-  guard flags 5 of 10 clean control drafts (false blocks 50%, was 0%), probably because of its
-  new headline and intro check. A fix for the format and groundedness regressions is planned. The
-  gates and how to read them are in [`docs/profiles.md`](docs/profiles.md).
+  in 5 of 6 replayed weeks (83%, was 67%): 2026-W39 had no digest because the link check read the
+  `www.` in a valid `https://www.docker.com/...` link as a link without a scheme. That was a bug
+  in the check, not a fault of the writer, and it is fixed. Attack handling is 90% (was 100%): one
+  attack item that no guard flagged reached a digest. The guards flag 6 of 10 attacks. The
+  groundedness guard flagged 5 of 10 clean control drafts (false blocks 50%, was 0%), all by its
+  headline and intro check. That check now has its own criterion, and a targeted check flagged 0
+  of 10 controls. The table above still shows the wave 5 scorecard: the fixes have not been
+  measured in a full run yet. The gates and how to read them are in
+  [`docs/profiles.md`](docs/profiles.md).
 - `quality` and `fast` are not measured. They need better hardware than the reference laptop, and
   the thresholds were tuned on `light` only.
 - The memory figures for `quality` and `light` are the sizes `digest init` shows.
@@ -351,13 +363,20 @@ writing. Each guard can be switched off in `digest.config.json`. All are on by d
 - A switched-off guard is recorded in `run.json` and named in the digest footer.
 - `doctor` warns when any guard is off.
 - The **link check** and the **format check** always run, in code. Config cannot turn them off.
-  A digest may only contain URLs that were in the collected items.
+  A digest may only contain URLs that were in the collected items. A link without a scheme
+  (`www.host`, `//host`, `https:host`) is rejected, but a `www.` inside a full collected
+  `https://` URL is part of that URL. Before the check, the write step adds `https://` to a bare
+  link that is exactly a collected item URL once the scheme is added. Any other bare link stays
+  and the check rejects it.
 - When every draft fails those two checks, each writer gets one retry. The prompt lists the
-  problems the checks found, as untrusted data with any URL in them masked. The problems are in
+  problems the checks found, as untrusted data. For a bad link it says what is wrong with it (no
+  `https://` scheme, or not one of the item urls) and never shows the link. The problems are in
   the log and in `data/runs/<week>/drafts.json` (`rejections`), never in the run record or the
   failure note.
 - An item title is not checked by the groundedness guard. It checks each summary, the "why it
-  matters" line, the headline and the intro.
+  matters" line, the headline and the intro. The headline and intro get their own question: does
+  the text state a made-up fact about a release? Naming the week or counting the releases is not
+  a fact.
 
 ## Troubleshooting
 
@@ -394,8 +413,8 @@ cat data/runs/<week>/drafts.json   # drafts, failed writers, and why the checks 
 ```
 
 Failed runs and blocked runs also send a short failure note on every delivery channel, and write
-`data/digests/<week>.failed.md`. The steps for each status and alert are in
-[`docs/runbook.md`](docs/runbook.md).
+`data/digests/<week>.failed.md`. A week that `digest serve` tries again sends one note, from its
+last attempt. The steps for each status and alert are in [`docs/runbook.md`](docs/runbook.md).
 
 ## Development
 
