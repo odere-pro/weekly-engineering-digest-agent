@@ -1,0 +1,386 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Node.js v20 to v22</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/migrations/v20-to-v22" />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/migrations/v20-to-v22"
+    />
+    <link rel="alternate" hreflang="en" href="https://nodejs.org/en/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="es" href="https://nodejs.org/es/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="fr" href="https://nodejs.org/fr/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="id" href="https://nodejs.org/id/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="ja" href="https://nodejs.org/ja/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="ko" href="https://nodejs.org/ko/blog/migrations/v20-to-v22" />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/migrations/v20-to-v22"
+    />
+    <link rel="alternate" hreflang="pt" href="https://nodejs.org/pt/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="ro" href="https://nodejs.org/ro/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="ta" href="https://nodejs.org/ta/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="tr" href="https://nodejs.org/tr/blog/migrations/v20-to-v22" />
+    <link rel="alternate" hreflang="uk" href="https://nodejs.org/uk/blog/migrations/v20-to-v22" />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/migrations/v20-to-v22"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/migrations/v20-to-v22"
+    />
+    <link rel="alternate" type="application/rss+xml" href="https://nodejs.org/en/feed/blog.xml" />
+    <meta property="og:title" content="Node.js — Node.js v20 to v22" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/migrations/Node.js%20%E2%80%94%20Node.js%20v20%20to%20v22"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Node.js v20 to v22" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Node.js v20 to v22</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/AugustinMauroy"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >AM</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>AugustinMauroy</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__announcements">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Node.js v20 to v22
+              </div>
+            </div>
+            <h1 id="nodejs-v20-to-v22"><a href="#nodejs-v20-to-v22">Node.js v20 to v22</a></h1>
+            <div class="index-module__VYslka__alertBox index-module__VYslka__info">
+              <span class="index-module__VYslka__title">!</span
+              ><span class="index-module__VYslka__content"
+                ><p>
+                  This article covers a part of the migration from Node.js v20 to v22. The userland
+                  migrations team is working on more codemods to help you with the migration.
+                </p></span
+              >
+            </div>
+            <p>
+              This page provides a list of codemods to help you migrate your code from Node.js v20
+              to v22.
+            </p>
+            <h2 id="import-assertions-to-attributes">
+              <a href="#import-assertions-to-attributes"
+                ><code>import-assertions-to-attributes</code></a
+              >
+            </h2>
+            <p>
+              During the process of TC39 standardization, the <code>import assert</code> feature was
+              introduced to allow importing
+              <a href="https://tc39.es/proposal-json-modules/">JSON modules</a>, but during the
+              transition to stage 4, the <code>assert</code> keyword was replaced with the
+              <code>with</code> attribute on the <code>import</code> statement.
+            </p>
+            <p>
+              So in
+              <a href="https://nodejs.org/fr/blog/release/v22.0.0#other-notable-changes"
+                >node.js v22</a
+              >, the <code>import assert</code> feature was removed and the
+              <code>with</code> attribute is required instead.
+            </p>
+            <p>
+              Also note that the <code>with</code> keyword was introduced in
+              <a
+                href="https://nodejs.org/fr/blog/release/v18.20.0#added-support-for-import-attributes"
+                >node.js v18.20</a
+              >
+              but it was not mandatory until v22.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/import-assertions-to-attributes"
+                >import-assertions-to-attributes directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/import-assertions-to-attributes"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/import-assertions-to-attributes</span></span></code></pre>
+            </div>
+            <h3 id="example"><a href="#example">Example:</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff no-line-numbers"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> import data from &#x27;./data.json&#x27; assert { type: &#x27;json&#x27; };</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> import data from &#x27;./data.json&#x27; with { type: &#x27;json&#x27; };</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h2 id="crypto-createcipheriv-migration">
+              <a href="#crypto-createcipheriv-migration"
+                ><code>crypto-createcipheriv-migration</code></a
+              >
+            </h2>
+            <p>
+              Migrates deprecated <code>crypto.createCipher()</code> /
+              <code>crypto.createDecipher()</code> usage to the supported
+              <code>crypto.createCipheriv()</code> / <code>crypto.createDecipheriv()</code> APIs
+              with explicit key derivation and IV handling.
+            </p>
+            <p>
+              Node.js removed <code>crypto.createCipher()</code> and
+              <code>crypto.createDecipher()</code> in v22.0.0 (<a
+                href="https://nodejs.org/api/deprecations.html#DEP0106"
+                >DEP0106</a
+              >). The legacy helpers derived keys with MD5 and no salt, and silently reused static
+              IVs. This codemod replaces those calls with the modern, explicit APIs and scaffolds
+              secure key derivation and IV management.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-createcipheriv-migration"
+                >crypto-createcipheriv-migration directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/crypto-createcipheriv-migration"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/crypto-createcipheriv-migration</span></span></code></pre>
+            </div>
+            <h3 id="what-it-does"><a href="#what-it-does">What it does</a></h3>
+            <ul>
+              <li>
+                Replaces invocations of <code>createCipher()</code> /
+                <code>createDecipher()</code> with <code>createCipheriv()</code> /
+                <code>createDecipheriv()</code>.
+              </li>
+              <li>
+                Inserts scaffolding that derives keys with <code>crypto.scryptSync()</code> and
+                generates random salts and IVs.
+              </li>
+              <li>
+                Reminds developers to persist salt + IV for decryption and to adjust key/IV lengths
+                per algorithm.
+              </li>
+              <li>
+                Updates destructured imports to include the new helpers
+                (<code>createCipheriv</code>, <code>createDecipheriv</code>,
+                <code>randomBytes</code>, <code>scryptSync</code>).
+              </li>
+            </ul>
+            <h3 id="example-1"><a href="#example-1">Example</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const cipher = crypto.createCipher(algorithm, password);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const cipher = (() =&gt; {</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   const __dep0106Salt = crypto.randomBytes(16);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   const __dep0106Key = crypto.scryptSync(password, __dep0106Salt, 32);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   const __dep0106Iv = crypto.randomBytes(16);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   // DEP0106: Persist __dep0106Salt and __dep0106Iv alongside the ciphertext so it can be decrypted later.</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   return crypto.createCipheriv(algorithm, __dep0106Key, __dep0106Iv);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> })();</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="important-notes"><a href="#important-notes">Important notes</a></h3>
+            <ul>
+              <li>
+                The codemod cannot guarantee algorithm-specific key/IV sizes. Review the generated
+                <code>scryptSync</code> length and IV length defaults and adjust as needed.
+              </li>
+              <li>
+                Decryption snippets include placeholders (<code>Buffer.alloc(16)</code>) that must
+                be replaced with the salt and IV stored during encryption.
+              </li>
+              <li>
+                If your project already wraps key derivation logic, you may prefer to adapt the
+                generated scaffolding to call existing helpers.
+              </li>
+              <li>
+                The generated code is not backward-compatible and will be unable to decrypt data
+                that was encrypted using <code>createCipher()</code>.
+              </li>
+              <li>
+                The use of scrypt is one possible choice for deriving a key from a password, but you
+                may wish to use Argon2id or PBKDF2 instead.
+              </li>
+            </ul>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a class="index-module__A9kfJq__crossLink" href="/en/blog/migrations/v22-to-v24"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content">Node.js v22 to v24</span></a
+              ><a class="index-module__A9kfJq__crossLink" href="/en/blog/migrations/v16-to-v18"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Node.js v16 to v18</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Oct 28, 2025</dd>
+            <dt>Reading Time</dt>
+            <dd>2 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/migrations/v20-to-v22.mdx"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#import-assertions-to-attributes"
+                    >import-assertions-to-attributes</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#example">Example:</a></li>
+                <li class="">
+                  <a class="" href="#crypto-createcipheriv-migration"
+                    >crypto-createcipheriv-migration</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#what-it-does">What it does</a></li>
+                <li class="pl-2"><a class="" href="#example-1">Example</a></li>
+                <li class="pl-2"><a class="" href="#important-notes">Important notes</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

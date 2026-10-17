@@ -1,0 +1,1683 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>
+      Node.js — Developing a minimally HashDoS resistant, yet quickly reversible integer hash for V8
+    </title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/vulnerability/march-2026-hashdos" />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nodejs.org/en/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="es"
+      href="https://nodejs.org/es/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://nodejs.org/fr/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="id"
+      href="https://nodejs.org/id/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="ja"
+      href="https://nodejs.org/ja/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="ko"
+      href="https://nodejs.org/ko/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt"
+      href="https://nodejs.org/pt/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="ro"
+      href="https://nodejs.org/ro/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="ta"
+      href="https://nodejs.org/ta/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://nodejs.org/tr/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="uk"
+      href="https://nodejs.org/uk/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/vulnerability/march-2026-hashdos"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/vulnerability.xml"
+    />
+    <meta
+      property="og:title"
+      content="Node.js — Developing a minimally HashDoS resistant, yet quickly reversible integer hash for V8"
+    />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/vulnerability/Node.js%20%E2%80%94%20Developing%20a%20minimally%20HashDoS%20resistant,%20yet%20quickly%20reversible%20integer%20hash%20for%20V8"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta
+      name="twitter:title"
+      content="Node.js — Developing a minimally HashDoS resistant, yet quickly reversible integer hash for V8"
+    />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <div class="index-module__VYslka__alertBox index-module__VYslka__warning">
+              <span class="index-module__VYslka__title"></span
+              ><span class="index-module__VYslka__content"
+                >Commercial support for versions past the Maintenance LTS phase is available through
+                our
+                <a href="/en/about/eol">OpenJS Ecosystem Sustainability Program partners</a></span
+              >
+            </div>
+            <h1>
+              Developing a minimally HashDoS resistant, yet quickly reversible integer hash for V8
+            </h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/joyeecheung"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >JC</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>Joyee Cheung</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__vulnerability">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Developing a minimally HashDoS resistant, yet quickly reversible integer hash for V8
+              </div>
+            </div>
+            <p>
+              What happens when a hashing scheme needs to be both HashDoS resistant and quickly
+              reversible? That&#x27;s the puzzle we tried to solve for addressing
+              <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2026-21717"
+                >CVE-2026-21717</a
+              >
+              in the
+              <a href="/en/blog/vulnerability/march-2026-security-releases"
+                >March 2026 Node.js security release</a
+              >. This led to the development of an integer hash that we believe is unpredictable
+              enough to prevent a blind attacker from reliably triggering severe performance
+              degradation in our threat model. At the same time, it is also a
+              <a href="https://en.wikipedia.org/wiki/Permutation">permutation</a> that can be
+              efficiently inverted to recover the original integer value by the runtime holding the
+              secret random keys, which is important for maintaining V8&#x27;s performance
+              optimizations.
+            </p>
+            <p>
+              In this post, we will go into the details of this vulnerability, explain why and how
+              the design tried to meet the two seemingly contradictory requirements, and sample the
+              statistical analysis we performed to evaluate the quality of the hash. Along the way,
+              we will also discuss some specifics of how V8 stores and uses string hashes internally
+              that lead to these constraints, the implementation techniques, and the performance
+              analysis.
+            </p>
+            <h2 id="what-is-hashdos-and-why-does-it-matter-for-nodejs">
+              <a href="#what-is-hashdos-and-why-does-it-matter-for-nodejs"
+                >What is HashDoS and why does it matter for Node.js?</a
+              >
+            </h2>
+            <p>
+              <a href="https://en.wikipedia.org/wiki/Hash_table">Hash tables</a> are one of the most
+              important data structures in software, and Node.js/V8 are no exceptions. With hash
+              tables, there comes the problem of
+              <a href="https://en.wikipedia.org/wiki/Hash_collision">collisions</a> - while hash
+              tables are designed to have O(1) average time complexity for, e.g., single lookup and
+              insertion, when there are so many keys whose hashed values can be mapped to the same
+              slot that the table has to walk through many locations to insert a new key, it&#x27;s
+              theoretically possible to degrade to O(n<sup>2</sup>) in total for inserting
+              <em>n</em> keys.
+            </p>
+            <p>
+              In many applications, the worst-case performance of hash tables is usually just a
+              theoretical concern and maybe an occasional nuisance, but for servers that need to
+              process untrusted input, this can be an attack vector. If an attacker manages to find
+              a path that allows them to cause a large number of collisions in the server&#x27;s
+              internal hash table with a small number of inputs, they can effectively
+              &quot;freeze&quot; the thread without much effort. And, with enough threads frozen,
+              they could render the service unavailable for a sustained period of time. This is
+              commonly called a
+              <a href="https://en.wikipedia.org/wiki/Collision_attack#Hash_flooding"
+                >hash flooding or Hash-DoS (Denial of Service) attack</a
+              >.
+            </p>
+            <p>
+              HashDoS vulnerabilities can show up in a wide range of platforms. In the case of V8,
+              when it&#x27;s used in a browser, DoS issues are
+              <a
+                href="https://chromium.googlesource.com/chromium/src/+/a2be834619701017dfcb830cc5b0b6522f4d52cf/docs/security/faq.md#Are-denial-of-service-issues-considered-security-bugs"
+                >not considered vulnerabilities</a
+              >
+              because they typically only affect the tab that processes the malicious input, and
+              users can simply close the tab. But when it&#x27;s used in event-loop-based
+              server-side runtimes, a single malicious request that manages to block the entire
+              event loop for a sustained period of time has a much bigger impact. As one of the most
+              widely deployed server-side runtimes, Node.js draws extensive scrutiny from security
+              researchers, which helps us find and address weak spots like these.
+            </p>
+            <p>
+              Unlike other DoS attack vectors that can be more easily mitigated by userland
+              restrictions, HashDoS vulnerabilities are particularly tricky because they lurk inside
+              widely used internal data structures and well-defined operations trusted by
+              developers. For V8 embedders, this means fixes for HashDoS vulnerabilities usually
+              fall on the runtime maintainers, and they are a critical part of maintaining the
+              security and reliability of the ecosystem.
+            </p>
+            <h2 id="mitigating-hashdos-with-seeded-hashes">
+              <a href="#mitigating-hashdos-with-seeded-hashes"
+                >Mitigating HashDoS with seeded hashes</a
+              >
+            </h2>
+            <p>
+              The core of HashDoS vulnerabilities lies in deterministic hash functions - if the
+              attacker can predict the hash values of their inputs, they can craft inputs that
+              reliably trigger worst-case performance in the target server. The standard mitigation
+              is to
+              <a
+                href="https://www.usenix.org/legacy/events/sec03/tech/full_papers/crosby/crosby.pdf"
+                >mix a seed value into the computation of the hash, and make sure that the seed is
+                randomly generated at program initialization</a
+              >. This way, even if the attacker knows the hash function, they can&#x27;t predict the
+              hash values without knowing the seed that changes whenever the server restarts, and
+              therefore can&#x27;t craft inputs that will reliably collide.
+            </p>
+            <p>
+              In Node.js/V8, HashDoS vulnerabilities tend to center around misconfigurations that
+              lead to unseeded hashes or hashes seeded by a constant value. For an early history of
+              HashDoS vulnerabilities in Node.js/V8 and their mitigations, check out this
+              <a href="https://v8.dev/blog/hash-flooding">V8 blog post</a>. A more recent example is
+              <a href="https://nodejs.org/en/blog/vulnerability/july-2025-security-releases"
+                >CVE-2025-27209</a
+              >, reported by Mate Marjanović and addressed in Node.js&#x27;s July 2025 security
+              release: during V8&#x27;s switch to
+              <a href="https://github.com/Nicoshev/rapidhash">rapidhash</a>, a configuration gap
+              left the constants used by rapidhash hard-coded in V8 without seeding. To mitigate
+              this, Node.js temporarily reverted back to a seeded hash in its copy of V8. Later, Gus
+              Caplan from Deno
+              <a href="https://chromium-review.googlesource.com/c/v8/v8/+/6733490"
+                >ported rapidhash&#x27;s secret generation code to V8 and wired it up to seed the
+                constants used by rapidhash at runtime</a
+              >, which became the eventual mitigation that shipped in newer versions of Node.js. The
+              generation of rapidhash secrets turned out to be important to our later design for the
+              seeded integer hash, which we will discuss below.
+            </p>
+            <p>
+              Until recently, most HashDoS discoveries in V8 had centered on hashing of regular
+              strings, since they are more commonly found in paths exposed to server handlers. It
+              wasn&#x27;t until the recent HackerOne report by Mate Marjanović that our attention
+              was drawn to an elephant in the room: array index strings (those that look like
+              non-negative integers and fit within 24 bits) in V8 used a different deterministic
+              hash that can be trivially predicted.
+            </p>
+            <h2 id="what-string-hashes-look-like-in-v8">
+              <a href="#what-string-hashes-look-like-in-v8">What string hashes look like in V8</a>
+            </h2>
+            <p>
+              To understand the vulnerability, let&#x27;s look at how V8 stores string hashes
+              internally.
+            </p>
+            <p>
+              Every
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#83"
+                ><code>v8::internal::Name</code></a
+              >
+              object (the superclass of
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/64b77c7889ed7149dd4c124ea0163091d026d2f3/src/objects/string.h#119"
+                ><code>v8::internal::String</code></a
+              >
+              in V8) carries a 32-bit
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.tq#7"
+                ><code>raw_hash_field</code></a
+              >. The composition of this field varies depending on the type of string. The bottom 2
+              bits (<a
+                href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#172"
+                ><code>HashFieldTypeBits</code></a
+              >) determine the interpretation, and two of the most common types are:
+            </p>
+            <ul>
+              <li>
+                Regular strings (type
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#166"
+                  ><code>kHash = 0b10</code></a
+                >): bits 2-31 store a 30-bit hash value computed by rapidhash, seeded with randomly
+                generated secrets. This is considered to be
+                <a
+                  href="https://github.com/hoxxep/rapidhash?tab=readme-ov-file#minimal-dos-resistance"
+                  >&quot;minimally HashDoS resistant&quot;</a
+                >, which we will discuss later.
+              </li>
+              <li>
+                Array index strings (type
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#167"
+                  ><code>kIntegerIndex = 0b00</code></a
+                >): these are decimal-integer-looking strings whose numeric value fits in 24 bits.
+                bits 2-25 (24 bits) hold the numeric value of the integer (<a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#214"
+                  ><code>ArrayIndexValueBits</code></a
+                >), and bits 26-31 (6 bits) hold the string length (<a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.h#227"
+                  ><code>ArrayIndexLengthBits</code></a
+                >).
+              </li>
+            </ul>
+            <p>
+              The layout of the hash fields looks like this (the least significant bits are on the
+              right):
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span></span><span> </span><span>&quot;hello&quot;</span><span> </span><span>(type:</span><span> </span><span>kHash</span><span> </span><span>=</span><span> </span><span>0b10):</span></span>
+<span class="line"><span></span><span> </span><span>+-----------------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>|</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>30-bit</span><span> </span><span>rapidhash</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|1</span><span> </span><span>0|</span></span>
+<span class="line"><span></span><span> </span><span>+-----------------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>31</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>2</span><span> </span><span>1</span><span> </span><span></span><span> </span><span>0</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&quot;1234&quot;</span><span> </span><span>(length=4,</span><span> </span><span>value=1234,</span><span> </span><span>type:</span><span> </span><span>kIntegerIndex</span><span> </span><span>=</span><span> </span><span>0b00):</span></span>
+<span class="line"><span></span><span> </span><span>+--------+--------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>|</span><span> </span><span>000100</span><span> </span><span>|</span><span> </span><span>000000000000010011010010</span><span> </span><span>|0</span><span> </span><span>0|</span></span>
+<span class="line"><span></span><span> </span><span>|</span><span> </span><span>length</span><span> </span><span>|</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>numeric</span><span> </span><span>value</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span></span>
+<span class="line"><span></span><span> </span><span>+--------+--------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>31</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>26</span><span> </span><span>25</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>2</span><span> </span><span>1</span><span> </span><span></span><span> </span><span>0</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <p>
+              As you can see, the hash for array index strings is fully deterministic and
+              there&#x27;s no seeding involved. An attacker can easily predict their hash values,
+              and with a bit of effort, craft colliding inputs.
+            </p>
+            <h3 id="exploiting-the-deterministic-hash-for-array-index-strings">
+              <a href="#exploiting-the-deterministic-hash-for-array-index-strings"
+                >Exploiting the deterministic hash for array index strings</a
+              >
+            </h3>
+            <p>
+              One of the most commonly used hash tables in V8 is the
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/6ded7b3c4d79fc170b8e104dc0efc33cc4f67021/src/objects/string-table.h#51"
+                >string table</a
+              >, which is used for
+              <a href="https://en.wikipedia.org/wiki/String_interning">string internalization</a> -
+              deduplicating and caching strings in a global table for time and memory efficiency.
+              The string table uses
+              <a href="https://en.wikipedia.org/wiki/Open_addressing">open addressing</a> with
+              <a href="https://en.wikipedia.org/wiki/Quadratic_probing">quadratic probing</a> to
+              deal with collisions. The
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/de546675cd3b496a44138edccb06ed5289b9c60f/src/objects/off-heap-hash-table-inl.h#160"
+                >probing sequence</a
+              >
+              is:
+            </p>
+            <math display="block"
+              ><mtable columnalign="left"
+                ><mtr
+                  ><mtd
+                    ><msub><mtext>slot</mtext><mn>0</mn></msub
+                    ><mo>=</mo><mtext>hash</mtext><mspace width="0.3em"></mspace><mo>&amp;</mo
+                    ><mspace width="0.3em"></mspace><mo stretchy="false">(</mo
+                    ><mtext>capacity</mtext><mo>-</mo><mn>1</mn><mo stretchy="false">)</mo><mo>,</mo
+                    ><mspace width="0.5em"></mspace><mtext>capacity</mtext><mo>=</mo
+                    ><msup><mn>2</mn><mi>n</mi></msup></mtd
+                  ></mtr
+                ><mtr
+                  ><mtd
+                    ><msub><mtext>slot</mtext><mi>k</mi></msub
+                    ><mo>=</mo><mo stretchy="false">(</mo
+                    ><msub
+                      ><mtext>slot</mtext><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub
+                    ><mo>+</mo><mi>k</mi><mo stretchy="false">)</mo><mspace width="0.3em"></mspace
+                    ><mo>&amp;</mo><mspace width="0.3em"></mspace><mo stretchy="false">(</mo
+                    ><mtext>capacity</mtext><mo>-</mo><mn>1</mn><mo stretchy="false">)</mo
+                    ><mspace width="1em"></mspace><mo>=</mo><mspace width="1em"></mspace
+                    ><mo stretchy="false">(</mo
+                    ><msub
+                      ><mtext>slot</mtext><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub
+                    ><mo>+</mo><mi>k</mi><mo stretchy="false">)</mo><mspace width="0.5em"></mspace
+                    ><mo>(</mo><mtext>mod</mtext><mspace width="0.3em"></mspace
+                    ><mtext>capacity</mtext><mo>)</mo></mtd
+                  ></mtr
+                ></mtable
+              ></math
+            >
+            <p>
+              The string table
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/de546675cd3b496a44138edccb06ed5289b9c60f/src/objects/off-heap-hash-table-inl.h#89"
+                >grows by adding 50% slack and rounding the capacity to a power of two</a
+              >, so <code>hash &amp; (capacity - 1)</code> equals <code>hash mod capacity</code>,
+              and two strings with congruent hashes land on the same first-probe slot. For array
+              index strings, the hash is <code>(length &lt;&lt; 24) | value</code> - but because the
+              capacity is usually smaller than 2<sup>24</sup>, the length bits are usually masked
+              away and the slot depends only on the numeric value mod capacity. Take a table with
+              initial capacity <code>32768</code> for example:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>String</th>
+                  <th>Hash</th>
+                  <th><code>Hash &amp; (capacity - 1)</code></th>
+                  <th>Slot</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="String"><code>&quot;1234&quot;</code></td>
+                  <td data-label="Hash"><code>(4 &lt;&lt; 24) | 1234</code></td>
+                  <td data-label="Hash &amp; (capacity - 1)">
+                    <code>0x040004D2 &amp; 32767</code>
+                  </td>
+                  <td data-label="Slot"><strong>1234</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="String"><code>&quot;34002&quot;</code></td>
+                  <td data-label="Hash"><code>(5 &lt;&lt; 24) | 34002</code></td>
+                  <td data-label="Hash &amp; (capacity - 1)">
+                    <code>0x050084D2 &amp; 32767</code>
+                  </td>
+                  <td data-label="Slot"><strong>1234</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="String"><code>&quot;525522&quot;</code></td>
+                  <td data-label="Hash"><code>(6 &lt;&lt; 24) | 525522</code></td>
+                  <td data-label="Hash &amp; (capacity - 1)">
+                    <code>0x060804D2 &amp; 32767</code>
+                  </td>
+                  <td data-label="Slot"><strong>1234</strong></td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              All three collide on slot 1234. The attacker can fill the probing sequence from the
+              target value&#x27;s first-probe slot to cause severe performance degradation, as
+              demonstrated in the PoC in the
+              <a href="https://hackerone.com/reports/3511792">HackerOne report</a>.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-javascript"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> payload</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> []</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> val</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1234</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> MOD</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 2</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> **</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 19</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> CHN</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 2</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> **</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 17</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99"> // chain length</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> REP</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 2</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> **</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 17</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99"> // repetitions of the target value</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Build the quadratic probing chain</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">let</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> j</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> val</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> +</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> MOD</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">for</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#CF222E;--shiki-dark:#81A1C1">let</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> i</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> i</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> CHN</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> i</span><span style="color:#CF222E;--shiki-dark:#81A1C1">++</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">) </span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  payload</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">push</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">`</span><span style="color:#0A3069;--shiki-dark:#81A1C1">${</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">j</span><span style="color:#0A3069;--shiki-dark:#81A1C1">}</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">`</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  j</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">j</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> +</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> i</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">) </span><span style="color:#CF222E;--shiki-dark:#81A1C1">%</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> MOD</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Repeat the target value to force lookups through the chain</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">for</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#CF222E;--shiki-dark:#81A1C1">let</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> k</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 0</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> k</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> REP</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> k</span><span style="color:#CF222E;--shiki-dark:#81A1C1">++</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">) </span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  payload</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">push</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">`</span><span style="color:#0A3069;--shiki-dark:#81A1C1">${</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">val</span><span style="color:#0A3069;--shiki-dark:#81A1C1">}</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">`</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// On the client side: attacker crafts an adversarial JSON payload</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// and sends it to the remote server.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> string</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> JSON</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">stringify</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#1F2328;--shiki-dark:#88C0D0"> data</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">:</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> payload</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// On the server side: V8 inserts the numeric strings in a hash table</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// for internalization, the collisions lead to extreme amplification</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// in resource consumption.</span></span>
+<span class="line"><span style="color:#0550AE;--shiki-dark:#D8DEE9">JSON</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">parse</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">string</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">JavaScript</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              With a ~2 MB payload, this can significantly slow down the JSON parsing - even on a
+              powerful MacBook, this can hang for about half a minute. This means for servers that
+              parse JSON from untrusted sources, a remote attacker can cause significant disruption
+              via extreme
+              <a href="https://cwe.mitre.org/data/definitions/405.html"
+                >asymmetric resource consumption</a
+              >. Since the same hashing scheme is also used for many other V8 internals, e.g., Map
+              keys, this has a wide attack surface.
+            </p>
+            <h2 id="hashdos-resistant-vs-efficiently-reversible">
+              <a href="#hashdos-resistant-vs-efficiently-reversible"
+                >HashDoS resistant vs. efficiently reversible</a
+              >
+            </h2>
+            <p>
+              As mentioned above, the standard mitigation for HashDoS is to seed the hash function,
+              so we need to look for a more robust, seeded hashing scheme for array index strings.
+            </p>
+            <p>
+              When we talk about hashes for security purposes, we often naturally think of
+              <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function"
+                >cryptographic hashes</a
+              >
+              - which are, by design, irreversible. And here we have a dilemma: V8&#x27;s array
+              index hash is not just a hash - it&#x27;s a reversible encoding. This enables an
+              important optimization that happens everywhere in V8: for example, in many fast paths
+              that involve string-to-integer conversion, like
+              <code>parseInt(&quot;42&quot;)</code> or <code>obj[&quot;42&quot;] = 1</code>, instead
+              of trying to parse the number from the string (whose content is not necessarily in CPU
+              cache), V8 simply reads the <code>raw_hash_field</code> of the string and extracts the
+              numeric value directly from the hash field. V8 also takes advantage of this encoding
+              in e.g., string equality checks, where it would just compare two integer strings by
+              their hashes. By nature, an irreversible cryptographic hash would break these
+              optimizations and could lead to significant performance regressions in many hot paths.
+            </p>
+            <p>
+              So it looks like we are in a bind: do we have to either live with this vulnerability
+              because of the reversibility requirement, or accept the performance regression?
+            </p>
+            <h3 id="finding-a-middle-ground-minimal-hashdos-resistance">
+              <a href="#finding-a-middle-ground-minimal-hashdos-resistance"
+                >Finding a middle ground: minimal HashDoS resistance</a
+              >
+            </h3>
+            <p>
+              Now is the time to take a step back and think about what exactly makes a hash
+              resistant to HashDoS attacks. It turned out that those who looked into rapidhash
+              wondered the same and proposed the idea of
+              <a
+                href="https://github.com/hoxxep/rapidhash?tab=readme-ov-file#minimal-dos-resistance"
+                >&quot;minimal HashDoS resistance&quot;</a
+              >, with constraints that apply to our case:
+            </p>
+            <ol>
+              <li>
+                The attacker cannot observe the hash output: The hash values are internal to V8 and
+                not exposed directly to JavaScript or network responses. The attacker has to work
+                blind.
+              </li>
+              <li>
+                <a href="https://github.com/nodejs/node/blob/main/SECURITY.md"
+                  >Node.js trusts the code it is asked to run and the infrastructure that runs it</a
+                >. The attacker should be sending untrusted input from a remote machine, and network
+                jitter, garbage collection latency, server load etc. typically render the cost of
+                exploiting timing side channels prohibitive.
+              </li>
+            </ol>
+            <p>
+              In the specific context of Node.js/V8 servers, there are also a few other important
+              factors in play:
+            </p>
+            <ol>
+              <li>
+                The attacker needs to work with a noisy table with application-specific entries out
+                of their control. It is shared by both array-index strings and regular strings
+                hashed by rapidhash, and the capacity growth can also be affected by pre-existing
+                entries, making it harder for the attacker to predict the exact probe chain
+                consistently.
+              </li>
+              <li>
+                Standard operational practices in production servers typically enforce payload size
+                limits and rate limits. Without them, the server can already be exposed to simpler
+                resource exhaustion attacks. These bound how many collisions an attacker can inject
+                per request and how often they can retry. Other common practices like load balancing
+                can further complicate the attacker&#x27;s ability to accumulate collisions on the
+                same server.
+              </li>
+              <li>
+                Hash table entries held weakly are subject to V8&#x27;s garbage collection. For
+                example, between requests, internalized strings that become unreachable are cleaned,
+                which helps prevent collisions from accumulating across requests and limit what an
+                attacker can achieve in each payload. If the server allows an attacker to keep
+                unlimited entries alive across GC cycles, no hash is strong enough to fix the
+                off-table memory growth and it&#x27;s that unbounded retention path that needs to be
+                fixed.
+              </li>
+            </ol>
+            <p>
+              These contributed to the evaluation of high attack complexity in
+              <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2026-21717"
+                >CVE-2026-21717</a
+              >
+              since the extreme amplification cannot be consistently reproduced against all Node.js
+              servers, e.g., an Express server with its default
+              <a href="https://expressjs.com/en/resources/middleware/body-parser.html"
+                >100 KB body limit</a
+              >.
+            </p>
+            <p>
+              That said, for servers with fewer guardrails or simpler states, a fully deterministic
+              hash still makes the attack feasible. So while we don&#x27;t need the hash to be
+              cryptographically secure (or due to the reversibility requirement it just can&#x27;t
+              be), we still need to find an efficiently invertible, randomly keyed permutation with
+              good diffusion on the 24-bit space, in order to bring the unpredictability of array
+              index string hashes up to a level similar to randomly keyed rapidhash&#x27;s
+              unpredictability for regular strings.
+            </p>
+            <h2 id="exploring-candidate-hashes">
+              <a href="#exploring-candidate-hashes">Exploring candidate hashes</a>
+            </h2>
+            <h3 id="some-naive-hashes-and-why-they-fail">
+              <a href="#some-naive-hashes-and-why-they-fail">Some naive hashes and why they fail</a>
+            </h3>
+            <p>
+              We first prototyped with a few naive hashes, partly to identify all the code paths in
+              V8 that would need updating, and partly to see whether something simple might be good
+              enough in practice.
+            </p>
+            <h4 id="multiply-a-secret-then-add-another">
+              <a href="#multiply-a-secret-then-add-another">Multiply a secret, then add another</a>
+            </h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp no-line-numbers"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;&lt;</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 24</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> -</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // 24-bit mask</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> SeedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> secrets</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">secrets</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> value</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> +</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> secrets</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              The first naive idea that came to mind was the classic
+              <a href="https://en.wikipedia.org/wiki/Linear_congruential_generator"
+                >linear congruential generator</a
+              >
+              (LCG) construction, but applied individually on the input instead of on a sequence.
+              This is bijective when <code>secrets[0]</code> is odd, and can be quickly inverted
+              (just subtract and multiply by the
+              <a href="https://en.wikipedia.org/wiki/Modular_multiplicative_inverse"
+                >modular inverse</a
+              >). Unfortunately, this construction preserves linear relationships, and the low bits
+              of the output depend only on the low bits of the input. As mentioned before, in many
+              hash tables only the lower bits matter in probing, so an attacker can still generate
+              collisions by picking values that are congruent modulo a guessed capacity.
+            </p>
+            <h4 id="xor-with-a-secret"><a href="#xor-with-a-secret">XOR with a secret</a></h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp no-line-numbers"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> SeedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> secrets</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> value</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> secrets</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // Both secrets and values are already 24-bit.</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              Another suggestion that came up during the development to minimize the overhead was to
+              XOR the value with the randomly generated seed. This is also bijective and the
+              inversion is extremely fast (just XOR the secret again), but each bit of the output
+              depends on exactly one bit of the input. An attacker can still construct collisions
+              just by choosing values that agree in the low bits.
+            </p>
+            <p>
+              These were clearly not good enough. We needed something with genuine bit diffusion,
+              where changing a single input bit would affect many output bits in an unpredictable
+              way for the attacker.
+            </p>
+            <h3 id="the-xorshift-multiply-mixers">
+              <a href="#the-xorshift-multiply-mixers">The xorshift-multiply mixers</a>
+            </h3>
+            <p>
+              The search for bijective integer hash functions led us to Christopher Wellons&#x27;
+              <a href="https://github.com/skeeto/hash-prospector">hash-prospector</a> project, which
+              generates billions of integer hash functions at random from a selection of nine
+              reversible operations, then evaluates and ranks them. This project
+              <a href="https://nullprogram.com/blog/2018/07/31/">showed</a> that many of the
+              best-performing functions came from the same family of constructions that use
+              alternating rounds of two operations:
+            </p>
+            <ol>
+              <li>
+                <math
+                  ><msub
+                    ><mi>x</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub
+                  ><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub
+                  ><mo>⊕</mo><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub
+                  ><mo>&gt;&gt;</mo><mi>k</mi><mo stretchy="false">)</mo></math
+                >
+                <!-- -->(right <a href="https://en.wikipedia.org/wiki/Xorshift">xorshift</a>): this
+                is bijective and invertible. The top <em>k</em> bits are unchanged, and we can
+                recover the next <em>k</em> bits by XORing with them, then repeat until all bits are
+                restored. A particularly elegant aspect of xorshift is that when the shift
+                <em>k</em> is at least half the bit width, this is an
+                <a href="https://en.wikipedia.org/wiki/Involution_(mathematics)">involution</a
+                >:<!-- -->
+                <math
+                  ><msub><mi>x</mi><mi>i</mi></msub
+                  ><mo>=</mo
+                  ><msub
+                    ><mi>x</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub
+                  ><mo>⊕</mo><mo stretchy="false">(</mo
+                  ><msub
+                    ><mi>x</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub
+                  ><mo>&gt;&gt;</mo><mi>k</mi><mo stretchy="false">)</mo></math
+                >
+                <!-- -->. It is linear over <a href="https://en.wikipedia.org/wiki/GF(2)">GF(2)</a>,
+                but nonlinear over
+                <a href="https://en.wikipedia.org/wiki/Modular_arithmetic#Integers_modulo_m"
+                  >ℤ/2<sup>N</sup> </a
+                >.
+              </li>
+              <li>
+                <math
+                  ><msub
+                    ><mi>y</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub
+                  ><mo>=</mo><msub><mi>y</mi><mi>i</mi></msub
+                  ><mo>×</mo><mi>m</mi><mspace width="0.5em"></mspace><mo>(</mo><mtext>mod</mtext
+                  ><mspace width="0.3em"></mspace><msup><mn>2</mn><mi>N</mi></msup
+                  ><mo>)</mo></math
+                >
+                <!-- -->(multiplication): this is bijective when <em>m</em> is odd, and invertible
+                by multiplying with<!-- -->
+                <math
+                  ><msub><mi>m</mi><mtext>inv</mtext></msub></math
+                >
+                <!-- -->, the modular inverse of <em>m</em> mod<!-- -->
+                <math
+                  ><msup><mn>2</mn><mi>N</mi></msup></math
+                >
+                <!-- -->. It is linear over
+                <a href="https://en.wikipedia.org/wiki/Modular_arithmetic#Integers_modulo_m"
+                  >ℤ/2<sup>N</sup> </a
+                >, but nonlinear over <a href="https://en.wikipedia.org/wiki/GF(2)">GF(2)</a>.
+              </li>
+            </ol>
+            <p>
+              This family of xorshift-multiply constructions is used in many pseudorandom number
+              generators/mixers like Java&#x27;s
+              <a href="https://doi.org/10.1145/2660193.2660195">SplittableRandom</a> and
+              <a
+                href="https://github.com/aappleby/smhasher/blob/92cf370/src/MurmurHash3.cpp#L68-L77"
+                >MurmurHash3&#x27;s finalizer</a
+              >. A great explanation of this construction can be found in
+              <a
+                href="https://www.pcg-random.org/posts/developing-a-seed_seq-alternative.html#multiplyxorshift"
+                >this article</a
+              >
+              (and
+              <a
+                href="https://ticki.github.io/blog/designing-a-good-non-cryptographic-hash-function/"
+                >this</a
+              >): multiplication propagates information upward through its carry chain, while
+              XOR-shift propagates information downward by folding high bits into low positions. By
+              <a href="https://doi.org/10.5555/112331.112375"
+                >mixing operations from different algebraic groups</a
+              >, this construction helps break the patterns each one preserves.
+            </p>
+            <p>
+              Since our multipliers are random secrets, the interaction between the two operations
+              differs for each set of secrets, and multiple rounds of alternation helps spread the
+              uncertainty across all bits. Applying this structure to our 24-bit input space, we
+              first came up with the following design:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;&lt;</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 24</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> -</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // 24-bit mask</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 12</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // half the bit width, so the xorshift is an involution</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Multipliers in m[] are odd and randomly generated at startup.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> SeedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // round 1</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // round 2</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">                          // finalize</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              To recover the original value, we can simply apply the steps in reverse order,
+              replacing each multiplier with its modular inverse. This looks nicely symmetric:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Modular inverses in m_inv[] are precomputed using Newton&#x27;s method at startup.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> UnseedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> hash</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1_inv</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2_inv</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> hash</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // undo round 2</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // undo round 1</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">                              // finalize</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="multiplier-generation">
+              <a href="#multiplier-generation">Multiplier generation</a>
+            </h3>
+            <p>
+              Now that we had found a(nother) plausible structure to mix the bits, the next step was
+              to find a way to generate good multipliers. The multipliers need to be 24-bit since
+              the permutation needs to operate on the 24-bit modular arithmetic space, and they also
+              need to be chosen well - if the multiplier is 1, for example, it won&#x27;t mix the
+              bits at all. On the other hand, since they need to be generated at startup, we need to
+              minimize the cost of finding good multipliers.
+            </p>
+            <p>
+              We turned to the existing rapidhash secrets that V8 already generates at startup,
+              which appeared to be a decent fit for our needs. While there is a width mismatch
+              (rapidhash secrets are 64-bit), the secrets still retain some
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/0a8b1cdcc8b243c62cf045fa8beb50600e11758a/third_party/rapidhash-v8/secret.h#50"
+                >desirable properties</a
+              >
+              after truncation. For example, each byte in the secrets must have exactly 4 bits set,
+              and the generation ensures the secrets are odd, which is needed for the permutation to
+              work. So we ended up just taking the lowest 24 bits of each rapidhash secret to derive
+              the multipliers:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;&lt;</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 24</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> -</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // 24-bit mask</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> derive_multiplier</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint64_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> secret</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">  // The | 1 ensures the multiplier is odd, which is redundant in practice</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">  // but serves as a safeguard.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> ((</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">secret</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> |</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              And because V8 already has to generate them anyway, we essentially get these
+              multipliers for free and can reuse a good chunk of the infrastructure around its
+              management.
+            </p>
+            <h2 id="statistical-evaluation">
+              <a href="#statistical-evaluation">Statistical evaluation</a>
+            </h2>
+            <p>
+              With the construction taking shape, we&#x27;d like to see some empirical evidence
+              about how well it diffuses the bits. While our threat model primarily relies on the
+              secrecy of the multipliers and the invisibility of hash output, good diffusion is
+              needed for that secrecy to reach every output bit. One common way to quantify
+              diffusion for a hash function is to check its
+              <a href="https://en.wikipedia.org/wiki/Avalanche_effect">avalanche effect</a>, which
+              measures how a small change in the input affects the output bits. For example, if for
+              each input <em>x</em> and each input bit position <em>j</em>, we compute the hash of
+              both <em>x</em> and <em>x</em> with bit <em>j</em> flipped, then count how often each
+              output bit <em>k</em> changed, the ideal hash function should have each output bit
+              flipped 50% of the time for each input bit flip, known as the
+              <a href="https://en.wikipedia.org/wiki/Avalanche_effect#Strict_avalanche_criterion"
+                >strict avalanche criterion (SAC)</a
+              >. We adapted the code in
+              <a href="https://github.com/skeeto/hash-prospector/tree/master">hash-prospector</a> to
+              evaluate the bias (root-mean-square relative deviation) from the SAC for our 24-bit
+              input space (scaled by 1000 for readability):
+            </p>
+            <math display="block"
+              ><mtable columnalign="left"
+                ><mtr
+                  ><mtd
+                    ><mtext>SAC</mtext><mo>=</mo
+                    ><msup
+                      ><mn>2</mn><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></msup
+                    ></mtd
+                  ></mtr
+                ><mtr
+                  ><mtd
+                    ><mtext>bias</mtext><mo>=</mo><mn>1000</mn><mo>⋅</mo
+                    ><msqrt
+                      ><mfrac
+                        ><mn>1</mn><msup><mi>N</mi><mn>2</mn></msup></mfrac
+                      ><munder
+                        ><mo>∑</mo><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></munder
+                      ><msup
+                        ><mrow
+                          ><mo>(</mo
+                          ><mfrac
+                            ><mrow
+                              ><msub
+                                ><mi>c</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub
+                              ><mo>-</mo><mtext>SAC</mtext></mrow
+                            ><mtext>SAC</mtext></mfrac
+                          ><mo>)</mo></mrow
+                        ><mn>2</mn></msup
+                      ></msqrt
+                    ></mtd
+                  ></mtr
+                ></mtable
+              ></math
+            >
+            <p>
+              where <math><mi>N</mi><mo>=</mo><mn>24</mn></math> is the bit width. A bias of 0 means
+              perfect avalanche, and 1000 means zero diffusion.
+            </p>
+            <p>
+              We ran this on the original deterministic hash (identity function) as a baseline, then
+              on a few naive ideas mentioned above, and finally on 1 and 2 rounds of
+              xorshift-multiply with rapidhash&#x27;s default secrets as multipliers:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Construction</th>
+                  <th style="text-align: right">Bias</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Construction">identity</td>
+                  <td data-label="Bias" style="text-align: right">1000.000</td>
+                </tr>
+                <tr>
+                  <td data-label="Construction">xor only</td>
+                  <td data-label="Bias" style="text-align: right">1000.000</td>
+                </tr>
+                <tr>
+                  <td data-label="Construction">mul+add</td>
+                  <td data-label="Bias" style="text-align: right">797.523</td>
+                </tr>
+                <tr>
+                  <td data-label="Construction">1-round xorshift-multiply</td>
+                  <td data-label="Bias" style="text-align: right">446.852</td>
+                </tr>
+                <tr>
+                  <td data-label="Construction">2-round xorshift-multiply</td>
+                  <td data-label="Bias" style="text-align: right">3.447</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              While there&#x27;s still room for improvement, it already looked very promising, so
+              this was what our
+              <a href="https://chromium-review.googlesource.com/c/v8/v8/+/7564330"
+                >initial implementation</a
+              >
+              used. But since our multipliers are derived from randomly generated rapidhash secrets,
+              how do we know that the avalanche properties will be consistently good across
+              different randomly generated secrets? We needed to verify that as well.
+            </p>
+            <p>
+              We
+              <a href="https://github.com/joyeecheung/rapid-xorshift-multiply"
+                >ran the same analysis on multipliers derived from 50 sets of randomly generated
+                rapidhash secrets</a
+              >, which revealed that the quality of the 2-round scheme can fluctuate quite a bit
+              when the multipliers don&#x27;t mix well.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Rounds</th>
+                  <th>Min</th>
+                  <th>Mean</th>
+                  <th>Max</th>
+                  <th>Std Dev</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Rounds"><strong>2 rounds</strong></td>
+                  <td data-label="Min">2.03</td>
+                  <td data-label="Mean">7.92</td>
+                  <td data-label="Max">40.37</td>
+                  <td data-label="Std Dev">7.19</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              We went with 2 rounds initially because that is the minimum to ensure every input bit
+              reaches every output bit through at least one multiplication, providing nonlinear
+              mixing rather than a single XOR fold. The fluctuations across the test runs, however,
+              seemed to warrant another round, so we tested a 3-round version that looks like this:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &lt;&lt;</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 24</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> -</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 1</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // 24-bit mask</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#0550AE;--shiki-dark:#B48EAD"> 12</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">  // half the bit width</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Multipliers in m[] are odd and randomly generated at startup.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> SeedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">3</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m3</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> value</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // round 1</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // round 2</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m3</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // round 3</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">                          // finalize</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Modular inverses in m_inv[] are precomputed using Newton&#x27;s method at startup.</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> UnseedArrayIndexValue</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#CF222E;--shiki-dark:#81A1C1">uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> hash</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> uint32_t</span><span style="color:#953800;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">3</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">])</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1_inv</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">0</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2_inv</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">1</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">],</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m3_inv</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">[</span><span style="color:#0550AE;--shiki-dark:#B48EAD">2</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  uint32_t</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> hash</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m3_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // undo round 3</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m2_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // undo round 2</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> *</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> m1_inv</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kMask</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">    // undo round 1</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ^=</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &gt;&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> kShift</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99">                              // finalize</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> x</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              This turned out to be quite effective in improving the stability of the avalanche
+              effect:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Rounds</th>
+                  <th>Min</th>
+                  <th>Mean</th>
+                  <th>Max</th>
+                  <th>Std Dev</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Rounds"><strong>2 rounds</strong></td>
+                  <td data-label="Min">2.03</td>
+                  <td data-label="Mean">7.92</td>
+                  <td data-label="Max">40.37</td>
+                  <td data-label="Std Dev">7.19</td>
+                </tr>
+                <tr>
+                  <td data-label="Rounds"><strong>3 rounds</strong></td>
+                  <td data-label="Min">0.37</td>
+                  <td data-label="Mean">0.50</td>
+                  <td data-label="Max">1.68</td>
+                  <td data-label="Std Dev">0.20</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="visualizing-the-hashes">
+              <a href="#visualizing-the-hashes">Visualizing the hashes</a>
+            </h3>
+            <p>
+              Now let&#x27;s look at some visualizations to get an intuitive sense of the hash. For
+              the seeded hashes, we derived the constants from the default rapidhash secrets for the
+              visualization, but the variation analysis above should also help you extrapolate the
+              variance in these visualizations when different secrets are applied.
+            </p>
+            <p>
+              First, we take sequential inputs (spaced by an interval for better visibility) and
+              plot their hash outputs. This helps us easily spot any linear relationships or
+              patterns.
+            </p>
+            <p>
+              <img
+                alt="Hash output vs sequential input"
+                loading="lazy"
+                width="0"
+                height="0"
+                decoding="async"
+                data-nimg="1"
+                class="h-auto w-auto"
+                style="color: transparent"
+                src="/static/images/blog/vulnerability/hash-distribution.svg?dpl=dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+              />
+            </p>
+            <p>
+              As you can see, 2-round and 3-round xorshift-multiply both look significantly more
+              random and less predictable than the naive constructions.
+            </p>
+            <p>
+              Another way to visualize it is to look at the
+              <a
+                href="https://cacm.acm.org/practice/questioning-the-criteria-for-evaluating-non-cryptographic-hash-functions/#F5"
+                >avalanche matrix</a
+              >. Here we take 50,000 random inputs, flip each input bit one at a time, and record
+              how often each output bit changes. Each cell (row <em>i</em>, column <em>j</em>) shows
+              the probability that flipping input bit <em>i</em> causes output bit <em>j</em> to
+              flip - green means it&#x27;s close to the ideal 50%, red means it&#x27;s strongly
+              biased toward never or always flipping. The more green there is, the better.
+            </p>
+            <p>
+              <img
+                alt="Avalanche matrix"
+                loading="lazy"
+                width="0"
+                height="0"
+                decoding="async"
+                data-nimg="1"
+                class="h-auto w-auto"
+                style="color: transparent"
+                src="/static/images/blog/vulnerability/avalanche-matrix.svg?dpl=dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+              />
+            </p>
+            <p>
+              Once again, the 2-round and 3-round xorshift-multiply constructions show much better
+              avalanche properties than the naive constructions.
+            </p>
+            <h3 id="limitations"><a href="#limitations">Limitations</a></h3>
+            <p>
+              The SAC is a necessary but insufficient condition for a good hash function. Since this
+              hashing scheme was developed to address a specific vulnerability, not to be a
+              general-purpose PRNG or a non-cryptographic hash, we only measured bias from SAC as an
+              empirical smoke test to guide the development, which happened in a limited timeframe.
+              We have been
+              <a href="https://github.com/joyeecheung/rapid-xorshift-multiply/"
+                >exploring other evaluations</a
+              >, but to keep this post focused we won&#x27;t go into them here. To avoid falling
+              into the trap of identifying weaknesses in a
+              <a href="https://en.wikipedia.org/wiki/Spherical_cow">spherical cow</a>, it&#x27;s
+              important to keep in mind that structural weaknesses that cannot be exploited by a
+              blind attacker to cause worst-case performance would only be informative rather than
+              actionable in our threat model. The defense lies not only in the hash construction
+              itself, but also in the lack of visibility of the randomly generated multipliers and
+              the hash output.
+            </p>
+            <h2 id="implementation"><a href="#implementation">Implementation</a></h2>
+            <p>
+              With a security release deadline to meet, we iterated on the hash design and V8
+              implementation in parallel, using the statistical analysis above to guide our choices
+              while finding ways to reduce the impact on performance and code complexity.
+            </p>
+            <h3 id="improving-the-access-to-hash-secrets">
+              <a href="#improving-the-access-to-hash-secrets"
+                >Improving the access to hash secrets</a
+              >
+            </h3>
+            <p>
+              Since our design will require even more frequent access to the hash secrets in hot
+              paths, we need to ensure the access to them is efficient. In V8, the hash seed and the
+              derived rapidhash secrets are stored in
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/882eb6b29fa8ca8f55a76bfa4488d5bd6570f837/src/roots/roots.h#264"
+                >a <code>ByteArray</code> in the read-only roots</a
+              >, which in the default configuration of Node.js, are shared across isolates and
+              initialized during process startup. The layout of the <code>ByteArray</code> was as
+              follows:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>Offset</span><span> </span><span>(bytes)</span><span> </span><span>|</span><span> </span><span>Content</span></span>
+<span class="line"><span>---------------|-----------------------------</span></span>
+<span class="line"><span>0</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>seed</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>8</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[0]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>16</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[1]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>24</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[2]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <p>
+              The roots tend to be hot and in cache, so reading the secrets from the roots directly
+              should be efficient. However, like most heap objects in V8, the
+              <code>ByteArray</code> was previously allocated with the default 4-byte alignment. To
+              deal with the potential misalignment when reading 8-byte secrets, the
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/numbers/hash-seed.h#22"
+                ><code>HashSeed</code></a
+              >
+              struct that was used to map them for access in C++ was passed around by value, with
+              each part <code>memcpy</code>-ed from the <code>ByteArray</code>, or copied from
+              another <code>HashSeed</code> that&#x27;s not necessarily in cache. To reduce the
+              overhead, we
+              <a href="https://chromium-review.googlesource.com/c/v8/v8/+/7609720/"
+                >updated the <code>ByteArray</code> to be allocated with 8-byte alignment, and
+                changed the <code>HashSeed</code> to only hold a pointer to the beginning of the
+                <code>ByteArray</code> in the read-only roots</a
+              >. Accesses to individual parts of the structure were then just direct loads from a
+              pointer that points to the roots without copying, and in code they are just simple
+              field accesses from a <code>HashSeed</code> struct reinterpreted over the
+              <code>ByteArray</code>.
+            </p>
+            <h3 id="extending-the-hashseed-for-the-new-hash">
+              <a href="#extending-the-hashseed-for-the-new-hash"
+                >Extending the <code>HashSeed</code> for the new hash</a
+              >
+            </h3>
+            <p>
+              For our new hashing scheme, during hash seed initialization, we derive the multipliers
+              from the rapidhash secrets by taking the lowest 24 bits, compute their modular
+              inverses using
+              <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton&#x27;s method</a>,
+              and store them all in the <code>ByteArray</code> that <code>HashSeed</code> maps onto.
+              When we initially implemented the 2-round xorshift-multiply scheme, the layout of the
+              <code>ByteArray</code> became:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>Offset</span><span> </span><span>(bytes)</span><span> </span><span>|</span><span> </span><span>Content</span></span>
+<span class="line"><span>---------------|-----------------------------</span></span>
+<span class="line"><span>0</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>seed</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>8</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[0]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>16</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[1]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>24</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>secrets[2]</span><span> </span><span>(8</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>32</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>m1</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(4</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>36</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>m2</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(4</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>40</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>m1_inv</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(4</span><span> </span><span>bytes)</span></span>
+<span class="line"><span>44</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span><span> </span><span>m2_inv</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>(4</span><span> </span><span>bytes)</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <p>
+              This was later extended to include <code>m3</code> and <code>m3_inv</code> for the
+              3-round scheme, with <code>m3</code> and <code>m3_inv</code> derived from
+              <code>secrets[2]</code>.
+            </p>
+            <h3 id="applying-the-new-hashing-scheme-across-v8">
+              <a href="#applying-the-new-hashing-scheme-across-v8"
+                >Applying the new hashing scheme across V8</a
+              >
+            </h3>
+            <p>
+              To implement the new seeded hashing scheme, we consolidated all the code paths that
+              treated the value bits as the original numeric value to go through a few helpers and
+              <a href="https://chromium-review.googlesource.com/c/v8/v8/+/7564330"
+                >enforce seeding when it&#x27;s enabled</a
+              >:
+            </p>
+            <ol>
+              <li>
+                In runtime C++, e.g., slow paths for JS operations that involve conversions between
+                strings and integers, numeric string parsing, equality checks in internal tables:
+                when the code needs to encode or decode an array index hash, it will first load the
+                <code>HashSeed</code> from the read-only roots of either the current
+                <a href="https://dbezhetskov.dev/multi-sandboxes/">isolate group</a> or the shared
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/4d1e2794e00a1071e774361994ac5ac4b6d3f147/src/heap/read-only-heap.h#36"
+                  >read-only heap</a
+                >, then call the new
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/strings/string-hasher.h#49"
+                  >encoding</a
+                >
+                and
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/strings/string-hasher.h#64"
+                  >decoding</a
+                >
+                helpers we added that perform the xorshift-multiply-based
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/strings/string-hasher.h#101"
+                  >seeding</a
+                >
+                and
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/strings/string-hasher.h#104"
+                  >unseeding</a
+                >.
+              </li>
+              <li>
+                In JIT-compiled code, e.g., fast paths for JS operations that involve conversions
+                between strings and integers like <code>parseInt</code>: the secrets need to be
+                loaded from the roots of the current isolate. We added
+                <a href="https://v8.dev/docs/torque">Torque</a> macros to facilitate generating code
+                that
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.tq#115"
+                  >encodes</a
+                >
+                and
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/1361b2a49d020a718dc5495713eae0fa67d697b9/src/objects/name.tq#126"
+                  >decodes</a
+                >
+                array index hashes, while code generation for
+                <a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/codegen/code-stub-assembler.cc#2708"
+                  >seeding</a
+                >/<a
+                  href="https://chromium.googlesource.com/v8/v8/+/aac14dd95e5be0d487eba6bcdaf9cef4f8bd806c/src/codegen/code-stub-assembler.cc#2737"
+                  >unseeding</a
+                >
+                algorithms was implemented in the
+                <a href="https://v8.dev/blog/csa"><code>CodeStubAssembler</code></a> instead since
+                the necessary operations were not yet well supported in Torque.
+              </li>
+            </ol>
+            <p>
+              After the changes, the layout of the <code>raw_hash_field</code> for array index
+              strings looks like this:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>&quot;1234&quot;</span><span> </span><span>(length=4,</span><span> </span><span>value=1234,</span><span> </span><span>type:</span><span> </span><span>kIntegerIndex</span><span> </span><span>=</span><span> </span><span>0b00):</span></span>
+<span class="line"><span></span><span> </span><span>+--------+-------------------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>|</span><span> </span><span>000100</span><span> </span><span>|</span><span> </span><span></span><span> </span><span></span><span> </span><span>0010</span><span> </span><span>0000</span><span> </span><span>1101</span><span> </span><span>0101</span><span> </span><span>1100</span><span> </span><span>1010</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>|0</span><span> </span><span>0|</span></span>
+<span class="line"><span></span><span> </span><span>|</span><span> </span><span>length</span><span> </span><span>|</span><span> </span><span>1234</span><span> </span><span>seeded</span><span> </span><span>with</span><span> </span><span>xorshift-multiply</span><span> </span><span></span><span> </span><span>|</span><span> </span><span></span><span> </span><span></span><span> </span><span>|</span></span>
+<span class="line"><span></span><span> </span><span>+--------+-------------------------------------+---+</span></span>
+<span class="line"><span></span><span> </span><span>31</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>26</span><span> </span><span>25</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>2</span><span> </span><span>1</span><span> </span><span></span><span> </span><span>0</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <h2 id="performance-evaluation">
+              <a href="#performance-evaluation">Performance evaluation</a>
+            </h2>
+            <p>
+              At first glance, adding 3 rounds of xorshift-multiply to every array index
+              string&#x27;s decoding might seem like a lot. The encoding direction has less impact
+              since it only runs once during string construction, and would be dwarfed by the cost
+              of the initial string-to-integer conversion. But what about decoding, which is where
+              the optimization that requires reversibility lies?
+            </p>
+            <h3 id="decoding-cost-showdown">
+              <a href="#decoding-cost-showdown">Decoding cost showdown</a>
+            </h3>
+            <ol>
+              <li>
+                Without seeding: recovering the integer from <code>raw_hash_field</code> is
+                essentially <code>(raw_hash_field &gt;&gt; 2) &amp; 0xFFFFFF</code>, which is just
+                one shift and one mask.
+              </li>
+              <li>
+                With seeding: on top of 1, this adds 4 xors, 4 shifts, 3 multiplies, 3 masks, and 3
+                loads of precomputed modular inverses from read-only roots that are likely in cache.
+              </li>
+              <li>
+                Re-parsing the string: if we used an irreversible hash and had to recover the
+                integer by parsing the string content, the CPU would need to read the string&#x27;s
+                content (a potential cache miss), then loop over each character doing
+                <code>result = result * 10 + (c - &#x27;0&#x27;)</code>.
+              </li>
+            </ol>
+            <p>
+              Compared to unseeded decoding, the seeded decoding incurs a few more ALU instructions.
+              But these are still a lot cheaper than any memory access that could happen around
+              them, and can be offset by the improvements in hash diffusion - the previous scheme
+              produced consecutive hashes for consecutive integers, which can already lead to
+              <a href="https://v8.dev/blog/speeding-up-v8-heap-snapshots"
+                >worst-case performance issues in real-world workloads</a
+              >. As for reparsing, at length 5 the ALU costs alone would add up to be comparable to
+              the seeded decoding, and when the string content is not in cache, the memory access
+              cost would dominate.
+            </p>
+            <h3 id="benchmark-results"><a href="#benchmark-results">Benchmark results</a></h3>
+            <p>
+              To quantify the performance impact of the changes, we ran four JavaScript benchmark
+              suites - Octane, SunSpider, Kraken, JetStream 3 - with and without
+              <code>v8_enable_seeded_array_index_hash</code> on an x64 Linux server. The performance
+              impact
+              <a href="https://github.com/joyeecheung/rapid-xorshift-multiply/blob/main/data"
+                >appeared neutral and within noise</a
+              >, which was adequate since our goal was to fix the vulnerability without causing a
+              significant performance regression.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Suite</th>
+                  <th style="text-align: right">Baseline</th>
+                  <th style="text-align: right">Seeded</th>
+                  <th style="text-align: right">Impact</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Suite">SunSpider</td>
+                  <td data-label="Baseline" style="text-align: right">86.9 ms</td>
+                  <td data-label="Seeded" style="text-align: right">86.9 ms</td>
+                  <td data-label="Impact" style="text-align: right">0.0%</td>
+                </tr>
+                <tr>
+                  <td data-label="Suite">Kraken</td>
+                  <td data-label="Baseline" style="text-align: right">470.3 ms</td>
+                  <td data-label="Seeded" style="text-align: right">469.2 ms</td>
+                  <td data-label="Impact" style="text-align: right">+0.2%</td>
+                </tr>
+                <tr>
+                  <td data-label="Suite">Octane</td>
+                  <td data-label="Baseline" style="text-align: right">72848</td>
+                  <td data-label="Seeded" style="text-align: right">72742</td>
+                  <td data-label="Impact" style="text-align: right">-0.1%</td>
+                </tr>
+                <tr>
+                  <td data-label="Suite">JetStream 3</td>
+                  <td data-label="Baseline" style="text-align: right">203.20</td>
+                  <td data-label="Seeded" style="text-align: right">202.90</td>
+                  <td data-label="Impact" style="text-align: right">-0.15%</td>
+                </tr>
+              </tbody>
+            </table>
+            <h2 id="deployment"><a href="#deployment">Deployment</a></h2>
+            <p>
+              The new seeded hashing scheme for array index strings has been merged into V8, gated
+              by
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/d3f0ec122bd234aa82347cc0e838c8fae8cd6565/BUILD.gn#510"
+                ><code>v8_enable_seeded_array_index_hash = true</code></a
+              >, and it needs to be used together with
+              <a
+                href="https://chromium.googlesource.com/v8/v8/+/d3f0ec122bd234aa82347cc0e838c8fae8cd6565/BUILD.gn#507"
+                ><code>v8_use_default_hasher_secret = false</code></a
+              >
+              for HashDoS resistance. For Chrome, where DoS attacks are not applicable, this will be
+              disabled. In Node.js, this is enabled and shipped to v25, v24, v22, and v20 in the
+              <a href="/en/blog/vulnerability/march-2026-security-releases"
+                >March 2026 security release</a
+              >.
+            </p>
+            <p>
+              We have also notified other V8 embedders (Deno and Cloudflare workers) about the
+              vulnerability and the fix during the development and the rollout.
+            </p>
+            <h2 id="acknowledgments"><a href="#acknowledgments">Acknowledgments</a></h2>
+            <p>
+              This fix was developed and backported to Node.js LTS branches by
+              <a href="https://github.com/joyeecheung">Joyee Cheung</a> (Igalia, under the
+              sponsorship of Bloomberg). Thanks to
+              <a href="https://hackerone.com/sharp_edged?type=user">Mate Marjanović</a> for
+              identifying and reporting the vulnerability,
+              <a href="https://github.com/leszekswirski">Leszek Swirski</a> from the Google V8 team
+              for reviewing and providing feedback on the design and implementation,
+              <a href="https://github.com/legendecas">Chengzhong Wu</a> (Bloomberg) for reviewing
+              the V8 patches for Node.js,
+              <a href="https://github.com/mcollina">Matteo Collina</a> (Platformatic) for triaging
+              and investigating the mitigations,
+              <a href="https://github.com/o-">Olivier Flückiger</a> (Google V8) for helping with the
+              coordination, <a href="https://github.com/aduh95">Antoine du Hamel</a>,
+              <a href="https://github.com/juanarbol">Juan José Arboleda</a>,
+              <a href="https://github.com/marco-ippolito">Marco Ippolito</a>, and
+              <a href="https://github.com/RafaelGSS">Rafael Gonzaga</a> for preparing the security
+              releases.
+            </p>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/june-2026-security-releases"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content"
+                  >Thursday, June 18, 2026 Security Releases</span
+                ></a
+              ><a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/march-2026-security-releases"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Tuesday, March 24, 2026 Security Releases</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Mar 24, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>25 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/vulnerability/march-2026-hashdos.mdx"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#what-is-hashdos-and-why-does-it-matter-for-nodejs"
+                    >What is HashDoS and why does it matter for Node.js?</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#mitigating-hashdos-with-seeded-hashes"
+                    >Mitigating HashDoS with seeded hashes</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#what-string-hashes-look-like-in-v8"
+                    >What string hashes look like in V8</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#exploiting-the-deterministic-hash-for-array-index-strings"
+                    >Exploiting the deterministic hash for array index strings</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#hashdos-resistant-vs-efficiently-reversible"
+                    >HashDoS resistant vs. efficiently reversible</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#finding-a-middle-ground-minimal-hashdos-resistance"
+                    >Finding a middle ground: minimal HashDoS resistance</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#exploring-candidate-hashes">Exploring candidate hashes</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#some-naive-hashes-and-why-they-fail"
+                    >Some naive hashes and why they fail</a
+                  >
+                </li>
+                <li class="pl-4">
+                  <a class="" href="#multiply-a-secret-then-add-another"
+                    >Multiply a secret, then add another</a
+                  >
+                </li>
+                <li class="pl-4"><a class="" href="#xor-with-a-secret">XOR with a secret</a></li>
+                <li class="pl-2">
+                  <a class="" href="#the-xorshift-multiply-mixers">The xorshift-multiply mixers</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#multiplier-generation">Multiplier generation</a>
+                </li>
+                <li class="">
+                  <a class="" href="#statistical-evaluation">Statistical evaluation</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#visualizing-the-hashes">Visualizing the hashes</a>
+                </li>
+                <li class="pl-2"><a class="" href="#limitations">Limitations</a></li>
+                <li class=""><a class="" href="#implementation">Implementation</a></li>
+                <li class="pl-2">
+                  <a class="" href="#improving-the-access-to-hash-secrets"
+                    >Improving the access to hash secrets</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#extending-the-hashseed-for-the-new-hash"
+                    >Extending the HashSeed for the new hash</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#applying-the-new-hashing-scheme-across-v8"
+                    >Applying the new hashing scheme across V8</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#performance-evaluation">Performance evaluation</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#decoding-cost-showdown">Decoding cost showdown</a>
+                </li>
+                <li class="pl-2"><a class="" href="#benchmark-results">Benchmark results</a></li>
+                <li class=""><a class="" href="#deployment">Deployment</a></li>
+                <li class=""><a class="" href="#acknowledgments">Acknowledgments</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

@@ -1,0 +1,331 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/68127936de624fb6f57d9989/Ol-uDBWtBtVDbowXgP-Un.png" />
+
+		<meta property="og:title" content="Build Low-Latency Multilingual Voice Agents: Open Weights &amp; Full Deployment Control with NVIDIA Magpie TTS" />
+
+		<meta property="og:description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/nvidia/magpie-tts-multilingual-voice-agents" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/68127936de624fb6f57d9989/Ol-uDBWtBtVDbowXgP-Un.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/nvidia/magpie-tts-multilingual-voice-agents">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Build Low-Latency Multilingual Voice Agents: Open Weights &amp; Full Deployment Control with NVIDIA Magpie TTS</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="build-low-latency-multilingual-voice-agents-open-weights--full-deployment-control-with-nvidia-magpie-tts" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#build-low-latency-multilingual-voice-agents-open-weights--full-deployment-control-with-nvidia-magpie-tts" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Build Low-Latency Multilingual Voice Agents: Open Weights &amp; Full Deployment Control with NVIDIA Magpie TTS
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[0--><span class="bg-linear-to-b inline-block translate-y-px from-white to-green-400 bg-clip-text font-extrabold text-transparent dark:from-black text-xs leading-[0.6]">+</span><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Fmagpie-tts-multilingual-voice-agents" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">38</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="maryameee" style="content-visibility:auto;"><!--[0--><a href="/maryameee" title="maryameee"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68127936de624fb6f57d9989/_eCAtnPorf7jPrW1luUg4.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mikyasdesta" style="content-visibility:auto;"><!--[0--><a href="/mikyasdesta" title="mikyasdesta"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5db8a6e841111795dde9d3522cd8234d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cetusian" style="content-visibility:auto;"><!--[0--><a href="/cetusian" title="cetusian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63d69da144f1d8fbe58a3a03/N3uTYOFMxI5CoSchv70x9.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Amargolin" style="content-visibility:auto;"><!--[0--><a href="/Amargolin" title="Amargolin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b10be888060c5a7c5423b3/FIOvkNhjeFiksYG7nn3QJ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="magicyoung8" style="content-visibility:auto;"><!--[0--><a href="/magicyoung8" title="magicyoung8"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64b708fa53d91a364aa32bbf/f8gnDFShkI3VBhadko8qr.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="luis-otte" style="content-visibility:auto;"><!--[0--><a href="/luis-otte" title="luis-otte"><img class="overflow-hidden rounded-full" alt="" src="/avatars/171dc46396c443601336fcc36c480011.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+32</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/maryameee"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Maryam Motamedi's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68127936de624fb6f57d9989/_eCAtnPorf7jPrW1luUg4.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/maryameee"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Maryam Motamedi">Maryam Motamedi</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">maryameee</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/mdestanv"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Mikyas Desta's avatar" src="/avatars/2800d1c36b686848ce0538bf65ee6097.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/mdestanv"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Mikyas Desta">Mikyas Desta</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">mdestanv</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/blisc"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Jason Li's avatar" src="/avatars/422f00c2051d298298f4fee17d39039d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/blisc"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Jason Li">Jason Li</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">blisc</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/JasonNV"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Jason Roche's avatar" src="/avatars/2cebd26c46f174032cb71e714b58fc1d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/JasonNV"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Jason Roche">Jason Roche</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">JasonNV</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://cdn-uploads.huggingface.co/production/uploads/68127936de624fb6f57d9989/6ORCRF3ze_mI5BYb6hh9u.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/68127936de624fb6f57d9989/6ORCRF3ze_mI5BYb6hh9u.png" alt="newsletter-speech-ai-customer-600x600 (4)"></a></p>
+<p>Every voice interaction has a latency budget.</p>
+<p>By the time a user hears your application respond, you've already spent precious milliseconds capturing audio, transcribing speech, running an LLM, retrieving context, and generating a response. Text-to-speech (TTS) is the final step — and the one users notice most. If speech generation is slow, the whole experience feels slow.</p>
+<p>The more of that pipeline you can run and tune yourself, the more of the latency budget you get back.</p>
+<p>Voice AI is moving fast. Integrated speech models offer simplicity — one API call, audio in, audio out — but they trade the ability to fine-tune each component for your domain, swap in better models as they ship, enforce data residency, and understand exactly where latency is coming from. For more control, a cascaded architecture — purpose-built ASR, TTS, and LLM components running together — keeps each layer independently tunable and deployable on infrastructure you own.</p>
+<p><a href="https://huggingface.co/nvidia/magpie_tts_multilingual_357m">NVIDIA Magpie Multilingual TTS</a> is built for that. With open weights, <a href="https://build.nvidia.com/nvidia/magpie-tts-multilingual" rel="nofollow">production-ready NVIDIA NIM</a>, and support for 12 languages, you can deploy multilingual speech inside your own infrastructure, optimize latency for your workload, and customize the model for your domain — end to end, in your own environment.</p>
+<p>The latest release expands multilingual coverage with Modern Standard Arabic, Korean, and Brazilian Portuguese, while improving quality across many existing languages through updated training data and model improvements.</p>
+<p>Whether you're building customer support agents, healthcare assistants, enterprise copilots, translation systems, or conversational AI applications, Magpie provides an open foundation for production voice AI.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="voice-ai-is-becoming-multilingual-by-default" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#voice-ai-is-becoming-multilingual-by-default" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Voice AI Is Becoming Multilingual by Default
+	</span>
+</h2>
+<p>Today's voice applications don't serve a single language.</p>
+<p>Global customer support, enterprise assistants, healthcare documentation, retail automation, and translation workflows increasingly require natural conversations across multiple languages — all while maintaining low latency.</p>
+<p>Supporting more languages is only part of the challenge. Developers also need the ability to:</p>
+<ul>
+<li>Deploy where their data lives  </li>
+<li>Meet enterprise privacy requirements  </li>
+<li>Customize pronunciation and voices  </li>
+<li>Predict latency under production workloads  </li>
+<li>Scale on their own infrastructure</li>
+</ul>
+<p><strong>Open models change what's possible on every one of these.</strong></p>
+<h2 class="relative group flex items-baseline">
+	<a id="one-open-model-twelve-languages" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#one-open-model-twelve-languages" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		One Open Model, Twelve Languages
+	</span>
+</h2>
+<p>Magpie TTS Multilingual is a 364M-parameter open-weights model supporting:</p>
+<p>English · Spanish · French · German · Italian · Vietnamese · Mandarin · Hindi · Japanese · Modern Standard Arabic (new) · Korean (new) · Brazilian Portuguese (new)</p>
+<p>Each language includes male and female speaker voices through a shared multilingual speaker representation.</p>
+<p>This release also improves multilingual flexibility with expanded code-switching support for Hindi and Japanese, enabled through IPA grapheme-to-phoneme processing and custom pronunciation dictionaries — making it easier to accurately pronounce names, technical terminology, and mixed-language content.</p>
+<p>Instead of maintaining separate TTS models for different regions, developers can build multilingual applications on a single open foundation.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-latency-your-users-actually-notice" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-latency-your-users-actually-notice" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Latency Your Users Actually Notice
+	</span>
+</h2>
+<p>In conversational AI, text-to-speech is the final stage before users hear a response. That makes Time to First Audio (TTFA) — the delay between speech generation beginning and the first audio reaching the user — one of the most important latency metrics in a voice pipeline.</p>
+<p>Because Magpie TTS can be deployed inside your own environment, the latency you measure is the server-side latency you actually control, with no managed-service round-trip in the number.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">GPU</th>
+<th align="left">1-stream TTFA</th>
+<th align="left">1-stream RTFX</th>
+<th align="left">64-stream TTFA</th>
+<th align="left">64-stream RTFX</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">B200</td>
+<td align="left">32 ms</td>
+<td align="left">12.1×</td>
+<td align="left">239 ms</td>
+<td align="left">319.81×</td>
+</tr>
+<tr>
+<td align="left">H100</td>
+<td align="left">47ms</td>
+<td align="left">14.7×</td>
+<td align="left">275 ms</td>
+<td align="left">290.79×</td>
+</tr>
+<tr>
+<td align="left">DGX Spark</td>
+<td align="left">53 ms</td>
+<td align="left">9.8×</td>
+<td align="left">962 ms</td>
+<td align="left">75.88×</td>
+</tr>
+<tr>
+<td align="left">A100</td>
+<td align="left">79 ms</td>
+<td align="left">12.2×</td>
+<td align="left">395 ms</td>
+<td align="left">197×</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>Source: <a href="https://docs.nvidia.com/nim/speech/26.07.0/reference/performances/tts/performance.html" rel="nofollow">NVIDIA TTS NIM Performance documentation</a> (v26.07), average of three trials, on-prem.</em><br><em>TTFA = latency to first audio; RTFX = throughput as a multiple of real time.</em></p>
+<p>At 32ms on B200, Magpie's TTFA leaves the rest of the latency budget for ASR and LLM processing — keeping total end-to-end latency within the sub-200ms window natural conversation requires. Across NVIDIA GPUs, Magpie delivers first audio in 32–79ms on a single stream. At 64 concurrent streams, B200 reaches 239ms TTFA while delivering throughput at 320× real time — generating audio more than 300 times faster than it plays back, even under concurrent load.</p>
+<p>The table above shows Magpie served as the NVIDIA NIM, measured on-prem — the optimized container running on your own GPU. The open Hugging Face checkpoint is the same model and your path for research and fine-tuning; the NIM is the tuned serving stack that produces these production latencies. Both run on hardware you control.</p>
+<p>Because the model runs on your own infrastructure, you can benchmark performance directly, tune it for your deployment, and scale according to your workload. For real-time voice agents, that's the difference between conversations that feel responsive and conversations that feel delayed.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="optimized-for-real-time-speech-generation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#optimized-for-real-time-speech-generation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Optimized for Real-Time Speech Generation
+	</span>
+</h2>
+<p>Low latency isn't accidental. Magpie introduces two complementary architectural improvements that reduce inference time while maintaining speech quality.</p>
+<p><strong>Frame stacking.</strong> The decoder predicts two audio frames during each decoding step rather than one. This cuts the number of decoder iterations in half, shortening generation time and improving throughput.</p>
+<p><strong>Local transformer.</strong> Frame stacking alone would reduce audio quality by introducing dependencies between simultaneously generated codebook tokens. The local transformer models those dependencies and refines the generated audio, recovering the quality that frame stacking would otherwise sacrifice.</p>
+<p>Together, these techniques deliver both faster generation and natural speech synthesis. The architecture is described in <a href="https://arxiv.org/abs/2509.19592" rel="nofollow">Frame-Stacked Local Transformers for Efficient Multi-Codebook Speech Generation</a> (ICASSP 2026).</p>
+<h2 class="relative group flex items-baseline">
+	<a id="faster-doesnt-matter-if-it-doesnt-sound-natural" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#faster-doesnt-matter-if-it-doesnt-sound-natural" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Faster Doesn't Matter If It Doesn't Sound Natural
+	</span>
+</h2>
+<p>This release doesn't only add languages — it also improves synthesis quality across many existing ones. Compared to the previous release, Magpie shows reduced character error rates (CER) and higher speaker similarity (SSIM) on several languages, with the clearest gains on French and Spanish:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Language</th>
+<th align="left">CER (prev)</th>
+<th align="left">CER (this release)</th>
+<th align="left">SSIM (prev)</th>
+<th align="left">SSIM (this release)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">French</td>
+<td align="left">2.70%</td>
+<td align="left">1.54%</td>
+<td align="left">0.703</td>
+<td align="left">0.747</td>
+</tr>
+<tr>
+<td align="left">Spanish</td>
+<td align="left">1.14%</td>
+<td align="left">0.60%</td>
+<td align="left">0.715</td>
+<td align="left">0.793</td>
+</tr>
+<tr>
+<td align="left">German</td>
+<td align="left">0.66%</td>
+<td align="left">0.80%</td>
+<td align="left">0.626</td>
+<td align="left">0.742</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>Source: <a href="https://huggingface.co/nvidia/magpie_tts_multilingual_357m">Magpie TTS Multilingual model card</a>. CER lower is better; SSIM higher is better.</em></p>
+<p>The newly added Arabic (1.62% CER), Korean (2.69%), and Brazilian Portuguese (2.91%) models establish baseline quality for future improvements.</p>
+<p>While objective metrics help measure progress, speech quality is ultimately perceptual. You can hear the difference yourself on <a href="https://build.nvidia.com/nvidia/magpie-tts-multilingual" rel="nofollow">NVIDIA Build</a> or the <a href="https://huggingface.co/spaces/nvidia/magpie_tts_multilingual_demo">Hugging Face demo</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-open-weights-matter" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-open-weights-matter" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why Open Weights Matter
+	</span>
+</h2>
+<p>Latency you can measure is useful. Latency you can control is even better.</p>
+<p>Open weights give developers capabilities that come from owning the deployment. With Magpie you can:</p>
+<ul>
+<li><strong>Deploy on infrastructure you control</strong> — run entirely within your own infrastructure, including private or air-gapped environments.  </li>
+<li><strong>Own your latency budget</strong> — no managed-service round-trip, and you optimize directly for your hardware and workload.  </li>
+<li><strong>Customize pronunciation and voices</strong> — fine-tune with NeMo for your own brand, domain vocabulary, or speaker data.  </li>
+<li><strong>Scale on your own terms</strong> — optimize the serving stack for your infrastructure and workload.</li>
+<li><strong>Maintain enterprise control</strong> — keep sensitive conversations and customer data inside your environment.</li>
+</ul>
+<p>For enterprises building production voice AI, this control over deployment, performance, and customization is often what matters most.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="build-complete-voice-agents--not-just-better-speech" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#build-complete-voice-agents--not-just-better-speech" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Build Complete Voice Agents — Not Just Better Speech
+	</span>
+</h2>
+<p>Voice AI in production is a system of models, not a single one. Magpie TTS is part of the <a href="https://build.nvidia.com/nvidia/nemotron-voice-agent" rel="nofollow">NVIDIA Nemotron Voice Agent Developer Example</a>, a reference implementation showing how purpose-built speech, language, and reasoning models work together as a coordinated system — so you can build always-on voice agents, not just better-sounding speech.</p>
+<p>Developers can combine:</p>
+<ul>
+<li>Nemotron Speech for streaming speech recognition  </li>
+<li>Magpie TTS for natural multilingual speech synthesis  </li>
+<li>Nemotron language and multimodal models for reasoning, tool calling, and multimodal understanding  </li>
+<li>NVIDIA NIM for GPU-optimized, production-ready inference microservices  </li>
+<li>NeMo for customization and fine-tuning</li>
+</ul>
+<p>The Nemotron Voice Agent developer example provides an end-to-end reference implementation that developers can clone, customize, and deploy in hours. It includes production patterns for:</p>
+<ul>
+<li>Real-time interruptible (barge-in) conversations  </li>
+<li>Multimodal voice agents with vision understanding  </li>
+<li>Multi-agent orchestration and tool calling  </li>
+<li>Multilingual voice interactions  </li>
+<li>Sub-second end-to-end latency using NVIDIA NIM</li>
+</ul>
+<p>Rather than assembling individual components from scratch, developers can start from a complete reference architecture and adapt it to their own applications.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="get-started" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#get-started" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Get Started
+	</span>
+</h2>
+<p><strong>Try the model</strong></p>
+<ul>
+<li><a href="https://build.nvidia.com/nvidia/magpie-tts-multilingual" rel="nofollow">NVIDIA Build</a>   </li>
+<li><a href="https://huggingface.co/spaces/nvidia/magpie_tts_multilingual_demo">Hugging Face demo</a></li>
+</ul>
+<p><strong>Deploy to production</strong></p>
+<ul>
+<li><a href="https://build.nvidia.com/nvidia/magpie-tts-multilingual" rel="nofollow">NVIDIA Magpie Multilingual TTS NIM</a> — optimized inference containers</li>
+</ul>
+<p><strong>Customize for your domain</strong></p>
+<ul>
+<li><a href="https://github.com/NVIDIA-NeMo/Speech" rel="nofollow">NVIDIA NeMo Speech</a> — fine-tuning and training</li>
+</ul>
+<p><strong>Build complete voice agents</strong></p>
+<ul>
+<li><a href="https://github.com/NVIDIA-AI-Blueprints/nemotron-voice-agent" rel="nofollow">NVIDIA voice-agent-examples</a></li>
+</ul>
+<p><strong>Open weights and license</strong></p>
+<ul>
+<li><a href="https://huggingface.co/nvidia/magpie_tts_multilingual_357m">Model card on Hugging Face</a> — open weights under the NVIDIA Open Model License.</li>
+</ul>
+<p>Recommended inference configuration:</p>
+<pre><code class="language-py">cfg_scale = <span class="hljs-number">2.5</span>          <span class="hljs-comment"># classifier-free guidance — raise for tighter text adherence</span>
+temperature = <span class="hljs-number">0.6</span>
+top_k = <span class="hljs-number">80</span>
+apply_attention_prior = <span class="hljs-literal">True</span>
+prior_epsilon = <span class="hljs-number">0.1</span>
+</code></pre>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/scaling-indic-pretraining"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/68d2fec8856b85d927e44d32/x0aObe_0mduBjWFuKBGoV.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Scaling Indic Pretraining: 2.8 Trillion Tokens and an Open Data Generation Pipeline</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 13</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/fine-tune-asr-with-nvidia-nemotron-speech-skills"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[-1--><div class="bg-linear-to-br absolute inset-0 overflow-hidden from-indigo-600 to-yellow-600 group-hover:scale-102 transition-transform duration-300 ease-in-out"></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Fine-Tune ASR for Your Domain with NVIDIA Speech Agent Skills</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 12</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 13, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/nvidia/magpie-tts-multilingual-voice-agents&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/nvidia/magpie-tts-multilingual-voice-agents&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a737bccd864ad1df6d16585&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;maryameee&quot;,&quot;mdestanv&quot;,&quot;blisc&quot;,&quot;JasonNV&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fnvidia%2Fmagpie-tts-multilingual-voice-agents">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fnvidia%2Fmagpie-tts-multilingual-voice-agents">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Fmagpie-tts-multilingual-voice-agents" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">38</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="maryameee" style="content-visibility:auto;"><!--[0--><a href="/maryameee" title="maryameee"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68127936de624fb6f57d9989/_eCAtnPorf7jPrW1luUg4.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mikyasdesta" style="content-visibility:auto;"><!--[0--><a href="/mikyasdesta" title="mikyasdesta"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5db8a6e841111795dde9d3522cd8234d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cetusian" style="content-visibility:auto;"><!--[0--><a href="/cetusian" title="cetusian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63d69da144f1d8fbe58a3a03/N3uTYOFMxI5CoSchv70x9.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Amargolin" style="content-visibility:auto;"><!--[0--><a href="/Amargolin" title="Amargolin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b10be888060c5a7c5423b3/FIOvkNhjeFiksYG7nn3QJ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="magicyoung8" style="content-visibility:auto;"><!--[0--><a href="/magicyoung8" title="magicyoung8"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64b708fa53d91a364aa32bbf/f8gnDFShkI3VBhadko8qr.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="luis-otte" style="content-visibility:auto;"><!--[0--><a href="/luis-otte" title="luis-otte"><img class="overflow-hidden rounded-full" alt="" src="/avatars/171dc46396c443601336fcc36c480011.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Radioception" style="content-visibility:auto;"><!--[0--><a href="/Radioception" title="Radioception"><img class="overflow-hidden rounded-full" alt="" src="/avatars/3642f029d028a289a928a248c3ef96ce.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="de-waang" style="content-visibility:auto;"><!--[0--><a href="/de-waang" title="de-waang"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6189d1aa2fbb43650911ee33/sGzrOSuzTv2Nxo-CwzfPu.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Buzaawkkk" style="content-visibility:auto;"><!--[0--><a href="/Buzaawkkk" title="Buzaawkkk"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69058f75c454095c3831e3b3/MzAbT9nrIwyXtb98URCVf.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="LoneHare" style="content-visibility:auto;"><!--[0--><a href="/LoneHare" title="LoneHare"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5196256bc3e4f4a398cb96f3f63b6d6b.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jonassssx1" style="content-visibility:auto;"><!--[0--><a href="/jonassssx1" title="jonassssx1"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/bzpr4e2QTVzrkHi385b7O.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="z4hid" style="content-visibility:auto;"><!--[0--><a href="/z4hid" title="z4hid"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4241cb1cadb532c82873331fe985c00c.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+26</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

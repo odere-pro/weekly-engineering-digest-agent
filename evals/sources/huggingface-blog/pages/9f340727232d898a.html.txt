@@ -1,0 +1,2157 @@
+<!doctype html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <meta name="description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="fb:app_id" content="1321688464574422" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:site" content="@huggingface" />
+
+    <meta
+      name="twitter:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Av4v9_l94sEUj-etRFOLb.png"
+    />
+
+    <meta property="og:title" content="Why Specialization Is Inevitable" />
+
+    <meta property="og:description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://huggingface.co/blog/Dharma-AI/why-specialization-is-inevitable"
+    />
+
+    <meta
+      property="og:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Av4v9_l94sEUj-etRFOLb.png"
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+    <link
+      rel="preload"
+      href="/front/build/kube-1f021fd/katex.css"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+
+    <noscript>
+      <link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+    </noscript>
+
+    <link
+      rel="canonical"
+      href="https://huggingface.co/blog/Dharma-AI/why-specialization-is-inevitable"
+    />
+    <!--g2q6vf-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/blog/feed.xml"
+      title="Hugging Face Blog"
+    />
+    <!---->
+    <title>Why Specialization Is Inevitable</title>
+
+    <link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+  </head>
+  <body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+    <!--[-->
+    <div class="flex min-h-dvh flex-col">
+      <div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}">
+        <!---->
+      </div>
+      <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}">
+        <!---->
+      </div>
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="SystemThemeMonitor"
+        data-props='{"isLoggedIn":false}'
+      >
+        <!---->
+      </div>
+      <!--[0-->
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="MainHeader"
+        data-props='{"classNames":"","isWide":false,"isZh":false,"canCreateKernels":false,"isPro":false}'
+      >
+        <!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]-->
+      <!--[-1--><!--]--><!---->
+      <!--[-1--><!--]--><!---->
+      <!--[0-->
+      <div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}">
+        <!--[-1--><!--]--><!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]--><!---->
+      <main class="flex flex-1 flex-col">
+        <div class="container relative flex flex-row justify-center gap-12">
+          <div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl">
+            <div class="max-lg:overflow-hidden">
+              <div
+                class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"
+              >
+                <div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}">
+                  <div></div>
+                  <!---->
+                </div>
+                <div class="mb-4">
+                  <a
+                    href="/blog"
+                    class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"
+                  >
+                    <!---->
+                    Back to Articles</a
+                  >
+                </div>
+                <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden">
+                  <!---->
+                  <a
+                    id="why-specialization-is-inevitable"
+                    class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                    href="#why-specialization-is-inevitable"
+                    rel="nofollow"
+                  >
+                    <span class="header-link"> </span>
+                  </a>
+                  <span> Why Specialization Is Inevitable </span>
+                  <!---->
+                </h1>
+                <div>
+                  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+                    <!--[0--><a
+                      href="/blog"
+                      class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"
+                      ><!--[0--><span
+                        class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs"
+                        ><!--[0--><span>Team</span><!--]--></span
+                      ><!---->
+                      <span>Article</span><!--]--></a
+                    ><!--]-->
+                    <div class="flex items-center gap-x-4">
+                      <!--[0--><span class="whitespace-nowrap text-sm sm:text-base"
+                        >Published June 30, 2026</span
+                      ><!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                  </div>
+                  <!--[-1--><!--]-->
+                </div>
+                <!---->
+                <div class="not-prose mb-6 font-sans xl:hidden">
+                  <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1 z-1 lg:sticky lg:top-8">
+                      <!--[0--><a
+                        href="/login?next=%2Fblog%2FDharma-AI%2Fwhy-specialization-is-inevitable"
+                        class="self-start"
+                        ><!--[0--><!---->
+                        <div
+                          role="checkbox"
+                          class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                        >
+                          <input disabled="" type="checkbox" class="peer hidden" />
+                          <!---->
+                          Upvote
+                          <div class="font-semibold text-orange-500">19</div>
+                          <!---->
+                        </div>
+                        <!----><!--]-->
+                        <!--[-1--><!--]--><!----></a
+                      ><!--]-->
+                      <!--[0--><!--[0-->
+                      <ul class="flex items-center text-gray-600 flex-row text-base">
+                        <!--[-->
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="deegerwalker"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/deegerwalker" title="deegerwalker"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/657ab009e1113b5af51588ee/Yhdq9wtstQl4lvWwzXnXW.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="croqaz"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/croqaz" title="croqaz"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/CSPa4qx2AFQtX9Rd-YWWX.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="lucas-treuke"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="wilczek"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/wilczek" title="wilczek"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/32c205488006372ffb6e84a42b144456.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="SaurabhSharma220"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/SaurabhSharma220" title="SaurabhSharma220"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/105faa734c6e20e6f5e6c7d8d503872f.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="ErickvL"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/ErickvL" title="ErickvL"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <!--]-->
+                        <!--[0-->
+                        <li
+                          class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                        >
+                          <!--[--><!--[0--><button
+                            class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                          >
+                            +13</button
+                          ><!--]--><!--]-->
+                        </li>
+                        <!--]-->
+                      </ul>
+                      <!--]--><!--]-->
+                    </div>
+                    <!--[-1--><!--]-->
+                    <dialog
+                      class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose"
+                    >
+                      <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                        <!--[-1--><!--]-->
+                      </div>
+                    </dialog>
+                    <!----><!---->
+                  </div>
+                </div>
+                <div class="not-prose">
+                  <div
+                    class="SVELTE_HYDRATER contents"
+                    data-target="BlogAuthorsByline"
+                    data-props=""
+                  >
+                    <div class="not-prose">
+                      <div
+                        class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"
+                      >
+                        <!--[-->
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/ErickvL"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Erick Lachmann's avatar"
+                                  src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/ErickvL"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Erick Lachmann"
+                                >Erick Lachmann</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >ErickvL</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/falves9101"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Francisco de Almeida Rocha Alves's avatar"
+                                  src="/avatars/ab4695681deba13fac2846ce4e641240.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/falves9101"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Francisco de Almeida Rocha Alves"
+                                >Francisco de Almeida Rocha Alves</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >falves9101</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/GabrielPimenta99"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Gabriel Pimenta de Freitas Cardoso's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/GabrielPimenta99"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Gabriel Pimenta de Freitas Cardoso"
+                                >Gabriel Pimenta de Freitas Cardoso</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >GabrielPimenta99</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <!--]-->
+                      </div>
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                  </div>
+                </div>
+                <!---->
+                <!--[-1--><!--]-->
+                <div
+                  class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"
+                >
+                  <!---->
+                  <h2 class="relative group flex items-baseline">
+                    <!--[--><!--[0-->
+                    <div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block">
+                      <div class="sticky top-4 flex">
+                        <div class="h-7 pt-[0.175rem]">
+                          <span class="peer" tabindex="0"
+                            ><button
+                              class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"
+                            >
+                              <!---->
+                            </button></span
+                          >
+                          <div
+                            class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--]--><!--]-->
+                    <a
+                      id="what-optimization-theory-evolutionary-biology-competitive-markets-and-machine-learning-all-predict--and-why-the-answer-is-the-same"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#what-optimization-theory-evolutionary-biology-competitive-markets-and-machine-learning-all-predict--and-why-the-answer-is-the-same"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      What optimization theory, evolutionary biology, competitive markets, and
+                      machine learning all predict — and why the answer is the same
+                    </span>
+                  </h2>
+                  <p>---</p>
+                  <p>
+                    Those who follow
+                    <a href="https://huggingface.co/Dharma-AI">Dharma AI</a> already know that we
+                    view specialization as one of the defining principles of effective AI systems,
+                    shaping everything from cost and performance to reliability and sovereignty. Few
+                    papers have articulated that case as rigorously as the 2026 work by Goldfeder,
+                    Wyder, LeCun, and Shwartz-Ziv.
+                  </p>
+                  <p>
+                    In this article, we explore and interpret ideas from
+                    <em>AI Must Embrace Specialization via Superhuman Adaptable Intelligence</em>
+                    (Goldfeder, Wyder, LeCun, &amp; Shwartz-Ziv, 2026). The paper's convergence case
+                    — spanning optimization theory, biology, organizational economics, and machine
+                    learning — provides both the evidential structure and the intellectual
+                    foundation for the discussion that follows. The framing, organization, and
+                    editorial synthesis presented here are Dharma's.
+                  </p>
+                  <p>---</p>
+                  <p>
+                    The conventional expectation is reasonable: as AI systems grow more capable,
+                    they should also grow more general. Greater capability and broader applicability
+                    seem like natural companions — more resources, better methods, and expanded
+                    training should produce systems that approach more tasks with increasing
+                    confidence.
+                  </p>
+                  <p>
+                    The pattern that actually appears is different. The systems that achieve the
+                    most significant results in any given domain tend to be the ones most narrowly
+                    focused on it. The breakthrough in protein structure prediction came from a
+                    system engineered for a single scientific task. The historical milestones of AI,
+                    examined closely, reflect intense domain targeting rather than expanding
+                    generality.
+                  </p>
+                  <p>
+                    This pattern recurs. It recurs across domains, across decades, across
+                    architectural choices that have almost nothing in common. A pattern this
+                    consistent suggests a common cause — one that does not originate inside AI
+                    research at all.
+                  </p>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="an-algorithm-wins-by-fitting-its-target"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#an-algorithm-wins-by-fitting-its-target"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> An Algorithm Wins by Fitting Its Target </span>
+                  </h3>
+                  <p>
+                    In 1997, Wolpert and Macready proved something that rarely surfaces in
+                    discussions of AI architecture: no single, general-purpose optimization
+                    algorithm outperforms all others across all possible problems (Wolpert &amp;
+                    Macready, 1997). The proof is mathematical, not philosophical. Averaged across
+                    every conceivable problem a learner might face, every algorithm performs equally
+                    well — and equally poorly. An algorithm that gains on one distribution of
+                    problems necessarily concedes on others. The performance is redistributed, not
+                    multiplied.
+                  </p>
+                  <p>
+                    The practical implication is direct: “an algorithm wins by being a good fit for
+                    the target problem” (Goldfeder et al., 2026). The theorem does not say
+                    generality is impossible — it says generality is not a performance advantage.
+                    The consistent structural path to outperformance is concentration: trading
+                    breadth for fit.
+                  </p>
+                  <p>
+                    This becomes sharper when finite resources enter the picture. Any real system
+                    operates under constraints — finite compute, finite data, finite development
+                    time. Given finite energy, an approach that directs available resources toward
+                    learning a finite set of tasks will outperform one that distributes those same
+                    resources across an unlimited range. The arithmetic is unforgiving: as the task
+                    set expands without bound, the resources available per task shrink toward zero.
+                    Universal coverage and meaningful performance are, under finite resources, in
+                    direct tension.
+                  </p>
+                  <p>
+                    The conclusion the theorem points toward is not that generality is bad. It is
+                    narrower and more operational than that: as the paper states, "universal
+                    generality is a theoretical concept, but in practical terms it is a myth"
+                    (Goldfeder et al., 2026). What survives contact with real constraints is not the
+                    system that tries to do everything — it is the system that fits its target.
+                  </p>
+                  <p>
+                    The mathematics establishes this as a prediction, not a preference. Whether that
+                    prediction holds in the world beyond optimization theory is a different
+                    question.
+                  </p>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="what-biology-and-markets-already-know"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#what-biology-and-markets-already-know"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> What Biology and Markets Already Know </span>
+                  </h3>
+                  <p>
+                    Two other domains arrived at the same prediction before optimization theory gave
+                    it a name.
+                  </p>
+                  <p>
+                    As the paper describes the biological case: every performance gain in one niche
+                    comes at a cost elsewhere. A generalist carries traits suited to many
+                    environments but optimal for none — competence spread too thin to dominate any
+                    particular condition. There are no performance gains without trade-offs; the
+                    resources invested in one capability are unavailable for another. Selection
+                    favors designs matched to local conditions over those optimized for uniform
+                    coverage across all possible environments. The organisms that survive to
+                    reproduce are not the most generally capable — they are the most specifically
+                    matched. The result, accumulated over evolutionary timescales, is not
+                    generalists dominating — it is specialists filling niches. As the paper states:
+                    "Specialization is not an accident of biology; it is a predictable consequence
+                    of limited resources, competing objectives, and environments that reward
+                    performance on a small subset of evolutionarily relevant challenges" (Goldfeder
+                    et al., 2026).
+                  </p>
+                  <p>
+                    Competitive markets follow the same dynamic through different means.
+                    Organizations and strategies that fail to meet performance thresholds are
+                    eliminated — not through extinction, but through exit, defunding, and
+                    replacement by better-matched alternatives. Competition acts as a selection
+                    mechanism: it amplifies effective strategies and eliminates ineffective ones.
+                    The mechanism has nothing in common with biological selection — no inheritance,
+                    no mutation, no evolutionary timescale. The unit of selection is not the
+                    organism but the organization, the product, the strategy. Yet the structural
+                    pressure is the same: finite resources, performance requirements, and the
+                    systematic removal of entities too broadly distributed to excel where it counts.
+                    Concentrated capacity outcompetes distributed capacity when performance
+                    standards are clear and consistent.
+                  </p>
+                  <p>
+                    Evolution and markets operate through entirely different mechanisms — different
+                    timescales, different units of selection, different inheritance mechanisms. Yet
+                    both produce the same outcome under resource pressure: fit over breadth. The
+                    theorem predicts this. Biology and markets arrive at it independently. When a
+                    third domain arrives at the same finding through different means entirely, the
+                    pattern ceases to look like a theorem and begins to look like something more
+                    general about how constrained systems behave.
+                  </p>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="machine-learning-keeps-rediscovering-specialization"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#machine-learning-keeps-rediscovering-specialization"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Machine Learning Keeps Rediscovering Specialization </span>
+                  </h3>
+                  <p>
+                    The same pattern has emerged inside machine learning — not derived from
+                    optimization theory, but arrived at through the accumulated experience of
+                    building systems and watching what improves them.
+                  </p>
+                  <p>
+                    The clearest form is negative transfer: a measurable degradation that occurs
+                    when a system trained on multiple tasks suffers because those tasks compete
+                    rather than cooperate (Ruder, 2017). When tasks share structure, training
+                    together helps. But when tasks compete for representational capacity, or impose
+                    conflicting gradients during training, performance on individual tasks falls
+                    below what a dedicated system would achieve. The gain from breadth becomes a
+                    cost to depth. It is a documented consequence of dividing finite capacity across
+                    tasks that pull against each other. The specialist, facing no such competition,
+                    does not pay this cost.
+                  </p>
+                  <p>
+                    The architecture of frontier models offers a different form of evidence.
+                    Mixture-of-experts systems achieve their breadth not through uniform generality
+                    across all parameters, but by routing each input to a specialized subset of the
+                    network — activating different experts for different tasks. The paper's authors
+                    read this as a structural concession: a system designed to be general achieving
+                    its results by recovering specialization internally. This is an argued
+                    interpretation, not a demonstrated theorem — these architectures were designed
+                    for computational efficiency, and what they imply about generality's limits is a
+                    reasonable inference rather than a stated intent. But it is a notable one: the
+                    most capable general-purpose systems reach their performance by doing internally
+                    what specialist systems do by design.
+                  </p>
+                  <p>
+                    The clearest historical example follows the same logic. AlphaFold achieved a
+                    step change in protein structure prediction by targeting that specific task with
+                    task-specific architecture and training choices (Jumper et al., 2021). Its gains
+                    came from narrower focus, not broader coverage. The paper uses AlphaFold as an
+                    archetypal case — not as evidence that all specialized systems achieve
+                    equivalent gains, but as an unusually clear illustration of the mechanism. That
+                    mechanism has appeared repeatedly: the history of AI milestones, the paper
+                    notes, frequently reflects intense domain targeting rather than broad
+                    competence, even when the results look like demonstrations of general
+                    intelligence.
+                  </p>
+                  <p>Three distinct places. Three different mechanisms. The same finding.</p>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="what-scaling-doesnt-change"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#what-scaling-doesnt-change"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> What Scaling Doesn't Change </span>
+                  </h3>
+                  <p>
+                    The picture would be incomplete without addressing one of AI research's most
+                    cited observations. Sutton's Bitter Lesson holds that methods relying on domain
+                    knowledge are consistently outperformed by methods that scale computation
+                    (Sutton, 2019). On its face, this appears to complicate the case for
+                    specialization: if scale and generality win, perhaps specialization is only a
+                    useful heuristic under resource constraints that will ease as compute becomes
+                    cheaper.
+                  </p>
+                  <p>
+                    The objection rests on a conflation between two distinct concepts. Domain
+                    knowledge refers to hand-coded features, engineered priors, and rules designed
+                    to give a system insight into a particular area. The Bitter Lesson targets this
+                    — and it is correct to do so. Systems that encode explicit domain knowledge have
+                    been consistently outperformed as scale increases.
+                  </p>
+                  <p>
+                    Domain specialization is different: the decision to
+                    <a
+                      href="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+                      >direct a system's resources, architecture, and training toward a bounded set
+                      of tasks</a
+                    >
+                    rather than distributing them broadly. This is not the encoding of knowledge
+                    about a domain. It is a decision about scope.
+                  </p>
+                  <p>The paper draws the distinction precisely:</p>
+                  <p>
+                    "The diminishing usefulness of domain knowledge is distinct from the usefulness
+                    of domain specialization. As scaling progresses, we will need to know less about
+                    proteins to build a system that does protein folding; however, such a system
+                    still benefits from focusing specifically on proteins." (Goldfeder et al., 2026)
+                  </p>
+                  <p>
+                    Scaling changes what systems can learn from data. It does not change whether
+                    concentrating resources on a finite task set outperforms distributing them
+                    across an unlimited range. The Bitter Lesson and the specialization argument
+                    operate on different dimensions — one describes how knowledge should be
+                    acquired, the other describes what a system should be pointed at. Both can be
+                    true simultaneously. Scaling changes the mechanisms by which systems learn; it
+                    does not dissolve the constraint that makes
+                    <a href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                      >fit more valuable than breadth</a
+                    >.
+                  </p>
+                  <p>---</p>
+                  <p>
+                    Across four analytical traditions, the same pattern emerged through different
+                    paths. This is not a coincidence that demands explanation. It is the evidence.
+                  </p>
+                  <p>
+                    When finite resources meet selection pressure — in an optimization problem, an
+                    ecosystem, a market, or a training run — fit consistently beats breadth. The
+                    specific mechanisms differ. The timescales differ. The units of selection
+                    differ. But the structural dynamic is the same, and it produces the same result.
+                  </p>
+                  <p>
+                    The theorem does not cause this pattern in biology. Biology does not cause it in
+                    markets. Neither causes it in machine learning. They all face the same
+                    underlying constraint: performance under scarcity requires concentration. What
+                    the theorem establishes mathematically, evolutionary history confirms
+                    empirically, competitive markets demonstrate institutionally, and machine
+                    learning rediscovers architecturally.
+                  </p>
+                  <p>
+                    Specialization is not a preference. It is what emerges when finite resources
+                    meet the requirement to perform.
+                  </p>
+                  <p>---</p>
+                  <p>
+                    If you're evaluating how domain focus affects AI performance in your
+                    organization — or building the case internally for a specialization strategy —
+                    we'd like to hear about your context.
+                    <a href="https://dharma-ai.com" rel="nofollow">Get in touch with Dharma AI.</a>
+                  </p>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="primary-source"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#primary-source"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Primary Source</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      Goldfeder, S., Wyder, M., LeCun, Y., &amp; Shwartz-Ziv, R. (2026). AI must
+                      embrace specialization via superhuman adaptable intelligence.
+                      arXiv:2602.23643.
+                    </li>
+                  </ul>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="sources"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#sources"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Sources</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      <p>
+                        Wolpert, D.H. &amp; Macready, W.G. (1997). No free lunch theorems for
+                        optimization. <em>IEEE Transactions on Evolutionary Computation</em>, 1(1),
+                        67–82.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Forister, M.L., Novotny, V., Panorska, A.K., Baje, L., Basset, Y.,
+                        Butterill, P.T., &amp; Dyer, L.A. (2012). Global distribution of diet
+                        breadth in insect herbivores.
+                        <em>Proceedings of the National Academy of Sciences</em>, 109(2), 418–423.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Futuyma, D.J. &amp; Moreno, G. (1988). The evolution of ecological
+                        specialization. <em>Annual Review of Ecology and Systematics</em>, 19,
+                        207–233.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Hannan, M.T. &amp; Freeman, J. (1977). The population ecology of
+                        organizations. <em>American Journal of Sociology</em>, 82(5), 929–964.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Loasby, B.J. (1983). Knowledge, learning and the firm. As cited in Goldfeder
+                        et al. (2026).
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Ruder, S. (2017). An overview of multi-task learning in deep neural
+                        networks. arXiv:1706.05098.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Fedus, W., Zoph, B., &amp; Shazeer, N. (2022). Switch transformers: Scaling
+                        to trillion parameter models with simple and efficient sparsity.
+                        <em>Journal of Machine Learning Research</em>, 23(120), 1–39.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Jumper, J., Evans, R., Pritzel, A., Green, T., Figurnov, M., Ronneberger,
+                        O., &amp; Hassabis, D. (2021). Highly accurate protein structure prediction
+                        with AlphaFold. <em>Nature</em>, 596, 583–589.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Silver, D., Hubert, T., Schrittwieser, J., Antonoglou, I., Lai, M., Guez,
+                        A., &amp; Hassabis, D. (2018). A general reinforcement learning algorithm
+                        that masters chess, shogi, and Go through self-play. <em>Science</em>,
+                        362(6419), 1140–1144.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Sutton, R.S. (2019). The bitter lesson. Retrieved from
+                        <a
+                          href="http://www.incompleteideas.net/IncIdeas/BitterLesson.html"
+                          rel="nofollow"
+                          >http://www.incompleteideas.net/IncIdeas/BitterLesson.html</a
+                        >
+                      </p>
+                    </li>
+                  </ul>
+                  <p>---</p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="further-reading"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#further-reading"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Further Reading</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      <p>
+                        <a href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                          >Specialization Beats Scale: A Strategic Variable Most AI Procurement
+                          Decisions Overlook</a
+                        >
+                        — The empirical and strategic complement to this article. Where the No Free
+                        Lunch theorem establishes why specialization is structurally predicted, this
+                        piece examines the evidence that it outperforms in practice — and why it
+                        remains underweighted in most AI procurement decisions.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        <a
+                          href="https://huggingface.co/blog/Dharma-AI/text-degeneration-a-production-failure-mode"
+                          >Text Degeneration: A Production Failure Mode That Most Benchmarks Do Not
+                          Track</a
+                        >
+                        — A documented failure mode that emerges when language models operate
+                        outside the boundaries of their effective domain.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        <a
+                          href="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+                          >Direct Preference Optimization Beyond Chatbots</a
+                        >
+                        — How preference optimization techniques extend into specialized domains
+                        beyond conversational AI — a concrete instantiation of the domain focus
+                        strategy this article argues is structurally predicted.
+                      </p>
+                    </li>
+                  </ul>
+                  <p>---</p>
+                  <p>
+                    <em>Explore</em>
+                    <a href="https://huggingface.co/Dharma-AI"
+                      ><em>Dharma AI on Hugging Face</em></a
+                    >
+                    <em
+                      >to try our interactive demos, download our open-source models, and discover
+                      how specialized AI systems outperform general-purpose models in real
+                      enterprise applications.</em
+                    >
+                  </p>
+                  <!---->
+                </div>
+              </div>
+            </div>
+            <!--[-1--><!--]-->
+            <!--[0-->
+            <div class="mx-auto mt-16 max-w-7xl border-t border-gray-200">
+              <div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6">
+                  <p class="col-span-1 mb-4 text-center text-lg font-semibold">
+                    More from this author
+                  </p>
+                  <!--[-->
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management-pt2"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/6a725daa5ca641a21ab61956/wOnyrU6-UQAM5hOwpaw3-.jpeg"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          Same Cluster, 33 Points More Utilization: What Changed Was the Order
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              20
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">August 17, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Ih3Nn6Wc1U_w_QpvEMXRY.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          GPU Management: Why Idle GPUs Are the New Grounded Aircraft
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              97
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">July 30, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <!--]-->
+                </div>
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8">
+              <h3 class="mb-6 flex items-center text-lg font-semibold"><!---->Community</h3>
+              <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="">
+                <div class="relative -mx-2.5">
+                  <!--[-1--><!--]-->
+                  <!--[-->
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-0 pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a46dd6663ffcf9635416177" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/4045ef572f7c1ca2d52500224affd443.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/not-zero"
+                                    >not-zero</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a46dd6663ffcf9635416177"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-07-02T21:51:34"
+                                title="Thu, 02 Jul 2026 21:51:34 GMT"
+                                >Jul 2</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              I would add that in the era of AI Agents, deploying a new
+                              hyperspecialized agent with a very narrow domain and less
+                              prompts/context, would lead to less hallucinations and less token
+                              comsuption. It's cheap and convenient, so is the most probable path in
+                              my opinion.
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[-1--><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[-->
+                                <div>
+                                  <span class="inline-block"
+                                    ><span class="contents"
+                                      ><button
+                                        class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                      >
+                                        <div class="mr-2 text-[0.9rem]">👍</div>
+                                        <div class="invisible">1</div>
+                                        <!---->
+                                        <div class="absolute right-2">1</div>
+                                        <!----></button
+                                      ><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                </div>
+                                <!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[-1-->+<!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[0-->
+                            <div class="ml-auto">
+                              <button
+                                class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"
+                              >
+                                <!---->Reply
+                              </button>
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[-1--><!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-0">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a5261e2535e26d8c8f35b3e" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/1fcdfbbbd4273f482ca6d97bd6ef81dc.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/AlliRose22"
+                                    >AlliRose22</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a5261e2535e26d8c8f35b3e"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-07-11T15:31:46"
+                                title="Sat, 11 Jul 2026 15:31:46 GMT"
+                                >Jul 11</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              The top line thesis — specialization beats generality — is (forgive
+                              me) something of a PGIO (penetrating glimpse into the obvious). I do
+                              appreciate the distinction between domain knowledge and domain
+                              specialization. They're not the same axis, and conflating them is a
+                              common mistake. Regretably, the authors stop right where things get
+                              interesting. Domain knowledge's value-add is described as diminishing
+                              as scale increases, with no stated floor. Specialization's value-add
+                              is described as persisting; not growing, just not eroding the way
+                              knowledge does. That's a decline running against a flat line, not two
+                              things moving in the same direction at different speeds. The authors
+                              never say where that decline runs out, or when investing further in
+                              expert content stops paying off — compared to just narrowing scope. A
+                              distinction this precise about what specialization is deserves
+                              precision about when to stop chasing knowledge and start chasing
+                              focus. How much is enough? 10K hours worth (a la Malcolm Gladwell)?
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="GabrielPimenta99"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  1 reply</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a56cf90fc26810d3f0a3354" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline text-blue-500"
+                                          href="/GabrielPimenta99"
+                                          >GabrielPimenta99</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[0--><span
+                                    class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2"
+                                    >Article author<!----></span
+                                  ><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a56cf90fc26810d3f0a3354"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-07-15T00:08:48"
+                                      title="Wed, 15 Jul 2026 00:08:48 GMT"
+                                      >Jul 15</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>
+                                    Great point, and I agree that this is where the discussion
+                                    becomes most interesting.
+                                  </p>
+                                  <p>
+                                    It is not possible to say where the decline bottoms out, since
+                                    neural networks learn representations through superposition
+                                    rather than assigning individual neurons or subnetworks to
+                                    specific domains. In other words, it is not possible to isolate
+                                    parts of the network and claim that they are responsible for
+                                    domain X or domain Y, as these domains are encoded through
+                                    overlapping representations. What we can affirm is that it
+                                    depends on the relationship between breadth of domains in the
+                                    knowledge base and the number of parameters of the model (the
+                                    greater the parameters, the greater the capacity to retain
+                                    knowledge). To answer this question, we would need some way of
+                                    measuring the amount of domain knowledge contained in the
+                                    training data, as well as the degree of overlap between those
+                                    domains in the latent space learned by a highly non-linear
+                                    neural network. I believe this question is currently
+                                    intractable.
+                                  </p>
+                                  <p>
+                                    Regarding the point at which investing in specialized content
+                                    ceases to pay off, I believe that this only happens when the
+                                    objective is to build a genuinely more general-purpose model. If
+                                    the goal is to use the available resources (parameters) to
+                                    provide shallow responses across a broad range of topics, then
+                                    it makes more sense to train on a dataset with broad coverage
+                                    but relatively little depth in each domain. On the other hand,
+                                    if the objective is to build a model that solves a finite and
+                                    relatively small set of tasks, more specialized data will always
+                                    be the better choice. Naturally, as you increase the size of
+                                    that task set, you eventually return to the first scenario of
+                                    wanting a general-purpose model.
+                                  </p>
+                                  <p>
+                                    The same reasoning applies to the question of when we should
+                                    pursue greater focus: whenever the scope of the application is
+                                    itself focused. It is fundamentally a design choice. If you are
+                                    training a model for open-ended tasks that may receive any type
+                                    of input, it is better to have a model that responds
+                                    superficially across many topics than one that responds deeply
+                                    to only a few. Conversely, if the application has a well-defined
+                                    scope, it will always be better to train a model specialized for
+                                    that scope, making more efficient use of its resources instead
+                                    of spending them on knowledge that will never be required.
+                                  </p>
+                                  <p>
+                                    That said, these are very relevant questions, and we hope to
+                                    address at least part of them through mechanistic
+                                    interpretability, which is one of the research areas within our
+                                    R&amp;D efforts. The techniques in this field allow us to
+                                    observe internal circuits within models, sparsely used neurons,
+                                    neurons that activate under specific conditions, and other
+                                    internal mechanisms. This may help us better understand how
+                                    models work internally and answer some of your questions more
+                                    directly.
+                                  </p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[--><!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[0-->
+                                            <!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <!--]-->
+                </div>
+                <div
+                  class="overflow-hidden rounded-lg border border-gray-200 bg-white rounded-b-none border-b-0 mt-6"
+                >
+                  <div
+                    class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"
+                  >
+                    <div class="flex h-full items-stretch">
+                      <!--[--><button class="tab active" type="button">Edit</button
+                      ><button class="tab" type="button">Preview</button><!--]-->
+                    </div>
+                    <div><!--[-1--><!--]--></div>
+                  </div>
+                  <!---->
+                  <div class="p-4">
+                    <div class="contents">
+                      <!--[-->
+                      <div class="contents">
+                        <!--[--><textarea
+                          class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2"
+                          name="comment"
+                          placeholder="Start discussing this article"
+                          required=""
+                          disabled=""
+                          rows="3"
+                        ></textarea
+                        ><!--]-->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                    <label
+                      class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"
+                      ><!--[-1-->
+                      <!--]-->
+                      <div class="hidden md:block">
+                        Upload images, audio, and videos by dragging in the text input, pasting, or
+                        <span class="cursor-pointer underline">clicking here</span>.
+                      </div>
+                      <div class="md:hidden">Tap or paste here to upload images</div>
+                      <input
+                        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav"
+                        class="hidden"
+                        disabled=""
+                        type="file"
+                        multiple=""
+                    /></label>
+                  </div>
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <!---->
+                <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200">
+                  <div class="p-4">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div
+                      class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"
+                    >
+                      <button class="btn btn-large" disabled="">
+                        <!---->
+                        Comment
+                      </button>
+                      <!--[0-->
+                      <p class="py-1 text-gray-800">
+                        <span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span>
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/join?next=%2Fblog%2FDharma-AI%2Fwhy-specialization-is-inevitable"
+                          >Sign up</a
+                        >
+                        or
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/login?next=%2Fblog%2FDharma-AI%2Fwhy-specialization-is-inevitable"
+                          >log in</a
+                        >
+                        to comment
+                      </p>
+                      <!--]-->
+                    </div>
+                  </div>
+                </div>
+                <!---->
+              </div>
+            </div>
+            <!--]-->
+          </div>
+          <div
+            class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"
+          >
+            <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+              <div
+                class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"
+              >
+                <!--[0--><a
+                  href="/login?next=%2Fblog%2FDharma-AI%2Fwhy-specialization-is-inevitable"
+                  class="self-start"
+                  ><!--[0--><!---->
+                  <div
+                    role="checkbox"
+                    class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                  >
+                    <input disabled="" type="checkbox" class="peer hidden" />
+                    <!---->
+                    Upvote
+                    <div class="font-semibold text-orange-500">19</div>
+                    <!---->
+                  </div>
+                  <!----><!--]-->
+                  <!--[-1--><!--]--><!----></a
+                ><!--]-->
+                <!--[0--><!--[0-->
+                <ul class="flex items-center text-gray-600 flex-row text-base">
+                  <!--[-->
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="deegerwalker"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/deegerwalker" title="deegerwalker"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/657ab009e1113b5af51588ee/Yhdq9wtstQl4lvWwzXnXW.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="croqaz"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/croqaz" title="croqaz"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/CSPa4qx2AFQtX9Rd-YWWX.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="lucas-treuke"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="wilczek"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/wilczek" title="wilczek"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/32c205488006372ffb6e84a42b144456.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="SaurabhSharma220"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/SaurabhSharma220" title="SaurabhSharma220"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/105faa734c6e20e6f5e6c7d8d503872f.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ErickvL"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ErickvL" title="ErickvL"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="iamsingularity"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/iamsingularity" title="iamsingularity"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/HXKKlyDzNjei5x-6w7gL2.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="JohannesZ"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/JohannesZ" title="JohannesZ"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/0594031f72c08b61552193f7b966bfbf.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Hiosaur"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Hiosaur" title="Hiosaur"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/83f131e14815560563eb8075b7ef57bb.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Aanuoluwapo65"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Aanuoluwapo65" title="Aanuoluwapo65"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/129d1e86bbaf764b507501f4feb177db.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="mseri"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/mseri" title="mseri"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/97bc412c4e76099fe6d1e58c7e8075da.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="not-zero"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/not-zero" title="not-zero"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/4045ef572f7c1ca2d52500224affd443.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <!--]-->
+                  <!--[0-->
+                  <li
+                    class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                  >
+                    <!--[--><!--[0--><button
+                      class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                    >
+                      +7</button
+                    ><!--]--><!--]-->
+                  </li>
+                  <!--]-->
+                </ul>
+                <!--]--><!--]-->
+              </div>
+              <!--[-1--><!--]-->
+              <dialog
+                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base"
+              >
+                <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                  <!--[-1--><!--]-->
+                </div>
+              </dialog>
+              <!----><!---->
+            </div>
+            <!--[-1--><!--]-->
+          </div>
+        </div>
+        <!---->
+      </main>
+      <!--[1-->
+      <!--]--><!---->
+    </div>
+    <!--]-->
+
+    <!-- Stripe -->
+  </body>
+</html>

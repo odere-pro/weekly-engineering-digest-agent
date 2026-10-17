@@ -19,8 +19,8 @@ export interface RawChoices {
 
 /** Entry fields in order of preference: published first, the Atom 0.3 names last. */
 const DATE_KEYS = ['published', 'pubDate', 'dc:date', 'issued', 'updated', 'modified'] as const;
-/** The library prefers the short text: RSS description, then Atom summary, then the full body. */
-const HTML_KEYS = ['description', 'summary', 'content:encoded', 'content'] as const;
+/** The fullest text first: the full body, then the short text. */
+const HTML_KEYS = ['content:encoded', 'content', 'summary', 'description'] as const;
 
 const ISO_DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 const SLASH_DATE_ONLY = /^\d{4}\/\d{2}\/\d{2}$/;
@@ -102,11 +102,41 @@ export function dateTexts(raw: RawEntry): string[] {
   return DATE_KEYS.map((key) => textOf(raw[key]).trim()).filter((text) => text !== '');
 }
 
+/**
+ * Typographic named entities that `toPlainText` leaves as they are. Full bodies (unlike the
+ * short excerpts) use them freely, and none of them can open or close a tag.
+ */
+const TYPOGRAPHIC_ENTITIES: Readonly<Record<string, string>> = {
+  rsquo: '\u2019',
+  lsquo: '\u2018',
+  rdquo: '\u201d',
+  ldquo: '\u201c',
+  sbquo: '\u201a',
+  bdquo: '\u201e',
+  hellip: '\u2026',
+  mdash: '\u2014',
+  ndash: '\u2013',
+  middot: '\u00b7',
+  bull: '\u2022',
+  copy: '\u00a9',
+  reg: '\u00ae',
+  trade: '\u2122',
+  times: '\u00d7',
+  rarr: '\u2192',
+  larr: '\u2190',
+};
+
+const NAMED_ENTITY = /&([a-z]+);/gi;
+
+function withTypographicEntities(html: string): string {
+  return html.replace(NAMED_ENTITY, (match, name: string) => TYPOGRAPHIC_ENTITIES[name] ?? match);
+}
+
 /** The entry's description or content, still as markup. */
 export function entryHtml(raw: RawEntry): string {
   for (const key of HTML_KEYS) {
     const text = textOf(raw[key]);
-    if (text) return text;
+    if (text) return withTypographicEntities(text);
   }
   return '';
 }

@@ -1,0 +1,1602 @@
+<!doctype html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <meta name="description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="fb:app_id" content="1321688464574422" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:site" content="@huggingface" />
+
+    <meta
+      name="twitter:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/3HJgWuzAFymnAq6TqEdL7.png"
+    />
+
+    <meta property="og:title" content="Newer Models, Same Advantage" />
+
+    <meta property="og:description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://huggingface.co/blog/Dharma-AI/newer-models-same-advantages"
+    />
+
+    <meta
+      property="og:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/3HJgWuzAFymnAq6TqEdL7.png"
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+    <link
+      rel="preload"
+      href="/front/build/kube-1f021fd/katex.css"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+
+    <noscript>
+      <link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+    </noscript>
+
+    <link
+      rel="canonical"
+      href="https://huggingface.co/blog/Dharma-AI/newer-models-same-advantages"
+    />
+    <!--g2q6vf-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/blog/feed.xml"
+      title="Hugging Face Blog"
+    />
+    <!---->
+    <title>Newer Models, Same Advantage</title>
+
+    <link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+  </head>
+  <body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+    <!--[-->
+    <div class="flex min-h-dvh flex-col">
+      <div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}">
+        <!---->
+      </div>
+      <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}">
+        <!---->
+      </div>
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="SystemThemeMonitor"
+        data-props='{"isLoggedIn":false}'
+      >
+        <!---->
+      </div>
+      <!--[0-->
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="MainHeader"
+        data-props='{"classNames":"","isWide":false,"isZh":false,"canCreateKernels":false,"isPro":false}'
+      >
+        <!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]-->
+      <!--[-1--><!--]--><!---->
+      <!--[-1--><!--]--><!---->
+      <!--[0-->
+      <div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}">
+        <!--[-1--><!--]--><!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]--><!---->
+      <main class="flex flex-1 flex-col">
+        <div class="container relative flex flex-row justify-center gap-12">
+          <div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl">
+            <div class="max-lg:overflow-hidden">
+              <div
+                class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"
+              >
+                <div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}">
+                  <div></div>
+                  <!---->
+                </div>
+                <div class="mb-4">
+                  <a
+                    href="/blog"
+                    class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"
+                  >
+                    <!---->
+                    Back to Articles</a
+                  >
+                </div>
+                <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden">
+                  <!---->
+                  <a
+                    id="newer-models-same-advantage"
+                    class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                    href="#newer-models-same-advantage"
+                    rel="nofollow"
+                  >
+                    <span class="header-link"> </span>
+                  </a>
+                  <span> Newer Models, Same Advantage </span>
+                  <!---->
+                </h1>
+                <div>
+                  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+                    <!--[0--><a
+                      href="/blog"
+                      class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"
+                      ><!--[0--><span
+                        class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs"
+                        ><!--[0--><span>Team</span><!--]--></span
+                      ><!---->
+                      <span>Article</span><!--]--></a
+                    ><!--]-->
+                    <div class="flex items-center gap-x-4">
+                      <!--[0--><span class="whitespace-nowrap text-sm sm:text-base"
+                        >Published July 16, 2026</span
+                      ><!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                  </div>
+                  <!--[-1--><!--]-->
+                </div>
+                <!---->
+                <div class="not-prose mb-6 font-sans xl:hidden">
+                  <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1 z-1 lg:sticky lg:top-8">
+                      <!--[0--><a
+                        href="/login?next=%2Fblog%2FDharma-AI%2Fnewer-models-same-advantages"
+                        class="self-start"
+                        ><!--[0--><!---->
+                        <div
+                          role="checkbox"
+                          class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                        >
+                          <input disabled="" type="checkbox" class="peer hidden" />
+                          <!---->
+                          Upvote
+                          <div class="font-semibold text-orange-500">58</div>
+                          <!---->
+                        </div>
+                        <!----><!--]-->
+                        <!--[-1--><!--]--><!----></a
+                      ><!--]-->
+                      <!--[0--><!--[0-->
+                      <ul class="flex items-center text-gray-600 flex-row text-base">
+                        <!--[-->
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="GabrielPimenta99"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="victormacedo996"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/victormacedo996" title="victormacedo996"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/9a96179126a43a01bfb95a6eb6390556.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="luke-loan-atlas"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="Phase-Technologies"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/Phase-Technologies" title="Phase-Technologies"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/66a49c4207dd6d0ab485d3c2/zpZyMDJZMDPc-7cyqR292.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="ClipMe0002"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/ClipMe0002" title="ClipMe0002"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/9QEWZtzOEaFejVAuy_aNq.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="ClipMe0004"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/ClipMe0004" title="ClipMe0004"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/o-0LtssoH_Ksbr9g0RYF3.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <!--]-->
+                        <!--[0-->
+                        <li
+                          class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                        >
+                          <!--[--><!--[0--><button
+                            class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                          >
+                            +52</button
+                          ><!--]--><!--]-->
+                        </li>
+                        <!--]-->
+                      </ul>
+                      <!--]--><!--]-->
+                    </div>
+                    <!--[-1--><!--]-->
+                    <dialog
+                      class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose"
+                    >
+                      <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                        <!--[-1--><!--]-->
+                      </div>
+                    </dialog>
+                    <!----><!---->
+                  </div>
+                </div>
+                <div class="not-prose">
+                  <div
+                    class="SVELTE_HYDRATER contents"
+                    data-target="BlogAuthorsByline"
+                    data-props=""
+                  >
+                    <div class="not-prose">
+                      <div
+                        class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"
+                      >
+                        <!--[-->
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/ErickvL"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Erick Lachmann's avatar"
+                                  src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/ErickvL"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Erick Lachmann"
+                                >Erick Lachmann</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >ErickvL</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/GabrielPimenta99"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Gabriel Pimenta de Freitas Cardoso's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/GabrielPimenta99"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Gabriel Pimenta de Freitas Cardoso"
+                                >Gabriel Pimenta de Freitas Cardoso</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >GabrielPimenta99</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/falves9101"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Francisco de Almeida Rocha Alves's avatar"
+                                  src="/avatars/ab4695681deba13fac2846ce4e641240.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/falves9101"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Francisco de Almeida Rocha Alves"
+                                >Francisco de Almeida Rocha Alves</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >falves9101</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/victorBarbosa23"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Victor Gabriel Ferreira Barbosa's avatar"
+                                  src="/avatars/7288e407f97fa45c62e83aee9ad68a4d.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/victorBarbosa23"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Victor Gabriel Ferreira Barbosa"
+                                >Victor Gabriel Ferreira Barbosa</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >victorBarbosa23</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <!--]-->
+                      </div>
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                  </div>
+                </div>
+                <!---->
+                <!--[-1--><!--]-->
+                <div
+                  class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"
+                >
+                  <!---->
+                  <h2 class="relative group flex items-baseline">
+                    <!--[--><!--[0-->
+                    <div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block">
+                      <div class="sticky top-4 flex">
+                        <div class="h-7 pt-[0.175rem]">
+                          <span class="peer" tabindex="0"
+                            ><button
+                              class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"
+                            >
+                              <!---->
+                            </button></span
+                          >
+                          <div
+                            class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--]--><!--]-->
+                    <a
+                      id="despite-newer-architectures-dharmaocr-outperformed-mistral-ocr4-and-unlimited-ocr-on-brazilian-portuguese-through-domain-specialization-and-targeted-training-this-article-presents-the-evidence-and-the-mechanism-behind-that-advantage"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#despite-newer-architectures-dharmaocr-outperformed-mistral-ocr4-and-unlimited-ocr-on-brazilian-portuguese-through-domain-specialization-and-targeted-training-this-article-presents-the-evidence-and-the-mechanism-behind-that-advantage"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      Despite newer architectures, DharmaOCR outperformed Mistral OCR4 and
+                      Unlimited-OCR on Brazilian Portuguese through domain specialization and
+                      targeted training. This article presents the evidence and the mechanism behind
+                      that advantage.
+                    </span>
+                  </h2>
+                  <p>
+                    Three months ago, we published a
+                    <a href="https://arxiv.org/abs/2604.14314" rel="nofollow">paper on DharmaOCR</a>
+                    and
+                    <a href="https://huggingface.co/Dharma-AI/Dharma-OCR-LITE"
+                      >open-sourced one of the models</a
+                    >. The objective was specific: optical character recognition engineered for
+                    Brazilian Portuguese.
+                  </p>
+                  <p>
+                    The training pipeline was built in two stages. The first was a supervised
+                    fine-tuning step, drawing on a broad collection of Portuguese-language files
+                    from different sources, formats, and levels of complexity. This stage aligned
+                    the model's weights to the specific vocabulary, syntax, and document structures
+                    of Brazilian Portuguese — concentrating representational capacity on the target
+                    language rather than distributing it across a broader multilingual space. The
+                    second stage applied Direct Preference Optimization: rather than training only
+                    on correct transcriptions, the model learned from comparative preference data
+                    between competing outputs, teaching it to consistently select the better
+                    extraction at inference time. This stage addressed a different problem: not
+                    accuracy, but stability. By suppressing the failure modes that cause generative
+                    models to produce repetitive or incoherent output, DPO reduced inference time
+                    and cost, and materially improved the reliability of what the model delivered in
+                    production.
+                  </p>
+                  <p>
+                    The combined result was a model that achieved the highest extraction quality
+                    score with the lowest degeneration rate on a Portuguese-focused benchmark. Both
+                    stages were necessary. The fine-tuning stage built domain competency; the DPO
+                    stage ensured that competency held under the conditions where models tend to
+                    fail.
+                  </p>
+                  <p>---</p>
+                  <p>
+                    OCR models have been moving quickly. But the gaps that originally motivated
+                    DharmaOCR's design (in extraction quality on complex documents and in model
+                    stability under production conditions) have not closed. They have, if anything,
+                    become more instructive as the field has changed.
+                  </p>
+                  <p>
+                    The proliferation of multimodal generative models made language model-based OCR
+                    widely accessible, and the wave of fine-tuned OCR variants that followed
+                    reflects how fast that adoption has moved. That proliferation has not, however,
+                    changed the fundamental character of the technology. Every OCR system built on a
+                    generative model is probabilistic. Transcription errors are an inherent variable
+                    of this probabilistic technology. What differentiates models is how many errors
+                    they make and of what kind. That is determined by two things: the structure of
+                    the model (its architecture and parameter count) and how those parameters were
+                    trained for the task.
+                  </p>
+                  <p>
+                    Architecture and parameter count establish the ceiling on what a model can
+                    learn. Training determines how that capacity is allocated.
+                  </p>
+                  <p>
+                    This distinction is where specialization becomes a structural question rather
+                    than a design preference. When a model is trained on a restricted domain — a
+                    single language, a bounded document type, a specific task — All of its
+                    parameters are dedicated to that specific task. When a model is trained to cover
+                    a broader range of domains — a multilingual model handling N languages, for
+                    instance — those same parameters must be distributed across all of them. The
+                    distribution is not linear: the neuron superposition principle means individual
+                    parameters can encode multiple features simultaneously. But the division is
+                    real, and its consequences are real. A model covering more ground commits less
+                    to any given part of it.
+                  </p>
+                  <p>
+                    DharmaOCR was trained to accept that constraint in reverse. The model is not
+                    designed to be the best option for other languages, and was never intended to
+                    be. In exchange, every parameter available to the network could be oriented
+                    toward the specific vocabulary, morphology, and orthographic patterns of
+                    Brazilian Portuguese — the most directed possible use of the model's resources
+                    for that domain.
+                  </p>
+                  <p>
+                    That concentration is the structural basis of an inherent advantage over
+                    multilingual and broader-domain models. The advantage does not depend on having
+                    a larger architecture or a more sophisticated training procedure than
+                    competitors use — new architectures and new training techniques improve what any
+                    model can do. It depends on where those resources are directed: at one domain
+                    rather than spread across many.
+                  </p>
+                  <p>
+                    Three months later, newer models have arrived. Whether the case for
+                    specialization holds when those models are newer and more capable is a different
+                    question.
+                  </p>
+                  <p>
+                    Three months after the DharmaOCR paper appeared, two new OCR models attracted
+                    significant attention from the research community: Mistral OCR4 and
+                    Unlimited-OCR. Both represent genuine technical advances — new training
+                    techniques, new datasets, and strong results across multiple languages on a
+                    range of benchmark evaluations. They are the kind of models that raise the
+                    competitive standard for what OCR systems are expected to deliver.
+                  </p>
+                  <p>
+                    When we ran both against the DharmaOCR benchmark — an evaluation designed
+                    exclusively around Portuguese — the results were conclusive.
+                  </p>
+                  <p>
+                    DharmaOCR scored 0.925. Mistral OCR4 scored 0.798. Unlimited-OCR scored 0.7587.
+                  </p>
+                  <p>
+                    The difference is significant. Mistral OCR4 falls approximately 13 points below
+                    DharmaOCR; Unlimited-OCR falls more than 16 points below. Both were released
+                    after our model, both backed by substantial research resources. On a task where
+                    DharmaOCR's fundamental design decision was to concentrate entirely on
+                    Portuguese, the specialization advantage is measurable and significant.
+                  </p>
+                  <p>
+                    The benchmark is the central finding. What follows illustrates why the gap takes
+                    the specific shape it does.
+                  </p>
+                  <p>---</p>
+                  <p>
+                    Processing non-trivial Portuguese documents reveals precisely where multilingual
+                    models tend to break. ENEM essays (Brazil's national high school examination)
+                    combine handwritten text with vocabulary, proper nouns, and cultural references
+                    that are specific to Brazilian Portuguese. They are exactly the kind of
+                    documents where language-specific training produces a return.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/67b22efa9b36260fe286e99f/XVbylBZ_TyY98EvfkO9pT.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/67b22efa9b36260fe286e99f/XVbylBZ_TyY98EvfkO9pT.png"
+                        alt="ENEM essay manuscript"
+                    /></a>
+                  </p>
+                  <p>
+                    <code
+                      >Figure 1: ENEM essay manuscript used in benchmark evaluation with outputs of
+                      the each model. Misreads marked in red.</code
+                    >
+                  </p>
+                  <p>
+                    Mistral OCR4, evaluated on documents of this kind, transcribed the name Chico
+                    Buarque (one of Brazil's most widely recognized musicians and poets) as "Chico
+                    Barque." Unlimited-OCR rendered the same name as "chico bique." Confronted with
+                    the phrase "O Brasil não exclui, assimila" ("Brazil does not exclude, it
+                    assimilates", a Chico Buarque quotation embedded in the same document)
+                    Unlimited-OCR returned: "a dose de chico bique, 'o Brasil no exclu, eliminila.'
+                  </p>
+                  <p>
+                    These are not random errors. A model with insufficient exposure to Brazilian
+                    Portuguese does not fail arbitrarily — it fails at precisely the vocabulary and
+                    proper nouns that distinguish Brazilian Portuguese from the broader multilingual
+                    corpus. Chico Buarque is not an obscure reference; the name is nationally
+                    recognized. Its systematic corruption across outputs is not an edge case. It is
+                    a diagnostic: evidence of where the model's training did not go.
+                  </p>
+                  <p>
+                    DharmaOCR, evaluated on the same documents, handles these cases correctly. The
+                    reason is direct: the model's training was concentrated on this linguistic
+                    space, orienting its resources toward the vocabulary and proper noun
+                    distributions that characterize Brazilian Portuguese rather than spreading them
+                    across many languages at once.
+                  </p>
+                  <p>
+                    The examples illustrate the benchmark rather than replace it. The benchmark
+                    establishes the magnitude of the gap; the examples show why it is concentrated
+                    in language-specific recognition rather than in general capability.
+                  </p>
+                  <p>
+                    Extraction accuracy, however, is only one dimension of production performance.
+                    Stability under visual difficulty is another — and operationally, it is the more
+                    consequential one to fail on.
+                  </p>
+                  <p>
+                    When a generative model encounters a document it cannot clearly resolve — small
+                    fonts, degraded scan quality, dense handwriting — it faces uncertainty in its
+                    input signal. Models trained primarily on next-token prediction objectives face
+                    a specific vulnerability here: when the visual signal becomes ambiguous, the
+                    model can continue generating from prior learned patterns rather than from the
+                    source document. The result is text degeneration — output that is repetitive,
+                    incoherent, and semantically disconnected from the page.
+                  </p>
+                  <p>
+                    Presented with a document with small fonts, Mistral OCR4 produces output with no
+                    connection to what is written.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/3YRHeWDsJ8twDlf7ArbZr.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/3YRHeWDsJ8twDlf7ArbZr.png"
+                        alt="Small-font Document"
+                    /></a>
+                  </p>
+                  <p><code>Figure 2: small-font document</code></p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/67b22efa9b36260fe286e99f/yBwDuIrqnY0xQ8RLY5Gbe.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/67b22efa9b36260fe286e99f/yBwDuIrqnY0xQ8RLY5Gbe.png"
+                        alt="DharmaOCR output and Mistral OCR4 degenerated output"
+                    /></a>
+                  </p>
+                  <p><code>Figure 3: DharmaOCR output and Mistral OCR4 degenerated output</code></p>
+                  <p>
+                    This is not a low-quality transcription of the source. It is a failure of an
+                    entirely different category.
+                  </p>
+                  <p>
+                    The operational consequence is distinct from that of a transcription error. An
+                    incorrect transcription is wrong in a recoverable way — it stands in a
+                    relationship to the source document, and the error can in principle be
+                    identified and corrected. Degenerated output has no such relationship. It cannot
+                    be corrected because there is nothing to correct toward. For downstream
+                    processes that depend on structured OCR output — document classification,
+                    information extraction, compliance workflows — degenerated output is not
+                    inaccurate data. It is structurally unusable data. The efficiency that
+                    automation was meant to deliver is negated at precisely the point where output
+                    stops being information.
+                  </p>
+                  <p>
+                    Mistral OCR4 and Unlimited-OCR are good models with significant technical
+                    advances behind them. The degeneration behavior described here does not define
+                    them; it identifies a specific failure condition that their current training has
+                    not addressed for this domain. The question is what a training pipeline designed
+                    to address it looks like.
+                  </p>
+                  <p>---</p>
+                  <p>In DharmaOCR, the answer is the DPO stage.</p>
+                  <p>
+                    Supervised fine-tuning concentrates the model's resources on the target domain —
+                    the stage that builds the linguistic alignment described above. But SFT trains
+                    on individual token predictions: the model learns to produce the correct next
+                    token given the context preceding it. Under visual complexity, this creates the
+                    condition that produces degeneration. If an early token in the output diverges
+                    from the source document, each subsequent prediction is conditioned on that
+                    divergent state, and the output continues to drift. Repetition loops and
+                    incoherent sequences are an inherent characteristic in this context — they are
+                    the predictable result of an objective optimized step by step without accounting
+                    for the coherence of the full extraction.
+                  </p>
+                  <p>
+                    DPO trains against a different signal. Where SFT trains token by token, DPO
+                    trains the model against the quality of complete outputs — teaching it to
+                    discriminate between competing responses based on the coherence of the full
+                    extraction rather than the accuracy of individual predictions. The effect is
+                    stabilizing: on documents where visual complexity would otherwise trigger drift,
+                    the model is less likely to commit to a divergent path, because its training
+                    penalized outputs that lost coherence at the extraction level.
+                  </p>
+                  <p>
+                    The result is what the original benchmark demonstrated: lower degeneration rates
+                    alongside higher extraction accuracy, on the same documents where models without
+                    this training stage lose coherence.
+                  </p>
+                  <p>
+                    The benchmark establishes what is true today. It is less precise about what will
+                    be true in two years.
+                  </p>
+                  <p>
+                    It is possible — and likely — that newer models will eventually outperform the
+                    current DharmaOCR even in Brazilian Portuguese. Architectures will improve.
+                    Training techniques will advance. Datasets will expand. The field moves toward
+                    higher capability at every level, and there is no reason to expect that
+                    trajectory to stop. This is expected, and it is welcome.
+                  </p>
+                  <p>
+                    What changes with each architectural generation is the ceiling on absolute
+                    performance. What does not change is the structural logic that determines which
+                    systems come closest to their ceiling in a given domain.
+                  </p>
+                  <p>
+                    Available resources — compute, parameters, training data — are finite. They must
+                    be directed somewhere. A system that directs them at a single domain will
+                    extract more from them in that domain than a system distributing the same
+                    resources across many. This relationship holds regardless of how capable the
+                    generalist model has become. The gap between specialist and generalist may
+                    evolve as architectures improve. The structural dynamic does not reverse. We
+                    explored this principle in more depth in an earlier piece on why specialization
+                    continues to produce an advantage as AI systems advance (<a
+                      href="https://huggingface.co/blog/Dharma-AI/why-specialization-is-inevitable"
+                      >Why Specialization Is Inevitable</a
+                    >).
+                  </p>
+                  <p>
+                    This is what shapes how Dharma approaches what comes next. The objective is not
+                    to defend the current model's benchmark position. It is to remain at the
+                    frontier of emerging techniques — new architectures, new training methods, new
+                    approaches to alignment and evaluation — and adapt them toward the same end: a
+                    specialized system for Brazilian Portuguese OCR that makes the best possible use
+                    of available resources, at the lowest possible cost and the shortest possible
+                    inference time.
+                  </p>
+                  <p>
+                    Better tools do not work against specialization. They expand what it can
+                    achieve.
+                  </p>
+                  <p>
+                    Three months ago, we showed that concentrating a model's training on a specific
+                    domain produces a measurable advantage over generalist systems, including ones
+                    that are newer and better-resourced. That advantage held. The same principle
+                    will determine how DharmaOCR continues to evolve — not by staying fixed, but by
+                    applying whatever progress the field makes to a domain that remains fixed.
+                  </p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="source"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#source"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Source</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      Cardoso, Gabriel Pimenta de Freitas, et al. "DharmaOCR: Specialized Small
+                      Language Models for Structured OCR that outperform Open-Source and Commercial
+                      Baselines."
+                      <a href="https://arxiv.org/abs/2604.14314" rel="nofollow"
+                        >arXiv preprint arXiv:2604.14314</a
+                      >
+                      (2026).
+                    </li>
+                  </ul>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="further-reading"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#further-reading"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Further Reading</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/why-specialization-is-inevitable"
+                        >Why Specialization Is Inevitable</a
+                      >
+                      — The structural and theoretical foundation for the specialization argument.
+                      Optimization theory, evolutionary biology, competitive markets, and machine
+                      learning all converge on the same prediction: under finite resources and
+                      selection pressure, fit beats breadth.
+                    </li>
+                    <li>
+                      <a href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                        >Specialization Beats Scale: A Strategic Variable Most AI Procurement
+                        Decisions Overlook</a
+                      >
+                      — The empirical and strategic complement to this article. Where the No Free
+                      Lunch theorem establishes why specialization is structurally predicted, this
+                      piece examines the evidence that it outperforms in practice — and why it
+                      remains underweighted in most AI procurement decisions.
+                    </li>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/text-degeneration-a-production-failure-mode"
+                        >Text Degeneration: A Production Failure Mode That Most Benchmarks Do Not
+                        Track</a
+                      >
+                      — A documented failure mode that emerges when language models operate outside
+                      the boundaries of their effective domain.
+                    </li>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+                        >Direct Preference Optimization Beyond Chatbots</a
+                      >
+                      — How preference optimization techniques extend into specialized domains
+                      beyond conversational AI — a concrete instantiation of the domain focus
+                      strategy this article argues is structurally predicted.
+                    </li>
+                  </ul>
+                  <p>---</p>
+                  <p>
+                    <em>Explore</em>
+                    <a href="https://huggingface.co/Dharma-AI"
+                      ><em>Dharma AI on Hugging Face</em></a
+                    >
+                    <em>to</em>
+                    <a href="https://huggingface.co/spaces/Dharma-AI/DharmaOCR-demo"
+                      ><em>try our interactive demos</em></a
+                    ><em>,</em>
+                    <a href="https://huggingface.co/Dharma-AI/Dharma-OCR-LITE"
+                      ><em>download our open-source models</em></a
+                    ><em
+                      >, and discover how specialized AI systems outperform general-purpose models
+                      in real enterprise applications.</em
+                    >
+                  </p>
+                  <!---->
+                </div>
+              </div>
+            </div>
+            <!--[0-->
+            <div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden">
+              <div class="flex flex-col gap-6">
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Models mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Spaces mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+                <!--[-1--><!--]-->
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto mt-16 max-w-7xl border-t border-gray-200">
+              <div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6">
+                  <p class="col-span-1 mb-4 text-center text-lg font-semibold">
+                    More from this author
+                  </p>
+                  <!--[-->
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management-pt2"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/6a725daa5ca641a21ab61956/wOnyrU6-UQAM5hOwpaw3-.jpeg"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          Same Cluster, 33 Points More Utilization: What Changed Was the Order
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              20
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">August 17, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Ih3Nn6Wc1U_w_QpvEMXRY.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          GPU Management: Why Idle GPUs Are the New Grounded Aircraft
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              97
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">July 30, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <!--]-->
+                </div>
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8">
+              <h3 class="mb-6 flex items-center text-lg font-semibold"><!---->Community</h3>
+              <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="">
+                <div class="relative -mx-2.5">
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <div
+                  class="overflow-hidden rounded-lg border border-gray-200 bg-white rounded-b-none border-b-0 mt-6"
+                >
+                  <div
+                    class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"
+                  >
+                    <div class="flex h-full items-stretch">
+                      <!--[--><button class="tab active" type="button">Edit</button
+                      ><button class="tab" type="button">Preview</button><!--]-->
+                    </div>
+                    <div><!--[-1--><!--]--></div>
+                  </div>
+                  <!---->
+                  <div class="p-4">
+                    <div class="contents">
+                      <!--[-->
+                      <div class="contents">
+                        <!--[--><textarea
+                          class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2"
+                          name="comment"
+                          placeholder="Start discussing this article"
+                          required=""
+                          disabled=""
+                          rows="3"
+                        ></textarea
+                        ><!--]-->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                    <label
+                      class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"
+                      ><!--[-1-->
+                      <!--]-->
+                      <div class="hidden md:block">
+                        Upload images, audio, and videos by dragging in the text input, pasting, or
+                        <span class="cursor-pointer underline">clicking here</span>.
+                      </div>
+                      <div class="md:hidden">Tap or paste here to upload images</div>
+                      <input
+                        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav"
+                        class="hidden"
+                        disabled=""
+                        type="file"
+                        multiple=""
+                    /></label>
+                  </div>
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <!---->
+                <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200">
+                  <div class="p-4">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div
+                      class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"
+                    >
+                      <button class="btn btn-large" disabled="">
+                        <!---->
+                        Comment
+                      </button>
+                      <!--[0-->
+                      <p class="py-1 text-gray-800">
+                        <span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span>
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/join?next=%2Fblog%2FDharma-AI%2Fnewer-models-same-advantages"
+                          >Sign up</a
+                        >
+                        or
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/login?next=%2Fblog%2FDharma-AI%2Fnewer-models-same-advantages"
+                          >log in</a
+                        >
+                        to comment
+                      </p>
+                      <!--]-->
+                    </div>
+                  </div>
+                </div>
+                <!---->
+              </div>
+            </div>
+            <!--]-->
+          </div>
+          <div
+            class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"
+          >
+            <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+              <div
+                class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"
+              >
+                <!--[0--><a
+                  href="/login?next=%2Fblog%2FDharma-AI%2Fnewer-models-same-advantages"
+                  class="self-start"
+                  ><!--[0--><!---->
+                  <div
+                    role="checkbox"
+                    class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                  >
+                    <input disabled="" type="checkbox" class="peer hidden" />
+                    <!---->
+                    Upvote
+                    <div class="font-semibold text-orange-500">58</div>
+                    <!---->
+                  </div>
+                  <!----><!--]-->
+                  <!--[-1--><!--]--><!----></a
+                ><!--]-->
+                <!--[0--><!--[0-->
+                <ul class="flex items-center text-gray-600 flex-row text-base">
+                  <!--[-->
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="GabrielPimenta99"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="victormacedo996"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/victormacedo996" title="victormacedo996"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/9a96179126a43a01bfb95a6eb6390556.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="luke-loan-atlas"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Phase-Technologies"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Phase-Technologies" title="Phase-Technologies"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/66a49c4207dd6d0ab485d3c2/zpZyMDJZMDPc-7cyqR292.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ClipMe0002"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ClipMe0002" title="ClipMe0002"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/9QEWZtzOEaFejVAuy_aNq.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ClipMe0004"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ClipMe0004" title="ClipMe0004"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/o-0LtssoH_Ksbr9g0RYF3.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="saniali"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/saniali" title="saniali"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/a9e167c066ccb46d1c9c27c1740caa62.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ExceedZhang"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ExceedZhang" title="ExceedZhang"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/5427b05b3ef627d4d8281f9a33bb98ab.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="OJDesigns"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/OJDesigns" title="OJDesigns"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/K6Vb5u_5Jfm00Jx6TezOT.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="rajathkumarks"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/rajathkumarks" title="rajathkumarks"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/1f9eb6b5debc8d6132cf3a0720490701.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="kweer"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/kweer" title="kweer"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/6InkQjL7Ynl1LDBQD5Dy7.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="zonzonzik"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/zonzonzik" title="zonzonzik"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/742968f66179a334a5529fd271a51697.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <!--]-->
+                  <!--[0-->
+                  <li
+                    class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                  >
+                    <!--[--><!--[0--><button
+                      class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                    >
+                      +46</button
+                    ><!--]--><!--]-->
+                  </li>
+                  <!--]-->
+                </ul>
+                <!--]--><!--]-->
+              </div>
+              <!--[-1--><!--]-->
+              <dialog
+                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base"
+              >
+                <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                  <!--[-1--><!--]-->
+                </div>
+              </dialog>
+              <!----><!---->
+            </div>
+            <!--[0-->
+            <div class="mt-8 flex flex-col gap-6 pb-8">
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Models mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Spaces mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+              <!--[-1--><!--]-->
+            </div>
+            <!--]-->
+          </div>
+        </div>
+        <!---->
+      </main>
+      <!--[1-->
+      <!--]--><!---->
+    </div>
+    <!--]-->
+
+    <!-- Stripe -->
+  </body>
+</html>

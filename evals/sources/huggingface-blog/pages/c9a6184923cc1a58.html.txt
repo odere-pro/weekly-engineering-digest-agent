@@ -1,0 +1,883 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/reflection-beam/thumbnail.jpg" />
+
+		<meta property="og:title" content="Welcome Beam: a 501B open model you can own, customize, and scale" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/reflection-beam" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/reflection-beam/thumbnail.jpg" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/reflection-beam">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Welcome Beam: a 501B open model you can own, customize, and scale</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="welcome-beam-a-501b-open-model-you-can-own-customize-and-scale" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#welcome-beam-a-501b-open-model-you-can-own-customize-and-scale" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Welcome Beam: a 501B open model you can own, customize, and scale
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/reflection-beam.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Freflection-beam" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">19</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pagezyhf" style="content-visibility:auto;"><!--[0--><a href="/pagezyhf" title="pagezyhf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/w3Z6xyKVBA6np65Tb16dP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stefan-it" style="content-visibility:auto;"><!--[0--><a href="/stefan-it" title="stefan-it"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1584020801691-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[0--><a href="/qgallouedec" title="qgallouedec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alvarobartt" style="content-visibility:auto;"><!--[0--><a href="/alvarobartt" title="alvarobartt"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60f0608166e5701b80ed3f02/H9LNnlf0W4fiOJhQMxnbW.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Gflorent" style="content-visibility:auto;"><!--[0--><a href="/Gflorent" title="Gflorent"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/620a77b7dbba8fc1fbb8bdb4/ZRW2pH9Iawj700OyLpJl8.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+13</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/burtenshaw"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="ben burtenshaw's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/burtenshaw"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="ben burtenshaw">ben burtenshaw</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">burtenshaw</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/merve"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="merve's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/merve"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="merve">merve</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">merve</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/pcuenq"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Pedro Cuenca's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/pcuenq"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Pedro Cuenca">Pedro Cuenca</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">pcuenq</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/beam-banner.jpg" alt="Hugging Face mascot with colorful concentric waves on a blue background." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Beam by Reflection is out on Hugging Face! It is the first model from the new US lab, Reflection, and it’s open! It's a mixture-of-experts (MoEs) model with 501B parameters (23B active per token), supports text as input, has a <strong>context window of 1M tokens</strong>, and is released under the Apache 2.0 license.</p>
+<p>Beam is focused on <em>coding</em> and <em>agentic</em> use cases. It is for teams that want a frontier-scale model on their own hardware, infrastructure, or cloud, and want to customize it to their own use cases. Beam ships with its own dedicated open source Rust based harness that delivers the best performance from the model.</p>
+<p>Beam has a native transformers implementation, as well as downstream libraries like vLLM and SGLang. We’ve worked with the Reflection team to bring you inference, SFT (supervised fine tuning), and RL (reinforcement learning) recipes for you to build with this model for your needs. On top of day-0 support in transformers, SGLang and vLLM, this post shows you how to run it, how to post-train it, and what we built with it.</p>
+<p><strong>TL;DR</strong></p>
+<blockquote>
+<ul>
+<li>501B-parameter MoEs LLM with 23B active per token. 52 layers, 256 experts per MoE layer, 8 routed per token.</li>
+<li>Text in, text out with <strong>context window of 1M tokens.</strong></li>
+<li>Checkpoint formats: <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B"><strong>BF16</strong></a><strong>, <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B-FP8">FP8</a>,</strong> and <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B-NVFP4"><strong>NVFP4</strong></a></li>
+<li>Reasoning that can stay in context across turns (<code>preserve_thinking</code>), tool calling with a dedicated grammar. The model supports five reasoning values: "low", "medium" (default), "high", "xhigh", and "max".</li>
+<li>Response template in the tokenizer.</li>
+<li>Speculative decoding drafter model with DFlash2</li>
+<li>Day-0 libraries: transformers, SGLang, vLLM. Full-parameter RL with Miles.</li>
+<li>Ships with a <a href="https://developers.reflection.ai/mirror-overview" rel="nofollow">Rust-based custom harness.</a></li>
+<li>Apache 2.0.</li>
+</ul>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="build-with-beam" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#build-with-beam" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Build with Beam
+	</span>
+</h2>
+<p>Reflection is going to give out $10,000 Hub credits to the best projects that use Beam. All you have to do is make a thing, and share it on the Hub:</p>
+<ul>
+<li>You could make a demo that uses the Beam model on Spaces</li>
+<li>You could quantize it for your favorite hardware</li>
+<li>You could generate a synthetic dataset for your favorite problem</li>
+<li>You could build an RL environment with or for Beam</li>
+<li>You could benchmark Beam and share the results.</li>
+<li>You could surprise us!</li>
+</ul>
+<p>If you build something with Beam, then share it on the Hub for a chance to win $10,000. All you have to do is build the space, model, or dataset repo and share it on the <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B/discussions/5">model’s repo page</a>. We’ll collect all the links, select the best, and send out the credits to your Hub accounts.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-is-beam" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-is-beam" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What is Beam?
+	</span>
+</h2>
+<p>Beam is a text-only model built for long-context (1M context length) reasoning and agentic work. It is a sparse MoE model, where each token is computed by a small fraction of the network, so it runs at the speed of a much smaller model while keeping the capacity of a large one.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/beam-architecture.png" alt="Beam architecture: three dense layers followed by 49 mixture-of-experts layers, with hybrid attention and weighted residual connections." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<h3 class="relative group flex items-baseline">
+	<a id="attention" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#attention" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Attention
+	</span>
+</h3>
+<p>The decoder has 52 layers with a hidden size of 5,120. Most layers use sliding-window attention over the previous 512 tokens; every sixth layer, and the last one, attend to the full context. That gives 43 sliding-window layers and 9 global ones.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/beam-attention.png" alt="Attention block with grouped-query attention, RoPE or scalable-softmax query scaling, and a learned sigmoid gate." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p><em>Inside the attention block (both layer types)</em></p>
+<p>The two kinds of layers handle position differently. Sliding-window layers use RoPE, since relative position matters most within a short window. <strong>Global layers use no positional encoding</strong>. Instead, each query is multiplied by a scaler that grows slowly with the number of visible tokens, <code>(1 + (pos + 1) / 2048) ** 0.1</code>. It acts as a temperature: the softmax keeps its precision as the context lengthens instead of flattening out. The implementation calls this scalable-softmax query scaling.</p>
+<p>Attention uses grouped-query attention with 48 query heads and 8 key-value heads, with RMSNorm on queries and keys. A learned sigmoid gate, computed from the layer input, scales every channel of every head before the output projection.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="mixture-of-experts" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#mixture-of-experts" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Mixture of Experts
+	</span>
+</h3>
+<p>The first 3 layers use a dense SwiGLU MLP. The other 49 replace it with a Mixture-of-Experts block of 256 experts, each a SwiGLU MLP with an intermediate size of 2,560, or about 39M parameters. The experts hold 98.4% of the model's parameters.</p>
+<p>The router follows DeepSeek-V3's group-limited scheme. It scores all 256 experts with a sigmoid, splits them into 8 groups of 32, keeps the 4 best groups (ranked by the sum of each group's top two scores), then picks the top 8 experts inside them. Beam uses the same group sizes as DeepSeek-V3 but no shared expert. Expert outputs are combined with normalized router weights and scaled by 2.5.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/beam-expert-routing.png" alt="Beam router scores 256 experts and selects groups before routing each token to eight experts." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p>Only 8 experts run per token, so the model computes each token with about 23B parameters. All 256 experts stay in memory, so deployment needs the memory of a 501B model but runs at the speed of a 23B one. The BF16 checkpoint is about 1 TB in safetensors format. The NVFP4 checkpoint stores most parameters in 4-bit precision for NVIDIA Blackwell GPUs, some parameters are kept in BF16 for accuracy. There are also FP8 checkpoints on the hub which are ideal for Hopper and Ampere series chips.</p>
+<p>If you want to deploy Beam yourself, check out the vLLM or SGLang recipes below.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="residual-stream" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#residual-stream" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Residual Stream
+	</span>
+</h3>
+<p>The residual connections are the most distinctive part. A standard transformer adds each sublayer output to the stream with weight 1, so the stream grows with depth.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/standard-residual-stream.png" alt="Standard transformer residual stream adds each sublayer output with weight one." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p>Beam counts the input embedding as step 1. At step <code>k</code> it adds the sublayer output with weight <code>1/sqrt(k)</code> and keeps the existing stream with weight <code>sqrt((k-1)/k)</code>. The squares of the two weights sum to one, so the stream stays at a constant scale from the first layer to the last. After all 104 additions, every sublayer output and the input embedding carry the same weight in the final hidden state.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/beam-residual-stream.png" alt="Beam residual stream uses depth-dependent weights to keep the accumulated hidden state at a constant scale." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p>Every sublayer is also normalized before and after, and the final logits pass through a tanh softcap at ±30, computed in FP32. The implementation fixes where it computes in FP32: the router, the SwiGLU product, the norms, RoPE, the query scaling and the softcap.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="long-context" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#long-context" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Long Context
+	</span>
+</h3>
+<p>Hybrid attention works well for long contexts. Each layer caches 2 x 8 KV heads x 128 dims = 2,048 values per token. If all 52 layers kept every token, the cache would grow by 208 KiB per token. Only the 9 global layers keep the whole sequence. The 43 sliding-window layers hold a fixed 512-token window each and stop growing. So the cache grows by 36 KiB per token, roughly a sixth of the naive rate.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Context</th>
+<th align="left">If all 52 layers were global</th>
+<th align="left">Beam</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">32K tokens</td>
+<td align="left">6.5 GiB</td>
+<td align="left">1.2 GiB</td>
+</tr>
+<tr>
+<td align="left">128K tokens</td>
+<td align="left">26 GiB</td>
+<td align="left">4.6 GiB</td>
+</tr>
+<tr>
+<td align="left">Full context (1M)</td>
+<td align="left">208 GiB</td>
+<td align="left"><strong>36.08 GiB</strong></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>These numbers are per sequence, in BF16, with the transformers dynamic cache.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="benchmark-results" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#benchmark-results" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Benchmark Results
+	</span>
+</h2>
+<p> Here are the benchmark results across different precision levels, as provided by the Reflection team.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left"></th>
+<th align="center"><em>Beam (BF16)</em></th>
+<th align="center"><em>Beam (FP8)</em></th>
+<th align="center"><em>Beam (NVFP4)</em></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><strong>Agentic Coding / Terminal</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">DeepSWE v1.1</td>
+<td align="center">43.3%</td>
+<td align="center">43.0%</td>
+<td align="center">42.7%</td>
+</tr>
+<tr>
+<td align="left">SWE Bench Pro v2-Hard</td>
+<td align="center">76.5%</td>
+<td align="center">78.4%</td>
+<td align="center">78.6%</td>
+</tr>
+<tr>
+<td align="left">SWE Bench Pro v1</td>
+<td align="center">66.1%</td>
+<td align="center">65.9%</td>
+<td align="center">65.6%</td>
+</tr>
+<tr>
+<td align="left">Terminal Bench v2.1</td>
+<td align="center">80.1%</td>
+<td align="center">78.9%</td>
+<td align="center">78.2%</td>
+</tr>
+<tr>
+<td align="left">SWE Atlas Codebase QnA</td>
+<td align="center">31.8%</td>
+<td align="center">32.2%</td>
+<td align="center">31.4%</td>
+</tr>
+<tr>
+<td align="left">SWEBench Multilingual</td>
+<td align="center">78.3%</td>
+<td align="center">78.1%</td>
+<td align="center">77.5%</td>
+</tr>
+<tr>
+<td align="left">SWEBench Verified</td>
+<td align="center">81.6%</td>
+<td align="center">80.2%</td>
+<td align="center">80.7%</td>
+</tr>
+<tr>
+<td align="left"><strong>Reasoning</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">AIME 2026</td>
+<td align="center">97.7%</td>
+<td align="center">98.0%</td>
+<td align="center">97.5%</td>
+</tr>
+<tr>
+<td align="left">HLE (no tools)</td>
+<td align="center">36.0%</td>
+<td align="center">36.0%</td>
+<td align="center">34.8%</td>
+</tr>
+<tr>
+<td align="left">HLE (with tools)</td>
+<td align="center">51.1%</td>
+<td align="center">51.1%</td>
+<td align="center">51.1%</td>
+</tr>
+<tr>
+<td align="left">SciCode</td>
+<td align="center">49.2%</td>
+<td align="center">48.3%</td>
+<td align="center">46.9%</td>
+</tr>
+<tr>
+<td align="left">CriPT AA</td>
+<td align="center">16.3%</td>
+<td align="center">17.4%</td>
+<td align="center">15.4%</td>
+</tr>
+<tr>
+<td align="left">GPQA Diamond</td>
+<td align="center">90.6%</td>
+<td align="center">90.3%</td>
+<td align="center">89.3%</td>
+</tr>
+<tr>
+<td align="left">LiveCodeBench</td>
+<td align="center">88.3%</td>
+<td align="center">88.1%</td>
+<td align="center">87.4%</td>
+</tr>
+<tr>
+<td align="left"><strong>Tool Calling / Search</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">AutomationBench - public split only</td>
+<td align="center">39.3</td>
+<td align="center">38.2</td>
+<td align="center">39.8%</td>
+</tr>
+<tr>
+<td align="left">MCP Atlas</td>
+<td align="center">80.8%</td>
+<td align="center">81.5%</td>
+<td align="center">80.5%</td>
+</tr>
+<tr>
+<td align="left">Tau3 Banking</td>
+<td align="center">36.1%</td>
+<td align="center">36.8%</td>
+<td align="center">35.4%</td>
+</tr>
+<tr>
+<td align="left">BrowseComp w/ context management</td>
+<td align="center">76.8%</td>
+<td align="center">76.7%</td>
+<td align="center">75.6%</td>
+</tr>
+<tr>
+<td align="left">DeepSearchQA w/ context management</td>
+<td align="center">80.5%</td>
+<td align="center">79.6%</td>
+<td align="center">81.1%</td>
+</tr>
+<tr>
+<td align="left"><strong>General Capabilities</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">AA-LCR</td>
+<td align="center">78.2%</td>
+<td align="center">79.4%</td>
+<td align="center">78.7%</td>
+</tr>
+<tr>
+<td align="left">LongBench v2</td>
+<td align="center">67.5%</td>
+<td align="center">67.6%</td>
+<td align="center">67.2%</td>
+</tr>
+<tr>
+<td align="left">IFBench</td>
+<td align="center">79.6%</td>
+<td align="center">80.7%</td>
+<td align="center">79.2%</td>
+</tr>
+<tr>
+<td align="left">AA Omniscience (index) - public split only</td>
+<td align="center">10.8</td>
+<td align="center">8.8</td>
+<td align="center">9.8</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="hardware-requirements" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hardware-requirements" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hardware Requirements
+	</span>
+</h2>
+<p>The most practical way to serve the model is serving the NVFP4 checkpoint, which retains most of the quality of the bf16 checkpoint.  NVFP4 stores some weights in 4 bits, and this way, it shrinks the 501B parameters in BF16 from 1 TB to ~280 GB. Blackwell GPUs run NVFP4 natively but GPUs older than Blackwell like the H200 can't. The FP8 checkpoints are suitable for GPUs older than Blackwell.</p>
+<p>A B200 has 180 GB of HBM3e, so two of them (360 GB) can hold the Beam weights, with little room left for activations and the KV cache. Plan for four B200s (720 GB), which leaves plenty of room for long contexts and concurrent requests. You can also serve it on a full 8xB200 node, or on two B300s at 288 GB each, or even 8xRTX Pro 6000. If you don't have Blackwell hardware, use Inference Providers (serverless) to test Reflection.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="inference-support" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-support" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Support
+	</span>
+</h2>
+<p>Beam comes with day-0 support in transformers, SGLang and vLLM.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="transformers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#transformers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Transformers
+	</span>
+</h3>
+<p>Install the latest version of transformers.</p>
+<pre><code class="language-sh">pip install -U <span class="hljs-string">"transformers&gt;=5.20.1"</span>
+</code></pre>
+<p>The easiest way to run Beam is the text-generation pipeline:</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline
+
+pipe = pipeline(
+    <span class="hljs-string">"text-generation"</span>, model=<span class="hljs-string">"reflection/Beam-1.0-501B-A23B"</span>, device_map=<span class="hljs-string">"auto"</span>
+)
+
+messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"Write a limerick about Python exceptions."</span>}
+]
+output = pipe(messages, max_new_tokens=<span class="hljs-number">2000</span>)
+output[<span class="hljs-number">0</span>][<span class="hljs-string">"generated_text"</span>][-<span class="hljs-number">1</span>]
+</code></pre>
+<p>The pipeline returns the whole chat. The last message is Beam's reply, already parsed by the response template.</p>
+<p>Going one level lower, use <code>AutoModelForCausalLM</code> and <code>AutoTokenizer</code>.</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer
+
+model_id = <span class="hljs-string">"reflection/Beam-1.0-501B-A23B"</span>
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_id, dtype=<span class="hljs-string">"auto"</span>, device_map=<span class="hljs-string">"auto"</span>
+)
+</code></pre>
+<h4 class="relative group flex items-baseline">
+	<a id="chat" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#chat" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Chat
+	</span>
+</h4>
+<pre><code class="language-py">messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"system"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"You should only answer with a number."</span>},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is 17 * 23?"</span>},
+]
+
+inputs = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=<span class="hljs-literal">True</span>,
+    tokenize=<span class="hljs-literal">True</span>,
+    return_dict=<span class="hljs-literal">True</span>,
+    return_tensors=<span class="hljs-string">"pt"</span>,
+    reasoning_effort=<span class="hljs-string">"medium"</span> <span class="hljs-comment"># by default</span>
+).to(model.device)
+
+input_len = inputs[<span class="hljs-string">"input_ids"</span>].shape[-<span class="hljs-number">1</span>]
+
+outputs = model.generate(**inputs, max_new_tokens=<span class="hljs-number">2000</span>)
+
+tokenizer.parse_response(
+    outputs[<span class="hljs-number">0</span>][input_len:], prefix=inputs[<span class="hljs-string">"input_ids"</span>][<span class="hljs-number">0</span>]
+)
+</code></pre>
+<p>Beam's tokenizer carries a response template. <code>parse_response</code> reads it and turns the raw output into a message dict, with the reasoning, the answer, and any tool calls in separate fields. This avoids the usual regex for splitting reasoning from answers from tool calls. And the rules ship with the tokenizer, so the parsed structure matches what Beam was trained to produce. The chat template can pre-write part of the assistant turn, which the parser needs to see.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="tool-calling" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tool-calling" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Tool calling
+	</span>
+</h4>
+<details>
+<summary>Complete tool-calling example</summary>
+
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_weather</span>(<span class="hljs-params">city: <span class="hljs-built_in">str</span>, unit: <span class="hljs-built_in">str</span> = <span class="hljs-string">"celsius"</span></span>):
+    <span class="hljs-string">"""</span>
+<span class="hljs-string">    Get the current weather for a city.</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">    Args:</span>
+<span class="hljs-string">        city: The city to look up.</span>
+<span class="hljs-string">        unit: Temperature unit, "celsius" or "fahrenheit".</span>
+<span class="hljs-string">    """</span>
+    ...
+
+tools = [get_weather]
+messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"I land in Paris tonight. Do I need a coat?"</span>}
+]
+
+inputs = tokenizer.apply_chat_template(
+    messages,
+    tools=tools,
+    add_generation_prompt=<span class="hljs-literal">True</span>,
+    tokenize=<span class="hljs-literal">True</span>,
+    return_dict=<span class="hljs-literal">True</span>,
+    return_tensors=<span class="hljs-string">"pt"</span>,
+).to(model.device)
+
+input_len = inputs[<span class="hljs-string">"input_ids"</span>].shape[-<span class="hljs-number">1</span>]
+outputs = model.generate(**inputs, max_new_tokens=<span class="hljs-number">1000</span>)
+
+message = tokenizer.parse_response(
+    outputs[<span class="hljs-number">0</span>][input_len:], prefix=inputs[<span class="hljs-string">"input_ids"</span>][<span class="hljs-number">0</span>], tools=tools
+)
+message.get(<span class="hljs-string">"tool_calls"</span>)
+</code></pre>
+</details>
+
+<p>Pass <code>tools</code> to <code>parse_response</code> as well. Beam writes tool-call arguments inline, in its own XML-style grammar, so a bare <code>7</code> could be a number or a string. With the tool schemas, the parser casts each argument to its declared type.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="multi-gpu-and-multi-node" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multi-gpu-and-multi-node" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multi-GPU and multi-node
+	</span>
+</h4>
+<p>Beam's config defines an expert-parallel plan. Expert parallelism puts each expert on one device. Attention, the dense layers, the embeddings and the LM head are replicated on every device. That is 8B parameters, or 16 GB in BF16. Load the model with a <code>DistributedConfig</code>:</p>
+<pre><code class="language-py"><span class="hljs-keyword">import</span> os
+
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM
+<span class="hljs-keyword">from</span> transformers.distributed <span class="hljs-keyword">import</span> DistributedConfig
+
+model = AutoModelForCausalLM.from_pretrained(
+    <span class="hljs-string">"reflection/Beam-1.0-501B-A23B"</span>,
+    distributed_config=DistributedConfig(
+        tp_size=<span class="hljs-built_in">int</span>(os.environ[<span class="hljs-string">"WORLD_SIZE"</span>]), ep_size=<span class="hljs-built_in">int</span>(os.environ[<span class="hljs-string">"WORLD_SIZE"</span>]), tp_plan={}
+    ),
+)
+</code></pre>
+<p>Launch the script with <code>torchrun</code> across 16 H200 GPUs. Each one then holds 78 GB of weights. With 8 GPUs each would hold 139 GB, which leaves no room on a 141 GB H200. The number of devices must divide the number of experts, 256.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="vllm" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#vllm" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		vLLM
+	</span>
+</h3>
+<p>Beam has day-0 support in vLLM. The command below serves the BF16 checkpoint with tensor parallelism across 16 GPUs (two 8x H200 nodes) and exposes an OpenAI-compatible API:</p>
+<pre><code class="language-sh">vllm serve reflection/Beam-1.0-501B-A23B --tensor-parallel-size 16 --served-model-name beam
+</code></pre>
+<p>For faster generation, add DFlash2 speculative decoding. A small drafter model proposes up to 15 tokens ahead, and Beam checks them all in one forward pass, so each step can accept several tokens. The cost is a little extra memory for the drafter:</p>
+<pre><code>vllm serve reflection/Beam-1.0-501B-A23B \
+  --tensor-parallel-size 16 \
+  --speculative-config '{ "method": "dflash", "model": "reflection/dflash2-drafter-preview", "num_speculative_tokens": 15 }'
+</code></pre>
+<p>Both commands start an OpenAI-compatible server, so you can point any OpenAI client at <code>http://localhost:8000/v1</code>. For additional serving configurations, see the <a href="https://github.com/vllm-project/recipes/pull/1132" rel="nofollow">proposed Beam recipe for vLLM</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="sglang" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#sglang" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		SGLang
+	</span>
+</h3>
+<p>Beam also has day-0 support in SGLang. We recommend serving it with DFlash2 speculative decoding, which both commands below turn on. On Blackwell, the NVFP4 checkpoint fits on 4 B300s:</p>
+<pre><code class="language-sh">python -m sglang.launch_server \
+--model-path reflection/Beam-1.0-501B-A23B-NVFP4 \
+--served-model-name beam \
+--tp 4 \
+--attention-backend trtllm_mha \
+--page-size 64 \
+--context-length 1048576 \
+--mem-fraction-static 0.85 \
+--enable-unified-memory \
+--speculative-algorithm DFLASH \
+--speculative-draft-model-path reflection/Beam-1.0-501B-A23B-DFlash2 \
+--speculative-dflash-block-size 8 \
+--tool-call-parser beam --reasoning-parser beam \
+--host 0.0.0.0 --port 30000
+</code></pre>
+<p>On Hopper GPUs, use the FP8 checkpoint on 8 H200s instead. Only three flags change: the checkpoint, the tensor-parallel size (8 instead of 4), and the attention backend (fa3 instead of trtllm_mha, which needs Blackwell):</p>
+<pre><code>python -m sglang.launch_server \
+--model-path reflection/Beam-1.0-501B-A23B-FP8 \
+--served-model-name beam \
+--tp 8 \
+--attention-backend fa3 \
+--page-size 64 \
+--context-length 1048576 \
+--mem-fraction-static 0.85 \
+--enable-unified-memory \
+--speculative-algorithm DFLASH \
+--speculative-draft-model-path reflection/Beam-1.0-501B-A23B-DFlash2 \
+--speculative-dflash-block-size 8 \
+--tool-call-parser beam --reasoning-parser beam \
+--host 0.0.0.0 --port 30000
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="inference-providers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-providers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Providers
+	</span>
+</h3>
+<p>Beam is available on Hugging Face Inference Providers, powered by Baseten, Fireworks, and Together, with more to follow soon.</p>
+<pre><code class="language-py"><span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="hljs-string">"https://router.huggingface.co/v1"</span>,
+    api_key=os.environ[<span class="hljs-string">"HF_TOKEN"</span>],
+)
+
+completion = client.chat.completions.create(
+    model=<span class="hljs-string">"reflection/Beam-1.0-501B-A23B:auto"</span>,
+    messages=[{<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is the capital of France?"</span>}],
+)
+
+<span class="hljs-built_in">print</span>(completion.choices[<span class="hljs-number">0</span>].message)
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="inference-endpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-endpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Endpoints
+	</span>
+</h3>
+<p>We’ve set up a Beam recipe for you to one click deploy in Inference Endpoints from the catalog in <a href="https://endpoints.huggingface.co/new/reflection/Beam-1.0-501B-A23B-FP8" rel="nofollow">FP8</a> or <a href="https://endpoints.huggingface.co/new/reflection/Beam-1.0-501B-A23B-NVFP4" rel="nofollow">NVFP4</a>, or install with the <code>hf</code> cli like so:</p>
+<pre><code class="language-sh">hf endpoints catalog deploy --repo reflection/Beam-1.0-501B-A23B --name beam
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="what-we-tested" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-we-tested" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What we tested
+	</span>
+</h2>
+<p>We are sharing some vibe evals of Reflection Beam-501B-A23B on five tasks, once each at low and high reasoning effort through the Reflection platform. These are vibe evals, not benchmarks. If you’re planning on using Beam, this is a great way to kick the tires and see how it behaves on specific use cases, and importantly, where it wins and loses.</p>
+<p>Below is an overview of the prompts we ran and the output traces from the hub. The complete inputs, outputs, API usage, task fixtures, graders and conversation traces are in <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12">this public Hugging Face bucket</a>.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Category</th>
+<th align="left">Prompt Description</th>
+<th align="left">Low reasoning (tokens)</th>
+<th align="left">High reasoning (tokens)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Multi-step tool calling</td>
+<td align="left">Fulfill ORD-742: compare stock, reservations, surcharges and arrival dates; reserve the cheapest eligible warehouse.</td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/multi_step_tools-low.jsonl">544</a></td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/multi_step_tools-high.jsonl">811</a></td>
+</tr>
+<tr>
+<td align="left">Long-context retrieval over a code base</td>
+<td align="left">Derive Click command configuration and two invocation results from three complete source files; cite six implementation symbols.</td>
+<td align="left">🔴 <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/long_context-low.jsonl">1,613</a> *</td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/long_context-high.jsonl">5,007</a></td>
+</tr>
+<tr>
+<td align="left">Terminal task in a sandbox</td>
+<td align="left">Inspect and repair a CSV ledger CLI; fix all bugs, preserve tests, run tests and a CLI check.</td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/terminal-low.jsonl">582</a></td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/terminal-high.jsonl">1,548</a></td>
+</tr>
+<tr>
+<td align="left">Math reasoning (AIME-style)</td>
+<td align="left">How many eight-element subsets of {1, …, 16} have a sum divisible by 17? Give a justification.</td>
+<td align="left">🟠 <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/math-low.jsonl">829</a> †</td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/math-high.jsonl">2,809</a></td>
+</tr>
+<tr>
+<td align="left">Structured output</td>
+<td align="left">Convert an out-of-order revision log into strict JSON: merge patches, cancellations, nulls, dates, currencies and totals.</td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/structured_output-low.jsonl">1,040</a></td>
+<td align="left">✅ <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12/tree/traces/structured_output-high.jsonl">2,088</a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>* Low's long-context response got all code behavior and all six source citations correct. However, the response did not correspond to the parsers format, so this is partly prompt ambiguity.</em></p>
+<p>† Low returned the correct answer, but omitted the requested justification. High supplied a correct roots-of-unity proof, independently reviewed.</p>
+<p>Don’t take our word for it. Dig into the <a href="https://huggingface.co/buckets/burtenshaw/beam-vibe-evals-2026-10-12">bucket</a>, rewrite for your use case or project and push Beam to the limit.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="post-training-beam" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#post-training-beam" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Post-training Beam
+	</span>
+</h2>
+<p>You can fine tune Beam for your own use cases. Here, we share some examples in TRL and Miles to get you started on supervised fine-tuning and reinforcement learning.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="sft-with-trl" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#sft-with-trl" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		SFT with TRL
+	</span>
+</h3>
+<p>The quickest way to adapt Beam to your own data is supervised fine-tuning with TRL's SFTTrainer. To keep memory manageable, we train LoRA adapters with PEFT rather than updating all 501B parameters:
+We used TRL’s <code>SFTTrainer</code> to adapt Beam to a simple goal: keep its reasoning in the language requested by the user. We fine-tuned on <a href="https://huggingface.co/datasets/HuggingFaceH4/Multilingual-Thinking">Multilingual-Thinking</a> with LoRA, which trains a small set of adapter weights while keeping the base model frozen.</p>
+<p>The setup combines model sharding at load time, expert parallelism, FlashAttention 4 and sequence packing. LoRA SFT fits on a single node with 8 B300 GPUs, reaching around 19,000 tokens per second. The corresponding H100 setup uses four nodes.</p>
+<p>After one epoch of Multilingual-Thinking, Beam reasoned in the requested language on 16 out of 16 held-out prompts, compared with 3 out of 16 for the base model. This small evaluation measures language adherence, rather than the correctness of the reasoning itself.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/trl-sft-training.png" alt="Training loss and mean token accuracy over a 500-step LoRA supervised fine-tuning run on one eight-GPU B300 node." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p><em>Training loss (left) and mean token accuracy (right) during a separate 500-step run on a reasoning subset of open-r1/Mixture-of-Thought, using one 8-GPU B300 node. These training metrics are from the official <a href="https://github.com/huggingface/trl/pull/7629" rel="nofollow">TRL example PR</a>.</em></p>
+<h3 class="relative group flex items-baseline">
+	<a id="grpo-with-miles" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#grpo-with-miles" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		GRPO with Miles
+	</span>
+</h3>
+<p>Reflection and RadixArk built a recipe that trains the model with GRPO in Miles, in BF16. You can update the full model or use LoRA to train adapters while keeping the base weights frozen. Megatron trains, SGLang generates the rollouts, and Miles publishes the new weights to the rollout engines after each update. We reviewed the recipe.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Workload</th>
+<th align="left">Reference configuration</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Inference / eval, BF16</td>
+<td align="left">16x H200 per engine</td>
+</tr>
+<tr>
+<td align="left">Full-parameter GRPO, BF16 (Miles)</td>
+<td align="left">96x H200: 64 train, 32 rollout. Or 64x H200 colocated.</td>
+</tr>
+<tr>
+<td align="left">LoRA GRPO, BF16 (Miles)</td>
+<td align="left">32x H200: 16 train, 16 rollout.</td>
+</tr>
+<tr>
+<td align="left">Full-parameter GRPO, BF16, 128-token context (Miles)</td>
+<td align="left">48x H200: 32 train, 16 rollout. The setup Reflection and RadixArk first validated on the real checkpoint.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The recipe runs GRPO on DAPO-Math-17K and evaluates on AIME25. Build the image, download the data, and submit the job to a Ray cluster of twelve 8x H200 nodes:</p>
+<pre><code class="language-sh">docker build -f docker/Dockerfile.beam -t miles-beam .
+
+python scripts/run_beam.py prepare \
+  --model-id reflection/Beam-1.0-501B-A23B \
+  --model-dir /root/models/Beam \
+  --data-dir /data/datasets
+
+<span class="hljs-built_in">export</span> MASTER_ADDR=10.0.0.1
+<span class="hljs-built_in">export</span> RAY_ADDRESS=http://<span class="hljs-variable">${MASTER_ADDR}</span>:8265
+
+python scripts/run_beam.py execute \
+  --model-dir /root/models/Beam \
+  --data-dir /data/datasets \
+  --output-dir /root/shared_data/beam-run \
+  --num-rollout 100
+</code></pre>
+<p>What happens in a rollout:</p>
+<p><strong>Sample:</strong> 32 prompts are passed to the model with 8 responses each. Two SGLang engines serve the rollouts on 16 GPUs each.</p>
+<p><strong>Score:</strong> the boxed answer is checked against the label, with a soft penalty for responses near the length limit.</p>
+<p><strong>Update:</strong> one optimizer step on all 256 samples. Group-relative advantages with truncated importance sampling, no KL or entropy penalty.</p>
+<p><strong>Train in parallel:</strong> tensor parallelism 8, expert parallelism 8, data parallelism 8, with sequence parallelism and full recompute.</p>
+<p><strong>Optimizer:</strong> Adam at a constant 1e-6. Gradients in BF16, master weights in FP32, moments in BF16. The optimizer state streams through node-local NVMe, so each trainer node needs 2 TB of scratch.</p>
+<p><strong>Evaluate:</strong> AIME25 every five rollouts, eight samples per problem. A checkpoint is saved every twenty.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/miles-grpo-aime2025.png" alt="Full-parameter GRPO evaluation on AIME 2025: accuracy increases from 46.25% to 55.8% with a 4,000-token output limit." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p>The next rollout is generated while the current one trains, so responses are one update behind. Add <code>--resume</code> to continue from the last checkpoint. <code>execute-colocate</code> runs the same recipe on eight nodes, with every GPU training and serving in turn.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="train-with-lora" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#train-with-lora" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Train with LoRA
+	</span>
+</h3>
+<p>You can also run GRPO with LoRA on four 8× H200 nodes: 16 GPUs for training and 16 for rollouts. The recipe trains rank-16 adapters on Beam’s attention, dense MLP, and expert layers while keeping the base weights frozen. Only adapter weights are synchronized with SGLang, and the optimizer state stays in GPU memory, removing the need for NVMe optimizer offloading.</p>
+<pre><code class="language-sh">python scripts/run_beam_lora.py execute \
+  --model-dir /root/models/Beam \
+  --data-dir /data/datasets \
+  --output-dir /root/shared_data/beam-run \
+  --num-rollout 100
+</code></pre>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/miles-lora-grpo-aime2025.png" alt="LoRA GRPO evaluation on AIME 2025: accuracy rises from 42.9% to 64.2% while mean output length falls from 3,188 to 2,197 tokens." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<h2 class="relative group flex items-baseline">
+	<a id="build-with-beam-demos" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#build-with-beam-demos" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Build with Beam: Demos
+	</span>
+</h2>
+<p>If you build something with Beam, then share it on the Hub for a chance to win $10,000. All you have to do is build a space, model, or dataset repo and share it on the <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B/discussions/5">model’s repo page</a>. To inspire you, here are a few things we built.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="hey-beam-build-a-native-local-macos-application" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hey-beam-build-a-native-local-macos-application" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hey Beam, build a native local MacOS application!
+	</span>
+</h3>
+<p>At Hugging Face we love open and local models that run native to their hardware, but building native apps on Mac can be hard! Let’s see if Beam can help us out.</p>
+<p>We asked Beam to build a native MacOS application that turns speech to text, and conveniently drops it at your cursor. We want to use MLX to get the most out of our Mac Metal and the Parakeet Model for great speech-to-text.</p>
+<pre><code>Build BeamSpeak, a native macOS menu bar dictation app with a compact recording pill and no main window or account.
+
+Use ⌘⇧Space to start and stop microphone recording, showing elapsed time, microphone level, and transcription status. Run speech recognition entirely locally using a Hugging Face model, preferably Parakeet v3 through MLX, and keep the model loaded between recordings. Paste the transcript into the original app if it remains focused and Accessibility permission is granted; otherwise copy it to the clipboard, preserving newer clipboard changes and never pressing Enter. Handle permissions, cancellation, silence, errors, a two-minute recording limit, and temporary audio cleanup. Deliver source code, a runnable BeamSpeak.app, setup instructions, and verification of offline transcription, the physical shortcut, microphone capture, and text delivery.
+</code></pre>
+<p>We used Beam with the Pi coding harness to build the initial native macOS menu bar app, running Parakeet with MLX. The saved run includes follow-up prompts; the final source also includes later Codex repairs. The prompt above is a condensed version of the build requirements.</p>
+<figure class="image text-center">
+  <video controls="" width="100%">
+    <source src="https://huggingface.co/buckets/burtenshaw/beamspeak-demo/resolve/beamspeak-demo.mp4" type="video/mp4">
+  </video>
+</figure>
+
+<p>You can check out the agent trace of how Beam built this in pi in <a href="https://huggingface.co/buckets/burtenshaw/beamspeak-demo/tree/trace/beam-build.sanitized.jsonl">this trace</a>. If you want to try the demo out, download the <a href="https://huggingface.co/buckets/burtenshaw/beamspeak-demo/resolve/beamspeak-source.zip">source code</a> or read the <a href="https://huggingface.co/buckets/burtenshaw/beamspeak-demo/resolve/RUNNING.md">setup instructions</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="hey-beam-how-do-you-scale-on-multiple-agents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hey-beam-how-do-you-scale-on-multiple-agents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hey Beam, how do you scale on multiple agents?
+	</span>
+</h3>
+<p>We wanted to see whether Beam could make faster progress by splitting a programming task across agents. We paired Beam with the open-source Pi coding agent and compared three setups: 1. one agent working alone, 2. five persistent peers collaborating through a shared Git repository, and 3. a lead agent delegating work to asynchronous subagents. The harness ran on Hugging Face jobs with inference through Reflection’s platform API.</p>
+<p>For the tasks, we used ProgramBench: agents must recreate a program from its compiled executable and documentation, without seeing its source code or the evaluator’s tests. Each setup had the same 8M API-token ceiling and two-hour solver limit per task, shared across its agents. We saved implementation snapshots and evaluated them against fixed hidden-test suites from the <a href="https://huggingface.co/datasets/programbench/ProgramBench-Tests">ProgramBench-Tests dataset</a>.</p>
+<p>Our <a href="https://burtenshaw-beam-pi-programbench.hf.space/study" rel="nofollow">score-versus-latency plot</a> shows the average fraction of tests passed. The time axis uses fixed reference rates for model tokens plus measured tool time, rather than elapsed wall time. We initially ran five tasks. The current figure shows a post-hoc subset of jq, xsv, FIGlet, and hexyl; ripgrep was excluded across all three setups because grading its saved artifacts was too slow. The published results retain all 15 original episodes.</p>
+<figure>
+<iframe src="https://burtenshaw-beam-pi-programbench.hf.space/study" frameborder="0" width="100%" height="780" sandbox="allow-scripts" referrerpolicy="same-origin"></iframe>
+</figure>
+
+<p>You can inspect the runs in the <a href="https://burtenshaw-beam-pi-programbench.hf.space/?project=beam-pi-programbench-20261009" rel="nofollow">Trackio dashboard</a>, explore the <a href="https://huggingface.co/spaces/burtenshaw/beam-pi-programbench/tree/main/results/beam-pi-programbench-20261009">published result data</a>, and reuse the <a href="https://huggingface.co/spaces/burtenshaw/beam-pi-programbench/tree/main/source">study harness</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="hey-beam-finetune-a-decision-model-for-my-code-base" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hey-beam-finetune-a-decision-model-for-my-code-base" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hey Beam, finetune a decision model for my code base!
+	</span>
+</h3>
+<p>Decision models are all the rage at the moment because they’re super fast and practical for many use cases. We started with Beam in Pi after Beam’s quota ran out to train and evaluate a custom decision model for developer incident triage.</p>
+<p>We wanted to see whether a coding agent could turn an incident-triage policy into a small, fast decision model. The task was to read a developer incident and choose the responsible team, its severity, and whether someone should be pinged immediately. Using Unsloth, we fine-tuned Qwen3.5-0.8B to score these choices directly.</p>
+<p>First, the workflow built a synthetic dataset containing 2.3k incidents split by incident cluster for training, calibration, and testing. We trained a LoRA adapter and decision head for three epochs, with a 4-bit backbone, on one H100 80GB on the Science Slurm cluster.</p>
+<p>For a baseline, we prompted the unadapted model with the full triage policy and ticket, without examples, and asked it to generate the three decisions as JSON. On the same 320 synthetic test tickets, the fine-tuned decision model got all three answers correct on 76.25%, versus 4.69% for prompted zero-shot. Mean ticket latency fell from 1,218.06 ms to 102.58 ms, an 11.9× speedup.</p>
+<img src="https://huggingface.co/buckets/huggingface/Beam-blog-assets/resolve/images/decision-model-results.png" alt="Incident triage decision model: accuracy rises from 4.69% to 76.25% and mean latency falls from 1,218.06 ms to 102.58 ms." width="624" style="max-width: 100%; height: auto; background-color: white;">
+
+<p>If you want to try out this experiment for yourself, check out the <a href="https://huggingface.co/buckets/burtenshaw/qwen35-incident-triage-reproduction">artifact bucket</a> which contains the data, code, checkpoints and results.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="wrapping-up" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#wrapping-up" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Wrapping Up
+	</span>
+</h2>
+<p>Beam is a 501B open model that you can run on your own hardware and change. Start with the <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B"><strong>BF16</strong></a> checkpoint, or try one of the quants <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B-FP8"><strong>FP8</strong></a><strong>,</strong> <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B-NVFP4"><strong>NVFP4</strong></a>. If you build something with Beam, share it in the <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B/discussions">discussions tab</a>.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/asyncgrpo-lora-hfjobs"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/asyncgrpo-lora-hfjobs/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">rl</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">trl</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Async GRPO with LoRA across HF Jobs: a bucket, a proxy, and no NCCL</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aminediroHF" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69a5684704dd904ad8fdf1c6/_AC_1juch3FyFgy7mHCYa.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 53</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/delta-weight-sync"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/delta-weight-sync/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">rl</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">trl</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Shipping a Trillion Parameters With a Hub Bucket: Delta Weight Sync in TRL</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aminediroHF" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69a5684704dd904ad8fdf1c6/_AC_1juch3FyFgy7mHCYa.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lewtun" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1594651707950-noauth.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+4</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 50</div><!--]--> <!--[0--><span class="whitespace-nowrap">May 27, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6ad26e61cd54a467c2b93d19" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/1eb4ad0105ad152c175a8f01be57819d.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/openroomxyz">openroomxyz</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6ad26e61cd54a467c2b93d19" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-10-16T18:35:13" title="Fri, 16 Oct 2026 18:35:13 GMT">about 15 hours ago</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Well why don't you build something that can run on cunsumer GPU like Qwen 3.8 Flash Next for example using strata ? </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Freflection-beam">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Freflection-beam">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Freflection-beam" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">19</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pagezyhf" style="content-visibility:auto;"><!--[0--><a href="/pagezyhf" title="pagezyhf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/w3Z6xyKVBA6np65Tb16dP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stefan-it" style="content-visibility:auto;"><!--[0--><a href="/stefan-it" title="stefan-it"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1584020801691-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[0--><a href="/qgallouedec" title="qgallouedec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alvarobartt" style="content-visibility:auto;"><!--[0--><a href="/alvarobartt" title="alvarobartt"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60f0608166e5701b80ed3f02/H9LNnlf0W4fiOJhQMxnbW.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Gflorent" style="content-visibility:auto;"><!--[0--><a href="/Gflorent" title="Gflorent"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/620a77b7dbba8fc1fbb8bdb4/ZRW2pH9Iawj700OyLpJl8.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yonigozlan" style="content-visibility:auto;"><!--[0--><a href="/yonigozlan" title="yonigozlan"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/SUHH6vlLZdQogCB6kIgrN.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="spisupat" style="content-visibility:auto;"><!--[0--><a href="/spisupat" title="spisupat"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/633c4fb100732349209f2aad/CjcKdqDmsdOkpT-Z-lWPs.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="illtakecash" style="content-visibility:auto;"><!--[0--><a href="/illtakecash" title="illtakecash"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/8JtxwoBQnQDq0pZd2vMch.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="daedalus2027" style="content-visibility:auto;"><!--[0--><a href="/daedalus2027" title="daedalus2027"><img class="overflow-hidden rounded-full" alt="" src="/avatars/c6b7cec309634ab44f30ee1ab16597ea.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="keyoumao" style="content-visibility:auto;"><!--[0--><a href="/keyoumao" title="keyoumao"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/K9E1T6hPSg6h29Ix_6lqn.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fabos" style="content-visibility:auto;"><!--[0--><a href="/fabos" title="fabos"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/hqS42AW0Y9YtvRsd0riJZ.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+7</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

@@ -1,0 +1,445 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by Amazon on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/qvSGZ0tZsgr4U4BCx_bVX.png" />
+
+		<meta property="og:title" content="From the Hugging Face Hub to robot hardware with Strands Agents and LeRobot" />
+
+		<meta property="og:description" content="A Blog post by Amazon on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/amazon/strands-lerobot-hub-to-hardware" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/qvSGZ0tZsgr4U4BCx_bVX.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/amazon/strands-lerobot-hub-to-hardware">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>From the Hugging Face Hub to robot hardware with Strands Agents and LeRobot</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="from-the-hugging-face-hub-to-robot-hardware-with-strands-agents-and-lerobot" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#from-the-hugging-face-hub-to-robot-hardware-with-strands-agents-and-lerobot" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		From the Hugging Face Hub to robot hardware with Strands Agents and LeRobot
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[-1--><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 17, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Famazon%2Fstrands-lerobot-hub-to-hardware" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">17</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="imstevenpmwork" style="content-visibility:auto;"><!--[0--><a href="/imstevenpmwork" title="imstevenpmwork"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b124b081d4eae18b957606/QdQMOTzsHBkJIuXjk8O_h.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cagataydev" style="content-visibility:auto;"><!--[0--><a href="/cagataydev" title="cagataydev"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6498ef778fadf0ae7639b982/N9zJ6s7luJFTPM26kxWfe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pagezyhf" style="content-visibility:auto;"><!--[0--><a href="/pagezyhf" title="pagezyhf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/w3Z6xyKVBA6np65Tb16dP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="KavyaChennojuArm97" style="content-visibility:auto;"><!--[0--><a href="/KavyaChennojuArm97" title="KavyaChennojuArm97"><img class="overflow-hidden rounded-full" alt="" src="/avatars/323a5bdfb713879dd090d49359933914.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="arronbailiss" style="content-visibility:auto;"><!--[0--><a href="/arronbailiss" title="arronbailiss"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6898e8353fd2a08d1b1caa65/9FMLVcH9uuLzaAV8tu2Jb.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+11</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/rsundaraws"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sundar Raghavan's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a1dc0f2b4238bb17ff94794/GBPtGiJKZpCakTXYM_SJO.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/rsundaraws"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sundar Raghavan">Sundar Raghavan</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">rsundaraws</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/amazon" class="mr-1.5 flex-none" title="Amazon"><img class="rounded-sm! size-4 select-none" alt="Amazon's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f19ed428ae41c20c470792/8y7msN6A6W82LdQhQd85a.png" loading="lazy"/></a> <a href="/amazon" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">amazon</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/cagataydev"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Cagatay Cali's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6498ef778fadf0ae7639b982/N9zJ6s7luJFTPM26kxWfe.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/cagataydev"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Cagatay Cali">Cagatay Cali</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">cagataydev</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/amazon" class="mr-1.5 flex-none" title="Amazon"><img class="rounded-sm! size-4 select-none" alt="Amazon's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f19ed428ae41c20c470792/8y7msN6A6W82LdQhQd85a.png" loading="lazy"/></a> <a href="/amazon" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">amazon</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><em>A walkthrough of the LeRobot integration in Strands Robots - one agent loop, from a Hub dataset to a physical robot, with sim-to-real datasets in the same on-disk format and policies you swap with a string.</em></p>
+<p>You have a robot, a folder of demonstration data on the <a href="https://huggingface.co">Hugging Face Hub</a>, and a new task you want it to learn. Today that takes five separate tools: one to record new demonstrations, another to train, a third to test in simulation, custom code to deploy on hardware, and yet another to coordinate when you have more than one robot. The pieces work on their own. They don't talk to each other.</p>
+<p><a href="https://github.com/strands-labs/robots" rel="nofollow">Strands Robots</a> is an open source SDK from AWS (<a href="https://www.apache.org/licenses/LICENSE-2.0" rel="nofollow">Apache 2.0</a>) that exposes robot abstractions, simulation, and the <a href="https://github.com/huggingface/lerobot" rel="nofollow">LeRobot</a> stack as AgentTools that you compose into a single Strands agent. The integration is deliberately thin: LeRobot's own scripts handle hardware recording and calibration, and the Strands AgentTools come in for the parts an agent actually orchestrates. The simulation tool records LeRobotDatasets in the same format LeRobot writes on hardware. <a href="https://strands-labs.github.io/robots/policies/lerobot-local/" rel="nofollow">LerobotLocal</a> serves policy inference behind one interface for <a href="https://github.com/NVIDIA/Isaac-GR00T" rel="nofollow">GR00T</a>, ACT, SmolVLA, and MolmoAct2 checkpoints. A peer mesh fans the agent out to remote robots. The dataset format stays exactly as LeRobot wrote it; the agent loop is the glue.</p>
+<p>This post walks you through five steps inside a single agent: build the agent over the LeRobot AgentTools, record a demonstration as a LeRobotDataset in simulation, run a policy on the same robot, deploy the same agent code to a physical <a href="https://github.com/TheRobotStudio/SO-ARM100" rel="nofollow">SO-101</a>  with one keyword argument change, and broadcast commands across a fleet over the <a href="https://zenoh.io" rel="nofollow">Zenoh</a> mesh. At the end, you can clone the working sample application from GitHub and run it on your laptop in simulation. No hardware, no GPU, no Hugging Face credentials needed for the default path. The runnable companion to this post lives at <a href="https://github.com/strands-labs/robots/blob/main/examples/lerobot/hub_to_hardware.py" rel="nofollow"><code>examples/lerobot/hub_to_hardware.py</code></a> and <a href="https://github.com/strands-labs/robots/blob/main/examples/lerobot/hub_to_hardware.ipynb" rel="nofollow"><code>hub_to_hardware.ipynb</code></a>. The notebook is sim-only and Mock-policy by default.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-youll-build" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-youll-build" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What you'll build
+	</span>
+</h2>
+<p>The Strands Robots SDK exposes the LeRobot stack as AgentTools that you compose into one Strands agent. The example agent in this post does four things: record new demonstrations in simulation, push the result to the Hub as a LeRobotDataset, run a policy in simulation against that same format, and deploy the same agent code to a physical robot with one keyword argument change. When you have more than one robot, the agent can coordinate the whole fleet through a built-in peer mesh. For hardware recording and calibration, LeRobot's own CLIs (<code>lerobot-record</code>, <code>lerobot-calibrate</code>) handle the bring-up; the agent picks up from there.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/23tSv83E-Y06YWhpso9AS.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/23tSv83E-Y06YWhpso9AS.png" alt="arch_hugginface"></a></p>
+<p><strong>Figure 1. <em>Robot("so100") defaults to a MuJoCo-backed simulation; mode="real" returns a hardware robot driven by LeRobot. Both modes share the same DatasetRecorder and the same policy providers, so a dataset captured in sim and a dataset captured on hardware use the same on-disk LeRobotDataset format.</em></strong></p>
+<p>Two design choices make this work. First, <a href="https://strands-labs.github.io/robots/getting-started/robot-factory/" rel="nofollow">Robot("so100")</a> returns a simulation by default (no hardware, no risk), and mode="real" returns a hardware-backed robot driven by LeRobot. The agent code is identical across both modes. Second, the DatasetRecorder that writes a LeRobotDataset is shared between the <a href="https://strands-labs.github.io/robots/simulation/overview/" rel="nofollow">simulation path</a> and LeRobot's own hardware recording, so a dataset captured in <a href="https://mujoco.org" rel="nofollow">MuJoCo</a> and one captured from a physical <a href="https://github.com/TheRobotStudio/SO-ARM100" rel="nofollow">SO-101</a> are in the same format.</p>
+<p>The whole workflow in five lines of Python:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> strands_robots <span class="hljs-keyword">import</span> Robot
+<span class="hljs-keyword">from</span> strands <span class="hljs-keyword">import</span> Agent
+
+arm = Robot(<span class="hljs-string">"so100"</span>) <span class="hljs-comment"># mode="sim" (default - safe, no hardware)</span>
+agent = Agent(tools=[arm])
+agent(<span class="hljs-string">"Pick up the red cube"</span>)
+</code></pre>
+<p>What follows is what's actually happening inside that call, step by step.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="prerequisites" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#prerequisites" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Prerequisites
+	</span>
+</h2>
+<h4 class="relative group flex items-baseline">
+	<a id="minimal-default-simulation-path" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#minimal-default-simulation-path" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Minimal (default simulation path)
+	</span>
+</h4>
+<ul>
+<li>Python 3.12+, on Linux or macOS (Apple Silicon supported for the MuJoCo backend).</li>
+<li>A Strands-compatible model provider for the agent's reasoning. <a href="https://aws.amazon.com/bedrock/" rel="nofollow">Amazon Bedrock</a> with AWS credentials, the <a href="https://docs.anthropic.com" rel="nofollow">Anthropic API</a>, OpenAI, or <a href="https://ollama.com" rel="nofollow">Ollama</a> running locally.</li>
+<li>Strands Robots installed with the <a href="https://strands-labs.github.io/robots/getting-started/installation/" rel="nofollow">install extras</a>: <code>uv pip install "strands-robots[sim-mujoco,lerobot,mesh]&gt;=0.5.3,&lt;1.0" </code></li>
+</ul>
+<p>That's it. The example in this post runs end-to-end on a laptop with these three.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="advanced-hardware-deployment-real-policies-hub-push" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#advanced-hardware-deployment-real-policies-hub-push" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Advanced (hardware deployment, real policies, Hub push)
+	</span>
+</h4>
+<ul>
+<li>A Hugging Face account and token with write permission, for pushing datasets and pulling policy checkpoints from the Hub.</li>
+<li>For the hardware path: an SO-101 follower and leader pair, or any other LeRobot-supported robot. Both devices need calibration files under <code>~/.cache/huggingface/lerobot/calibration/</code>.</li>
+<li>For GR00T inference: an NVIDIA GPU and the GR00T extra, <code>uv pip install "strands-robots[groot]&gt;=0.5.3,&lt;1.0"</code>. GR00T N1.7 loads in-process through LeRobot, so no container or Docker is needed. Set <code>STRANDS_TRUST_REMOTE_CODE=1</code> to allow the checkpoint to load.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="step-1---set-up-the-example" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-1---set-up-the-example" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 1 - <strong>Set up the example</strong>
+	</span>
+</h2>
+<p>Install Strands Robots and get the example files:</p>
+<pre><code class="language-bash">uv pip install <span class="hljs-string">"strands-robots[sim-mujoco,lerobot,mesh]&gt;=0.5.3,&lt;1.0"</span>
+git <span class="hljs-built_in">clone</span> https://github.com/strands-labs/robots.git
+<span class="hljs-built_in">cd</span> robots
+</code></pre>
+<p>Export your Hugging Face token if you want the agent to push datasets or pull policies from the Hub. This is optional for the default simulation path in this post; the example runs end-to-end with the Mock policy and writes the dataset to your local cache without needing Hub access.</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> HF_TOKEN=hf_...
+</code></pre>
+<p>The runnable example lives at <code>examples/lerobot/hub_to_hardware.py</code> (Python script) and <code>hub_to_hardware.ipynb</code> (notebook), in the <code>strands-labs/robots</code> repository alongside the MuJoCo examples. The notebook is the recommended starting point: open it in <a href="https://jupyterlab.readthedocs.io" rel="nofollow">JupyterLab</a> and run cells top-to-bottom in simulation mode without any hardware connected.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-2---record-demonstrations-and-push-to-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-2---record-demonstrations-and-push-to-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 2 - Record demonstrations and push to the Hub
+	</span>
+</h2>
+<p>The simulation tool <a href="https://strands-labs.github.io/robots/recording/" rel="nofollow">records LeRobotDatasets</a> in the same format LeRobot writes on hardware. No hardware required. The <code>Simulation</code> tool's <code>start_recording</code> action writes through the same <code>DatasetRecorder</code> class: same parquet schema for joint states and actions, same per-camera MP4 layout. The agent prompt is almost identical:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> strands <span class="hljs-keyword">import</span> Agent
+<span class="hljs-keyword">from</span> strands_robots <span class="hljs-keyword">import</span> Robot
+
+robot = Robot(<span class="hljs-string">"so100"</span>)  <span class="hljs-comment"># mode="sim" by default</span>
+agent = Agent(tools=[robot])
+
+agent(
+    <span class="hljs-string">"Record a demonstration of 'pick the red cube and place it in the box' "</span>
+    <span class="hljs-string">"using the Mock policy provider at FPS 30. Write the dataset to "</span>
+    <span class="hljs-string">"my_user/cube_picking_sim and push to the Hub when done."</span>
+)
+</code></pre>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/DBe5futoSUQ9z9s4ECZ79.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/DBe5futoSUQ9z9s4ECZ79.png" alt="sim_scene"></a></p>
+<p><strong>Figure 2. <em>The recording scene in MuJoCo simulation: the SO-100 arm reaching toward a red cube on the ground plane, captured to a LeRobotDataset. No hardware, no GPU, no Hugging Face credentials needed for this default path.</em></strong></p>
+<p>The Mock policy is intentional: it generates placeholder joint actions so the workflow runs end-to-end without a trained checkpoint. The robot moves through random motions rather than completing the grasp, and the recording is structurally complete (valid joint states, valid camera frames, a well-formed LeRobotDataset episode), but the demonstration itself isn't useful as training data. Step 3 below swaps in a GR00T checkpoint through LerobotLocal for real grasping behavior. To see actual cube-picking in this step, run <code>--policy lerobot_local --checkpoint allenai/MolmoAct2-SO100_101</code> (a <a href="https://huggingface.co/allenai/MolmoAct2-SO100_101">MolmoAct2 checkpoint</a>, auto-detected from its config.json and routed through the LerobotLocal path); the prompt, dataset format, and agent code stay the same.</p>
+<p>The proof is what happens next. LeRobot's own dataset loader reads the sim-recorded data with no Strands-specific code path:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> lerobot.datasets.lerobot_dataset <span class="hljs-keyword">import</span> LeRobotDataset
+
+dataset = LeRobotDataset(<span class="hljs-string">"my_user/cube_picking_sim"</span>)
+<span class="hljs-built_in">print</span>(dataset.features)
+<span class="hljs-comment"># {'observation.state': Sequence(...),</span>
+<span class="hljs-comment">#  'observation.images.front': VideoFrame(...),</span>
+<span class="hljs-comment">#  'action': Sequence(...),</span>
+<span class="hljs-comment">#  'episode_index': Value(...), 'frame_index': Value(...), ...}</span>
+</code></pre>
+<p>This features dict is identical in shape to any LeRobot dataset on the Hub: same column names, same parquet+MP4 layout, same loader path. Training scripts that consume hardware-recorded data consume the sim-recorded data without modification. Datasets pushed from sim sit alongside hardware recordings in the same Hub repository if you want them to.</p>
+<p><video src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/6pY2tWrPpwrVDk650Vxju.mp4" controls="" class="max-w-full!"></video></p>
+
+<p><em>A single episode from a recorded LeRobotDataset, played back from the per-camera MP4 the recorder wrote, the same on-disk video a training script reads.</em></p>
+<h4 class="relative group flex items-baseline">
+	<a id="recording-on-hardware" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#recording-on-hardware" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		<strong>Recording on hardware</strong>
+	</span>
+</h4>
+<p>To record demonstrations on a physical SO-101 instead of simulation, use LeRobot's record CLI directly. The Strands integration doesn't wrap that command as an AgentTool because LeRobot already does the job cleanly:</p>
+<pre><code class="language-bash">lerobot-calibrate --robot.type=so101_follower --robot.id=my_follower
+lerobot-calibrate --robot.type=so101_leader   --robot.id=my_leader
+
+lerobot-record \
+  --robot.type=so101_follower --robot.id=my_follower \
+  --teleop.type=so101_leader  --teleop.id=my_leader \
+  --dataset.repo_id=my_user/cube_picking \
+  --dataset.single_task=<span class="hljs-string">'Pick up the red cube and place it in the box'</span> \
+  --dataset.num_episodes=25 \
+  --dataset.push_to_hub=<span class="hljs-literal">true</span>
+</code></pre>
+<p>The dataset that lands on the Hub from this command is in the same format as the simulation recording. To fine-tune a policy on it, run LeRobot's training CLI (<code>lerobot-train</code>); training itself is out of scope for this post and follows the standard LeRobot workflow. From Step 3 onward, the agent picks up either the original or a fine-tuned checkpoint interchangeably. For full SO-101 hardware setup, calibration walkthroughs, and troubleshooting, see the <a href="https://github.com/strands-labs/robots/blob/main/examples/lerobot/README.md" rel="nofollow">README in the example folder</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-3---run-a-policy-in-simulation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-3---run-a-policy-in-simulation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 3 - Run a policy in simulation
+	</span>
+</h2>
+<p>With the dataset on the Hub, the next step is to run a policy. The example uses the <code>Robot()</code> factory in its default sim mode and runs a GR00T checkpoint through the LerobotLocal provider, in the same process:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> os
+
+os.environ[<span class="hljs-string">"STRANDS_TRUST_REMOTE_CODE"</span>] = <span class="hljs-string">"1"</span>  <span class="hljs-comment"># GR00T loads through LeRobot</span>
+
+<span class="hljs-keyword">from</span> strands <span class="hljs-keyword">import</span> Agent
+<span class="hljs-keyword">from</span> strands_robots <span class="hljs-keyword">import</span> Robot
+
+robot = Robot(<span class="hljs-string">"so100"</span>)  <span class="hljs-comment"># mode="sim" by default</span>
+agent = Agent(tools=[robot])
+
+agent(
+    <span class="hljs-string">"Run the LerobotLocal policy 'my_user/cube-picker' on the robot with "</span>
+    <span class="hljs-string">"the instruction 'pick up the red cube' for 200 steps."</span>
+)
+</code></pre>
+<p>Under the hood, the agent runs a <code>run_policy</code> action on the simulated robot with <code>policy_provider="lerobot_local"</code>. The provider downloads the checkpoint from the Hub and loads it through <a href="https://strands-labs.github.io/robots/policies/lerobot-local/" rel="nofollow">LeRobot's GR00T policy</a> in the same process. The simulation steps with the policy's action chunks, and a render of the result is available via <code>Simulation.render</code>. To run inference on a separate GPU host instead, start <code>strands_robots.inference.server.PolicyServer</code> there and use <code>policy_provider="remote"</code>.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/70ZHVAM2CTkP0_kjNy08U.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/70ZHVAM2CTkP0_kjNy08U.png" alt="sim_grasp"></a></p>
+<p><strong>Figure 3. <em>With a trained policy (a GR00T or MolmoAct2 checkpoint), the agent drives the SO-100 to grasp the red cube in simulation, the behavior the Mock policy stands in for.</em></strong></p>
+<p>The same provider loads any LeRobot checkpoint. A model ID under the <code>lerobot/</code> organization routes to it by name:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> strands_robots.policies <span class="hljs-keyword">import</span> create_policy
+policy = create_policy(<span class="hljs-string">"lerobot/act_aloha_sim_transfer_cube_human"</span>)
+</code></pre>
+<p><code>LerobotLocalPolicy</code> supports <a href="https://tonyzhaozh.github.io/aloha/" rel="nofollow">ACT</a>, <a href="https://diffusion-policy.cs.columbia.edu" rel="nofollow">Diffusion Policy</a>, <a href="https://huggingface.co/blog/smolvla">SmolVLA</a>, <a href="https://www.pi.website/blog/pi0" rel="nofollow">π0</a>, and <a href="https://www.pi.website/blog/pi05" rel="nofollow">π0.5</a>, anything LeRobot's own policy registry can resolve from a <code>config.json</code>. <a href="https://www.pi.website/research/real_time_chunking" rel="nofollow">Real-Time Chunking</a> turns on automatically for flow-matching policies that ship an <code>rtc_config</code> (π0, SmolVLA).</p>
+<p>NVIDIA's recently released <a href="https://huggingface.co/nvidia/Cosmos3-Nano">Cosmos 3</a> is also available as a policy provider behind the same interface, so the agent code stays the same whichever provider you point it at.</p>
+<p><em>Note: LerobotLocalPolicy loads Hugging Face models with trust_remote_code=True. Set</em> <code>STRANDS_TRUST_REMOTE_CODE=1</code> <em>to opt in, and only load checkpoints from organizations you trust.</em></p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-4---deploy-the-policy-to-physical-hardware" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-4---deploy-the-policy-to-physical-hardware" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 4 - <strong>Deploy the policy to physical hardware</strong>
+	</span>
+</h2>
+<p>This is the same code as Step 3, with one keyword argument changed. The <code>Robot</code> factory returns a hardware-backed robot driven by LeRobot's <code>make_robot_from_config</code>:</p>
+<pre><code class="language-python">robot = Robot(
+    <span class="hljs-string">"so100"</span>,
+    mode=<span class="hljs-string">"real"</span>,
+    port=<span class="hljs-string">"/dev/ttyACM0"</span>,
+    data_config=<span class="hljs-string">"so100_dualcam"</span>,
+    cameras={
+        <span class="hljs-string">"front"</span>: {<span class="hljs-string">"type"</span>: <span class="hljs-string">"opencv"</span>, <span class="hljs-string">"index_or_path"</span>: <span class="hljs-string">"/dev/video0"</span>, <span class="hljs-string">"fps"</span>: <span class="hljs-number">30</span>},
+        <span class="hljs-string">"wrist"</span>: {<span class="hljs-string">"type"</span>: <span class="hljs-string">"opencv"</span>, <span class="hljs-string">"index_or_path"</span>: <span class="hljs-string">"/dev/video2"</span>, <span class="hljs-string">"fps"</span>: <span class="hljs-number">30</span>},
+    },
+)
+agent = Agent(tools=[robot])
+
+agent(
+    <span class="hljs-string">"Run the LerobotLocal policy 'my_user/cube-picker' on the robot with "</span>
+    <span class="hljs-string">"the instruction 'pick up the red cube' for 200 steps."</span>
+)
+</code></pre>
+<p>The same agent prompt now runs against a physical arm. The hardware path uses LeRobot's robot abstraction for joint commands and camera reads, and the same GR00T checkpoint, loaded in-process, generates the action chunks.</p>
+<p>Before this runs against your SO-101, calibration for both follower and leader has to be in place. Run LeRobot's calibration command (<code>lerobot-calibrate</code>) once per device; the files land under ~/.cache/huggingface/lerobot/calibration/ and any Strands code path that touches the hardware reads them from there. If a calibration is missing, the agent surfaces the error from the LeRobot driver layer.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-5---coordinate-multiple-robots-with-the-mesh" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-5---coordinate-multiple-robots-with-the-mesh" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 5 - Coordinate multiple robots with the mesh
+	</span>
+</h2>
+<p>Up to now we've driven one robot at a time. <a href="https://strands-labs.github.io/robots/mesh/" rel="nofollow">The mesh</a> is how Strands Robots handles more than one. Picture a leader arm on your desk teleoperating a follower arm in another room, or five SO-101s running the same warehouse task in parallel, or a humanoid coordinating with a mobile base. All of those are mesh patterns. The mesh is built on Zenoh, an open source peer-to-peer protocol, and you don't manage IP addresses, write discovery code, or pick a broker; new robots show up on the mesh the moment they come up, and the agent can talk to all of them at once.</p>
+<p>A <code>Robot()</code> or <code>Simulation()</code> joins a Zenoh peer mesh when you pass <code>mesh=True</code>, or set <code>STRANDS_MESH=true</code>; the mesh is off by default. The <code>robot_mesh</code> tool gives the agent a vocabulary for fleet operations such as discovery, structured commands, broadcasts, and emergency stop:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> strands <span class="hljs-keyword">import</span> Agent
+<span class="hljs-keyword">from</span> strands_robots <span class="hljs-keyword">import</span> Robot, robot_mesh
+
+robot = Robot(<span class="hljs-string">"so100"</span>, mesh=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># joining the mesh is opt-in</span>
+agent = Agent(tools=[robot_mesh])
+
+agent(
+    <span class="hljs-string">"List every robot and simulation on the mesh. "</span>
+    <span class="hljs-string">"Then send 'go to home pose' to each one in parallel."</span>
+)
+</code></pre>
+<p>The agent calls <code>robot_mesh(action="peers")</code> to enumerate locals and discovered peers, then <code>robot_mesh(action="broadcast", ...)</code> to send the structured command to every peer with a timeout. Add the <code>[mesh-iot]</code> extra to route this traffic over AWS IoT Core for cross-network fleets. The <code>robot_mesh</code> tool's action reference in the project documentation covers the full vocabulary: subscribe, watch, inbox, and structured peer-to-peer commands.</p>
+<p>By default, every physically-actuating mesh action pauses for a human approval interrupt before it runs: the fleet-wide broadcast and emergency_stop, plus the single-peer tell, send, and stop. You can tune this set with the STRANDS_MESH_HITL_ACTIONS environment variable (set it to all, none, or a comma-separated subset). The first time you run this example, you'll see a robot_mesh-broadcast-approval prompt in your terminal; type y (or yes / approve) to authorize the broadcast. The approval is delivered out-of-band of the LLM's tool arguments, so a prompt-injection attempt that tries to slip an approval flag into the command body cannot bypass the gate.</p>
+<p>The transport scales without touching agent code. The built-in Zenoh mesh is the automatic fallback: on the LAN, Zenoh peers find each other with no broker (gossip by default; set STRANDS_MESH_MULTICAST=true for multicast scouting), and adding the [mesh-iot] extra routes traffic through <a href="https://aws.amazon.com/iot-core/" rel="nofollow">AWS IoT Core</a> (MQTT5 with mTLS) for cloud fleets, with a BridgeTransport that fans LAN and cloud behind one API (select it with STRANDS_MESH_BACKEND=bridge).</p>
+<p>For production fleets, Device Connect, a device-aware networking layer developed in collaboration with Arm, handles discovery, presence, structured RPC, event routing, and safety. The same robot_mesh tool dispatches through Device Connect when it is available and falls back to the built-in Zenoh mesh otherwise, so the agent code in this post is unchanged either way. See the <a href="https://strands-labs.github.io/robots/device-connect/" rel="nofollow">Device Connect documentation</a> for setup and current availability.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="try-it-using-the-sample-application" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-it-using-the-sample-application" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try it using the sample application
+	</span>
+</h2>
+<p>The full sample is on GitHub at <a href="https://github.com/strands-labs/robots" rel="nofollow">strands-labs/robots</a> in the examples/lerobot/ folder. It packages all five steps into a single CLI script (hub_to_hardware.py) and a notebook (hub_to_hardware.ipynb). The CLI defaults run end-to-end in simulation with the Mock policy. No GPU, no Docker, no Hugging Face credentials needed.</p>
+<pre><code class="language-bash">uv pip install <span class="hljs-string">"strands-robots[sim-mujoco,lerobot,mesh]&gt;=0.5.3,&lt;1.0"</span>
+git <span class="hljs-built_in">clone</span> https://github.com/strands-labs/robots.git
+<span class="hljs-built_in">cd</span> robots
+
+<span class="hljs-built_in">export</span> STRANDS_MESH_LOCAL_DEV=1
+
+python examples/lerobot/hub_to_hardware.py
+</code></pre>
+<p>The recorded dataset lands at <code>~/.cache/huggingface/lerobot/local/strands-cube-pick/</code>. To push to the Hugging Face Hub instead of keeping it local, pass <code>--hf-user &lt;your-user&gt;</code> after exporting HF_TOKEN with write scope. For real grasping behavior in Step 3, pass <code>--policy lerobot_local --checkpoint nvidia/GR00T-N1.7-3B</code>, or another Hub checkpoint. This needs a GPU and <code>STRANDS_TRUST_REMOTE_CODE=1</code>.</p>
+<p>The notebook (examples/lerobot/hub_to_hardware.ipynb) walks through the same workflow cell by cell, with narration between each step. Open it in JupyterLab and run top-to-bottom in simulation mode.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="security-considerations" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#security-considerations" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Security Considerations
+	</span>
+</h2>
+<p>The code snippets shown in this setup represent a “hello world” example of setting up Strands Robots with HuggingFace. For more serious, production-ready use cases there are some important considerations users should be aware of:</p>
+<h4 class="relative group flex items-baseline">
+	<a id="prompt-injection" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#prompt-injection" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Prompt Injection
+	</span>
+</h4>
+<p>Supplying untrusted data into agents can lead to prompt injection, where untrustworthy context is treated as LLM instructions. Given the actuation of these robots in physical space, this is an important risk to track. To mitigate this behavior, developers should be careful to feed the robots only data that comes from a trusted source. If not all input data can be trusted, developers should restrict the tools available to the agent to prevent the robots from making safety-critical actions. </p>
+<h4 class="relative group flex items-baseline">
+	<a id="robot-mesh-auth-behavior" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#robot-mesh-auth-behavior" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Robot Mesh Auth Behavior
+	</span>
+</h4>
+<p>The <code>STRANDS_MESH_LOCAL_DEV=1</code> setting shared in the code snippets in this blog initializes the robot mesh without authentication or access controls. This means that any device on the same network can provide commands to the robot fleet. This is acceptable for trusted development environments, but is not suitable for untrusted networks or production environments. For these use cases, <code>STRANDS_MESH_AUTH_MODE=mtls</code> is required.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="operator-approval-for-fleet-wide-actions" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#operator-approval-for-fleet-wide-actions" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		<strong>Operator approval for fleet-wide actions</strong>
+	</span>
+</h4>
+<p>The robot_mesh tool's physically-actuating actions affect peers on the network: broadcast and emergency_stop reach every peer, while tell, send, and stop reach a single targeted peer. To prevent an agent from issuing these commands autonomously (or under prompt injection), all five are gated behind a human-in-the-loop interrupt by default. When the agent invokes a gated action, the Strands runtime pauses the agent loop and asks the operator to approve out-of-band of the LLM's tool arguments. You can adjust the gated set with the STRANDS_MESH_HITL_ACTIONS environment variable (all, none, or a comma-separated subset). Per-action rate limits, command validation, and an audit trail run alongside the interrupt. Outside an agent loop (a bare script or unit test), the gated actions fail closed.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="clean-up" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#clean-up" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Clean up
+	</span>
+</h2>
+<p>The preceding workflow opens serial ports on hardware and writes a local dataset cache. To return your environment to a clean state:</p>
+<ul>
+<li><strong>Release the serial ports:</strong> if you ran the hardware path, disconnect the SO-101 follower and leader.</li>
+<li><strong>Optionally remove the local dataset cache:</strong> the recorded dataset lives under <code>~/.cache/huggingface/lerobot/&lt;repo_id&gt;</code>. Datasets you pushed to the Hub are unaffected.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="how-this-fits-together" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-this-fits-together" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How this fits together
+	</span>
+</h2>
+<p>The integration's central design choice is that Strands Robots doesn't reimplement what LeRobot already provides. Hardware abstraction, calibration, and the dataset format stay upstream. Strands adds the AgentTool surface that makes them composable from natural language.</p>
+<p>Two consequences follow. For users, every dataset on the Hub is an asset an agent can extend, fine-tune from, and deploy against with no conversion step. For developers, simulation data and hardware data share a single file format, so training scripts written for one consume the other unchanged. The line between sim and real becomes a deployment detail, not an architectural divide.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="where-to-go-from-here" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#where-to-go-from-here" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Where to go from here
+	</span>
+</h2>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/LC9TP6EKBDCBC4waZEXJo.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/LC9TP6EKBDCBC4waZEXJo.png" alt="fleet"></a></p>
+<p><strong>Figure 4. <em>The Strands Robots catalog spans arms, humanoids, quadrupeds, and hands, all in the same MuJoCo simulation and behind the same <code>Robot()</code> factory. The SO-100 in this post is one of many supported embodiments.</em></strong></p>
+<p>The full <a href="https://strands-labs.github.io/robots/" rel="nofollow">Strands Robots documentation</a> covers the robot catalog, simulation, policy providers, the mesh, and Device Connect in depth. For larger workloads, Strands Robots also ships heavier simulation backends, Isaac Sim and Newton. Both backends plug into the same Robot abstraction shown in this post, so the agent code stays the same as you scale up.</p>
+<p>Contributions are welcome under Apache 2.0. If you build something with this workflow, open an issue with what worked and what didn't. The SDK improves fastest when developer feedback lands directly on the surface that needs it.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="resources" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#resources" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Resources
+	</span>
+</h2>
+<ul>
+<li><strong>Strands Robots</strong> (SDK, AgentTools, Robot factory): <a href="https://github.com/strands-labs/robots" rel="nofollow">github.com/strands-labs/robots</a>, Apache 2.0</li>
+<li><strong>Strands Robots docs</strong> (full documentation): <a href="https://strands-labs.github.io/robots/" rel="nofollow">strands-labs.github.io/robots</a></li>
+<li><strong>The example:</strong> <a href="https://github.com/strands-labs/robots/tree/main/examples/lerobot" rel="nofollow">examples/lerobot/hub_to_hardware.py</a> and <a href="https://github.com/strands-labs/robots/tree/main/examples/lerobot" rel="nofollow">hub_to_hardware.ipynb</a></li>
+<li><strong>How to Build Physical AI Agents: Natural Language for Real-World Robotics</strong>: <a href="https://www.youtube.com/watch?v=K5fVWNeaqiM" rel="nofollow">Live Stream</a> and <a href="https://aws.amazon.com/blogs/opensource/building-intelligent-physical-ai-from-edge-to-cloud-with-strands-agents-bedrock-agentcore-claude-4-5-nvidia-gr00t-and-hugging-face-lerobot/" rel="nofollow">Blog</a></li>
+<li><strong>Diving Deep on Physical AI | S1E4 | Automate with NVIDIA NeMo Agent Toolkit and Bedrock AgentCore</strong>: <a href="https://www.youtube.com/watch?v=o4WJrv4jlCU" rel="nofollow">Live Stream</a></li>
+<li><strong>LeRobot</strong>: <a href="https://github.com/huggingface/lerobot" rel="nofollow">github.com/huggingface/lerobot</a> - datasets, policies, hardware drivers</li>
+<li><strong>Strands Agents SDK</strong>: <a href="https://github.com/strands-agents/harness-sdk" rel="nofollow">github.com/strands-agents/harness-sdk</a></li>
+<li><strong>SmolVLA</strong>: <a href="https://huggingface.co/lerobot/smolvla_base">SmolVLA</a></li>
+<li><strong>Pi0</strong>: <a href="https://huggingface.co/lerobot/pi0_base">Pi0</a></li>
+<li><strong>NVIDIA Isaac-GR00T N1.7</strong>: <a href="https://huggingface.co/nvidia/GR00T-N1.7-3B">GR00T N1.7</a></li>
+<li><strong>NVIDIA Cosmos3 Nano</strong>: <a href="https://huggingface.co/nvidia/Cosmos3-Nano">Cosmos 3 Nano</a></li>
+</ul>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="authors" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#authors" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Authors
+	</span>
+</h2>
+<p><strong>Cagatay Cali</strong> is a Research Engineer at AWS focused on Agentic AI and robotics. He designs interfaces that connect AI agents to physical robots, enabling developers to control robotic systems through natural language and making agents and robotics development accessible to builders at any skill level.</p>
+<p><a href="https://www.linkedin.com/in/sundar-raghavan-4838a526" rel="nofollow"><strong>Sundar Raghavan</strong></a> is a Sr Solutions Architect at AWS on the Agentic AI Foundations team. He leads the developer experience for Amazon Bedrock AgentCore, owning the SDK and CLI, and drives the framework and ecosystem integrations strategy. He focuses on how developers build, deploy, and scale production AI agents on AWS. He is currently extending that focus into physical AI, collaborating on Strands Robots to bring the same agent developer experience to robotics.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">5</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/amazon/strands-lerobot-streaming-data-loop"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/6a1dc0f2b4238bb17ff94794/St00mBynNYpgz93MpL17G.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Record, train, and deploy from one place with Strands Agents, LeRobot, and Hugging Face Storage Buckets</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="amazon" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f19ed428ae41c20c470792/8y7msN6A6W82LdQhQd85a.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 35</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 13, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/amazon/one-click-to-sagemaker-studio"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/68abb71b13d7773ad97e9035/f1nX3dXVmvJcQzJfgfpnJ.webp" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">From Hugging Face to Amazon SageMaker Studio in one click</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="amazon" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f19ed428ae41c20c470792/8y7msN6A6W82LdQhQd85a.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 21</div><!--]--> <!--[0--><span class="whitespace-nowrap">July 7, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a32cc195e3457d3291f0fe4" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/55f74fa0a0e912e67fba3920fe28a900.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/atsyplikhin">atsyplikhin</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a32cc195e3457d3291f0fe4" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-17T16:32:25" title="Wed, 17 Jun 2026 16:32:25 GMT">Jun 17</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Fantastic to see! The single-kwarg flip from MuJoCo sim to mode="real" (same agent code, same LeRobotDataset format end to end) is exactly the friction-removal that gets robotics agents into real labs. Work like this lifts all the ships: the easier and more open we make agent-to-hardware control, the faster the whole industry moves. The Device Connect team at Arm is excited to collaborate!</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🤝</div> <div class="invisible">2</div> <!----><div class="absolute right-2">2</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a3340e09a0c92d603ce386f" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/YdisMmTuCDj0gVK2TDml7.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/sondhiArm">sondhiArm</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a3340e09a0c92d603ce386f" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-18T00:50:40" title="Thu, 18 Jun 2026 00:50:40 GMT">Jun 18</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Very cool! </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🤗</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Famazon%2Fstrands-lerobot-hub-to-hardware">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Famazon%2Fstrands-lerobot-hub-to-hardware">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Famazon%2Fstrands-lerobot-hub-to-hardware" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">17</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="imstevenpmwork" style="content-visibility:auto;"><!--[0--><a href="/imstevenpmwork" title="imstevenpmwork"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b124b081d4eae18b957606/QdQMOTzsHBkJIuXjk8O_h.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cagataydev" style="content-visibility:auto;"><!--[0--><a href="/cagataydev" title="cagataydev"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6498ef778fadf0ae7639b982/N9zJ6s7luJFTPM26kxWfe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pagezyhf" style="content-visibility:auto;"><!--[0--><a href="/pagezyhf" title="pagezyhf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/w3Z6xyKVBA6np65Tb16dP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="KavyaChennojuArm97" style="content-visibility:auto;"><!--[0--><a href="/KavyaChennojuArm97" title="KavyaChennojuArm97"><img class="overflow-hidden rounded-full" alt="" src="/avatars/323a5bdfb713879dd090d49359933914.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="arronbailiss" style="content-visibility:auto;"><!--[0--><a href="/arronbailiss" title="arronbailiss"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6898e8353fd2a08d1b1caa65/9FMLVcH9uuLzaAV8tu2Jb.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sondhiArm" style="content-visibility:auto;"><!--[0--><a href="/sondhiArm" title="sondhiArm"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/YdisMmTuCDj0gVK2TDml7.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="BasitMustafa" style="content-visibility:auto;"><!--[0--><a href="/BasitMustafa" title="BasitMustafa"><img class="overflow-hidden rounded-full" alt="" src="/avatars/1f9d09bba8dd2d8657619536078f9ec2.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alvarobartt" style="content-visibility:auto;"><!--[0--><a href="/alvarobartt" title="alvarobartt"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60f0608166e5701b80ed3f02/H9LNnlf0W4fiOJhQMxnbW.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="KeitaWatanabe" style="content-visibility:auto;"><!--[0--><a href="/KeitaWatanabe" title="KeitaWatanabe"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64d6b270c2eedf9af82baa23/AuqNaw5D1zv6ck1C4IR5I.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Tabbab321" style="content-visibility:auto;"><!--[0--><a href="/Tabbab321" title="Tabbab321"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0e2a406f3c8ae3d17e7e67139aca4553.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="loleg" style="content-visibility:auto;"><!--[0--><a href="/loleg" title="loleg"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1673712263092-61f1877a168a0b52fda88455.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+5</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">5</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

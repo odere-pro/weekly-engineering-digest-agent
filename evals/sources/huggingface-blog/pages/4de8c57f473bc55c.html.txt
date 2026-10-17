@@ -1,0 +1,369 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/hf-cli-for-agents/thumbnail.png" />
+
+		<meta property="og:title" content="Designing the hf CLI as an agent-optimized way to work with the Hub" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/hf-cli-for-agents" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/hf-cli-for-agents/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/hf-cli-for-agents">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Designing the hf CLI as an agent-optimized way to work with the Hub</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="designing-the-hf-cli-as-an-agent-optimized-way-to-work-with-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#designing-the-hf-cli-as-an-agent-optimized-way-to-work-with-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Designing the hf CLI as an agent-optimized way to work with the Hub
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 4, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/hf-cli-for-agents.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fhf-cli-for-agents" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">61</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="osolmaz" style="content-visibility:auto;"><!--[0--><a href="/osolmaz" title="osolmaz"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/633413b18003819e16aee0aa/CglgixDB95u8ILW8WdxCU.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="celinah" style="content-visibility:auto;"><!--[0--><a href="/celinah" title="celinah"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="davanstrien" style="content-visibility:auto;"><!--[0--><a href="/davanstrien" title="davanstrien"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1627505688463-60107b385ac3e86b3ea4fc34.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="victor" style="content-visibility:auto;"><!--[0--><a href="/victor" title="victor"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5f17f0a0925b9863e28ad517/78BR8GuQiX9a8wbbRlSAC.webp" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Wauplin" style="content-visibility:auto;"><!--[0--><a href="/Wauplin" title="Wauplin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659336880158-6273f303f6d63a28483fde12.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+55</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/celinah"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Célina Hanouti's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/celinah"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Célina Hanouti">Célina Hanouti</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">celinah</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/Wauplin"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Lucain Pouget's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659336880158-6273f303f6d63a28483fde12.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/Wauplin"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Lucain Pouget">Lucain Pouget</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">Wauplin</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><code>hf</code> is the official command-line entrypoint to the Hugging Face Hub. Anything you can do on the Hub from the Python SDK, you can do from your terminal: download and upload models, datasets and Spaces; create and manage repos, branches, tags and pull requests; run Jobs on HF infrastructure; manage Buckets, Collections, webhooks and Inference Endpoints.</p>
+<p>The <code>hf</code> CLI has been primarily built for our users over the years. But it's now increasingly used by <strong>coding agents</strong>: Claude Code, Codex, Cursor and more. So we rebuilt it to make it work for both audiences at once. This blog post summarizes what we did, and how we benchmarked it. We found that on complex, multi-step tasks the no-CLI baseline (an agent hand-rolling <code>curl</code> or the Python SDK) uses up to <strong>6× as many tokens</strong> as the <code>hf</code> CLI.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="ai-agent-traffic-on-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#ai-agent-traffic-on-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		AI agent traffic on the Hub
+	</span>
+</h2>
+<p>We started tracking agent usage of the Hub in April 2026. The <code>hf</code> CLI (and the <code>huggingface_hub</code> Python SDK it's built on) detects when a coding agent is driving it by reading the environment variables agents set: <code>CLAUDECODE</code>/<code>CLAUDE_CODE</code> for Claude Code, <code>CODEX_SANDBOX</code> for Codex, plus Cursor, Gemini, Pi, and the universal <code>AI_AGENT</code>. That single signal does two jobs: it shapes the CLI's output (more on that below) and it tags each Hub request with an <code>agent/&lt;name&gt;</code> user-agent, so we can attribute traffic to the agent driving it. The two largest by distinct users are <strong>Claude Code and Codex</strong>, well ahead of everything else, and they're the two agents we benchmark later in this article.</p>
+<div class="flex justify-center">
+    <img class="block dark:hidden" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-users.png" alt="Distinct users of the Hugging Face Hub by coding agent since April 2026. Claude Code leads with 39.5k users and 48.6M requests, then Codex with 34.8k users and 36.4M requests, followed by antigravity, cursor-cli, openclaw, cursor, gemini and pi." width="100%">
+    <img class="hidden dark:block" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-users-dark.png" alt="Distinct users of the Hugging Face Hub by coding agent since April 2026. Claude Code leads with 39.5k users and 48.6M requests, then Codex with 34.8k users and 36.4M requests, followed by antigravity, cursor-cli, openclaw, cursor, gemini and pi." width="100%">
+</div>
+
+<p>The bars count distinct users per agent; request volume is the sub-label. Claude Code alone is ~40k users and nearly 49M requests, with Codex close behind. These are early numbers (we only began attributing agent traffic in April 2026), but the scale is already significant, and we expect it to keep growing as coding agents become a standard way to work with the Hub.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="built-for-humans-and-agents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#built-for-humans-and-agents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Built for humans and agents
+	</span>
+</h2>
+<p>Humans and coding agents expect different outputs for the same <code>hf</code> commands. A human wants rich terminal output: ANSI color, padded tables truncated to fit the screen, a green ✅ on success, <code>✔</code> for booleans, progress bars, prose hints. An agent wants
+the inverse: no ANSI, nothing truncated, every value in full since an agent can handle far denser output than a human, kept compact and structured to stay light on tokens. It also can't answer a CLI prompt and will happily re-run a command after a timeout. The rest of this section is how <code>hf</code> gives each side what it needs. We introduced agent-mode output in <code>hf</code> v1.9.0 and have been migrating the rest of the CLI to it gradually in the following releases.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="one-command-multiple-renderings" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#one-command-multiple-renderings" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		One command, multiple renderings
+	</span>
+</h3>
+<p>When <code>hf</code> auto-detects agent use (via the environment variables mentioned above), it renders the <strong>same command</strong> differently. It optimizes output format for humans or agents without passing a flag:</p>
+<pre><code class="language-text"># human (default in a terminal): aligned table, truncated to fit, with a hint
+&gt; hf models ls --author Qwen --sort downloads --limit 3
+ID                       CREATED_AT DOWNLOADS LIBRARY_NAME LIKES PIPELINE_TAG    PRIVATE TAGS
+------------------------ ---------- --------- ------------ ----- --------------- ------- -------------------------
+Qwen/Qwen3-0.6B          2025-04-27  21156913 transformers  1285 text-generation         transformers, safetens...
+Qwen/Qwen2.5-1.5B-Ins... 2024-09-17  15143953 transformers   725 text-generation         transformers, safetens...
+Qwen/Qwen3-4B            2025-04-27  14808352 transformers   625 text-generation         transformers, safetens...
+Hint: Use `--no-truncate` or `--format json` to display full values.
+
+# agent (auto-detected): TSV, full ids + ISO timestamps + every tag, nothing truncated
+$ hf models ls --author Qwen --sort downloads --limit 3
+id      created_at      downloads       library_name    likes   pipeline_tag    private tags
+Qwen/Qwen3-0.6B 2025-04-27T03:40:08+00:00       21156913        transformers    1285    text-generation False   ['transformers', 'safetensors', 'qwen3', 'text-generation', 'conversational', 'arxiv:2505.09388', 'base_model:Qwen/Qwen3-0.6B-Base', 'base_model:finetune:Qwen/Qwen3-0.6B-Base', 'license:apache-2.0', 'text-generation-inference', 'endpoints_compatible', 'deploy:azure', 'region:us']
+Qwen/Qwen2.5-1.5B-Instruct      2024-09-17T14:10:29+00:00       15143953        transformers    725     text-generation False['transformers', 'safetensors', 'qwen2', 'text-generation', 'chat', 'conversational', 'en', 'arxiv:2407.10671', 'base_model:Qwen/Qwen2.5-1.5B', 'base_model:finetune:Qwen/Qwen2.5-1.5B', 'license:apache-2.0', 'text-generation-inference', 'endpoints_compatible', 'deploy:azure', 'region:us']
+Qwen/Qwen3-4B   2025-04-27T03:41:29+00:00       14808352        transformers    625     text-generation False   ['transformers', 'safetensors', 'text-generation', 'arxiv:2309.00071', 'arxiv:2505.09388', 'base_model:Qwen/Qwen3-4B-Base', 'base_model:finetune:Qwen/Qwen3-4B-Base', 'license:apache-2.0', 'endpoints_compatible', 'deploy:azure', 'region:us']
+</code></pre>
+<p>A <strong>human</strong> gets an aligned table, truncated to fit the terminal, plus a hint on how to see more, with color cues for status (a green <code>✓</code> on success, red on error). An <strong>agent</strong> gets the complete record as TSV: full repo ids, full ISO timestamps, every tag, no ANSI codes, nothing truncated, clean to parse and light on tokens.</p>
+<p>In practice, we've implemented logging methods like <code>.table(...)</code>, <code>.result(...)</code>, <code>.json()</code>, etc., which take raw data as input and handle the formatting. In addition to human and agent modes, we've introduced <code>--json</code> and <code>--quiet</code> options to make it easier to pipe commands together. The default mode is automatically chosen based on context, but users can always force the format of their choice with <code>--format human | agent | json | quiet</code>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="next-command-hints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#next-command-hints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Next-command hints
+	</span>
+</h3>
+<p>CLI commands rarely run in isolation: one step usually implies the next (<code>git add</code>, then <code>git commit</code>). Many <code>hf</code> commands now end with a <strong>hint</strong>: the exact next command to run, pre-filled with the IDs you just used, so a user or agent can chain straight to the next step instead of working it out from scratch. Start a Job in the background and it points you to its logs; create a Space and it points you to its boot status:</p>
+<pre><code class="language-text">$ hf jobs run --detach python:3.12 python train.py
+✓ Job started
+  id: 6f3a1c2e9b
+  url: https://huggingface.co/jobs/celinah/6f3a1c2e9b
+Hint: Use `hf jobs logs 6f3a1c2e9b` to fetch the logs.
+</code></pre>
+<p>For a human that's a convenience. For an agent it's a rail: the next action is named, parameterized with the right ids, and ready to run, so it takes fewer steps working out what to do. Errors behave the same way, naming the fix instead of just failing:</p>
+<pre><code>Error: Not logged in. Run `hf auth login` first.
+</code></pre>
+<p>Hints, warnings and errors all go to stderr while data goes to stdout, so none of this guidance pollutes the output the agent is parsing.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="non-blocking-and-safe-to-retry" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#non-blocking-and-safe-to-retry" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Non-blocking and safe to retry
+	</span>
+</h3>
+<p><code>hf</code> never sits on an interactive prompt waiting for a key an agent can't press. A destructive command still asks a human to confirm, but in agent mode it <em>fails fast</em> with the fix in the message (<code>Use --yes to skip confirmation.</code>), and <code>-y</code>/<code>--yes</code> skips it. And because agents retry on timeouts and lost context, operations are built to be safe to repeat: <code>hf repos create --exist-ok</code> is a no-op if the repo already exists, and re-running an upload re-commits cleanly. Separately, the commands that move real data take a <code>--dry-run</code> that shows exactly what they'll transfer before they run, which proves handy for humans and  agents alike, since neither has to commit to a long download or blind sync:</p>
+<pre><code class="language-text"># agent mode: a destructive command without --yes refuses, with the fix in the message
+$ hf repos delete my-org/old-model
+Error: You are about to permanently delete model 'my-org/old-model'. Proceed? Use --yes to skip confirmation.
+
+# commands that move data take --dry-run to preview the transfer first
+$ hf download deepseek-ai/DeepSeek-V4-Pro config.json --dry-run
+[dry-run] Will download 1 files (out of 1) totalling 1.8K.
+file         size
+config.json  1.8K
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="discoverable-predictable-commands" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#discoverable-predictable-commands" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Discoverable, predictable commands
+	</span>
+</h3>
+<p><code>hf</code> is built to be probed: run <code>hf</code> to see the resource groups, run <code>--help</code> on the one you need, and every <code>--help</code> ends with real, copy-pasteable examples (which an agent matches against far faster than it parses a description):</p>
+<pre><code>$ hf models ls --help
+...
+Examples
+  $ hf models ls --sort downloads --limit 10
+  $ hf models ls --search "qwen" --author Qwen
+  $ hf models ls Qwen/Qwen3-4B --tree
+</code></pre>
+<p>The command tree is consistent, <strong>resource + verb</strong> with the obvious aliases (<code>hf models ls</code>, <code>hf repos create</code>, <code>hf jobs ps</code>, <code>hf collections delete</code>; <code>list</code>/<code>ls</code>, <code>remove</code>/<code>rm</code>), so once an agent learns one command it can guess the rest. And the output composes: <code>-q</code> prints one id per line to pipe into the next command, <code>--json</code> gives you something to hand to <a href="https://jqlang.org/" rel="nofollow"><code>jq</code></a>.</p>
+<pre><code class="language-text">$ hf models ls --author Qwen -q | head -3
+Qwen/Qwen3-0.6B
+Qwen/Qwen2.5-1.5B-Instruct
+Qwen/Qwen3-4B
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="benchmarking-the-hf-cli-for-coding-agents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#benchmarking-the-hf-cli-for-coding-agents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Benchmarking the hf CLI for Coding Agents
+	</span>
+</h2>
+<p>To find out whether the <code>hf</code> CLI is really more efficient for agents, we measured it. We built a small evaluation harness and ran the same set of Hub tasks through each way of driving the Hub, many times over, grading every run against the live Hub. Here's the headline before the methodology: across both agents the <code>hf</code> CLI comes out ahead, most clearly on complex, multi-step tasks where it uses far fewer tokens.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>agent</th>
+<th>tool</th>
+<th>success score</th>
+<th>token usage</th>
+<th>self-report error</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><strong>Claude Code (Sonnet 4.6)</strong></td>
+<td><code>hf</code> CLI</td>
+<td><strong>0.94</strong></td>
+<td>baseline</td>
+<td><strong>2 / 163</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>curl / Python SDK</td>
+<td>0.84</td>
+<td><strong>1.3-1.6× tokens</strong></td>
+<td>11 / 163</td>
+</tr>
+<tr>
+<td><strong>Codex (GPT-5.5)</strong></td>
+<td><code>hf</code> CLI</td>
+<td><strong>0.93</strong></td>
+<td>baseline</td>
+<td><strong>3 / 163</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>curl / Python SDK</td>
+<td>0.92</td>
+<td><strong>1.6-1.8× tokens</strong></td>
+<td>10 / 163</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>(self-report error = the agent reported success on the 17 solvable tasks but the Hub said otherwise. The <code>hf</code> CLI rows are the CLI with its skill installed; what the skill adds on top of the bare CLI (chiefly fewer tool calls) is broken out in <a href="#the-hf-cli-skill" rel="nofollow">the skill section</a> below. Representative transcripts are published <a href="https://huggingface.co/buckets/celinah/hf-cli-agent-benchmark">in this bucket</a>.)</em></p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-setup" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-setup" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The setup
+	</span>
+</h3>
+<p>We defined <strong>18 non-trivial Hub tasks</strong>. Not "download a file", but the kind of thing you'd actually ask for: aggregate a trending org's models, inspect a repo's files and their sizes, upload a folder with include/exclude rules, delete files, copy files across repos, open a PR that adds a license, create a repo with a branch and a tag, sync and prune a bucket, build a collection. Each task goes to a fresh coding agent with exactly <strong>one</strong> way to talk to the Hub:</p>
+<ul>
+<li>the <code>hf</code> CLI, or</li>
+<li><strong>curl / the Python SDK</strong>: no <code>hf</code> CLI at all, so the agent falls back to <code>curl</code> against the REST API or the <code>huggingface_hub</code> Python library.</li>
+</ul>
+<p>We run the <code>hf</code> CLI in two configurations, with and without its skill (a generated command reference we come back to in <a href="#the-hf-cli-skill" rel="nofollow">its own section</a>). But the headline comparison below is simply <strong><code>hf</code> CLI vs curl / the SDK</strong>; the skill's incremental effect is small enough that we break it out on its own rather than crowd it into the main results.</p>
+<p>The config is deliberately clean: a fresh instance per run, no custom MCP servers, no <code>CLAUDE.md</code> or <code>AGENTS.md</code>, nothing in context to nudge behavior. The task and the tool go into a single prompt, and the agent finishes with a <code>TASK_COMPLETE</code> or <code>TASK_FAILED</code> marker, but we don't trust that marker (an agent will report success on work that never landed), so we grade every run independently by <strong>re-querying the live Hub</strong>: did the branch really get created, is the file actually gone, does the bucket exist? Each task/tool combination is run <strong>10 times</strong>, since coding agents are non-deterministic, about <strong>520 runs per agent</strong> (18 tasks × 3 tools × 10 reps, minus a cap on one billable Jobs task) and ~1,000 graded runs in total. We ran the whole thing twice, on the two most popular coding agents (<strong>Claude Code</strong> with Sonnet 4.6 and <strong>OpenAI Codex</strong> with GPT-5.5).</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-results" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-results" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The results
+	</span>
+</h3>
+<p>The two charts below unpack the table above. First, <strong>task success on Sonnet</strong>, the agent where curl and the SDK struggle most:</p>
+<div class="flex justify-center">
+    <img class="block dark:hidden" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-success.png" alt="Task success on Claude Code with Sonnet 4.6: hf CLI 94%, curl / Python SDK 84%." width="100%">
+    <img class="hidden dark:block" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-success-dark.png" alt="Task success on Claude Code with Sonnet 4.6: hf CLI 94%, curl / Python SDK 84%." width="100%">
+</div>
+
+<p>Without the CLI, curl and the SDK trail by ten points, because on Sonnet they simply can't finish parts of the job (the writes, mostly), while the <code>hf</code> CLI clears them.</p>
+<p>The second image shows <strong>token impact on GPT-5.5</strong>, broken down per task. Each bar is the curl/SDK tokens divided by the CLI's on the same task, so <code>2.4×</code> means the non-hf version burned 2.4 times as many tokens to do the same thing:</p>
+<div class="flex justify-center">
+    <img class="block dark:hidden" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-tokens.png" alt="Per-task token ratio of curl/Python SDK divided by the hf CLI on GPT-5.5, sorted high to low. Multi-step tasks cost curl/Python SDK far more: bucket create+sync+prune 6.0x, rank orgs by trending models 4.1x, repo create+branch+tag / delete files / copy files across repos 2.4x each. Simple one-shot reads sit near parity or cheaper: batch model metadata 0.5x, count dataset rows 0.3x." width="80%">
+    <img class="hidden dark:block" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-tokens-dark.png" alt="Per-task token ratio of curl/Python SDK divided by the hf CLI on GPT-5.5, sorted high to low. Multi-step tasks cost curl/Python SDK far more: bucket create+sync+prune 6.0x, rank orgs by trending models 4.1x, repo create+branch+tag / delete files / copy files across repos 2.4x each. Simple one-shot reads sit near parity or cheaper: batch model metadata 0.5x, count dataset rows 0.3x." width="80%">
+</div>
+
+<p>On a one-shot read (count dataset rows, batch metadata) curl and the SDK are fine, and sometimes lighter. But as tasks get more complex and involve several dependent steps, the agent has to hand-roll the entire chain of REST calls (or dig through the SDK) and the cost blows up: <strong>2.4× to 6× the CLI's</strong> on creating a repo with a branch and tag, deleting files, copying across repos, or syncing a bucket. The <code>hf</code> CLI lets the agent express the task as a few higher-level commands, rather than crafting a complex workflow.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="key-findings" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#key-findings" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Key findings
+	</span>
+</h3>
+<ul>
+<li><strong>The <code>hf</code> CLI is far leaner than curl or the SDK.</strong> For the same task, at equal-or-better success, curl and the SDK burn <strong>roughly 1.3× to 1.8× the tokens</strong>. On easy reads they're fine, but on real multi-step work they pay <strong>2× to 6×</strong>: the CLI composes a chain of REST calls into a few high-level commands, while curl or the SDK re-derives the chain by hand every run.</li>
+<li><strong>On a stronger model, curl and the SDK work but stay wasteful.</strong> On Sonnet they can't finish parts of the job (the writes, mostly); on GPT-5.5 they mostly succeed, hand-rolling the REST calls (or using the SDK) correctly, but still pay well over the CLI's token bill.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="the-hf-cli-skill" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-hf-cli-skill" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The hf-cli skill
+	</span>
+</h2>
+<p><code>hf</code> ships a <strong>skill</strong>: a compact reference of the whole command surface that an agent loads as context. It's <strong>auto-generated</strong> from the live <code>hf</code> command tree, one line per command (its signature, a one-line description, and the flags that matter), grouped by resource, with a short glossary of common options. It deliberately skips the self-explanatory flags so it stays terse and light on context, and it's regenerated every release. Run <code>hf skills preview</code> to print it, or install it with:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># for Codex, Cursor, OpenCode, Pi and other agents that load skills from `.agents/skills`</span>
+hf skills add
+<span class="hljs-comment"># includes the above + Claude Code</span>
+hf skills add --claude
+</code></pre>
+<p>What does it buy you? Mostly, the agent stops guessing. The clearest single view is how many commands each run takes, with the skill and without:</p>
+<div class="flex justify-center">
+    <img class="block dark:hidden" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-skill.png" alt="Mean commands (tool calls) per run, with and without the hf-cli skill, on both agents. Claude Code (Sonnet 4.6): 10.4 without the skill, 6.9 with it. Codex (GPT-5.5): 10.1 without, 7.3 with. Fewer is better." width="100%">
+    <img class="hidden dark:block" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/huggingface_hub/chart-skill-dark.png" alt="Mean commands (tool calls) per run, with and without the hf-cli skill, on both agents. Claude Code (Sonnet 4.6): 10.4 without the skill, 6.9 with it. Codex (GPT-5.5): 10.1 without, 7.3 with. Fewer is better." width="100%">
+</div>
+
+<p>On both agents that's about ten commands per task down to about seven, roughly 30% fewer tool calls. That's because the agent isn't probing <code>--help</code> to find the right command and argument. The skill won't cut your token bill, because it prepends a fixed slice of info to the context, so tokens remain about the same or slightly tick up for the same task. The Skill won't make the CLI more reliable either, but it will help the agent spend time running your task rather than finding out how the tool works. This could be particularly helpful when using <code>hf</code> with local models.</p>
+<p>We ran each task in a fresh session, so the skill pays its context cost on every task. In a real multi-task session that cost amortizes (the agent learns the command surface once), so the token picture likely improves there; we didn't measure that case.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="try-it-yourself" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-it-yourself" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try it yourself
+	</span>
+</h2>
+<p>We benchmarked all this because we think it matters. Agents are becoming real users of the Hub: they train models, build and clean datasets, and ship demos as Spaces, almost always on behalf of a person. A Hub that works well for agents is also a Hub that works better for the people using them. The better an agent's tools are, the more it can do for you.</p>
+<p>If your agent interacts with the Hugging Face Hub, we recommend giving it the <code>hf</code> CLI:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># macOS / Linux</span>
+curl -LsSf https://hf.co/cli/install.sh | bash
+
+<span class="hljs-comment"># Windows (PowerShell)</span>
+powershell -ExecutionPolicy ByPass -c <span class="hljs-string">"irm https://hf.co/cli/install.ps1 | iex"</span>
+</code></pre>
+<p>Then hand it the skill, so it knows the whole command surface from the first turn:</p>
+<pre><code class="language-bash">hf skills add            <span class="hljs-comment"># Codex, Cursor, OpenCode, Pi and other agents that load skills from .agents/skills</span>
+hf skills add --claude   <span class="hljs-comment"># the above + Claude Code</span>
+</code></pre>
+<p>Then point your agent at the Hub and let it work. Make sure you're logged in (<code>hf auth login</code>), then hand it a prompt like:</p>
+<pre><code class="language-text">Use `hf` to list my Hugging Face Hub models, datasets, and Spaces.
+Take a look at how I am currently using the Hub and suggest a few ways you could help me.
+</code></pre>
+<p>It'll work out the commands on its own and come back with something useful.</p>
+<p>The full command reference lives in the <a href="https://huggingface.co/docs/huggingface_hub/guides/cli"><code>hf</code> CLI guide</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="register-an-agent-harness" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#register-an-agent-harness" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Register an agent harness
+	</span>
+</h2>
+<p>Building an agent harness? <strong>Get it registered!</strong> That's how <code>hf</code> learns to detect it, and how the Hub attributes its traffic to your harness. You simply need to open a small PR adding an entry to <a href="https://github.com/huggingface/huggingface.js/blob/main/packages/tasks/src/agent-harnesses.ts" rel="nofollow"><code>agent-harnesses.ts</code></a>. Read the <a href="https://huggingface.co/docs/hub/agents-overview#register-your-agent-harness">Register your agent harness</a> guide for more details.</p>
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/huggingface-hub-release-ci"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/huggingface-hub-release-ci/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">ci</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">huggingface_hub</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">agents</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Shipping huggingface_hub every week with AI, open tools, and a human in the loop</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Wauplin" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659336880158-6273f303f6d63a28483fde12.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="celinah" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 20</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 23, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/is-it-agentic-enough"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/is-it-agentic-enough/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">agents</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">transformers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">evaluation</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Is it agentic enough? Benchmarking open models on your own tooling</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lysandre" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e3aec01f55e2b62848a5217/PMKS0NNB4MJQlTSFzh918.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SaylorTwift" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1678663263366-63e0eea7af523c37e5a77966.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 24</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 18, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/hf-cli-for-agents&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/hf-cli-for-agents&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a219764f3e6d0135b924748&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;celinah&quot;,&quot;Wauplin&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fhf-cli-for-agents">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fhf-cli-for-agents">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fhf-cli-for-agents" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">61</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="osolmaz" style="content-visibility:auto;"><!--[0--><a href="/osolmaz" title="osolmaz"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/633413b18003819e16aee0aa/CglgixDB95u8ILW8WdxCU.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="celinah" style="content-visibility:auto;"><!--[0--><a href="/celinah" title="celinah"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="davanstrien" style="content-visibility:auto;"><!--[0--><a href="/davanstrien" title="davanstrien"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1627505688463-60107b385ac3e86b3ea4fc34.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="victor" style="content-visibility:auto;"><!--[0--><a href="/victor" title="victor"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5f17f0a0925b9863e28ad517/78BR8GuQiX9a8wbbRlSAC.webp" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Wauplin" style="content-visibility:auto;"><!--[0--><a href="/Wauplin" title="Wauplin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659336880158-6273f303f6d63a28483fde12.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="not-lain" style="content-visibility:auto;"><!--[0--><a href="/not-lain" title="not-lain"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6527e89a8808d80ccff88b7a/CuGNmF1Et8KMQ0mCd1NEJ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="julien-c" style="content-visibility:auto;"><!--[0--><a href="/julien-c" title="julien-c"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5dd96eb166059660ed1ee413/NQtzmrDdbG0H8qkZvRyGk.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pierrci" style="content-visibility:auto;"><!--[0--><a href="/pierrci" title="pierrci"><img class="overflow-hidden rounded-full" alt="" src="/avatars/973db41f23cd375c588e7828c5efe5ce.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="luke-loan-atlas" style="content-visibility:auto;"><!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+49</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

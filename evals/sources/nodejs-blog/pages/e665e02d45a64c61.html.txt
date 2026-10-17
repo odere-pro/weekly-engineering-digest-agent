@@ -1,0 +1,808 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Node.js v22 to v24</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/migrations/v22-to-v24" />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/migrations/v22-to-v24"
+    />
+    <link rel="alternate" hreflang="en" href="https://nodejs.org/en/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="es" href="https://nodejs.org/es/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="fr" href="https://nodejs.org/fr/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="id" href="https://nodejs.org/id/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="ja" href="https://nodejs.org/ja/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="ko" href="https://nodejs.org/ko/blog/migrations/v22-to-v24" />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/migrations/v22-to-v24"
+    />
+    <link rel="alternate" hreflang="pt" href="https://nodejs.org/pt/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="ro" href="https://nodejs.org/ro/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="ta" href="https://nodejs.org/ta/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="tr" href="https://nodejs.org/tr/blog/migrations/v22-to-v24" />
+    <link rel="alternate" hreflang="uk" href="https://nodejs.org/uk/blog/migrations/v22-to-v24" />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/migrations/v22-to-v24"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/migrations/v22-to-v24"
+    />
+    <link rel="alternate" type="application/rss+xml" href="https://nodejs.org/en/feed/blog.xml" />
+    <meta property="og:title" content="Node.js — Node.js v22 to v24" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/migrations/Node.js%20%E2%80%94%20Node.js%20v22%20to%20v24"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Node.js v22 to v24" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Node.js v22 to v24</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/AugustinMauroy"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >AM</span
+                    ></a
+                  ></span
+                ><span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/richardlau"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >RL</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>AugustinMauroy, Richard Lau</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__announcements">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Node.js v22 to v24
+              </div>
+            </div>
+            <h1 id="nodejs-v22-to-v24"><a href="#nodejs-v22-to-v24">Node.js v22 to v24</a></h1>
+            <div class="index-module__VYslka__alertBox index-module__VYslka__info">
+              <span class="index-module__VYslka__title">!</span
+              ><span class="index-module__VYslka__content"
+                ><p>
+                  This article covers a part of the migration from Node.js v22 to v24. The userland
+                  migrations team is working on more codemods to help you with the migration.
+                </p>
+                <p>Missing codemods will be added over time. If you have specific needs.</p>
+                <a href="https://github.com/nodejs/userland-migrations/issues/239"
+                  ><p>
+                    Read this issue to learn where we are in the process and how to manually migrate
+                    your code.
+                  </p></a
+                ></span
+              >
+            </div>
+            <p>
+              With the release of
+              <a href="https://nodejs.org/blog/release/v24.11.0">Node.js 24.11.0</a>, the Node.js 24
+              release line has entered Long-Term Support (LTS) and will continue to receive updates
+              through to the end of April 2028.
+            </p>
+            <p>
+              If you are migrating from Node.js 22 LTS, the following summarizes the breaking
+              changes that came in
+              <a href="https://nodejs.org/blog/release/v23.0.0">Node.js 23.0.0</a> and
+              <a href="https://nodejs.org/blog/release/v24.0.0">Node.js 24.0.0</a>.
+            </p>
+            <h3 id="platform-support"><a href="#platform-support">Platform support</a></h3>
+            <p>
+              Node.js no longer provides
+              <a href="https://nodejs.org/en/download">pre-built binaries</a> for:
+            </p>
+            <ul>
+              <li>32-bit Windows (x86) as of Node.js 23.0.0.</li>
+              <li>32-bit Linux on armv7 as of Node.js 24.0.0.</li>
+            </ul>
+            <p>Pre-built binaries for macOS now require a minimum of macOS 13.5.</p>
+            <p>
+              Pre-built binaries for Linux on arm64, ppc64le, s390x and x64 continue to be
+              compatible with glibc 2.28 and above (no change from Node.js 22).
+            </p>
+            <p>
+              Please refer to
+              <a href="#building-nodejs-from-source"
+                >additional notes if you are building Node.js from source</a
+              >.
+            </p>
+            <h3 id="breaking-changes"><a href="#breaking-changes">Breaking changes</a></h3>
+            <h3 id="openssl-35"><a href="#openssl-35">OpenSSL 3.5</a></h3>
+            <p>
+              Pre-built binaries of Node.js 24 LTS, or builds using the default build configuration
+              options, include OpenSSL 3.5. Node.js 24 LTS uses the default security level from
+              OpenSSL 3.5 of <code>2</code>, which means that:
+            </p>
+            <ul>
+              <li>
+                RSA, DSA and DH keys shorter than 2048 bits and ECC keys shorter than 224 bits are
+                prohibited.
+              </li>
+              <li>Any cipher suite using RC4 is also prohibited.</li>
+            </ul>
+            <p>
+              If you rely on older keys or weak ciphers, test your workloads against Node.js 24
+              builds (or adjust key/cipher choices) before upgrading.
+            </p>
+            <h3 id="other-behavioral-changes-and-argument-validation">
+              <a href="#other-behavioral-changes-and-argument-validation"
+                >Other behavioral changes and argument validation</a
+              >
+            </h3>
+            <p>
+              The release includes a number of behavior and validation changes (stricter
+              <code>fetch()</code> compliance, AbortSignal validation, stream/pipe errors now
+              throwing, changes to Buffer behavior, path handling fixes on Windows, test runner
+              defaults, and more).
+            </p>
+            <h3 id="cc-addons"><a href="#cc-addons">C/C++ addons</a></h3>
+            <p>
+              Addons linking against V8 APIs may need updates for V8 13.6; C++20 support may be
+              required where previously C++17 was used. Where possible, prefer NODE-API to reduce
+              rebuild churn.
+            </p>
+            <h3 id="building-nodejs-from-source">
+              <a href="#building-nodejs-from-source">Building Node.js from source</a>
+            </h3>
+            <p>
+              If you are building Node.js from source, you may need to update your compiler
+              toolchain:
+            </p>
+            <ul>
+              <li>
+                For AIX and Linux platforms, the minimum supported version of
+                <a href="https://gcc.gnu.org/">gcc</a> is 12.2.
+              </li>
+              <li>
+                For macOS the minimum supported version of
+                <a href="https://developer.apple.com/xcode/">Xcode</a> is 16.1.
+              </li>
+            </ul>
+            <p>
+              Node.js&#x27; <code>configure</code> script will warn if you attempt to build Node.js
+              with a compiler toolchain that does not meet the minimum supported version but will
+              not actively prevent you from trying.
+            </p>
+            <h2 id="available-codemods"><a href="#available-codemods">Available Codemods</a></h2>
+            <p>
+              Some breaking changes or End of Life (EOL) deprecations in Node.js 23 and 24 have
+              associated codemods to help you update your codebase. Below is a list of the available
+              codemods for this migration:
+            </p>
+            <h3 id="crypto-rsa-pss-update">
+              <a href="#crypto-rsa-pss-update"><code>crypto-rsa-pss-update</code></a>
+            </h3>
+            <p>
+              In <a href="https://nodejs.org/docs/latest/api/deprecations.html#DEP0154">DEP0154</a>,
+              the <code>generateKeyPair</code> and <code>generateKeyPairSync</code> methods in the
+              <code>crypto</code> module deprecated the <code>hash</code>, <code>mgf1Hash</code>,
+              and <code>saltLength</code> options for the <code>&#x27;rsa-pss&#x27;</code> key type
+              in favor of <code>hashAlgorithm</code>, <code>mgf1HashAlgorithm</code>, and
+              <code>saltLength</code> respectively.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-rsa-pss-update"
+                >crypto-rsa-pss-update directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/crypto-rsa-pss-update"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/crypto-rsa-pss-update</span></span></code></pre>
+            </div>
+            <h4 id="example"><a href="#example">Example</a></h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">const crypto = require(&quot;node:crypto&quot;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">crypto.generateKeyPair(</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  &quot;rsa-pss&quot;,</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    modulusLength: 2048,</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">   hash: &quot;sha256&quot;,</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">   mgf1Hash: &quot;sha1&quot;,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   hashAlgorithm: &quot;sha256&quot;,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   mgf1HashAlgorithm: &quot;sha1&quot;,</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    saltLength: 32,</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  },</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  (err, publicKey, privateKey) =&gt; {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    // callback</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  },</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">crypto.generateKeyPairSync(&quot;rsa-pss&quot;, {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  modulusLength: 2048,</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> hash: &quot;sha256&quot;,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> hashAlgorithm: &quot;sha256&quot;,</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">});</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="dirent-path-to-parent-path">
+              <a href="#dirent-path-to-parent-path"><code>dirent-path-to-parent-path</code></a>
+            </h3>
+            <p>
+              This codemod transforms the usage of <code>dirent.path</code> to use
+              <code>dirent.parentPath</code>.
+            </p>
+            <p>See <a href="https://nodejs.org/api/deprecations.html#DEP0178">DEP0178</a>.</p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/dirent-path-to-parent-path"
+                >dirent-path-to-parent-path directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/dirent-path-to-parent-path"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/dirent-path-to-parent-path</span></span></code></pre>
+            </div>
+            <h4 id="examples"><a href="#examples">Examples</a></h4>
+            <h3 id="readdir"><a href="#readdir">readdir</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  const { readdir } = require(&#x27;node:fs/promises&#x27;);</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  const entries = await readdir(&#x27;/some/path&#x27;, { withFileTypes: true });</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  for (const dirent of entries) {</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> console.log(dirent.path);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> console.log(dirent.parentPath);</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  }</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="opendir"><a href="#opendir">opendir</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  import { opendir } from &#x27;node:fs/promises&#x27;;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  const dir = await opendir(&#x27;./&#x27;);</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  for await (const dirent of dir) {</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">   console.log(`Found ${dirent.name} in ${dirent.path}`);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   console.log(`Found ${dirent.name} in ${dirent.parentPath}`);</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  }</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="fs-access-mode-constants">
+              <a href="#fs-access-mode-constants"><code>fs-access-mode-constants</code></a>
+            </h3>
+            <p>
+              The <code>fs</code> module introduced a runtime deprecation for <code>F_OK</code>,
+              <code>R_OK</code>, <code>W_OK</code>, and <code>X_OK</code> getters exposed directly
+              on <code>node:fs</code>. Get them from <code>fs.constants</code> or
+              <code>fs.promises.constants</code> instead.
+            </p>
+            <p>
+              This codemod handles
+              <a href="https://nodejs.org/api/deprecations.html#DEP0176">DEP0176</a>.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-access-mode-constants"
+                >fs-access-mode-constants directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/fs-access-mode-constants"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/fs-access-mode-constants</span></span></code></pre>
+            </div>
+            <h4 id="example-1"><a href="#example-1">Example</a></h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  const fs = require(&#x27;node:fs&#x27;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> fs.access(&#x27;/path/to/file&#x27;, fs.F_OK, callback);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> fs.access(&#x27;/path/to/file&#x27;, fs.constants.F_OK, callback);</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> fs.access(&#x27;/path/to/file&#x27;, fs.R_OK | fs.W_OK, callback);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> fs.access(&#x27;/path/to/file&#x27;, fs.constants.R_OK | fs.constants.W_OK, callback);</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="fs-truncate-fd-deprecation">
+              <a href="#fs-truncate-fd-deprecation"><code>fs-truncate-fd-deprecation</code></a>
+            </h3>
+            <p>
+              The
+              <a href="https://nodejs.org/api/fs.html#fs_fs_truncate_path_len_callback"
+                ><code>fs.truncate</code></a
+              >
+              function was deprecated (<a href="https://nodejs.org/api/deprecations.html#DEP0081"
+                >DEP0081</a
+              >) when used with a file descriptor. Use
+              <a href="https://nodejs.org/api/fs.html#fs_fs_ftruncate_fd_len_callback"
+                ><code>fs.ftruncate</code></a
+              >
+              instead.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-truncate-fd-deprecation"
+                >fs-truncate-fd-deprecation directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/fs-truncate-fd-deprecation"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/fs-truncate-fd-deprecation</span></span></code></pre>
+            </div>
+            <h4 id="example-2"><a href="#example-2">Example</a></h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const { truncate, open, close } = require(&#x27;node:fs&#x27;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const { ftruncate, open, close } = require(&#x27;node:fs&#x27;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  open(&#x27;file.txt&#x27;, &#x27;w&#x27;, (err, fd) =&gt; {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    if (err) throw err;</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">   truncate(fd, 10, (err) =&gt; {</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">   ftruncate(fd, 10, (err) =&gt; {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">      if (err) throw err;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">      close(fd, () =&gt; {});</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    });</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  });</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="http2-priority-signaling">
+              <a href="#http2-priority-signaling"><code>http2-priority-signaling</code></a>
+            </h3>
+            <p>
+              This recipe removes HTTP/2 priority-related options and methods since priority
+              signaling has been deprecated.
+            </p>
+            <p>See <a href="https://nodejs.org/api/deprecations.html#DEP0194">DEP0194</a>.</p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/http2-priority-signaling"
+                >http2-priority-signaling directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/http2-priority-signaling"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/http2-priority-signaling</span></span></code></pre>
+            </div>
+            <h2 id="what-this-codemod-does">
+              <a href="#what-this-codemod-does">What this codemod does</a>
+            </h2>
+            <ul>
+              <li>
+                Removes the <code>priority</code> property from <code>http2.connect()</code> call
+                options
+              </li>
+              <li>
+                Removes the <code>priority</code> property from <code>session.request()</code> call
+                options
+              </li>
+              <li>Removes entire <code>stream.priority()</code> method call statements</li>
+              <li>
+                Removes the <code>priority</code> property from <code>client.settings()</code> call
+                options
+              </li>
+              <li>
+                Handles both CommonJS (<code>require()</code>) and ESM (<code>import</code>) imports
+              </li>
+            </ul>
+            <h2 id="examples-1"><a href="#examples-1">Examples</a></h2>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">import http2 from &quot;node:http2&quot;;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">const session = http2.connect(&quot;https://example.com&quot;, {</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> priority: { weight: 16, parent: 0, exclusive: false }</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">const stream = session.request({</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  &quot;:path&quot;: &quot;/api/data&quot;,</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> priority: { weight: 32 }</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">});</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> stream.priority({ exclusive: true, parent: 0, weight: 128 });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">const client = http2.connect(&quot;https://example.com&quot;);</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">client.settings({ enablePush: false, priority: true });</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">client.settings({ enablePush: false });</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="process-assert-to-node-assert">
+              <a href="#process-assert-to-node-assert"
+                ><code>process-assert-to-node-assert</code></a
+              >
+            </h3>
+            <p>
+              In Node.js v23 the
+              <a href="https://nodejs.org/api/deprecations.html#DEP0100">DEP0100</a> deprecation
+              reached End-of-Life, and <code>process.assert</code> was removed in favor of using the
+              <code>assert</code> module directly. This codemod will help you replace any references
+              to <code>process.assert</code> with the appropriate import of the
+              <code>assert</code> module and usage of <code>assert()</code>.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/process-assert-to-node-assert"
+                >process-assert-to-node-assert directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/process-assert-to-node-assert"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/process-assert-to-node-assert</span></span></code></pre>
+            </div>
+            <h4 id="example-3"><a href="#example-3">Example</a></h4>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff no-line-numbers"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> import assert from &quot;node:assert&quot;;</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> process.assert(condition, &quot;Assertion failed&quot;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> assert(condition, &quot;Assertion failed&quot;);</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h4 id="additional-notes"><a href="#additional-notes">Additional Notes</a></h4>
+            <p>
+              This codemod uses the
+              <a href="https://docs.codemod.com/jssg/security"><code>fs</code> capability</a> to
+              read the <code>package.json</code> file and determine if the project is using ES
+              modules or CommonJS. Based on this information, it adds the appropriate import
+              statement for the <code>assert</code> module.
+            </p>
+            <h3 id="tls-create-secure-pair-to-tls-socket">
+              <a href="#tls-create-secure-pair-to-tls-socket"
+                ><code>tls-create-secure-pair-to-tls-socket</code></a
+              >
+            </h3>
+            <p>
+              This recipe transforms the usage from the deprecated
+              <code>createSecurePair()</code> to <code>TLSSocket()</code>.
+            </p>
+            <p>
+              See
+              <a href="https://nodejs.org/api/deprecations.html#dep0064-tlscreatesecurepair"
+                >DEP0064</a
+              >.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/tls-create-secure-pair-to-tls-socket"
+                >tls-create-secure-pair-to-tls-socket directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a
+                href="https://app.codemod.com/registry/@nodejs/tls-create-secure-pair-to-tls-socket"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/tls-create-secure-pair-to-tls-socket</span></span></code></pre>
+            </div>
+            <h2 id="examples-2"><a href="#examples-2">Examples</a></h2>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">const { createSecurePair } = require(&#x27;node:tls&#x27;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">const { TLSSocket } = require(&#x27;node:tls&#x27;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A">const pair = createSecurePair(credentials, true, true, false);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">const socket = new TLSSocket(underlyingSocket, {</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">  secureContext: credentials,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">  isServer: true,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">  requestCert: true,</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">  rejectUnauthorized: false</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C">});</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <div></div>
+              <a class="index-module__A9kfJq__crossLink" href="/en/blog/migrations/v20-to-v22"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Node.js v20 to v22</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Oct 28, 2025</dd>
+            <dt>Reading Time</dt>
+            <dd>5 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/migrations/v22-to-v24.mdx"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="pl-2"><a class="" href="#platform-support">Platform support</a></li>
+                <li class="pl-2"><a class="" href="#breaking-changes">Breaking changes</a></li>
+                <li class="pl-2"><a class="" href="#openssl-35">OpenSSL 3.5</a></li>
+                <li class="pl-2">
+                  <a class="" href="#other-behavioral-changes-and-argument-validation"
+                    >Other behavioral changes and argument validation</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#cc-addons">C/C++ addons</a></li>
+                <li class="pl-2">
+                  <a class="" href="#building-nodejs-from-source">Building Node.js from source</a>
+                </li>
+                <li class=""><a class="" href="#available-codemods">Available Codemods</a></li>
+                <li class="pl-2">
+                  <a class="" href="#crypto-rsa-pss-update">crypto-rsa-pss-update</a>
+                </li>
+                <li class="pl-4"><a class="" href="#example">Example</a></li>
+                <li class="pl-2">
+                  <a class="" href="#dirent-path-to-parent-path">dirent-path-to-parent-path</a>
+                </li>
+                <li class="pl-4"><a class="" href="#examples">Examples</a></li>
+                <li class="pl-2"><a class="" href="#readdir">readdir</a></li>
+                <li class="pl-2"><a class="" href="#opendir">opendir</a></li>
+                <li class="pl-2">
+                  <a class="" href="#fs-access-mode-constants">fs-access-mode-constants</a>
+                </li>
+                <li class="pl-4"><a class="" href="#example-1">Example</a></li>
+                <li class="pl-2">
+                  <a class="" href="#fs-truncate-fd-deprecation">fs-truncate-fd-deprecation</a>
+                </li>
+                <li class="pl-4"><a class="" href="#example-2">Example</a></li>
+                <li class="pl-2">
+                  <a class="" href="#http2-priority-signaling">http2-priority-signaling</a>
+                </li>
+                <li class="">
+                  <a class="" href="#what-this-codemod-does">What this codemod does</a>
+                </li>
+                <li class=""><a class="" href="#examples-1">Examples</a></li>
+                <li class="pl-2">
+                  <a class="" href="#process-assert-to-node-assert"
+                    >process-assert-to-node-assert</a
+                  >
+                </li>
+                <li class="pl-4"><a class="" href="#example-3">Example</a></li>
+                <li class="pl-4"><a class="" href="#additional-notes">Additional Notes</a></li>
+                <li class="pl-2">
+                  <a class="" href="#tls-create-secure-pair-to-tls-socket"
+                    >tls-create-secure-pair-to-tls-socket</a
+                  >
+                </li>
+                <li class=""><a class="" href="#examples-2">Examples</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

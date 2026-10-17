@@ -1,0 +1,380 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by IBM Research on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/j-n1Au9SJ2-RGkT9i98u4.jpeg" />
+
+		<meta property="og:title" content="How Much Memory Does Your Agent Actually Need?" />
+
+		<meta property="og:description" content="A Blog post by IBM Research on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/ibm-research/altk-evolve-hmm" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/j-n1Au9SJ2-RGkT9i98u4.jpeg" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/ibm-research/altk-evolve-hmm">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>How Much Memory Does Your Agent Actually Need?</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="how-much-memory-does-your-agent-actually-need" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-much-memory-does-your-agent-actually-need" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How Much Memory Does Your Agent Actually Need?
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[-1--><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 18, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-research%2Faltk-evolve-hmm" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">83</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="vinodmut" style="content-visibility:auto;"><!--[0--><a href="/vinodmut" title="vinodmut"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/645e4bc1d9187cd3e07535c2/YYhUQPu19hB2OTTN1l4zE.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="laredoj" style="content-visibility:auto;"><!--[0--><a href="/laredoj" title="laredoj"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6487da02c4b44322c124f39f/a59vwxS7l3iylkGXzN6R3.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="gaodan-fang" style="content-visibility:auto;"><!--[0--><a href="/gaodan-fang" title="gaodan-fang"><img class="overflow-hidden rounded-full" alt="" src="/avatars/18f132b7a7dabcdf5fb933edb554ea68.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ashwath-vaithina" style="content-visibility:auto;"><!--[0--><a href="/ashwath-vaithina" title="ashwath-vaithina"><img class="overflow-hidden rounded-full" alt="" src="/avatars/8ba2912d52fca21df2caa3aac681c8c3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yarizk" style="content-visibility:auto;"><!--[0--><a href="/yarizk" title="yarizk"><img class="overflow-hidden rounded-full" alt="" src="/avatars/dc237f871dc180a8ab2fcb20e7d08d48.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ankita-naik" style="content-visibility:auto;"><!--[0--><a href="/ankita-naik" title="ankita-naik"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ed9723b5fd015bb65e8dceb0a6d86ff9.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+77</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/Vatche"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Vatche Isahagian's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6435a1131860001f144239ea/smzcd7SHs33E2ArxBLBBK.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/Vatche"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Vatche Isahagian">Vatche Isahagian</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">Vatche</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/gaodan-fang"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Gaodan Fang's avatar" src="/avatars/18f132b7a7dabcdf5fb933edb554ea68.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/gaodan-fang"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Gaodan Fang">Gaodan Fang</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">gaodan-fang</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/jayaramkr"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Jayaram Radhakrishnan's avatar" src="/avatars/981da7aa42bc31072a5f6e04ce8e6c3a.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/jayaramkr"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Jayaram Radhakrishnan">Jayaram Radhakrishnan</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">jayaramkr</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/illeatmyhat"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Punleuk Oum's avatar" src="/avatars/c20bc90f9b6a68b53d1b66c6ff37090b.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/illeatmyhat"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Punleuk Oum">Punleuk Oum</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">illeatmyhat</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ashwath-vaithina"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Ashwath Vaithinathan Aravindan's avatar" src="/avatars/8ba2912d52fca21df2caa3aac681c8c3.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ashwath-vaithina"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Ashwath Vaithinathan Aravindan">Ashwath Vaithinathan Aravindan</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ashwath-vaithina</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/evduester"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Evelyn Duesterwald's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/643993faeb7c5616ef3fdbc9/zo55b-nrQcwpgmQGRvj4K.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/evduester"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Evelyn Duesterwald">Evelyn Duesterwald</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">evduester</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/gsthomasx"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="G Thomas's avatar" src="/avatars/7567e1a8588c0bee6293c3cb88c11c8d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/gsthomasx"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="G Thomas">G Thomas</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">gsthomasx</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/vinodmut"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Vinod Muthusamy's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/645e4bc1d9187cd3e07535c2/YYhUQPu19hB2OTTN1l4zE.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/vinodmut"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Vinod Muthusamy">Vinod Muthusamy</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">vinodmut</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/mrvnvr"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Merve Unuvar's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/voQatzALsIDEbM2JR25ei.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/mrvnvr"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Merve Unuvar">Merve Unuvar</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">mrvnvr</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ayhansebin"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Ayhan Sebin's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64e8143f6de557454220921e/aNouKBrKm1dnN9pI1JXlp.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ayhansebin"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Ayhan Sebin">Ayhan Sebin</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ayhansebin</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->In our <a href="https://huggingface.co/blog/ibm-research/altk-evolve-sldd/">previous post</a>, we compared <strong><a href="https://agenttoolkit.github.io/altk-evolve/" rel="nofollow">ALTK-Evolve</a></strong> with <a href="https://arxiv.org/abs/2510.04618" rel="nofollow">ACE</a> and showed that <em>how</em> you deliver an agent's self-distilled guidelines — a few retrieved per task vs. the whole set injected — drives both accuracy and cost. This post steps back to the question that comes before it: <em>how much</em> should you give it?</p>
+<p>Equipping an agent with agentic memory sounds simple: distill lessons from its past work, put them back in context, and more experience should mean better performance. It doesn't always work that way. When we scaled the evaluation to <strong>eight models</strong> — from a 30B dense model to frontier proprietary systems — one finding stood out:</p>
+<blockquote>
+<p><strong>Agentic memory is not a feature you switch on. It's a dose you calibrate to the model.</strong></p>
+</blockquote>
+<p><strong>TL;DR</strong></p>
+<ul>
+<li><p><strong>ALTK-Evolve</strong> lets an agent learn from its own past trajectories: distilling reusable guidelines and injecting them back at inference time, with no weight updates and no human annotation.</p>
+</li>
+<li><p><strong>The right dose differs by model tier:</strong> strong models with headroom want the full guideline set, weaker models do best with a compact core plus per-task retrieval, and saturated models show no measurable gain.</p>
+</li>
+<li><p><strong>Curated retrieval can be both the most accurate and the cheapest option:</strong> gpt-oss-120b gained +16.1pp task completion at only +5% tokens — and prompt caching keeps even the full guideline set affordable in production.</p>
+</li>
+</ul>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="the-key-insight-dosage-depends-on-capability" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-key-insight-dosage-depends-on-capability" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Key Insight: Dosage Depends on Capability
+	</span>
+</h2>
+<p>Not every model benefits from the same amount of memory. Across eight models spanning the capability spectrum, we saw three recurring patterns:</p>
+<ul>
+<li><p><strong>Strong models with headroom</strong> want the full guideline set — every guideline, including rare edge-case lessons. They have the capacity to absorb and apply all of it. DeepSeek-V3.2 (671B MoE) climbed <strong>+9.5 percentage points</strong> in task completion when given its full self-mined guideline set.</p>
+</li>
+<li><p><strong>Smaller or weaker models get drowned by a large guideline set.</strong> For these, a tight, high-confidence core plus a handful of task-relevant guidelines retrieved per task works best. gpt-oss-120b (117B MoE) gained <strong>+16.1pp</strong> with this selective approach — while the full guideline set gained less <em>and</em> cost ~50% more tokens.</p>
+</li>
+<li><p><strong>Already-saturated models show no measurable gain.</strong> We call this the saturated pattern — the label describes what we observed, not a proven cause. The model may already have been near its ceiling on these tasks, the guidelines may not have addressed its remaining failures, or it may not have applied the guidance effectively. GLM-5 (745B MoE) sat here in our runs.</p>
+</li>
+</ul>
+<p><em>What puts a model into one pattern rather than another isn't simply parameter count.</em> Benchmark headroom, context-window size, architecture, guideline quality, and task distribution all appear to shape where a model lands, and separating those factors is ongoing work. The practical takeaway holds either way: <strong>the right dose of memory depends on the model, and we can calibrate it.</strong></p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="learning-happens-around-the-model-not-inside-it" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#learning-happens-around-the-model-not-inside-it" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Learning happens around the model, not inside it
+	</span>
+</h2>
+<p>"Memory" here doesn't mean replaying a past transcript. It means a <strong>guideline set</strong> — strategies that worked, mistakes to avoid, and edge cases — distilled from the agent's own prior trajectories. The loop is straightforward:</p>
+<ol>
+<li><p>The agent attempts tasks and produces trajectories.</p>
+</li>
+<li><p>ALTK-Evolve extracts behavioral guidelines from both its successful and unsuccessful runs.</p>
+</li>
+<li><p>It consolidates those guidelines into a reusable set.</p>
+</li>
+<li><p>At inference time, the agent receives either the full guideline set or a task-relevant selection of it.</p>
+</li>
+</ol>
+<p>No model weights are updated. The learning loop changes the <em>guidance available to the agent</em>, not the underlying model — which is exactly why it's cheap to adopt and portable across the eight models we tested.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="results-across-the-spectrum" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#results-across-the-spectrum" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Results Across the Spectrum
+	</span>
+</h2>
+<p>We evaluated on <strong>AppWorld</strong> — 585 multi-step tasks (168 <code>test_normal</code> + 417 <code>test_challenge</code>) across 9 simulated apps (calendars, messaging, payments, and so on). Tasks are scored two ways: whether the agent fully completes each task (<strong>TGC — Task Goal Completion</strong>) and whether <em>every</em> variant of a scenario passes (<strong>SGC — Scenario Goal Completion</strong>, a stricter, all-or-nothing bar). Full definitions are in the appendix.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-three-configurations-we-compare" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-three-configurations-we-compare" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The three configurations we compare
+	</span>
+</h3>
+<p>Because the confusing part of any memory study is <em>what's actually in the context window</em>, we define the configurations up front.</p>
+<p>Both memory configurations draw from <strong>the same guideline set</strong>, mined once (via the loop above) from AppWorld's <strong>training split</strong> only. What changes between them is only <em>how that one set is delivered</em> — the <strong>full guideline set</strong> injects all of it every step, while <strong>curated retrieval</strong> delivers a selected subset — never how the guidelines were produced, and no test-split data ever goes into building it.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Configuration</th>
+<th>What's in the agent's context</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>Baseline</td>
+<td>No memory — the agent as shipped.</td>
+</tr>
+<tr>
+<td>Full guideline set</td>
+<td>Every mined guideline, injected on every ReAct step.</td>
+</tr>
+<tr>
+<td>Curated retrieval</td>
+<td>A fixed, high-confidence core of those same guidelines plus a few task-relevant ones retrieved for each task (a fixed portion + a variable portion).</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The number of guidelines a model mines depends on its own capability, so we report configurations by <strong>strategy</strong> — "full guideline set" vs. "curated retrieval" — rather than by raw counts, which aren't comparable across models.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-three-patterns-in-one-view" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-three-patterns-in-one-view" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The three patterns, in one view
+	</span>
+</h3>
+<p>Representative models from the eight-model sweep, measured by task completion (TGC) on <code>test_normal</code>:</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/Kdj4ytv-bFmt7LII55y-m.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/Kdj4ytv-bFmt7LII55y-m.png" alt="image"></a></p>
+<p><em>Figure 1. Representative models in the three observed patterns. Bars show TGC on AppWorld <code>test_normal</code> for baseline vs. the best-memory configuration; the x-axis begins at 40% to make differences visible. TGC alone understates the larger SGC gains — see the SGC columns in the table below.</em></p>
+<p>The figure plots TGC to keep it readable; the table adds the stricter <strong>SGC</strong> metric, where the gains are often larger:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Model</th>
+<th>Pattern</th>
+<th>Baseline TGC / SGC</th>
+<th>Best-memory TGC / SGC</th>
+<th>Best config</th>
+<th>Δ TGC</th>
+<th>Δ SGC</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>gpt-oss-120b (117B MoE)</td>
+<td>Weak / selective</td>
+<td>39.9 / 21.4</td>
+<td>56.0 / 37.5</td>
+<td>curated retrieval</td>
+<td>+16.1</td>
+<td>+16.1</td>
+</tr>
+<tr>
+<td>DeepSeek-V3.2 (671B MoE)</td>
+<td>Strong w/ headroom</td>
+<td>79.8 / 64.3</td>
+<td>89.3 / 80.4</td>
+<td>full guideline set</td>
+<td>+9.5</td>
+<td>+16.1</td>
+</tr>
+<tr>
+<td>Claude Opus 4.6</td>
+<td>Strong w/ headroom</td>
+<td>90.5 / 87.5</td>
+<td>94.6 / 94.6</td>
+<td>full guideline set</td>
+<td>+4.1</td>
+<td>+7.1</td>
+</tr>
+<tr>
+<td>GPT-5.5</td>
+<td>Strong (near-ceiling)</td>
+<td>92.3 / 82.1</td>
+<td>95.2 / 89.3</td>
+<td>full guideline set</td>
+<td>+2.9</td>
+<td>+7.2</td>
+</tr>
+<tr>
+<td>GLM-5 (745B MoE)</td>
+<td>Saturated</td>
+<td>87.5 / 80.4</td>
+<td>87.5 / 80.4</td>
+<td>full guideline set</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Reading the SGC column, the stricter metric usually moves more than TGC — DeepSeek's SGC jumps <strong>+16.1pp</strong> against a <strong>+9.5pp</strong> TGC gain — because good guidelines especially help an agent clear <em>every</em> variant of a scenario, not just the average case. And the effect doesn't disappear at the top of the range: GPT-5.5 and Opus, both near the ceiling on TGC, still gain <strong>+7.2</strong> and <strong>+7.1pp SGC</strong> respectively. Memory keeps paying off as long as a model has a remaining failure mode to target.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="the-cheapest-memory-strategy-can-also-be-the-best" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-cheapest-memory-strategy-can-also-be-the-best" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Cheapest Memory Strategy Can Also Be the Best
+	</span>
+</h2>
+<p>A practical concern: injecting a full guideline set inflates every ReAct step's input, because the guidelines are re-sent each turn. Here's what we observed:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Model</th>
+<th>Config</th>
+<th>Tokens/task (baseline)</th>
+<th>Tokens/task (+ memory)</th>
+<th>Overhead</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>DeepSeek-V3.2</td>
+<td>full guideline set</td>
+<td>148K</td>
+<td>263K</td>
+<td>+78%</td>
+</tr>
+<tr>
+<td>gpt-oss-120b</td>
+<td>full guideline set</td>
+<td>110K</td>
+<td>166K</td>
+<td>+51%</td>
+</tr>
+<tr>
+<td>gpt-oss-120b</td>
+<td>curated retrieval</td>
+<td>110K</td>
+<td>116K</td>
+<td>+5%</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>Table 1. Average token use per task, accumulated across agent steps, measured against the no-memory baseline.</em></p>
+<p>Two takeaways:</p>
+<ol>
+<li><p><strong>Curated retrieval keeps cost near baseline.</strong> For weaker models, where selection wins on accuracy, it also wins on cost — the best of both worlds (<strong>+16.1pp TGC at only +5% tokens</strong> for gpt-oss-120b). Better performance here does <strong>not</strong> require more inference cost.</p>
+</li>
+<li><p><strong>Memory doesn't blow up the reasoning loop.</strong> DeepSeek runs about the same number of ReAct steps with memory as without (≈18–19 on average), so the added cost is input-token inflation, not longer trajectories.</p>
+</li>
+</ol>
+<p>The real efficiency lever in production is <strong>prompt caching</strong>: the static portion of the guideline set is identical across steps and can be cached, cutting effective cost substantially. Cache-aware prompt design — keeping the shared guideline-set prefix stable so it stays cacheable — is worth engineering for. We also hypothesize that <strong>context-window size</strong> plays a role: models with larger windows may absorb the full guideline set more effectively, while smaller-context models benefit more from retrieval that keeps injected content compact. We have not yet run controlled experiments isolating this factor.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="memory-should-be-calibrated-not-merely-accumulated" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#memory-should-be-calibrated-not-merely-accumulated" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Memory Should Be Calibrated, Not Merely Accumulated
+	</span>
+</h2>
+<p>The lesson isn't to give an agent everything it has learned. It's to give it the amount of experience it can actually use.</p>
+<ul>
+<li><p>For <strong>weak models</strong>, that means a compact core plus a few task-specific lessons — which, conveniently, is also the cheapest option.</p>
+</li>
+<li><p>For <strong>strong models with headroom</strong>, it means preserving the full guideline set, kept affordable in production via prompt caching.</p>
+</li>
+<li><p>For <strong>saturated models</strong>, it means spending no extra context until their remaining failure modes are better understood.</p>
+</li>
+</ul>
+<p>The gains are real across the board — automatic, leakage-free, and requiring no human annotation — but only when the dose fits the model.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="whats-next" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#whats-next" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What's Next
+	</span>
+</h2>
+<p>This is a starting point, not the finish line:</p>
+<ul>
+<li><p><strong>A learned selector.</strong> Our current retrieval ranks guidelines by cosine similarity, which we've shown doesn't perfectly predict which guidelines help a given task. A selector trained on outcome signal is the natural next step.</p>
+</li>
+<li><p><strong>Memory for very weak models.</strong> Below a minimum capability baseline, self-distillation lacks signal. Teacher-distilled memory for very weak models is a separate problem we're exploring.</p>
+</li>
+<li><p><strong>Beyond AppWorld.</strong> These results are validated on AppWorld — a rigorous multi-step benchmark, but a single one. Broader agent benchmarks and real-world deployments are in progress.</p>
+</li>
+<li><p><strong>Isolating context window.</strong> As above, we want controlled experiments that separate context-window size from raw capability.</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Try the <a href="https://github.com/AgentToolkit/altk-evolve" rel="nofollow">ALTK-Evolve</a> library</strong> — which includes the extraction, consolidation, and retrieval pipeline used here — <strong>or read the <a href="https://arxiv.org/abs/2603.10600" rel="nofollow">full technical report</a></strong> for the complete method and ablations.</p>
+</blockquote>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="appendix-understanding-the-metrics" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#appendix-understanding-the-metrics" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Appendix: Understanding the Metrics
+	</span>
+</h2>
+<p>AppWorld tasks are graded by two metrics, both reported as percentages (higher is better):</p>
+<ul>
+<li><p><strong>TGC — Task Goal Completion.</strong> The share of individual tasks the agent completes fully and correctly. This is the headline <em>"did it get the job done"</em> number.</p>
+</li>
+<li><p><strong>SGC — Scenario Goal Completion.</strong> A stricter, all-or-nothing metric. Each <em>scenario</em> bundles several variants of the same task (the same request with different data, phrasing, or edge conditions). SGC counts a scenario as passing only if the agent succeeds on <strong>every</strong> variant. It measures <strong>reliability</strong> — an agent that solves a task most of the time but fails on one variant scores on TGC but not on SGC.</p>
+</li>
+</ul>
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-research/altk-evolve-consistency"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/dI5J2sSc3TSprk9VB4EVJ.jpeg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Your Agent Aced the Task. Will It Do It Again?</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-research" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 120</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 15, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-research/ibm-releases-sota-granite-time-series"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/69d3d41eef229c09afea5d83/KYse3pX6t3l8FnI-1pKsi.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">IBM releases SOTA Granite Time Series PatchTST-FM-r2 model with commercial-friendly license</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-research" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 60</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 9, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a913c2a565ae6a2f0c0018e" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/099746ac56e31bb4785307daebf2c2bf.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/ajayyadav031853">ajayyadav031853</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a913c2a565ae6a2f0c0018e" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-28T07:43:38" title="Fri, 28 Aug 2026 07:43:38 GMT">Aug 28</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Really interesting take on agentic memory. The idea that memory needs to be calibrated to the model rather than simply accumulated is especially useful for production systems. Selective retrieval also seems like a practical way to improve reliability without unnecessarily increasing context and inference costs. It makes a strong case for thoughtful custom AI agent development and enterprise AI agent solutions, where memory, performance, and cost all need to be designed together. <a href="https://mobisoftinfotech.com/services/ai-agent-development-company" rel="nofollow">https://mobisoftinfotech.com/services/ai-agent-development-company</a></p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fibm-research%2Faltk-evolve-hmm">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fibm-research%2Faltk-evolve-hmm">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-research%2Faltk-evolve-hmm" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">83</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="vinodmut" style="content-visibility:auto;"><!--[0--><a href="/vinodmut" title="vinodmut"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/645e4bc1d9187cd3e07535c2/YYhUQPu19hB2OTTN1l4zE.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="laredoj" style="content-visibility:auto;"><!--[0--><a href="/laredoj" title="laredoj"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6487da02c4b44322c124f39f/a59vwxS7l3iylkGXzN6R3.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="gaodan-fang" style="content-visibility:auto;"><!--[0--><a href="/gaodan-fang" title="gaodan-fang"><img class="overflow-hidden rounded-full" alt="" src="/avatars/18f132b7a7dabcdf5fb933edb554ea68.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ashwath-vaithina" style="content-visibility:auto;"><!--[0--><a href="/ashwath-vaithina" title="ashwath-vaithina"><img class="overflow-hidden rounded-full" alt="" src="/avatars/8ba2912d52fca21df2caa3aac681c8c3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yarizk" style="content-visibility:auto;"><!--[0--><a href="/yarizk" title="yarizk"><img class="overflow-hidden rounded-full" alt="" src="/avatars/dc237f871dc180a8ab2fcb20e7d08d48.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ankita-naik" style="content-visibility:auto;"><!--[0--><a href="/ankita-naik" title="ankita-naik"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ed9723b5fd015bb65e8dceb0a6d86ff9.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kirankate06" style="content-visibility:auto;"><!--[0--><a href="/kirankate06" title="kirankate06"><img class="overflow-hidden rounded-full" alt="" src="/avatars/fbde74cb6bf95cd51412962f0eafa824.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nfuller" style="content-visibility:auto;"><!--[0--><a href="/nfuller" title="nfuller"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65b12ed52be9660f0b7e5f72/r230jdYzTFj_CYmKgpz78.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="gsthomasx" style="content-visibility:auto;"><!--[0--><a href="/gsthomasx" title="gsthomasx"><img class="overflow-hidden rounded-full" alt="" src="/avatars/7567e1a8588c0bee6293c3cb88c11c8d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="saurabhiit2011" style="content-visibility:auto;"><!--[0--><a href="/saurabhiit2011" title="saurabhiit2011"><img class="overflow-hidden rounded-full" alt="" src="/avatars/a8e6ed70291c1a54635990fe421f25e1.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="0xSynthax" style="content-visibility:auto;"><!--[0--><a href="/0xSynthax" title="0xSynthax"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/frGAuLAsCrnF-ER1fIgzz.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="triagmas" style="content-visibility:auto;"><!--[0--><a href="/triagmas" title="triagmas"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/0s4C7O_Au4aMxbNpslhT8.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+71</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

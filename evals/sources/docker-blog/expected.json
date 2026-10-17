@@ -8,7 +8,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/stack-overflow-survey-2026-ai-agent-trust/",
       "title": "From Containers to Sandboxes: Developer Trust in the Agentic Era",
-      "summary": "The 2026 Stack Overflow Developer Survey shows only 7% of developers trust AI output for important decisions. Here’s what that means for running agents safely.",
+      "summary": "What the 2026 Stack Overflow Developer Survey tells us about where trust goes next If you’ve followed Docker lately, you know we’re all-in on sandboxes. We’ve spent a ton of time talking about the difference between sandboxes and containers, and helping our customers and the industry as a whole understand when to use which. In fact, Docker president Mark Cavage dedicated his opening keynote at WeAreDevelopers World Congress North America to this exact topic, using live demos to show why sandboxes (and not containers) provide the level of isolation required to contain autonomous agents. To...",
       "publishedAt": "2026-10-16T16:00:00.000Z"
     },
     {
@@ -17,7 +17,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/ai-agent-security-risks/",
       "title": "AI Agent Security Risks: What Can Go Wrong When Agents Act on Their Own",
-      "summary": "Learn the top AI agent security risks, from prompt injection to excessive autonomy and credential exposure, and how to contain them.",
+      "summary": "The thing that makes an AI agent useful, its freedom to act, is also what can introduce risk. An agent doesn’t just answer a question, it browses, runs code, and calls tools on its own, so a single bad or manipulated instruction can turn into real damage instead of just a wrong answer. That’s the shift traditional application security wasn’t built for, and it’s why trust has to be built into the system around the agent , not assumed. An agent decides its own path, picking tools at runtime, chaining actions together, and usually running with the credentials of whoever launched it. That...",
       "publishedAt": "2026-10-14T22:08:33.000Z"
     },
     {
@@ -26,7 +26,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/harbor-docker-sandboxes-run-safe-reproducible-agent-evals/",
       "title": "Harbor + Docker Sandboxes: Run Safe, Reproducible Agent Evals",
-      "summary": "Harbor can now run every eval task in Docker Sandboxes Docker Sandboxes are MicroVM environments to run agents like Claude Code, Codex, Cursor, and more safely With Sandboxes, define custom network policies for fair, reproducible evals Run your evals locally or in the cloud: starting for free on Docker Sandboxes on local surfaces and scaling...",
+      "summary": "Key takeaways Harbor can now run every eval task in Docker Sandboxes Docker Sandboxes are MicroVM environments to run agents like Claude Code, Codex, Cursor, and more safely With Sandboxes, define custom network policies for fair, reproducible evals Run your evals locally or in the cloud: starting for free on Docker Sandboxes on local surfaces and scaling to Cloud Sandboxes To evaluate an agent, you give it a real task, let it work, and check the result. Along the way, the agent installs packages, edits files, and runs commands. That’s untrusted, AI-written code, and a benchmark runs it...",
       "publishedAt": "2026-10-14T21:45:27.000Z"
     },
     {
@@ -35,7 +35,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/docker-hub-security-advisory-cve-2026-105445/",
       "title": "Docker Hub security advisory: personal access tokens transferred during account-to-organization conversions",
-      "summary": "CVE-2026-105445: Docker Hub account conversion could re-assign personal access tokens to a new owner. Read what happened, who was affected, and the fix.",
+      "summary": "On September 30, 2026, security researchers reported a vulnerability in Docker Hub’s identity and access management through our Vulnerability Disclosure Program. We confirmed the report and deployed a fix to production the same afternoon, less than four hours after receiving it. We then reviewed every account conversion back to the date the flaw was introduced, and on October 2, notified every user and organization owner whose account could have been impacted by this vulnerability. This post explains what the vulnerability was, what it could and could not do, what we found, and what we...",
       "publishedAt": "2026-10-12T16:00:00.000Z"
     },
     {
@@ -44,7 +44,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/docker-cloud-sandboxes-wearedevelopers-recap/",
       "title": "Trust Docker for the agents you don’t",
-      "summary": "At WeAreDevelopers, Docker introduced Cloud Sandboxes, the open Sandbox Kit specification, and a commitment to bring Kits to the CNCF for neutral governance.",
+      "summary": "Cloud Sandboxes, open Kits, and a developer community building the next generation of AI software Docker Cloud Sandboxes are here. At WeAreDevelopers World Congress North America, we launched a way for developers to start agent work in a safe way on their laptop, move to the same microVM environment on Docker-managed cloud compute, and bring the results back. Longer tasks can keep running, even after you close your laptop. That launch reflects a bigger ambition. We want developers to be able to give agents useful work with confidence in the systems around them. That means a place for the...",
       "publishedAt": "2026-10-01T18:26:12.000Z"
     },
     {
@@ -53,7 +53,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/manufacturing-trust-for-ai-agents-keynote/",
       "title": "Manufacturing Trust for AI Agents | Docker’s WeAreDevelopers Keynote",
-      "summary": "Docker's WeAreDevelopers keynote shows how Sandboxes, Kits, and Cloud Sandboxes give AI agents strong isolation and reproducible authority.",
+      "summary": "Coding agents do more than write code. Agents can install dependencies, access networks, use credentials, and keep working after we’ve moved on to something else. Agents need access to get real work done. But the more access they have, the bigger the impact of a mistake. The challenge is building enough trust into the system to give agents more freedom without giving them access to everything. At WeAreDevelopers North America, Docker President Mark Cavage laid out Docker’s answer: give every agent a strong boundary, make its environment and authority reproducible, and let the work run...",
       "publishedAt": "2026-09-24T17:15:00.000Z"
     },
     {
@@ -62,7 +62,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/docker-sandbox-kit-spec/",
       "title": "From Dockerfile to Kit: the Docker Sandboxes Kit Specification",
-      "summary": "Docker's Sandbox Kit Specification v3 packages an AI agent's network rules, credentials, and volumes as an ordinary, pinnable OCI image.",
+      "summary": "Agents need containment, and a sandbox is only half of it. Something still has to say which agent runs there, what it gets, and what it may touch. That is a Kit: an ordinary OCI image, so the answer travels with the agent and means the same thing on any conforming runtime. Today we published the Docker Sandbox Kit Specification v3, open source under Apache 2.0 at docker/sandbox-kit-spec . Here is why I wrote it. Everything that makes an agent useful is a grant I run a lot of agents. They write code, run tests, install dependencies, call APIs, and work on infrastructure while I do something...",
       "publishedAt": "2026-09-24T16:00:00.000Z"
     },
     {
@@ -71,7 +71,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/docker-sandbox-kit-spec-cncf/",
       "title": "Docker and CNCF partner on an open spec for agent permissions",
-      "summary": "Docker is bringing the open source Sandbox Kit Spec to the CNCF, so AI agent permissions become a neutral, vendor independent standard built on OCI.",
+      "summary": "Docker and CNCF: Making what an agent may do as portable as t he agent itself Ten years ago, the software industry faced a choice. Every vendor could ship its own image format and its own runtime, and developers would have to pick a side. Or the industry could agree on one artifact. The second option won. Docker donated its image format and the Runc runtime to the Linux Foundation, and the Open Container Initiative (OCI) formed around them. Today, a Docker image built anywhere can run anywhere. The format is the backbone of the cloud native ecosystem and a de facto standard. Now, we see a...",
       "publishedAt": "2026-09-24T16:00:00.000Z"
     },
     {
@@ -80,7 +80,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/introducing-cloud-sandboxes-start-on-your-laptop-finish-in-the-cloud/",
       "title": "Introducing Cloud Sandboxes: Start on Your Laptop, Finish in the Cloud",
-      "summary": "Run agents on your laptop, in the cloud, and move between them with one command, all safely. Earlier this year we launched Docker Sandboxes: microVM environments where coding agents can work autonomously in a safe way.",
+      "summary": "Run agents on your laptop, in the cloud, and move between them with one command, all safely. Earlier this year, we launched Docker Sandboxes: microVM environments where coding agents can work autonomously and safely. Since then, agents have started taking on long-horizon work: tasks that run for hours, not minutes. Agents need a new place to work. Today, we’re introducing Cloud Sandboxes: the same microVM-based sandbox, running on Docker-managed compute, with one command to move between them. The most important change in coding agents over the past year is that they can work for much...",
       "publishedAt": "2026-09-24T16:00:00.000Z"
     },
     {
@@ -89,7 +89,7 @@
       "kind": "rss",
       "url": "https://www.docker.com/blog/wearedevelopers-partner-customer-sessions-2026/",
       "title": "Meet the Ecosystem: Partners and Customers at WeAreDevelopers with Docker",
-      "summary": "Meet the partners and customers bringing practical AI, security, and development sessions to the Docker Pavilion at WeAreDevelopers. The post explains why a strong ecosystem matters to developers, announces the sessions and speakers, and invites attendees to connect with the teams building and using these technologies.",
+      "summary": "As teams put AI agents to work, they need to move quickly without losing control of what they deploy. They’re combining models, tools, and infrastructure from across a fast-changing ecosystem. Making those pieces work together and keeping them accountable as the stack evolves is becoming a core part of building AI applications. Docker’s approach to this challenge is providing a trusted, common foundation for containment, curation, and control of agent workloads at its core, while pairing those capabilities with an open ecosystem of partners and tools. That ecosystem spans model providers,...",
       "publishedAt": "2026-09-22T15:06:15.000Z"
     }
   ],

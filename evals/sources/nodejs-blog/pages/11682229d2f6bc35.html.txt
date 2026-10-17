@@ -1,0 +1,698 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Thursday, June 18, 2026 Security Releases</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://nodejs.org/en/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nodejs.org/en/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="es"
+      href="https://nodejs.org/es/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://nodejs.org/fr/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="id"
+      href="https://nodejs.org/id/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="ja"
+      href="https://nodejs.org/ja/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="ko"
+      href="https://nodejs.org/ko/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt"
+      href="https://nodejs.org/pt/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="ro"
+      href="https://nodejs.org/ro/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="ta"
+      href="https://nodejs.org/ta/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://nodejs.org/tr/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="uk"
+      href="https://nodejs.org/uk/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/vulnerability/june-2026-security-releases"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/vulnerability.xml"
+    />
+    <meta property="og:title" content="Node.js — Thursday, June 18, 2026 Security Releases" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/vulnerability/Node.js%20%E2%80%94%20Thursday,%20June%2018,%202026%20Security%20Releases"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Thursday, June 18, 2026 Security Releases" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <div class="index-module__VYslka__alertBox index-module__VYslka__warning">
+              <span class="index-module__VYslka__title"></span
+              ><span class="index-module__VYslka__content"
+                >Commercial support for versions past the Maintenance LTS phase is available through
+                our
+                <a href="/en/about/eol">OpenJS Ecosystem Sustainability Program partners</a></span
+              >
+            </div>
+            <h1>Thursday, June 18, 2026 Security Releases</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/nodejs"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >TNJP</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>The Node.js Project</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__vulnerability">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Thursday, June 18, 2026 Security Releases
+              </div>
+            </div>
+            <h2 id="update-2026-06-18-security-releases-available">
+              <a href="#update-2026-06-18-security-releases-available"
+                >(UPDATE 2026-06-18) Security releases available</a
+              >
+            </h2>
+            <p>
+              Updates are now available for the 26.x, 24.x, 22.x Node.js release lines for the
+              following issues.
+            </p>
+            <p>
+              This security release includes the following dependency updates to address public
+              vulnerabilities:
+            </p>
+            <ul>
+              <li>llhttp (9.4.2) on all release lines</li>
+              <li>nghttp2 (1.69.0) on all release lines</li>
+              <li>openssl (3.5.7) on all release lines</li>
+              <li>undici (8.5.0) on 26.3.1</li>
+              <li>undici (7.28.0) on 24.17.0</li>
+              <li>undici (6.27.0) on 22.23.0</li>
+            </ul>
+            <h2
+              id="nodejs-webcrypto-aes-integer-overflow-leads-to-remote-process-abort-dos-cve-2026-48933---high"
+            >
+              <a
+                href="#nodejs-webcrypto-aes-integer-overflow-leads-to-remote-process-abort-dos-cve-2026-48933---high"
+                >Node.js WebCrypto AES Integer Overflow Leads to Remote Process Abort (DoS)
+                (CVE-2026-48933) - (high)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js WebCrypto implementation can crash the process if the input of
+              <code>subtle.encrypt()</code> is a multiple of 2GiB.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to erichen for reporting this vulnerability and thank you Filip Skokan for
+              fixing it.
+            </p>
+            <h2
+              id="nodejs-unicode-dot-separator-handling-can-lead-to-tls-wildcard-depth-authentication-bypass-due-to-resolver-and-verifier-hostname-normalization-mismatch-cve-2026-48618---high"
+            >
+              <a
+                href="#nodejs-unicode-dot-separator-handling-can-lead-to-tls-wildcard-depth-authentication-bypass-due-to-resolver-and-verifier-hostname-normalization-mismatch-cve-2026-48618---high"
+                >Node.js unicode dot separator handling can lead to tls wildcard-depth
+                authentication bypass due to resolver and verifier hostname normalization mismatch
+                (CVE-2026-48618) - (high)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js TLS hostname handling can cause Node.js unicode dot separator
+              handling can lead to tls wildcard-depth authentication bypass due to resolver and
+              verifier hostname normalization mismatch.
+            </p>
+            <p>
+              This can lead to confidentiality impact or bypass of the intended security boundary
+              under affected configurations.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to tmeletlidis for reporting this vulnerability and thank you Matteo
+              Collina for fixing it.
+            </p>
+            <h2
+              id="proxy-credentials-leaked-in-err_proxy_tunnel-error-message-cve-2026-48615---medium"
+            >
+              <a
+                href="#proxy-credentials-leaked-in-err_proxy_tunnel-error-message-cve-2026-48615---medium"
+                >Proxy credentials leaked in ERR_PROXY_TUNNEL error message (CVE-2026-48615) -
+                (medium)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js proxy tunnel error handling could expose proxy credentials in
+              <code>ERR_PROXY_TUNNEL</code> error messages.
+            </p>
+            <p>
+              When proxy credentials are embedded in the proxy URL, they may be exposed through
+              error handling paths and captured by logs, diagnostics, or other error consumers.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to nssys for reporting this vulnerability and thank you Matteo Collina for
+              fixing it.
+            </p>
+            <h2
+              id="permission-model-bypass-via-processreportwritereport-path-misvalidation-cve-2026-48617---low"
+            >
+              <a
+                href="#permission-model-bypass-via-processreportwritereport-path-misvalidation-cve-2026-48617---low"
+                >Permission Model Bypass via <code>process.report.writeReport()</code> Path
+                Misvalidation (CVE-2026-48617) - (low)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js Permission Model enforcement allows Bypass via
+              <code>process.report.writeReport()</code> Path Misvalidation.
+            </p>
+            <p>
+              This can lead to confidentiality impact or bypass of the intended security boundary
+              under affected configurations.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to suul for reporting this vulnerability and thank you RafaelGSS for fixing
+              it.
+            </p>
+            <h2
+              id="unbounded-memory-growth-in-nodehttp2-clients-via-attacker-controlled-origin-frames-cve-2026-48619---medium"
+            >
+              <a
+                href="#unbounded-memory-growth-in-nodehttp2-clients-via-attacker-controlled-origin-frames-cve-2026-48619---medium"
+                >Unbounded memory growth in <code>node:http2</code> clients via attacker-controlled
+                ORIGIN frames (CVE-2026-48619) - (medium)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js HTTP/2 client allows a server to send an unlimited number of ORIGIN
+              frames, which could lead to an Out of Memory error on the client.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to kingsd for reporting this vulnerability and thank you Matteo Collina for
+              fixing it.
+            </p>
+            <h2
+              id="http2-sessions-never-clean-up-after-goaway-on-invalid-protocol-errors-cve-2026-48937---medium"
+            >
+              <a
+                href="#http2-sessions-never-clean-up-after-goaway-on-invalid-protocol-errors-cve-2026-48937---medium"
+                >HTTP/2 sessions never clean up after GOAWAY on invalid protocol errors
+                (CVE-2026-48937) - (medium)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js HTTP/2 server API can cause servers to keep accepting data even
+              after sending a <code>GOAWAY</code> frame.
+            </p>
+            <p>
+              This vulnerability affects two supported release lines:
+              <strong>Node.js 22</strong> and <strong>Node.js 24</strong>.
+            </p>
+            <p>Thank you, Tim Perry, for reporting this vulnerability and for fixing it.</p>
+            <h2
+              id="uppercase-sni-context-matching-can-lead-to-mtls-authorization-bypass-due-to-case-sensitive-hostname-matching-cve-2026-48928---medium"
+            >
+              <a
+                href="#uppercase-sni-context-matching-can-lead-to-mtls-authorization-bypass-due-to-case-sensitive-hostname-matching-cve-2026-48928---medium"
+                >Uppercase sni context matching can lead to mtls authorization bypass due to
+                case-sensitive hostname matching (CVE-2026-48928) - (medium)</a
+              >
+            </h2>
+            <p>
+              A inconsistency in Node.js hostname matching can cause a trust-policy bypass in
+              multi-context mTLS setups.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to tmeletlidis for reporting this vulnerability and thank you Matteo
+              Collina for fixing it.
+            </p>
+            <h2
+              id="embedded-nul-hostnames-can-lead-to-silent-authority-rebinding-due-to-c-string-truncation-in-resolver-bindings-cve-2026-48930---medium"
+            >
+              <a
+                href="#embedded-nul-hostnames-can-lead-to-silent-authority-rebinding-due-to-c-string-truncation-in-resolver-bindings-cve-2026-48930---medium"
+                >Embedded-nul hostnames can lead to silent authority rebinding due to c-string
+                truncation in resolver bindings (CVE-2026-48930) - (medium)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js TLS hostname handling can cause Embedded-nul hostnames can lead to
+              silent authority rebinding due to c-string truncation in resolver bindings.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to tmeletlidis for reporting this vulnerability and thank you Matteo
+              Collina for fixing it.
+            </p>
+            <h2
+              id="tls-host-identity-verification-bypass-via-session-reuse-with-different-servername-leads-to-unauthorized-connections-cve-2026-48934---medium"
+            >
+              <a
+                href="#tls-host-identity-verification-bypass-via-session-reuse-with-different-servername-leads-to-unauthorized-connections-cve-2026-48934---medium"
+                >TLS host identity verification bypass via session reuse with different servername
+                leads to unauthorized connections (CVE-2026-48934) - (medium)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js TLS host verification can cause an attacker to bypass certification
+              validation.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to 3d7omb for reporting this vulnerability and thank you Matteo Collina for
+              fixing it.
+            </p>
+            <h2
+              id="permission-model-bypass-via-filehandleutimes-in-the-promises-api-cve-2026-48935---low"
+            >
+              <a
+                href="#permission-model-bypass-via-filehandleutimes-in-the-promises-api-cve-2026-48935---low"
+                >Permission Model bypass via FileHandle.utimes() in the promises API
+                (CVE-2026-48935) - (low)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js Permission API can cause a file metadata to be modified even on a
+              path that was set as read-only with e.g. <code>--allow-fs-read</code>.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to muhammaddaffa for reporting this vulnerability and thank you RafaelGSS
+              for fixing it.
+            </p>
+            <h2
+              id="unix-domain-socket-server-bypasses---permission-network-restrictions-incomplete-cve-2026-21636-fix-cve-2026-48936---low"
+            >
+              <a
+                href="#unix-domain-socket-server-bypasses---permission-network-restrictions-incomplete-cve-2026-21636-fix-cve-2026-48936---low"
+                >Unix domain socket server bypasses --permission network restrictions (incomplete
+                CVE-2026-21636 fix) (CVE-2026-48936) - (low)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js Permission API can cause a local server to be started (via a Unix
+              domain socket), even without the <code>--allow-net</code> permission.
+            </p>
+            <p>
+              This vulnerability affects one supported release line: <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to Vitaly Simonovich for reporting this vulnerability and thank you
+              RafaelGSS for fixing it.
+            </p>
+            <h2
+              id="http-response-queue-poisoning-via-toctou-race-condition-in-httpagent-cve-2026-48931---low"
+            >
+              <a
+                href="#http-response-queue-poisoning-via-toctou-race-condition-in-httpagent-cve-2026-48931---low"
+                >HTTP Response Queue Poisoning via TOCTOU Race Condition in
+                <code>http.Agent</code> (CVE-2026-48931) - (low)</a
+              >
+            </h2>
+            <p>
+              A flaw in Node.js HTTP Agent can cause a client to accept as valid a response that is
+              send before the client has sent the request.
+            </p>
+            <p>
+              This vulnerability affects all supported release lines: <strong>Node.js 22</strong>,
+              <strong>Node.js 24</strong>, and <strong>Node.js 26</strong>.
+            </p>
+            <p>
+              Thank you, to yushengchen for reporting this vulnerability and thank you Matteo
+              Collina for fixing it.
+            </p>
+            <h2 id="downloads-and-release-details">
+              <a href="#downloads-and-release-details">Downloads and release details</a>
+            </h2>
+            <ul>
+              <li><a href="/en/blog/release/v22.23.0/">Node.js v22.23.0</a></li>
+              <li><a href="/en/blog/release/v24.17.0/">Node.js v24.17.0</a></li>
+              <li><a href="/en/blog/release/v26.3.1/">Node.js v26.3.1</a></li>
+            </ul>
+            <h1 id="summary"><a href="#summary">Summary</a></h1>
+            <p>
+              The Node.js project will release new versions of the 26.x, 24.x, 22.x releases lines
+              on or shortly after, Wednesday, June 17, 2026 in order to address one or more security
+              issues, the highest severity is HIGH.
+            </p>
+            <h2 id="impact"><a href="#impact">Impact</a></h2>
+            <p>
+              The highest severity issue fixed in the 26.x release line is HIGH. The highest
+              severity issue fixed in the 24.x release line is HIGH. The highest severity issue
+              fixed in the 22.x release line is HIGH.
+            </p>
+            <p>
+              It&#x27;s important to note that End-of-Life versions are always affected when a
+              security release occurs. To ensure your system&#x27;s security, please use an
+              up-to-date version as outlined in our
+              <a href="https://github.com/nodejs/release#release-schedule">Release Schedule</a>.
+            </p>
+            <h2 id="release-timing"><a href="#release-timing">Release timing</a></h2>
+            <p>Releases are available as of Thursday, June 18, 2026.</p>
+            <h2 id="contact-and-future-updates">
+              <a href="#contact-and-future-updates">Contact and future updates</a>
+            </h2>
+            <p>
+              The current Node.js security policy can be found at
+              <a href="https://nodejs.org/en/security/">https://nodejs.org/en/security/</a>. Please
+              follow the process outlined in
+              <a href="https://github.com/nodejs/node/blob/master/SECURITY.md"
+                >https://github.com/nodejs/node/blob/master/SECURITY.md</a
+              >
+              if you wish to report a vulnerability in Node.js.
+            </p>
+            <p>
+              Subscribe to the low-volume announcement-only nodejs-sec mailing list at
+              <a href="https://groups.google.com/forum/#!forum/nodejs-sec"
+                >https://groups.google.com/forum/#!forum/nodejs-sec</a
+              >
+              to stay up to date on security vulnerabilities and security-related releases of
+              Node.js and the projects maintained in the nodejs GitHub organization.
+            </p>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/july-2026-security-releases"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content"
+                  >Wednesday, July 29, 2026 Security Releases</span
+                ></a
+              ><a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/march-2026-hashdos"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Developing a minimally HashDoS resistant, yet quickly reversible integer hash for
+                  V8</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Jun 18, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>5 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/vulnerability/june-2026-security-releases.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#update-2026-06-18-security-releases-available"
+                    >(UPDATE 2026-06-18) Security releases available</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#nodejs-webcrypto-aes-integer-overflow-leads-to-remote-process-abort-dos-cve-2026-48933---high"
+                    >Node.js WebCrypto AES Integer Overflow Leads to Remote Process Abort (DoS)
+                    (CVE-2026-48933) - (high)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#nodejs-unicode-dot-separator-handling-can-lead-to-tls-wildcard-depth-authentication-bypass-due-to-resolver-and-verifier-hostname-normalization-mismatch-cve-2026-48618---high"
+                    >Node.js unicode dot separator handling can lead to tls wildcard-depth
+                    authentication bypass due to resolver and verifier hostname normalization
+                    mismatch (CVE-2026-48618) - (high)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#proxy-credentials-leaked-in-err_proxy_tunnel-error-message-cve-2026-48615---medium"
+                    >Proxy credentials leaked in ERR_PROXY_TUNNEL error message (CVE-2026-48615) -
+                    (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#permission-model-bypass-via-processreportwritereport-path-misvalidation-cve-2026-48617---low"
+                    >Permission Model Bypass via process.report.writeReport() Path Misvalidation
+                    (CVE-2026-48617) - (low)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#unbounded-memory-growth-in-nodehttp2-clients-via-attacker-controlled-origin-frames-cve-2026-48619---medium"
+                    >Unbounded memory growth in node:http2 clients via attacker-controlled ORIGIN
+                    frames (CVE-2026-48619) - (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#http2-sessions-never-clean-up-after-goaway-on-invalid-protocol-errors-cve-2026-48937---medium"
+                    >HTTP/2 sessions never clean up after GOAWAY on invalid protocol errors
+                    (CVE-2026-48937) - (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#uppercase-sni-context-matching-can-lead-to-mtls-authorization-bypass-due-to-case-sensitive-hostname-matching-cve-2026-48928---medium"
+                    >Uppercase sni context matching can lead to mtls authorization bypass due to
+                    case-sensitive hostname matching (CVE-2026-48928) - (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#embedded-nul-hostnames-can-lead-to-silent-authority-rebinding-due-to-c-string-truncation-in-resolver-bindings-cve-2026-48930---medium"
+                    >Embedded-nul hostnames can lead to silent authority rebinding due to c-string
+                    truncation in resolver bindings (CVE-2026-48930) - (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#tls-host-identity-verification-bypass-via-session-reuse-with-different-servername-leads-to-unauthorized-connections-cve-2026-48934---medium"
+                    >TLS host identity verification bypass via session reuse with different
+                    servername leads to unauthorized connections (CVE-2026-48934) - (medium)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#permission-model-bypass-via-filehandleutimes-in-the-promises-api-cve-2026-48935---low"
+                    >Permission Model bypass via FileHandle.utimes() in the promises API
+                    (CVE-2026-48935) - (low)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#unix-domain-socket-server-bypasses---permission-network-restrictions-incomplete-cve-2026-21636-fix-cve-2026-48936---low"
+                    >Unix domain socket server bypasses --permission network restrictions
+                    (incomplete CVE-2026-21636 fix) (CVE-2026-48936) - (low)</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#http-response-queue-poisoning-via-toctou-race-condition-in-httpagent-cve-2026-48931---low"
+                    >HTTP Response Queue Poisoning via TOCTOU Race Condition in http.Agent
+                    (CVE-2026-48931) - (low)</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#downloads-and-release-details"
+                    >Downloads and release details</a
+                  >
+                </li>
+                <li class=""><a class="" href="#impact">Impact</a></li>
+                <li class=""><a class="" href="#release-timing">Release timing</a></li>
+                <li class="">
+                  <a class="" href="#contact-and-future-updates">Contact and future updates</a>
+                </li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

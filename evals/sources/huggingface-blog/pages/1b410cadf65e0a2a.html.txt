@@ -1,0 +1,298 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-thumbnails.huggingface.co/social-thumbnails/blog/nvidia/nemotron-3-5-content-safety.png" />
+
+		<meta property="og:title" content="Nemotron 3.5 Content Safety: Customizable Multimodal Safety for Global Enterprise AI" />
+
+		<meta property="og:description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/nvidia/nemotron-3-5-content-safety" />
+
+		<meta property="og:image" content="https://cdn-thumbnails.huggingface.co/social-thumbnails/blog/nvidia/nemotron-3-5-content-safety.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/nvidia/nemotron-3-5-content-safety">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Nemotron 3.5 Content Safety: Customizable Multimodal Safety for Global Enterprise AI</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="nemotron-35-content-safety-customizable-multimodal-safety-for-global-enterprise-ai" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#nemotron-35-content-safety-customizable-multimodal-safety-for-global-enterprise-ai" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Nemotron 3.5 Content Safety: Customizable Multimodal Safety for Global Enterprise AI
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[0--><span class="bg-linear-to-b inline-block translate-y-px from-white to-green-400 bg-clip-text font-extrabold text-transparent dark:from-black text-xs leading-[0.6]">+</span><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 4, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Fnemotron-3-5-content-safety" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">14</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="btaras22" style="content-visibility:auto;"><!--[0--><a href="/btaras22" title="btaras22"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Hn29SxpGNzkKBnV2P-4F_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="amitpuri" style="content-visibility:auto;"><!--[0--><a href="/amitpuri" title="amitpuri"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62a0baa7c6754e9bfabf7e76/aogJMfrZ_Cvgx1ka_IDTV.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="theQuert" style="content-visibility:auto;"><!--[0--><a href="/theQuert" title="theQuert"><img class="overflow-hidden rounded-full" alt="" src="/avatars/728c18c9aae5f19eac6f7f0cfa7ceace.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="asleekgeek" style="content-visibility:auto;"><!--[0--><a href="/asleekgeek" title="asleekgeek"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/hbAkxpuGputK16Fj8tahX.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="devopen" style="content-visibility:auto;"><!--[0--><a href="/devopen" title="devopen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/23417fa8d1b053b57bfe16eede254353.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Pegasus10" style="content-visibility:auto;"><!--[0--><a href="/Pegasus10" title="Pegasus10"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/SUSAsNhSj4_KHqyDGJnkr.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+8</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/varunsingh"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Varun Singh 's avatar" src="/avatars/49ce600ee229f9a50a6f9bfff2e63683.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/varunsingh"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Varun Singh ">Varun Singh </span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">varunsingh</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ihulseman0220"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Isabel Hulseman's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/692f256930af6df4c8e042f5/1We0xkKlpRmt-pkBdDUJY.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ihulseman0220"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Isabel Hulseman">Isabel Hulseman</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ihulseman0220</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/andoshi"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Anuj Doshi's avatar" src="/avatars/67bb5b34b5b0838df560fc3268dcb9eb.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/andoshi"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Anuj Doshi">Anuj Doshi</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">andoshi</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sprayaga25"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Shyamala Prayaga's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/644c4b804ef896a09019a5b4/8n36CAdYm6smTqmWNT2aM.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sprayaga25"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Shyamala Prayaga">Shyamala Prayaga</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sprayaga25</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->The last two years have seen NVIDIA's content safety stack grow from a focused English text classifier into a family of specialized models—each extending coverage to new modalities, languages, and inference modes. <a href="https://huggingface.co/nvidia/Nemotron-3-Content-Safety">Nemotron 3 Content Safety</a>, released in March 2026, combined multimodal and multilingual capabilities for the first time in a single 4B-parameter model. Today, we are releasing <a href="https://huggingface.co/nvidia/Nemotron-3.5-Content-Safety">Nemotron 3.5 Content Safety</a>, which completes that arc: a single model that unifies multimodal input, multilingual reach, custom enterprise policy enforcement, and auditable reasoning into one inference call.</p>
+<p>This post covers what changes in 3.5, the design decisions behind each new capability, and how to integrate the model into production safety pipelines.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="whats-new-in-nemotron-35-content-safety" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#whats-new-in-nemotron-35-content-safety" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What's New in Nemotron 3.5 Content Safety
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="1-unified-multimodal-evaluation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#1-unified-multimodal-evaluation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		1. Unified Multimodal Evaluation
+	</span>
+</h3>
+<p>Nemotron 3 introduced image understanding; Nemotron 3.5 deepens the multimodal integration. The model takes a <strong>user prompt, an optional image, and an optional assistant response</strong> as a single context window and produces a coherent safety verdict over the combined input. Evaluating all three together—rather than scoring each independently—closes a well-known gap in multimodal safety scenarios: policy violations that only emerge from the <em>interaction</em> between text and image, or between request and response, are now caught in a single pass.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="2-global-language-coverage" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#2-global-language-coverage" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		2. Global Language Coverage
+	</span>
+</h3>
+<p>Nemotron 3.5 maintains the 12-language explicit training coverage of its predecessors—<strong>English, French, Spanish, German, Chinese, Japanese, Korean, Arabic, Hindi, Russian, Portuguese, and Italian</strong>—while also inheriting strong zero-shot generalization across approximately 140 languages from the Gemma 3 base model. This means deployments in markets where training data is sparse (e.g., Southeast Asian languages, Scandinavian languages, less-resourced African languages) benefit from base-model multilingual transfer without requiring separate fine-tuning.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="3-custom-policy-enforcement" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#3-custom-policy-enforcement" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		3. Custom Policy Enforcement
+	</span>
+</h3>
+<p>This is the most significant architectural addition in 3.5 relative to Nemotron 3. Production deployments rarely operate under a single universal safety taxonomy. A healthcare platform has a different risk profile than a financial services chatbot, a developer tools IDE, or a children's education app. Nemotron 3.5 accepts a custom policy specification alongside the input. The model reasons over that policy when producing its verdict rather than deferring entirely to the built-in taxonomy. This extends the work first introduced in <a href="https://huggingface.co/nvidia/Nemotron-Content-Safety-Reasoning-4B">Nemotron Content Safety Reasoning 4B</a> to the full multimodal, multilingual setting.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="4-reasoning-traces-think-mode" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#4-reasoning-traces-think-mode" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		4. Reasoning Traces (THINK Mode)
+	</span>
+</h3>
+<p>Every safety verdict in Nemotron 3.5 can be accompanied by an auditable reasoning trace via an optional <strong>think mode</strong>. When enabled, the model outputs its step-by-step reasoning before delivering a final <code>safe</code> / <code>unsafe</code> label and, optionally, the violated categories.</p>
+<pre><code>&lt;think&gt;
+The user prompt asks for guidance on acquiring a controlled substance without a prescription.
+The assistant response provides specific sourcing steps and references an online marketplace.
+This interaction violates the Criminal Planning/Confessions and Controlled Substances categories.
+The image (a pharmacy exterior) provides locational context but does not alter the verdict.
+&lt;/think&gt;
+
+User Safety: unsafe
+Response Safety: unsafe
+Safety Categories: Criminal Planning/Confessions, Controlled Substances
+</code></pre>
+<p>When latency is the primary constraint, THINK mode can be disabled to return to the same low-latency binary verdict available in Nemotron 3.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="5-safety-dataset" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#5-safety-dataset" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		5. Safety Dataset
+	</span>
+</h3>
+<p>With Nemotron 3.5, we are releasing our safety dataset. This is an important milestone since most OSS safety models don't generally provide the training or evaluation sets. This problem is worse for the multimodal space where artifacts such as images or videos are often derived from resources with restrictive licensing terms. The Nemotron 3.5 Content Safety Dataset is multimodal, multilingual, and includes safety reasoning traces that were used to train the model. These reasoning traces were generated in a 2-step manner to make them concise, similar to the <a href="https://huggingface.co/nvidia/Nemotron-Content-Safety-Reasoning-4B">Nemotron Content Safety Reasoning 4B</a> model.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="model-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#model-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Model Architecture
+	</span>
+</h2>
+<p>Nemotron 3.5 Content Safety is built on <strong>Google Gemma 3 4B IT</strong> (4B parameters), providing a 128K context window, strong vision-language reasoning, and broad multilingual coverage. NVIDIA fine-tunes this base with a LoRA adapter that installs targeted safety classification behavior while keeping the model compact enough for real-time deployment on 8GB+ VRAM GPUs.</p>
+<p>The inference interface supports three output modes:</p>
+<p><strong>Mode 1 — Low-latency binary verdict:</strong></p>
+<pre><code>User Safety: safe
+Response Safety: unsafe
+</code></pre>
+<p><strong>Mode 2 — Binary verdict with categories:</strong></p>
+<pre><code>User Safety: safe
+Response Safety: unsafe
+Safety Categories: Violence, Criminal Planning/Confessions
+</code></pre>
+<p><strong>Mode 3 — THINK mode (reasoning + verdict):</strong></p>
+<pre><code>&lt;think&gt;
+[step-by-step reasoning trace]
+&lt;/think&gt;
+
+User Safety: unsafe
+Response Safety: unsafe
+Safety Categories: [categories]
+</code></pre>
+<p>The safety taxonomy follows the <strong>Aegis 2.0</strong> framework: 13 core categories aligned with the MLCommons safety taxonomy, plus 10 fine-grained subcategories. This alignment allows direct comparison with other open and closed guard systems benchmarked on Aegis-taxonomy datasets.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="reasoning" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#reasoning" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Reasoning
+	</span>
+</h2>
+<p>Reasoning is a supercharger for content safety classification because it provides the necessary context, customization, and accountability required for production AI systems, especially in enterprise and regulated environments.</p>
+<p><strong>Enables Custom and Contextual Policy Enforcement</strong></p>
+<p>Reasoning allows a content safety model to dynamically interpret and enforce custom, domain-specific policies defined in natural language at the time of inference. This is necessary because production deployments rarely operate under a single, universal safety taxonomy. A financial services chatbot has a different risk profile than a children's education app which may have a lower tolerance for profanity. This capability supports:</p>
+<ul>
+<li><strong>Category Suppression:</strong> Disabling irrelevant categories, such as preventing a "violence" category trigger when a DevOps tool handles the phrase "terminate a process".</li>
+<li><strong>Custom Category Injection:</strong> Defining proprietary risk categories specific to an organization's regulatory or product policies.</li>
+</ul>
+<p><strong>Provides Auditable and Documented Justification</strong></p>
+<p>The reasoning traces show the model's step-by-step logic before it delivers a final safe or unsafe verdict. This documented justification serves several purposes:</p>
+<ul>
+<li><strong>Compliance and Audit Logging:</strong> Regulated industries often require documented justifications for content moderation decisions.</li>
+<li><strong>Human Review:</strong> Reviewers can audit <em>why</em> a verdict was reached to identify systematic model errors.</li>
+<li><strong>Policy Iteration:</strong> The traces reveal how the model interprets edge cases, allowing teams to iteratively refine and improve custom policy language.</li>
+</ul>
+<p><strong>Latency</strong></p>
+<p>While reasoning can introduce latency, the Nemotron model addresses this by condensing reasoning chains into concise summaries to limit output tokens and increase efficiency. This is done in a 2-step process similar to what was done in the predecessor model <a href="https://huggingface.co/nvidia/Nemotron-Content-Safety-Reasoning-4B">Nemotron-Content-Safety-Reasoning-4B</a>. In the first step, we use larger, more powerful models such as Qwen 397B to generate chain-of-thought reasoning traces based upon provided prompts, images, and responses. We also provided the ground-truth labels of the samples to avoid any misclassification that can find its way into the reasoning traces. In step 2, we make these reasoning traces more concise by using another large model such as Qwen 80B. We specifically instruct this model to rephrase the original traces (from step 1) so that it fits in no more than 3 sentences. Based on our experiments, most reasoning traces generated are under 3 sentences.</p>
+<p>The efficient reasoning traces optimization allows for low-latency custom policy enforcement. Furthermore, the reasoning traces provide a valuable training signal that can be used for training specialized moderator models. Developers can choose a dual-mode operation, disabling reasoning for minimal latency in generic tasks or enabling it for complex policies.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="training-data" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-data" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training Data
+	</span>
+</h2>
+<p>The dataset driving Nemotron 3.5 is an evolution of the multimodal, multilingual blends used for Nemotron 3, with additions targeting the reasoning and custom-policy capabilities. We have used the following sources of data:</p>
+<ul>
+<li><strong>Multilingual text safety data</strong> from <a href="https://huggingface.co/datasets/nvidia/Nemotron-Safety-Guard-Dataset-v3">Nemotron Safety Guard Dataset v3</a>, sampled from culturally nuanced subsets with proportional representation across safety categories and safe/unsafe splits.</li>
+<li><strong>Human-annotated multimodal data</strong> collected in English by NVIDIA, translated into 12 languages. Critically, <strong>99% of training images are real photographs</strong>—not synthetic generations. This directly addresses a known weakness in the multimodal safety benchmark landscape, where existing datasets like VLGuard and MM-SafetyBench rely heavily on SDXL-generated images that lack the cultural texture and adversarial complexity of production content. While not all of these real images could be released due to licensing constraints, we are still able to release a subset of images from Wikimedia and synthetic generation.</li>
+<li><strong>Safe multimodal data</strong> from <a href="https://huggingface.co/datasets/nvidia/Nemotron-VLM-Dataset-v2">Nemotron VLM Dataset v2</a>, covering scanned documents, charts, papers, and diagrams with associated queries—ensuring the model does not over-flag benign professional content.</li>
+<li><strong>Reasoning traces</strong> derived from chain-of-thought outputs produced by larger teacher models—Qwen 397B and then shortened using Qwen 80B—are used to teach the model how to reason.</li>
+<li><strong>Topic following data</strong> from the <a href="https://huggingface.co/datasets/nvidia/CantTalkAboutThis-Topic-Control-Dataset">CantTalkAboutThis</a> dataset consisting of policy-specification/verdict pairs across a range of enterprise deployment scenarios (healthcare, finance, banking, education, etc.).</li>
+<li><strong>Synthetic data</strong> accounting for roughly 10% of total training volume, used primarily to diversify jailbreak patterns, generate rare policy violation examples, and produce multimodal adversarial cases.</li>
+</ul>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="benchmarking" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#benchmarking" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Benchmarking
+	</span>
+</h2>
+<p>Nemotron 3.5 Content Safety was evaluated across multilingual, multimodal, and custom-policy safety benchmarks, including VLGuard, MM-SafetyBench, PolyGuard, RTP-LX, Aya Redteaming, XSafety, MultiJail, Aegis, Dynaguardrail, and CoSA. These evaluations reflect the core production challenge for enterprise safety: applying consistent guardrails across global languages, text and image inputs, and domain-specific policies without adding significant latency.</p>
+<p>Nemotron 3 set a strong baseline with 84% average accuracy on multimodal harmful-content tests and roughly half the latency of LlamaGuard-4-12B. Nemotron 3.5 maintains that compact 4B efficiency while adding custom policy support and reasoning traces.</p>
+<p>Across multilingual and multimodal safety benchmarks, Nemotron 3.5 delivers strong harmful-content classification accuracy while maintaining a compact footprint. This matters because many safety models remain English-first, text-only, or too costly to run repeatedly in production pipelines. Nemotron 3.5 is designed to combine multilingual coverage, multimodal classification, custom-policy support, and low-latency deployment in one model.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/uomUY8i9DOEdH9YfOCCB0.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/uomUY8i9DOEdH9YfOCCB0.png" alt="figure1"></a></p>
+<p><em>Figure 1. Nemotron 3.5 Content Safety delivers strong harmful-content classification accuracy across multilingual and multimodal safety benchmarks, averaging about 85% across the evaluated benchmark set.</em></p>
+<p>The language-level results highlight why multilingual safety matters for global enterprise AI. On Multilingual Aegis, Nemotron 3.5 averages 96.5% harmful-content classification accuracy across 12 languages. On RTP-LX, it averages 88.8%, for a combined Aegis and RTP-LX average of 92.7%. This consistency helps teams apply the same safety posture across customer, employee, and partner-facing workflows instead of relying on English-only moderation or separate regional safety models.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/6vntaUhBuotVodz-9BkaX.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/6vntaUhBuotVodz-9BkaX.png" alt="figure2"></a>
+<em>Figure 2. Nemotron 3.5 Content Safety averages 97% harmful-content classification accuracy on Multilingual Aegis Cultural + Adapted (prompt classification) (harmful-f1) across 12 languages.</em></p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/w8u_dXJ_iRg3GDRzq5I3-.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/w8u_dXJ_iRg3GDRzq5I3-.png" alt="figure3"></a>
+<em>Figure 3. Nemotron 3.5 Content Safety averages 89% harmful-content classification accuracy on RTPLX (prompt classification) (harmful-f1) across 12 languages.</em></p>
+<p>Accuracy alone is not enough for production guardrails. Safety models must also be efficient enough to run before content is processed, returned, or routed downstream. Nemotron 3.5 Content Safety's compact 4B design helps reduce the cost and latency of repeated safety checks, making multilingual and multimodal guardrails practical for real-world AI applications.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="latency" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#latency" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Latency
+	</span>
+</h2>
+<p>The latency profile is unchanged from Nemotron 3 in the default (no THINK) mode. THINK mode adds inference time proportional to trace length, but this overhead is predictable and can be budgeted separately from the synchronous moderation loop—for instance, by running THINK-mode evaluation asynchronously as part of an audit pipeline while the default mode handles real-time decisions.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/5drKmlTOcLxVobY03RJ7_.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644c4b804ef896a09019a5b4/5drKmlTOcLxVobY03RJ7_.png" alt="figure4"></a>
+<em>Figure 4. Nemotron 3.5 Content Safety achieves 3x lower end-to-end latency on a multimodal benchmark compared to an alternative multimodal safety model.</em></p>
+<p>Compared to another reasoning safety model, our model generated up to 50% fewer tokens when reasoning is enabled, making it efficient in terms of cost and latency.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="addressing-the-benchmark-gap" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#addressing-the-benchmark-gap" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Addressing the Benchmark Gap
+	</span>
+</h2>
+<p>A recurring theme in multimodal safety research is the gaps in existing evaluation infrastructure. Nemotron 3.5's development encountered the same gaps documented in the broader literature:</p>
+<ul>
+<li><strong>Text-only coverage</strong>: The most widely cited safety benchmarks (WildGuard, XSTest, HarmBench) are text-only. Multimodal performance cannot be inferred from text-benchmark results.</li>
+<li><strong>Synthetic image quality</strong>: Most multimodal benchmarks that exist use AI-generated images (typically SDXL) rather than real photographs, understating the difficulty of real production content.</li>
+<li><strong>Real-image licensing</strong>: Stock photo licenses prohibit redistribution in AI datasets, creating a structural gap between research and production conditions.</li>
+</ul>
+<p>NVIDIA's multimodal training data—with real images and culturally nuanced multilingual prompts—is designed to fill some of these gaps for model training. The benchmark gap for evaluation remains an open problem for the broader safety research community.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting Started
+	</span>
+</h2>
+<p>Nemotron 3.5 Content Safety is available on <a href="https://huggingface.co/nvidia/Nemotron-3.5-Content-Safety">Hugging Face</a> under the NVIDIA Open Model License for research and commercial use, along with the training <a href="https://huggingface.co/datasets/nvidia/Nemotron-3.5-Content-Safety-Dataset">dataset</a>. It supports transformers, vLLM, and SGLang, and is available as a production-grade <a href="https://nvcr.io/nim/nvidia/nemotron-3.5-content-safety:2.0.5-variant" rel="nofollow">NVIDIA NIM</a> on build.nvidia.com for teams that need a pre-packaged, GPU-optimized inference microservice.</p>
+<p>Developers can also access the model through inference platforms including <a href="https://www.baseten.co/library/nemotron-3-5-content-safety/" rel="nofollow">Baseten</a>, <a href="https://www.eigenai.com/blog/2026-06-04-eigenai-delivers-day-0-inference-nvidia-nemotron-3-x-family-ultra-asr-content-safety" rel="nofollow">Eigen AI</a>, <a href="https://deepinfra.com/nvidia/Nemotron-Content-Safety-3.5" rel="nofollow">DeepInfra</a>, <a href="https://openrouter.ai/nvidia/nemotron-3.5-content-safety:free" rel="nofollow">OpenRouter</a>, and <a href="https://blogs.vultr.com/nemotron-3-5-content-safety" rel="nofollow">Vultr</a>.</p>
+<p>For custom policy workflows, NVIDIA provides a Claude- and Codex-compatible <a href="https://github.com/NVIDIA-NeMo/Nemotron/tree/main/skills/nemotron-policy-generator" rel="nofollow">skill for generating custom policies</a>, along with <a href="https://github.com/NVIDIA-NeMo/Nemotron/tree/main/usage-cookbook/Nemotron-3.5-Content-Safety" rel="nofollow">cookbooks showing how to use the model</a>. Custom policies and reasoning traces help teams adapt safety behavior to domain-specific rules while keeping decisions auditable.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">4</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/scaling-indic-pretraining"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/68d2fec8856b85d927e44d32/x0aObe_0mduBjWFuKBGoV.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Scaling Indic Pretraining: 2.8 Trillion Tokens and an Open Data Generation Pipeline</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 13</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/fine-tune-asr-with-nvidia-nemotron-speech-skills"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[-1--><div class="bg-linear-to-br absolute inset-0 overflow-hidden from-indigo-600 to-yellow-600 group-hover:scale-102 transition-transform duration-300 ease-in-out"></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Fine-Tune ASR for Your Domain with NVIDIA Speech Agent Skills</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 12</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 13, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/nvidia/nemotron-3-5-content-safety&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/nvidia/nemotron-3-5-content-safety&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a21b928db8aa1adc431cc1e&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;varunsingh&quot;,&quot;ihulseman0220&quot;,&quot;andoshi&quot;,&quot;sprayaga25&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fnvidia%2Fnemotron-3-5-content-safety">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fnvidia%2Fnemotron-3-5-content-safety">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Fnemotron-3-5-content-safety" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">14</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="btaras22" style="content-visibility:auto;"><!--[0--><a href="/btaras22" title="btaras22"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Hn29SxpGNzkKBnV2P-4F_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="amitpuri" style="content-visibility:auto;"><!--[0--><a href="/amitpuri" title="amitpuri"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62a0baa7c6754e9bfabf7e76/aogJMfrZ_Cvgx1ka_IDTV.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="theQuert" style="content-visibility:auto;"><!--[0--><a href="/theQuert" title="theQuert"><img class="overflow-hidden rounded-full" alt="" src="/avatars/728c18c9aae5f19eac6f7f0cfa7ceace.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="asleekgeek" style="content-visibility:auto;"><!--[0--><a href="/asleekgeek" title="asleekgeek"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/hbAkxpuGputK16Fj8tahX.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="devopen" style="content-visibility:auto;"><!--[0--><a href="/devopen" title="devopen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/23417fa8d1b053b57bfe16eede254353.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Pegasus10" style="content-visibility:auto;"><!--[0--><a href="/Pegasus10" title="Pegasus10"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/SUSAsNhSj4_KHqyDGJnkr.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ottosulin" style="content-visibility:auto;"><!--[0--><a href="/ottosulin" title="ottosulin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/693a8d48f37a13f46737c795/HKDmAQe6hGo379WN0RSrk.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TimexPeachtree" style="content-visibility:auto;"><!--[0--><a href="/TimexPeachtree" title="TimexPeachtree"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/-hTmvLgCD22VOVWP7Wq3L.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hiepnh" style="content-visibility:auto;"><!--[0--><a href="/hiepnh" title="hiepnh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/15720cf8cd69a7fecfc749f5524c2500.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="andyolivers" style="content-visibility:auto;"><!--[0--><a href="/andyolivers" title="andyolivers"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64f878172f7d3d945ce3c8a4/IdYrpypdFRG_WxT7l78Ld.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="liao1111" style="content-visibility:auto;"><!--[0--><a href="/liao1111" title="liao1111"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/tepbtroizuVjvEALBPGTx.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aldaleri" style="content-visibility:auto;"><!--[0--><a href="/aldaleri" title="aldaleri"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65c018e0c63d6a8d7f13e275/0Kwz9wCg3KlvIY150cYku.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+2</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">4</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

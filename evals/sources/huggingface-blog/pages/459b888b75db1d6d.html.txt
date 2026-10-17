@@ -1,0 +1,430 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by Mishig ᠮᠢᠰᠾᠢᠭ on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/0tamlKpAvO3lZEklNmwHT.png" />
+
+		<meta property="og:title" content="How an Agent Built a 3D Paris Gallery by Chaining Two Hugging Face Spaces" />
+
+		<meta property="og:description" content="A Blog post by Mishig ᠮᠢᠰᠾᠢᠭ on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/mishig/spaces-agents-md" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/0tamlKpAvO3lZEklNmwHT.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/mishig/spaces-agents-md">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>How an Agent Built a 3D Paris Gallery by Chaining Two Hugging Face Spaces</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="how-an-agent-built-a-3d-paris-gallery-by-chaining-two-hugging-face-spaces" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-an-agent-built-a-3d-paris-gallery-by-chaining-two-hugging-face-spaces" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How an Agent Built a 3D Paris Gallery by Chaining Two Hugging Face Spaces
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog/community" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-yellow-500/10 hover:bg-yellow-500/20"><!--[-1--> <!----> <span>Community Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 9, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fmishig%2Fspaces-agents-md" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">25</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="AbhiCommits" style="content-visibility:auto;"><!--[0--><a href="/AbhiCommits" title="AbhiCommits"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/IqSRj0aonNs23JoJs0ufY.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[0--><a href="/ror" title="ror"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="celinah" style="content-visibility:auto;"><!--[0--><a href="/celinah" title="celinah"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="FranckAbgrall" style="content-visibility:auto;"><!--[0--><a href="/FranckAbgrall" title="FranckAbgrall"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6727ae309b9d58f33eba419a/A-8lDQBqm8HVZzMvSrooS.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="AdinaY" style="content-visibility:auto;"><!--[0--><a href="/AdinaY" title="AdinaY"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63a369d98c0c89dcae3b8329/AiH2zjy1cnt9OADAAZMLD.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="blanchon" style="content-visibility:auto;"><!--[0--><a href="/blanchon" title="blanchon"><img class="overflow-hidden rounded-full" alt="" src="/avatars/716b6a7d1094c8036b2a8a7b9063e8aa.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+19</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;60a551a34ecc5d054c8ad93e&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg&quot;,&quot;fullname&quot;:&quot;Mishig ᠮᠢᠰᠾᠢᠭ&quot;,&quot;name&quot;:&quot;mishig&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:true,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:408,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/mishig"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Mishig ᠮᠢᠰᠾᠢᠭ's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/mishig"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Mishig ᠮᠢᠰᠾᠢᠭ">Mishig ᠮᠢᠰᠾᠢᠭ</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">mishig</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><em>An agent built a 3D Paris gallery from two Hugging Face Spaces.</em></p>
+<p>I asked a coding agent to build a beautiful website showcasing the monuments of
+Paris as 3D Gaussian splats. I never opened an image generator. I never touched a
+3D reconstruction tool. The agent produced every asset (the images <strong>and</strong> the 3D
+splats) by calling two Hugging Face Spaces directly, then wired them into a
+cinematic viewer.</p>
+<p>Here's the result, live as a static Space:</p>
+<p>👉 <strong><a href="https://huggingface.co/spaces/mishig/monuments-de-paris">mishig/monuments-de-paris</a></strong></p>
+<p><video autoplay="" loop="" muted="" playsinline="" poster="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-eiffel.png" src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splats-rotating.mp4" style="width: 100%; border-radius: 8px;"></video></p>
+<p>This post is about <em>how</em> that's possible now, and why I think it's a preview of
+how a lot of multimedia software gets built from here on.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-building-block-economy-comes-for-multimedia" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-building-block-economy-comes-for-multimedia" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The building-block economy comes for multimedia
+	</span>
+</h2>
+<p>Mitchell Hashimoto recently described a shift he calls the
+<a href="https://mitchellh.com/writing/building-block-economy" rel="nofollow">building block economy</a>:
+the most effective path to software is no longer a polished monolith, but small,
+well-documented components that others (increasingly <em>agents</em>) can assemble.
+His key observation: AI is okay at building everything from scratch, but it is
+<strong>really good at gluing together</strong> proven pieces.</p>
+<p>That thesis has mostly been told with <em>code</em> libraries. But the same forces are
+hitting <strong>multimedia AI</strong>. The hard part of using a state-of-the-art image model,
+a video model, a TTS model, or a 3D reconstruction model was never the model. It
+was the integration: SDKs, weights, GPUs, input formats, polling. If each model
+were instead a documented, callable block, an agent could glue them together the
+same way it globs together npm packages.</p>
+<p>That's exactly what Hugging Face Spaces have quietly become.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="every-space-is-a-building-block-via-agentsmd" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#every-space-is-a-building-block-via-agentsmd" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Every Space is a building block, via <code>agents.md</code>
+	</span>
+</h2>
+<p>The Hub hosts thousands of state-of-the-art models (a huge share of them
+<strong>open-weights</strong>), and most are deployed as interactive <strong>Spaces</strong>. As of now,
+every Gradio Space also exposes a plain-text
+<a href="https://huggingface.co/docs/hub/en/spaces-agents"><code>agents.md</code></a> that tells an agent
+<em>exactly</em> how to call it:</p>
+<pre><code class="language-bash">curl https://huggingface.co/spaces/VAST-AI/TripoSplat/agents.md
+</code></pre>
+<p>returns everything needed in one shot: the schema URL, the call and poll templates,
+how to upload files, and the auth hint:</p>
+<pre><code>API schema:   GET  .../gradio_api/info
+Call endpoint: POST .../gradio_api/call/v2/{endpoint} {"param_name": value, ...}
+Poll result:  GET  .../gradio_api/call/{endpoint}/{event_id}
+File inputs:  POST .../gradio_api/upload -F "files=@file.ext"
+Auth:         Bearer $HF_TOKEN
+</code></pre>
+<p>No client library. No hardcoded integration. An agent reads that, and it can drive
+the Space end to end. Set an <a href="https://huggingface.co/settings/tokens"><code>HF_TOKEN</code></a>
+and you're going. You can find these instructions on any Gradio Space via its
+<strong>Agents</strong> button:</p>
+<img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/agents-triposplat.png" width="800" alt="The Agents button on a Hugging Face Space">
+
+<p>The real unlock is <strong>chaining</strong>: the output of one Space becomes the input to the
+next. Prompt → image → 3D. That's the whole pipeline behind this gallery.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-worked-example-paris-monuments-→-splats" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-worked-example-paris-monuments-→-splats" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The worked example: Paris monuments → splats
+	</span>
+</h2>
+<p>The agent chained two Spaces:</p>
+<ol>
+<li><strong>Image:</strong> an image-generation Space turned each monument into a clean,
+dark-background "specimen" shot (and the Eiffel Tower into a little diorama on a
+plinth). Prompt in, image out.</li>
+<li><strong>Splat:</strong> <a href="https://huggingface.co/spaces/VAST-AI/TripoSplat"><code>VAST-AI/TripoSplat</code></a>
+reconstructed a 3D Gaussian splat (<code>.ply</code>) from each single image. Image in,
+3D out.</li>
+</ol>
+<p>Generated image</p>
+<p><a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-pantheon.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-pantheon.jpg" alt="Generated Panthéon"></a></p>
+<p>Reconstructed splat</p>
+<p><video autoplay="" loop="" muted="" playsinline="" width="100%" poster="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-pantheon.png" src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-pantheon.mp4"></video></p>
+<p>The six source images the agent generated, all isolated on black, ready for
+single-image 3D reconstruction:</p>
+<p><a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-opera.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-opera.jpg" alt="Generated monument images"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-arc.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-arc.jpg" alt="Generated Arc de Triomphe"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-sacre-coeur.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-sacre-coeur.jpg" alt="Generated Sacré-Cœur"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-eiffel-diorama.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-eiffel-diorama.jpg" alt="Generated Eiffel diorama"></a></p>
+<p>From there the agent did the "glue" work too. It noticed TripoSplat outputs are
+Y-down and flipped them upright, auto-framed each monument, compressed the <code>.ply</code>
+files to <code>.ksplat</code> (~3× smaller, so they load fast), built a Three.js viewer with a
+scroll-to-switch and drag-to-rotate UI, and deployed the whole thing as a static
+Space. The only human inputs were taste-level: "make it zoomed out," "replace the
+obelisk with something better for splatting," "the transition lingers too long."</p>
+<p>Several of those steps were <strong>the agent reacting to reality</strong>. A wide glass pyramid
+splats poorly. A thin obelisk is dull. A single-view reconstruction infers the
+back. That is exactly the "outsourced R&amp;D, fast iteration" loop the building-block
+economy predicts, except the R&amp;D was a conversation.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="two-prompts-a-whole-new-gallery" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#two-prompts-a-whole-new-gallery" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Two prompts, a whole new gallery
+	</span>
+</h2>
+<p>The real test of a building block is how cheaply you can reuse it. Once this
+pipeline existed, spinning up entirely new galleries cost about one sentence each.
+"Create a similar Space with splats for Japan," then the same for Egypt, and the
+agent did the rest: six monument images, six splats, compression, a viewer, and a
+deployed Space, per country.</p>
+<ul>
+<li>🏛️ <a href="https://huggingface.co/spaces/mishig/monuments-of-egypt">Monuments of Egypt</a>:
+the Great Pyramid, the Sphinx, Abu Simbel, the mask of Tutankhamun, Karnak, the
+Colossi of Memnon.</li>
+</ul>
+<p>&lt;video autoplay loop muted playsinline width="100%" src="</p><p><video src="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/XBpd9bSPrIzygYBG75Ap_.mp4" controls="" class="max-w-full!"></video></p>"&gt;<p></p>
+<ul>
+<li>⛩️ <a href="https://huggingface.co/spaces/mishig/monuments-of-japan">Monuments of Japan</a>:
+Tokyo Tower, Himeji Castle, Kinkaku-ji, Osaka Castle, the Great Buddha of
+Kamakura, the Itsukushima torii.</li>
+</ul>
+<p>&lt;video autoplay loop muted playsinline width="100%" src="</p><p><video src="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/7VhbJcbhAbugjZfImSpXH.mp4" controls="" class="max-w-full!"></video></p>"&gt;<p></p>
+<p>Same two Spaces, same <code>agents.md</code>, only the prompts changed. That is the
+building-block economy in one line: the marginal cost of a new multimedia app
+falls toward the cost of describing it.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-this-matters" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-this-matters" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why this matters
+	</span>
+</h2>
+<ul>
+<li><strong>Models become composable.</strong> A SOTA splat model and a SOTA image model, from
+different orgs, chained with zero integration code. The Hub's open-weights
+catalog turns into a library of callable multimedia primitives.</li>
+<li><strong>Agents prefer what's documented and reachable.</strong> <code>agents.md</code> makes a Space
+trivially reachable, so an agent will pick it over a model it has to set up by
+hand. That is the same dynamic Hashimoto flags for open-source libraries.</li>
+<li><strong>The barrier was integration, and it's largely gone.</strong> "Turn a prompt into a
+rotating 3D monument" used to be a project. Here it was a step in a pipeline.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="try-it-yourself" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-it-yourself" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try it yourself
+	</span>
+</h2>
+<p>Point your own agent at a Space's <code>agents.md</code> and let it cook:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># image generation</span>
+curl https://huggingface.co/spaces/ideogram-ai/ideogram4/agents.md
+<span class="hljs-comment"># single-image to 3D gaussian splat</span>
+curl https://huggingface.co/spaces/VAST-AI/TripoSplat/agents.md
+</code></pre>
+<p>Paste either link into your coding agent (Claude Code, etc.), set your
+<code>HF_TOKEN</code>, and ask it to build something. The full, reproducible pipeline for this
+gallery, the scripts that hit those two <code>agents.md</code> endpoints, lives in the
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/tree/main">Space repo</a>.</p>
+<p>The building blocks are sitting right there on the Hub. The agents already know how
+to glue.</p>
+<p>I asked a coding agent to build a beautiful website showcasing the monuments of
+Paris as 3D Gaussian splats. I never opened an image generator. I never touched a
+3D reconstruction tool. The agent produced every asset (the images <strong>and</strong> the 3D
+splats) by calling two Hugging Face Spaces directly, then wired them into a
+cinematic viewer.</p>
+<p>Here's the result, live as a static Space:</p>
+<p>👉 <strong><a href="https://huggingface.co/spaces/mishig/monuments-de-paris">mishig/monuments-de-paris</a></strong></p>
+<p><video autoplay="" loop="" muted="" playsinline="" poster="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-eiffel.png" src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splats-rotating.mp4" style="width: 100%; border-radius: 8px;"></video></p>
+<p>This post is about <em>how</em> that's possible now, and why I think it's a preview of
+how a lot of multimedia software gets built from here on.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-building-block-economy-comes-for-multimedia-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-building-block-economy-comes-for-multimedia-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The building-block economy comes for multimedia
+	</span>
+</h2>
+<p>Mitchell Hashimoto recently described a shift he calls the
+<a href="https://mitchellh.com/writing/building-block-economy" rel="nofollow">building block economy</a>:
+the most effective path to software is no longer a polished monolith, but small,
+well-documented components that others (increasingly <em>agents</em>) can assemble.
+His key observation: AI is okay at building everything from scratch, but it is
+<strong>really good at gluing together</strong> proven pieces.</p>
+<p>That thesis has mostly been told with <em>code</em> libraries. But the same forces are
+hitting <strong>multimedia AI</strong>. The hard part of using a state-of-the-art image model,
+a video model, a TTS model, or a 3D reconstruction model was never the model. It
+was the integration: SDKs, weights, GPUs, input formats, polling. If each model
+were instead a documented, callable block, an agent could glue them together the
+same way it globs together npm packages.</p>
+<p>That's exactly what Hugging Face Spaces have quietly become.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="every-space-is-a-building-block-via-agentsmd-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#every-space-is-a-building-block-via-agentsmd-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Every Space is a building block, via <code>agents.md</code>
+	</span>
+</h2>
+<p>The Hub hosts thousands of state-of-the-art models (a huge share of them
+<strong>open-weights</strong>), and most are deployed as interactive <strong>Spaces</strong>. As of now,
+every Gradio Space also exposes a plain-text
+<a href="https://huggingface.co/docs/hub/en/spaces-agents"><code>agents.md</code></a> that tells an agent
+<em>exactly</em> how to call it:</p>
+<pre><code class="language-bash">curl https://huggingface.co/spaces/VAST-AI/TripoSplat/agents.md
+</code></pre>
+<p>returns everything needed in one shot: the schema URL, the call and poll templates,
+how to upload files, and the auth hint:</p>
+<pre><code>API schema:   GET  .../gradio_api/info
+Call endpoint: POST .../gradio_api/call/v2/{endpoint} {"param_name": value, ...}
+Poll result:  GET  .../gradio_api/call/{endpoint}/{event_id}
+File inputs:  POST .../gradio_api/upload -F "files=@file.ext"
+Auth:         Bearer $HF_TOKEN
+</code></pre>
+<p>No client library. No hardcoded integration. An agent reads that, and it can drive
+the Space end to end. Set an <a href="https://huggingface.co/settings/tokens"><code>HF_TOKEN</code></a>
+and you're going.</p>
+<p>The real unlock is <strong>chaining</strong>: the output of one Space becomes the input to the
+next. Prompt → image → 3D. That's the whole pipeline behind this gallery.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-worked-example-paris-monuments-→-splats-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-worked-example-paris-monuments-→-splats-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The worked example: Paris monuments → splats
+	</span>
+</h2>
+<p>The agent chained two Spaces:</p>
+<ol>
+<li><strong>Image:</strong> <a href="https://huggingface.co/spaces/ideogram-ai/ideogram4"><code>ideogram-ai/ideogram4</code></a> turned each monument into a clean,
+dark-background "specimen" shot (and the Eiffel Tower into a little diorama on a
+plinth). Prompt in, image out.</li>
+<li><strong>Splat:</strong> <a href="https://huggingface.co/spaces/VAST-AI/TripoSplat"><code>VAST-AI/TripoSplat</code></a>
+reconstructed a 3D Gaussian splat (<code>.ply</code>) from each single image. Image in,
+3D out.</li>
+</ol>
+<p>Generated image</p>
+<p><a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-pantheon.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-pantheon.jpg" alt="Generated Panthéon"></a></p>
+<p>Reconstructed splat</p>
+<p><video autoplay="" loop="" muted="" playsinline="" width="100%" poster="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-pantheon.png" src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/splat-pantheon.mp4"></video></p>
+<p>The six source images the agent generated, all isolated on black, ready for
+single-image 3D reconstruction:</p>
+<p><a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-opera.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-opera.jpg" alt="Generated monument images"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-arc.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-arc.jpg" alt="Generated Arc de Triomphe"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-sacre-coeur.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-sacre-coeur.jpg" alt="Generated Sacré-Cœur"></a>
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-eiffel-diorama.jpg" rel="nofollow"><img src="https://huggingface.co/spaces/mishig/monuments-de-paris/resolve/main/blog/assets/gen-eiffel-diorama.jpg" alt="Generated Eiffel diorama"></a></p>
+<p>From there the agent did the "glue" work too. It noticed TripoSplat outputs are
+Y-down and flipped them upright, auto-framed each monument, compressed the <code>.ply</code>
+files to <code>.ksplat</code> (~3× smaller, so they load fast), built a Three.js viewer with a
+scroll-to-switch and drag-to-rotate UI, and deployed the whole thing as a static
+Space. The only human inputs were taste-level: "make it zoomed out," "replace the
+obelisk with something better for splatting," "the transition lingers too long."</p>
+<p>Several of those steps were <strong>the agent reacting to reality</strong>. A wide glass pyramid
+splats poorly. A thin obelisk is dull. A single-view reconstruction infers the
+back. That is exactly the "outsourced R&amp;D, fast iteration" loop the building-block
+economy predicts, except the R&amp;D was a conversation.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="two-prompts-a-whole-new-gallery-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#two-prompts-a-whole-new-gallery-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Two prompts, a whole new gallery
+	</span>
+</h2>
+<p>The real test of a building block is how cheaply you can reuse it. Once this
+pipeline existed, spinning up entirely new galleries cost about one sentence each.
+"Create a similar Space with splats for Japan," then the same for Egypt, and the
+agent did the rest: six monument images, six splats, compression, a viewer, and a
+deployed Space, per country.</p>
+<ul>
+<li>🏛️ <a href="https://huggingface.co/spaces/mishig/monuments-of-egypt">Monuments of Egypt</a>:
+the Great Pyramid, the Sphinx, Abu Simbel, the mask of Tutankhamun, Karnak, the
+Colossi of Memnon.</li>
+</ul>
+<p><video src="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/XBpd9bSPrIzygYBG75Ap_.mp4" controls="" class="max-w-full!"></video></p>
+
+<ul>
+<li>⛩️ <a href="https://huggingface.co/spaces/mishig/monuments-of-japan">Monuments of Japan</a>:
+Tokyo Tower, Himeji Castle, Kinkaku-ji, Osaka Castle, the Great Buddha of
+Kamakura, the Itsukushima torii.</li>
+</ul>
+<p><video src="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/7VhbJcbhAbugjZfImSpXH.mp4" controls="" class="max-w-full!"></video></p>
+       
+
+
+<p>Same two Spaces, same <code>agents.md</code>, only the prompts changed. That is the
+building-block economy in one line: the marginal cost of a new multimedia app
+falls toward the cost of describing it.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-this-matters-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-this-matters-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why this matters
+	</span>
+</h2>
+<ul>
+<li><strong>Models become composable.</strong> A SOTA splat model and a SOTA image model, from
+different orgs, chained with zero integration code. The Hub's open-weights
+catalog turns into a library of callable multimedia primitives.</li>
+<li><strong>Agents prefer what's documented and reachable.</strong> <code>agents.md</code> makes a Space
+trivially reachable, so an agent will pick it over a model it has to set up by
+hand. That is the same dynamic Hashimoto flags for open-source libraries.</li>
+<li><strong>The barrier was integration, and it's largely gone.</strong> "Turn a prompt into a
+rotating 3D monument" used to be a project. Here it was a step in a pipeline.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="try-it-yourself-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-it-yourself-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try it yourself
+	</span>
+</h2>
+<p>Point your own agent at a Space's <code>agents.md</code> and let it cook:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># image generation</span>
+curl https://huggingface.co/spaces/ideogram-ai/ideogram4/agents.md
+<span class="hljs-comment"># single-image to 3D gaussian splat</span>
+curl https://huggingface.co/spaces/VAST-AI/TripoSplat/agents.md
+</code></pre>
+<p>Paste either link into your coding agent (Claude Code, etc.), set your
+<code>HF_TOKEN</code>, and ask it to build something. The full, reproducible pipeline for this
+gallery, the scripts that hit those two <code>agents.md</code> endpoints, lives in the
+<a href="https://huggingface.co/spaces/mishig/monuments-de-paris/tree/main">Space repo</a>.</p>
+<p>The building blocks are sitting right there on the Hub. The agents already know how
+to glue.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">5</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/mishig/multimedia-by-agent"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[-1--><div class="bg-linear-to-br absolute inset-0 overflow-hidden from-pink-600 to-teal-600 group-hover:scale-102 transition-transform duration-300 ease-in-out"></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">No Photoshop, No Blender: Multimedia by Agent</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mishig" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 6</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 19, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/mishig/infinite-london"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/60a551a34ecc5d054c8ad93e/nMTL86QVeA7MIZvMO2-9v.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">36 Prompts, One Infinite City</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mishig" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 11</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/mishig/spaces-agents-md&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/mishig/spaces-agents-md&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a27e875e369fa30e49330d9&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;mishig&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fmishig%2Fspaces-agents-md">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fmishig%2Fspaces-agents-md">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fmishig%2Fspaces-agents-md" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">25</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="AbhiCommits" style="content-visibility:auto;"><!--[0--><a href="/AbhiCommits" title="AbhiCommits"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/IqSRj0aonNs23JoJs0ufY.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[0--><a href="/ror" title="ror"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="celinah" style="content-visibility:auto;"><!--[0--><a href="/celinah" title="celinah"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6192895f3b8aa351a46fadfd/gsGa2PvHTKAv7MNbyLH8y.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="FranckAbgrall" style="content-visibility:auto;"><!--[0--><a href="/FranckAbgrall" title="FranckAbgrall"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6727ae309b9d58f33eba419a/A-8lDQBqm8HVZzMvSrooS.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="AdinaY" style="content-visibility:auto;"><!--[0--><a href="/AdinaY" title="AdinaY"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63a369d98c0c89dcae3b8329/AiH2zjy1cnt9OADAAZMLD.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="blanchon" style="content-visibility:auto;"><!--[0--><a href="/blanchon" title="blanchon"><img class="overflow-hidden rounded-full" alt="" src="/avatars/716b6a7d1094c8036b2a8a7b9063e8aa.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="victor" style="content-visibility:auto;"><!--[0--><a href="/victor" title="victor"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5f17f0a0925b9863e28ad517/78BR8GuQiX9a8wbbRlSAC.webp" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="julien-c" style="content-visibility:auto;"><!--[0--><a href="/julien-c" title="julien-c"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5dd96eb166059660ed1ee413/NQtzmrDdbG0H8qkZvRyGk.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lbourdois" style="content-visibility:auto;"><!--[0--><a href="/lbourdois" title="lbourdois"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/613b0a62a14099d5afed7830/pLuqSIYaNYhUqdjxlNrFn.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yjernite" style="content-visibility:auto;"><!--[0--><a href="/yjernite" title="yjernite"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1594144055859-5ee3a7cd2a3eae3cbdad1305.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Ines2R" style="content-visibility:auto;"><!--[0--><a href="/Ines2R" title="Ines2R"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68d1b830e3fb66ee578a6ed9/4ljOxsFjH2kOkjUSaaqBh.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+13</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">5</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

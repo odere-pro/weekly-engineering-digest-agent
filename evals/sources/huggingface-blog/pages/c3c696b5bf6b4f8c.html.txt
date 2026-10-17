@@ -1,0 +1,482 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/local-reachy-mini-conversation/thumbnail.png" />
+
+		<meta property="og:title" content="Reachy Mini goes fully local" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/local-reachy-mini-conversation" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/local-reachy-mini-conversation/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/local-reachy-mini-conversation">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Reachy Mini goes fully local</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="reachy-mini-goes-fully-local" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#reachy-mini-goes-fully-local" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Reachy Mini goes fully local
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					May 27, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/local-reachy-mini-conversation.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Flocal-reachy-mini-conversation" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">78</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Neilblaze" style="content-visibility:auto;"><!--[0--><a href="/Neilblaze" title="Neilblaze"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1666772404424-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="deegerwalker" style="content-visibility:auto;"><!--[0--><a href="/deegerwalker" title="deegerwalker"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/657ab009e1113b5af51588ee/Yhdq9wtstQl4lvWwzXnXW.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Steveeeeeeen" style="content-visibility:auto;"><!--[0--><a href="/Steveeeeeeen" title="Steveeeeeeen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/654bcb6fae75d15300d48205/T4L1RZUgCZgdik4ZhEWCq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="drak-hf" style="content-visibility:auto;"><!--[0--><a href="/drak-hf" title="drak-hf"><img class="overflow-hidden rounded-full" alt="" src="/avatars/34b83369effbed30a8169ba23bc4249b.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TechTran" style="content-visibility:auto;"><!--[0--><a href="/TechTran" title="TechTran"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/JAVJzFuNHjmbc8dvVdnlg.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="chrisbennett" style="content-visibility:auto;"><!--[0--><a href="/chrisbennett" title="chrisbennett"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/aIgU45wrCw2kJgwUQL337.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+72</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/A-Mahla"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Amir Mahla's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67f2f500e329a81a62a05d44/DOlzc8GFQzrnfVrsOdtbN.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/A-Mahla"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Amir Mahla">Amir Mahla</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">A-Mahla</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/andito"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Andres Marafioti's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65d66b494bbd0d92b641cdbb/6-7dm7B-JxcoS1QlCPdMN.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/andito"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Andres Marafioti">Andres Marafioti</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">andito</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->After building your Reachy Mini, you'll install the <a href="https://github.com/pollen-robotics/reachy_mini_conversation_app" rel="nofollow">conversation app</a> and start talking to it. Until now, you had to send your audio to a server. But not anymore. Today we'll walk you through running the whole stack locally.</p>
+<p>This stack is powered by <a href="https://github.com/huggingface/speech-to-speech" rel="nofollow"><code>speech-to-speech</code></a>, our cascaded VAD → STT → LLM → TTS pipeline that exposes a Realtime API-compatible <code>/v1/realtime</code> WebSocket. Once you launch the backend, point the robot at it from the UI.</p>
+<p>Cascades are the most flexible option in the open-source landscape today, and with the right pieces they're also the fastest. We'll recommend the components we like best, but the whole point of a cascade is that you can swap them. New models drop every week.</p>
+<blockquote>
+<p><strong>TL;DR</strong></p>
+<ul>
+<li>Deploy a local speech backend for your Reachy Mini.</li>
+<li>We use our <code>speech-to-speech</code> library, a cascade approach.</li>
+<li>Recommended: <strong>llama.cpp</strong> with <strong>Gemma 4</strong>, <strong>Silero VAD</strong>, <strong>Parakeet-TDT 0.6B v3 STT</strong>, <strong>Qwen3-TTS</strong>.</li>
+</ul>
+</blockquote>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="quick-start" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#quick-start" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Quick start
+	</span>
+</h2>
+<p>This blog walks you through running conversations with Reachy Mini fully locally. No cloud, no API keys, no data leaving your machine. Here's a video showing this live:</p>
+<video controls="" width="360" style="display: block; max-width: 100%; height: auto; margin: 0 auto;">
+  <source src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/local_reachy_mini_conversation/Reachy mini local.mp4" type="video/mp4">
+</video>
+
+<h3 class="relative group flex items-baseline">
+	<a id="locally-serving-the-llm" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#locally-serving-the-llm" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Locally serving the LLM
+	</span>
+</h3>
+<p>To serve the LLM, we'll use Hugging Face's <code>llama.cpp</code>. If you need to install it, the simplest way is <code>brew install llama.cpp</code> or <code>winget install llama.cpp</code>, for more help, <a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md" rel="nofollow">check the docs</a>.
+First, we'll run:</p>
+<pre><code class="language-bash">llama-server -hf ggml-org/gemma-4-E4B-it-GGUF -np 2 -c 65536 -fa on --swa-full
+</code></pre>
+<p>And done! The first time it will download the model, subsequent launches are fast.</p>
+<details>
+<summary>What do those flags do?</summary>
+
+<ul>
+<li><code>-hf ggml-org/gemma-4-E4B-it-GGUF</code> — pulls the model straight from the Hub. First run downloads it, subsequent runs use the cache.</li>
+<li><code>-np 2</code> — two parallel slots. Lets the server handle a second request (e.g. a quick interruption) without blocking on the first.</li>
+<li><code>-c 65536</code> — 64k context window, shared across slots. Plenty of headroom for long conversations.</li>
+<li><code>-fa on</code> — flash attention. Faster and lower memory, basically free on modern hardware.</li>
+<li><code>--swa-full</code> — keeps the full sliding-window attention cache instead of recomputing it. Trades a bit of RAM for noticeably faster prompt processing on Gemma.</li>
+</ul>
+</details>
+
+<h3 class="relative group flex items-baseline">
+	<a id="setting-up-speech-to-speech" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#setting-up-speech-to-speech" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Setting up speech-to-speech
+	</span>
+</h3>
+<p>We'll begin by simply installing the library</p>
+<pre><code class="language-bash">uv pip install speech-to-speech
+</code></pre>
+<p>Then, while we are serving the LLM in another terminal, we can simply run:</p>
+<pre><code class="language-bash">speech-to-speech --responses_api_base_url <span class="hljs-string">"http://127.0.0.1:8080"</span> --responses_api_api_key <span class="hljs-string">""</span> --mode <span class="hljs-built_in">local</span>
+</code></pre>
+<p>And you can start talking to the model through your terminal! The first time it will need to download Parakeet-TDT 0.6B v3 and Qwen3TTS, but subsequent launches are fast.</p>
+<p>Here's a video showing the local conversation mode: </p>
+<video controls="" width="100%">
+  <source src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/local_reachy_mini_conversation/s2s-llamacpp.mp4" type="video/mp4">
+</video>
+
+<p>Now, after you've tried it in <code>--mode local</code>, you can run again the command without that option to serve speech-to-speech to the robot.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="connecting-reachy-mini-to-speech-to-speech" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#connecting-reachy-mini-to-speech-to-speech" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Connecting Reachy Mini to speech-to-speech
+	</span>
+</h3>
+<p>Once you have llama.cpp and speech-to-speech running, you can start the robot with the desktop app and launch the conversation app. In the UI from the conversation app, you need to choose the local mode by clicking on "edit connection" in the HF backend. Here's a video showing how to do it:</p>
+<video controls="" width="100%">
+  <source src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/local_reachy_mini_conversation/setting_up_conv_app.mp4" type="video/mp4">
+</video>
+
+
+<p>And you're done. You can start talking to your robot. Every stage of the pipeline is a trade-off: there are faster TTS models with lower quality, slower STT models with higher quality. We optimized for multilingual, you might want to optimize for a single language. The rest of the blog covers how to customize.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="going-deeper" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#going-deeper" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Going deeper
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="why-run-your-own-speech-to-speech-server" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-run-your-own-speech-to-speech-server" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why run your own Speech-to-Speech server?
+	</span>
+</h3>
+<p>Hosted realtime backends are convenient, but running your own engine unlocks three things:</p>
+<ul>
+<li><strong>Privacy.</strong> Audio never leaves your network, the entire pipeline runs on hardware you control.</li>
+<li><strong>No API costs.</strong> No per-minute or per-token fees.</li>
+<li><strong>Full control over the pipeline.</strong> Swap any piece: VAD, STT, LLM, TTS. Whenever something better lands on the Hub 🤗.</li>
+</ul>
+<p>The <code>speech-to-speech</code> repo gives you all of that in a single CLI. It boots a WebSocket server at <code>/v1/realtime</code> that speaks the same protocol Reachy Mini already knows how to talk to.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="our-opinionated-defaults-vad-stt-tts" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#our-opinionated-defaults-vad-stt-tts" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Our opinionated defaults: VAD, STT, TTS
+	</span>
+</h3>
+<p>A cascaded voice pipeline has four stages: VAD, STT, LLM, and TTS. For three of them, we pick solid defaults so you can focus on the LLM:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Stage</th>
+<th>Choice</th>
+<th>Why</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>VAD</td>
+<td><strong>Silero VAD v5</strong></td>
+<td>Tiny, accurate, runs on CPU. The de-facto default in the open-source voice-agent world.</td>
+</tr>
+<tr>
+<td>STT</td>
+<td><strong>Parakeet-TDT 0.6B v3</strong></td>
+<td>Streaming-friendly, very fast, great quality on English.</td>
+</tr>
+<tr>
+<td>TTS</td>
+<td><strong>Qwen3-TTS</strong></td>
+<td>Expressive, low-latency, multilingual, supports custom voices.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>We are opinionated about these choices, feel free to swap them out for your own if you have a preference.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="choosing-your-llm" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#choosing-your-llm" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Choosing your LLM
+	</span>
+</h3>
+<p>The LLM is the layer with the most impact on latency and overall performance of the system. We support two options: <strong>run a model locally</strong> (llama.cpp, MLX, Transformers, vLLM), or <strong>use a server with a Responses API</strong> (OpenAI, Gemini, HF Inference Endpoints, llama.cpp, vLLM, etc).</p>
+<h4 class="relative group flex items-baseline">
+	<a id="the-responses-api-decouple-the-brain-from-the-voice-loop" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-responses-api-decouple-the-brain-from-the-voice-loop" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Responses API: decouple the brain from the voice loop
+	</span>
+</h4>
+<p>The main bottleneck in the system is LLM inference latency. To address that, we support external inference engines exposed through the Responses API protocol.</p>
+<p>The <code>speech-to-speech</code> engine therefore supports a second mode where the LLM lives in a separate process as long as it speaks the Responses API protocol. You launch your model server in one terminal, you launch the voice loop in another terminal, and the two talk over HTTP.</p>
+<h5 class="relative group flex items-baseline">
+	<a id="option-1-llamacpp-in-one-terminal-speech-to-speech-in-the-other" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-1-llamacpp-in-one-terminal-speech-to-speech-in-the-other" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 1: llama.cpp in one terminal, speech-to-speech in the other
+	</span>
+</h5>
+<p><strong>Terminal 1: llama.cpp server:</strong></p>
+<pre><code class="language-bash">llama-server -hf ggml-org/gemma-4-E4B-it-GGUF -np 2 -c 65536 -fa on --swa-full
+</code></pre>
+<p><strong>Terminal 2: speech-to-speech client:</strong></p>
+<pre><code class="language-bash">speech-to-speech \
+  --mode realtime \
+  --stt parakeet-tdt \
+  --tts qwen3 \
+  --llm_backend responses-api \
+  --model_name <span class="hljs-string">"ggml-org/gemma-4-E4B-it-GGUF"</span> \
+  --responses_api_base_url <span class="hljs-string">"http://127.0.0.1:8080/v1"</span>
+</code></pre>
+<h5 class="relative group flex items-baseline">
+	<a id="option-2-vllm-in-one-terminal-speech-to-speech-in-the-other" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-2-vllm-in-one-terminal-speech-to-speech-in-the-other" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 2: vLLM in one terminal, speech-to-speech in the other
+	</span>
+</h5>
+<blockquote>
+<p><strong>Requires vLLM ≥ 0.21.0.</strong> Full support for the Responses API protocol, including tool-call streaming used by the speech-to-speech backend, landed in vLLM 0.21.0. Older versions will boot but trip up as soon as the assistant tries to call a tool.</p>
+</blockquote>
+<p>When serving a model through vLLM for this pipeline, three flags are effectively required:</p>
+<ul>
+<li><code>--enable-auto-tool-choice</code></li>
+<li><code>--tool-call-parser &lt;tool_parser_name&gt;</code> — picks the per-family parser that turns the model's raw output into structured tool calls (e.g. <code>qwen3_coder</code> for Qwen3 instruct models, <code>llama3_json</code> for Llama 3, <code>hermes</code> for Hermes-style models, ...).</li>
+<li><code>--default-chat-template-kwargs '{"enable_thinking":false}'</code> : disables the <code>&lt;think&gt;</code> reasoning channel for models that support it. For harder agentic tasks you can flip this to <code>true</code> and let the model reason, but for a natural-feeling conversation we strongly recommend keeping it off: every thinking token is latency the user hears as silence before the robot starts speaking.</li>
+</ul>
+<p><strong>Terminal 1: vLLM inference server (<code>Qwen/Qwen3-4B-Instruct-2507</code>):</strong></p>
+<pre><code class="language-bash">vllm serve Qwen/Qwen3-4B-Instruct-2507 \
+  --port 8000 \
+  --host 127.0.0.1 \
+  --max-model-len 32768 \
+  --enable-auto-tool-choice \
+  --tool-call-parser qwen3_coder \
+  --default-chat-template-kwargs <span class="hljs-string">'{"enable_thinking":false}'</span> \
+  --speculative-config <span class="hljs-string">'{"method":"qwen3_next_mtp","num_speculative_tokens":1}'</span>
+</code></pre>
+<blockquote>
+<p>The <code>--speculative-config</code> line enables Multi-Token Prediction (MTP). It is <strong>optional</strong>, but it has a great impact on end-to-end latency. Leave it on whenever the model supports it.</p>
+</blockquote>
+<p><strong>Terminal 2: speech-to-speech client:</strong></p>
+<pre><code class="language-bash">speech-to-speech \
+  --mode realtime \
+  --stt parakeet-tdt \
+  --tts qwen3 \
+  --llm_backend responses-api \
+  --model_name <span class="hljs-string">"Qwen/Qwen3-4B-Instruct-2507"</span> \
+  --responses_api_base_url <span class="hljs-string">"http://127.0.0.1:8000/v1"</span>
+</code></pre>
+<h5 class="relative group flex items-baseline">
+	<a id="option-3-hugging-face-inference-endpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-3-hugging-face-inference-endpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 3: Hugging Face Inference Endpoints
+	</span>
+</h5>
+<p>Same protocol, but the model runs on a managed GPU on Hugging Face. Deploy any chat model as an Inference Endpoint, then point the voice loop at the endpoint URL:</p>
+<pre><code class="language-bash">speech-to-speech \
+  --mode realtime \
+  --stt parakeet-tdt \
+  --tts qwen3 \
+  --llm_backend responses-api \
+  --model_name <span class="hljs-string">"Qwen/Qwen3-4B-Instruct-2507"</span> \
+  --responses_api_base_url <span class="hljs-string">"https://&lt;your-endpoint&gt;.endpoints.huggingface.cloud/v1"</span> \
+  --responses_api_api_key <span class="hljs-string">"<span class="hljs-variable">$HF_TOKEN</span>"</span>
+</code></pre>
+<h5 class="relative group flex items-baseline">
+	<a id="option-4-hugging-face-inference-providers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-4-hugging-face-inference-providers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 4: Hugging Face Inference Providers
+	</span>
+</h5>
+<p>If you don't want to manage your own endpoint, use an <a href="https://huggingface.co/docs/inference-providers">Inference Provider</a>. Hugging Face routes your request to a third-party backend (e.g. Together, Fireworks, Replicate) with a single URL:</p>
+<pre><code class="language-bash">speech-to-speech \
+  --mode realtime \
+  --stt parakeet-tdt \
+  --tts qwen3 \
+  --llm_backend responses-api \
+  --model_name <span class="hljs-string">"Qwen/Qwen3.6-35B-A3B:deepinfra"</span> \
+  --responses_api_base_url <span class="hljs-string">"https://router.huggingface.co/v1"</span> \
+  --responses_api_api_key <span class="hljs-string">"<span class="hljs-variable">$HF_TOKEN</span>"</span>
+</code></pre>
+<h5 class="relative group flex items-baseline">
+	<a id="option-5-openai-or-any-openai-compatible-provider" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-5-openai-or-any-openai-compatible-provider" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 5: OpenAI (or any OpenAI-compatible provider)
+	</span>
+</h5>
+<p>When you want to test against a frontier model with zero infra, point the same flag at OpenAI:</p>
+<pre><code class="language-bash">speech-to-speech \
+  --mode realtime \
+  --stt parakeet-tdt \
+  --tts qwen3 \
+  --llm_backend responses-api \
+  --model_name <span class="hljs-string">"gpt-5.4"</span> \
+  --responses_api_api_key <span class="hljs-string">"<span class="hljs-variable">$OPENAI_API_KEY</span>"</span>
+</code></pre>
+<p>The <code>--responses_api_*</code> flags work the same for any provider that implements the protocol (OpenRouter, Together, Fireworks, …). Swap the base URL and the API key, keep the rest of the pipeline identical.</p>
+<hr>
+<h4 class="relative group flex items-baseline">
+	<a id="running-the-llm-in-process" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#running-the-llm-in-process" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Running the LLM in-process
+	</span>
+</h4>
+<h5 class="relative group flex items-baseline">
+	<a id="option-1-local-llm-on-mlx-apple-silicon" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-1-local-llm-on-mlx-apple-silicon" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 1: Local LLM on MLX (Apple Silicon)
+	</span>
+</h5>
+<p>If you are on a Mac, MLX is the lowest-friction way to run a real model with sane latency. We recommend <strong>Qwen3-4B-Instruct-2507</strong>, which is small enough to feel instant on M-series chips and capable enough to hold a conversation.</p>
+<pre><code class="language-bash">speech-to-speech \
+  --llm_backend mlx-lm \
+  --model_name <span class="hljs-string">"mlx-community/Qwen3-4B-Instruct-2507-bf16"</span>
+</code></pre>
+<p>The server listens on <code>ws://127.0.0.1:8765/v1/realtime</code> by default. Leave it running, connect the conversation app to the local backend, and you are talking to your robot.</p>
+<h5 class="relative group flex items-baseline">
+	<a id="option-2-local-llm-on-transformers-cuda--cpu--mps" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#option-2-local-llm-on-transformers-cuda--cpu--mps" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Option 2: Local LLM on Transformers (CUDA / CPU / MPS)
+	</span>
+</h5>
+<p>Same idea, but using vanilla <code>transformers</code>. Use this if you are on a CUDA box, on Linux, or if you want to swap models freely without re-converting weights for MLX.</p>
+<pre><code class="language-bash">speech-to-speech \
+  --llm_backend transformers \
+  --model_name <span class="hljs-string">"Qwen/Qwen3-4B-Instruct-2507"</span>
+</code></pre>
+<blockquote>
+<p><strong>Tip.</strong> <code>Qwen3-4B-Instruct-2507</code> is another good option for LLM because it gives a good speed/quality balance on a single consumer GPU. You can point <code>--model_name</code> at any HF model the backend supports — for example a larger Gemma, Qwen, or a Mistral.</p>
+</blockquote>
+<h3 class="relative group flex items-baseline">
+	<a id="running-the-engine-on-your-laptop-the-app-on-the-robot" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#running-the-engine-on-your-laptop-the-app-on-the-robot" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Running the engine on your laptop, the app on the robot
+	</span>
+</h3>
+<p>If you are running the voice engine on your laptop and the conversation app on a Reachy Mini Wireless, the only thing that changes is the URL. Make sure the engine binds to a LAN address (not just <code>127.0.0.1</code>) and use the laptop's IP from the robot when you select the IP in the UI.</p>
+<p>If you don't know your IP, here's how to find it:</p>
+<details>
+<summary>macOS</summary>
+
+<pre><code class="language-bash">ipconfig getifaddr en0    <span class="hljs-comment"># wifi</span>
+ipconfig getifaddr en1    <span class="hljs-comment"># ethernet (sometimes en0, varies)</span>
+</code></pre>
+</details>
+
+<details>
+<summary>Linux</summary>
+
+<pre><code class="language-bash">hostname -I
+</code></pre>
+</details>
+
+<details>
+<summary>Windows</summary>
+
+<pre><code class="language-powershell">ipconfig
+</code></pre>
+<p>Look for "IPv4 Address" under your active adapter.</p>
+</details>
+
+<p>You want the <code>192.168.x.x</code> or <code>10.x.x.x</code> one. If you see <code>169.254.x.x</code>, you're not actually on the network.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="wrap-up" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#wrap-up" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Wrap up
+	</span>
+</h2>
+<p>You now have a fully local voice loop:</p>
+<ul>
+<li>A robot listening with <strong>Silero</strong>,</li>
+<li>transcribing with <strong>Parakeet-TDT 0.6B v3</strong>,</li>
+<li>thinking with whichever LLM you picked, whether that's local MLX, local Transformers, a vLLM or llama.cpp server next door, or a hosted Responses API endpoint,</li>
+<li>and answering with <strong>Qwen3-TTS</strong>.</li>
+</ul>
+<p>Star <a href="https://github.com/huggingface/speech-to-speech" rel="nofollow"><code>huggingface/speech-to-speech</code></a> and <a href="https://github.com/pollen-robotics/reachy_mini_conversation_app" rel="nofollow"><code>pollen-robotics/reachy_mini_conversation_app</code></a>, and come tell us in the discussions which open-source cascade you ended up running on your robot.</p>
+
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/adding-mcp-tools-to-reachy-mini"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/adding-mcp-tools-to-reachy-mini/reachy_mini_remote_spaces_thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">robotics</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">reachy</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Adding MCP Tools to Reachy Mini</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alozowski" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63f5010dfcf95ecac2ad8652/vmRox4fcHMjT1y2bidjOL.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 28</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 3, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/voice-consent-gate"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/voice-consent-gate/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">ethics</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">speech</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Voice Cloning with Consent</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="meg" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1626214544196-60c757ea5f9a76ab3f844f12.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="frimelle" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/ux7NRFAbgnlIVNh-Cbv9s.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 44</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 28, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a17623f775c5b5ed0661e8c" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/62acc87e519b663b1610ccc4/wumnvAamrjCDnJvs8av8C.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/freinold">freinold</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a17623f775c5b5ed0661e8c" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-05-27T21:29:35" title="Wed, 27 May 2026 21:29:35 GMT">May 27</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by freinold" href="#6a17623f775c5b5ed0661e8c"><!--[0-->edited May 27<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Great improvement to the conversation app, I can't wait to tinker with this and add my own tools!</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a1c6bb8a9105615a9dee426" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/6bc0fd0ef1a27cb276cd88502b13e28e.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/rouillyv">rouillyv</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a1c6bb8a9105615a9dee426" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-05-31T17:11:20" title="Sun, 31 May 2026 17:11:20 GMT">May 31</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Fantastic to have now a local option ! I just set it up  on my DGX Spark, and it runs very smoothly with your suggested default components. I would love to hear your thoughts on how reachy could become an interface to a Hermes Agent (running a bigger LLM model), by still keeping its low latency interactions. Many thanks for building such a cool platform.   </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs "><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mamoras" style="content-visibility:auto;"><!--[0--><a href="/mamoras" title="mamoras"><img class="overflow-hidden" alt="" src="/avatars/b02b29dde557b6f2f9b7710456478f59.svg" loading="lazy"/></a><!--]--></li><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="LuisGV" style="content-visibility:auto;"><!--[0--><a href="/LuisGV" title="LuisGV"><img class="overflow-hidden" alt="" src="/avatars/0eb57a157c2b2df4636799a95fca45a7.svg" loading="lazy"/></a><!--]--></li><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="chrisbennett" style="content-visibility:auto;"><!--[0--><a href="/chrisbennett" title="chrisbennett"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/aIgU45wrCw2kJgwUQL337.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">4 replies</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a5886a8fe7849461b7dec84" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/b02b29dde557b6f2f9b7710456478f59.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/mamoras">mamoras</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a5886a8fe7849461b7dec84" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-16T07:22:16" title="Thu, 16 Jul 2026 07:22:16 GMT">Jul 16</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Interesting you mentioning Hermes Agent!  I am also a big user of Hermes Agent and I also had the same idea/wish!<br>Simply said, it is to give "a face" to my Hermes Agent... lol.</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[0--><button class="inline-flex h-10 items-center gap-1 text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"> <!----> Expand 3
+						replies</button><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a24a9785278afaf146918b1" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/MknbZ-bwfHxsPlMnlKPLp.png" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/yasamanparhizkar">yasamanparhizkar</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a24a9785278afaf146918b1" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-06T23:12:56" title="Sat, 06 Jun 2026 23:12:56 GMT">Jun 6</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Hi,<br>Great article. How can I find all the other articles related to Reachy Mini?</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a2c15b795607f4decda2a59" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/63793e653f575acc2f66fafd/BBVugVZKW37XW1zDQNcX4.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/ccortezb">ccortezb</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a2c15b795607f4decda2a59" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-12T14:20:39" title="Fri, 12 Jun 2026 14:20:39 GMT">Jun 12</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>incredible</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a7dcb130e3012bd3148065f" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/9e56741153fdc2bcaab56b603d0ff84e.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/xamtur">xamtur</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a7dcb130e3012bd3148065f" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-13T13:48:03" title="Thu, 13 Aug 2026 13:48:03 GMT">Aug 13</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by xamtur" href="#6a7dcb130e3012bd3148065f"><!--[0-->edited Aug 13<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>I really like the direction of the new conversation stack, but I’m disappointed by the quality of Italian and, more generally, by the depth of the answers.</p>
+<p>I currently use Gemini 3.1 Flash Live, and I’d really like to keep using it while staying aligned with Pollen’s continuous updates.</p>
+<p>To achieve this, I’ve had to build agentic tools that analyze each update and detect what breaks. When something breaks, I create new tools to compensate, making them idempotent and, as far as possible, resilient to future updates.</p>
+<p>It works, but it’s a fragile and expensive process: the effort depends directly on the breaking changes introduced by each release.</p>
+<p>I can see that the Conversation App supports cloud backends such as Gemini Live and OpenAI, so I’m wondering:</p>
+<p>Can the LLM/backend be treated as a truly interchangeable component while keeping the official Conversation App fully up to date?</p>
+<p>I’d love to benefit from all Pollen’s improvements to voice, behaviors, tools and the conversation stack, while choosing Gemini (or another cloud model) as the “brain”, without having to continuously adapt a custom integration after every breaking change.</p>
+<p>Is the LLM/backend interface intended to remain stable enough to support this kind of customization?</p>
+<p>And is anyone already doing this successfully?</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6ab002600697c66c468d3d1d" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/xkPUmTyZF895G-w4GSFht.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/Adamspliff">Adamspliff</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6ab002600697c66c468d3d1d" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-20T15:57:20" title="Sun, 20 Sep 2026 15:57:20 GMT">27 days ago</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>I haven't managed to get it to work properly via ROCm on Strix Halo. With a lot of trial and error and AI support, the pipeline was running kind of stable, but the response time - even using tiny llm models - was not usable. I'm no expert though and I don't know if it is likely that this will be optimized for AMD hardware with Nvidia taking over hugging face. Anyway, I'd really appreatiate. </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Flocal-reachy-mini-conversation">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Flocal-reachy-mini-conversation">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Flocal-reachy-mini-conversation" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">78</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Neilblaze" style="content-visibility:auto;"><!--[0--><a href="/Neilblaze" title="Neilblaze"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1666772404424-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="deegerwalker" style="content-visibility:auto;"><!--[0--><a href="/deegerwalker" title="deegerwalker"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/657ab009e1113b5af51588ee/Yhdq9wtstQl4lvWwzXnXW.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Steveeeeeeen" style="content-visibility:auto;"><!--[0--><a href="/Steveeeeeeen" title="Steveeeeeeen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/654bcb6fae75d15300d48205/T4L1RZUgCZgdik4ZhEWCq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="drak-hf" style="content-visibility:auto;"><!--[0--><a href="/drak-hf" title="drak-hf"><img class="overflow-hidden rounded-full" alt="" src="/avatars/34b83369effbed30a8169ba23bc4249b.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TechTran" style="content-visibility:auto;"><!--[0--><a href="/TechTran" title="TechTran"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/JAVJzFuNHjmbc8dvVdnlg.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="chrisbennett" style="content-visibility:auto;"><!--[0--><a href="/chrisbennett" title="chrisbennett"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/aIgU45wrCw2kJgwUQL337.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="andito" style="content-visibility:auto;"><!--[0--><a href="/andito" title="andito"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65d66b494bbd0d92b641cdbb/6-7dm7B-JxcoS1QlCPdMN.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="A-Mahla" style="content-visibility:auto;"><!--[0--><a href="/A-Mahla" title="A-Mahla"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67f2f500e329a81a62a05d44/DOlzc8GFQzrnfVrsOdtbN.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tengomucho" style="content-visibility:auto;"><!--[0--><a href="/tengomucho" title="tengomucho"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6311157564939fabc00c87ec/eOaySRhZnV2maIUC_7HgC.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+66</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

@@ -1,0 +1,1170 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>
+      Node.js — Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space Exhaustion
+      for React, Next.js, and APM Users
+    </title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://nodejs.org/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nodejs.org/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="es"
+      href="https://nodejs.org/es/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://nodejs.org/fr/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="id"
+      href="https://nodejs.org/id/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="ja"
+      href="https://nodejs.org/ja/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="ko"
+      href="https://nodejs.org/ko/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt"
+      href="https://nodejs.org/pt/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="ro"
+      href="https://nodejs.org/ro/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="ta"
+      href="https://nodejs.org/ta/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://nodejs.org/tr/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="uk"
+      href="https://nodejs.org/uk/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/vulnerability.xml"
+    />
+    <meta
+      property="og:title"
+      content="Node.js — Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space Exhaustion for React, Next.js, and APM Users"
+    />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/vulnerability/Node.js%20%E2%80%94%20Mitigating%20Denial-of-Service%20Vulnerability%20from%20Unrecoverable%20Stack%20Space%20Exhaustion%20for%20React,%20Next.js,%20and%20APM%20Users"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta
+      name="twitter:title"
+      content="Node.js — Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space Exhaustion for React, Next.js, and APM Users"
+    />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <div class="index-module__VYslka__alertBox index-module__VYslka__warning">
+              <span class="index-module__VYslka__title"></span
+              ><span class="index-module__VYslka__content"
+                >Commercial support for versions past the Maintenance LTS phase is available through
+                our
+                <a href="/en/about/eol">OpenJS Ecosystem Sustainability Program partners</a></span
+              >
+            </div>
+            <h1>
+              Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space Exhaustion
+              for React, Next.js, and APM Users
+            </h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/mcollina"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >MC</span
+                    ></a
+                  ></span
+                ><span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/joyeecheung"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >JC</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>Matteo Collina, Joyee Cheung</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__vulnerability">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space Exhaustion
+                for React, Next.js, and APM Users
+              </div>
+            </div>
+            <h2 id="tldr"><a href="#tldr">TL;DR</a></h2>
+            <p>
+              Node.js/V8 makes a best-effort attempt to recover from stack space exhaustion with a
+              catchable error, which frameworks have come to rely on for service availability. An
+              edge case that reproduces only when <code>async_hooks</code> are enabled breaks this
+              recovery path: when recursion in user code exhausts stack space, Node.js exits
+              immediately with exit code 7 instead of throwing a recoverable error. This can be
+              reproduced in countless applications because:
+            </p>
+            <ul>
+              <li><strong>React Server Components</strong> use <code>AsyncLocalStorage</code></li>
+              <li>
+                <strong>Next.js</strong> uses <code>AsyncLocalStorage</code> for request context
+                tracking
+              </li>
+              <li>
+                <strong>Other frameworks</strong> may also use <code>AsyncLocalStorage</code> for
+                request context tracking
+              </li>
+              <li>
+                <strong>Most APM tools</strong> (Datadog, New Relic, Dynatrace, Elastic APM,
+                OpenTelemetry) use <code>AsyncLocalStorage</code> or
+                <code>async_hooks.createHook</code> to trace requests
+              </li>
+            </ul>
+            <p>
+              The weakness ultimately lies in the ecosystem&#x27;s reliance on an unspecified
+              behavior in the language - recovery from stack space exhaustion - for service
+              availability (<a href="https://cwe.mitre.org/data/definitions/758.html">CWE-758</a>).
+              Given the widespread use of <code>async_hooks</code> by popular frameworks and APM
+              tools, the aforementioned edge case can expose this weakness more frequently and can
+              present a Denial‑of‑Service vector for many applications. Node.js shipped a mitigation
+              in the January 2026 security release to make this unspecified behavior more
+              consistent, reducing the chance of reproduction. However, the weakness remains in the
+              ecosystem until applications and frameworks move away from relying on unspecified
+              behavior for availability.
+            </p>
+            <p>
+              <strong>For users of these frameworks/tools and server hosting providers</strong>:
+              Update as soon as possible.
+            </p>
+            <p>
+              <strong>For libraries and frameworks</strong>: apply more robust defenses against
+              stack space exhaustion to ensure service availability (e.g., limit recursion depth or
+              avoid recursion if the depth can be controlled by an attacker). A recoverable
+              <code>RangeError: Maximum call stack size exceeded</code> is only an unspecified
+              behavior maintained with best-effort, and cannot be depended on for security
+              guarantees.
+            </p>
+            <h2 id="the-reproduction"><a href="#the-reproduction">The Reproduction</a></h2>
+            <p>
+              When a stack overflow occurs in user code while <code>async_hooks</code> is enabled,
+              Node.js <strong>immediately exits with code <code>7</code></strong> instead of
+              allowing <code>try-catch</code> blocks to catch the error. This is a special condition
+              in Node.js that skips the
+              <code>process.on(&#x27;uncaughtException&#x27;)</code> handlers, making the exception
+              uncatchable.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-javascript"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">import</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span><span style="color:#1F2328;--shiki-dark:#8FBCBB"> createHook</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> from</span><span style="color:#0A3069;--shiki-dark:#ECEFF4"> &#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">node:async_hooks</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// This simulates what APM tools do</span></span>
+<span class="line"><span style="color:#8250DF;--shiki-dark:#88C0D0">createHook</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> init</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {}</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">enable</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">function</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> recursive</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  new</span><span style="color:#0550AE;--shiki-dark:#8FBCBB"> Promise</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =&gt;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {}</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99"> // Creates async context</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> recursive</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">try</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#8250DF;--shiki-dark:#88C0D0">  recursive</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> catch</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">err</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">) </span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">  console</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">log</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">This never runs</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> err</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">JavaScript</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <ul>
+              <li>
+                <strong>Expected</strong>: <code>try-catch</code> catches the
+                <code>RangeError</code>
+              </li>
+              <li><strong>Actual</strong>: Immediate crash with exit code 7</li>
+            </ul>
+            <h2 id="why-this-affects-react-and-nextjs">
+              <a href="#why-this-affects-react-and-nextjs">Why This Affects React and Next.js</a>
+            </h2>
+            <h3 id="react-server-components">
+              <a href="#react-server-components">React Server Components</a>
+            </h3>
+            <p>
+              React 18+ uses <code>AsyncLocalStorage</code> (which is built on
+              <code>async_hooks</code>) to track the rendering context for Server Components:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-javascript"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Inside React&#x27;s internals</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">import</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span><span style="color:#1F2328;--shiki-dark:#8FBCBB"> AsyncLocalStorage</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> from</span><span style="color:#0A3069;--shiki-dark:#ECEFF4"> &#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">node:async_hooks</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> asyncLocalStorage</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> new</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> AsyncLocalStorage</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Every server component render creates async context</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">async</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> function</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> renderServerComponent</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#953800;--shiki-dark:#D8DEE9">Component</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#953800;--shiki-dark:#D8DEE9"> props</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> asyncLocalStorage</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">run</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#1F2328;--shiki-dark:#88C0D0"> request</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">:</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> currentRequest</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> },</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> async</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> ()</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =&gt;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">    return</span><span style="color:#1F2328;--shiki-dark:#81A1C1"> &lt;</span><span style="color:#116329;--shiki-dark:#8FBCBB">Component</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> {...</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">props</span><span style="color:#CF222E;--shiki-dark:#81A1C1">}</span><span style="color:#1F2328;--shiki-dark:#81A1C1"> /&gt;;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">JavaScript</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="nextjs-request-context">
+              <a href="#nextjs-request-context">Next.js Request Context</a>
+            </h3>
+            <p>
+              Next.js uses <code>AsyncLocalStorage</code> to track request context, cookies,
+              headers, and more:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-javascript"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Simplified from Next.js internals</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">import</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span><span style="color:#1F2328;--shiki-dark:#8FBCBB"> AsyncLocalStorage</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> from</span><span style="color:#0A3069;--shiki-dark:#ECEFF4"> &#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">node:async_hooks</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">export</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> requestAsyncStorage</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> new</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> AsyncLocalStorage</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// Every request creates async context</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">export</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> function</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> handleRequest</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#953800;--shiki-dark:#D8DEE9">req</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#953800;--shiki-dark:#D8DEE9"> res</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> requestAsyncStorage</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">run</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> req</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> res</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> },</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> async</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> ()</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =&gt;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">    // Your page/API handler runs here</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">JavaScript</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h3 id="the-real-world-scenario">
+              <a href="#the-real-world-scenario">The Real-World Scenario</a>
+            </h3>
+            <p>Consider a Next.js API route that processes user-submitted JSON:</p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-javascript"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// pages/api/process.js</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">export</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> default</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> async</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> function</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> handler</span><span style="color:#953800;--shiki-dark:#ECEFF4">(</span><span style="color:#953800;--shiki-dark:#D8DEE9">req</span><span style="color:#953800;--shiki-dark:#ECEFF4">,</span><span style="color:#953800;--shiki-dark:#D8DEE9"> res</span><span style="color:#953800;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  try</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">    const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> data</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> req</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">body</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">    const</span><span style="color:#0550AE;--shiki-dark:#D8DEE9"> result</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> processNestedData</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">data</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span><span style="color:#6E7781;--shiki-dark:#707e99"> // Deeply nested = stack overflow</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">    res</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">json</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#1F2328;--shiki-dark:#88C0D0"> success</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">:</span><span style="color:#0550AE;--shiki-dark:#81A1C1"> true</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> result</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> catch</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">err</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">) </span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">    // THIS CATCH BLOCK NEVER RUNS</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">    console</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">error</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">Processing failed:</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> err</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9">    res</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">status</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#0550AE;--shiki-dark:#B48EAD">500</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">json</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span><span style="color:#1F2328;--shiki-dark:#88C0D0"> error</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">:</span><span style="color:#0A3069;--shiki-dark:#ECEFF4"> &#x27;</span><span style="color:#0A3069;--shiki-dark:#A3BE8C">Processing failed</span><span style="color:#0A3069;--shiki-dark:#ECEFF4">&#x27;</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> }</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">function</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> processNestedData</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#953800;--shiki-dark:#D8DEE9">data</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  if</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF"> (</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">Array</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">isArray</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">data</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)) </span><span style="color:#1F2328;--shiki-dark:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">    return</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> data</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">.</span><span style="color:#8250DF;--shiki-dark:#88C0D0">map</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#953800;--shiki-dark:#D8DEE9">item</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =&gt;</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> processNestedData</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">item</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">))</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  return</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> transform</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">data</span><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">JavaScript</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>A user sending deeply nested JSON can crash your entire server:</p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-json no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">[[[[[[[[[[[[[[[[[[[[[[[[</span><span style="color:#6E7781;--shiki-dark:#707e99">/* 50,000 levels deep */</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">]]]]]]]]]]]]]]]]]]]]]]]]</span></span></code></pre>
+            </div>
+            <ul>
+              <li>
+                <strong>Without <code>async_hooks</code></strong
+                >: <code>try-catch</code> catches the <code>RangeError</code>, returns 500, server
+                continues
+              </li>
+              <li>
+                <strong>With <code>async_hooks</code> (React/Next.js)</strong>: Server crashes
+                immediately with exit code 7
+              </li>
+            </ul>
+            <h2 id="why-the-use-of-apm-tools-makes-it-easier-to-reproduce">
+              <a href="#why-the-use-of-apm-tools-makes-it-easier-to-reproduce"
+                >Why the Use of APM Tools Makes It Easier to Reproduce</a
+              >
+            </h2>
+            <p>
+              Application Performance Monitoring (APM) tools are essential infrastructure for
+              production applications. They track request latency, identify bottlenecks, trace
+              errors to their source, and alert teams when something goes wrong. Companies use APM
+              tools like Datadog, New Relic, Dynatrace, Elastic APM, and OpenTelemetry to maintain
+              visibility into their distributed systems.
+            </p>
+            <p>
+              To provide this functionality, APM tools need to follow a request as it flows through
+              your application, even across async boundaries. When an HTTP request comes in, is
+              processed by middleware, queries a database, calls an external API, and finally
+              returns a response, the APM needs to correlate all of these operations into a single
+              trace. This requires async context tracking.
+            </p>
+            <p>
+              Most modern APM tools use <code>AsyncLocalStorage</code> (which is built on
+              <code>async_hooks</code> in versions of Node.js before Node 24) to propagate trace
+              context across async operations. The moment you
+              <code>require(&#x27;dd-trace&#x27;)</code>,
+              <code>require(&#x27;newrelic&#x27;)</code>, or initialize OpenTelemetry, your
+              application has <code>async_hooks</code> enabled.
+            </p>
+            <p>
+              The irony is notable: the tools you install to monitor and debug crashes can make a
+              category of crashes behave differently. This is not the fault of the APM tools; they
+              are using Node.js APIs exactly as intended.
+            </p>
+            <h2 id="why-this-is-only-a-mitigation-and-the-vulnerability-lies-elsewhere">
+              <a href="#why-this-is-only-a-mitigation-and-the-vulnerability-lies-elsewhere"
+                >Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere</a
+              >
+            </h2>
+            <p>
+              While this issue has significant practical impact, we want to be clear about why
+              Node.js is treating this fix as a mere mitigation of security vulnerability risks at
+              large:
+            </p>
+            <h3 id="stack-space-exhaustion-behavior-is-not-specified">
+              <a href="#stack-space-exhaustion-behavior-is-not-specified"
+                >Stack Space Exhaustion Behavior Is Not Specified</a
+              >
+            </h3>
+            <p>
+              The &quot;Maximum call stack size exceeded&quot; error is not part of the ECMAScript
+              specification.
+              <a href="https://tc39.es/ecma262/#execution-context-stack"
+                >The specification does not impose any limit and assumes infinite stack space</a
+              >. Imposing a limit and throwing a recoverable error are only behaviors that
+              JavaScript engines implement with best-effort. Applications and frameworks are already
+              at risk when they build a security model on top of these unspecified behaviors that
+              are not guaranteed to reproduce consistently, see:
+            </p>
+            <ul>
+              <li>
+                <a href="https://cwe.mitre.org/data/definitions/758.html"
+                  >CWE-758: Reliance on Undefined, Unspecified, or Implementation-Defined
+                  Behavior</a
+                >
+              </li>
+              <li>
+                <a href="https://cwe.mitre.org/data/definitions/674.html"
+                  >CWE-674: Uncontrolled Recursion</a
+                >
+              </li>
+            </ul>
+            <p>
+              It&#x27;s worth noting that even when ECMAScript specifies that
+              <a href="https://tc39.es/ecma262/#sec-tail-position-calls">proper tail calls</a>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model#tail_calls"
+                >should reuse stack frames</a
+              >, this is not implemented by most JavaScript engines today, including V8. And in the
+              few JavaScript engines that do implement it, proper tail calls (as used in
+              <a href="#the-reproduction">the reproduction above</a>) can block an application with
+              infinite recursion instead of hitting the stack size limit at some point and stopping
+              with an error, which is another Denial-of-Service vector. This reinforces that stack
+              overflow behavior cannot be relied upon for defending against Denial-of-Service
+              attacks.
+            </p>
+            <h3 id="this-behavior-is-not-part-of-the-security-guarantees-of-v8">
+              <a href="#this-behavior-is-not-part-of-the-security-guarantees-of-v8"
+                >This Behavior Is Not Part of The Security Guarantees of V8</a
+              >
+            </h3>
+            <p>
+              In Node.js, the stack space usage from JavaScript function calls is primarily
+              implemented by V8. JavaScript engines developed for browsers have a different security
+              model, and they do not triage crashes like this as security vulnerabilities. This
+              means similar behavior inconsistencies reported in the upstream (like
+              <a href="https://issues.chromium.org/issues/432385241">this</a>) are not guaranteed to
+              go through vulnerability disclosure procedures, making any security classification by
+              Node.js alone ineffective.
+            </p>
+            <h3 id="uncaughtexception-limitations">
+              <a href="#uncaughtexception-limitations">uncaughtException Limitations</a>
+            </h3>
+            <p>
+              The <code>uncaughtException</code> handler is not designed to recover the process
+              after it fires. The Node.js documentation explicitly warns against this pattern.
+              Specifically, the documentation states that
+              <a
+                href="https://nodejs.org/api/process.html#warning-using-uncaughtexception-correctly"
+                >&quot;Exceptions thrown from within the event handler will not be caught. Instead,
+                the process will exit with a non-zero exit code, and the stack trace will be
+                printed. This is to avoid infinite recursion.&quot;</a
+              >
+            </p>
+            <p>
+              Trying to invoke the handler after the call stack size is exceeded would itself throw.
+              The fact that it works without promise hooks is largely coincidental rather than
+              guaranteed behavior.
+            </p>
+            <h3 id="why-we-put-it-in-a-security-release">
+              <a href="#why-we-put-it-in-a-security-release">Why We Put It In a Security Release</a>
+            </h3>
+            <p>
+              Although it is a patch for an unspecified behavior, we chose to include it in the
+              security release because of its widespread impact on the ecosystem. The prevalence of
+              <code>async_hooks</code> usage by React Server Components, Next.js, and APM tools
+              makes it a practical Denial-of-Service vector for many applications. Making the
+              unspecified behavior more consistent in Node.js improves developer experience and
+              makes error handling more predictable.
+            </p>
+            <p>
+              However, it&#x27;s important to note that we were fortunate to be able to fix this
+              particular case. There&#x27;s no guarantee that similar edge cases involving stack
+              overflow and <code>async_hooks</code> can always be addressed.
+              <strong
+                >For mission-critical paths that must defend against infinite recursion or stack
+                overflow from recursion whose depth can be controlled by an attacker, always
+                sanitize the input or impose a limit on the depth of recursion by other
+                means</strong
+              >.
+            </p>
+            <p>
+              It&#x27;s worth noting that large array allocations can suffer from similar issues,
+              like the recent
+              <a href="https://github.com/ljharb/qs"><code>qs</code></a> vulnerability
+              <a href="https://github.com/ljharb/qs/security/advisories/GHSA-6rw7-vpxm-498p"
+                >CVE-2025-15284</a
+              >
+              showed. It&#x27;s paramount that developers validate and constrain resource usage that
+              could be controlled by an attacker. The runtime cannot always recover reliably from
+              resource exhaustion after-the-fact.
+            </p>
+            <h2 id="technical-deep-dive"><a href="#technical-deep-dive">Technical Deep Dive</a></h2>
+            <h3 id="how-async_hooks-works">
+              <a href="#how-async_hooks-works">How async_hooks Works</a>
+            </h3>
+            <p>
+              When you create a Promise, <code>async_hooks</code> fires callbacks to track the async
+              context:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>new</span><span> </span><span>Promise()</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>V8</span><span> </span><span>promise</span><span> </span><span>hook</span><span> </span><span>triggered</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>async_hooks</span><span> </span><span>init</span><span> </span><span>callback</span><span> </span><span>runs</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>Your</span><span> </span><span>hook</span><span> </span><span>code</span><span> </span><span>executes</span><span> </span><span>(e.g.,</span><span> </span><span>APM</span><span> </span><span>span</span><span> </span><span>creation)</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <h3 id="the-fatal-trycatchscope">
+              <a href="#the-fatal-trycatchscope">The Fatal TryCatchScope</a>
+            </h3>
+            <p>
+              Node.js wraps <code>async_hooks</code> callbacks in a special error handler called
+              <code>TryCatchScope</code> with <code>CatchMode::kFatal</code>:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">// From Node.js internals</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">void</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> EmitAsyncInit</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#6E7781;--shiki-dark:#707e99">/* ... */</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#953800;--shiki-dark:#D8DEE9FF">  TryCatchScope</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> try_catch</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">env</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">,</span><span style="color:#953800;--shiki-dark:#D8DEE9FF"> TryCatchScope</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">::</span><span style="color:#953800;--shiki-dark:#D8DEE9FF">CatchMode</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">::</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">kFatal</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">  // Run async_hooks callback</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>
+              <code>kFatal</code> means: &quot;If any error occurs here, it&#x27;s unrecoverable.
+              Exit immediately.&quot;
+            </p>
+            <p>
+              This behavior is documented and intentional. From the
+              <a href="https://nodejs.org/api/async_hooks.html#error-handling"
+                >async_hooks documentation</a
+              >:
+            </p>
+            <blockquote class="index-module__x_agTG__wrapper">
+              <p>
+                If any <code>AsyncHook</code> callbacks throw, the application will print the stack
+                trace and exit. The exit path does follow that of an uncaught exception, but all
+                <code>&#x27;uncaughtException&#x27;</code> listeners are removed, thus forcing the
+                process to exit.
+              </p>
+              <p>
+                The reason for this error handling behavior is that these callbacks are running at
+                potentially volatile points in an object&#x27;s lifetime, for example during class
+                construction and destruction. Because of this, it is deemed necessary to bring down
+                the process quickly in order to prevent an unintentional abort in the future.
+              </p>
+            </blockquote>
+            <p>
+              This design makes sense: if your APM tool&#x27;s <code>init</code> callback throws an
+              error, the application is in an undefined state. The hook might have partially
+              executed, resources might be leaked, and continuing could cause data corruption.
+              Better to crash fast and loud.
+            </p>
+            <p>
+              <strong>But stack overflow is different.</strong> The error doesn&#x27;t originate in
+              the hook. Instead, it originates in user code. The stack just happens to overflow
+              while the hook is on the call stack. The hook itself is fine; there&#x27;s no
+              corrupted state to worry about.
+            </p>
+            <h3 id="the-bug-explained"><a href="#the-bug-explained">The Bug Explained</a></h3>
+            <p>To understand the bug, we need to understand how promise hooks work.</p>
+            <p>
+              When you enable <code>async_hooks</code> with an <code>init</code> callback, Node.js
+              registers a <strong>promise hook</strong> with V8. This hook is invoked by V8 itself
+              every time a Promise is created, not by Node.js JavaScript code. The critical detail
+              is that V8 calls this hook <strong>synchronously</strong> during the Promise
+              constructor, before <code>new Promise()</code> returns to your code.
+            </p>
+            <p>The call sequence looks like this:</p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>Your</span><span> </span><span>code:</span><span> </span><span>new</span><span> </span><span>Promise()</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>V8</span><span> </span><span>Promise</span><span> </span><span>constructor</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>V8</span><span> </span><span>calls</span><span> </span><span>promise</span><span> </span><span>hook</span><span> </span><span>(synchronous,</span><span> </span><span>before</span><span> </span><span>constructor</span><span> </span><span>returns)</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>Node.js</span><span> </span><span>promiseInitHook()</span><span> </span><span>[JavaScript]</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>emitInitNative()</span><span> </span><span>[JavaScript]</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>Your</span><span> </span><span>async_hooks</span><span> </span><span>init</span><span> </span><span>callback</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>→</span><span> </span><span>V8</span><span> </span><span>Promise</span><span> </span><span>constructor</span><span> </span><span>returns</span></span>
+<span class="line"><span>Your</span><span> </span><span>code</span><span> </span><span>continues...</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <p>
+              This means that <code>async_hooks</code> callbacks don&#x27;t run in isolation. They
+              run on the <strong>same call stack</strong> as user code. Every
+              <code>new Promise()</code> call adds several stack frames for the hook machinery on
+              top of whatever is already on the stack.
+            </p>
+            <p>Here&#x27;s what the stack looks like during deep recursion:</p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>[bottom</span><span> </span><span>of</span><span> </span><span>stack]</span></span>
+<span class="line"><span>recursive()</span><span> </span><span>frame</span><span> </span><span>#1</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>new</span><span> </span><span>Promise()</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>V8</span><span> </span><span>promise</span><span> </span><span>hook</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>async_hooks</span><span> </span><span>init</span><span> </span><span>callback</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>←</span><span> </span><span>TryCatchScope::kFatal</span><span> </span><span>active</span><span> </span><span>here</span></span>
+<span class="line"><span>recursive()</span><span> </span><span>frame</span><span> </span><span>#2</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>new</span><span> </span><span>Promise()</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>V8</span><span> </span><span>promise</span><span> </span><span>hook</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>async_hooks</span><span> </span><span>init</span><span> </span><span>callback</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>←</span><span> </span><span>TryCatchScope::kFatal</span><span> </span><span>active</span><span> </span><span>here</span></span>
+<span class="line"><span>recursive()</span><span> </span><span>frame</span><span> </span><span>#3</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span>new</span><span> </span><span>Promise()</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>V8</span><span> </span><span>promise</span><span> </span><span>hook</span></span>
+<span class="line"><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>async_hooks</span><span> </span><span>init</span><span> </span><span>callback</span><span> </span><span></span><span> </span><span></span><span> </span><span></span><span> </span><span>←</span><span> </span><span>STACK</span><span> </span><span>OVERFLOW</span><span> </span><span>HAPPENS</span><span> </span><span>HERE</span></span>
+<span class="line"><span>[top</span><span> </span><span>of</span><span> </span><span>stack</span><span> </span><span>-</span><span> </span><span>limit</span><span> </span><span>reached]</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <p>
+              Each recursive call adds frames for both the user code AND the async_hooks machinery.
+              When the stack finally overflows, the currently executing code is the async_hooks
+              callback, so the <code>TryCatchScope::kFatal</code> catches it.
+            </p>
+            <p>The complete sequence when stack overflow occurs:</p>
+            <ol>
+              <li>User code calls <code>new Promise()</code> recursively</li>
+              <li>Each <code>new Promise()</code> synchronously triggers V8&#x27;s promise hook</li>
+              <li>
+                V8 calls into Node.js&#x27;s <code>promiseInitHook()</code>, then
+                <code>emitInitNative()</code>
+              </li>
+              <li>The stack fills up with interleaved user code and hook frames</li>
+              <li>
+                Stack overflow throws a <code>RangeError</code> while inside the hook callback
+              </li>
+              <li><code>TryCatchScope::kFatal</code> catches the error</li>
+              <li>
+                <code>TryCatchScope::~TryCatchScope()</code> calls
+                <code>env_-&gt;Exit(ExitCode::kExceptionInFatalExceptionHandler)</code>
+              </li>
+              <li>Node.js exits with code 7</li>
+            </ol>
+            <p>
+              The error originated in <strong>user code</strong> (the recursive pattern), but
+              because it manifests while the hook callback is the active frame, it&#x27;s treated as
+              a fatal hook error.
+            </p>
+            <h2 id="the-fix"><a href="#the-fix">The Fix</a></h2>
+            <p>
+              The fix detects stack overflow errors and re-throws them to user code instead of
+              treating them as fatal:
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-cpp"
+                tabindex="0"
+              ><code><span class="line"></span>
+<span class="line"><span style="color:#953800;--shiki-dark:#D8DEE9FF">TryCatchScope</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">::</span><span style="color:#CF222E;--shiki-dark:#81A1C1">~</span><span style="color:#8250DF;--shiki-dark:#88C0D0">TryCatchScope</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">  // ... simplified</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">  if</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#8250DF;--shiki-dark:#88C0D0">HasCaught</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> &amp;&amp;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> mode_</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> ==</span><span style="color:#953800;--shiki-dark:#D8DEE9FF"> CatchMode</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">::</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">kFatal</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#953800;--shiki-dark:#D8DEE9FF">    Local</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">&lt;</span><span style="color:#953800;--shiki-dark:#D8DEE9FF">Value</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">&gt;</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> exception</span><span style="color:#CF222E;--shiki-dark:#81A1C1"> =</span><span style="color:#8250DF;--shiki-dark:#88C0D0"> Exception</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">    // Stack overflow? Re-throw to user code instead of exiting</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">    if</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> (</span><span style="color:#8250DF;--shiki-dark:#88C0D0">IsStackOverflowError</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#1F2328;--shiki-dark:#D8DEE9">env_</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">-&gt;</span><span style="color:#8250DF;--shiki-dark:#88C0D0">isolate</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(),</span><span style="color:#1F2328;--shiki-dark:#D8DEE9"> exception</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">))</span><span style="color:#1F2328;--shiki-dark:#ECEFF4"> {</span></span>
+<span class="line"><span style="color:#8250DF;--shiki-dark:#88C0D0">      ReThrow</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#8250DF;--shiki-dark:#88C0D0">      Reset</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">()</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#CF222E;--shiki-dark:#81A1C1">      return</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6E7781;--shiki-dark:#707e99">    // Other fatal errors: exit as before</span></span>
+<span class="line"><span style="color:#8250DF;--shiki-dark:#88C0D0">    FatalException</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">(</span><span style="color:#6E7781;--shiki-dark:#707e99">/* ... */</span><span style="color:#1F2328;--shiki-dark:#ECEFF4">)</span><span style="color:#1F2328;--shiki-dark:#81A1C1">;</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">  }</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#ECEFF4">}</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">C++</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <p>After this fix:</p>
+            <ul>
+              <li><code>try-catch</code> blocks catch the <code>RangeError</code> as expected</li>
+              <li>Applications can handle the error gracefully</li>
+              <li>Behavior is more consistent with and without <code>async_hooks</code> enabled</li>
+            </ul>
+            <h2 id="a-brief-history-from-async_hooks-to-asynccontextframe">
+              <a href="#a-brief-history-from-async_hooks-to-asynccontextframe"
+                >A Brief History: From async_hooks to AsyncContextFrame</a
+              >
+            </h2>
+            <p>
+              Understanding this bug requires knowing how Node.js evolved its async context
+              tracking.
+            </p>
+            <h3 id="the-async_hooks-era"><a href="#the-async_hooks-era">The async_hooks Era</a></h3>
+            <p>
+              <a href="https://nodejs.org/api/async_hooks.html"><code>async_hooks</code></a> was
+              introduced in
+              <a href="https://nodejs.org/en/blog/release/v8.0.0">Node.js 8 (2017)</a> as a
+              low-level API to track asynchronous resources. It provides callbacks
+              (<code>init</code>, <code>before</code>, <code>after</code>, <code>destroy</code>)
+              that fire at key points in an async resource&#x27;s lifecycle. APM tools immediately
+              adopted it to trace requests across async boundaries.
+            </p>
+            <p>
+              However, <code>async_hooks</code> has significant performance overhead. Every Promise
+              creation, every timer, and every I/O operation triggers these callbacks. This cost is
+              unavoidable when the hooks are enabled.
+            </p>
+            <h3 id="asynclocalstorage"><a href="#asynclocalstorage">AsyncLocalStorage</a></h3>
+            <p>
+              <a href="https://nodejs.org/en/blog/release/v12.17.0">Node.js 12.17.0 (2020)</a>
+              introduced
+              <a href="https://nodejs.org/api/async_context.html#class-asynclocalstorage"
+                ><code>AsyncLocalStorage</code></a
+              >, a higher-level API built on top of <code>async_hooks</code>. It provides a cleaner
+              interface for the most common use case: storing context that flows through async
+              operations (like request IDs, user sessions, or tracing spans).
+            </p>
+            <p>
+              React Server Components and Next.js adopted <code>AsyncLocalStorage</code> for request
+              context tracking, unknowingly inheriting all of <code>async_hooks</code> behaviors,
+              including this bug.
+            </p>
+            <h3 id="the-asynccontextframe-revolution-nodejs-24">
+              <a href="#the-asynccontextframe-revolution-nodejs-24"
+                >The AsyncContextFrame Revolution (Node.js 24+)</a
+              >
+            </h3>
+            <p>
+              In <a href="https://nodejs.org/en/blog/release/v24.0.0">Node.js 24</a>,
+              <code>AsyncLocalStorage</code> was reimplemented using a new V8 feature called
+              <a href="https://github.com/tc39/proposal-async-context"
+                ><code>AsyncContextFrame</code></a
+              >. This approach integrates context tracking directly into V8&#x27;s Promise
+              implementation, eliminating the need for JavaScript callbacks on every async
+              operation.
+            </p>
+            <p>
+              The result is dramatically better performance. Importantly for this bug,
+              <code>AsyncLocalStorage</code> no longer uses
+              <code>async_hooks.createHook()</code> internally. This is why React and Next.js are
+              not affected by this bug on Node.js 24+.
+            </p>
+            <p>
+              Note: <code>AsyncLocalStorage</code> is still exported from the
+              <code>async_hooks</code> module for backwards compatibility, even though it no longer
+              uses the <code>async_hooks</code> machinery internally on Node.js 24+. It&#x27;s also
+              available from <code>node:async_hooks</code> and the newer
+              <code>node:async_context</code> module.
+            </p>
+            <p>
+              For more details on this evolution and its performance implications, see
+              <a href="https://blog.platformatic.dev/the-hidden-cost-of-context"
+                >The Hidden Cost of Context</a
+              >.
+            </p>
+            <h2 id="affected-versions"><a href="#affected-versions">Affected Versions</a></h2>
+            <p><strong>Patched releases available for:</strong></p>
+            <ul>
+              <li>Node.js 20.20.0 (LTS)</li>
+              <li>Node.js 22.22.0 (LTS)</li>
+              <li>Node.js 24.13.0 (LTS)</li>
+              <li>Node.js 25.3.0 (Current)</li>
+            </ul>
+            <p><strong>Also affected (no patches, end-of-life):</strong></p>
+            <ul>
+              <li>
+                All Node.js versions from 8.x to 18.x (8.x was the first version with
+                <code>async_hooks</code>)
+              </li>
+            </ul>
+            <p>
+              Users on Node.js versions prior to 20.x who cannot upgrade should reach out for
+              <a href="https://nodejs.org/en/about/eol#commercial-support"
+                >commercial support for EOL versions</a
+              >.
+            </p>
+            <h3 id="important-react-and-nextjs-impact-by-version">
+              <a href="#important-react-and-nextjs-impact-by-version"
+                >Important: React and Next.js Impact by Version</a
+              >
+            </h3>
+            <p>The impact on React Server Components and Next.js varies by Node.js version:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Node.js Version</th>
+                  <th>React/Next.js Affected?</th>
+                  <th>APM Tools Affected?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Node.js Version">25.x</td>
+                  <td data-label="React/Next.js Affected?">No*</td>
+                  <td data-label="APM Tools Affected?">Depends**</td>
+                </tr>
+                <tr>
+                  <td data-label="Node.js Version">24.x</td>
+                  <td data-label="React/Next.js Affected?">No*</td>
+                  <td data-label="APM Tools Affected?">Depends**</td>
+                </tr>
+                <tr>
+                  <td data-label="Node.js Version">22.x</td>
+                  <td data-label="React/Next.js Affected?">Yes</td>
+                  <td data-label="APM Tools Affected?">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Node.js Version">20.x</td>
+                  <td data-label="React/Next.js Affected?">Yes</td>
+                  <td data-label="APM Tools Affected?">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Node.js Version">&lt; 20.x</td>
+                  <td data-label="React/Next.js Affected?">Yes</td>
+                  <td data-label="APM Tools Affected?">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              *Node.js 24+ reimplemented <code>AsyncLocalStorage</code> without using
+              <code>async_hooks.createHook()</code>, so React and Next.js are not affected on these
+              versions.
+            </p>
+            <p>
+              **APM tools that use only <code>AsyncLocalStorage</code> are not affected on Node.js
+              24+. APM tools that directly use <code>async_hooks.createHook()</code> are still
+              affected on all versions.
+            </p>
+            <h2 id="mitigation"><a href="#mitigation">Mitigation</a></h2>
+            <p>
+              <strong>Recommended</strong>: Upgrade to the patched versions released on January
+              13th, 2026.
+            </p>
+            <p>
+              If you cannot upgrade immediately, consider altering your application to avoid deep
+              recursion, particularly when allocating promises within recursive functions.
+            </p>
+            <h2 id="timeline"><a href="#timeline">Timeline</a></h2>
+            <ul>
+              <li>
+                <strong>December 7, 2025</strong>: React/Next.js team contacted Matteo Collina to
+                report this issue
+              </li>
+              <li>
+                <strong>December 8, 2025</strong>: Vercel Security team opens the
+                <a href="https://hackerone.com/reports/3456295">HackerOne report #3456295</a>
+              </li>
+              <li>
+                <strong>December 9, 2025</strong>: Matteo Collina starts working on a first patch
+                that would defer the stack overflow error to the next macrotick.
+              </li>
+              <li>
+                <strong>December 10, 2025</strong>: The React/Next.js team validates that this patch
+                did not fix the problem.
+              </li>
+              <li>
+                <strong>December 10, 2025</strong>: Matteo Collina prepares a different patch that
+                rethrows the error immediately, freeing the stack.
+              </li>
+              <li>
+                <strong>December 11, 2025</strong>: The React/Next.js team validates that this patch
+                fixes the problem.
+              </li>
+              <li>
+                <strong>December 12, 2025</strong>: Anna Henningsen identifies a blocker for this
+                strategy. The Node.js team starts brainstorming on alternative solutions.
+              </li>
+              <li>
+                <strong>December 16, 2025</strong>: Joyee Cheung communicates that Node.js cannot
+                treat this as a vulnerability for the reasons listed in this blog post.
+              </li>
+              <li>
+                <strong>December 17, 2025</strong>: Anna Henningsen fixes the blocking issue for the
+                patch.
+              </li>
+              <li>
+                <strong>January 13, 2026</strong>: Patched versions released and disclosure
+                published
+              </li>
+            </ul>
+            <h2 id="conclusion"><a href="#conclusion">Conclusion</a></h2>
+            <p>
+              This bug highlights how deeply <code>async_hooks</code> has become embedded in the
+              Node.js ecosystem. What started as a low-level debugging API is now a critical
+              dependency for React Server Components, Next.js, every major APM tool, and any code
+              using <code>AsyncLocalStorage</code>.
+            </p>
+            <p>
+              The fix improves the consistency of stack size limit errors caused by deep recursions.
+              While we were able to address this particular case, developers should be aware that
+              stack overflow behavior is not specified by ECMAScript and should not be relied upon
+              for service availability. If the depth of recursion can be controlled by an attacker,
+              always sanitize the input or impose a limit by other means to restrict the depth,
+              instead of counting on the JS runtime to impose a limit or recover from it with a
+              catchable error.
+            </p>
+            <p>
+              <strong
+                >Users running React RSC, Next.js, or any other framework using
+                <code>AsyncLocalStorage</code>, as well as any APM tool in production, should
+                upgrade to the patched versions released on January 13th, 2026.</strong
+              >
+            </p>
+            <h2 id="acknowledgments"><a href="#acknowledgments">Acknowledgments</a></h2>
+            <p>
+              This fix was developed by <a href="https://x.com/matteocollina">Matteo Collina</a> and
+              <a href="https://github.com/addaleax">Anna Henningsen</a>. Thanks to
+              <a href="https://x.com/satanacchio">Marco Ippolito</a> for preparing the release and
+              to <a href="https://x.com/_rafaelgss">Rafael Gonzaga</a>,
+              <a href="https://github.com/joyeecheung">Joyee Cheung</a>, and
+              <a href="https://bsky.app/profile/jasnell.me">James Snell</a> for helping with the
+              triaging.
+            </p>
+            <p>
+              Thanks to <a href="https://github.com/AndrewMohawk">Andrew MacPherson</a> for
+              reporting the bug in Next.js/React and to the React and Next.js teams at
+              <a href="https://www.meta.com/">Meta</a> and
+              <a href="https://vercel.com">Vercel</a> for reporting this issue and providing
+              additional evidence that helped refine the fix. Special thanks to
+              <a href="https://x.com/feedthejim">Jimmy Jai</a>,
+              <a href="https://x.com/sebmarkbage">Sebastian Markbage</a>, and
+              <a href="https://x.com/sebsilbermann">Sebastian Silbermann</a>.
+            </p>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content"
+                  >OpenSSL Security Advisory Assessment, January 2026</span
+                ></a
+              ><a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/december-2025-security-releases"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Tuesday, January 13, 2026 Security Releases</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Jan 13, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>13 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class=""><a class="" href="#tldr">TL;DR</a></li>
+                <li class=""><a class="" href="#the-reproduction">The Reproduction</a></li>
+                <li class="">
+                  <a class="" href="#why-this-affects-react-and-nextjs"
+                    >Why This Affects React and Next.js</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#react-server-components">React Server Components</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#nextjs-request-context">Next.js Request Context</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#the-real-world-scenario">The Real-World Scenario</a>
+                </li>
+                <li class="">
+                  <a class="" href="#why-the-use-of-apm-tools-makes-it-easier-to-reproduce"
+                    >Why the Use of APM Tools Makes It Easier to Reproduce</a
+                  >
+                </li>
+                <li class="">
+                  <a
+                    class=""
+                    href="#why-this-is-only-a-mitigation-and-the-vulnerability-lies-elsewhere"
+                    >Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#stack-space-exhaustion-behavior-is-not-specified"
+                    >Stack Space Exhaustion Behavior Is Not Specified</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#this-behavior-is-not-part-of-the-security-guarantees-of-v8"
+                    >This Behavior Is Not Part of The Security Guarantees of V8</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#uncaughtexception-limitations"
+                    >uncaughtException Limitations</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#why-we-put-it-in-a-security-release"
+                    >Why We Put It In a Security Release</a
+                  >
+                </li>
+                <li class=""><a class="" href="#technical-deep-dive">Technical Deep Dive</a></li>
+                <li class="pl-2">
+                  <a class="" href="#how-async_hooks-works">How async_hooks Works</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#the-fatal-trycatchscope">The Fatal TryCatchScope</a>
+                </li>
+                <li class="pl-2"><a class="" href="#the-bug-explained">The Bug Explained</a></li>
+                <li class=""><a class="" href="#the-fix">The Fix</a></li>
+                <li class="">
+                  <a class="" href="#a-brief-history-from-async_hooks-to-asynccontextframe"
+                    >A Brief History: From async_hooks to AsyncContextFrame</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#the-async_hooks-era">The async_hooks Era</a>
+                </li>
+                <li class="pl-2"><a class="" href="#asynclocalstorage">AsyncLocalStorage</a></li>
+                <li class="pl-2">
+                  <a class="" href="#the-asynccontextframe-revolution-nodejs-24"
+                    >The AsyncContextFrame Revolution (Node.js 24+)</a
+                  >
+                </li>
+                <li class=""><a class="" href="#affected-versions">Affected Versions</a></li>
+                <li class="pl-2">
+                  <a class="" href="#important-react-and-nextjs-impact-by-version"
+                    >Important: React and Next.js Impact by Version</a
+                  >
+                </li>
+                <li class=""><a class="" href="#mitigation">Mitigation</a></li>
+                <li class=""><a class="" href="#timeline">Timeline</a></li>
+                <li class=""><a class="" href="#conclusion">Conclusion</a></li>
+                <li class=""><a class="" href="#acknowledgments">Acknowledgments</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

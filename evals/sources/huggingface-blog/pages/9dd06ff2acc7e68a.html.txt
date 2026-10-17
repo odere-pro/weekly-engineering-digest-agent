@@ -1,0 +1,788 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/torch-attention-profile/thumbnail.png" />
+
+		<meta property="og:title" content="Profiling in PyTorch (Part 3): Attention is all you profile" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/torch-attention-profile" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/torch-attention-profile/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/torch-attention-profile">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Profiling in PyTorch (Part 3): Attention is all you profile</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="profiling-in-pytorch-part-3-attention-is-all-you-profile" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#profiling-in-pytorch-part-3-attention-is-all-you-profile" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Profiling in PyTorch (Part 3): Attention is all you profile
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					July 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/torch-attention-profile.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftorch-attention-profile" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">54</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Ajax0564" style="content-visibility:auto;"><!--[0--><a href="/Ajax0564" title="Ajax0564"><img class="overflow-hidden rounded-full" alt="" src="/avatars/25ab2549a0a846f06cf0936924769c15.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Zmu" style="content-visibility:auto;"><!--[0--><a href="/Zmu" title="Zmu"><img class="overflow-hidden rounded-full" alt="" src="/avatars/3bb8728057fa2ba0e24f5ceb1600068d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="IMvision12" style="content-visibility:auto;"><!--[0--><a href="/IMvision12" title="IMvision12"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1670152199461-629631215de6e0eb3292ae91.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Aanuoluwapo65" style="content-visibility:auto;"><!--[0--><a href="/Aanuoluwapo65" title="Aanuoluwapo65"><img class="overflow-hidden rounded-full" alt="" src="/avatars/129d1e86bbaf764b507501f4feb177db.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stats-luke" style="content-visibility:auto;"><!--[0--><a href="/stats-luke" title="stats-luke"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4ec315b7ca47b5a588c6eb89f1994414.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cestdove" style="content-visibility:auto;"><!--[0--><a href="/cestdove" title="cestdove"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/Q71vDSrUuzLoia2HRWeDf.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+48</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ariG23498"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Aritra Roy Gosthipaty's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ariG23498"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Aritra Roy Gosthipaty">Aritra Roy Gosthipaty</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ariG23498</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sergiopaniego"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sergio Paniego's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sergiopaniego"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sergio Paniego">Sergio Paniego</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sergiopaniego</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sayakpaul"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sayak Paul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sayakpaul"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sayak Paul">Sayak Paul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sayakpaul</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ror"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Rémi Ouazan Reboul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ror"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Rémi Ouazan Reboul">Rémi Ouazan Reboul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ror</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/profile-3-thumbnail.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/profile-3-thumbnail.png" alt="Thumbnail of the blog post"></a></p>
+<div style="border: 1px solid #1f5c48; border-radius: 6px; padding: 1.5rem 2rem; background: #17211f; color: #ddd; font-size: 1.1rem; line-height: 1.7;">
+
+  <p>
+    This is the third post of Profiling in PyTorch, a series where we slowly build the skill of reading profiler traces and use it to drive optimization:
+  </p>
+
+  <ol>
+    <li>
+      <a href="https://huggingface.co/blog/torch-profiler" style="color: #10b981;">
+        Profiling in PyTorch (Part 1): A Beginner's Guide to torch.profiler
+      </a>
+    </li>
+    <li>
+      <a href="https://huggingface.co/blog/torch-mlp-fusion" style="color: #10b981;">
+        Profiling in PyTorch (Part 2): From nn.Linear to a Fused MLP
+      </a>
+    </li>
+    <li>
+      <a href="https://huggingface.co/blog/torch-attention-profile" style="color: #10b981;">
+        Profiling in PyTorch (Part 3): Attention is all you profile
+      </a>
+      <em style="color: #aaa;">(current)</em>
+    </li>
+  </ol>
+
+</div>
+
+<p>The series "Profiling in PyTorch" is meant to make you comfortable reading profiler traces and tables. In <a href="https://huggingface.co/blog/torch-profiler">Part 1</a> we profiled basic math operations like addition and multiplication. We saw how the profiler table uncovers hotspots, and how the profiler trace shows the order in which an algorithm runs over time.</p>
+<p>In <a href="https://huggingface.co/blog/torch-mlp-fusion">Part 2</a> we wrapped that addition and multiplication into a torch linear layer. We then stacked several linear layers on top of each other (a multilayer perceptron) and profiled that. Along the way we also profiled fused and hand-tuned kernels.</p>
+<p>From the perspective of the Transformer architecture, the next logical step for us to profile is yet another fundamental algorithm, attention. While being infamous for its quadratic-time complexity, many clever tricks exist to mitigate that issue and make it fast. Our goal here is not to cover every trick in detail. Instead, we want to see how each one looks different under the profiler.</p>
+<blockquote class="note">
+<p>The scripts for this blog post live here: <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/04_a_naive_attention.py"><code>04_a_naive_attention.py</code></a>, <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/04_b_inplace_ops_attention.py"><code>04_b_inplace_ops_attention.py</code></a>, <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/04_c_sdpa_attention.py"><code>04_c_sdpa_attention.py</code></a>, and <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/04_d_kernels_attention.py"><code>04_d_kernels_attention.py</code></a>. Like before, it helps to open them in a separate tab and walk through the code as you read. We use an <code>NVIDIA A100-SXM4-80GB</code> GPU to run the scripts. It is really easy to set up a GPU on the Hugging Face infrastructure and experiment with the scripts using <a href="https://huggingface.co/docs/hub/spaces-dev-mode">Dev Mode with Spaces</a>. One could also run the scripts with the <a href="https://huggingface.co/docs/huggingface_hub/en/guides/jobs">Hugging Face Jobs pipeline</a>.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="naive-attention" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#naive-attention" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Naive attention
+	</span>
+</h2>
+<p>Attention works with Queries (<code>q</code>), Keys (<code>k</code>), and Values (<code>v</code>). The interaction between them can be written as a short sequence of steps:</p>
+<ol>
+<li>Build the attention scores <code>scores</code>: <code>matmul(q, k.T)</code></li>
+<li>Scale the scores: <code>scores * scale</code></li>
+<li>Apply a causal mask to the scores: <code>scores.masked_fill(mask, "-inf")</code></li>
+<li>Normalize the scores with softmax to get the attention weights <code>attn</code>: <code>softmax(scores)</code></li>
+<li>Reweight the values with those weights: <code>matmul(attn, v)</code></li>
+</ol>
+<p>So attention is really a collection of primitive operations. Some of them we already know (the matmuls), and the rest are easy to spot. Let's write a naive attention module in PyTorch and profile it.</p>
+<pre><code class="language-py"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NaiveCausalAttention</span>(nn.Module):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, head_dim</span>):
+        <span class="hljs-built_in">super</span>().__init__()
+        self.scale = <span class="hljs-number">1.0</span> / math.sqrt(head_dim)
+
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, q, k, v, mask</span>):
+        scores = torch.matmul(q, k.transpose(-<span class="hljs-number">2</span>, -<span class="hljs-number">1</span>))
+        scores = scores * self.scale
+        scores = scores.masked_fill(mask, <span class="hljs-built_in">float</span>(<span class="hljs-string">"-inf"</span>))
+        attn = torch.softmax(scores, dim=-<span class="hljs-number">1</span>)
+        out = torch.matmul(attn, v)
+        <span class="hljs-keyword">return</span> out
+</code></pre>
+<p>Before opening the trace, let's do our usual exercise and guess what we should see. Tracing the <code>forward</code> of this module, we expect:</p>
+<ul>
+<li>a matmul kernel (<code>q . k.T</code>)</li>
+<li>a mul kernel (the scaling)</li>
+<li>an operation for the masking</li>
+<li>a softmax kernel</li>
+<li>a matmul kernel (<code>atten . v</code>)</li>
+</ul>
+<pre><code class="language-bash">uv run 04_a_naive_attention.py
+uvx trace-util -f traces/ -b &lt;hf_uname&gt;/traces
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-naive.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-naive.png" alt="CPU lane of the naive attention profiler trace, with the `attn_fwd` block expanded to show its matmul, mul, masked_fill and softmax operations"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 1: The CPU lane of the profile trace for naive attention highlighting the discrete operations</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Figure 1 shows the CPU lane of the profile (the GPU lane is folded so it does not overwhelm us). Inside <code>attn_fwd</code> (our annotated forward call) we can see exactly the operations we guessed. The matmul is an old friend by now, and the new operations are easy to spot:</p>
+<ul>
+<li><code>mul</code>: the scaling</li>
+<li><code>masked_fill</code>: the causal masking</li>
+<li><code>softmax</code>: the softmax kernel</li>
+</ul>
+<p>Now let's unfold the GPU lane and see which kernels were actually launched.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/gpu-profile-naive.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/gpu-profile-naive.png" alt="Profiler trace of naive attention showing the CPU lane above the GPU lane, with each `attn_fwd` step mapping to a cluster of GPU kernels"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 2: GPU and CPU lanes of the profile trace for naive attention highlighting a collection of kernels corresponding to one profiler step.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Figure 2 shows the GPU lane next to the CPU lane. Let's zoom into a single <code>attn_fwd</code> block on the GPU lane to look at the kernels one by one.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-naive.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-naive.png" alt="Zoomed-in GPU lane of naive attention showing the individual kernels for one step: two matmuls, a mul, a memory copy, a masking kernel and a softmax"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 3: Zoomed in GPU lane of the profiler trace for naive attention implementation.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Figure 3 lets us read off the individual kernels for one profiler step:</p>
+<ol>
+<li>matmul (query and key)</li>
+<li>mul (scaling)</li>
+<li>memory copy 🤔</li>
+<li>causal masking</li>
+<li>softmax (produces the attention weights)</li>
+<li>matmul (attention weights and values)</li>
+</ol>
+<p>Five of these are expected. The memory copy is the odd one out, so where does this come from? The clue is that PyTorch has in-place operations. When you operate on a tensor the ordinary (out-of-place) way, PyTorch often makes a copy, applies the requested operation to it, and returns the copy. Following the sequence of operations, the culprit here is our <a href="https://docs.pytorch.org/docs/2.13/generated/torch.Tensor.masked_fill.html" rel="nofollow"><code>masked_fill</code></a>.</p>
+<p>What if we replaced this with an in-place operation?</p>
+<h2 class="relative group flex items-baseline">
+	<a id="naive-attention-with-inplace-causal-masking" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#naive-attention-with-inplace-causal-masking" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Naive attention with inplace causal masking
+	</span>
+</h2>
+<p>All we change is <code>masked_fill</code> to <code>masked_fill_</code> (note the trailing underscore, PyTorch's convention for in-place operations), and we run the same script.</p>
+<pre><code class="language-diff">def forward(self, q, k, v, mask):
+    # q, k, v: [batch, heads, seq, head_dim]
+    scores = torch.matmul(q, k.transpose(-2, -1))  # [batch, heads, seq, seq]
+    scores = torch.mul(scores, self.scale)
+<span class="hljs-deletion">-    scores = scores.masked_fill(mask, float("-inf"))</span>
+<span class="hljs-addition">+    scores.masked_fill_(mask, float("-inf"))</span>
+    attn = torch.softmax(scores, dim=-1)
+    out = torch.matmul(attn, v)  # [batch, heads, seq, head_dim]
+    return out
+</code></pre>
+<p>Let's look at the trace and see if something changed.</p>
+<pre><code class="language-bash">uv run 04_b_inplace_ops_attention.py
+uvx trace-util -f traces/ -b &lt;hf_uname&gt;/traces
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Type</th>
+<th align="center">CPU stream</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 4: Naive masking</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-naive.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-naive.png" alt="CPU lane of naive attention with out-of-place `masked_fill`, showing several dispatch ops for the masking step"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 5: In place masking</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-inplace.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cpu-profile-inplace.png" alt="CPU lane of naive attention with in-place `masked_fill_`, showing fewer dispatch ops for the masking step"></a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The in-place version (Figure 5) wraps far fewer CPU ops inside the masking step than the out-of-place version (Figure 4). This is an encouraging signal. Let's unfold the GPU lane to confirm what happened there.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Type</th>
+<th align="center">GPU stream</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 6: Naive masking</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-naive.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-naive.png" alt="GPU kernels for naive attention including a separate Memcpy kernel before the masking"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 7: In place masking</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-inpace.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/each-kernels-inpace.png" alt="GPU kernels for naive attention with in-place masking, with the Memcpy kernel gone"></a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>On the GPU lane the <code>Memcpy</code> kernel is gone for good (Figures 6 and 7). With a one line change we shaved a whole kernel off each forward pass. This may not look like much on its own, but remember this is a single attention operation. In the context of a transformer based large model (LLMs, Diffusion models, etc.), it repeats once per layer, and there are many layers, so the saving adds up quickly (and if it earns you a raise, sharing at least 10% with us feels only fair).</p>
+<blockquote class="note">
+<p>Out-of-place is PyTorch's default for a reason. To compute gradients, autograd has to remember the tensor values it saw on the forward pass, because many backward formulas reuse them. An in-place operation overwrites those values in memory, so the backward pass would read the wrong numbers. Due to the fact that we run <code>forward</code> under <code>torch.no_grad</code>, in-place is safe for us, with no backward pass and nothing to corrupt. It is also noteworthy that in-place operations do not only save time (like we see in our case) but also memory (due to no extra copy) which is great for large tensors like logits!</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="scaled-dot-product-attention" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#scaled-dot-product-attention" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Scaled Dot Product Attention
+	</span>
+</h2>
+<p>We just built attention from primitives, and even shaved off a <code>Memcpy</code>. The good news is that the PyTorch team has done all of this for us, and packaged the whole pipeline into a single function:</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> torch.nn <span class="hljs-keyword">import</span> functional <span class="hljs-keyword">as</span> F
+
+F.scaled_dot_product_attention(q, k, v, is_causal=<span class="hljs-literal">True</span>)
+</code></pre>
+<p>This one line replaces our hand written module, and <code>is_causal=True</code> even saves us from building the mask by hand. It is worth pausing to appreciate how much this one call hides. And it hides more than just code lines. Scaled Dot Product Attention (SDPA) does not have a single implementation. Under the hood it <em>dispatches</em> to one of the several backends and picks the fastest one that supports our inputs (dtype, head dimension, mask, hardware, etc.).</p>
+<p>The <a href="https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html" rel="nofollow">official SDPA tutorial</a> walks us through this selection, and the backends themselves are listed in the <code>torch.nn.attention.SDPBackend</code> enum:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> torch.nn.attention <span class="hljs-keyword">import</span> SDPBackend
+
+BACKENDS = {
+    <span class="hljs-string">"math"</span>: SDPBackend.MATH,
+    <span class="hljs-string">"flash"</span>: SDPBackend.FLASH_ATTENTION,
+    <span class="hljs-string">"efficient"</span>: SDPBackend.EFFICIENT_ATTENTION,
+    <span class="hljs-string">"cudnn"</span>: SDPBackend.CUDNN_ATTENTION,
+}
+</code></pre>
+<p>Normally SDPA chooses for us, but we can pin a specific backend with the <code>torch.nn.attention.sdpa_kernel</code> context manager. This is what we do in our scripts. This lets us profile each backend on its own and read how differently they show up in the trace. Let's go one at a time.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="math-backend" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#math-backend" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Math backend
+	</span>
+</h3>
+<pre><code class="language-bash">uv run 04_c_sdpa_attention.py --backend math
+uvx trace-util -f traces/ -b &lt;hf_uname&gt;/traces
+</code></pre>
+<p>Before we open anything, let's guess. We have replaced hand written attention (matmul, mul, mask, softmax, matmul) with a single one liner, so we should expect the trace to get <em>simpler and faster</em>. Fewer kernels, less CPU dispatch, maybe even a fused kernel. Let's check the profiler table first.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Metric</th>
+<th align="center">Where to look?</th>
+<th align="center">Naive in-place</th>
+<th align="center">SDPA math</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center"><code>*_fwd</code> CUDA time avg</td>
+<td align="center">The "CUDA time avg" column for the <code>*_fwd</code> op</td>
+<td align="center">1.955 ms</td>
+<td align="center">7.239 ms</td>
+</tr>
+<tr>
+<td align="center">Self CUDA time total</td>
+<td align="center">At the bottom of the profiler table</td>
+<td align="center">7.194 ms</td>
+<td align="center">27.279 ms</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>This is our first surprise, the one liner is <code>3.7x</code> slower.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"></th>
+<th align="center">Profiler Trace</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 8: Profiler trace of naive in-place attention showing five GPU kernel launches for one forward</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/inplace-kernel-launches.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/inplace-kernel-launches.png" alt="GPU lane of naive in-place attention with five kernel launches for one forward pass"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 9: Profiler trace of the SDPA math backend showing 20 GPU kernel launches for a single attention forward</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/math-kernel-launches.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/math-kernel-launches.png" alt="GPU lane of the SDPA math backend with twenty kernel launches for a single attention forward pass"></a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Opening the trace (Figure 9) shows why the alarm bells ring, the math backend launches <code>20</code> GPU kernels per forward instead of the <code>5</code> launched with our naive attention implementation (Figure 8). This is the opposite of what we guessed. Let's figure out why this happens.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="tensor-cores-left-vacant" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tensor-cores-left-vacant" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Tensor cores left vacant
+	</span>
+</h4>
+<p>In <a href="https://huggingface.co/blog/torch-mlp-fusion#where-did-the-transpose-go-kernel-layouts-and-pre-ops">Part 2</a> we learned to read a kernel name like a fingerprint. Let's use that habit here:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Run</th>
+<th align="center">matmul kernel</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 10: Naive attention</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/tensor-core-kernels.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/tensor-core-kernels.png" alt="Matmul kernel name for naive attention in Perfetto, carrying the s16816 bfloat16 Tensor-core GEMM signature"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 11: SDPA with math backend</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cuda-core-kernels.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cuda-core-kernels.png" alt="Matmul kernel name for the SDPA math backend, carrying the sgemm FP32 CUDA-core signature"></a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The A100s we used to capture these traces ship with <a href="https://www.nvidia.com/en-us/data-center/tensor-cores/" rel="nofollow">Tensor Cores</a>, specialised hardware for accelerated matmuls that is known to be far faster than the ordinary CUDA cores. To see why that matters here, it helps to know what lives inside a GPU. A Streaming Multiprocessor (SM) is the compute unit of a GPU, and each SM has two kinds of arithmetic units, the CUDA cores and the Tensor Cores. CUDA cores are general purpose and process a handful of elements at a time, while Tensor Cores multiply and accumulate a whole small matrix tile in a single instruction. So the question is simple, "Is each backend actually using the fast path?"</p>
+<p>The kernel names answer it. The <code>s16816</code> in the naive kernel (Figure 10) is the signature of a <code>bfloat16</code> Tensor Core matmul (the <code>16x8x16</code> Tensor Core instruction), so the naive version is on the fast path. <code>sgemm</code> (Figure 11) is the classic single precision (<code>FP32</code>) matmul that runs on the ordinary CUDA cores. In other words, the math backend never touches the Tensor Cores at all: to trade speed for numerical accuracy it upcasts tensors to <code>FP32</code> (doubling the data moved, even when the inputs are in <code>bf16</code>) and falls back to the slower CUDA cores.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="causal-masks-built" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#causal-masks-built" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Causal masks built
+	</span>
+</h4>
+<p>In the naive version we built the causal mask once and reused it. Here we passed <code>is_causal=True</code> and the math backend materialized one for us, on <em>every</em> single call. You can watch it happen on the CPU lane:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/mask-math.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/mask-math.png" alt="CPU lane of the SDPA math backend showing the ops that rebuild the causal mask: aten::ones, aten::tril, aten::scalar_tensor, aten::fill_ and aten::where"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 12: CPU lane showing the ops for masking</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Here is what we see in Figure 12</p>
+<pre><code class="language-bash">aten::ones -&gt; aten::tril            build a [<span class="hljs-built_in">seq</span>, <span class="hljs-built_in">seq</span>] lower-triangular matrix
+aten::scalar_tensor -&gt; aten::fill_  make the -inf fill value
+aten::<span class="hljs-built_in">where</span>                         turn it into an additive bias (0 or -inf)
+</code></pre>
+<p>On the GPU this shows up as a <code>triu_tril_kernel</code>, several <code>where</code> kernels, and an <code>add_</code>. The convenience flag that let us stop thinking about the mask did not remove the work, it just moved it one layer down, where the mask is rebuilt from scratch every forward.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="the-safe-softmax" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-safe-softmax" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The safe softmax
+	</span>
+</h4>
+<p>Our hand written version called plain <code>aten::softmax</code>. The math backend calls <code>aten::_safe_softmax</code>, and the difference is again visible as extra kernels (Figure 13):</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/safe-softmax-extra-kernels.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/safe-softmax-extra-kernels.png" alt="GPU lane of the SDPA math backend showing the extra kernels that aten::_safe_softmax launches compared to a plain softmax"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 13: Safe softmax highlighting the extra kernels compared to generic softmax</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>A row that is fully masked (every entry <code>-inf</code>) would make an ordinary softmax compute <code>exp(-inf)/sum(exp(-inf)) = 0/0 = NaN</code>. <code>_safe_softmax</code> guards against exactly that. Our naive kernel never bothered, and would have quietly produced <code>NaN</code>s in that corner case.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="so-what-is-the-math-backend-for" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#so-what-is-the-math-backend-for" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		So what is the math backend for?
+	</span>
+</h4>
+<p>Put together, the math backend is the reference implementation. It is a straightforward, dtype-safe, NaN-safe decomposition of attention into primitive ATen ops. It is essentially the naive attention we wrote by hand, but more careful. That carefulness is exactly what makes it extremely slow.</p>
+<p>Its job is not to be fast, but to <em>always</em> work. This makes it the perfect baseline. Every backend we profile next (flash, efficient, cudnn) is trying to collapse the <code>20</code> GPU kernels into essentially one fused kernel that stays in bf16 and never materializes the intermediate matrices at all.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="efficient-backend" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#efficient-backend" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Efficient backend
+	</span>
+</h3>
+<pre><code class="language-bash">uv run 04_c_sdpa_attention.py --backend efficient
+uvx trace-util -f traces -b &lt;hf_uname&gt;/traces
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/efficient-backend.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/efficient-backend.png" alt="Profiler trace of the SDPA efficient backend showing a single fused fmha_cutlassF attention kernel per forward"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 14: The profiler trace for sdpa with efficient backend</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Where the math backend launched 20 kernels across one profiler step, the efficient backend launches only one <code>fmha_cutlassF_bf16_aligned_64x64_rf_sm80</code> (as seen in Figure 14).</p>
+<p>Let's decode the name of the kernel:</p>
+<ul>
+<li><code>fmha</code> (fused multi-head attention): All the primitive ops in attention is "fused" in one op now.</li>
+<li><code>cutlassF</code>: built on CUTLASS (NVIDIA's open-source templates for tensor-core GEMMs), <code>F</code> for forward.</li>
+<li><code>bf16_aligned</code>: runs in bfloat16 (no FP32 upcast, unlike math).</li>
+<li><code>64x64</code>: the tile size.</li>
+<li><code>rf</code> (register file): the working set is kept in registers, the fastest memory on the chip.</li>
+<li><code>sm80</code>: compiled for Ampere (the A100's compute capability 8.0).</li>
+</ul>
+<p>This is the memory efficient attention kernel that grew out of Meta's <a href="https://github.com/facebookresearch/xformers" rel="nofollow">xformers</a> library and was upstreamed into PyTorch. When people say "the xformers backend," this <code>fmha_cutlassF</code> kernel is what they mean.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="flash-backend" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#flash-backend" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Flash backend
+	</span>
+</h3>
+<pre><code class="language-bash">uv run 04_c_sdpa_attention.py --backend flash
+uvx trace-util -f traces -b &lt;hf_uname&gt;/traces
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-backend.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-backend.png" alt="Profiler trace of the SDPA flash backend"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 15: The flash backend trace, one fused <code>pytorch_flash</code> kernel per forward</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The <code>void pytorch_flash</code> kernel (Figure 15) is <a href="https://arxiv.org/abs/2307.08691" rel="nofollow">FlashAttention-2</a> (Tri Dao's implementation), vendored into PyTorch.</p>
+<p>Before we read the trace any further, it is worth answering the question you should be asking by now: <em>why is there a whole backend named "flash", and why does it matter so much?</em></p>
+<h4 class="relative group flex items-baseline">
+	<a id="why-flash-attention-exists" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-flash-attention-exists" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why flash attention exists?
+	</span>
+</h4>
+<p>Let's go back to the math backend for a moment. Its real problem was not the count of 20 kernels, it was what those kernels handed to each other.</p>
+<p>Step 1 builds the full score matrix <code>attn = q . k.T</code>, which is <code>[seq, seq]</code> <strong>per head</strong>. For a sequence length of 4096 that is <code>4096 x 4096 ≈ 16 million</code> numbers for a single head. That matrix is written out to the HBM (the GPU's main memory), if there is even enough space to do so. Then, it is read back to be scaled, written again for the mask, read again for the softmax, and so on. Attention's cost is dominated by this <strong>back and forth traffic to HBM</strong>, not by the matmuls themselves.</p>
+<p>FlashAttention attacks exactly this. Instead of computing the whole <code>s</code> matrix and only then reducing it, it walks over <code>k</code> and <code>v</code> in <strong>tiles</strong>, keeps a running softmax as it goes (the "online softmax" trick), and accumulates the output one tile at a time. The full <code>[seq, seq]</code> score matrix is <strong>never written to HBM</strong>, it only ever lives on-chip. This is the single idea that lets the entire attention pipeline collapse into one fused kernel that stays in bf16 on the Tensor cores.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="why-flash-looks-wrong-under-the-profiler" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-flash-looks-wrong-under-the-profiler" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why flash looks "wrong" under the profiler
+	</span>
+</h4>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-occupancy.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-occupancy.png" alt="Perfetto footprint of the flash kernel reporting an estimated achieved occupancy of 13%"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 16: Estimated occupancy of flash kernel is seen to be 13%</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Here is where flash surprises people who read profiler footprints. It is the fastest backend, yet the profiler reports it with very <strong>low occupancy</strong> (shown in Figure 16). To see why that is fine, we need three quick definitions.</p>
+<p>A GPU kernel is essentially a series of instructions executed by many small execution units. These individual execution units (threads) take care of loading variables, adding them together, storing them back, etc. For each kernel, we launch many, many threads, and to keep track of them, we group them by blocks.</p>
+<p>Blocks are scheduled onto Streaming Multiprocessors (SMs), the main compute units of a GPU. A block lives entirely on one SM, and an SM can host multiple blocks at once <em>if it has enough resources</em>. Those resources include registers, shared memory, maximum resident threads, and maximum resident warps. So when we say a kernel has low <strong>occupancy</strong>, we mean each SM has fewer resident warps than it could theoretically support.</p>
+<blockquote class="tip">
+<p>If you want to know more about threads, blocks, grids, etc. here is a <a href="https://huggingface.co/blog/mi300kernels#a-quick-introduction-to-the-mi300x">great resource</a>.</p>
+</blockquote>
+<p>If you click the flash kernel in the trace, its footprint tells the story (Figure 17).</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-reg-count.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-reg-count.png" alt="Resource footprint of the pytorch_flash kernel in Perfetto, showing a high per-thread register count and large shared memory usage per block"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 17: The flash kernel footprint, heavy on registers and shared memory per block.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Flash uses a lot of per-thread registers and a large amount of shared memory per block. For example, if a block has 128 threads and each thread uses 255 registers, that block needs <code>128 × 255 = 32,640</code> registers. On an Ampere SM with 65,536 registers, only two such blocks fit at once. Each 128-thread block has <code>128 / 32 = 4</code> warps, so two blocks give only 8 resident warps. Against a maximum of 64 resident warps, that is roughly 13% occupancy. Flash has low occupancy not because it is poorly optimized, but because each block is deliberately very "heavy" in on-chip resource usage.</p>
+<p>And that is the whole point. High occupancy helps <em>hide latency</em> by keeping many warps ready to run, but it does not make the work itself efficient. Flash spends those registers and that shared memory on purpose, to keep attention tiles on-chip, reuse data aggressively, and avoid ever materializing the full attention matrix in global memory.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="cudnn-backend" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#cudnn-backend" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		cuDNN backend
+	</span>
+</h3>
+<pre><code class="language-bash">uv run 04_c_sdpa_attention.py --backend cudnn
+uvx trace-util -f traces -b &lt;hf_uname&gt;/traces
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-backend.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-backend.png" alt="Profiler trace of the SDPA cuDNN backend showing a single cudnn_generated attention kernel per forward"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 18: The cuDNN backend trace, a single generated attention kernel per forward.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>By now the pattern is familiar. Like flash and efficient, cuDNN gives us one fused, flash-style kernel per forward (Figure 18). So the natural question is: <strong>if flash already fuses attention, why does PyTorch ship yet another flash backend?</strong> The answer is <em>who writes the kernel and how it is built</em>, and that difference is what makes the trace look different.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="how-is-cudnn-kernel-different" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-is-cudnn-kernel-different" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How is cuDNN kernel different
+	</span>
+</h4>
+<p>Flash and efficient are <strong>fixed, pre-compiled kernels</strong> vendored into PyTorch. You get the same binary every time. cuDNN is NVIDIA's own deep learning library, and its attention kernel is <strong>generated and tuned for the specific problem</strong> at hand. It is closer in spirit to <code>torch.compile</code>'s codegen than to a fixed cuBLAS binary. You can read that straight off the (very long) kernel name:</p>
+<pre><code class="language-bash">cudnn_generated_fort_native_sdpa_sm80_flash_fprop_wmma_f16_knob_6_128x64x64_4x1x1_cga1x1x1_kernel0_0
+</code></pre>
+<ul>
+<li><code>cudnn_generated</code>: not a pre-shipped binary, it was generated by cuDNN.</li>
+<li><code>flash_fprop</code>: a flash attention style forward pass. So the algorithm is the same family as the flash backend.</li>
+<li><code>wmma_f16</code>: it uses the warp-level matrix multiply-accumulate (WMMA) API, the Tensor-core path on the 16-bit float pipeline.</li>
+<li><code>knob_6</code>: cuDNN picks from a set of pre-tuned configurations ("knobs"). Different shapes select different knobs, much like cuBLAS picking a tile variant.</li>
+<li><code>128x64x64</code>: the tile dimensions it chose.</li>
+</ul>
+<p>That one fact, <em>generated per problem</em>, explains everything else that looks unusual in the trace.</p>
+<ol>
+<li><p>No transposes: The CPU lane goes from <code>_cudnn_attention_forward</code> straight to a couple of <code>aten::empty</code> allocations and then the kernel, with zero <code>aten::transpose</code> (Figures 19, 20 and 21). Flash and efficient each insert four (metadata) transposes to reshape the tensors while cuDNN consumes the native <code>[B, H, S, D]</code> layout directly because its generator emits a kernel for that layout.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Variant</th>
+<th align="center">Trace</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 19: Flash</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-transpose.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/flash-transpose.png" alt="CPU lane of the flash backend showing four aten::transpose ops before the fused attention kernel"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 20: Efficient</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/efficient-trasnpose.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/efficient-trasnpose.png" alt="CPU lane of the efficient backend showing four aten::transpose ops before the fused attention kernel"></a></td>
+</tr>
+<tr>
+<td align="center">Figure 21: cuDNN</td>
+<td align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-backend.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-backend.png" alt="CPU lane of the cuDNN backend going straight to aten::empty allocations and the kernel, with no transpose ops"></a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+</li>
+<li><p>It launches through <code>cuLaunchKernelEx</code>, not <code>cudaLaunchKernel</code>: Every other kernel in this whole series went through the runtime API <code>cudaLaunchKernel</code>. cuDNN uses the driver-level <em>extended</em> launch, which carries launch attributes (Figure 22).</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-launch.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-launch.png" alt="CPU lane of the cuDNN backend showing the cuLaunchKernelEx driver-level launch instead of cudaLaunchKernel"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 22: CPU lane of the cuDNN backend showing the cuLaunchKernelEx driver-level launch instead of cudaLaunchKernel</td>
+</tr>
+</tbody>
+	</table>
+</div>
+</li>
+<li><p>The profiler reports 0% achieved occupancy: Do not take that at face value, it is a measurement gap, not a stalled GPU. CUPTI (the profiling backend) cannot attribute occupancy to a driver-API (<code>cuLaunchKernelEx</code>) launch the way it does for <code>cudaLaunchKernel</code>, so the field reads 0. The footprint fills in the truth (Figure 23): <code>240 registers × 256 threads = 61,440</code> registers per block against the SM's 65,536, so only <strong>one block</strong> fits per SM (8 warps ≈ 12.5%), right in line with flash.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-footprint.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-attention-profile/cudnn-footprint.png" alt="Perfetto footprint of the cuDNN kernel reporting 0% achieved occupancy, with 240 registers per thread and 256 threads per block"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 23: cuDNN kernel reporting 0% achieved occupancy, with 240 registers per thread and 256 threads per block</td>
+</tr>
+</tbody>
+	</table>
+</div>
+</li>
+</ol>
+<h4 class="relative group flex items-baseline">
+	<a id="the-cost-moved-to-the-cpu" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-cost-moved-to-the-cpu" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The cost moved to the CPU
+	</span>
+</h4>
+<p>The "no transposes" story tempts us to expect cuDNN to be the <em>leanest</em> backend on the CPU. It is the opposite.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">backend</th>
+<th align="center">CUDA avg time</th>
+<th align="center">CPU avg time</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">efficient</td>
+<td align="center">277.9 µs</td>
+<td align="center">117 µs</td>
+</tr>
+<tr>
+<td align="center">flash</td>
+<td align="center">146.8 µs</td>
+<td align="center">138 µs</td>
+</tr>
+<tr>
+<td align="center">cudnn</td>
+<td align="center">186.3 µs</td>
+<td align="center"><strong>214 µs</strong></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Even with zero transpose ops, cuDNN spends about <strong>214 µs per forward on the CPU</strong>, more than flash (138) or efficient (117). Almost all of it sits in <code>aten::scaled_dot_product_attention</code> self time (26% of the whole run) and <code>_cudnn_attention_forward</code>. That is cuDNN's runtime engine selecting and preparing the plan (the "knob" search) on every call.</p>
+<p>Fewer visible ATen ops did not mean less CPU work, it <strong>moved the work into the library</strong>, where the profiler can only show it as one fat, opaque bar. When a trace suddenly gets <em>cleaner</em>, the work has not always disappeared, sometimes it has just moved somewhere the profiler cannot break down.</p>
+<p>On the GPU, cuDNN (186.3 µs) lands between efficient and flash. On this very flash-friendly shape, hand-written FlashAttention-2 edges it out. cuDNN often wins on <em>other</em> shapes (larger head dimensions, different sequence lengths) precisely because its generator retunes per problem, but that retuning is also what you just paid for on the CPU.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="everything-we-covered-at-a-glance" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#everything-we-covered-at-a-glance" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Everything we covered, at a glance
+	</span>
+</h2>
+<p>Before we wrap up, here is a single table to review every attention variant we profiled and the one lesson each trace taught us.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Variant</th>
+<th align="left">What we changed</th>
+<th align="center">Kernels / forward</th>
+<th align="left">What the trace revealed</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Naive attention</td>
+<td align="left">Attention built by hand from primitives (matmul, mul, mask, softmax, matmul)</td>
+<td align="center">6</td>
+<td align="left">A hidden <code>Memcpy</code> from the out-of-place <code>masked_fill</code>.</td>
+</tr>
+<tr>
+<td align="left">Naive in-place</td>
+<td align="left"><code>masked_fill</code> → <code>masked_fill_</code></td>
+<td align="center">5</td>
+<td align="left">One line drops the <code>Memcpy</code> kernel entirely.</td>
+</tr>
+<tr>
+<td align="left">SDPA math</td>
+<td align="left"><code>F.scaled_dot_product_attention</code> pinned to the math backend</td>
+<td align="center">20</td>
+<td align="left">The reference: FP32 on CUDA cores, mask rebuilt every call, <code>_safe_softmax</code>. Correct but ~3.7x slower.</td>
+</tr>
+<tr>
+<td align="left">SDPA efficient</td>
+<td align="left">Efficient (xformers) backend</td>
+<td align="center">1</td>
+<td align="left">One fused <code>fmha_cutlassF</code> kernel, stays in bf16 on Tensor cores.</td>
+</tr>
+<tr>
+<td align="left">SDPA flash</td>
+<td align="left">Flash backend</td>
+<td align="center">1</td>
+<td align="left">One fused <code>pytorch_flash</code> kernel (FlashAttention-2). Fastest, despite "wrong-looking" 13% occupancy.</td>
+</tr>
+<tr>
+<td align="left">SDPA cuDNN</td>
+<td align="left">cuDNN backend</td>
+<td align="center">1</td>
+<td align="left">A per-problem generated kernel: no transposes, <code>cuLaunchKernelEx</code>, but the cost moved to a fat CPU bar.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="concluding-the-series" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#concluding-the-series" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Concluding the series
+	</span>
+</h2>
+<p>If you take away only one thing from the whole series, let it be the habit we repeated before every single trace which is to <strong>guess first, then look.</strong></p>
+<p>State out loud what you expect the trace to contain, open it, and treat any mismatch as the most interesting thing on the screen. Every real insight in these three posts, the hidden <code>Memcpy</code>, the <code>addmm</code> epilogue, the 20 kernel math backend, flash's "wrong-looking" occupancy, cuDNN's fat CPU bar, came from a guess that did not match the trace.</p>
+<p>Profiling is not a separate, intimidating skill reserved for GPU experts. It is just the discipline of looking closely and asking "wait, why is <em>that</em> happening?" until the answer clicks. You now have the vocabulary and the reflexes to do that on your own models. Open a trace, form a guess, and go find the mismatch.</p>
+<p>Thanks for reading the <strong>Profiling in PyTorch</strong> series. Now go profile something. 🤗</p>
+<p>Thanks to <a href="https://huggingface.co/NoeFlandre">Noe Flandre</a> for their reviews on the early draft of the post!</p>
+<blockquote class="note">
+<p>The blog post was polished using an LLM. This in no way means that we have let an agent run in the background and let it generate the blog. Some of us in the team are non-english speakers and think LLMs (which are mostly trained in the English Language) can rectify silly grammar mistakes or rephrase sentences that sound less intimidating and cleaner. Hope this helps with the idea of "why should I read, if this was LLM generated". 🤗</p>
+</blockquote>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/torch-mlp-fusion"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/torch-mlp-fusion/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">torch</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">profile</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">CUDA</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Profiling in PyTorch (Part 2): From nn.Linear to a Fused MLP</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 65</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 11, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/torch-profiler"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/torch-profiler/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">torch</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">profile</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">CUDA</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Profiling in PyTorch (Part 1): A Beginner's Guide to torch.profiler</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 182</div><!--]--> <!--[0--><span class="whitespace-nowrap">May 29, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a510933258b3e321edbca8a" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/603bdba23249b99991dbcbc4/cxCnN1H-RXOhojHY3Wcxo.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/tolgacangoz">tolgacangoz</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a510933258b3e321edbca8a" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-10T15:01:07" title="Fri, 10 Jul 2026 15:01:07 GMT">Jul 10</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by tolgacangoz" href="#6a510933258b3e321edbca8a"><!--[0-->edited Jul 10<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Thanks for the series, really delightful!</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">❤️</div> <div class="invisible">2</div> <!----><div class="absolute right-2">2</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a537035906afa5ece0e931d" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[-1--><div class="mr-2">deleted</div><!--]--> <a href="#6a537035906afa5ece0e931d" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-12T10:45:09" title="Sun, 12 Jul 2026 10:45:09 GMT">Jul 12</time></a> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <span class="truncate text-xs italic text-gray-400 sm:text-sm">This comment has been hidden</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[-1--><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a5739b41329db29d6e05f70" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[-1--><div class="mr-2">deleted</div><!--]--> <a href="#6a5739b41329db29d6e05f70" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-15T07:41:40" title="Wed, 15 Jul 2026 07:41:40 GMT">Jul 15</time></a> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <span class="truncate text-xs italic text-gray-400 sm:text-sm">This comment has been hidden</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[-1--><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a59d57bc86e087dc92ed213" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/27d784ca352ecb86db8a94979fcf2c9f.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/huangsean">huangsean</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a59d57bc86e087dc92ed213" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-17T07:10:51" title="Fri, 17 Jul 2026 07:10:51 GMT">Jul 17</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>forward for Chinese version</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a5bf6d80061da1b33740fa0" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/92e56ee35a2dc71503bfd59b4b5c43fb.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/Sartc">Sartc</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a5bf6d80061da1b33740fa0" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-18T21:57:44" title="Sat, 18 Jul 2026 21:57:44 GMT">Jul 18</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited 3 times by Sartc" href="#6a5bf6d80061da1b33740fa0"><!--[0-->edited Jul 18<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>hello Aritra (<span class="SVELTE_PARTIAL_HYDRATER contents" data-target="UserMention" data-props="{&quot;user&quot;:&quot;ariG23498&quot;}"><span class="inline-block"><span class="contents"><a href="https://huggingface.co/ariG23498">@<span class="underline">ariG23498</span></a></span> </span></span> ), thanks a lot for this series!<br>one doubt which i had: how were you able to know for sure that <code>Memcpy</code> (memory copy) operation in GPU was indeed because of out of place masked_fill?</p>
+<p>one way i'm able to think it is because that occured exactly before the masked_fill kernel op? but how did you actually validated that is something i'm not able to understand. </p>
+<p>edit:<br>i figured it out while i was tinkering - but keeping this comment here incase someone else has the same doubt. the arrow mapping in perfetto maps exactly that which op in cpu invoked the kernel at gpu. </p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/637875538bfb575b63398fde/MbbLjY0g2M00lELq-9OMa.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/637875538bfb575b63398fde/MbbLjY0g2M00lELq-9OMa.png" alt="image"></a></p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9940a3c5cbeee68d5a9a92" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/e68d0d213eaedead1fa25fedc4ba34ac.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/spectre2004">spectre2004</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a9940a3c5cbeee68d5a9a92" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-03T09:40:51" title="Thu, 03 Sep 2026 09:40:51 GMT">Sep 3</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Finally completed it. Thank you for the series</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs mr-1.5"><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">1 reply</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🚀</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🔥</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9fae432dd7f4a3f35c1fbd" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/ariG23498">ariG23498</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a9fae432dd7f4a3f35c1fbd" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-08T06:42:11" title="Tue, 08 Sep 2026 06:42:11 GMT">Sep 8</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>How did you like the series? Anything that we could have done better?</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[-1--><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9adfc1bf01b7e693befa36" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[-1--><div class="mr-2">deleted</div><!--]--> <a href="#6a9adfc1bf01b7e693befa36" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-04T15:12:01" title="Fri, 04 Sep 2026 15:12:01 GMT">Sep 4</time></a> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <span class="truncate text-xs italic text-gray-400 sm:text-sm">This comment has been hidden</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[-1--><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Ftorch-attention-profile">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Ftorch-attention-profile">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftorch-attention-profile" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">54</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Ajax0564" style="content-visibility:auto;"><!--[0--><a href="/Ajax0564" title="Ajax0564"><img class="overflow-hidden rounded-full" alt="" src="/avatars/25ab2549a0a846f06cf0936924769c15.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Zmu" style="content-visibility:auto;"><!--[0--><a href="/Zmu" title="Zmu"><img class="overflow-hidden rounded-full" alt="" src="/avatars/3bb8728057fa2ba0e24f5ceb1600068d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="IMvision12" style="content-visibility:auto;"><!--[0--><a href="/IMvision12" title="IMvision12"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1670152199461-629631215de6e0eb3292ae91.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Aanuoluwapo65" style="content-visibility:auto;"><!--[0--><a href="/Aanuoluwapo65" title="Aanuoluwapo65"><img class="overflow-hidden rounded-full" alt="" src="/avatars/129d1e86bbaf764b507501f4feb177db.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stats-luke" style="content-visibility:auto;"><!--[0--><a href="/stats-luke" title="stats-luke"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4ec315b7ca47b5a588c6eb89f1994414.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cestdove" style="content-visibility:auto;"><!--[0--><a href="/cestdove" title="cestdove"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/Q71vDSrUuzLoia2HRWeDf.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="adamm-hf" style="content-visibility:auto;"><!--[0--><a href="/adamm-hf" title="adamm-hf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6340651b388c3fa40f9a5bc0/vM3rB17pUNT11MUhYqfFY.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="shadowlilac" style="content-visibility:auto;"><!--[0--><a href="/shadowlilac" title="shadowlilac"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/643606c5fed1a5fd435eedaf/iQ_mazJcspCyB1-wIA7ij.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="EricLabile" style="content-visibility:auto;"><!--[0--><a href="/EricLabile" title="EricLabile"><img class="overflow-hidden rounded-full" alt="" src="/avatars/debb175d8166351eb6419e79f9dbf0a1.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="huangsean" style="content-visibility:auto;"><!--[0--><a href="/huangsean" title="huangsean"><img class="overflow-hidden rounded-full" alt="" src="/avatars/27d784ca352ecb86db8a94979fcf2c9f.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="adlito" style="content-visibility:auto;"><!--[0--><a href="/adlito" title="adlito"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/RGNLn-3eobw-I0mbordiN.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Sartc" style="content-visibility:auto;"><!--[0--><a href="/Sartc" title="Sartc"><img class="overflow-hidden rounded-full" alt="" src="/avatars/92e56ee35a2dc71503bfd59b4b5c43fb.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+42</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

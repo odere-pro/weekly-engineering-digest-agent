@@ -42,7 +42,7 @@ export const SOURCE_ALLOWED_HOSTS: readonly string[] = [
 ];
 
 /** Every recording is read with a window that holds all of its entries and the largest cap. */
-const EVERYTHING: FetchWindow = {
+export const EVERYTHING: FetchWindow = {
   since: new Date(0),
   until: new Date(8.64e15),
   maxItems: 100,
@@ -53,6 +53,8 @@ export interface SourceRecording {
   source: Source;
   response: SourceResponse;
   body: string;
+  /** Recorded article pages by URL (`pages/<item id>.html.txt`), served to the enrichment step. */
+  pages: Readonly<Record<string, string>>;
   expected: SourceExpected;
 }
 
@@ -85,14 +87,31 @@ export interface SourceResult {
   error?: string;
 }
 
-function serveRecording({ response, body }: SourceRecording): typeof fetch {
-  return () =>
-    Promise.resolve(
-      new Response(body, {
-        status: response.status ?? 200,
-        headers: response.contentType ? { 'content-type': response.contentType } : {},
-      }),
+const PAGE_HEADERS = { 'content-type': 'text/html; charset=utf-8' };
+
+function requestedUrl(input: Parameters<typeof fetch>[0]): string {
+  return typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+}
+
+/** The feed for the URL the recorder requested, a recorded page for its URL, 404 for the rest. */
+export function serveRecording({ response, body, pages }: SourceRecording): typeof fetch {
+  return (input) => {
+    const url = requestedUrl(input);
+    if (url === response.url) {
+      return Promise.resolve(
+        new Response(body, {
+          status: response.status ?? 200,
+          headers: response.contentType ? { 'content-type': response.contentType } : {},
+        }),
+      );
+    }
+    const page = Object.hasOwn(pages, url) ? pages[url] : undefined;
+    return Promise.resolve(
+      page === undefined
+        ? new Response('not recorded', { status: 404 })
+        : new Response(page, { headers: PAGE_HEADERS }),
     );
+  };
 }
 
 /** The items a source's fetcher yields from its recording, for a window that covers all of it. */
@@ -230,6 +249,32 @@ async function folderNames(dir: string): Promise<string[]> {
   }
 }
 
+/** Not `.html`: prettier would try to format a recorded page, and fail on some. */
+const PAGE_FILE = /^([0-9a-f]+)\.html\.txt$/;
+
+/** `pages/<item id>.html.txt` of a source, keyed by the URL of the expected item with that id. */
+async function loadPages(dir: string, expected: SourceExpected): Promise<Record<string, string>> {
+  const pagesDir = join(dir, 'pages');
+  let names: string[];
+  try {
+    names = (await readdir(pagesDir)).sort();
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return {};
+    throw new DigestError(`Cannot read ${pagesDir}: ${errorMessage(error)}`, { cause: error });
+  }
+  const urlById = new Map(expected.items.map((item) => [item.id, item.url]));
+  const pages: Record<string, string> = {};
+  for (const name of names) {
+    const id = PAGE_FILE.exec(name)?.[1];
+    const url = id === undefined ? undefined : urlById.get(id);
+    if (url === undefined) {
+      throw new DigestError(`${join(pagesDir, name)} matches no expected item of the source`);
+    }
+    pages[url] = await readFile(join(pagesDir, name), 'utf8');
+  }
+  return pages;
+}
+
 async function loadOne(
   dir: string,
   source: Source,
@@ -247,7 +292,7 @@ async function loadOne(
     });
   });
   const expected = await readParsed(join(dir, 'expected.json'), SourceExpectedSchema);
-  return { source, response, body, expected };
+  return { source, response, body, pages: await loadPages(dir, expected), expected };
 }
 
 /**

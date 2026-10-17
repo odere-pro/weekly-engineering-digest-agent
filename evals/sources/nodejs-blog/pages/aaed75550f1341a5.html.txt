@@ -1,0 +1,433 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Node.js v14 to v16</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/migrations/v14-to-v16" />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/migrations/v14-to-v16"
+    />
+    <link rel="alternate" hreflang="en" href="https://nodejs.org/en/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="es" href="https://nodejs.org/es/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="fr" href="https://nodejs.org/fr/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="id" href="https://nodejs.org/id/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="ja" href="https://nodejs.org/ja/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="ko" href="https://nodejs.org/ko/blog/migrations/v14-to-v16" />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/migrations/v14-to-v16"
+    />
+    <link rel="alternate" hreflang="pt" href="https://nodejs.org/pt/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="ro" href="https://nodejs.org/ro/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="ta" href="https://nodejs.org/ta/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="tr" href="https://nodejs.org/tr/blog/migrations/v14-to-v16" />
+    <link rel="alternate" hreflang="uk" href="https://nodejs.org/uk/blog/migrations/v14-to-v16" />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/migrations/v14-to-v16"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/migrations/v14-to-v16"
+    />
+    <link rel="alternate" type="application/rss+xml" href="https://nodejs.org/en/feed/blog.xml" />
+    <meta property="og:title" content="Node.js — Node.js v14 to v16" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/migrations/Node.js%20%E2%80%94%20Node.js%20v14%20to%20v16"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Node.js v14 to v16" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Node.js v14 to v16</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/AugustinMauroy"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >AM</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>AugustinMauroy</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__announcements">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Node.js v14 to v16
+              </div>
+            </div>
+            <h1 id="nodejs-v14-to-v16"><a href="#nodejs-v14-to-v16">Node.js v14 to v16</a></h1>
+            <div class="index-module__VYslka__alertBox index-module__VYslka__info">
+              <span class="index-module__VYslka__title">!</span
+              ><span class="index-module__VYslka__content"
+                ><p>
+                  This article covers a part of the migration from Node.js v14 to v16. The userland
+                  migrations team is working on more codemods to help you with the migration.
+                </p></span
+              >
+            </div>
+            <p>
+              This page provides a list of codemods to help you migrate your code from Node.js v14
+              to v16.
+            </p>
+            <h2 id="create-require-from-path">
+              <a href="#create-require-from-path"><code>create-require-from-path</code></a>
+            </h2>
+            <p>
+              Node.js v16 replaced the
+              <a href="https://nodejs.org/api/module.html#module_module_createrequirefrompath"
+                ><code>createRequireFromPath</code></a
+              >
+              function, deprecated in
+              <a href="https://nodejs.org/api/deprecations.html#DEP0148">DEP0148</a>, with the
+              modern
+              <a href="https://nodejs.org/api/module.html#module_module_createrequire"
+                ><code>createRequire</code></a
+              >
+              function. This codemod replaces calls of the deprecated function with the modern
+              alternative mentioned.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/create-require-from-path"
+                >create-require-from-path directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/create-require-from-path"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/create-require-from-path</span></span></code></pre>
+            </div>
+            <h3 id="example"><a href="#example">Example:</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const { createRequireFromPath } = require(&#x27;node:module&#x27;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const { createRequire } = require(&#x27;node:module&#x27;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const requireFromPath = createRequireFromPath(&#x27;/path/to/module&#x27;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const require = createRequire(&#x27;/path/to/module&#x27;);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const myModule = requireFromPath(&#x27;./myModule.cjs&#x27;);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const myModule = require(&#x27;./myModule.cjs&#x27;);</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h2 id="process-main-module">
+              <a href="#process-main-module"><code>process-main-module</code></a>
+            </h2>
+            <p>
+              The <code>process.mainModule</code> property was deprecated in favor of
+              <code>require.main</code>. This codemod will help you replace the old
+              <code>process.mainModule</code> usage with the new <code>require.main</code> usage.
+            </p>
+            <p>
+              So the codemod handle
+              <a href="https://nodejs.org/api/deprecations.html#DEP0138">DEP0138</a>.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/process-main-module"
+                >process-main-module directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/process-main-module"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/process-main-module</span></span></code></pre>
+            </div>
+            <h3 id="example-1"><a href="#example-1">Example:</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> if (process.mainModule === &quot;mod.js&quot;) {</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> if (require.main === &quot;mod.js&quot;) {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    // cli thing</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  } else {</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">    // module thing</span></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  }</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h2 id="rmdir">
+              <a href="#rmdir"><code>rmdir</code></a>
+            </h2>
+            <p>
+              The <code>fs.rmdir</code> function was deprecated in favor of <code>fs.rm</code> with
+              the <code>{ recursive: true }</code> option. This codemod will help you replace the
+              old <code>fs.rmdir</code> function with the new <code>fs.rm</code> function.
+            </p>
+            <p>
+              so this codemod handle
+              <a href="https://nodejs.org/api/deprecations.html#DEP0147">DEP0147</a>.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a href="https://github.com/nodejs/userland-migrations/tree/main/recipes/rmdir"
+                >rmdir directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/rmdir">Codemod Registry</a>.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/rmdir</span></span></code></pre>
+            </div>
+            <h3 id="example-2"><a href="#example-2">Example:</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  // Using fs.rmdir with the recursive option</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> fs.rmdir(path, { recursive: true }, callback);</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> // Using fs.rm with recursive and force options</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> fs.rm(path, { recursive: true, force: true }, callback);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  // Using fs.rmdirSync with the recursive option</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> fs.rmdirSync(path, { recursive: true });</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> // Using fs.rmSync with recursive and force options</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> fs.rmSync(path, { recursive: true, force: true });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#1F2328;--shiki-dark:#D8DEE9FF">  // Using fs.promises.rmdir with the recursive option</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> fs.promises.rmdir(path, { recursive: true });</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> // Using fs.promises.rm with recursive and force options</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> fs.promises.rm(path, { recursive: true, force: true });</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <h2 id="tmpdir-to-tmpdir">
+              <a href="#tmpdir-to-tmpdir"><code>tmpDir-to-tmpdir</code></a>
+            </h2>
+            <p>
+              The <code>tmpDir</code> function was renamed to <code>tmpdir</code> in Node.js v16.
+              This codemod will help you replace all instances of <code>tmpDir</code> with
+              <code>tmpdir</code>.
+            </p>
+            <p>
+              So the codemod handles
+              <a href="https://nodejs.org/docs/latest/api/deprecations.html#dep0022-ostmpdir"
+                >DEP0022</a
+              >.
+            </p>
+            <p>
+              The source code for this codemod can be found in the
+              <a
+                href="https://github.com/nodejs/userland-migrations/tree/main/recipes/tmpdir-to-tmpdir"
+                >tmpdir-to-tmpdir directory</a
+              >.
+            </p>
+            <p>
+              You can find this codemod in the
+              <a href="https://app.codemod.com/registry/@nodejs/tmpDir-to-tmpdir"
+                >Codemod Registry</a
+              >.
+            </p>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-bash no-line-numbers no-footer"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#953800;--shiki-dark:#88C0D0">npx</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> codemod</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> run</span><span style="color:#0A3069;--shiki-dark:#A3BE8C"> @nodejs/tmpDir-to-tmpdir</span></span></code></pre>
+            </div>
+            <h3 id="example-3"><a href="#example-3">Example:</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content shiki shiki-themes github-light-default nord language-diff no-line-numbers"
+                tabindex="0"
+              ><code><span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> import { tmpDir } from &#x27;node:os&#x27;;</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> import { tmpdir } from &#x27;node:os&#x27;;</span></span>
+<span class="line"><span style="color:#82071E;--shiki-dark:#ECEFF4">-</span><span style="color:#82071E;--shiki-dark:#BF616A"> const foo = tmpDir()</span></span>
+<span class="line"><span style="color:#116329;--shiki-dark:#ECEFF4">+</span><span style="color:#116329;--shiki-dark:#A3BE8C"> const foo = tmpdir()</span></span></code></pre>
+              <div class="index-module__HWYciG__footer">
+                <span class="index-module__HWYciG__language">Diff</span
+                ><button
+                  class="index-module__EPgSia__button index-module__EPgSia__neutral index-module__HWYciG__action"
+                  type="button"
+                >
+                  Copy to clipboard
+                </button>
+              </div>
+            </div>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a class="index-module__A9kfJq__crossLink" href="/en/blog/migrations/v16-to-v18"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content">Node.js v16 to v18</span></a
+              ><a class="index-module__A9kfJq__crossLink" href="/en/blog/migrations/v12-to-v14"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Node.js v12 to v14</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Oct 28, 2025</dd>
+            <dt>Reading Time</dt>
+            <dd>2 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/migrations/v14-to-v16.mdx"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#create-require-from-path">create-require-from-path</a>
+                </li>
+                <li class="pl-2"><a class="" href="#example">Example:</a></li>
+                <li class=""><a class="" href="#process-main-module">process-main-module</a></li>
+                <li class="pl-2"><a class="" href="#example-1">Example:</a></li>
+                <li class=""><a class="" href="#rmdir">rmdir</a></li>
+                <li class="pl-2"><a class="" href="#example-2">Example:</a></li>
+                <li class=""><a class="" href="#tmpdir-to-tmpdir">tmpDir-to-tmpdir</a></li>
+                <li class="pl-2"><a class="" href="#example-3">Example:</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

@@ -1,0 +1,3367 @@
+<!doctype html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <meta
+      name="description"
+      content="We’re on a journey to advance and democratize artificial intelligence through open source and open science."
+    />
+
+    <meta property="fb:app_id" content="1321688464574422" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:site" content="@huggingface" />
+
+    <meta
+      name="twitter:image"
+      content="https://huggingface.co/blog/assets/peft-beyond-lora/thumbnail.png"
+    />
+
+    <meta
+      property="og:title"
+      content="Beyond LoRA: Can you beat the most popular fine-tuning technique?"
+    />
+
+    <meta
+      property="og:description"
+      content="We’re on a journey to advance and democratize artificial intelligence through open source and open science."
+    />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:url" content="https://huggingface.co/blog/peft-beyond-lora" />
+
+    <meta
+      property="og:image"
+      content="https://huggingface.co/blog/assets/peft-beyond-lora/thumbnail.png"
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+    <link
+      rel="preload"
+      href="/front/build/kube-1f021fd/katex.css"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+
+    <noscript>
+      <link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+    </noscript>
+
+    <link rel="canonical" href="https://huggingface.co/blog/peft-beyond-lora" />
+    <!--g2q6vf-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/blog/feed.xml"
+      title="Hugging Face Blog"
+    />
+    <!---->
+    <title>Beyond LoRA: Can you beat the most popular fine-tuning technique?</title>
+
+    <link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+  </head>
+  <body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+    <!--[-->
+    <div class="flex min-h-dvh flex-col">
+      <div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}">
+        <!---->
+      </div>
+      <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}">
+        <!---->
+      </div>
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="SystemThemeMonitor"
+        data-props='{"isLoggedIn":false}'
+      >
+        <!---->
+      </div>
+      <!--[0-->
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="MainHeader"
+        data-props='{"classNames":"","isWide":false,"isZh":false,"canCreateKernels":false,"isPro":false}'
+      >
+        <!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]-->
+      <!--[-1--><!--]--><!---->
+      <!--[-1--><!--]--><!---->
+      <!--[0-->
+      <div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}">
+        <!--[-1--><!--]--><!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]--><!---->
+      <main class="flex flex-1 flex-col">
+        <div class="container relative flex flex-row justify-center gap-12">
+          <div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl">
+            <div class="max-lg:overflow-hidden">
+              <div
+                class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"
+              >
+                <div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}">
+                  <div></div>
+                  <!---->
+                </div>
+                <div class="mb-4">
+                  <a
+                    href="/blog"
+                    class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"
+                  >
+                    <!---->
+                    Back to Articles</a
+                  >
+                </div>
+                <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden">
+                  <!---->
+                  <a
+                    id="beyond-lora-can-you-beat-the-most-popular-fine-tuning-technique"
+                    class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                    href="#beyond-lora-can-you-beat-the-most-popular-fine-tuning-technique"
+                    rel="nofollow"
+                  >
+                    <span class="header-link"> </span>
+                  </a>
+                  <span> Beyond LoRA: Can you beat the most popular fine-tuning technique? </span>
+                  <!---->
+                </h1>
+                <div>
+                  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+                    <!--[-1--><!--]-->
+                    <div class="flex items-center gap-x-4">
+                      <!--[0--><span class="whitespace-nowrap text-sm sm:text-base"
+                        >Published June 18, 2026</span
+                      ><!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                  </div>
+                  <!--[0--><a
+                    target="_blank"
+                    class="btn mb-5 font-sans text-sm no-underline"
+                    href="https://github.com/huggingface/blog/blob/main/peft-beyond-lora.md"
+                    >Update on GitHub</a
+                  ><!--]-->
+                </div>
+                <!---->
+                <div class="not-prose mb-6 font-sans xl:hidden">
+                  <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1 z-1 lg:sticky lg:top-8">
+                      <!--[0--><a href="/login?next=%2Fblog%2Fpeft-beyond-lora" class="self-start"
+                        ><!--[0--><!---->
+                        <div
+                          role="checkbox"
+                          class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                        >
+                          <input disabled="" type="checkbox" class="peer hidden" />
+                          <!---->
+                          Upvote
+                          <div class="font-semibold text-orange-500">105</div>
+                          <!---->
+                        </div>
+                        <!----><!--]-->
+                        <!--[-1--><!--]--><!----></a
+                      ><!--]-->
+                      <!--[0--><!--[0-->
+                      <ul class="flex items-center text-gray-600 flex-row text-base">
+                        <!--[-->
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="manuojvv"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/manuojvv" title="manuojvv"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/da1ef25414b1f1656d76950f591e4224.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="wuyanzu2468"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/wuyanzu2468" title="wuyanzu2468"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/93a1df7051cae1f3bec4f7efa9b345b4.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="Fathur47"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/Fathur47" title="Fathur47"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/zSZ6CqxXivRSBOLeAJtoL.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="DVLX"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/DVLX" title="DVLX"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/403e14877fe2c8352d227c3d1f695f76.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="Tajalla"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/Tajalla" title="Tajalla"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/e10f17ee9352ec937353765389f7996b.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="Metso29"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/Metso29" title="Metso29"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/6HvQJ4aZiWWS8_d_CDbA8.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <!--]-->
+                        <!--[0-->
+                        <li
+                          class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                        >
+                          <!--[--><!--[0--><button
+                            class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                          >
+                            +99</button
+                          ><!--]--><!--]-->
+                        </li>
+                        <!--]-->
+                      </ul>
+                      <!--]--><!--]-->
+                    </div>
+                    <!--[-1--><!--]-->
+                    <dialog
+                      class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose"
+                    >
+                      <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                        <!--[-1--><!--]-->
+                      </div>
+                    </dialog>
+                    <!----><!---->
+                  </div>
+                </div>
+                <div class="not-prose">
+                  <div
+                    class="SVELTE_HYDRATER contents"
+                    data-target="BlogAuthorsByline"
+                    data-props=""
+                  >
+                    <div class="not-prose">
+                      <div
+                        class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"
+                      >
+                        <!--[-->
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/BenjaminB"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Benjamin Bossan's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/1656685953025-62bf03d1e80cec527083cd66.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/BenjaminB"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Benjamin Bossan"
+                                >Benjamin Bossan</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >BenjaminB</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/sayakpaul"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Sayak Paul's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/sayakpaul"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Sayak Paul"
+                                >Sayak Paul</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >sayakpaul</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/hubnemo"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Marian Tietz's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/upIyVlEpqWqoeFTvNzTf5.png" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/hubnemo"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Marian Tietz"
+                                >Marian Tietz</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >hubnemo</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/kashif"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Kashif Rasul's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/kashif"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Kashif Rasul"
+                                >Kashif Rasul</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >kashif</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div>
+                          </div>
+                        </div>
+                        <!--]-->
+                      </div>
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                  </div>
+                </div>
+                <!---->
+                <!--[-1--><!--]-->
+                <div
+                  class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"
+                >
+                  <!---->
+                  <p align="center">
+                    <img
+                      src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/lora-celebration.png"
+                      alt="Is LoRA the best PEFT technique?"
+                      width="600"
+                    />
+                  </p>
+
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="when-you-plan-to-fine-tune-a-model-in-a-parameter-efficient-way-think-beyond-lora"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#when-you-plan-to-fine-tune-a-model-in-a-parameter-efficient-way-think-beyond-lora"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      When you plan to fine-tune a model in a parameter-efficient way, think beyond
+                      LoRA
+                    </span>
+                  </h1>
+                  <p>
+                    <!--[--><!--[-1--><!--]--><!--]-->If you want to fine-tune an open model on your
+                    own data, you are probably interested in so-called parameter-efficient
+                    fine-tuning, in short <em>PEFT</em>. This term describes techniques that
+                    significantly reduce the memory requirement to fine-tune a model. Although there
+                    are dozens of these techniques, almost everyone chooses one called “LoRA”. In
+                    this blog post, we explore whether LoRA is really the best choice, what tools
+                    are available to make an informed decision, and how you can benefit from
+                    extending your horizon beyond LoRA.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="what-is-peft-and-when-do-you-need-it"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#what-is-peft-and-when-do-you-need-it"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> What is PEFT and when do you need it </span>
+                  </h1>
+                  <p>
+                    There are countless open models available, but they often aren't quite good
+                    enough for your use case. Prompting may help, but it usually isn't enough.
+                    Rather than training a new model from scratch, you should consider fine-tuning
+                    an existing one.
+                  </p>
+                  <p>
+                    Fine-tuning, however, is memory-hungry: you generally need enough memory to fit
+                    the whole model several times over. Quantization reduces a model's memory
+                    footprint, but quantized models can't be fine-tuned directly. So a set of
+                    techniques emerged to cut the memory needed for fine-tuning, called
+                    "parameter-efficient fine-tuning", or PEFT.
+                  </p>
+                  <p>
+                    With PEFT, you can fine-tune a model using only a fraction of that memory and
+                    even fine-tune quantized models. It offers other advantages, such as tiny
+                    checkpoint sizes, greater resistance to catastrophic forgetting, and the ability
+                    to serve multiple fine-tunes from the same base model.
+                  </p>
+                  <p>
+                    At Hugging Face, we develop the
+                    <a href="https://github.com/huggingface/peft" rel="nofollow"
+                      ><code>PEFT</code> library</a
+                    >, which implements many PEFT techniques behind a unified API and integrates
+                    well with the ecosystem, for example
+                    <a href="https://huggingface.co/docs/transformers/main/en/peft"
+                      ><code>Transformers</code></a
+                    >
+                    and
+                    <a href="https://huggingface.co/docs/diffusers/main/en/api/loaders/peft"
+                      ><code>Diffusers</code></a
+                    >. It also supports
+                    <a href="https://huggingface.co/docs/peft/developer_guides/quantization"
+                      >multiple quantization methods</a
+                    >, enabling further accessibility in parameter-efficient fine-tuning.
+                    <code>PEFT</code> provides a good starting point, whether you want to fine-tune
+                    on your own data or you're researching a new PEFT method.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="lora-the-queen-of-fine-tuning-techniques-👑"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#lora-the-queen-of-fine-tuning-techniques-👑"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> LoRA: The queen of fine-tuning techniques 👑 </span>
+                  </h1>
+                  <p>
+                    One parameter-efficient fine-tuning technique that emerged early and proved to
+                    be quite effective is called “Low Rank Adaptation”, or short
+                    <a href="https://huggingface.co/papers/2106.09685">“LoRA”</a>. It works by
+                    adding a handful of parameters on top of the base model, freezing the base model
+                    weights, and only training those few parameters.
+                  </p>
+                  <p>
+                    Among all PEFT techniques, LoRA is by far the most popular. Here are a few
+                    estimates:
+                  </p>
+                  <ul>
+                    <li>
+                      Of a sample of 20,834
+                      <a
+                        href="https://huggingface.co/datasets/librarian-bots/model_cards_with_metadata"
+                        >model cards on Hugging Face Hub</a
+                      >
+                      that mention exactly one PEFT technique, 20,509 mention LoRA (98.4%).
+                    </li>
+                    <li>
+                      We checked which PEFT techniques are popular for image generation on an
+                      external site, too. Using a sample of 10,000 checkpoints, we found 7,111 to be
+                      LoRAs. The other identified PEFT techniques are LoCon (363) and DoRA (11,
+                      arguably a LoRA variant). That means 95.0% of PEFT checkpoints are LoRAs.
+                    </li>
+                    <li>
+                      Searching for the code snippet
+                      <code>from peft import &lt;PEFT CONFIG&gt;</code> on GitHub (<a
+                        href="https://github.com/search?q=%22from+peft+import+LoraConfig%22&amp;type=code"
+                        rel="nofollow"
+                        >example GH query</a
+                      >), 71.3% of results are for LoRA. The runners-up are LoHa (3.7%) and AdaLoRA
+                      (3.5%).
+                    </li>
+                  </ul>
+                  <p>
+                    Although these estimates are not perfect, the conclusion is nonetheless that
+                    LoRA is almost certainly by far the most common PEFT technique.
+                  </p>
+                  <p>
+                    This could just mean that LoRA works best for everyone, and this fact is
+                    reflected in its usage statistics. There is, however, another possibility: LoRA
+                    was one of the earlier, popular PEFT techniques. So maybe its usage became
+                    self-reinforcing: LoRA has the highest visibility, the highest number of
+                    tutorials/examples, and it has the best support in downstream packages. Thus
+                    LoRA's popularity feeds on itself.
+                  </p>
+                  <p>
+                    This all leads to the question:
+                    <em
+                      >Are we all leaving performance on the table by shunning better
+                      techniques?</em
+                    >
+                    After all, there are countless researchers whose papers claim their technique
+                    beats LoRA. Isn't that sufficient proof that we should go beyond LoRA in favor
+                    of newer techniques?
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="choosing-the-right-peft-technique-based-on-paper-results-is-problematic"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#choosing-the-right-peft-technique-based-on-paper-results-is-problematic"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      Choosing the right PEFT technique based on paper results is problematic
+                    </span>
+                  </h1>
+                  <p>
+                    There are dozens of papers that investigate fine-tuning techniques other than
+                    LoRA. Just in the <code>PEFT</code> library, there are more than 40 distinct
+                    PEFT techniques at the time of writing (and numerous more when counting
+                    variations of PEFT techniques). For almost all of them, you will find
+                    researchers claiming that their technique beats LoRA according to their
+                    benchmarks.
+                  </p>
+                  <p>
+                    The trouble with these claims is that researchers are under pressure to provide
+                    results that beat the existing benchmark. Even without ill intent, this can bias
+                    the results, e.g. by spending less time tuning the alternative techniques
+                    compared to the one proposed by the researchers.
+                    <a href="https://arxiv.org/abs/2602.04998" rel="nofollow">One study</a> found,
+                    for instance, that LoRA can match supposedly better PEFT techniques by tuning
+                    the learning rate.
+                  </p>
+                  <p>
+                    Another complication is that each paper chooses a different set of PEFT
+                    techniques to compare to, and a different set of benchmarks to run. And even if
+                    the same technique is compared on the same benchmark, the code is often not
+                    available or not easy to run yourself, which makes results hard to reproduce.
+                  </p>
+                  <p>
+                    Overall, it's difficult to figure out the PEFT technique that works best for you
+                    by only checking paper results. Therefore, you might be tempted to just go with
+                    the default, LoRA.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="how-we-approach-benchmarking-in-peft"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#how-we-approach-benchmarking-in-peft"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> How we approach benchmarking in <code>PEFT</code> </span>
+                  </h1>
+                  <p>
+                    At Hugging Face, we thought about how we can help users make informed decisions
+                    about which PEFT technique to use. With the <code>PEFT</code> library, we
+                    already provide a package that implements many PEFT techniques and exposes them
+                    with the same API. The next step is to provide benchmarks that can shed more
+                    light on the discussed issue.
+                  </p>
+                  <p>
+                    We already had a benchmark that
+                    <a
+                      href="https://github.com/huggingface/peft/tree/main/method_comparison/MetaMathQA"
+                      rel="nofollow"
+                      >checks fine-tuning of LLMs on a math dataset</a
+                    >
+                    for some time. This benchmark takes an LLM and fine-tunes it on chain-of-thought
+                    reasoning to produce the result to a mathematical question using a base model
+                    that is not instruction fine-tuned. The benchmark thus checks if the model can
+                    learn to perform mathematical reasoning and also to adjust the generated output
+                    to the expected format.
+                  </p>
+                  <p>
+                    To extend our findings on another modality, we also added an
+                    <a
+                      href="https://github.com/huggingface/peft/tree/main/method_comparison/image-gen"
+                      rel="nofollow"
+                      >image generation benchmark</a
+                    >. This one tests whether the model can be fine-tuned to learn a new concept, a
+                    <a
+                      href="https://huggingface.co/datasets/peft-internal-testing/cat-image-dataset"
+                      >cat plushy</a
+                    >, and generate it in new contexts without forgetting existing concepts.
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/metamath-question.png"
+                            style="width: 400px; border: 1px solid #ccc; padding: 4px"
+                          />
+                        </td>
+                        <td>
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/cat-plushy-train-image.jpg"
+                            style="width: 400px; border: 1px solid #ccc; padding: 4px"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" align="center">
+                          <em
+                            >Left: Sample question and answer from the MetaMathQA dataset. Right:
+                            Sample image from the cat plushy dataset.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p>
+                    All PEFT techniques are evaluated according to the exact same conditions: same
+                    base model, same dataset, same training and evaluation code, same hardware. As
+                    different users have different needs, we track more than just test performance.
+                    Besides VRAM usage, we track metrics like forgetting/drift, runtime, and
+                    checkpoint size. The results are designed to run on consumer hardware, and
+                    adding a new experiment only requires adding a new <code>PEFT</code> config and
+                    running a script.
+                  </p>
+                  <p>
+                    Since we compare all PEFT techniques on equal footing and have no horse in the
+                    race, we believe that these benchmarks can draw an objective picture of how well
+                    different PEFT techniques work. We argue that if you have your own dataset, you
+                    can take a similar approach and take advantage of the <code>PEFT</code> library
+                    to evaluate multiple PEFT techniques.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="our-findings-lora-works-well-but-is-not-necessarily-the-best-choice"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#our-findings-lora-works-well-but-is-not-necessarily-the-best-choice"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      Our findings: LoRA works well but is not necessarily the best choice
+                    </span>
+                  </h1>
+                  <p>
+                    After finishing the benchmark runs, we found that although LoRA works well,
+                    other PEFT methods can beat it on one or multiple axes and should thus be
+                    considered. Check the image below that compares the performance of LoRA and five
+                    other PEFT techniques.
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td align="center">
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/benchmark-highlights.png"
+                            width="900"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <em
+                            >Some results from the benchmark. When it comes to test performance and
+                            memory usage, LoRA is not necessarily the best choice. Left: MetaMathQA
+                            benchmark; right: image generation benchmark. Consult this
+                            <a
+                              href="https://huggingface.co/spaces/peft-internal-testing/PEFT-method-comparison"
+                              >Space</a
+                            >
+                            for the most up-to-date results.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p>
+                    One way to interpret the results above is to think in terms of tradeoffs, for
+                    example: How well does the model perform on the test set vs how much memory is
+                    needed to train it? If a PEFT technique cannot be beaten on both of these
+                    metrics at the same time by any other technique, it is on the
+                    <em>Pareto Frontier</em>. In other words: If you want better test accuracy, you
+                    need more memory, and if you want more memory efficiency, you have to give up on
+                    accuracy.
+                  </p>
+                  <p>
+                    Let's take a closer look at the results for the LLM Math dataset benchmark. When
+                    it comes to test accuracy vs memory, we find that LoRA is indeed on the Pareto
+                    frontier. It achieves 53.2% test accuracy and requires 22.6 GB of VRAM at the
+                    peak. There are, however, other PEFT techniques on the Pareto Frontier. For
+                    instance,
+                    <a href="https://huggingface.co/docs/peft/main/en/package_reference/beft"
+                      >BEFT</a
+                    >
+                    achieves 32.9% test accuracy and requires only 20.2 GB of memory at max. On the
+                    other end, we have
+                    <a href="https://huggingface.co/docs/peft/main/en/package_reference/lily"
+                      >Lily</a
+                    >, which achieves 54.9% test accuracy but requires 25.6 GB of memory. Depending
+                    on what's more important to you, you may conclude that LoRA does not present the
+                    best tradeoff for you.
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td align="center">
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/metamath-pareto.png"
+                            width="900"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <em
+                            >Test accuracy vs memory usage tradeoff of fine-tuning
+                            <code>meta-llama/Llama-3.2-3B</code> and evaluating it on GSM8K. LoRA
+                            does well but so do other PEFT techniques.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p>
+                    It is also worth noting that even though LoRA does well on this task, we're not
+                    talking about vanilla LoRA. On one side, we have LoRA with
+                    <a href="https://huggingface.co/papers/2312.03732"
+                      >rank stabilized initialization</a
+                    >, which is a technique to scale the LoRA contribution differently from the
+                    default initialization and provides very good test accuracy (53.2%). On the
+                    other end, we have
+                    <a href="https://huggingface.co/papers/2308.03303">LoRA-FA</a>, which uses an
+                    optimizer specialized for LoRA that freezes part of the LoRA weights and is thus
+                    more memory efficient (20.2 GB). Normal LoRA only achieves an accuracy of 48.1%
+                    at 22.5 GB memory and should thus be avoided in favor of the alternatives.
+                  </p>
+                  <p>
+                    Next let's take a look at the image generation benchmark. In the
+                    <a
+                      href="https://huggingface.co/spaces/peft-internal-testing/PEFT-method-comparison"
+                      >Hugging Face Space</a
+                    >, choose “image-gen” in the “Select Task” dropdown to show the results. The
+                    goal of the task is to learn a new concept, namely a cat plushy, and generalize
+                    it to new prompts.
+                  </p>
+                  <div align="center">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td align="center">
+                            <img
+                              src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/cat-plushy-lora.png"
+                              width="400"
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <em
+                              >Cat plushy image created with LoRA fine-tuned on
+                              <code>FLUX.2-klein-base-4B</code>.</em
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <p>
+                    For this task, the main metric is “dino similarity”, which measures how much a
+                    generated image resembles the picture from a holdout test dataset, with higher
+                    values being better. As always, we also want to keep an eye on memory usage.
+                    When plotting the Pareto Frontier of these two metrics, we find that LoRA is
+                    below that frontier. Let's get concrete numbers: LoRA achieves a similarity
+                    score of 0.697 whereas
+                    <a href="https://huggingface.co/docs/peft/package_reference/oft">OFT</a>
+                    achieves 0.708; in terms of memory, LoRA requires 9.97 GB, and OFT requires 9.01
+                    GB. Therefore, OFT strictly dominates LoRA on these metrics.
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td align="center">
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/image-gen-pareto.png"
+                            width="900"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <em
+                            >Test accuracy vs memory usage tradeoff of fine-tuning
+                            <code>FLUX.2-klein-base-4B</code> and evaluating it on the test set.
+                            Other PEFT techniques like OFT beat LoRA in terms of test score and
+                            lower memory usage.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p>
+                    Of course, you should also check the other PEFT methods that are close to the
+                    Pareto frontier, as metrics can be subject to small variations due to
+                    randomness. Also, you should explore other metrics: is runtime performance
+                    important to you or do you care about the size of the checkpoints? Choose the
+                    relevant metric from the dropdown and the picture can change considerably. For
+                    the image generation benchmark, do inspect the generated sample images to get a
+                    vibe of the fine-tuned model's capability.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="limitations"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#limitations"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Limitations </span>
+                  </h1>
+                  <blockquote class="warning">
+                    <p>Objection: But the benchmarks favor one method over another!</p>
+                  </blockquote>
+                  <p>
+                    One criticism that could be leveled at the <code>PEFT</code> benchmarks is that
+                    the choice of hyper-parameters may favor one technique over another. This is
+                    true, doing an exhaustive and fair hyper-parameter sweep with this many
+                    techniques is difficult. It is, however, very easy for everyone to contribute
+                    their own experiments to <code>PEFT</code>: If you believe that a specific PEFT
+                    technique can be improved by choosing different hyper-parameters, create a PR!
+                    We added
+                    <a
+                      href="https://github.com/huggingface/peft/tree/main/method_comparison#creating-new-experiments"
+                      rel="nofollow"
+                      >instructions on how to do that</a
+                    >. In a similar vein, if you want to contribute a completely new benchmark,
+                    reach out to us to discuss your idea.
+                  </p>
+                  <p>
+                    Another problem with the benchmarks is that they may not fully reflect the
+                    capabilities of a specific PEFT technique. We make it possible to compare the
+                    techniques along many different dimensions and discover the best ones according
+                    to these tradeoffs. But it's impossible to capture all facets this way. For
+                    instance, one PEFT technique called
+                    <a href="https://huggingface.co/docs/peft/package_reference/cartridges"
+                      >Cartridges</a
+                    >
+                    was developed to compress long prompts, which is not measured in the benchmarks.
+                    Other factors can also influence the choice, for instance:
+                  </p>
+                  <ul>
+                    <li>
+                      Depending on the PEFT technique, only certain layer types can be modified.
+                    </li>
+                    <li>
+                      Not all PEFT techniques support quantized base models (but we actively expand
+                      the support in <code>PEFT</code>).
+                    </li>
+                    <li>
+                      Some PEFT techniques allow
+                      <a
+                        href="https://huggingface.co/docs/peft/main/en/developer_guides/model_merging"
+                        >merging of the adapter</a
+                      >
+                      to reduce runtime overhead but others don't.
+                    </li>
+                  </ul>
+                  <p>
+                    The benchmarks cannot fully lift the responsibility to do your research, but
+                    they can be reasonable pointers.
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td align="center">
+                          <a href="https://huggingface.co/spaces/peft-internal-testing/PEFT-shop"
+                            ><img
+                              src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/peft-shop.png"
+                              width="100%"
+                          /></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <em
+                            >Click on the image to peruse the PEFT shop to find the best PEFT
+                            technique for you. It allows you to browse not only by benchmark metrics
+                            but also by capabilities, like quantization support.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <blockquote>
+                    <p>Objection: But llama.cpp/vLLM/... only supports LoRA</p>
+                  </blockquote>
+                  <p>
+                    A limitation of using a PEFT technique other than LoRA is that they don't get
+                    the broad support in downstream packages that LoRA sees. For example, if you
+                    want to serve the model using vLLM, only LoRA checkpoints can be loaded.
+                    Thankfully, <code>PEFT</code> now supports
+                    <a
+                      href="https://huggingface.co/docs/peft/main/en/package_reference/lora_conversion"
+                      >converting other adapters into LoRA</a
+                    >. That way, you can convert a non-LoRA checkpoint into LoRA and use it in vLLM
+                    or other downstream packages.
+                  </p>
+                  <p>
+                    To test this, we converted an image adapter using the GraLoRA technique into a
+                    LoRA checkpoint. The test scores were virtually identical after conversion
+                    (similarity 0.702 → 0.694, 0.260 → 0.269). Below are test images for the prompt
+                    “sks cat at the beach”:
+                  </p>
+                  <table align="center">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/lora-image-gen.png"
+                            style="width: 400px; border: 1px solid #ccc; padding: 4px"
+                          />
+                        </td>
+                        <td>
+                          <img
+                            src="https://huggingface.co/datasets/peft-internal-testing/peft-blog-assets/resolve/main/peft-beyond-lora/gralora-image-gen-converted.png"
+                            style="width: 400px; border: 1px solid #ccc; padding: 4px"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" align="center">
+                          <em
+                            >Left: Image generated by GraLoRA. Right: Image generated by the same
+                            GraLoRA checkpoint converted to a LoRA checkpoint. The images quality is
+                            comparable.</em
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p>
+                    At the moment, we haven't implemented conversion for all PEFT techniques, but if
+                    there is demand, we will expand the support.
+                  </p>
+                  <h1 class="relative group flex items-baseline">
+                    <a
+                      id="conclusion-and-what-you-can-do"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#conclusion-and-what-you-can-do"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Conclusion and what <em>you</em> can do </span>
+                  </h1>
+                  <p>
+                    While working on the <code>PEFT</code> package, we noticed that LoRA has a lot
+                    of momentum behind it, even though other PEFT techniques are potentially better.
+                    Therefore, we set out to add benchmarks to PEFT that could paint a more
+                    objective picture of how well different PEFT techniques perform on different
+                    metrics.
+                  </p>
+                  <p>
+                    Given the results we found, we can confidently conclude that LoRA is not a bad
+                    choice at all, but there are potentially better choices. Especially when
+                    checking the image generation benchmark, LoRA is beaten by other techniques. We
+                    discussed that besides metrics, other considerations must be taken into account
+                    when choosing the right PEFT technique. However, even then, we are pushing
+                    <code>PEFT</code> further to achieve feature parity between LoRA and those other
+                    techniques.
+                  </p>
+                  <p>
+                    Our journey is far from finished; we want to extend and improve the existing
+                    benchmarks, and we also plan to add more benchmarks in the future. We ensured
+                    that it is easy for the community to contribute, so if this is something you
+                    would like to do, please open an
+                    <a href="https://github.com/huggingface/peft/issues" rel="nofollow"
+                      >issue on the <code>PEFT</code> repository</a
+                    >
+                    and let us know how you would like to contribute.
+                  </p>
+                  <p>
+                    If you take away only one thing from this article, it is that LoRA should not be
+                    the automatic default when choosing a PEFT technique for your use case. Given
+                    the unified API provided by <code>PEFT</code>, changing from one PEFT technique
+                    to another is as easy as switching one config in your code. And even if you
+                    stick with LoRA, check out all the variants that are supported in
+                    <code>PEFT</code>: DoRA, rs-LoRA, LoRA-FA etc. Give these other techniques a try
+                    and you might be pleasantly surprised.
+                  </p>
+                  <p>Example: Changing from LoRA to OFT using <code>PEFT</code>:</p>
+                  <pre><code class="language-diff">from transformers import AutoModelForCausalLM
+<span class="hljs-deletion">-from peft import LoraConfig, get_peft_model</span>
+<span class="hljs-addition">+from peft import OFTConfig, get_peft_model</span>
+
+base_model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.2-3B", dtype="bfloat16")
+<span class="hljs-deletion">-config = LoraConfig(target_modules=["q_proj", "v_proj"])</span>
+<span class="hljs-addition">+config = OFTConfig(target_modules=["q_proj", "v_proj"])</span>
+model = get_peft_model(base_model, config)
+</code></pre>
+                  <!---->
+                </div>
+              </div>
+            </div>
+            <!--[0-->
+            <div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden">
+              <div class="flex flex-col gap-6">
+                <!--[-1--><!--]-->
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Datasets mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">2</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Spaces mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Papers mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">3</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto mt-16 max-w-7xl border-t border-gray-200">
+              <div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6">
+                  <p class="col-span-1 mb-4 text-center text-lg font-semibold">
+                    More Articles from our Blog
+                  </p>
+                  <!--[-->
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/sdxl_lora_advanced_script"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="/blog/assets/dreambooth_lora_sdxl/thumbnail.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5">
+                            <!--[0--><!--[--><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >guide</span
+                            ><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >collaboration</span
+                            ><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >diffusers</span
+                            ><!--]--><!--]-->
+                          </div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          LoRA training scripts of the world, unite!
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="linoyts"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden rounded-full"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/638f308fc4444c6ca870b60a/Q11NK-8-JbiilJ-vk2LAR.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="multimodalart"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden rounded-full"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649143001781-624bebf604abc7ebb01789af.jpeg"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              81
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">January 2, 2024</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/multi-lora-serving"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="/blog/assets/multi-lora-serving/thumbnail.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5">
+                            <!--[0--><!--[--><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >nlp</span
+                            ><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >tgi</span
+                            ><span
+                              class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              >LLM</span
+                            ><!--]--><!--]-->
+                          </div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          TGI Multi-LoRA: Deploy Once, Serve 30 Models
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="derek-thomas"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden rounded-full"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/638eb5f949de7ae552dd6211/mJkQJGpn9tXV37N2VLFCh.jpeg"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="dmaniloff"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden rounded-full"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/YARBj-PT4QW3Mys2UzGco.jpeg"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="drbh"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden rounded-full"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d5ba3f80ad88c77b2f05/yuvfzgqOeK8-bFxEZ2gg9.jpeg"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              63
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">July 18, 2024</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <!--]-->
+                </div>
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8">
+              <h3 class="mb-6 flex items-center text-lg font-semibold"><!---->Community</h3>
+              <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="">
+                <div class="relative -mx-2.5">
+                  <!--[-1--><!--]-->
+                  <!--[-->
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-0 pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a34e3fc1ad44d7d76d10090" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/ad5d5b0ea6bd48c61a8feb3e91d6eb26.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/ItsMaxNorm"
+                                    >ItsMaxNorm</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a34e3fc1ad44d7d76d10090"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-06-19T06:38:52"
+                                title="Fri, 19 Jun 2026 06:38:52 GMT"
+                                >Jun 19</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>Thanks for analysis. Very helpful.</p>
+                            <p>
+                              What about DEFT?<br />It adapts a pre-trained weight matrix by
+                              decomposing its update into two components with two trainable
+                              matrices: (1) a projection onto the complement of a low-rank subspace
+                              spanned by a low-rank matrix, and (2) a low-rank update. The single
+                              trainable low-rank matrix defines the subspace, while the other
+                              trainable low-rank matrix enables flexible parameter adaptation within
+                              that subspace.
+                            </p>
+                            <p>
+                              GitHub
+                              <a href="https://github.com/MAXNORM8650/DEFT" rel="nofollow"
+                                >https://github.com/MAXNORM8650/DEFT</a
+                              >
+                            </p>
+                            <p>
+                              Paper:
+                              <a href="https://arxiv.org/abs/2509.22793" rel="nofollow"
+                                >https://arxiv.org/abs/2509.22793</a
+                              >
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="kashif"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/kashif" title="kashif"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="ItsMaxNorm"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/ItsMaxNorm" title="ItsMaxNorm"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="/avatars/ad5d5b0ea6bd48c61a8feb3e91d6eb26.svg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  2 replies</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[-->
+                                <div>
+                                  <span class="inline-block"
+                                    ><span class="contents"
+                                      ><button
+                                        class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                      >
+                                        <div class="mr-2 text-[0.9rem]">👍</div>
+                                        <div class="invisible">3</div>
+                                        <!---->
+                                        <div class="absolute right-2">3</div>
+                                        <!----></button
+                                      ><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                </div>
+                                <!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[-1-->+<!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a34ec621ad44d7d76d100a5" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline text-blue-500"
+                                          href="/kashif"
+                                          >kashif</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[0--><span
+                                    class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2"
+                                    >Article author<!----></span
+                                  ><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a34ec621ad44d7d76d100a5"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-06-19T07:14:42"
+                                      title="Fri, 19 Jun 2026 07:14:42 GMT"
+                                      >Jun 19</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>would you like to make a PEFT PR for this?</p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[-->
+                                      <div>
+                                        <span class="inline-block"
+                                          ><span class="contents"
+                                            ><button
+                                              class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                            >
+                                              <div class="mr-2 text-[0.9rem]">❤️</div>
+                                              <div class="invisible">1</div>
+                                              <!---->
+                                              <div class="absolute right-2">1</div>
+                                              <!----></button
+                                            ><!----></span
+                                          >
+                                          <!--[-1--><!--]--></span
+                                        ><!---->
+                                      </div>
+                                      <!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[-1-->+<!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[0--><button
+                            class="inline-flex h-10 items-center gap-1 text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                          >
+                            <!---->
+                            Expand 1 reply</button
+                          ><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a38d09324b1ea00171f833b" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div
+                                    class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"
+                                  >
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none bg-white p-px"
+                                      src="/avatars/92777236af55e5d871f719c088991da9.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[0-->
+                                    <!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/OJ-1"
+                                    >OJ-1</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a38d09324b1ea00171f833b"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-06-22T06:05:07"
+                                title="Mon, 22 Jun 2026 06:05:07 GMT"
+                                >Jun 22</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              OFT had a version 2, skipped over version1. Which one did you guys
+                              test?
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="BenjaminB"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/BenjaminB" title="BenjaminB"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="https://cdn-avatars.huggingface.co/v1/production/uploads/1656685953025-62bf03d1e80cec527083cd66.jpeg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="OJ-1"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/OJ-1" title="OJ-1"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="/avatars/92777236af55e5d871f719c088991da9.svg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  2 replies</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a38d21c14f6a01146258af7" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="https://cdn-avatars.huggingface.co/v1/production/uploads/1656685953025-62bf03d1e80cec527083cd66.jpeg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline text-blue-500"
+                                          href="/BenjaminB"
+                                          >BenjaminB</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[0--><span
+                                    class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2"
+                                    >Article author<!----></span
+                                  ><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a38d21c14f6a01146258af7"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-06-22T06:11:40"
+                                      title="Mon, 22 Jun 2026 06:11:40 GMT"
+                                      >Jun 22</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>
+                                    It's the updated version 2 of OFT:
+                                    <a
+                                      href="https://github.com/huggingface/peft/pull/2575"
+                                      rel="nofollow"
+                                      >https://github.com/huggingface/peft/pull/2575</a
+                                    >.
+                                  </p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[-->
+                                      <div>
+                                        <span class="inline-block"
+                                          ><span class="contents"
+                                            ><button
+                                              class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                            >
+                                              <div class="mr-2 text-[0.9rem]">👍</div>
+                                              <div class="invisible">1</div>
+                                              <!---->
+                                              <div class="absolute right-2">1</div>
+                                              <!----></button
+                                            ><!----></span
+                                          >
+                                          <!--[-1--><!--]--></span
+                                        ><!---->
+                                      </div>
+                                      <!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[-1-->+<!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[0--><button
+                            class="inline-flex h-10 items-center gap-1 text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                          >
+                            <!---->
+                            Expand 1 reply</button
+                          ><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a3a1fd6e7515e61b3e08253" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/8550b407452ba7fc83f02d4e087e45c1.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/haiderpalari"
+                                    >haiderpalari</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a3a1fd6e7515e61b3e08253"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-06-23T05:55:34"
+                                title="Tue, 23 Jun 2026 05:55:34 GMT"
+                                >Jun 23</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              <a
+                                href="https://cdn-uploads.huggingface.co/production/uploads/6a379a7901e41f0d3946f020/z7sQ6fd0UZo-ptxazOiEV.jpeg"
+                                rel="nofollow"
+                                ><img
+                                  src="https://cdn-uploads.huggingface.co/production/uploads/6a379a7901e41f0d3946f020/z7sQ6fd0UZo-ptxazOiEV.jpeg"
+                                  alt="Screenshot_2026-06-13-02-43-32-985_com.ebay.mobile"
+                              /></a>
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[-1--><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[0-->
+                            <div class="ml-auto">
+                              <button
+                                class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"
+                              >
+                                <!---->Reply
+                              </button>
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[-1--><!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a5e2afe01c6c44101783b80" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/403e14877fe2c8352d227c3d1f695f76.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/DVLX"
+                                    >DVLX</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a5e2afe01c6c44101783b80"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-07-20T14:04:46"
+                                title="Mon, 20 Jul 2026 14:04:46 GMT"
+                                >Jul 20</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>Good solution!</p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[-1--><!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[-1--><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[0-->
+                            <div class="ml-auto">
+                              <button
+                                class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"
+                              >
+                                <!---->Reply
+                              </button>
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[-1--><!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-0">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a847612ae7cbfa2397eae85" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/YKzZN2rucP3N9G6PX3yY9.png"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/bird0867"
+                                    >bird0867</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a847612ae7cbfa2397eae85"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-08-18T15:11:14"
+                                title="Tue, 18 Aug 2026 15:11:14 GMT"
+                                >Aug 18</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              Was there a reason EMLoC and the Drag-and-Drop LLMs methods weren't
+                              included in the comparison?
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="BenjaminB"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/BenjaminB" title="BenjaminB"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="https://cdn-avatars.huggingface.co/v1/production/uploads/1656685953025-62bf03d1e80cec527083cd66.jpeg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  1 reply</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a8565ee332062929e9619db" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="https://cdn-avatars.huggingface.co/v1/production/uploads/1656685953025-62bf03d1e80cec527083cd66.jpeg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline text-blue-500"
+                                          href="/BenjaminB"
+                                          >BenjaminB</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[0--><span
+                                    class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2"
+                                    >Article author<!----></span
+                                  ><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a8565ee332062929e9619db"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-08-19T08:14:38"
+                                      title="Wed, 19 Aug 2026 08:14:38 GMT"
+                                      >Aug 19</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>
+                                    We only included techniques that are implemented in PEFT, and
+                                    those two are not implemented.
+                                  </p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[--><!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[0-->
+                                            <!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <!--]-->
+                </div>
+                <div
+                  class="overflow-hidden rounded-lg border border-gray-200 bg-white rounded-b-none border-b-0 mt-6"
+                >
+                  <div
+                    class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"
+                  >
+                    <div class="flex h-full items-stretch">
+                      <!--[--><button class="tab active" type="button">Edit</button
+                      ><button class="tab" type="button">Preview</button><!--]-->
+                    </div>
+                    <div><!--[-1--><!--]--></div>
+                  </div>
+                  <!---->
+                  <div class="p-4">
+                    <div class="contents">
+                      <!--[-->
+                      <div class="contents">
+                        <!--[--><textarea
+                          class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2"
+                          name="comment"
+                          placeholder="Start discussing this article"
+                          required=""
+                          disabled=""
+                          rows="3"
+                        ></textarea
+                        ><!--]-->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                    <label
+                      class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"
+                      ><!--[-1-->
+                      <!--]-->
+                      <div class="hidden md:block">
+                        Upload images, audio, and videos by dragging in the text input, pasting, or
+                        <span class="cursor-pointer underline">clicking here</span>.
+                      </div>
+                      <div class="md:hidden">Tap or paste here to upload images</div>
+                      <input
+                        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav"
+                        class="hidden"
+                        disabled=""
+                        type="file"
+                        multiple=""
+                    /></label>
+                  </div>
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <!---->
+                <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200">
+                  <div class="p-4">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div
+                      class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"
+                    >
+                      <button class="btn btn-large" disabled="">
+                        <!---->
+                        Comment
+                      </button>
+                      <!--[0-->
+                      <p class="py-1 text-gray-800">
+                        <span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span>
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/join?next=%2Fblog%2Fpeft-beyond-lora"
+                          >Sign up</a
+                        >
+                        or
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/login?next=%2Fblog%2Fpeft-beyond-lora"
+                          >log in</a
+                        >
+                        to comment
+                      </p>
+                      <!--]-->
+                    </div>
+                  </div>
+                </div>
+                <!---->
+              </div>
+            </div>
+            <!--]-->
+          </div>
+          <div
+            class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"
+          >
+            <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+              <div
+                class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"
+              >
+                <!--[0--><a href="/login?next=%2Fblog%2Fpeft-beyond-lora" class="self-start"
+                  ><!--[0--><!---->
+                  <div
+                    role="checkbox"
+                    class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                  >
+                    <input disabled="" type="checkbox" class="peer hidden" />
+                    <!---->
+                    Upvote
+                    <div class="font-semibold text-orange-500">105</div>
+                    <!---->
+                  </div>
+                  <!----><!--]-->
+                  <!--[-1--><!--]--><!----></a
+                ><!--]-->
+                <!--[0--><!--[0-->
+                <ul class="flex items-center text-gray-600 flex-row text-base">
+                  <!--[-->
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="manuojvv"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/manuojvv" title="manuojvv"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/da1ef25414b1f1656d76950f591e4224.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="wuyanzu2468"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/wuyanzu2468" title="wuyanzu2468"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/93a1df7051cae1f3bec4f7efa9b345b4.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Fathur47"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Fathur47" title="Fathur47"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/zSZ6CqxXivRSBOLeAJtoL.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="DVLX"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/DVLX" title="DVLX"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/403e14877fe2c8352d227c3d1f695f76.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Tajalla"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Tajalla" title="Tajalla"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/e10f17ee9352ec937353765389f7996b.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Metso29"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Metso29" title="Metso29"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/6HvQJ4aZiWWS8_d_CDbA8.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="johardi"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/johardi" title="johardi"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/4b9f8e474208804e570a434bee37613d.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="asdfuruhito"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/asdfuruhito" title="asdfuruhito"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/5a06d68e9f309f24f4d7bc96f33542ba.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="okozymandias"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/okozymandias" title="okozymandias"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/ZM0DLGwRv3IZEoyq9Ue8_.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="tolgacangoz"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/tolgacangoz" title="tolgacangoz"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/603bdba23249b99991dbcbc4/cxCnN1H-RXOhojHY3Wcxo.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Saman2C"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Saman2C" title="Saman2C"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/bf170b59499de162f4a74043a40f9cd6.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Shynraku"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Shynraku" title="Shynraku"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/99bb63582a8dbce37608a9ee196cac68.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <!--]-->
+                  <!--[0-->
+                  <li
+                    class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                  >
+                    <!--[--><!--[0--><button
+                      class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                    >
+                      +93</button
+                    ><!--]--><!--]-->
+                  </li>
+                  <!--]-->
+                </ul>
+                <!--]--><!--]-->
+              </div>
+              <!--[-1--><!--]-->
+              <dialog
+                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base"
+              >
+                <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                  <!--[-1--><!--]-->
+                </div>
+              </dialog>
+              <!----><!---->
+            </div>
+            <!--[0-->
+            <div class="mt-8 flex flex-col gap-6 pb-8">
+              <!--[-1--><!--]-->
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Datasets mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">2</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Spaces mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Papers mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">3</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+            </div>
+            <!--]-->
+          </div>
+        </div>
+        <!---->
+      </main>
+      <!--[1-->
+      <!--]--><!---->
+    </div>
+    <!--]-->
+
+    <!-- Stripe -->
+  </body>
+</html>

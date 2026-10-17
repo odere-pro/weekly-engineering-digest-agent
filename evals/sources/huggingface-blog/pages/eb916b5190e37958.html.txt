@@ -1,0 +1,310 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/datasets-filters/thumbnail.png" />
+
+		<meta property="og:title" content="Welcome RL Environments to the hub" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/rl-environments" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/datasets-filters/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/rl-environments">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Welcome RL Environments to the hub</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="welcome-rl-environments-to-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#welcome-rl-environments-to-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Welcome RL Environments to the hub
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					September 28, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/rl-environments.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Frl-environments" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">40</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[0--><a href="/kashif" title="kashif"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[0--><a href="/burtenshaw" title="burtenshaw"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lhoestq" style="content-visibility:auto;"><!--[0--><a href="/lhoestq" title="lhoestq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e9ecfc04957053f60648a3e/UY4H1oMtmXVo1p-HnKV6l.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rajivmehtapy" style="content-visibility:auto;"><!--[0--><a href="/rajivmehtapy" title="rajivmehtapy"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1673701526502-60098a0f460b9e8842d93363.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MadMike477" style="content-visibility:auto;"><!--[0--><a href="/MadMike477" title="MadMike477"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68b232dcf6027d00161fb46c/FwXMNqgpoXBb2NWJ3X_Pq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+34</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/burtenshaw"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="ben burtenshaw's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/burtenshaw"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="ben burtenshaw">ben burtenshaw</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">burtenshaw</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/AdithyaSK"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Adithya S K's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6442d975ad54813badc1ddf7/JIAN8B1dLOXN8fWTk8_mI.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/AdithyaSK"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Adithya S K">Adithya S K</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">AdithyaSK</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sergiopaniego"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sergio Paniego's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sergiopaniego"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sergio Paniego">Sergio Paniego</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sergiopaniego</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/xeophon"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Florian's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63c0b5aa7f52541dfc7cf6cf/KbY8aehcLakofwMwL-JqF.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/xeophon"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Florian">Florian</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">xeophon</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[1--><span class="rounded-sm bg-gray-100 px-1 font-mono text-sm text-gray-600 dark:bg-gray-700">guest</span><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ryanmarten"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Ryan Marten's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/626c182a030a6e7363b6fe0a/NaMcIOPVgJ6JFt8fojZWU.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ryanmarten"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Ryan Marten">Ryan Marten</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ryanmarten</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[1--><span class="rounded-sm bg-gray-100 px-1 font-mono text-sm text-gray-600 dark:bg-gray-700">guest</span><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/merve"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="merve's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/merve"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="merve">merve</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">merve</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/lhoestq"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Quentin Lhoest's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e9ecfc04957053f60648a3e/UY4H1oMtmXVo1p-HnKV6l.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/lhoestq"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Quentin Lhoest">Quentin Lhoest</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">lhoestq</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/julien-c"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Julien Chaumond's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5dd96eb166059660ed1ee413/NQtzmrDdbG0H8qkZvRyGk.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/julien-c"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Julien Chaumond">Julien Chaumond</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">julien-c</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Reinforcement Learning environments give new capabilities to agentic AI systems, and they’re a great way to measure and improve performance in your agents. Therefore, Hugging Face Hub now has a special place for RL Environments.</p>
+<p>An environment gives an agent a task, responds to its actions with observations, and scores the outcome. The resulting rewards can measure an agent's performance during evaluation or provide a learning signal during training. For an introduction to this interaction loop, see <a href="https://huggingface.co/spaces/AdithyaSK/rl-environments-guide">our blogpost on environments</a>. Within the environment, the agent will perform a set of tasks that are represented as datasets. Therefore, environments can be split into broadly two parts: tasksets and runtimes. In this release, we are focusing on the tasksets.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/rl-environments/rl-environments-filter.gif" alt="Browsing the RL Environments filter on the Hugging Face Hub" width="100%">
+</figure>
+
+<p>An RL environment on the Hub is a dataset repo that shows up in the new <a href="https://huggingface.co/datasets?other=rl-environment">RL Environments filter</a>. The <strong>Use this dataset</strong> button gives you the command to run it in that framework. There is no new repo type, no registry, and no sign-up. There are already environments in Harbor, Verifiers, and NVIDIA NeMo Gym.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="stop-building-environment-registries" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#stop-building-environment-registries" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Stop building environment registries
+	</span>
+</h2>
+<p>Every RL paper or framework uses its own way to find environments. Custom hubs, runtime registries, independent task datasets, or a GitHub list of tasks with a custom loader. This means that many of the published environments are siloed: if you publish an environment for one framework, users of the other three can’t load it. If you want to train on an environment from another framework or a new paper, you’ll need to port it by hand.</p>
+<p>We think this is the wrong shape. An environment is tasks, tests, containers, and a reward rule, which are data with a runtime on top. The Hub already stores data, versions it, gates it, previews it, and serves it to millions of people. It does not need a second system to hold environments. It needs a way to say "this data is an environment, and here is how you run it."</p>
+<figure class="image text-center">
+   
+  <figcaption>Task data lives on the Hub. Runtime configuration and verifier code can live in the repo or the framework.</figcaption>
+</figure>
+
+<p>The frameworks keep doing what they are good at. The Hub does what it is good at, which is hosting, discovery, and versioning. Nobody has to own the catalogue. In fact, catalogues can run on other platforms too, powered by the hub.</p>
+<p>The dataset repository hosts your environment files. The framework runs them locally or on a supported cloud backend. <a href="https://huggingface.co/docs/hub/en/jobs">Hugging Face Jobs</a> can run cloud workloads, and <a href="https://huggingface.co/docs/huggingface_hub/main/guides/sandbox">Hugging Face Sandboxes</a>, built on Jobs, provide interactive command execution. The tags describe compatibility and generate loading commands; adding a tag does not start a job or sandbox.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-shipped" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-shipped" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What shipped
+	</span>
+</h2>
+<p><strong>The RL Environments filter.</strong> Go to <a href="https://huggingface.co/datasets?other=rl-environment">huggingface.co/datasets?other=rl-environment</a>. Every dataset with the <code>rl-environment</code> tag appears there, whatever framework it works with.</p>
+<p><strong>Framework tags.</strong> Four environment frameworks are registered as dataset libraries:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Tag</th>
+<th align="left">Framework</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><code>harbor</code></td>
+<td align="left"><a href="https://github.com/harbor-framework/harbor" rel="nofollow">Harbor</a></td>
+</tr>
+<tr>
+<td align="left"><code>verifiers</code></td>
+<td align="left"><a href="https://github.com/PrimeIntellect-ai/verifiers" rel="nofollow">Verifiers</a></td>
+</tr>
+<tr>
+<td align="left"><code>openenv</code></td>
+<td align="left"><a href="https://github.com/huggingface/OpenEnv" rel="nofollow">OpenEnv</a></td>
+</tr>
+<tr>
+<td align="left"><code>nemo-gym</code></td>
+<td align="left"><a href="https://github.com/NVIDIA-NeMo/Gym" rel="nofollow">NeMo Gym</a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Each framework tag puts the framework's icon on the dataset page and adds a generated snippet to <strong>Use this dataset</strong>.</p>
+<p>A dataset can carry more than one framework tag. That is the point. Tags describe compatibility, and compatibility is not exclusive. Each listed framework must support the files in the repository; adding a tag does not convert them.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="run-an-environment-and-inspect-its-reward" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#run-an-environment-and-inspect-its-reward" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Run an environment and inspect its reward
+	</span>
+</h2>
+<p>Choose the example for your framework and run it in a separate Python environment with the prerequisites listed below.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="harbor-run-a-reference-solution" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#harbor-run-a-reference-solution" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Harbor: run a reference solution
+	</span>
+</h3>
+<p><a href="https://www.harborframework.com/docs/datasets" rel="nofollow">Harbor</a> can load task directories from a Hub repository. The oracle agent runs the task's reference solution, then the verifier scores the result. It does not call a model.</p>
+<pre><code class="language-sh">uv tool install --python 3.13 <span class="hljs-string">'harbor==0.21.0'</span>
+harbor run \
+    --repo https://huggingface.co/datasets/harborframework/terminal-bench-2.1 \
+    --dataset terminal-bench-2.1@2.1.0 \
+    --include-task-name <span class="hljs-string">'*regex-log'</span> \
+    --agent oracle --<span class="hljs-built_in">env</span> docker --jobs-dir results/harbor
+harbor view results/harbor
+</code></pre>
+<p>The viewer shows the task's reward, verifier output, and logs. This checks the task and its reference solution before you try a model agent.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="verifiers-run-a-model-on-the-same-task" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#verifiers-run-a-model-on-the-same-task" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Verifiers: run a model on the same task
+	</span>
+</h3>
+<p>The Harbor integration of <a href="https://www.primeintellect.ai/blog/verifiers-v1" rel="nofollow">verifiers v1</a> can run the same task directories in different runtimes, such as Docker. It also supports different harnesses, including a minimal bash harness.</p>
+<pre><code class="language-sh">uvx --python 3.13 --from <span class="hljs-string">'verifiers[harbor]'</span> <span class="hljs-built_in">eval</span> harbor \
+    --env.taskset.repo https://huggingface.co/datasets/harborframework/terminal-bench-2.1 \
+    --env.taskset.dataset terminal-bench-2.1@2.1.0 \
+    --env.taskset.tasks <span class="hljs-string">'["regex-log"]'</span> \
+    --env.agent.runtime.type docker \
+    --env.agent.harness.id bash \
+    --model <span class="hljs-string">"<span class="hljs-variable">$MODEL</span>"</span> \
+    --client.base-url <span class="hljs-string">"<span class="hljs-variable">$LLM_URL</span>"</span>
+</code></pre>
+<p>Here repo is the full Hugging Face Git URL, while dataset is the name and version in that repo's registry.json. This loader uses Harbor's registry conventions, so a bare Hub repo ID cannot replace both values.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="openenv-run-an-agent-and-inspect-its-reward" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#openenv-run-an-agent-and-inspect-its-reward" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		OpenEnv: run an agent and inspect its reward
+	</span>
+</h3>
+<p><a href="https://huggingface.co/docs/openenv/main/environments/harbor">OpenEnv's Harbor integration</a> can run the same task directories with an agent such as OpenCode and return the verifier's reward alongside the agent's trace. </p>
+<pre><code class="language-sh">pip install <span class="hljs-string">"openenv[harbor]==0.7.0"</span>
+
+openenv harbor rollout \
+    --llm-url <span class="hljs-string">"<span class="hljs-variable">$LLM_URL</span>"</span> \
+    --model <span class="hljs-string">"<span class="hljs-variable">$MODEL</span>"</span> \
+    --dataset harborframework/terminal-bench-2.1 \
+    --task-index 0 \
+    --harness opencode \
+    --sandbox docker \
+    --out rollout.json
+</code></pre>
+<p>The command downloads the dataset's <code>tasks/</code> directories, runs one task in Docker, and writes the result. The default connection uses a temporary Gradio tunnel so the sandboxed agent can reach OpenEnv's model proxy. Read the verifier result and the number of model calls:</p>
+<pre><code class="language-py"><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">from</span> pathlib <span class="hljs-keyword">import</span> Path
+
+result = json.loads(Path(<span class="hljs-string">"rollout.json"</span>).read_text())[<span class="hljs-number">0</span>]
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"Reward:"</span>, result[<span class="hljs-string">"reward"</span>])
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"Model calls:"</span>, result[<span class="hljs-string">"n_turns"</span>])
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"Error:"</span>, result[<span class="hljs-string">"error"</span>])
+</code></pre>
+<p>A reward of <code>None</code> means no verifier reward was produced; inspect <code>error</code> before interpreting the run as a model failure. This path expects Harbor task directories.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="nemo-gym-generate-responses-and-inspect-rewards" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#nemo-gym-generate-responses-and-inspect-rewards" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		NeMo Gym: generate responses and inspect rewards
+	</span>
+</h3>
+<p><a href="https://github.com/NVIDIA-NeMo/Gym" rel="nofollow">NeMo Gym</a> supports evaluation and RL training: its environments collect trajectories and compute rewards, while a training framework updates model weights. For example, the <a href="https://huggingface.co/datasets/nvidia/Nemotron-RL-instruction_following-structured_outputs">Structured Outputs dataset</a> pairs prompts with JSON schemas. Its verifier rewards schema adherence; it does not check whether the generated content is factually correct.</p>
+<p>The best part is that this gives one repo and one discussion tab where people report broken tasks from all major frameworks. So when an author fixes a bad test, every framework gets the fix on the next pull.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="tag-your-environment" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tag-your-environment" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Tag your environment
+	</span>
+</h2>
+<p>Open your dataset card and add this to the YAML header:</p>
+<pre><code>---
+pretty_name: Terminal-Bench 2.0
+tags:
+- rl-environment
+- harbor
+- verifiers
+---
+</code></pre>
+<p>That is the whole integration. Keep <code>rl-environment</code>, then list every framework that can load your files. If your environment works with a framework we have not registered yet, open a PR to the <a href="https://github.com/huggingface/huggingface.js/blob/main/packages/tasks/src/dataset-libraries.ts" rel="nofollow">list of supported libraries</a>.</p>
+<p>The <a href="https://huggingface.co/docs/hub/datasets-cards#declare-an-rl-environment-dataset">docs</a> have the full reference.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="already-on-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#already-on-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Already on the Hub
+	</span>
+</h2>
+<p>We opened PRs to tag some of the environments people already train on. If you maintain one of these, merge the PR and your environment shows up in the filter.</p>
+<p><strong>Harbor</strong></p>
+<ul>
+<li><a href="https://huggingface.co/datasets/AweAI-Team/BeyondSWE-harbor/discussions/1">BeyondSWE</a>: the BeyondSWE benchmark as Harbor task directories, one folder per instance.  </li>
+<li><a href="https://huggingface.co/datasets/Lego-X/Terminal-Lego-15k/discussions/1">Terminal-Lego</a>: Terminal-Bench-style tasks built from real StackOverflow issues, kept only after Docker round-trip verification.  </li>
+<li><a href="https://huggingface.co/datasets/harborframework/harbor-mix/discussions/2">Harbor-Mix</a>: 100 hard agentic tasks picked from the Harbor adapters pool, cheaper to run than a full multi-benchmark sweep.  </li>
+<li><a href="https://huggingface.co/datasets/FrontisAI/NatureBench-Harbor/discussions/2">NatureBench</a>: the 90 NatureBench tasks prebuilt for Harbor.</li>
+</ul>
+<p><strong>Verifiers</strong></p>
+<ul>
+<li><a href="https://huggingface.co/datasets/PrimeIntellect/Reverse-Text-RL/discussions/2">Reverse-Text-RL</a>: the small reversal task prime-rl uses in CI to debug RL training.  </li>
+<li><a href="https://huggingface.co/datasets/PrimeIntellect/Multi-SWE-RL-Verified/discussions/2">Multi-SWE-RL-Verified</a>: 2,232 of 4,703 Multi-SWE-RL rows that pass gold-patch validation across C, Go, Java, JavaScript, Rust, and TypeScript.  </li>
+<li><a href="https://huggingface.co/datasets/PrimeIntellect/R2E-Gym-Subset-Verified/discussions/1">R2E-Gym-Subset-Verified</a>: a verified R2E-Gym subset.  </li>
+<li><a href="https://huggingface.co/datasets/PrimeIntellect/Scale-SWE-Verified/discussions/2">Scale-SWE-Verified</a>: 17,202 of 20,181 Python issue-resolving tasks that give a clean reward signal end to end.</li>
+</ul>
+<p><strong>NeMo Gym</strong></p>
+<ul>
+<li><a href="https://huggingface.co/datasets/nvidia/Nemotron-RL-agent-workplace_assistant/discussions/3">Workplace Assistant</a>: a multi-step tool-use sandbox with five databases, 26 tools, and 690 business tasks.  </li>
+<li><a href="https://huggingface.co/datasets/nvidia/Nemotron-RL-instruction_following-structured_outputs/discussions/2">Structured Outputs</a>: instruction following with structured outputs.  </li>
+<li><a href="https://huggingface.co/datasets/nvidia/Nemotron-RL-CFBench-v1/discussions/2">CFBench</a>: multilingual constraint following.  </li>
+<li><a href="https://huggingface.co/datasets/nvidia/Nemotron-RL-SysBench-v1/discussions/1">SysBench</a>: multi-turn system message following.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="what-comes-next" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-comes-next" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What comes next
+	</span>
+</h2>
+<p>The first version generates one <code>default</code> snippet per framework. Per-config snippets are next, so a repo with several task sets can show the right command for each. After that we will look at structural detection for frameworks with strict layouts. It would also be really cool build custom task UIs, we’ve been experimenting with this here:</p>
+<figure class="image text-center">
+  <iframe src="https://fineenvs-rl-explorer.hf.space/" width="100%" height="700" frameborder="0" sandbox="allow-scripts" referrerpolicy="same-origin"></iframe>
+</figure>
+
+<p>The bigger goal is for framework tagging to be automatic everywhere. OpenEnv already does it on upload. If you maintain Harbor, Verifiers, Nemo Gym, or any other environment framework, add the tags in your push path. It is a few lines, and every environment your users publish becomes visible to everyone else.</p>
+<p>If you train agents, go browse the <a href="https://huggingface.co/datasets?other=rl-environment">filter</a>. If you build environments, publish and tag them, whether they cover coding, tool use, games, robotics, or another task. Include the files, a working run command, and the rule that produces the reward so others can use them. If your framework is missing, contribute it to the <a href="https://github.com/huggingface/huggingface.js/blob/main/packages/tasks/src/dataset-libraries.ts" rel="nofollow">list of supported libraries</a>.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">10</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/asyncgrpo-lora-hfjobs"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/asyncgrpo-lora-hfjobs/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">rl</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">trl</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Async GRPO with LoRA across HF Jobs: a bucket, a proxy, and no NCCL</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aminediroHF" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69a5684704dd904ad8fdf1c6/_AC_1juch3FyFgy7mHCYa.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 53</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/delta-weight-sync"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/delta-weight-sync/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">rl</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">trl</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Shipping a Trillion Parameters With a Hub Bucket: Delta Weight Sync in TRL</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aminediroHF" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69a5684704dd904ad8fdf1c6/_AC_1juch3FyFgy7mHCYa.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lewtun" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1594651707950-noauth.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+4</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 50</div><!--]--> <!--[0--><span class="whitespace-nowrap">May 27, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Frl-environments">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Frl-environments">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Frl-environments" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">40</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[0--><a href="/kashif" title="kashif"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[0--><a href="/burtenshaw" title="burtenshaw"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lhoestq" style="content-visibility:auto;"><!--[0--><a href="/lhoestq" title="lhoestq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e9ecfc04957053f60648a3e/UY4H1oMtmXVo1p-HnKV6l.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rajivmehtapy" style="content-visibility:auto;"><!--[0--><a href="/rajivmehtapy" title="rajivmehtapy"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1673701526502-60098a0f460b9e8842d93363.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MadMike477" style="content-visibility:auto;"><!--[0--><a href="/MadMike477" title="MadMike477"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68b232dcf6027d00161fb46c/FwXMNqgpoXBb2NWJ3X_Pq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="evijit" style="content-visibility:auto;"><!--[0--><a href="/evijit" title="evijit"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6413251362e6057cbb6259bd/k8UMg_tnorG_uCXidybZ7.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Tonic" style="content-visibility:auto;"><!--[0--><a href="/Tonic" title="Tonic"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62a3bb1cd0d8c2c2169f0b88/eT2TS0IlQbZtz-F_zHLz9.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lewtun" style="content-visibility:auto;"><!--[0--><a href="/lewtun" title="lewtun"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1594651707950-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[0--><a href="/qgallouedec" title="qgallouedec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="semioz" style="content-visibility:auto;"><!--[0--><a href="/semioz" title="semioz"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64bbd2b612afb2f119147528/jzr5_RAIkuhFzNmb9HMTc.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="xhluca" style="content-visibility:auto;"><!--[0--><a href="/xhluca" title="xhluca"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1633380224986-5fa9ff3ea13e063b8b2b60cb.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+28</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">10</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

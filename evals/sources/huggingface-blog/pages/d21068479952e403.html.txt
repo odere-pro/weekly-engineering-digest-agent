@@ -1,0 +1,1296 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by IBM Granite on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/XHWV2L_wZsFe3ekksCgvQ.webp" />
+
+		<meta property="og:title" content="Granite 4.2 LLMs: How They&#39;re Built" />
+
+		<meta property="og:description" content="A Blog post by IBM Granite on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/ibm-granite/granite-4-2" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/XHWV2L_wZsFe3ekksCgvQ.webp" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/ibm-granite/granite-4-2">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Granite 4.2 LLMs: How They&#39;re Built</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="granite-42-llms-how-theyre-built" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#granite-42-llms-how-theyre-built" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Granite 4.2 LLMs: How They're Built
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[-1--><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 25, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-granite%2Fgranite-4-2" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">127</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="bedkingsbury" style="content-visibility:auto;"><!--[0--><a href="/bedkingsbury" title="bedkingsbury"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f1769e8da6d3e95420fb6d/eDcW_M2L3YzfMaCJU5XXU.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kristunlee" style="content-visibility:auto;"><!--[0--><a href="/kristunlee" title="kristunlee"><img class="overflow-hidden rounded-full" alt="" src="/avatars/c321df95ef32bbc777f7a548a2a361c3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dkayser" style="content-visibility:auto;"><!--[0--><a href="/dkayser" title="dkayser"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/kudZhLf7A57UTUwo7nZ7n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dangxuanhongatIBM" style="content-visibility:auto;"><!--[0--><a href="/dangxuanhongatIBM" title="dangxuanhongatIBM"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/zHPZhLzz0234VbfhvOyE4.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="padusum" style="content-visibility:auto;"><!--[0--><a href="/padusum" title="padusum"><img class="overflow-hidden rounded-full" alt="" src="/avatars/59ca21bbf7cd7bac10ac0a12cb447560.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Violette" style="content-visibility:auto;"><!--[0--><a href="/Violette" title="Violette"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1638698875017-noauth.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+121</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/yousafshah"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Yousaf Shah's avatar" src="/avatars/1a8eca0ab4e6d04d78d8aaefbe2f0f1c.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/yousafshah"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Yousaf Shah">Yousaf Shah</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">yousafshah</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-granite" class="mr-1.5 flex-none" title="IBM Granite"><img class="rounded-sm! size-4 select-none" alt="IBM Granite's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/></a> <a href="/ibm-granite" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-granite</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/kswanand1"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Swanand Kadhe's avatar" src="/avatars/9103bce1c91f6ee6f7e6a51518bbc7c3.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/kswanand1"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Swanand Kadhe">Swanand Kadhe</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">kswanand1</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-granite" class="mr-1.5 flex-none" title="IBM Granite"><img class="rounded-sm! size-4 select-none" alt="IBM Granite's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/></a> <a href="/ibm-granite" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-granite</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/rmoulick"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Riddhiman Moulick's avatar" src="/avatars/23d7bddbfe7cc9e681716c2e562c593c.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/rmoulick"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Riddhiman Moulick">Riddhiman Moulick</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">rmoulick</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-granite" class="mr-1.5 flex-none" title="IBM Granite"><img class="rounded-sm! size-4 select-none" alt="IBM Granite's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/></a> <a href="/ibm-granite" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-granite</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ashish23"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Ashish Sunil Agrawal's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639582473d9ac9664fd436f5/yWH354yTLKVchFD2N498z.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ashish23"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Ashish Sunil Agrawal">Ashish Sunil Agrawal</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ashish23</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-granite" class="mr-1.5 flex-none" title="IBM Granite"><img class="rounded-sm! size-4 select-none" alt="IBM Granite's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/></a> <a href="/ibm-granite" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-granite</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sanborse"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="santosh borse's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63eeafcbbe5d5900b8512844/wZNzXUzGBbeEySnYA4uMZ.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sanborse"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="santosh borse">santosh borse</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sanborse</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-granite" class="mr-1.5 flex-none" title="IBM Granite"><img class="rounded-sm! size-4 select-none" alt="IBM Granite's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/></a> <a href="/ibm-granite" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-granite</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><em>A technical walkthrough of how we built the Granite 4.2 reasoning model family.</em></p>
+<p><strong>Authors:</strong> Granite Team, IBM</p>
+<hr>
+<p><strong>TL;DR:</strong> Granite 4.2 is our first family of dense, decoder-only reasoning LLMs, released in three sizes: <strong>3B, 8B, and 30B</strong>. These  models are post-trained from <a href="https://huggingface.co/collections/ibm-granite/granite-41-language-models">Granite-4.1</a> base models. <a href="https://huggingface.co/collections/ibm-granite/granite-41-language-models">Granite-4.1</a> base models were pre-trained from scratch on roughly 15T tokens with a five-phase strategy that extends the context window to 512K tokens, supervised fine-tuned on chain-of-thought, reasoning, and agentic-trajectory data, then post-trained with a <strong>multi-stage reinforcement learning pipeline</strong>. That pipeline includes agentic RL, where the 8B and 30B models learn to act with tools inside real sandboxed environments. Every model has a <strong>thinking / non-thinking</strong> switch, a <strong>low-effort</strong> thinking mode that spends a short reasoning budget on easy questions, and native tool calling. All Granite 4.2 models are released under the Apache 2.0 license.</p>
+<p><strong>Links:</strong></p>
+<ul>
+<li><a href="https://huggingface.co/collections/ibm-granite/granite-42-language-models">Granite 4.2 HF Collection</a></li>
+<li><a href="https://github.com/ibm-granite/granite-4.2-language-models" rel="nofollow">GitHub Repository</a></li>
+<li><a href="https://www.ibm.com/granite/docs/" rel="nofollow">Granite Docs</a></li>
+</ul>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="overview" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#overview" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Overview
+	</span>
+</h2>
+<p>Granite 4.2 is the reasoning-focused release of the Granite language-model family. Earlier Granite releases were strong instruction-following assistants; Granite 4.2 adds explicit reasoning. Every model can produce a chain of thought before its answer and can run in <strong>thinking</strong> or <strong>non-thinking</strong> mode depending on how much deliberation a task needs. A <strong>low-effort</strong> mode falls between the two, spending a short reasoning budget on easy questions.</p>
+<p>The three sizes (<strong>3B, 8B, and 30B</strong>) share the same architectural design and follow the same training pipeline (base model, SFT, then multi-stage RL), each at its own scale. All three are strong reasoners and instruction followers. The clearest capability split shows up in post-training. The <strong>8B and 30B</strong> models additionally go through an <strong>agentic RL</strong> block that teaches them to operate as agents: calling tools, editing and running code, driving a terminal, and searching the web inside real environments. Every model supports native tool calling. Served through an OpenAI-compatible endpoint (for example, with vLLM), it emits tool calls in the OpenAI function-calling format and plugs into agentic harnesses without extra glue. Granite 4.2 is also supported in SGLang, see the <a href="https://docs.sglang.io/cookbook/autoregressive/IBM/Granite-4.2" rel="nofollow">SGLang cookbook</a> for a ready-to-serve recipe.</p>
+
+
+<p>The rest of this post walks through the build: architecture, pre-training, supervised fine-tuning, the multi-stage RL pipeline, and results.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="model-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#model-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Model Architecture
+	</span>
+</h2>
+<p>Granite 4.2 models are built on a decoder-only dense transformer architecture with the following core components:</p>
+<ul>
+<li><strong>Attention:</strong> Grouped Query Attention (GQA) with 40 attention heads and 8 KV heads</li>
+<li><strong>Position Embedding:</strong> Rotary Position Embedding (RoPE) with θ = 10,000,000</li>
+<li><strong>Feed-Forward:</strong> MLP with SwiGLU activation</li>
+<li><strong>Normalization:</strong> RMSNorm (ε = 1e-5)</li>
+<li><strong>Embeddings:</strong> Separate input/output embeddings (not tied)</li>
+<li><strong>Precision:</strong> bfloat16</li>
+</ul>
+<table>
+<thead>
+  <tr>
+    <th style="text-align: left; background-color: #001d6c; color: white;">Component</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">3B Dense</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">8B Dense</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">30B Dense</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td style="text-align: left;">Embedding size</td>
+    <td style="text-align: center;">2560</td>
+    <td style="text-align: center;">4096</td>
+    <td style="text-align: center;">4096</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Number of layers</td>
+    <td style="text-align: center;">40</td>
+    <td style="text-align: center;">40</td>
+    <td style="text-align: center;">64</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Attention head size</td>
+    <td style="text-align: center;">64</td>
+    <td style="text-align: center;">128</td>
+    <td style="text-align: center;">128</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Number of attention heads</td>
+    <td style="text-align: center;">40</td>
+    <td style="text-align: center;">32</td>
+    <td style="text-align: center;">32</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Number of KV heads</td>
+    <td style="text-align: center;">8</td>
+    <td style="text-align: center;">8</td>
+    <td style="text-align: center;">8</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">MLP hidden size</td>
+    <td style="text-align: center;">8192</td>
+    <td style="text-align: center;">12800</td>
+    <td style="text-align: center;">32768</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">MLP activation</td>
+    <td style="text-align: center;">SwiGLU</td>
+    <td style="text-align: center;">SwiGLU</td>
+    <td style="text-align: center;">SwiGLU</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Sequence length</td>
+    <td style="text-align: center;">131072</td>
+    <td style="text-align: center;">131072</td>
+    <td style="text-align: center;">131072</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;">Position embedding</td>
+    <td style="text-align: center;">RoPE</td>
+    <td style="text-align: center;">RoPE</td>
+    <td style="text-align: center;">RoPE</td>
+  </tr>
+  <tr>
+    <td style="text-align: left;"># Parameters</td>
+    <td style="text-align: center;">3B</td>
+    <td style="text-align: center;">8B</td>
+    <td style="text-align: center;">30B</td>
+  </tr>
+</tbody></table>
+
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="pre-training" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#pre-training" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Pre-Training
+	</span>
+</h2>
+<p>Granite 4.2 models are post-trained from <a href="https://huggingface.co/collections/ibm-granite/granite-41-language-models">Granite-4.1</a> base models. <a href="https://huggingface.co/collections/ibm-granite/granite-41-language-models">Granite-4.1</a> base models were trained from scratch on approximately <strong>15 trillion tokens</strong> using a five-phase training strategy. Phases 1–2 focus on foundational pre-training, phases 3–4 perform mid-training with progressively higher-quality data annealing, and phase 5 introduces long-context training, extending the context window to <strong>512K tokens</strong>. Each phase uses a distinct data mixture and learning-rate schedule, gradually shifting from broad web-scale data toward more curated, high-quality sources.</p>
+<p>The pre-training recipe closely follows the previous generation; for a detailed treatment of the data blend, phase schedule, and long-context extension, see the <a href="https://huggingface.co/blog/ibm-granite/granite-4-1">Granite 4.1 blog</a>.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="sft-data-preparation--quality-control" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#sft-data-preparation--quality-control" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		SFT: Data Preparation &amp; Quality Control
+	</span>
+</h2>
+<p>Supervised fine-tuning (SFT) turns the base model into a reliable instruction-following, reasoning, and tool-using assistant. The SFT data mixture combines agentic (31.6%) and non-agentic (68.4%) data, totaling approximately 7.2 million samples, or roughly 100B tokens, of which about 65B are trainable.</p>
+<p>The <strong>agentic corpus</strong> covers a broad range of domains, including software engineering (SWE, 69%), tool calling (12.1%), terminal use (8.0%), math (3.5%), search (0.8%), and action (0.2%). These samples and trajectories are generated using a diverse set of agent scaffolds and harnesses, including OpenHands, OpenCode, Terminus-2, SWE-agent, OpenResearcher, MiniSWE, OpenSeeker, EnvScaler, Gemini CLI, Hermes, Codex, and Goose. The agentic data combines samples from both open-source datasets and our own synthetically generated RL environments, spanning a variety of agent–harness combinations.</p>
+<p>The <strong>non-agentic corpus</strong> consists of several major categories: instruction following (18.8%), coding (18.8%), math (14.6%), multilingual (7.0%), science (5.4%), reasoning (3.0%), and safety (0.8%).</p>
+<h3 class="relative group flex items-baseline">
+	<a id="data-quality-control" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#data-quality-control" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Data Quality Control
+	</span>
+</h3>
+<p>We apply multiple stages of quality control before a sample enters the final SFT mixture. First, data from different sources is normalized and reformatted into a consistent OpenAI Chat format, making the conversation structure and tool interactions uniform across datasets and scaffolds.</p>
+<p>We then use GPT-OSS-120B and Gemma 4 as LLM-based judges to assess sample quality. Low-scoring samples are removed, as are samples containing hallucinated or fabricated information, invalid tool interactions, or tool calls to functions that are not defined in the corresponding tool list. Several targeted, dataset-specific heuristic rules are also applied where appropriate to further improve quality and remove known sources of noise.</p>
+<p>Finally, we perform both local and global deduplication. Deduplication is based on SHA-256 hashes computed over the combination of the <code>tools</code> and <code>messages</code> fields, removing duplicate samples both within individual data sources and across the overall SFT mixture.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="sft-training-details" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#sft-training-details" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		SFT Training Details
+	</span>
+</h3>
+<p>The complete corpus is first globally shuffled to reduce ordering effects and ensure that samples from different domains are well mixed during training. The shuffled corpus is then partitioned into equally sized <code>.parquet</code> shards, which are tokenized using the model's tokenizer and chat template and prepared for large-scale distributed training.</p>
+<p>Before launching the final large-scale runs, we tune hyperparameters on representative configurations, sweeping learning-rate schedules, initial learning rates, and warm-up ratios to find settings that train stably across model sizes. The final training configuration is summarized below:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>Compute</td>
+<td>32–128 nodes (by model size), 4× Grace/GB200 per node</td>
+</tr>
+<tr>
+<td>Sequence length (packed)</td>
+<td>131,072 (128K)</td>
+</tr>
+<tr>
+<td>Global batch size</td>
+<td>128</td>
+</tr>
+<tr>
+<td>Learning rate</td>
+<td>1.0e-5, constant after warm-up; 3.0e-6 for Phase 2</td>
+</tr>
+<tr>
+<td>LR warm-up</td>
+<td>2.5% of <code>train_iters</code></td>
+</tr>
+<tr>
+<td>Training duration</td>
+<td>~2 epochs</td>
+</tr>
+<tr>
+<td>Parallelism</td>
+<td>TP=2, PP=1, CP=4 or CP=2</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="phase-2-sft-for-the-30b-model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#phase-2-sft-for-the-30b-model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Phase 2 SFT for the 30B Model
+	</span>
+</h3>
+<p>For the 30B model, we additionally perform a second phase of SFT focused specifically on agentic coding. In this phase, agentic, SWE, and coding data are upsampled to increase their effective contribution to the training distribution, while approximately 16% of the mixture is retained as replay data from the original SFT corpus.</p>
+<p>The 30B model is then fine-tuned for roughly one additional epoch at a lower learning rate of 3.0e-6. This targeted second phase increases the model's exposure to agentic coding trajectories without discarding the capabilities acquired during the initial SFT phase.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="reinforcement-learning-a-multi-stage-multi-environment-pipeline" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#reinforcement-learning-a-multi-stage-multi-environment-pipeline" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Reinforcement Learning: A Multi-Stage, Multi-Environment Pipeline
+	</span>
+</h2>
+<p>After SFT, we apply a <strong>multi-stage, multi-environment reinforcement learning pipeline</strong>. Rather than a single RL pass, we run a <em>chain</em> of focused stages spanning many environments: math, code, science, instruction following, tool use, and structured output, then software engineering, terminal use, and web search. Each stage is an independent RL run that targets one capability and warm-starts from the previous stage's checkpoint.</p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/TuxEn5hma0bQf3-z_Ab6c.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/TuxEn5hma0bQf3-z_Ab6c.png" alt="Granite 4.2 staged RL curriculum"></a></p>
+<p><em>Figure 1. The staged RL curriculum. Foundational RL (verifiable rewards + skill boosters) runs for all sizes; the agentic RL block (SWE → Terminal → Search) runs for 8B and 30B only. Every model finishes with RLHF. Each stage is a separate GRPO run that warm-starts from the previous checkpoint.</em></p>
+<h3 class="relative group flex items-baseline">
+	<a id="training-methodology" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-methodology" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training Methodology
+	</span>
+</h3>
+<p>Every stage trains with <strong>asynchronous GRPO</strong> (<a href="https://arxiv.org/abs/2402.03300" rel="nofollow">Group Relative Policy Optimization</a>), so the generator and trainer halves of the loop never block on each other. A pool of generation workers keeps sampling responses and dropping the finished trajectories into a shared buffer; once the buffer holds a full step's worth, the trainer pulls that batch, takes an optimizer step, and streams the updated parameters back to the generator workers without pausing them. A refresh can land partway through a rollout, leaving a single trajectory stitched together from two adjacent policy versions. We allow this instead of paying to prevent it: the workers reuse their existing KV cache rather than rebuilding it after each refresh, and the one guardrail is a limit that keeps them from drifting more than a single update behind the trainer, which bounds how off-policy any sample can get. Whatever mismatch survives that limit is handled in the objective by <em>truncated importance sampling</em>, which clamps the train-versus-generation log-probability ratio to a fixed ceiling so a handful of stale tokens cannot dominate an update.</p>
+<p>Advantages are group-relative with a <strong>leave-one-out baseline</strong>: each response is judged against the mean reward of the <em>other</em> samples drawn for the same prompt, which removes the need for a separate value network. To make this concrete, take <strong>RLVR</strong>, the first and longest-running stage: each step pairs <strong>256 prompts</strong> with <strong>16 sampled responses apiece</strong> for a <strong>4,096</strong>-example batch, which the trainer consumes in a single optimizer step before the next rollout begins. Later stages keep this machinery unchanged and adjust only the per-stage shape, shown next.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="rl-training-configuration" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#rl-training-configuration" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		RL training configuration
+	</span>
+</h4>
+<p>The pipeline keeps a common backbone of hyperparameters across every stage, which makes the curriculum easier to run and compare. A handful of knobs are fixed everywhere:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Parameter</th>
+<th>Value (shared across stages)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>Algorithm</td>
+<td>GRPO (no value network; group-relative advantages)</td>
+</tr>
+<tr>
+<td>Training stack</td>
+<td>NeMo-RL (Megatron-Core + vLLM) with NeMo-Gym environments</td>
+</tr>
+<tr>
+<td>Ratio clip (min / max)</td>
+<td>0.2 / 0.28</td>
+</tr>
+<tr>
+<td>Micro-batch size</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Parallelism</td>
+<td>tensor-parallel 2–4; no pipeline- or context-parallelism</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>What changes from stage to stage is the <em>shape</em> of each run: how many prompts and generations per step, how long the context is, whether the agent loop runs, and how hard we pull back toward the reference policy. The table below gives the exact settings for the <strong>30B</strong> chain, stage by stage:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Stage</th>
+<th align="center">Prompts/step</th>
+<th align="center">Gens/prompt</th>
+<th align="center">Max seq len</th>
+<th align="center">Rollout turns</th>
+<th align="center">KL</th>
+<th align="center">LR</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>RLVR (×3)</td>
+<td align="center">256</td>
+<td align="center">16</td>
+<td align="center">64K</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>IF booster</td>
+<td align="center">256</td>
+<td align="center">16</td>
+<td align="center">64K</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>Code booster</td>
+<td align="center">64</td>
+<td align="center">16</td>
+<td align="center">64K</td>
+<td align="center">1</td>
+<td align="center">0.05</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>SWE 1</td>
+<td align="center">64</td>
+<td align="center">16</td>
+<td align="center">128K</td>
+<td align="center">1</td>
+<td align="center">0.01</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>SWE 2</td>
+<td align="center">32</td>
+<td align="center">16</td>
+<td align="center">128K</td>
+<td align="center"><strong>128</strong></td>
+<td align="center">0</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td align="center">8</td>
+<td align="center">32</td>
+<td align="center">64K</td>
+<td align="center"><strong>64</strong></td>
+<td align="center">0.01</td>
+<td align="center"><strong>1e-6</strong></td>
+</tr>
+<tr>
+<td>Search</td>
+<td align="center">32</td>
+<td align="center">16</td>
+<td align="center">128K</td>
+<td align="center"><strong>64</strong></td>
+<td align="center">0.01</td>
+<td align="center">5e-7</td>
+</tr>
+<tr>
+<td>RLHF</td>
+<td align="center">128</td>
+<td align="center">16</td>
+<td align="center">48K</td>
+<td align="center">1</td>
+<td align="center">0.05</td>
+<td align="center">5e-7</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><em>Parameters shown for the 30B model. Global batch size = prompts/step × generations/prompt (e.g. 256 × 16 = 4096 for RLVR). The 3B and 8B models use the same recipe and hyperparameters with <strong>fewer stages</strong> (see <a href="#how-the-three-sizes-differ" rel="nofollow">How the Three Sizes Differ</a>); the stage list is what changes, not the knobs.</em></p>
+<p>The <strong>KL schedule</strong> follows the reward type: explore freely where the reward is objective and verifiable (RLVR and SWE 2 run at KL 0), and stay close to the reference where the objective is preference, safety, or a narrow skill graft (RLHF and the code booster use KL 0.05). The <strong>rollout-turns</strong> column counts the environment interactions <em>GRPO itself</em> sees per rollout. In every case the model is trained on complete, real-environment trajectories.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-staged-curriculum" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-staged-curriculum" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Staged Curriculum
+	</span>
+</h3>
+<p>Each stage is a separate RL run with a single objective and its own reward signal. When it finishes, its policy is exported to Hugging Face format and becomes the base model for the next stage, so the pipeline is a sequence of warm-starts:</p>
+<pre><code>SFT ─▶ RLVR ─▶ Skill boosters ─▶ SWE agent ─▶ Terminal ─▶ Search ─▶ RLHF
+      └──────── foundational RL ────────┘   └──────── agentic RL (8B / 30B) ────────┘
+</code></pre>
+<p>The <strong>8B and 30B</strong> models follow the full ladder. The <strong>3B</strong> model takes a shortened path: foundational RL and alignment, without the agentic block.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="reward-signals" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#reward-signals" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Reward Signals
+	</span>
+</h3>
+<p>A stage is defined mostly by <em>how it is rewarded</em>. Across the pipeline there are three reward types, and a single stage can use more than one:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Reward type</th>
+<th>What it measures</th>
+<th>Used in</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><strong>Verifiable</strong></td>
+<td>Exact-match, unit tests, format checkers, rule-based checkers on ground truth</td>
+<td>RLVR · boosters · SWE</td>
+</tr>
+<tr>
+<td><strong>Reward model / LLM judge</strong></td>
+<td>Open-ended quality, preference, safety, answer correctness</td>
+<td>RLVR · Search · RLHF</td>
+</tr>
+<tr>
+<td><strong>Agentic outcome</strong></td>
+<td>Did the model actually solve a task in a real environment?</td>
+<td>SWE · Terminal · Search</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Verifiable rewards are objective and hard to game, so the pipeline front-loads them. Judge- and preference-based rewards handle open-ended qualities that no checker can express. Agentic-outcome rewards are the sparsest: often a single bit at the end of a long tool-use trajectory.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="foundational-rl-build-the-skills" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#foundational-rl-build-the-skills" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Foundational RL: Build the Skills
+	</span>
+</h3>
+<h4 class="relative group flex items-baseline">
+	<a id="rlvr-verifiable-reward-rl" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#rlvr-verifiable-reward-rl" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		RLVR: verifiable-reward RL
+	</span>
+</h4>
+<p>RLVR is the foundational stage and the broadest data mix in the pipeline: a single blended dataset spanning many verifiable domains.</p>
+<ul>
+<li><strong>Math:</strong> chain-of-thought with boxed-answer checking, plus formal proving in <strong>Lean</strong></li>
+<li><strong>Competitive coding:</strong> solutions checked against hidden tests in a sandbox</li>
+<li><strong>STEM / graduate-level science MCQA</strong> and general knowledge</li>
+<li><strong>Instruction following:</strong> structured-output and inverse-instruction tasks</li>
+<li><strong>Tool / function calling:</strong> single-step tool use</li>
+<li><strong>Reasoning puzzles</strong> and <strong>abstention</strong> (knowing when to refuse)</li>
+</ul>
+<p>Each task type carries its own verifier, so the reward is grounded per example. RLVR runs for <strong>two rounds on 3B and 8B, and three on 30B</strong>. Each round is a fresh warm-started run on a re-weighted mix of public and internally curated RL data.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="skill-boosters-targeted-lifts" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#skill-boosters-targeted-lifts" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Skill boosters: targeted lifts
+	</span>
+</h4>
+<p>After RLVR, a few short <strong>booster</strong> stages sharpen specific capabilities that benefit from concentrated training focusing on the following domains:</p>
+<ul>
+<li><strong>Instruction following (IF):</strong> multi-turn chat, inverse-IFEval, structured outputs</li>
+<li><strong>Code:</strong> competitive coding only</li>
+</ul>
+<p>Boosters are small, focused runs. A light KL penalty keeps the model close to its current behavior while nudging one skill. </p>
+
+
+<h3 class="relative group flex items-baseline">
+	<a id="agentic-rl-learning-to-act-8b--30b" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#agentic-rl-learning-to-act-8b--30b" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Agentic RL: Learning to Act (8B / 30B)
+	</span>
+</h3>
+<p>In the agentic stages the model learns to <strong>act</strong>: call tools, observe results, and iterate inside a real environment, rewarded on whether the task was actually solved. These stages share the same shape: multi-turn tool use, real (not simulated) environments, sparse outcome rewards, and GRPO, warm-started from the coding-boosted checkpoint. They run in order: <strong>SWE → Terminal → Search</strong>.</p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/FxSMYasHnR4vpv263_DAL.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/FxSMYasHnR4vpv263_DAL.png" alt="Agentic RL environments"></a></p>
+<p><em>Figure 2. The three agentic-RL environments. Each pairs a real harness with a real environment and a sparse, outcome-based reward. The 3B model runs none of these.</em></p>
+<ul>
+<li><strong>SWE agent (software engineering).</strong> Each task is a real repository in its own sandbox. Driven by the <a href="https://github.com/All-Hands-AI/OpenHands" rel="nofollow">OpenHands</a> harness, the model reads code, edits files, and runs the test suite over many internal turns. The reward is verifiable: do the hidden tests pass? Tasks are drawn from open-source SWE datasets, each instance backed by a per-repo container image.</li>
+<li><strong>Terminal agent (terminal / OS operation).</strong> Multi-step tasks in a live shell, run through the Harbor / <a href="https://www.harborframework.com/docs/agents/terminus-2" rel="nofollow">Terminus-2</a> agent harness. The model plans a sequence of commands, observes their output, and recovers from errors. Reward is assigned when the task completed successfully. This is the one stage that drives its multi-turn agent loop at the GRPO level, with rollouts spanning up to 64 environment turns.</li>
+<li><strong>Search agent (deep research).</strong> The model answers hard, multi-hop questions using live web-search tool calls inside a browsing agent loop: gather evidence across hops, reason over it, and produce an answer. Because correctness here is open-ended, the reward is an LLM judge on the final answer.</li>
+</ul>
+<h3 class="relative group flex items-baseline">
+	<a id="alignment-rlhf" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#alignment-rlhf" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Alignment: RLHF
+	</span>
+</h3>
+<p>The final stage of every model is <strong>RLHF for human preference and safety.</strong> It optimizes against a generative reward model (GenRM) for preference, plus a safety reward covering jailbreak resistance and appropriate refusals. This stage uses the highest KL penalty in the pipeline, aligning tone and safety without eroding the capabilities the earlier stages built. In addition to human preference and safety alignment, this stage also applies a reasoning-length penalty to discourage overly verbose reasoning behavior acquired during earlier stages.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="how-the-three-sizes-differ" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-the-three-sizes-differ" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How the Three Sizes Differ
+	</span>
+</h3>
+<p>Same method and infrastructure; the difference is how far up the ladder each model goes.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Stage</th>
+<th align="center">3B</th>
+<th align="center">8B</th>
+<th align="center">30B</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><strong>RLVR</strong> (verifiable)</td>
+<td align="center">×2</td>
+<td align="center">×2</td>
+<td align="center">×3</td>
+</tr>
+<tr>
+<td><strong>Skill boosters</strong></td>
+<td align="center">code</td>
+<td align="center">IF · GPQA · code</td>
+<td align="center">IF · code</td>
+</tr>
+<tr>
+<td><strong>SWE agent</strong></td>
+<td align="center">—</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td><strong>Terminal agent</strong></td>
+<td align="center">—</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td><strong>Search agent</strong></td>
+<td align="center">—</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td><strong>RLHF</strong> (preference + safety)</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>3B is a strong foundational-RL model; 8B and 30B add the agentic-RL block on top, learning to act with tools in real environments.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="agentic-ai-infrastructure-for-scalable-rl" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#agentic-ai-infrastructure-for-scalable-rl" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Agentic AI Infrastructure for Scalable RL
+	</span>
+</h2>
+<p>Reinforcement learning at this scale needs infrastructure that can drive a training loop and a fleet of live environments at the same time. This matters most in the agentic stages, where every training example is a multi-turn rollout that edits code, runs commands, or browses the web. Granite 4.2's RL runs on two open components: <strong><a href="https://github.com/NVIDIA-NeMo/RL" rel="nofollow">NeMo-RL</a></strong> on the training side and <strong><a href="https://github.com/NVIDIA-NeMo/gym" rel="nofollow">NeMo-Gym</a></strong> on the rollout side.</p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/ceRxgjK0m0kVHp1iJ7P34.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/ceRxgjK0m0kVHp1iJ7P34.png" alt="NeMo-RL + NeMo-Gym system architecture"></a></p>
+<p><em>Figure 3. The RL system. NeMo-RL drives the GRPO loop (Megatron-Core training backend, vLLM generation, and Megatron-Bridge for HF⇄Megatron weight conversion). NeMo-Gym orchestrates rollouts and hosts the tools, sandboxes, and reward/verifier calls as pluggable <strong>Resources</strong>.</em></p>
+<p>The division of labor:</p>
+<ul>
+<li><strong>NeMo-RL (training side).</strong> <a href="https://github.com/NVIDIA/Megatron-LM" rel="nofollow">Megatron-Core</a> is the training backend; <a href="https://github.com/vllm-project/vllm" rel="nofollow">vLLM</a> generates rollouts; <strong>Megatron-Bridge</strong> converts weights between Megatron and Hugging Face formats, so each stage can export a clean HF checkpoint for the next one.</li>
+<li><strong>NeMo-Gym (rollout side).</strong> It exposes each environment as a set of <strong>Resources</strong> (verifiers, tools, sandboxes, and reward models) behind a uniform interface. This is the plug point for the agentic stages: the SWE repo sandboxes, the terminal harness, and the web-search tools all attach here, and to the training loop they look the same as a simple math verifier.</li>
+</ul>
+<p>That uniformity is what makes the staged curriculum above practical: a booster's rule-based checker and a full SWE sandbox present the same interface to GRPO.</p>
+<p>This split is also what makes the <strong>asynchronous</strong> training loop described above physically possible: generation and policy updates live on separate GPU pools, so the expensive generation fleet — including the live agentic environments — stays busy instead of idling through optimizer steps.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="results" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#results" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Results
+	</span>
+</h2>
+<p>Granite 4.2 was evaluated across agentic coding, general agentic and tool use, reasoning, chat and instruction following, and long context. The full benchmark table is below, followed by charts that break out the headline results by model size.</p>
+<table>
+<thead>
+  <tr>
+    <th style="text-align: left; background-color: #001d6c; color: white;">Task</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">3B Dense</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">8B Dense</th>
+    <th style="text-align: center; background-color: #001d6c; color: white;">30B Dense</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+  <td colspan="4" style="text-align: center; font-style: italic;">Agentic (Coding)</td>
+</tr>
+<tr>
+    <td>SWE Bench Multilingual</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">30.78</td><td style="text-align: center;">41.89</td>
+</tr>
+<tr>
+    <td>SWE Bench Pro</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">19.11</td><td style="text-align: center;">33.29</td>
+</tr>
+<tr>
+    <td>SWE Bench Verified</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">47.67</td><td style="text-align: center;">57.00</td>
+</tr>
+<tr>
+    <td>Terminal-Bench 2.1</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">20.56</td><td style="text-align: center;">29.24</td>
+</tr>
+<tr>
+  <td colspan="4" style="text-align: center; font-style: italic;">Agentic (General)</td>
+</tr>
+<tr>
+    <td>τ³-bench</td>
+    <td style="text-align: center;">45.78</td>
+    <td style="text-align: center;">58.06</td><td style="text-align: center;">62.00</td>
+</tr>
+<tr>
+    <td>BFCL (v4)</td>
+    <td style="text-align: center;">52.41</td>
+    <td style="text-align: center;">50.29</td><td style="text-align: center;">61.39</td>
+</tr>
+<tr>
+    <td>ProfBench</td>
+    <td style="text-align: center;">32.10</td>
+    <td style="text-align: center;">41.20</td><td style="text-align: center;">42.90</td>
+</tr>
+<tr>
+    <td>BirdBench</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">41.07</td><td style="text-align: center;">41.85</td>
+</tr>
+<tr>
+    <td>GDPval</td>
+    <td style="text-align: center;">NA</td>
+    <td style="text-align: center;">1189.00</td><td style="text-align: center;">1225.00</td>
+</tr>
+<tr>
+  <td colspan="4" style="text-align: center; font-style: italic;">Reasoning</td>
+</tr>
+<tr>
+    <td>AIME25</td>
+    <td style="text-align: center;">78.33</td>
+    <td style="text-align: center;">86.67</td><td style="text-align: center;">89.17</td>
+</tr>
+<tr>
+    <td>HMMT Feb25</td>
+    <td style="text-align: center;">66.67</td>
+    <td style="text-align: center;">78.33</td><td style="text-align: center;">89.17</td>
+</tr>
+<tr>
+    <td>GPQA</td>
+    <td style="text-align: center;">54.80</td>
+    <td style="text-align: center;">64.14</td><td style="text-align: center;">66.41</td>
+</tr>
+<tr>
+    <td>LiveCodeBench v6</td>
+    <td style="text-align: center;">69.71</td>
+    <td style="text-align: center;">73.24</td><td style="text-align: center;">75.77</td>
+</tr>
+<tr>
+    <td>SciCode</td>
+    <td style="text-align: center;">24.11</td>
+    <td style="text-align: center;">36.09</td><td style="text-align: center;">38.76</td>
+</tr>
+<tr>
+  <td colspan="4" style="text-align: center; font-style: italic;">Chat &amp; Instruction Following</td>
+</tr>
+<tr>
+    <td>MMLU-Pro</td>
+    <td style="text-align: center;">67.84</td>
+    <td style="text-align: center;">74.04</td><td style="text-align: center;">77.60</td>
+</tr>
+<tr>
+    <td>MMLU-ProX lite (IBM)</td>
+    <td style="text-align: center;">27.78</td>
+    <td style="text-align: center;">61.06</td><td style="text-align: center;">66.64</td>
+</tr>
+<tr>
+    <td>Arena-Hard-V2</td>
+    <td style="text-align: center;">34.96</td>
+    <td style="text-align: center;">65.19</td><td style="text-align: center;">67.93</td>
+</tr>
+<tr>
+    <td>IFBench (prompt)</td>
+    <td style="text-align: center;">74.33</td>
+    <td style="text-align: center;">79.33</td><td style="text-align: center;">77.17</td>
+</tr>
+<tr>
+  <td colspan="4" style="text-align: center; font-style: italic;">Long Context</td>
+</tr>
+<tr>
+    <td>RULER 64K</td>
+    <td style="text-align: center;">67.52</td>
+    <td style="text-align: center;">80.99</td><td style="text-align: center;">89.96</td>
+</tr>
+<tr>
+    <td>RULER 128K</td>
+    <td style="text-align: center;">55.30</td>
+    <td style="text-align: center;">71.41</td><td style="text-align: center;">81.38</td>
+</tr>
+</tbody></table>
+
+<p><strong>Supported languages:</strong> English, German, Spanish, French, Japanese, Portuguese, Arabic, Czech, Italian, Korean, Dutch, and Chinese.</p>
+<p>The charts below break these results out by capability area.</p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/u4p7x5-U_7Qj9w-ovsZ7D.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/u4p7x5-U_7Qj9w-ovsZ7D.png" alt="Reasoning benchmarks"></a></p>
+<p><em>Figure 4. Reasoning (pass@1). Scores rise consistently with model size across math (AIME25, HMMT), science (GPQA), and code reasoning (LiveCodeBench, SciCode).</em></p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/CH5Aqnjba9hHlBteGNvw0.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/CH5Aqnjba9hHlBteGNvw0.png" alt="Agentic coding benchmarks"></a></p>
+<p><em>Figure 5. Agentic coding resolve rates. The agentic-RL block is trained only for 8B and 30B; the 30B model leads across SWE-Bench variants and Terminal-Bench.</em></p>
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/mXZuw86XqEvna7Rm2OcTi.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/65cc2c288ebd392213e58899/mXZuw86XqEvna7Rm2OcTi.png" alt="General agentic and tool-use benchmarks"></a></p>
+<p><em>Figure 6. General agentic and tool-use benchmarks, reported for all three sizes.</em></p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="quantization" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#quantization" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Quantization
+	</span>
+</h2>
+<p>We also released four quantized variants of the Granite 4.2 models for inference with vLLM. The models are converted to FP8, NVFP4, and MXFP4 using LLM Compressor, and to the GGUF format using the llama.cpp framework for reduced-memory deployment.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="fp8" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#fp8" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		FP8
+	</span>
+</h3>
+<p>The FP8 version is quantized with dynamic per-channel weights and per-token activations.  No calibration is used.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="fp4" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#fp4" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		FP4
+	</span>
+</h3>
+<p>The NVFP4 and MXFP4 versions are quantized using GPTQ calibrated on 2K samples drawn from the SFT dataset.  Max context length is 2K during calibration.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="gguf" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#gguf" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		GGUF
+	</span>
+</h3>
+<p>Conversion of the Granite 4.2 models to GGUF is done with the canonical llama.cpp tool as described in <a href="https://github.com/IBM/gguf#gguf-conversion--quantization" rel="nofollow">https://github.com/IBM/gguf#gguf-conversion--quantization</a>.</p>
+<p>Several GGUF formats are provided:</p>
+<ul>
+<li>Q8_0</li>
+<li>Q6_K</li>
+<li>Q5_K_S</li>
+<li>Q5_K_M</li>
+<li>Q5_1</li>
+<li>Q5_0</li>
+<li>Q4_K_S</li>
+<li>Q4_K_M</li>
+<li>Q4_1</li>
+<li>Q4_0</li>
+<li>Q3_K_S</li>
+<li>Q3_K_M</li>
+<li>Q3_K_L</li>
+<li>Q2_K</li>
+</ul>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="infrastructure" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#infrastructure" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Infrastructure
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="hardware" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hardware" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hardware
+	</span>
+</h3>
+<p>We trained the Granite 4.2 language models on an NVIDIA GB200 NVL72 cluster hosted by CoreWeave, featuring:</p>
+<ul>
+<li>A 72-GPU NVLink domain for high-speed intra-rack communication</li>
+<li>A non-blocking Fat-Tree NDR 400 Gb/s InfiniBand fabric for full-bandwidth inter-rack connectivity</li>
+<li>Thousands of GPUs operating at cluster scale</li>
+</ul>
+<p>This infrastructure delivers the high-bandwidth, low-latency communication required for efficient large-scale distributed training.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="software-stack" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#software-stack" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Software Stack
+	</span>
+</h3>
+<p>The training software stack is packaged into <code>.sqsh</code> container images, each giving a run a reproducible, portable environment with its SBSA-compatible CUDA targets, Linux aarch64 Python wheels, and GPU-specific binaries pinned. The large-scale SFT runs build on an NGC PyTorch base image (Ubuntu 22.04, CUDA 12.8, Python 3.12); the RL stack runs in its own NeMo-RL container.</p>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started-transformers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started-transformers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting Started (Transformers)
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="installation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#installation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Installation
+	</span>
+</h3>
+<pre><code class="language-bash">pip install torch
+pip install accelerate transformers
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="basic-inference-thinking-mode" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#basic-inference-thinking-mode" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Basic Inference (Thinking Mode)
+	</span>
+</h3>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer
+
+model_path = <span class="hljs-string">"ibm-granite/granite-4.2-30b"</span>
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForCausalLM.from_pretrained(model_path, device_map=<span class="hljs-string">"cuda"</span>, torch_dtype=torch.bfloat16)
+model.<span class="hljs-built_in">eval</span>()
+
+messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"How many r's are in the word 'strawberry'?"</span>},
+]
+
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>, enable_thinking=<span class="hljs-literal">True</span>)
+inputs = tokenizer(text, return_tensors=<span class="hljs-string">"pt"</span>).to(model.device)
+
+<span class="hljs-keyword">with</span> torch.no_grad():
+    output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">8192</span>, temperature=<span class="hljs-number">1.0</span>, top_p=<span class="hljs-number">0.95</span>, do_sample=<span class="hljs-literal">True</span>)
+
+<span class="hljs-built_in">print</span>(tokenizer.decode(output[<span class="hljs-number">0</span>][inputs.input_ids.shape[-<span class="hljs-number">1</span>]:], skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<details>
+<summary><b>Example Output</b></summary>
+
+<pre><code>&lt;think&gt;
+Okay, let's see. The problem is to find how many 'r's are in the word 'strawberry'.
+
+First, I need to write out the word: s t r a w b e r r y.
+
+Now, I need to count the number of 'r' letters. Let's list each letter and check for 'r'.
+
+1. s – not r
+2. t – not r
+3. r – yes, that's one
+4. a – no
+5. w – no
+6. b – no
+7. e – no
+8. r – yes, that's two
+9. r – yes, that's three
+10. y – no
+
+Total r's = 3.
+&lt;/think&gt;
+There are **3** r's in the word "strawberry".&lt;|im_end|&gt;
+</code></pre>
+</details>
+
+<h3 class="relative group flex items-baseline">
+	<a id="non-thinking-mode" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#non-thinking-mode" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Non-Thinking Mode
+	</span>
+</h3>
+<pre><code class="language-python">messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is the capital of France?"</span>},
+]
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>, enable_thinking=<span class="hljs-literal">False</span>)
+inputs = tokenizer(text, return_tensors=<span class="hljs-string">"pt"</span>).to(model.device)
+
+output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">2048</span>, temperature=<span class="hljs-number">1.0</span>, top_p=<span class="hljs-number">0.95</span>, do_sample=<span class="hljs-literal">True</span>)
+<span class="hljs-built_in">print</span>(tokenizer.decode(output[<span class="hljs-number">0</span>][inputs.input_ids.shape[-<span class="hljs-number">1</span>]:], skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<details>
+<summary><b>Example Output</b></summary>
+
+<pre><code>&lt;think&gt;&lt;/think&gt;The capital of France is Paris.&lt;|im_end|&gt;
+</code></pre>
+</details>
+
+<h3 class="relative group flex items-baseline">
+	<a id="low-effort-thinking" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#low-effort-thinking" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Low-Effort Thinking
+	</span>
+</h3>
+<pre><code class="language-python">messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is 2 + 2?"</span>},
+]
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>,
+                                     enable_thinking=<span class="hljs-literal">True</span>, low_effort=<span class="hljs-literal">True</span>)
+inputs = tokenizer(text, return_tensors=<span class="hljs-string">"pt"</span>).to(model.device)
+
+output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">4096</span>, temperature=<span class="hljs-number">1.0</span>, top_p=<span class="hljs-number">0.95</span>, do_sample=<span class="hljs-literal">True</span>)
+<span class="hljs-built_in">print</span>(tokenizer.decode(output[<span class="hljs-number">0</span>][inputs.input_ids.shape[-<span class="hljs-number">1</span>]:], skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<details>
+<summary><b>Example Output</b></summary>
+
+<pre><code>&lt;think&gt;
+Simple answer.
+&lt;/think&gt;
+2 + 2 = 4.&lt;|im_end|&gt;
+</code></pre>
+</details>
+
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="tool-calling" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tool-calling" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Tool Calling
+	</span>
+</h2>
+<p>Granite models support tool calling with integrated reasoning: the model reasons about which tool to call and why before calling it. Tools are defined with the <a href="https://platform.openai.com/docs/guides/function-calling" rel="nofollow">OpenAI function definition schema</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="basic-tool-calling" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#basic-tool-calling" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Basic Tool Calling
+	</span>
+</h3>
+<pre><code class="language-python">tools = [
+    {
+        <span class="hljs-string">"type"</span>: <span class="hljs-string">"function"</span>,
+        <span class="hljs-string">"function"</span>: {
+            <span class="hljs-string">"name"</span>: <span class="hljs-string">"get_current_weather"</span>,
+            <span class="hljs-string">"description"</span>: <span class="hljs-string">"Get the current weather for a specified city."</span>,
+            <span class="hljs-string">"parameters"</span>: {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+                <span class="hljs-string">"properties"</span>: {
+                    <span class="hljs-string">"city"</span>: {<span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>, <span class="hljs-string">"description"</span>: <span class="hljs-string">"Name of the city"</span>}
+                },
+                <span class="hljs-string">"required"</span>: [<span class="hljs-string">"city"</span>]
+            }
+        }
+    }
+]
+
+messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What's the weather like in Boston right now?"</span>},
+]
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, tools=tools,
+                                     add_generation_prompt=<span class="hljs-literal">True</span>, enable_thinking=<span class="hljs-literal">True</span>)
+inputs = tokenizer(text, return_tensors=<span class="hljs-string">"pt"</span>).to(model.device)
+
+output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">4096</span>, temperature=<span class="hljs-number">1.0</span>, top_p=<span class="hljs-number">0.95</span>, do_sample=<span class="hljs-literal">True</span>)
+<span class="hljs-built_in">print</span>(tokenizer.decode(output[<span class="hljs-number">0</span>][inputs.input_ids.shape[-<span class="hljs-number">1</span>]:], skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<details>
+<summary><b>Example Output</b></summary>
+
+<pre><code>&lt;think&gt;
+Okay, the user is asking for the weather in Boston right now. Let me check the tools
+available. There's a function called get_current_weather that takes a city parameter.
+I need to call that with the city set to Boston.
+&lt;/think&gt;
+&lt;tool_call&gt;
+&lt;function=get_current_weather&gt;
+&lt;parameter=city&gt;
+Boston
+&lt;/parameter&gt;
+&lt;/function&gt;
+&lt;/tool_call&gt;
+&lt;|im_end|&gt;
+</code></pre>
+</details>
+
+<h3 class="relative group flex items-baseline">
+	<a id="multi-turn-with-tool-response" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multi-turn-with-tool-response" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multi-Turn with Tool Response
+	</span>
+</h3>
+<pre><code class="language-python">messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What's the weather like in Boston right now?"</span>},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"assistant"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"&lt;think&gt;\nThe user wants to know the current weather in Boston. I should call get_current_weather.\n&lt;/think&gt;"</span>,
+     <span class="hljs-string">"tool_calls"</span>: [{<span class="hljs-string">"function"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"get_current_weather"</span>, <span class="hljs-string">"arguments"</span>: {<span class="hljs-string">"city"</span>: <span class="hljs-string">"Boston"</span>}}}]},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"tool"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">'{"temperature": "72°F", "condition": "Partly cloudy", "humidity": "65%"}'</span>},
+]
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, tools=tools,
+                                     add_generation_prompt=<span class="hljs-literal">True</span>, enable_thinking=<span class="hljs-literal">True</span>)
+inputs = tokenizer(text, return_tensors=<span class="hljs-string">"pt"</span>).to(model.device)
+
+output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">4096</span>, temperature=<span class="hljs-number">1.0</span>, top_p=<span class="hljs-number">0.95</span>, do_sample=<span class="hljs-literal">True</span>)
+<span class="hljs-built_in">print</span>(tokenizer.decode(output[<span class="hljs-number">0</span>][inputs.input_ids.shape[-<span class="hljs-number">1</span>]:], skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<details>
+<summary><b>Example Output</b></summary>
+
+<pre><code>&lt;think&gt;
+The tool returned the weather data for Boston: temperature 72°F, partly cloudy, humidity 65%.
+I need to present this information clearly to the user.
+&lt;/think&gt;
+The current weather in Boston is 72°F, partly cloudy, with 65% humidity.&lt;|im_end|&gt;
+</code></pre>
+</details>
+
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="multi-turn-conversations" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multi-turn-conversations" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multi-Turn Conversations
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="history-thinking-truncation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#history-thinking-truncation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		History Thinking Truncation
+	</span>
+</h3>
+<pre><code class="language-python">messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is 15 * 37?"</span>},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"assistant"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"&lt;think&gt;\nLet me calculate 15 * 37.\n15 * 37 = 15 * 30 + 15 * 7 = 450 + 105 = 555\n&lt;/think&gt;\n15 * 37 = 555"</span>},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"Now divide that by 5"</span>},
+]
+
+<span class="hljs-comment"># Default: previous thinking is stripped to save context</span>
+text = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>,
+                                     enable_thinking=<span class="hljs-literal">True</span>, truncate_history_thinking=<span class="hljs-literal">True</span>)
+
+<span class="hljs-comment"># To preserve full history:</span>
+text_full = tokenizer.apply_chat_template(messages, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>,
+                                          enable_thinking=<span class="hljs-literal">True</span>, truncate_history_thinking=<span class="hljs-literal">False</span>)
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="parsing-thinking-vs-final-answer" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#parsing-thinking-vs-final-answer" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Parsing Thinking vs. Final Answer
+	</span>
+</h3>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> re
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">parse_model_output</span>(<span class="hljs-params">text</span>):
+    <span class="hljs-string">"""Separate thinking content from final answer."""</span>
+    think_match = re.search(<span class="hljs-string">r'&lt;think&gt;(.*?)&lt;/think&gt;'</span>, text, re.DOTALL)
+    <span class="hljs-keyword">if</span> think_match:
+        thinking = think_match.group(<span class="hljs-number">1</span>).strip()
+        answer_start = text.find(<span class="hljs-string">'&lt;/think&gt;'</span>) + <span class="hljs-built_in">len</span>(<span class="hljs-string">'&lt;/think&gt;'</span>)
+        answer_end = text.find(<span class="hljs-string">'&lt;|im_end|&gt;'</span>, answer_start)
+        answer = text[answer_start:answer_end].strip() <span class="hljs-keyword">if</span> answer_end != -<span class="hljs-number">1</span> <span class="hljs-keyword">else</span> text[answer_start:].strip()
+    <span class="hljs-keyword">else</span>:
+        thinking, answer = <span class="hljs-string">""</span>, text.strip()
+    <span class="hljs-keyword">return</span> thinking, answer
+
+thinking, answer = parse_model_output(output_text)
+</code></pre>
+<hr>
+<h2 class="relative group flex items-baseline">
+	<a id="using-with-agentic-coding-harnesses" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#using-with-agentic-coding-harnesses" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Using with Agentic Coding Harnesses
+	</span>
+</h2>
+<p>Granite models can serve as the backbone for agentic coding tools. Because they support reasoning and tool calling through the OpenAI-compatible API, they integrate with popular agentic harnesses without extra adapters. Start the vLLM server, then follow the harness-specific instructions below.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="opencode" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#opencode" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		OpenCode
+	</span>
+</h3>
+<p><a href="https://opencode.ai" rel="nofollow">OpenCode</a> is an AI coding agent that runs in your terminal.</p>
+<p><strong>Install:</strong></p>
+<pre><code class="language-bash">curl -fsSL https://opencode.ai/install | bash
+</code></pre>
+<p><strong>Configure</strong> <code>~/.config/opencode/opencode.json</code>:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"$schema"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"https://opencode.ai/config.json"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"model"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"local/granite-4.2-30b"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"provider"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"local"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"npm"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"@ai-sdk/openai-compatible"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"vLLM (local)"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"options"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"baseURL"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"http://localhost:8000/v1"</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"apiKey"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"EMPTY"</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"models"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"granite-4.2-30b"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+          <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Granite 4.2 30B"</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"limit"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">"context"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">131072</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">"output"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8192</span>
+          <span class="hljs-punctuation">}</span>
+        <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Run:</strong></p>
+<pre><code class="language-bash">opencode
+opencode run <span class="hljs-string">"your task description"</span>
+</code></pre>
+<p>For full documentation, see <a href="https://opencode.ai/docs" rel="nofollow">opencode.ai/docs</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="pi" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#pi" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Pi
+	</span>
+</h3>
+<p><a href="https://pi.dev" rel="nofollow">Pi</a> is a minimal agent harness for AI-powered coding that runs in your terminal. It supports custom providers via a <code>models.json</code> configuration file.</p>
+<p><strong>Install:</strong></p>
+<pre><code class="language-bash">curl -fsSL https://pi.dev/install.sh | sh
+</code></pre>
+<p><strong>Configure</strong> <code>~/.pi/agent/models.json</code>:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"providers"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"vllm"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"baseUrl"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"http://localhost:8000/v1"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"api"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"openai-completions"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"apiKey"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"EMPTY"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"compat"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"supportsDeveloperRole"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"supportsReasoningEffort"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"models"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span>
+          <span class="hljs-attr">"id"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"granite-4.2-30b"</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Granite 4.2 30B"</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"reasoning"</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"input"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">"text"</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"contextWindow"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">131072</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"maxTokens"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8192</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"samplingParams"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">"temperature"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.0</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-attr">"top_p"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.95</span>
+          <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+          <span class="hljs-attr">"cost"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span> <span class="hljs-attr">"input"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">"output"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">"cacheRead"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">"cacheWrite"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span> <span class="hljs-punctuation">}</span>
+        <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Run:</strong></p>
+<pre><code class="language-bash">pi
+</code></pre>
+<p>Then select the <code>granite-4.2-30b</code> model with <code>/model</code> or <code>Ctrl+L</code> in the interactive session.</p>
+<p>For full documentation, see <a href="https://pi.dev/docs/latest" rel="nofollow">pi.dev/docs</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="openhands" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#openhands" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		OpenHands
+	</span>
+</h3>
+<p><a href="https://www.openhands.dev" rel="nofollow">OpenHands</a> is an AI software engineer that can plan, write code, and execute commands.</p>
+<ol>
+<li><p><strong>Install and launch OpenHands</strong> following the <a href="https://docs.openhands.dev/openhands/usage/agent-canvas/setup" rel="nofollow">official installation guide</a>.</p>
+</li>
+<li><p><strong>Configure the LLM</strong> in the OpenHands settings with:</p>
+<ul>
+<li><strong>Model:</strong> <code>granite-4.2-30b</code></li>
+<li><strong>Base URL:</strong> <code>http://localhost:8000/v1</code></li>
+<li><strong>API Key:</strong> your vLLM <code>--api-key</code> value</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> The <code>openai/</code> prefix is required when connecting to OpenAI-compatible endpoints like vLLM. Refer to the <a href="https://docs.openhands.dev/openhands/usage/llms/local-llms" rel="nofollow">OpenHands local LLM documentation</a> for detailed setup instructions, troubleshooting, and alternative installation methods.</p>
+</blockquote>
+<hr>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://huggingface.co/collections/ibm-granite/granite-42-language-models">Granite 4.2 HF Collection</a></li>
+<li><a href="https://github.com/ibm-granite/granite-4.2-language-models" rel="nofollow">GitHub: ibm-granite/granite-4.2-language-models</a></li>
+<li><a href="https://www.ibm.com/granite/docs/" rel="nofollow">Granite Documentation</a></li>
+<li><a href="https://github.com/ibm-granite-community/" rel="nofollow">Granite Community Resources</a></li>
+<li><a href="https://research.ibm.com/blog/code-alchemy-for-synthetic-code" rel="nofollow">Code Alchemy</a></li>
+</ul>
+<hr>
+<p><em>Last updated: September 11, 2026 to clarify base models.</em></p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-granite/granite-switch-4-1"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/662836b742709fe826510597/gltB0o--PV_Jh0D3aDm8-.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Granite Switch 4.1: Chat, Decisions, and Speech from One Endpoint</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-granite" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 49</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 15, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-granite/granite-speech-5-0-470m-turboctc"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/66f1769e8da6d3e95420fb6d/3oJOytYwNfiKCuD6_Wf0u.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Extremely Fast and Accurate Transcription with Granite Speech 5.0 Turbo CTC</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-granite" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/639bcaa2445b133a4e942436/CEW-OjXkRkDNmTxSu8Egh.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 37</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 25, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/ibm-granite/granite-4-2&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/ibm-granite/granite-4-2&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a847824bfb02a66afcc88ee&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;yousafshah&quot;,&quot;kswanand1&quot;,&quot;rmoulick&quot;,&quot;ashish23&quot;,&quot;sanborse&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fibm-granite%2Fgranite-4-2">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fibm-granite%2Fgranite-4-2">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-granite%2Fgranite-4-2" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">127</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="bedkingsbury" style="content-visibility:auto;"><!--[0--><a href="/bedkingsbury" title="bedkingsbury"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f1769e8da6d3e95420fb6d/eDcW_M2L3YzfMaCJU5XXU.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kristunlee" style="content-visibility:auto;"><!--[0--><a href="/kristunlee" title="kristunlee"><img class="overflow-hidden rounded-full" alt="" src="/avatars/c321df95ef32bbc777f7a548a2a361c3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dkayser" style="content-visibility:auto;"><!--[0--><a href="/dkayser" title="dkayser"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/kudZhLf7A57UTUwo7nZ7n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dangxuanhongatIBM" style="content-visibility:auto;"><!--[0--><a href="/dangxuanhongatIBM" title="dangxuanhongatIBM"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/zHPZhLzz0234VbfhvOyE4.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="padusum" style="content-visibility:auto;"><!--[0--><a href="/padusum" title="padusum"><img class="overflow-hidden rounded-full" alt="" src="/avatars/59ca21bbf7cd7bac10ac0a12cb447560.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Violette" style="content-visibility:auto;"><!--[0--><a href="/Violette" title="Violette"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1638698875017-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yjernite" style="content-visibility:auto;"><!--[0--><a href="/yjernite" title="yjernite"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1594144055859-5ee3a7cd2a3eae3cbdad1305.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="bezzam" style="content-visibility:auto;"><!--[0--><a href="/bezzam" title="bezzam"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6384db7fb2906edaf835a91d/MOTXxaOmjlTZ8wONYifnD.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="michelvdp" style="content-visibility:auto;"><!--[0--><a href="/michelvdp" title="michelvdp"><img class="overflow-hidden rounded-full" alt="" src="/avatars/9514f30dbbb6bb9a88640a9820df19e4.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SpyFox" style="content-visibility:auto;"><!--[0--><a href="/SpyFox" title="SpyFox"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1664097982677-632591024f4f4ea5a85cb19f.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="xdavxd" style="content-visibility:auto;"><!--[0--><a href="/xdavxd" title="xdavxd"><img class="overflow-hidden rounded-full" alt="" src="/avatars/96007c8b84c4861610daa7921f708a21.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mikiotakeuchi" style="content-visibility:auto;"><!--[0--><a href="/mikiotakeuchi" title="mikiotakeuchi"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6463c6d0e0475a83333bf0f6/d123KM-2ri-I6Eav6R7Uw.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+115</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

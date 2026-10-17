@@ -1,0 +1,298 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/revamped-kernels/thumbnail.png" />
+
+		<meta property="og:title" content="🤗 Kernels: Major Updates" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/revamped-kernels" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/revamped-kernels/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/revamped-kernels">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>🤗 Kernels: Major Updates</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="🤗-kernels-major-updates" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#🤗-kernels-major-updates" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		🤗 Kernels: Major Updates
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					July 6, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/revamped-kernels.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Frevamped-kernels" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">38</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="iAkashPaul" style="content-visibility:auto;"><!--[0--><a href="/iAkashPaul" title="iAkashPaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/630439880907b9a115c7ade0/3KyGw9hRNqImALLyB2OdM.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tepirale" style="content-visibility:auto;"><!--[0--><a href="/tepirale" title="tepirale"><img class="overflow-hidden rounded-full" alt="" src="/avatars/200551407f4ccfe8e0e50fbcb5f0c0fb.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Strangefrost" style="content-visibility:auto;"><!--[0--><a href="/Strangefrost" title="Strangefrost"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/o2Q7iBaVtpuFUVBM2Afip.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="injaeryou" style="content-visibility:auto;"><!--[0--><a href="/injaeryou" title="injaeryou"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6687a8741c9173b89f32f872/13pghJEKQsAM2AwwdqHzu.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SaptaDey" style="content-visibility:auto;"><!--[0--><a href="/SaptaDey" title="SaptaDey"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64bb8780e90972519d4e1698/O1_P3_CilEZ_BbOPfDZTH.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ManikandanBalasubrmanian" style="content-visibility:auto;"><!--[0--><a href="/ManikandanBalasubrmanian" title="ManikandanBalasubrmanian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6827098797fde5ca7222b6aa/PXDiVePTmt63kUjsT4wO8.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+32</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sayakpaul"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sayak Paul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sayakpaul"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sayak Paul">Sayak Paul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sayakpaul</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/danieldk"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Daniël de Kok's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6310e9a107a76827902421d7/1e0GItqv3A6sOWYz5SXoe.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/danieldk"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Daniël de Kok">Daniël de Kok</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">danieldk</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/drbh"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="David Holtz's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d5ba3f80ad88c77b2f05/yuvfzgqOeK8-bFxEZ2gg9.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/drbh"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="David Holtz">David Holtz</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">drbh</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->In our <a href="https://huggingface.co/blog/kernel-builder">previous post (From Zero to GPU)</a>, we introduced the 🤗 Kernels project, which aims at standardizing how custom kernels are packaged, distributed, and consumed. We want the project to be frictionless and secure, while making it as Hub-friendly as possible.</p>
+<p>Over the past few months, we have worked towards this goal. In the process, we also almost completely redesigned the project. This post will summarize the major updates we have shipped and what’s coming.</p>
+<p><strong>Table of contents</strong></p>
+<ul>
+<li><a href="#kernels--a-new-repository-type" rel="nofollow">Kernels – a new repository type</a></li>
+<li><a href="#improved-security" rel="nofollow">Improved security</a></li>
+<li><a href="#revamped-clis" rel="nofollow">Revamped CLIs</a></li>
+<li><a href="#more-coverage-of-frameworks-and-backends" rel="nofollow">More coverage of frameworks and backends</a></li>
+<li><a href="#foundation-for-agentic-kernel-development" rel="nofollow">Foundation for agentic kernel development</a></li>
+<li><a href="#misc" rel="nofollow">Misc</a></li>
+<li><a href="#conclusion" rel="nofollow">Conclusion</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="kernels--a-new-repository-type" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#kernels--a-new-repository-type" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Kernels – a new repository type
+	</span>
+</h2>
+<p>We have introduced a new repository type on the Hub called <a href="https://huggingface.co/kernels">"kernel"</a>. This enables us to cater to users with compute-related specificities. For example, a user can get a sense of which accelerators, operating systems, and backend versions are supported for a given kernel:</p>
+<figure align="center">
+    <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/revamped-kernels/flash-attn3.png" alt="Flash Attention 3 Kernel Page" width="600">
+    <figcaption>Kernel page: <a href="https://huggingface.co/kernels/kernels-community/flash-attn3">kernels-community/flash-attn3</a></figcaption>
+</figure>
+
+<p>One can browse all available kernels on the Hub here: <a href="https://huggingface.co/kernels">https://huggingface.co/kernels</a>. </p>
+<p>Making these kernels first-class citizens of the Hub also benefits the AI ecosystem. Users can now see trends across kernels, models, and the applications that use them. The kernels become more discoverable to users.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="improved-security" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#improved-security" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Improved security
+	</span>
+</h2>
+<p>Kernels run native code with the same privileges as the Python process that loads them, so a malicious kernel can do real harm. Therefore, security has always been of utmost importance to the Kernels project.</p>
+<p>This is why we focused early on reproducibility: you should be able to recompile a kernel yourself and verify that it matches the publicly available source. We use Nix to make this possible, since it keeps builds pure through hermetic evaluation of the build recipe and a strongly isolated sandbox. We further improve provenance by embedding the source Git SHA1 into the kernel itself.</p>
+<p>In recent months, we have added additional layers of defense: trusted kernel publishers and code signing.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="trusted-kernel-publishers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#trusted-kernel-publishers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Trusted kernel publishers
+	</span>
+</h3>
+<p>With the new repo type, we also introduced “trusted publishers”. Since kernels execute code on a machine with the same privileges as the Python process they are used in, an attacker could compromise machines by uploading a malicious kernel and coaxing you to use that kernel. To help you avoid such malicious kernels, the kernels package will now only load kernels by <em>trusted publishers</em> by default. A trusted publisher is an organization that is trusted by the community to act in good faith.</p>
+<p>We still want to support loading kernels from organizations or users that are not trusted publishers, but you have to explicitly opt in using the <code>trust_remote_code</code> argument when loading a kernel from the Hub:</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> kernels <span class="hljs-keyword">import</span> get_kernel
+
+kernel_module = get_kernel(  
+   “Atlas-Inference/gdn”, version=<span class="hljs-number">1</span>, trust_remote_code=<span class="hljs-literal">True</span>  
+)  
+</code></pre>
+<p>By default, users cannot publish kernel repositories on the Hub. They have to request to be a kernel publisher. Users and organizations can request for access from their account settings. This gives us time to treat these requests on a case-by-case basis.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="kernel-signing" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#kernel-signing" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Kernel signing
+	</span>
+</h3>
+<p>An additional layer of security that we are adding is code signing. Code signing protects against the scenario where an attacker uploads a malicious kernel to a kernel repo from a trusted publisher whose Hub credentials were compromised. In code signing, a kernel is signed with a private key known only to the kernel developer and validated with a public key that is generally available. In the Hub compromise scenario, an attacker cannot sign the malicious kernel since they do not own the private key needed for signing.</p>
+<p>To further improve security, we use Sigstore’s cosign to sign using ephemeral private keys. Since these signing keys are only valid for a limited time, an attacker typically cannot use the private key, even when it is leaked. We also verify that the kernel was signed by a trusted GitHub workflow from a trusted GitHub repository.</p>
+<p>Kernel signing is already supported by <code>kernel-builder</code> and we have provided the <code>kernels verify-signature</code> to verify a kernel. Kernels does not verify the signature upon loading a kernel yet, since we would like to test this new functionality more before fully rolling it out. Preliminary notes on setting up code signing for your own kernels can be found in the kernels 0.16.0 release notes: <a href="https://github.com/huggingface/kernels/releases/tag/v0.16.0" rel="nofollow">https://github.com/huggingface/kernels/releases/tag/v0.16.0</a>. </p>
+<h2 class="relative group flex items-baseline">
+	<a id="revamped-clis" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#revamped-clis" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Revamped CLIs
+	</span>
+</h2>
+<p>Previously, a bunch of utilities were intertwined between <code>kernels</code> and <code>kernel-builder</code>. We have established a better separation of concern between the CLI of <code>kernels</code> and <code>kernel-builder</code>. The mental model here is that <code>kernels</code> is a library for loading and preparing kernels for use. Therefore, it should not include anything related to “building” kernels. </p>
+<p>As a result of this, both <code>kernels</code> and <code>kernel-builder</code> are now much leaner and more specific. Refer to the documentation to learn more about this:</p>
+<ul>
+<li><a href="https://huggingface.co/docs/kernels/en/cli"><code>kernels</code> CLI</a>  </li>
+<li><a href="https://huggingface.co/docs/kernels/en/builder-cli"><code>kernel-builder</code> CLI</a></li>
+</ul>
+<p>This improved CLI experience also lets us cater to the rise of agentic kernel
+development in a better manner. More on this <a href="#foundation-for-agentic-kernel-development" rel="nofollow">later</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="more-coverage-of-frameworks-and-backends" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#more-coverage-of-frameworks-and-backends" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		More coverage of frameworks and backends
+	</span>
+</h2>
+<p>We have extended support for frameworks, the most visible changes are:</p>
+<ul>
+<li>We added support for the Torch Stable ABI to kernels and kernel-builder. The Torch Stable ABI allows kernel developers to target a particular Torch version or any version that is released after it for roughly two years. For instance, a kernel that targets the Torch 2.9 Stable ABI support Torch &gt;= 2.9.  </li>
+<li>Apache TVM FFI is the first framework to be supported besides Torch. TVM FFI is standardized ABI for kernels that interoperates with other frameworks such as PyTorch, Jax and CuPy. This allows kernel developers to make kernels that runs across frameworks.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="foundation-for-agentic-kernel-development" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#foundation-for-agentic-kernel-development" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Foundation for agentic kernel development
+	</span>
+</h2>
+<p><code>kernel-builder</code> and <code>kernels</code> complement the rise of agentic kernel development wherein an agent is leveraged to come up with an (optimized) kernel from scratch. Together, they support a workflow in which agents can scaffold, build, benchmark, and iteratively optimize kernels.</p>
+<p>Agentic kernel development is still nascent, and the right development loops will continue to evolve. That makes simple, clear fundamentals especially important where the tools should be easy to compose into whichever agent workflows or frameworks people choose to use.</p>
+<p><code>kernel-builder</code> helps enforce a structure in how kernel source code should be scaffolded and used to perform reproducible builds. This gives agents a predictable project layout and repeatable workflow to operate within. Its CLI is also meant to be <a href="https://huggingface.co/blog/is-it-agentic-enough">agent-optimized</a>. For example, this can mean non-interactive commands and outputs that are straightforward for an agent to interpret programmatically. To this end, we also have <a href="https://huggingface.co/docs/kernels/en/cli-skills">backend-specific skills</a> to help agents navigate the idiosyncrasies of different backends. These skills can capture backend-specific toolchains, compilation paths, and performance considerations.</p>
+<p>Building a kernel successfully isn’t the only goal, we need to ensure that it delivers actual speedups over a baseline on the target hardware. A successful build is therefore only the first validation step. Usually, this target hardware can include many different accelerators, even different families of the same accelerator.</p>
+<p> This makes it important to evaluate results across hardware vendors and generations where relevant. Our tight <a href="https://huggingface.co/docs/kernels/en/builder/github-actions">integration with HF Jobs</a> can make this benchmarking process easy. Agents can use this integration to run benchmark suites, collect performance results, and compare them against a defined baseline.</p>
+<p>This way, agents can run tests across different hardware configurations to get reliable feedback on the performance of the generated kernels and identify what needs to be done. That feedback can then inform the next optimization iteration.</p>
+<p>Below are some examples of agent-augmented kernels. These illustrate the kinds of kernels that can be developed and evaluated through this workflow: </p>
+<ul>
+<li><a href="https://huggingface.co/kernels/drbh/yamoe">https://huggingface.co/kernels/drbh/yamoe</a>   </li>
+<li><a href="https://huggingface.co/kernels/sayakpaul/qk-norm-rope">https://huggingface.co/kernels/sayakpaul/qk-norm-rope</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="misc" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#misc" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Misc
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="environment-setup" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#environment-setup" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Environment setup
+	</span>
+</h3>
+<p>The environment setup for building kernels with <code>kernel-builder</code> can be daunting. To make it easier for users, we now have an <a href="https://huggingface.co/docs/kernels/en/builder/writing-kernels#quick-install">installation script</a> for setting up an environment in one click. If you prefer working with ephemeral instances, our <a href="https://github.com/huggingface/kernels/tree/main/terraform" rel="nofollow">Terraform setup guide</a> is worth following. </p>
+<h3 class="relative group flex items-baseline">
+	<a id="system-card-for-kernels" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#system-card-for-kernels" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		System card for kernels
+	</span>
+</h3>
+<p>After the kernels are built, we create a system card for each kernel to expose useful information, including how to use it and its exposed interfaces. When the kernel is pushed to the Hub, this system card becomes the front matter for the kernel:</p>
+<figure align="center">
+    <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/revamped-kernels/kernel-card.png" alt="System card for a kernel" width="600">
+    <figcaption>System card for <a href="https://huggingface.co/kernels/kernels-community/flash-attn3">kernels-community/flash-attn3</a></figcaption>
+</figure>
+
+<h3 class="relative group flex items-baseline">
+	<a id="is-a-kernel-compatible-on-my-system" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#is-a-kernel-compatible-on-my-system" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Is a kernel compatible on my system?
+	</span>
+</h3>
+<p>Is a question one would ask multiple times to plan things better. Use the <a href="https://huggingface.co/docs/kernels/main/en/api/kernels#kernels.has_kernel"><code>has_kernel()</code></a> method for this purpose:</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> kernels <span class="hljs-keyword">import</span> has_kernel
+
+<span class="hljs-built_in">print</span>(has_kernel(<span class="hljs-string">"kernels-community/activation"</span>, version=<span class="hljs-number">1</span>))  
+</code></pre>
+<p>It returns a <code>bool</code>. If you’re looking for more explanations around why a given kernel isn’t supported then use <a href="https://huggingface.co/docs/kernels/main/en/api/kernels#kernels.get_kernel_variants"><code>get_kernel_variants()</code></a>:</p>
+<pre><code class="language-py"> <span class="hljs-keyword">from</span> kernels <span class="hljs-keyword">import</span> get_kernel_variants, VariantAccepted
+
+<span class="hljs-keyword">for</span> decision <span class="hljs-keyword">in</span> get_kernel_variants(<span class="hljs-string">"kernels-community/activation"</span>, version=<span class="hljs-number">1</span>):  
+    name = decision.variant.variant_str  
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(decision, VariantAccepted):  
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f"<span class="hljs-subst">{name}</span>: compatible"</span>)  
+    <span class="hljs-keyword">else</span>:  
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f"<span class="hljs-subst">{name}</span>: rejected (<span class="hljs-subst">{decision.reason}</span>)"</span>)  
+</code></pre>
+<p>It should print (depends on the machine you’re on):</p>
+<pre><code class="language-bash">torch212-cxx11-cu130-aarch64-linux: compatible  
+torch210-cu128-x86_64-windows: rejected (CPU (x86_64) does not match system CPU (aarch64))  
+torch211-cu128-x86_64-windows: rejected (CPU (x86_64) does not match system CPU (aarch64))  
+torch212-metal-aarch64-darwin: rejected (OS (darwin) does not match system OS (linux))  
+torch211-metal-aarch64-darwin: rejected (OS (darwin) does not match system OS (linux))  
+torch210-metal-aarch64-darwin: rejected (OS (darwin) does not match system OS (linux))  
+torch29-metal-aarch64-darwin: rejected (OS (darwin) does not match system OS (linux))  
+…  
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="improved-manylinux_2_28-support" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#improved-manylinux_2_28-support" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Improved manylinux_2_28 support
+	</span>
+</h3>
+<p>Kernel-builder has targeted <code>manylinux_2_28</code> almost since the beginning. We used to target <code>manylinux</code> by using a modern gcc toolchain compiled with glibc 2.28. To avoid compatibility issues with older versions of <code>libstdc++</code>, we statically linked libstdc++.</p>
+<p>However, this approach recently resulted in some issues. Some <code>libstdc++</code> functionality uses global initialization. This can lead to corrupted data when multiple <code>libstdc++</code> versions come into play, such as the <code>libstdc++</code> that is linked dynamically by PyTorch and the <code>libstdc++</code> that is linked statically by a kernel. Some recent kernels use functionality (e.g. C++ regexes) that trigger global initializations, leading to such corrupted data, causing segfaults and other issues.</p>
+<p>To solve this issue, kernels now link <code>libstdc++</code> dynamically. To ensure compatibility with old <code>libstdc++</code> versions, we now compile kernels with the official <code>manylinux_2_28</code> toolchain.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p>Our goal with the Kernels project is to serve both kernel developers and users of custom kernels. We’re always keen on receiving feedback from the community on how we can improve it. Don’t hesitate to contribute!</p>
+<p><em>Acknowledgements: Thanks to <a href="https://huggingface.co/ariG23498">Aritra</a> for reviewing the post.</em></p>
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/kernel-builder"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/kernel-builder/kernel-builder.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">kernels</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">kernels-community</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">From Zero to GPU: A Guide to Building and Scaling Production-Ready CUDA Kernels</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="drbh" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d5ba3f80ad88c77b2f05/yuvfzgqOeK8-bFxEZ2gg9.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="danieldk" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6310e9a107a76827902421d7/1e0GItqv3A6sOWYz5SXoe.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 112</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 18, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/mi300kernels"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/mi300kernels/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">kernels</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">cuda</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">amd</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Creating custom kernels for the AMD MI300</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="seungrokj" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/651e6aa7c14e363968e338ff/5l-LMIYAFjWzHQKACuOgN.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 54</div><!--]--> <!--[0--><span class="whitespace-nowrap">July 9, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/revamped-kernels&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/revamped-kernels&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a4b27e5253e5fae4de72a3d&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;sayakpaul&quot;,&quot;danieldk&quot;,&quot;drbh&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Frevamped-kernels">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Frevamped-kernels">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Frevamped-kernels" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">38</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="iAkashPaul" style="content-visibility:auto;"><!--[0--><a href="/iAkashPaul" title="iAkashPaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/630439880907b9a115c7ade0/3KyGw9hRNqImALLyB2OdM.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tepirale" style="content-visibility:auto;"><!--[0--><a href="/tepirale" title="tepirale"><img class="overflow-hidden rounded-full" alt="" src="/avatars/200551407f4ccfe8e0e50fbcb5f0c0fb.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Strangefrost" style="content-visibility:auto;"><!--[0--><a href="/Strangefrost" title="Strangefrost"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/o2Q7iBaVtpuFUVBM2Afip.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="injaeryou" style="content-visibility:auto;"><!--[0--><a href="/injaeryou" title="injaeryou"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6687a8741c9173b89f32f872/13pghJEKQsAM2AwwdqHzu.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SaptaDey" style="content-visibility:auto;"><!--[0--><a href="/SaptaDey" title="SaptaDey"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64bb8780e90972519d4e1698/O1_P3_CilEZ_BbOPfDZTH.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ManikandanBalasubrmanian" style="content-visibility:auto;"><!--[0--><a href="/ManikandanBalasubrmanian" title="ManikandanBalasubrmanian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6827098797fde5ca7222b6aa/PXDiVePTmt63kUjsT4wO8.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kariukijoseck" style="content-visibility:auto;"><!--[0--><a href="/kariukijoseck" title="kariukijoseck"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/7AXaC5PZzJejGbsHd442O.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wmeints" style="content-visibility:auto;"><!--[0--><a href="/wmeints" title="wmeints"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0e7dd556fe5080e41267b8a0f2a301d8.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fffiloni" style="content-visibility:auto;"><!--[0--><a href="/fffiloni" title="fffiloni"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61868ce808aae0b5499a2a95/F6BA0anbsoY_Z7M1JrwOe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nosuchstudios" style="content-visibility:auto;"><!--[0--><a href="/nosuchstudios" title="nosuchstudios"><img class="overflow-hidden rounded-full" alt="" src="/avatars/381de982e1575bfdab1c2c3a81d42b4f.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[0--><a href="/sayakpaul" title="sayakpaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tolgacangoz" style="content-visibility:auto;"><!--[0--><a href="/tolgacangoz" title="tolgacangoz"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/603bdba23249b99991dbcbc4/cxCnN1H-RXOhojHY3Wcxo.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+26</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

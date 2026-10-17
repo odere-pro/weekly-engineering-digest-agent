@@ -143,8 +143,8 @@ describe('dateTexts', () => {
 
 describe('entryHtml', () => {
   it.each([
-    ['an RSS description', { description: '<p>d</p>', 'content:encoded': 'c' }, '<p>d</p>'],
-    ['an Atom summary', { summary: { '#text': 's', '@_type': 'html' }, content: 'c' }, 's'],
+    ['an RSS content:encoded', { description: '<p>d</p>', 'content:encoded': 'c' }, 'c'],
+    ['an Atom content', { summary: { '#text': 's', '@_type': 'html' }, content: 'c' }, 'c'],
     ['RSS content:encoded', { 'content:encoded': '<p>full</p>' }, '<p>full</p>'],
     ['Atom content', { content: { '#text': 'body', '@_type': 'html' } }, 'body'],
   ])('reads %s', (_label, raw, expected) => {
@@ -263,4 +263,14 @@ describe('parseFeedDate', () => {
       expect(parseFeedDate(text)).toBeUndefined();
     },
   );
+});
+
+describe('typographic entities in entry markup', () => {
+  it('decodes the named punctuation a full body uses, and leaves markup entities alone', () => {
+    expect(
+      entryHtml({
+        'content:encoded': 'don&rsquo;t &ldquo;stop&rdquo;&hellip; &lt;T&gt; &amp; &unknown;',
+      }),
+    ).toBe('don’t “stop”… &lt;T&gt; &amp; &unknown;');
+  });
 });

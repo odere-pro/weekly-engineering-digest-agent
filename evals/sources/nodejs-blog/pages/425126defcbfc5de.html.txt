@@ -1,0 +1,2753 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Node.js 24.20.0 (LTS)</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="x-default" href="https://nodejs.org/en/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="en" href="https://nodejs.org/en/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="es" href="https://nodejs.org/es/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="fr" href="https://nodejs.org/fr/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="id" href="https://nodejs.org/id/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="ja" href="https://nodejs.org/ja/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="ko" href="https://nodejs.org/ko/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="pt-br" href="https://nodejs.org/pt-br/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="pt" href="https://nodejs.org/pt/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="ro" href="https://nodejs.org/ro/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="ta" href="https://nodejs.org/ta/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="tr" href="https://nodejs.org/tr/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="uk" href="https://nodejs.org/uk/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="zh-cn" href="https://nodejs.org/zh-cn/blog/release/v24.20.0" />
+    <link rel="alternate" hreflang="zh-tw" href="https://nodejs.org/zh-tw/blog/release/v24.20.0" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/releases.xml"
+    />
+    <meta property="og:title" content="Node.js — Node.js 24.20.0 (LTS)" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/release/Node.js%20%E2%80%94%20Node.js%2024.20.0%20(LTS)"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Node.js 24.20.0 (LTS)" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Node.js 24.20.0 (LTS)</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/aduh95"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >ADH</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>Antoine du Hamel</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__release">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Node.js 24.20.0 (LTS)
+              </div>
+            </div>
+            <h2 id="2026-08-26-version-24200-krypton-lts-aduh95">
+              <a href="#2026-08-26-version-24200-krypton-lts-aduh95"
+                >2026-08-26, Version 24.20.0 &#x27;Krypton&#x27; (LTS), @aduh95</a
+              >
+            </h2>
+            <h3 id="notable-changes"><a href="#notable-changes">Notable Changes</a></h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b12bcc9ae1"
+                  ><code>b12bcc9ae1</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>async_hooks</strong>: add
+                <code>using</code> scopes to <code>AsyncLocalStorage</code> (Stephen Belanger)
+                <a href="https://github.com/nodejs/node/pull/61674">#61674</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2eb88b36b"
+                  ><code>e2eb88b36b</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>buffer</strong>: add
+                <code>end</code> parameter (Robert Nagy)
+                <a href="https://github.com/nodejs/node/pull/62390">#62390</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1fefdda18e"
+                  ><code>1fefdda18e</code></a
+                >] - <strong>crypto</strong>: update root certificates to NSS 3.125 (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/64746">#64746</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4a158cf1ab"
+                  ><code>4a158cf1ab</code></a
+                >] - <strong>doc</strong>: add MikeMcC399 as collaborator (Mike McCready)
+                <a href="https://github.com/nodejs/node/pull/64656">#64656</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d4cafce076"
+                  ><code>d4cafce076</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>lib,permission</strong>: add
+                <code>permission.drop</code> (Rafael Gonzaga)
+                <a href="https://github.com/nodejs/node/pull/62672">#62672</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b3cfb55267"
+                  ><code>b3cfb55267</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>loader</strong>: implement package maps
+                (Maël Nison) <a href="https://github.com/nodejs/node/pull/62239">#62239</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cd1eb3e60b"
+                  ><code>cd1eb3e60b</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>src,permission</strong>: add
+                <code>--permission-audit</code> (RafaelGSS)
+                <a href="https://github.com/nodejs/node/pull/61869">#61869</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/28dc85d8d2"
+                  ><code>28dc85d8d2</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>stream</strong>: add
+                <code>node:stream/iter</code> implementation (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/62066">#62066</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d31c168740"
+                  ><code>d31c168740</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>test_runner</strong>: add
+                <code>context.log()</code> and test:log event (Moshe Atlow)
+                <a href="https://github.com/nodejs/node/pull/64389">#64389</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/add1edbc42"
+                  ><code>add1edbc42</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>test_runner</strong>: report
+                <code>entryFile</code> in <code>TestStream</code> events (Moshe Atlow)
+                <a href="https://github.com/nodejs/node/pull/64309">#64309</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d937c8c6cd"
+                  ><code>d937c8c6cd</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>wasm</strong>: enable JSPI (Guy
+                Bedford) <a href="https://github.com/nodejs/node/pull/59941">#59941</a>
+              </li>
+            </ul>
+            <h3 id="commits"><a href="#commits">Commits</a></h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1822c0f335"
+                  ><code>1822c0f335</code></a
+                >] - <strong>assert,util</strong>: fix TypeError on Maps with null keys (Paul
+                Bouchon) <a href="https://github.com/nodejs/node/pull/64441">#64441</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b12bcc9ae1"
+                  ><code>b12bcc9ae1</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>async_hooks</strong>: add using scopes
+                to AsyncLocalStorage (Stephen Belanger)
+                <a href="https://github.com/nodejs/node/pull/61674">#61674</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/984260bf44"
+                  ><code>984260bf44</code></a
+                >] - <strong>async_hooks</strong>: use validateBoolean for trackPromises (Soul Lee)
+                <a href="https://github.com/nodejs/node/pull/64731">#64731</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ba2612cca2"
+                  ><code>ba2612cca2</code></a
+                >] - <strong>benchmark</strong>: fix calibrate-n option handling (Luan Muniz)
+                <a href="https://github.com/nodejs/node/pull/64146">#64146</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/236dc4d2d7"
+                  ><code>236dc4d2d7</code></a
+                >] - <strong>benchmark</strong>: add bytes variant to webstreams async-iterator
+                (Matteo Collina) <a href="https://github.com/nodejs/node/pull/64291">#64291</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b022a1419c"
+                  ><code>b022a1419c</code></a
+                >] - <strong>benchmark</strong>: respect stream/iter broadcast backpressure
+                (Trivikram Kamat) <a href="https://github.com/nodejs/node/pull/63314">#63314</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a290f51f15"
+                  ><code>a290f51f15</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>benchmark</strong>: add benchmarks for
+                experimental stream/iter (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/62066">#62066</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/465f2bfb74"
+                  ><code>465f2bfb74</code></a
+                >] - <strong>buffer</strong>: use Clamp conversion in Blob slice (Donghoon Kang)
+                <a href="https://github.com/nodejs/node/pull/64739">#64739</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/74a22cd0c5"
+                  ><code>74a22cd0c5</code></a
+                >] - <strong>buffer</strong>: validate copyArrayBuffer offsets against buffer length
+                (Ilia Alshanetsky) <a href="https://github.com/nodejs/node/pull/63904">#63904</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/21e24208dc"
+                  ><code>21e24208dc</code></a
+                >] - <strong>buffer</strong>: normalize lone &quot;\r&quot; in Blob native line
+                endings (Daijiro Wachi)
+                <a href="https://github.com/nodejs/node/pull/64115">#64115</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ddacb3ff10"
+                  ><code>ddacb3ff10</code></a
+                >] - <strong>buffer</strong>: fix Blob.stream() leaking source buffer (semimikoh)
+                <a href="https://github.com/nodejs/node/pull/63577">#63577</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/49198d2313"
+                  ><code>49198d2313</code></a
+                >] - <strong>buffer</strong>: fix end parameter bugs in indexOf/lastIndexOf (Robert
+                Nagy) <a href="https://github.com/nodejs/node/pull/62711">#62711</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2eb88b36b"
+                  ><code>e2eb88b36b</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>buffer</strong>: add end parameter
+                (Robert Nagy) <a href="https://github.com/nodejs/node/pull/62390">#62390</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2e5c4fe88"
+                  ><code>e2e5c4fe88</code></a
+                >] - <strong>build</strong>: update binary-upload to use correct tarball name
+                (Stewart X Addison) <a href="https://github.com/nodejs/node/pull/65282">#65282</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b78a212553"
+                  ><code>b78a212553</code></a
+                >] - <strong>build</strong>: pin envinfo versions in github actions (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/64117">#64117</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/094fb840aa"
+                  ><code>094fb840aa</code></a
+                >] - <strong>build</strong>: add QUIC CI job for PRs matching QUIC related paths
+                (Tim Perry) <a href="https://github.com/nodejs/node/pull/63875">#63875</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/91f5003cad"
+                  ><code>91f5003cad</code></a
+                >] - <strong>build</strong>: fix flags for ngtcp2 on IBM i (SRAVANI GUNDEPALLI)
+                <a href="https://github.com/nodejs/node/pull/60073">#60073</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e83648effd"
+                  ><code>e83648effd</code></a
+                >] - <strong>build,test</strong>: add tests for binary linked with shared libnode
+                (Joyee Cheung) <a href="https://github.com/nodejs/node/pull/61463">#61463</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4a425b41d9"
+                  ><code>4a425b41d9</code></a
+                >] - <strong>build,tools</strong>: fix shared library cross-compile (Kirill Saied)
+                <a href="https://github.com/nodejs/node/pull/63963">#63963</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fe8fa45ff2"
+                  ><code>fe8fa45ff2</code></a
+                >] - <strong>cli</strong>: style node --help output with util.styleText (Adrián
+                Estrada) <a href="https://github.com/nodejs/node/pull/64484">#64484</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3cd1576cb2"
+                  ><code>3cd1576cb2</code></a
+                >] - <strong>crypto</strong>: preserve OpenSSL errors from KDF failures (Filip
+                Skokan) <a href="https://github.com/nodejs/node/pull/64776">#64776</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/74b3023565"
+                  ><code>74b3023565</code></a
+                >] - <strong>crypto</strong>: handle XOF output allocation failure (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64851">#64851</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fea0666a1b"
+                  ><code>fea0666a1b</code></a
+                >] - <strong>crypto</strong>: clarify missing cipher error (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64852">#64852</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/33fec91b54"
+                  ><code>33fec91b54</code></a
+                >] - <strong>crypto</strong>: reuse X509 issuer result (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64852">#64852</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/44c1473348"
+                  ><code>44c1473348</code></a
+                >] - <strong>crypto</strong>: validate key generation options (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64852">#64852</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c2c53a18e5"
+                  ><code>c2c53a18e5</code></a
+                >] - <strong>crypto</strong>: fix Argon2 validation errors (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64852">#64852</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/edc1f2126d"
+                  ><code>edc1f2126d</code></a
+                >] - <strong>crypto</strong>: initialize KeyObjectData mutex eagerly (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64851">#64851</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/be8237240c"
+                  ><code>be8237240c</code></a
+                >] - <strong>crypto</strong>: handle DH operation failures (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64851">#64851</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b65a8f3875"
+                  ><code>b65a8f3875</code></a
+                >] - <strong>crypto</strong>: preserve RSA-PSS legacy pubkey DER (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64547">#64547</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/49f2ae204b"
+                  ><code>49f2ae204b</code></a
+                >] - <strong>crypto</strong>: cleanse provider private key copies (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64547">#64547</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a5d4ac8208"
+                  ><code>a5d4ac8208</code></a
+                >] - <strong>crypto</strong>: handle incomplete RSA private keys (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64547">#64547</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b72c0b9616"
+                  ><code>b72c0b9616</code></a
+                >] - <strong>crypto</strong>: retain legacy DH validation (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64547">#64547</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/24a1be5886"
+                  ><code>24a1be5886</code></a
+                >] - <strong>crypto</strong>: limit KangarooTwelveParams customization to 512 bytes
+                (Filip Skokan) <a href="https://github.com/nodejs/node/pull/64557">#64557</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0290e0a61e"
+                  ><code>0290e0a61e</code></a
+                >] - <strong>crypto</strong>: split OpenSSL 3, BoringSSL, and legacy backends (Filip
+                Skokan) <a href="https://github.com/nodejs/node/pull/64211">#64211</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ba27e72ff8"
+                  ><code>ba27e72ff8</code></a
+                >] - <strong>crypto</strong>: fix Argon2 bypassing FIPS mode (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64776">#64776</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1fefdda18e"
+                  ><code>1fefdda18e</code></a
+                >] - <strong>crypto</strong>: update root certificates to NSS 3.125 (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/64746">#64746</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c0dd022081"
+                  ><code>c0dd022081</code></a
+                >] - <strong>crypto</strong>: use user-facing error for output encoding changes
+                (Archkon) <a href="https://github.com/nodejs/node/pull/64692">#64692</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ff485a9410"
+                  ><code>ff485a9410</code></a
+                >] - <strong>crypto</strong>: make --use-system-ca per-env rather than per-process
+                (Aditi) <a href="https://github.com/nodejs/node/pull/60678">#60678</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1329d9b9f1"
+                  ><code>1329d9b9f1</code></a
+                >] - <strong>debugger</strong>: preserve overlapping CDP request state (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64467">#64467</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/82a02336aa"
+                  ><code>82a02336aa</code></a
+                >] - <strong>deps</strong>: V8: backport d259a9e2ead7 (Leszek Swirski)
+                <a href="https://github.com/nodejs/node/pull/63865">#63865</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f0fc82d404"
+                  ><code>f0fc82d404</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.25.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64944">#64944</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c4e02f0fbc"
+                  ><code>c4e02f0fbc</code></a
+                >] - <strong>deps</strong>: upgrade npm to 11.19.0 (npm team)
+                <a href="https://github.com/nodejs/node/pull/64883">#64883</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d5a57ed4dd"
+                  ><code>d5a57ed4dd</code></a
+                >] - <strong>deps</strong>: update nghttp3 to 1.18.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64943">#64943</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/51d413150a"
+                  ><code>51d413150a</code></a
+                >] - <strong>deps</strong>: update minimatch to 10.2.6 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64945">#64945</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/21f79ce140"
+                  ><code>21f79ce140</code></a
+                >] - <strong>deps</strong>: update simdjson to 4.6.6 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64942">#64942</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7a4960d6a9"
+                  ><code>7a4960d6a9</code></a
+                >] - <strong>deps</strong>: update acorn to 8.18.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64941">#64941</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5c423aa113"
+                  ><code>5c423aa113</code></a
+                >] - <strong>deps</strong>: update googletest to
+                1b6f64d659944658a4c685b7bd9f04c1c3b8a39b (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64940">#64940</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/40561e61b0"
+                  ><code>40561e61b0</code></a
+                >] - <strong>deps</strong>: update nghttp2 to 1.70.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64939">#64939</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/51090925b0"
+                  ><code>51090925b0</code></a
+                >] - <strong>deps</strong>: update zlib to 1.3.2.1-motley-42c2f19 (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/64744">#64744</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7c534bf8e5"
+                  ><code>7c534bf8e5</code></a
+                >] - <strong>deps</strong>: V8: backport 5177b10891e6 (avivkeller)
+                <a href="https://github.com/nodejs/node/pull/64631">#64631</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7b1898a341"
+                  ><code>7b1898a341</code></a
+                >] - <strong>deps</strong>: update ada to 4.0.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64790">#64790</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9209cc4095"
+                  ><code>9209cc4095</code></a
+                >] - <strong>deps</strong>: update sqlite to 3.53.4 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64745">#64745</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3833fceff6"
+                  ><code>3833fceff6</code></a
+                >] - <strong>deps</strong>: update googletest to
+                fa005b296f90faec4f352d7ab382287bf6548c8d (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64587">#64587</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bc7ce488d1"
+                  ><code>bc7ce488d1</code></a
+                >] - <strong>deps</strong>: histogram: cherry-pick 62ea52b07ee9b195
+                (StefanStojanovic) <a href="https://github.com/nodejs/node/pull/64296">#64296</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e3fa05841d"
+                  ><code>e3fa05841d</code></a
+                >] - <strong>deps</strong>: update histogram to 0.11.10 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64296">#64296</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e75bdb9bbe"
+                  ><code>e75bdb9bbe</code></a
+                >] - <strong>deps</strong>: update amaro to 1.1.11 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64586">#64586</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1e034e6e40"
+                  ><code>1e034e6e40</code></a
+                >] - <strong>deps</strong>: update timezone to 2026c (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64588">#64588</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2b8f1f27bd"
+                  ><code>2b8f1f27bd</code></a
+                >] - <strong>deps</strong>: update googletest to
+                8240fa7d62f73e01c7af27d61ed965d6d66698fa (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64439">#64439</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/241ece0417"
+                  ><code>241ece0417</code></a
+                >] - <strong>deps</strong>: enable OpenSSL asm support for riscv64 (Jamie Magee)
+                <a href="https://github.com/nodejs/node/pull/62606">#62606</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/215105eb90"
+                  ><code>215105eb90</code></a
+                >] - <strong>deps</strong>: update c-ares to 1.34.8 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64330">#64330</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7ac97fc84e"
+                  ><code>7ac97fc84e</code></a
+                >] - <strong>deps</strong>: upgrade npm to 11.18.0 (npm team)
+                <a href="https://github.com/nodejs/node/pull/64199">#64199</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8d4cb9ae46"
+                  ><code>8d4cb9ae46</code></a
+                >] - <strong>deps</strong>: update zlib to 1.3.2.1-motley-8b3aa8a (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/64295">#64295</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/564c0f4592"
+                  ><code>564c0f4592</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.24.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64297">#64297</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e3304cd31a"
+                  ><code>e3304cd31a</code></a
+                >] - <strong>deps</strong>: update nghttp3 to 1.17.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64182">#64182</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/345d6ad4eb"
+                  ><code>345d6ad4eb</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.23.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/63777">#63777</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a53db015e6"
+                  ><code>a53db015e6</code></a
+                >] - <strong>deps</strong>: update nghttp3 to 1.16.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/63776">#63776</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1f4a5c1c76"
+                  ><code>1f4a5c1c76</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.22.1 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/62812">#62812</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/080c4d7cda"
+                  ><code>080c4d7cda</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.22.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/62595">#62595</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4309e7c82f"
+                  ><code>4309e7c82f</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.21.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/62051">#62051</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/90cf11cfb5"
+                  ><code>90cf11cfb5</code></a
+                >] - <strong>deps</strong>: update nghttp3 to 1.15.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/61512">#61512</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e1f315a554"
+                  ><code>e1f315a554</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.20.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/61511">#61511</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9a3f690c9d"
+                  ><code>9a3f690c9d</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.19.0 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/61156">#61156</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fe88f31764"
+                  ><code>fe88f31764</code></a
+                >] - <strong>deps</strong>: add ngtcp2 test binaries (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59946">#59946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6d60fce138"
+                  ><code>6d60fce138</code></a
+                >] - <strong>diagnostics_channel</strong>: grow native channel storage (Stephen
+                Belanger) <a href="https://github.com/nodejs/node/pull/64497">#64497</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/30ae8ab091"
+                  ><code>30ae8ab091</code></a
+                >] - <strong>doc</strong>: document --permission-audit audit mode behavior (Adrián
+                Estrada) <a href="https://github.com/nodejs/node/pull/64791">#64791</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8cefc6efa8"
+                  ><code>8cefc6efa8</code></a
+                >] - <strong>doc</strong>: fix guaranteed typo (lilianakatrina684-a11y)
+                <a href="https://github.com/nodejs/node/pull/62374">#62374</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2e78e4b120"
+                  ><code>2e78e4b120</code></a
+                >] - <strong>doc</strong>: add throwIfNoEntry version history to fs.stat (kovan)
+                <a href="https://github.com/nodejs/node/pull/62204">#62204</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c7a04401cb"
+                  ><code>c7a04401cb</code></a
+                >] - <strong>doc</strong>: fix grammar and punctuation in dgram documentation (Kamal
+                Rawal) <a href="https://github.com/nodejs/node/pull/64957">#64957</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/331e5e8f62"
+                  ><code>331e5e8f62</code></a
+                >] - <strong>doc</strong>: fix grammar and editorial issues in addons documentation
+                (Kamal Rawal) <a href="https://github.com/nodejs/node/pull/64952">#64952</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/232287fcc6"
+                  ><code>232287fcc6</code></a
+                >] - <strong>doc</strong>: formalize fn/name as part of TestOptions API (Christopher
+                Hiller) <a href="https://github.com/nodejs/node/pull/64946">#64946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7f9efeb445"
+                  ><code>7f9efeb445</code></a
+                >] - <strong>doc</strong>: remove references to <code>ca</code>/<code>crl</code> as
+                per-context QuicSession options (René)
+                <a href="https://github.com/nodejs/node/pull/64769">#64769</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b54aa83cc6"
+                  ><code>b54aa83cc6</code></a
+                >] - <strong>doc</strong>: fix typo in maintaining-dependencies.md (greenhead)
+                <a href="https://github.com/nodejs/node/pull/64896">#64896</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f4e427803c"
+                  ><code>f4e427803c</code></a
+                >] - <strong>doc</strong>: add RafaelGSS as last security release stewards (Rafael
+                Gonzaga) <a href="https://github.com/nodejs/node/pull/64843">#64843</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f2cd6df3f3"
+                  ><code>f2cd6df3f3</code></a
+                >] - <strong>doc</strong>: fix typos in documentation (greenhead)
+                <a href="https://github.com/nodejs/node/pull/64900">#64900</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d5627162bd"
+                  ><code>d5627162bd</code></a
+                >] - <strong>doc</strong>: improve TestContext hook descriptions (Kamal Rawal)
+                <a href="https://github.com/nodejs/node/pull/64899">#64899</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/72ee03bd2e"
+                  ><code>72ee03bd2e</code></a
+                >] - <strong>doc</strong>: document stream.isDestroyed() (YspritanHyzygy)
+                <a href="https://github.com/nodejs/node/pull/64789">#64789</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/995141eb81"
+                  ><code>995141eb81</code></a
+                >] - <strong>doc</strong>: add contributing detail for git Signed-off-by trailer
+                (Mike McCready) <a href="https://github.com/nodejs/node/pull/64862">#64862</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/dc30379310"
+                  ><code>dc30379310</code></a
+                >] - <strong>doc</strong>: fix duplicated word in test snapshot docs (Kamal Rawal)
+                <a href="https://github.com/nodejs/node/pull/64837">#64837</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/205d4d0472"
+                  ><code>205d4d0472</code></a
+                >] - <strong>doc</strong>: remove obsolete cctest node.gyp instructions (Soul Lee)
+                <a href="https://github.com/nodejs/node/pull/64814">#64814</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/108b883d0b"
+                  ><code>108b883d0b</code></a
+                >] - <strong>doc</strong>: report proper return type on url.format (Brian
+                Muenzenmeyer) <a href="https://github.com/nodejs/node/pull/64806">#64806</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b03bd3a8ed"
+                  ><code>b03bd3a8ed</code></a
+                >] - <strong>doc</strong>: clarify tlsSocket.authorized on resumption (soreavis)
+                <a href="https://github.com/nodejs/node/pull/64584">#64584</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/093098ad7f"
+                  ><code>093098ad7f</code></a
+                >] - <strong>doc</strong>: stabilize --disable-warning (Jean Michelet)
+                <a href="https://github.com/nodejs/node/pull/64742">#64742</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2de1d76d80"
+                  ><code>2de1d76d80</code></a
+                >] - <strong>doc</strong>: add MDN links for explicit resource management in fs
+                (lluisemper) <a href="https://github.com/nodejs/node/pull/59557">#59557</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2e0f36a891"
+                  ><code>2e0f36a891</code></a
+                >] - <strong>doc</strong>: mention constructor check in deepStrictEqual (Sumit Kumar
+                Das) <a href="https://github.com/nodejs/node/pull/62010">#62010</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1c9d354d09"
+                  ><code>1c9d354d09</code></a
+                >] - <strong>doc</strong>: update technical priorities (Jacob Smith)
+                <a href="https://github.com/nodejs/node/pull/64505">#64505</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/30c99bf08f"
+                  ><code>30c99bf08f</code></a
+                >] - <strong>doc</strong>: deprecation add more codemod (Augustin Mauroy)
+                <a href="https://github.com/nodejs/node/pull/63175">#63175</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a971a09eb"
+                  ><code>8a971a09eb</code></a
+                >] - <strong>doc</strong>: run license-builder (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/63918">#63918</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/707f6eacfc"
+                  ><code>707f6eacfc</code></a
+                >] - <strong>doc</strong>: clarify rules for adding new built-in modules (Antoine du
+                Hamel) <a href="https://github.com/nodejs/node/pull/64648">#64648</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/928208cffc"
+                  ><code>928208cffc</code></a
+                >] - <strong>doc</strong>: mention DEPENDENCY custom field for H1 reports (Rafael
+                Gonzaga) <a href="https://github.com/nodejs/node/pull/64634">#64634</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ee593cadf5"
+                  ><code>ee593cadf5</code></a
+                >] - <strong>doc</strong>: fix dnsPromises.lookup verbatim default (Shivam S)
+                <a href="https://github.com/nodejs/node/pull/64658">#64658</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9c228b32d1"
+                  ><code>9c228b32d1</code></a
+                >] - <strong>doc</strong>: fix typo in releases guide (Jihwan)
+                <a href="https://github.com/nodejs/node/pull/64621">#64621</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4a158cf1ab"
+                  ><code>4a158cf1ab</code></a
+                >] - <strong>doc</strong>: add MikeMcC399 as collaborator (Mike McCready)
+                <a href="https://github.com/nodejs/node/pull/64656">#64656</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8125809853"
+                  ><code>8125809853</code></a
+                >] - <strong>doc</strong>: use promote wording in release guide (Md Muhtasim Munif
+                Fahim) <a href="https://github.com/nodejs/node/pull/64371">#64371</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2a2effadf6"
+                  ><code>2a2effadf6</code></a
+                >] - <strong>doc</strong>: fix import.meta example for vm.SourceTextModule (Muhammad
+                Zeeshan) <a href="https://github.com/nodejs/node/pull/64112">#64112</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c879f912bf"
+                  ><code>c879f912bf</code></a
+                >] - <strong>doc</strong>: mention crypto.hash() for better perf (Steven)
+                <a href="https://github.com/nodejs/node/pull/63420">#63420</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/634afda904"
+                  ><code>634afda904</code></a
+                >] - <strong>doc</strong>: update sea example by fixing wrong code example (Maxence
+                Robinet) <a href="https://github.com/nodejs/node/pull/64025">#64025</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bced1433a3"
+                  ><code>bced1433a3</code></a
+                >] - <strong>doc</strong>: fix socket.readyState state descriptions (YuSheng Chen)
+                <a href="https://github.com/nodejs/node/pull/64468">#64468</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4b2c18938f"
+                  ><code>4b2c18938f</code></a
+                >] - <strong>doc</strong>: replace large tables in crypto.md and webcrypto.md with
+                lists (Filip Skokan) <a href="https://github.com/nodejs/node/pull/64582">#64582</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5207231996"
+                  ><code>5207231996</code></a
+                >] - <strong>doc</strong>: note --env-file is not applied to --run (Paul Bouchon)
+                <a href="https://github.com/nodejs/node/pull/64442">#64442</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/329a2884fd"
+                  ><code>329a2884fd</code></a
+                >] - <strong>doc</strong>: fix typo in embedding.md (greenhead)
+                <a href="https://github.com/nodejs/node/pull/64425">#64425</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fab3f56aa1"
+                  ><code>fab3f56aa1</code></a
+                >] - <strong>doc</strong>: fix typos in contributing docs (Donghoon Kang)
+                <a href="https://github.com/nodejs/node/pull/64520">#64520</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cbc2bed4e8"
+                  ><code>cbc2bed4e8</code></a
+                >] - <strong>doc</strong>: document TLS alpnProtocol and servername fields (Tim
+                Perry) <a href="https://github.com/nodejs/node/pull/64362">#64362</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/dada3ae60e"
+                  ><code>dada3ae60e</code></a
+                >] - <strong>doc</strong>: fix spelling in devcontainer guide (한만욱)
+                <a href="https://github.com/nodejs/node/pull/64459">#64459</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/71343b28aa"
+                  ><code>71343b28aa</code></a
+                >] - <strong>doc</strong>: clarify PEM format for signing keys (Harjoth Khara)
+                <a href="https://github.com/nodejs/node/pull/64404">#64404</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0544ec1c78"
+                  ><code>0544ec1c78</code></a
+                >] - <strong>doc</strong>: fix typo in tls.md (Daijiro Wachi)
+                <a href="https://github.com/nodejs/node/pull/64458">#64458</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8fe58078e7"
+                  ><code>8fe58078e7</code></a
+                >] - <strong>doc</strong>: document net Socket server property (Efe Karasakal)
+                <a href="https://github.com/nodejs/node/pull/64364">#64364</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d54fd03fa4"
+                  ><code>d54fd03fa4</code></a
+                >] - <strong>doc</strong>: update a Dispatcher undici doc link (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64358">#64358</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1bdebecd41"
+                  ><code>1bdebecd41</code></a
+                >] - <strong>doc</strong>: fix typos in documentation (Jungwon Sohn)
+                <a href="https://github.com/nodejs/node/pull/64466">#64466</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/86bca58641"
+                  ><code>86bca58641</code></a
+                >] - <strong>doc</strong>: clarify fixes and refs trailer guidance (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64421">#64421</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b5b84c9394"
+                  ><code>b5b84c9394</code></a
+                >] - <strong>doc</strong>: add scope overview tables for TestsStream events (Moshe
+                Atlow) <a href="https://github.com/nodejs/node/pull/64386">#64386</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/004238d77c"
+                  ><code>004238d77c</code></a
+                >] - <strong>doc</strong>: clarify proxy threat model (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64366">#64366</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6851b8d55f"
+                  ><code>6851b8d55f</code></a
+                >] - <strong>doc</strong>: add note about restricted CI to pull-requests.md (Stewart
+                X Addison) <a href="https://github.com/nodejs/node/pull/64321">#64321</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/662e33714a"
+                  ><code>662e33714a</code></a
+                >] - <strong>doc</strong>: various updates to releases.md (Stewart X Addison)
+                <a href="https://github.com/nodejs/node/pull/64198">#64198</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/949bc3cfd3"
+                  ><code>949bc3cfd3</code></a
+                >] - <strong>doc</strong>: remove obsolete --napi-modules doc entry (Chengzhong Wu)
+                <a href="https://github.com/nodejs/node/pull/64220">#64220</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/830d16067f"
+                  ><code>830d16067f</code></a
+                >] - <strong>doc</strong>: clarify QUIC stream state wording (EduardF1)
+                <a href="https://github.com/nodejs/node/pull/63660">#63660</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/79b6704630"
+                  ><code>79b6704630</code></a
+                >] - <strong>doc</strong>: fix typo in node-config-schema.json (Hamid Reza Ghavami)
+                <a href="https://github.com/nodejs/node/pull/64188">#64188</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9f5bf554db"
+                  ><code>9f5bf554db</code></a
+                >] - <strong>doc</strong>: fix broken link (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/65078">#65078</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/42b27ed428"
+                  ><code>42b27ed428</code></a
+                >] - <strong>doc</strong>: remove unsupported syntax from
+                <code>stream_iter.md</code> (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/64649">#64649</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f1a9df7f22"
+                  ><code>f1a9df7f22</code></a
+                >] - <strong>doc</strong>: clarify fromReadable() duck-typed contract (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63682">#63682</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c7a3d450ac"
+                  ><code>c7a3d450ac</code></a
+                >] - <strong>doc</strong>: improve quic documentation (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63157">#63157</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cc425bc659"
+                  ><code>cc425bc659</code></a
+                >] - <strong>doc</strong>: fix promise nomenclature in
+                <code>stream_iter.md</code> (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/63406">#63406</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/859a02da96"
+                  ><code>859a02da96</code></a
+                >] - <strong>doc</strong>: minor structural stream/iter edits (René)
+                <a href="https://github.com/nodejs/node/pull/63089">#63089</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/630b15eb20"
+                  ><code>630b15eb20</code></a
+                >] - <strong>doc</strong>: fix doubled word typo in stream_iter.md (Daijiro Wachi)
+                <a href="https://github.com/nodejs/node/pull/62916">#62916</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/50791fa8fa"
+                  ><code>50791fa8fa</code></a
+                >] - <strong>doc,test</strong>: widen fsPromises.appendFile()&#x27;s data type, add
+                missing tests (Jimmy Leung)
+                <a href="https://github.com/nodejs/node/pull/64279">#64279</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9e39360a09"
+                  ><code>9e39360a09</code></a
+                >] - <strong>esm</strong>: improve ERR_REQUIRE_ASYNC_MODULE (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/64260">#64260</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d2b02e443a"
+                  ><code>d2b02e443a</code></a
+                >] - <strong>esm</strong>: print required top-level await locations without
+                evaluating (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/64154">#64154</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e8c153f3f4"
+                  ><code>e8c153f3f4</code></a
+                >] - <strong>events</strong>: avoid retaining removed event names (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64475">#64475</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/73e1701bad"
+                  ><code>73e1701bad</code></a
+                >] - <strong>events</strong>: optimize once() and removeListener() (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64373">#64373</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/12f7fc0558"
+                  ><code>12f7fc0558</code></a
+                >] - <strong>fs</strong>: key glob matcher cache by platform (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64571">#64571</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e5af022302"
+                  ><code>e5af022302</code></a
+                >] - <strong>fs</strong>: add pattern cache for matchGlobPattern() (bq)
+                <a href="https://github.com/nodejs/node/pull/63915">#63915</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/63321eeb11"
+                  ><code>63321eeb11</code></a
+                >] - <strong>fs</strong>: fix cp symlink and EEXIST handling on Windows (Kirill
+                Saied) <a href="https://github.com/nodejs/node/pull/64353">#64353</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ad55e5618"
+                  ><code>0ad55e5618</code></a
+                >] - <strong>http</strong>: fix writableFinished and &#x27;finish&#x27; after write
+                errors (Tim Perry) <a href="https://github.com/nodejs/node/pull/64847">#64847</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ee54d9d4d2"
+                  ><code>ee54d9d4d2</code></a
+                >] - <strong>http</strong>: avoid aborting IncomingMessage signal on normal close
+                (Archkon) <a href="https://github.com/nodejs/node/pull/64392">#64392</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/14cb8b0a06"
+                  ><code>14cb8b0a06</code></a
+                >] - <strong>http</strong>: guard invalid timeout values in checkConnections (Efe
+                Karasakal) <a href="https://github.com/nodejs/node/pull/64506">#64506</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f24177ccc6"
+                  ><code>f24177ccc6</code></a
+                >] - <strong>http</strong>: propagate highWaterMark to ClientRequest OutgoingMessage
+                (trivenay) <a href="https://github.com/nodejs/node/pull/64653">#64653</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/55e2c2da8c"
+                  ><code>55e2c2da8c</code></a
+                >] - <strong>http</strong>: fix perf_hooks detail.req.url port and proxied path
+                (Stefano Baghino) <a href="https://github.com/nodejs/node/pull/64311">#64311</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b57350fe27"
+                  ><code>b57350fe27</code></a
+                >] - <strong>http</strong>: remove unused n arg from IncomingMessage._read (Efe
+                Karasakal) <a href="https://github.com/nodejs/node/pull/64370">#64370</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/af3a17e0b3"
+                  ><code>af3a17e0b3</code></a
+                >] - <strong>http2</strong>: avoid copying the options in respond() (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64265">#64265</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f11ac0da37"
+                  ><code>f11ac0da37</code></a
+                >] - <strong>http2</strong>: avoid per-write closures in kWriteGeneric (Matteo
+                Collina) <a href="https://github.com/nodejs/node/pull/64265">#64265</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/157bd07b6e"
+                  ><code>157bd07b6e</code></a
+                >] - <strong>http2</strong>: reduce per-request allocations (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64265">#64265</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b075b33429"
+                  ><code>b075b33429</code></a
+                >] - <strong>http2</strong>: don&#x27;t throw when destroying socket proxy (Matteo
+                Collina) <a href="https://github.com/nodejs/node/pull/64427">#64427</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/445bcce079"
+                  ><code>445bcce079</code></a
+                >] - <strong>inspector</strong>: add --cond to node inspect probe mode (Joyee
+                Cheung) <a href="https://github.com/nodejs/node/pull/64328">#64328</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/06b54fe7d3"
+                  ><code>06b54fe7d3</code></a
+                >] - <strong>lib</strong>: fix AbortSignal.any() observed-composite leak (Paul
+                Bouchon) <a href="https://github.com/nodejs/node/pull/64481">#64481</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d8fac094d1"
+                  ><code>d8fac094d1</code></a
+                >] - <strong>lib</strong>: fix typo in comment in _http_client.js (agape1225)
+                <a href="https://github.com/nodejs/node/pull/64729">#64729</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9ce72fd6fb"
+                  ><code>9ce72fd6fb</code></a
+                >] - <strong>lib</strong>: use <code>assignFunctionName</code> util where it makes
+                sense (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/64515">#64515</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c40d1473e6"
+                  ><code>c40d1473e6</code></a
+                >] - <strong>lib,permission</strong>: fix addon permission drop (Martin Wagner)
+                <a href="https://github.com/nodejs/node/pull/64007">#64007</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d4cafce076"
+                  ><code>d4cafce076</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>lib,permission</strong>: add
+                permission.drop (Rafael Gonzaga)
+                <a href="https://github.com/nodejs/node/pull/62672">#62672</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6b09d30a76"
+                  ><code>6b09d30a76</code></a
+                >] - <strong>lib,tools</strong>: add <code>node-core/func-name-matching</code> lint
+                rule (Livia Medeiros) <a href="https://github.com/nodejs/node/pull/57901">#57901</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d7d4f0e2ac"
+                  ><code>d7d4f0e2ac</code></a
+                >] - <strong>loader</strong>: enforce path normalization before lookup (Maël Nison)
+                <a href="https://github.com/nodejs/node/pull/63917">#63917</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b3cfb55267"
+                  ><code>b3cfb55267</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>loader</strong>: implement package maps
+                (Maël Nison) <a href="https://github.com/nodejs/node/pull/62239">#62239</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cf425ad935"
+                  ><code>cf425ad935</code></a
+                >] - <strong>meta</strong>: bump actions/stale from 10.3.0 to 11.0.0
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64935">#64935</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/26fa9cc32b"
+                  ><code>26fa9cc32b</code></a
+                >] - <strong>meta</strong>: bump github/codeql-action/analyze from 4.36.2 to 4.37.3
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64934">#64934</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c90fa82cd7"
+                  ><code>c90fa82cd7</code></a
+                >] - <strong>meta</strong>: bump github/codeql-action/autobuild from 4.36.2 to
+                4.37.3 (dependabot[bot])
+                <a href="https://github.com/nodejs/node/pull/64933">#64933</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/314893253a"
+                  ><code>314893253a</code></a
+                >] - <strong>meta</strong>: bump actions/setup-python from 6.3.0 to 7.0.0
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64932">#64932</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6ab711278f"
+                  ><code>6ab711278f</code></a
+                >] - <strong>meta</strong>: bump github/codeql-action/init from 4.36.2 to 4.37.3
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64931">#64931</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9138f5892a"
+                  ><code>9138f5892a</code></a
+                >] - <strong>meta</strong>: bump Mozilla-Actions/sccache-action from 0.0.10 to
+                0.0.11 (dependabot[bot])
+                <a href="https://github.com/nodejs/node/pull/64930">#64930</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3ef3f934d4"
+                  ><code>3ef3f934d4</code></a
+                >] - <strong>meta</strong>: bump github/codeql-action/upload-sarif from 4.36.2 to
+                4.37.3 (dependabot[bot])
+                <a href="https://github.com/nodejs/node/pull/64927">#64927</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a0a33127ae"
+                  ><code>a0a33127ae</code></a
+                >] - <strong>meta</strong>: bump step-security/harden-runner from 2.19.4 to 2.20.0
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64926">#64926</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4ad2afbf33"
+                  ><code>4ad2afbf33</code></a
+                >] - <strong>meta</strong>: bump ossf/scorecard-action from 2.4.3 to 2.4.4
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64925">#64925</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d9b2ee4083"
+                  ><code>d9b2ee4083</code></a
+                >] - <strong>meta</strong>: add @nodejs/url as codeowner for node_url_pattern.* (Efe
+                Karasakal) <a href="https://github.com/nodejs/node/pull/64737">#64737</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2b43b78e82"
+                  ><code>2b43b78e82</code></a
+                >] - <strong>meta</strong>: lower stale to 3 months (Aviv Keller)
+                <a href="https://github.com/nodejs/node/pull/64569">#64569</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ffe8352ae"
+                  ><code>0ffe8352ae</code></a
+                >] - <strong>meta</strong>: move one or more collaborators to emeritus (Node.js
+                GitHub Bot) <a href="https://github.com/nodejs/node/pull/64315">#64315</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/afd922cd8a"
+                  ><code>afd922cd8a</code></a
+                >] - <strong>meta</strong>: bump actions/checkout from 6.0.2 to 7.0.0
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64245">#64245</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b6149a2976"
+                  ><code>b6149a2976</code></a
+                >] - <strong>meta</strong>: bump actions/setup-python from 6.2.0 to 6.3.0
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64241">#64241</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8f4a5c622f"
+                  ><code>8f4a5c622f</code></a
+                >] - <strong>meta</strong>: update sccache version in test-linux-quic (René)
+                <a href="https://github.com/nodejs/node/pull/64043">#64043</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9040b08696"
+                  ><code>9040b08696</code></a
+                >] - <strong>net</strong>: support TCP handle transfer on Windows (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64460">#64460</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1216481a09"
+                  ><code>1216481a09</code></a
+                >] - <strong>net</strong>: support AF_UNIX paths in net.BoundSocket (Guy Bedford)
+                <a href="https://github.com/nodejs/node/pull/64399">#64399</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f6bf3f8a5d"
+                  ><code>f6bf3f8a5d</code></a
+                >] - <strong>net</strong>: support sync connect for BoundSocket (Guy Bedford)
+                <a href="https://github.com/nodejs/node/pull/64375">#64375</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fb8a7e15ca"
+                  ><code>fb8a7e15ca</code></a
+                >] - <strong>net</strong>: make TCP Server and Socket transferable across worker
+                threads (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64225">#64225</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/224d2c7886"
+                  ><code>224d2c7886</code></a
+                >] - <strong>path</strong>: add benchmarks for path.matchesGlob() (bq)
+                <a href="https://github.com/nodejs/node/pull/63915">#63915</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/980c651de5"
+                  ><code>980c651de5</code></a
+                >] - <strong>permission</strong>: add unique warning codes (David Evans)
+                <a href="https://github.com/nodejs/node/pull/64414">#64414</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9f9a96030d"
+                  ><code>9f9a96030d</code></a
+                >] - <strong>permission</strong>: support v8.setHeapSnapshotNearHeapLimit (Ilyas
+                Shabi) <a href="https://github.com/nodejs/node/pull/64808">#64808</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a00872183"
+                  ><code>8a00872183</code></a
+                >] - <strong>quic</strong>: fix stop sending behaviour &amp; callback (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64710">#64710</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7aab0c3183"
+                  ><code>7aab0c3183</code></a
+                >] - <strong>quic</strong>: fix coverage comment typo (Jungwon Sohn)
+                <a href="https://github.com/nodejs/node/pull/64486">#64486</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b4ecb3040b"
+                  ><code>b4ecb3040b</code></a
+                >] - <strong>quic</strong>: fix segfault after fragmented client hello (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64720">#64720</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6386540dad"
+                  ><code>6386540dad</code></a
+                >] - <strong>quic</strong>: serialize stream reset code as string (한만욱)
+                <a href="https://github.com/nodejs/node/pull/64577">#64577</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/82717741c9"
+                  ><code>82717741c9</code></a
+                >] - <strong>quic</strong>: defer server session emit until TLS ClientHello is
+                processed (Tim Perry) <a href="https://github.com/nodejs/node/pull/64132">#64132</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7cb3099907"
+                  ><code>7cb3099907</code></a
+                >] - <strong>quic</strong>: preserve session stats after close (한만욱)
+                <a href="https://github.com/nodejs/node/pull/64489">#64489</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/50e639b578"
+                  ><code>50e639b578</code></a
+                >] - <strong>quic</strong>: add support for TLS certificate compression (Sebastian
+                Beltran) <a href="https://github.com/nodejs/node/pull/64434">#64434</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2e28292cc"
+                  ><code>e2e28292cc</code></a
+                >] - <strong>quic</strong>: extract transport logic from Application to Session (Tim
+                Perry) <a href="https://github.com/nodejs/node/pull/64127">#64127</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2ef4b7ebf2"
+                  ><code>2ef4b7ebf2</code></a
+                >] - <strong>quic</strong>: correct http3 callback and fix revealed errs (Marten
+                Richter) <a href="https://github.com/nodejs/node/pull/64289">#64289</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a682b53456"
+                  ><code>a682b53456</code></a
+                >] - <strong>quic</strong>: fix no onstream handler crash quic (Efe)
+                <a href="https://github.com/nodejs/node/pull/64158">#64158</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9445e2719a"
+                  ><code>9445e2719a</code></a
+                >] - <strong>quic</strong>: fix stall datagrams, if no pending streams (Marten
+                Richter) <a href="https://github.com/nodejs/node/pull/64303">#64303</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2ea9d193bd"
+                  ><code>2ea9d193bd</code></a
+                >] - <strong>quic</strong>: fix potential crash from unobserved closed (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64134">#64134</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3b7f4fc1fb"
+                  ><code>3b7f4fc1fb</code></a
+                >] - <strong>quic</strong>: drop version negotiation packets with oversized CIDs
+                (Mohamed Sayed) <a href="https://github.com/nodejs/node/pull/64228">#64228</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bd477a3202"
+                  ><code>bd477a3202</code></a
+                >] - <strong>quic</strong>: fixes undefined handle in QuicStream kInspect (Marten
+                Richter) <a href="https://github.com/nodejs/node/pull/64170">#64170</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3dd04b3ec6"
+                  ><code>3dd04b3ec6</code></a
+                >] - <strong>quic</strong>: fix get_reader bug that dropped data on FIN (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/63946">#63946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4be8abe8f9"
+                  ><code>4be8abe8f9</code></a
+                >] - <strong>quic</strong>: expose QUIC certificates as JS X509Certificate, not raw
+                handles (Tim Perry) <a href="https://github.com/nodejs/node/pull/63191">#63191</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e264c5c0cb"
+                  ><code>e264c5c0cb</code></a
+                >] - <strong>quic</strong>: fix reader backpressure deadlock on idle connections
+                (Tim Perry) <a href="https://github.com/nodejs/node/pull/63950">#63950</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2f749dde18"
+                  ><code>2f749dde18</code></a
+                >] - <strong>quic</strong>: impl. cb for http/3 settings/app. options (Marten
+                Richter) <a href="https://github.com/nodejs/node/pull/63558">#63558</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5ca7ef3202"
+                  ><code>5ca7ef3202</code></a
+                >] - <strong>quic</strong>: fix broken listEndpoints export, test callbacks &amp;
+                nghttp3 include (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/63874">#63874</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/147150cfdd"
+                  ><code>147150cfdd</code></a
+                >] - <strong>quic</strong>: add listEndpoints API (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63536">#63536</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3b59d12f5d"
+                  ><code>3b59d12f5d</code></a
+                >] - <strong>quic</strong>: add proper error codes &amp; messages for QUIC failures
+                (Tim Perry) <a href="https://github.com/nodejs/node/pull/63198">#63198</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b68f8eadb9"
+                  ><code>b68f8eadb9</code></a
+                >] - <strong>quic</strong>: support hostname verification (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7652bd9c6d"
+                  ><code>7652bd9c6d</code></a
+                >] - <strong>quic</strong>: add stream idle timeout (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e493f04214"
+                  ><code>e493f04214</code></a
+                >] - <strong>quic</strong>: add block list support for endpoints (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6d6cd45f8b"
+                  ><code>6d6cd45f8b</code></a
+                >] - <strong>quic</strong>: improve peer cert verification (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/dbe0b371ee"
+                  ><code>dbe0b371ee</code></a
+                >] - <strong>quic</strong>: handle h3 max header size option (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/39dca4150c"
+                  ><code>39dca4150c</code></a
+                >] - <strong>quic</strong>: add rate limiting docs (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c726a893d6"
+                  ><code>c726a893d6</code></a
+                >] - <strong>quic</strong>: cache timestamp for address lru cache (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/11778a7925"
+                  ><code>11778a7925</code></a
+                >] - <strong>quic</strong>: add session creation rate limiting (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8107f1b3ed"
+                  ><code>8107f1b3ed</code></a
+                >] - <strong>quic</strong>: refine rate limiting (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3f0d7371e0"
+                  ><code>3f0d7371e0</code></a
+                >] - <strong>quic</strong>: flip preferred address policy default to
+                &#x27;ignore&#x27; (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/97c8a96774"
+                  ><code>97c8a96774</code></a
+                >] - <strong>quic</strong>: add doc note about certificate size limitations (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63483">#63483</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/42aa3f6612"
+                  ><code>42aa3f6612</code></a
+                >] - <strong>quic</strong>: add applicationOptions to session (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4c00ab9d29"
+                  ><code>4c00ab9d29</code></a
+                >] - <strong>quic</strong>: add getters for local and remote transport parameters
+                (James M Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/858b636576"
+                  ><code>858b636576</code></a
+                >] - <strong>quic</strong>: improve recv coalescing test sizes (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/84d3100256"
+                  ><code>84d3100256</code></a
+                >] - <strong>quic</strong>: add initial RTT option to session options (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a2b6a81c66"
+                  ><code>a2b6a81c66</code></a
+                >] - <strong>quic</strong>: enable recvmmsg batching in Endpoint (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/46a0868994"
+                  ><code>46a0868994</code></a
+                >] - <strong>quic</strong>: improve stream header collection performance (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bc7f4efdb7"
+                  ><code>bc7f4efdb7</code></a
+                >] - <strong>quic</strong>: coalesce received data into fewer buffers (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f727efb8b2"
+                  ><code>f727efb8b2</code></a
+                >] - <strong>quic</strong>: apply multiple additional minor improvements (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ee0a0f1540"
+                  ><code>ee0a0f1540</code></a
+                >] - <strong>quic</strong>: fix tests that are missing serverEndpoint close (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f8a1fdad07"
+                  ><code>f8a1fdad07</code></a
+                >] - <strong>quic</strong>: fixup some v8:: qualifiers (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c66605609c"
+                  ><code>c66605609c</code></a
+                >] - <strong>quic</strong>: fix premature unref of endpoint when listening (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9a72949b0b"
+                  ><code>9a72949b0b</code></a
+                >] - <strong>quic</strong>: fixup UAFs in bindingdata, streams, and app (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a4db12198e"
+                  ><code>a4db12198e</code></a
+                >] - <strong>quic</strong>: fix UAF in Application::OnTimeout() (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0a11b2ccde"
+                  ><code>0a11b2ccde</code></a
+                >] - <strong>quic</strong>: improve the quic js structure (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1bc25d2a03"
+                  ><code>1bc25d2a03</code></a
+                >] - <strong>quic</strong>: improve internal structure of QuicStream (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/69e48aed02"
+                  ><code>69e48aed02</code></a
+                >] - <strong>quic</strong>: add aliased struct arenas (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6b7185351b"
+                  ><code>6b7185351b</code></a
+                >] - <strong>quic</strong>: add handshake timeout and default connection limits
+                (James M Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/91e3c39097"
+                  ><code>91e3c39097</code></a
+                >] - <strong>quic</strong>: fix crash in early handshake failure (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/098e3d715d"
+                  ><code>098e3d715d</code></a
+                >] - <strong>quic</strong>: eliminate per-received datagram allocation (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/53b05e2ab2"
+                  ><code>53b05e2ab2</code></a
+                >] - <strong>quic</strong>: cache the timestamp on send and receive (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1592a11219"
+                  ><code>1592a11219</code></a
+                >] - <strong>quic</strong>: add support for future ECN marking (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/80e6bf9539"
+                  ><code>80e6bf9539</code></a
+                >] - <strong>quic</strong>: improve batching of packet sending (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ff0cd5b95f"
+                  ><code>ff0cd5b95f</code></a
+                >] - <strong>quic</strong>: improve backend quic packet processing (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c4eb6a95da"
+                  ><code>c4eb6a95da</code></a
+                >] - <strong>quic</strong>: send correct OpenSSL alert for ALPN mismatches (Tim
+                Perry) <a href="https://github.com/nodejs/node/pull/63193">#63193</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/575dc7d100"
+                  ><code>575dc7d100</code></a
+                >] - <strong>quic</strong>: fixup quic stream variable chunk len (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63230">#63230</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2551f9e6dd"
+                  ><code>2551f9e6dd</code></a
+                >] - <strong>quic</strong>: remove unused env_ variable in session_manager.h/cc
+                (James M Snell) <a href="https://github.com/nodejs/node/pull/63177">#63177</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bea62a14b3"
+                  ><code>bea62a14b3</code></a
+                >] - <strong>quic</strong>: ignore coverage for quic files (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63149">#63149</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9788bbff97"
+                  ><code>9788bbff97</code></a
+                >] - <strong>quic</strong>: complete the internal implementation of QUIC (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/62876">#62876</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/54c094d245"
+                  ><code>54c094d245</code></a
+                >] - <strong>quic</strong>: continue working on quic api bits (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/60123">#60123</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ea82bc418d"
+                  ><code>ea82bc418d</code></a
+                >] - <strong>readline</strong>: reduce createInterface overhead (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64585">#64585</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/90a8b23db0"
+                  ><code>90a8b23db0</code></a
+                >] - <strong>sqlite</strong>: invalidate sessions when closing database (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64783">#64783</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6abd00ed65"
+                  ><code>6abd00ed65</code></a
+                >] - <strong>sqlite</strong>: check database state before calling SQLite (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64812">#64812</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c2a52514d6"
+                  ><code>c2a52514d6</code></a
+                >] - <strong>sqlite</strong>: fix crash when a session outlives its database
+                (Mohamed Sayed) <a href="https://github.com/nodejs/node/pull/63797">#63797</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f9126923ef"
+                  ><code>f9126923ef</code></a
+                >] - <strong>sqlite</strong>: fix use-after-free in Exec() and ApplyChangeset()
+                (Matteo Collina) <a href="https://github.com/nodejs/node/pull/64535">#64535</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c010131bc3"
+                  ><code>c010131bc3</code></a
+                >] - <strong>sqlite</strong>: read column count after step in StatementSync.all()
+                (Guilherme Araújo) <a href="https://github.com/nodejs/node/pull/64219">#64219</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/782ad5d5b0"
+                  ><code>782ad5d5b0</code></a
+                >] - <strong>src</strong>: implement MemoryRetainer protocol for ByteSource (Filip
+                Skokan) <a href="https://github.com/nodejs/node/pull/64660">#64660</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4afc15bf1d"
+                  ><code>4afc15bf1d</code></a
+                >] - <strong>src</strong>: avoid redundant KEM encapsulation copies (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64553">#64553</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/37085f850d"
+                  ><code>37085f850d</code></a
+                >] - <strong>src</strong>: fix crash when writing odd-length hex string via Writev
+                (RajeshKumar11) <a href="https://github.com/nodejs/node/pull/63658">#63658</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f58ac8224c"
+                  ><code>f58ac8224c</code></a
+                >] - <strong>src</strong>: avoid using ToLocalChecked in crypto_hash (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/64668">#64668</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/05ec9c4771"
+                  ><code>05ec9c4771</code></a
+                >] - <strong>src</strong>: fix libuv assertion on windows (liuxingbaoyu)
+                <a href="https://github.com/nodejs/node/pull/61999">#61999</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/308a589ee9"
+                  ><code>308a589ee9</code></a
+                >] - <strong>src</strong>: avoid redundant DataPointer reallocations (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/64552">#64552</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3650fabcb4"
+                  ><code>3650fabcb4</code></a
+                >] - <strong>src</strong>: fix comment typos (Jungwon Sohn)
+                <a href="https://github.com/nodejs/node/pull/64509">#64509</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/06b3441ea2"
+                  ><code>06b3441ea2</code></a
+                >] - <strong>src</strong>: zero-initialize cap_data in node_credentials.cc (Samuel
+                Kapust) <a href="https://github.com/nodejs/node/pull/64347">#64347</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bb24a88b99"
+                  ><code>bb24a88b99</code></a
+                >] - <strong>src</strong>: fix some typo errors and rename some variables (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64301">#64301</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ba36ab71fd"
+                  ><code>ba36ab71fd</code></a
+                >] - <strong>src</strong>: make node.config.json throw at unknown fields (Marco
+                Ippolito) <a href="https://github.com/nodejs/node/pull/62992">#62992</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fbb3960189"
+                  ><code>fbb3960189</code></a
+                >] - <strong>src</strong>: show original file name in FileHandle GC close errors
+                (Anna Henningsen) <a href="https://github.com/nodejs/node/pull/60593">#60593</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d53d582be7"
+                  ><code>d53d582be7</code></a
+                >] - <strong>src,permission</strong>: do not throw on denied access in audit mode
+                (Adrián Estrada) <a href="https://github.com/nodejs/node/pull/64426">#64426</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cd1eb3e60b"
+                  ><code>cd1eb3e60b</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>src,permission</strong>: add
+                --permission-audit (RafaelGSS)
+                <a href="https://github.com/nodejs/node/pull/61869">#61869</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b1596c2b65"
+                  ><code>b1596c2b65</code></a
+                >] - <strong>stream</strong>: cut per-chunk allocations in pipeTo (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64890">#64890</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2cfa96f5cb"
+                  ><code>2cfa96f5cb</code></a
+                >] - <strong>stream</strong>: preserve push signal abort reason (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64798">#64798</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fc80ff5f7a"
+                  ><code>fc80ff5f7a</code></a
+                >] - <strong>stream</strong>: skip zero-byte broadcast writes (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64772">#64772</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/486cff4c08"
+                  ><code>486cff4c08</code></a
+                >] - <strong>stream</strong>: honor AbortSignal in Writer.end() (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64727">#64727</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/59ef1789f7"
+                  ><code>59ef1789f7</code></a
+                >] - <strong>stream</strong>: use validateString for consumer encoding (Jungwon
+                Sohn) <a href="https://github.com/nodejs/node/pull/64754">#64754</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8aba47536a"
+                  ><code>8aba47536a</code></a
+                >] - <strong>stream</strong>: use the ring buffer for pending BYOB pull-into
+                descriptors (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64818">#64818</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b20217cb56"
+                  ><code>b20217cb56</code></a
+                >] - <strong>stream</strong>: fix uncatchable error closing half-open Duplex.toWeb()
+                writable (Mohamed Sayed)
+                <a href="https://github.com/nodejs/node/pull/64161">#64161</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8accb0c4c0"
+                  ><code>8accb0c4c0</code></a
+                >] - <strong>stream</strong>: abort pending single-source merge reads (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64445">#64445</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ed5b04027c"
+                  ><code>ed5b04027c</code></a
+                >] - <strong>stream</strong>: use RangeError for broadcast overflow (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64420">#64420</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/136d4e7628"
+                  ><code>136d4e7628</code></a
+                >] - <strong>stream</strong>: skip null output from stateful transforms (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64462">#64462</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/193091f1ba"
+                  ><code>193091f1ba</code></a
+                >] - <strong>stream</strong>: update iterable streams to use budget backpressure
+                (James M Snell) <a href="https://github.com/nodejs/node/pull/64464">#64464</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2b32fce77"
+                  ><code>e2b32fce77</code></a
+                >] - <strong>stream</strong>: remove custom
+                <code>CloneableDOMException</code> implementation (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/64469">#64469</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d77788eafe"
+                  ><code>d77788eafe</code></a
+                >] - <strong>stream</strong>: fix drop-newest behavior in share() (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64417">#64417</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/de4ca2c962"
+                  ><code>de4ca2c962</code></a
+                >] - <strong>stream</strong>: fold desired-size check into WHATWG backpressure
+                update (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64451">#64451</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2a3babb8d7"
+                  ><code>2a3babb8d7</code></a
+                >] - <strong>stream</strong>: validate writer options signal (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64385">#64385</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ab8f269b0"
+                  ><code>0ab8f269b0</code></a
+                >] - <strong>stream</strong>: reject push iterator.throw() with error (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64380">#64380</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/262e6545d1"
+                  ><code>262e6545d1</code></a
+                >] - <strong>stream</strong>: simplify nested <code>PromisePrototypeThen</code>s
+                (Antoine du Hamel) <a href="https://github.com/nodejs/node/pull/64470">#64470</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ddfc6af91"
+                  ><code>0ddfc6af91</code></a
+                >] - <strong>stream</strong>: use the ring buffer for WHATWG stream request queues
+                (Matteo Collina) <a href="https://github.com/nodejs/node/pull/64431">#64431</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a5e7d89f9e"
+                  ><code>a5e7d89f9e</code></a
+                >] - <strong>stream</strong>: validate writevSync chunks before queuing (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64300">#64300</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8044f895bf"
+                  ><code>8044f895bf</code></a
+                >] - <strong>stream</strong>: speed up reads and iteration over default WHATWG
+                streams (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64320">#64320</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d4dfb66bdf"
+                  ><code>d4dfb66bdf</code></a
+                >] - <strong>stream</strong>: copy SAB-backed chunks in iter consumers (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64382">#64382</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9c9ade337f"
+                  ><code>9c9ade337f</code></a
+                >] - <strong>stream</strong>: reject nested async streamables in from() (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64352">#64352</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/271c7454f4"
+                  ><code>271c7454f4</code></a
+                >] - <strong>stream</strong>: avoid draining merged iter sources (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64293">#64293</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cbb2568a04"
+                  ><code>cbb2568a04</code></a
+                >] - <strong>stream</strong>: use ring buffer for WHATWG stream queues (Yagiz
+                Nizipli) <a href="https://github.com/nodejs/node/pull/64312">#64312</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/67688cc651"
+                  ><code>67688cc651</code></a
+                >] - <strong>stream</strong>: hoist repeated loads in readable paths (Yagiz Nizipli)
+                <a href="https://github.com/nodejs/node/pull/64312">#64312</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3f8b446a67"
+                  ><code>3f8b446a67</code></a
+                >] - <strong>stream</strong>: prefer sync iterator in fromSync (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64294">#64294</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3043b2a68a"
+                  ><code>3043b2a68a</code></a
+                >] - <strong>stream</strong>: speed up async iteration over WHATWG byte streams
+                (Antoine du Hamel) <a href="https://github.com/nodejs/node/pull/64291">#64291</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/870273ccde"
+                  ><code>870273ccde</code></a
+                >] - <strong>stream</strong>: reject iter consumers on abort (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64066">#64066</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a4a997f3e"
+                  ><code>8a4a997f3e</code></a
+                >] - <strong>stream</strong>: fix merge abort for pending sources (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/64013">#64013</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ac5e5d5dec"
+                  ><code>ac5e5d5dec</code></a
+                >] - <strong>stream</strong>: refactor unnecessary optional chaining away (Antoine
+                du Hamel) <a href="https://github.com/nodejs/node/pull/64253">#64253</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cb298cfb15"
+                  ><code>cb298cfb15</code></a
+                >] - <strong>stream</strong>: normalize Broadcast.from() byte inputs (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64082">#64082</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bbbb4aadef"
+                  ><code>bbbb4aadef</code></a
+                >] - <strong>stream</strong>: observe abort while awaiting pipeTo source (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64015">#64015</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4387ad412f"
+                  ><code>4387ad412f</code></a
+                >] - <strong>stream</strong>: respect iter consumer abort signals (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63997">#63997</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4ba1fa0062"
+                  ><code>4ba1fa0062</code></a
+                >] - <strong>stream</strong>: handle falsy push writer fail reasons (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63569">#63569</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3b8c30c096"
+                  ><code>3b8c30c096</code></a
+                >] - <strong>stream</strong>: handle setEncoding after buffered data (Matteo
+                Collina) <a href="https://github.com/nodejs/node/pull/63973">#63973</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/97ef13c84e"
+                  ><code>97ef13c84e</code></a
+                >] - <strong>stream</strong>: keep overlapping broadcast reads pending (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63500">#63500</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a46ddad9fa"
+                  ><code>a46ddad9fa</code></a
+                >] - <strong>stream</strong>: refine the stream/iter backpressure (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63697">#63697</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/557bf99245"
+                  ><code>557bf99245</code></a
+                >] - <strong>stream</strong>: remove transform-writer handling in pipeTo (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63684">#63684</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/24b7831a1a"
+                  ><code>24b7831a1a</code></a
+                >] - <strong>stream</strong>: fix pipeToSync byte accounting (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63564">#63564</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3b5f1b56bc"
+                  ><code>3b5f1b56bc</code></a
+                >] - <strong>stream</strong>: reject pull() reads on abort (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63498">#63498</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e48e287633"
+                  ><code>e48e287633</code></a
+                >] - <strong>stream</strong>: fast-path stateless transform flush results (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63605">#63605</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f0ee316f45"
+                  ><code>f0ee316f45</code></a
+                >] - <strong>stream</strong>: handle sync writev completion in pipeTo (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63561">#63561</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fbed90b2fb"
+                  ><code>fbed90b2fb</code></a
+                >] - <strong>stream</strong>: settle pending broadcast reads on return (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63603">#63603</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/568dcc250f"
+                  ><code>568dcc250f</code></a
+                >] - <strong>stream</strong>: serialize concurrent share consumer reads (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63478">#63478</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5e2b4c4ade"
+                  ><code>5e2b4c4ade</code></a
+                >] - <strong>stream</strong>: fix lint error (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/63598">#63598</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/74bd0cd35a"
+                  ><code>74bd0cd35a</code></a
+                >] - <strong>stream</strong>: reject pending reads on iterator throw (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63555">#63555</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/45780df841"
+                  ><code>45780df841</code></a
+                >] - <strong>stream</strong>: wait for push writer end fallback to drain (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63503">#63503</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/217b495e0a"
+                  ><code>217b495e0a</code></a
+                >] - <strong>stream</strong>: flush each fused stateless transform (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63468">#63468</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2e8685592e"
+                  ><code>2e8685592e</code></a
+                >] - <strong>stream</strong>: avoid duplicate writes in toWritable (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63360">#63360</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/88a3392a78"
+                  ><code>88a3392a78</code></a
+                >] - <strong>stream</strong>: propagate abort reason in share and broadcast
+                (Trivikram Kamat) <a href="https://github.com/nodejs/node/pull/63358">#63358</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fce3df74e9"
+                  ><code>fce3df74e9</code></a
+                >] - <strong>stream</strong>: disallow writing string chunk with &#x27;buffer&#x27;
+                encoding (René) <a href="https://github.com/nodejs/node/pull/63062">#63062</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5658c631fa"
+                  ><code>5658c631fa</code></a
+                >] - <strong>stream</strong>: align <code>Readable.toWeb</code> termination with eos
+                (ikeyan) <a href="https://github.com/nodejs/node/pull/62394">#62394</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/02a51a746b"
+                  ><code>02a51a746b</code></a
+                >] - <strong>stream</strong>: add sync iterable fast path to pipeTo (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63318">#63318</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4c9f3edb64"
+                  ><code>4c9f3edb64</code></a
+                >] - <strong>stream</strong>: fix merge handling for object-like sources (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63356">#63356</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c50d8e49cc"
+                  ><code>c50d8e49cc</code></a
+                >] - <strong>stream</strong>: limit iter from sync iterable batches (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63324">#63324</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1d7c86d577"
+                  ><code>1d7c86d577</code></a
+                >] - <strong>stream</strong>: cache minimum cursor count in broadcast (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63322">#63322</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ec2666edbe"
+                  ><code>ec2666edbe</code></a
+                >] - <strong>stream</strong>: avoid retrying accepted pipeTo writes (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63297">#63297</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f63143fd83"
+                  ><code>f63143fd83</code></a
+                >] - <strong>stream</strong>: validate broadcast writer writev chunks (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63300">#63300</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/944470b08a"
+                  ><code>944470b08a</code></a
+                >] - <strong>stream</strong>: uncork fromWritable writev on chunk error (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63295">#63295</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ae79f2b67a"
+                  ><code>ae79f2b67a</code></a
+                >] - <strong>stream</strong>: validate fromWritable() options before cache
+                (Trivikram Kamat) <a href="https://github.com/nodejs/node/pull/63278">#63278</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c98cc67f33"
+                  ><code>c98cc67f33</code></a
+                >] - <strong>stream</strong>: optimize single-slot push queue drain (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63274">#63274</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9a45ff5d8f"
+                  ><code>9a45ff5d8f</code></a
+                >] - <strong>stream</strong>: preserve toReadableSync batch after backpressure
+                (Trivikram Kamat) <a href="https://github.com/nodejs/node/pull/63276">#63276</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/eb72fe94fc"
+                  ><code>eb72fe94fc</code></a
+                >] - <strong>stream</strong>: cache minimum cursor count in share (Trivikram Kamat)
+                <a href="https://github.com/nodejs/node/pull/63262">#63262</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b57b51eeed"
+                  ><code>b57b51eeed</code></a
+                >] - <strong>stream</strong>: minor stream/iter implementation edits (René)
+                <a href="https://github.com/nodejs/node/pull/63132">#63132</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/274b3a2ea1"
+                  ><code>274b3a2ea1</code></a
+                >] - <strong>stream</strong>: remove redundant method check from iter.pipeToSync
+                (René) <a href="https://github.com/nodejs/node/pull/63099">#63099</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/baf98faa06"
+                  ><code>baf98faa06</code></a
+                >] - <strong>stream</strong>: add stream/iter to classic stream adapters (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/62469">#62469</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/28dc85d8d2"
+                  ><code>28dc85d8d2</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>stream</strong>: add stream/iter
+                Implementation (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/62066">#62066</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/125c19da43"
+                  ><code>125c19da43</code></a
+                >] - <strong>stream, quic</strong>: update iterable streams backpressure (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/64464">#64464</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/11d1bd3ba7"
+                  ><code>11d1bd3ba7</code></a
+                >] - <strong>test</strong>: split test-embedding.js and run tests in parallel (Joyee
+                Cheung) <a href="https://github.com/nodejs/node/pull/61571">#61571</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e59346b704"
+                  ><code>e59346b704</code></a
+                >] - <strong>test</strong>: ensure assertions are reached on all tests (Antoine du
+                Hamel) <a href="https://github.com/nodejs/node/pull/64716">#64716</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/42a967d7ed"
+                  ><code>42a967d7ed</code></a
+                >] - <strong>test</strong>: unflake debugger and REPL tests (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64718">#64718</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d80a45fdc4"
+                  ><code>d80a45fdc4</code></a
+                >] - <strong>test</strong>: update WPT for url to 4832db4761 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64829">#64829</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7264efb21b"
+                  ><code>7264efb21b</code></a
+                >] - <strong>test</strong>: update WPT for url to b63305b743 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/64790">#64790</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/539f5dc8f9"
+                  ><code>539f5dc8f9</code></a
+                >] - <strong>test</strong>: cover worker throwing primitive values (varshitha)
+                <a href="https://github.com/nodejs/node/pull/64365">#64365</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/087d9e8dd0"
+                  ><code>087d9e8dd0</code></a
+                >] - <strong>test</strong>: mark test-repl-user-error-handler as flaky (Aviv Keller)
+                <a href="https://github.com/nodejs/node/pull/64612">#64612</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/dd1e7139a5"
+                  ><code>dd1e7139a5</code></a
+                >] - <strong>test</strong>: update quic tests for stream/iter update (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/64464">#64464</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/eee0e84537"
+                  ><code>eee0e84537</code></a
+                >] - <strong>test</strong>: fix flaky http2 socket proxy test (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64673">#64673</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a5ce44dd75"
+                  ><code>a5ce44dd75</code></a
+                >] - <strong>test</strong>: apply correction to comment (Rich Trott)
+                <a href="https://github.com/nodejs/node/pull/64524">#64524</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/da8508c5a0"
+                  ><code>da8508c5a0</code></a
+                >] - <strong>test</strong>: keep finalization before-exit ref alive (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64521">#64521</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/14b710c415"
+                  ><code>14b710c415</code></a
+                >] - <strong>test</strong>: copyedit
+                <code>test-tls-psk-alpn-callback-exception-handling</code> (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/63485">#63485</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/99b7382c6a"
+                  ><code>99b7382c6a</code></a
+                >] - <strong>test</strong>: fix stale async-context-frame status entries (Kirill
+                Saied) <a href="https://github.com/nodejs/node/pull/64141">#64141</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6da6ca730d"
+                  ><code>6da6ca730d</code></a
+                >] - <strong>test</strong>: update WPT for urlpattern to 5847ee5cfa (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/64436">#64436</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/73bf0f07f1"
+                  ><code>73bf0f07f1</code></a
+                >] - <strong>test</strong>: update WPT for WebCryptoAPI to ec2fee39a4 (Node.js
+                GitHub Bot) <a href="https://github.com/nodejs/node/pull/64435">#64435</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9a7ec52e6f"
+                  ><code>9a7ec52e6f</code></a
+                >] - <strong>test</strong>: fix flaky http2 maxOriginSetSize test (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64407">#64407</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/59af7e0ed9"
+                  ><code>59af7e0ed9</code></a
+                >] - <strong>test</strong>: fix 2nd flaky blob test case (Tim Perry)
+                <a href="https://github.com/nodejs/node/pull/64391">#64391</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7fd5f66376"
+                  ><code>7fd5f66376</code></a
+                >] - <strong>test</strong>: fix flaky watch + cwd + argv test-runner test (Tim
+                Perry) <a href="https://github.com/nodejs/node/pull/64372">#64372</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d5b47d2fae"
+                  ><code>d5b47d2fae</code></a
+                >] - <strong>test</strong>: normalize Windows crash in debugger test normalization
+                (Joyee Cheung) <a href="https://github.com/nodejs/node/pull/64332">#64332</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a8ae44096d"
+                  ><code>a8ae44096d</code></a
+                >] - <strong>test</strong>: unmark flaky http2-large-file for Win (Kirill Saied)
+                <a href="https://github.com/nodejs/node/pull/64255">#64255</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8461d18597"
+                  ><code>8461d18597</code></a
+                >] - <strong>test</strong>: increase timeout in consumed-timeout test (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/64204">#64204</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/af52410d70"
+                  ><code>af52410d70</code></a
+                >] - <strong>test</strong>: handle null stdio streams in spawnSyncAndAssert helper
+                (Joyee Cheung) <a href="https://github.com/nodejs/node/pull/64273">#64273</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ea079be7b"
+                  ><code>0ea079be7b</code></a
+                >] - <strong>test</strong>: remove impact of tier-up changes in worker stack size
+                test (Joyee Cheung) <a href="https://github.com/nodejs/node/pull/64271">#64271</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1bde0ef053"
+                  ><code>1bde0ef053</code></a
+                >] - <strong>test</strong>: update WPT for WebCryptoAPI to 0c413fb56b (Node.js
+                GitHub Bot) <a href="https://github.com/nodejs/node/pull/63647">#63647</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f32b412867"
+                  ><code>f32b412867</code></a
+                >] - <strong>test</strong>: get rid of unnecessary
+                <code>AbortController</code> instanciations (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/63489">#63489</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8cbd90161b"
+                  ><code>8cbd90161b</code></a
+                >] - <strong>test</strong>: update WPT for wasm/jsapi to 288c467d35 (Node.js GitHub
+                Bot) <a href="https://github.com/nodejs/node/pull/63136">#63136</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f200aaccf0"
+                  ><code>f200aaccf0</code></a
+                >] - <strong>test</strong>: fixup quic tests (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/63267">#63267</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/14c547351b"
+                  ><code>14c547351b</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>test</strong>: add tests for
+                experimental stream/iter implementation (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/62066">#62066</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2cc54e1793"
+                  ><code>2cc54e1793</code></a
+                >] - <strong>test</strong>: skip quic tests that IBM i does not support (SRAVANI
+                GUNDEPALLI) <a href="https://github.com/nodejs/node/pull/60160">#60160</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8ec80b311b"
+                  ><code>8ec80b311b</code></a
+                >] - <strong>test_runner</strong>: wait for filtered suite build (semimikoh)
+                <a href="https://github.com/nodejs/node/pull/64208">#64208</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9ed7146851"
+                  ><code>9ed7146851</code></a
+                >] - <strong>test_runner</strong>: convert to uint during deserialization (Aviv
+                Keller) <a href="https://github.com/nodejs/node/pull/64706">#64706</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d31c168740"
+                  ><code>d31c168740</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>test_runner</strong>: add context.log()
+                and test:log event (Moshe Atlow)
+                <a href="https://github.com/nodejs/node/pull/64389">#64389</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/add1edbc42"
+                  ><code>add1edbc42</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>test_runner</strong>: report
+                <code>entryFile</code> in <code>TestStream</code> events (Moshe Atlow)
+                <a href="https://github.com/nodejs/node/pull/64309">#64309</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8d97dee696"
+                  ><code>8d97dee696</code></a
+                >] - <strong>tests</strong>: start adding quic test server utilities (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59946">#59946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e5278b7f7d"
+                  ><code>e5278b7f7d</code></a
+                >] - <strong>timers</strong>: do not retain a reference to the async store after
+                firing (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/53443">#53443</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e277bc4608"
+                  ><code>e277bc4608</code></a
+                >] - <strong>tls</strong>: fix SNICallback certificate selection (Matteo Collina)
+                <a href="https://github.com/nodejs/node/pull/64700">#64700</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b9104decc3"
+                  ><code>b9104decc3</code></a
+                >] - <strong>tls</strong>: match IPv6 hosts against IP-Address SANs (Pascal Garber)
+                <a href="https://github.com/nodejs/node/pull/64145">#64145</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b50139e89f"
+                  ><code>b50139e89f</code></a
+                >] - <strong>tools</strong>: bump the eslint group in /tools/eslint with 4 updates
+                (dependabot[bot]) <a href="https://github.com/nodejs/node/pull/64928">#64928</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5460c464a0"
+                  ><code>5460c464a0</code></a
+                >] - <strong>tools</strong>: bump brace-expansion from 5.0.7 to 5.0.9 in
+                /tools/eslint (dependabot[bot])
+                <a href="https://github.com/nodejs/node/pull/64904">#64904</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f8a13811cd"
+                  ><code>f8a13811cd</code></a
+                >] - <strong>tools</strong>: use &#x27;readonly&#x27; for EventSource global (Honey
+                Tyagi) <a href="https://github.com/nodejs/node/pull/64787">#64787</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6e10012c0d"
+                  ><code>6e10012c0d</code></a
+                >] - <strong>tools</strong>: bump brace-expansion from 5.0.6 to 5.0.7 in
+                /tools/eslint (dependabot[bot])
+                <a href="https://github.com/nodejs/node/pull/64636">#64636</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d66b7588ac"
+                  ><code>d66b7588ac</code></a
+                >] - <strong>tools</strong>: reference &#x27;git node land&#x27; in PR-URL: error
+                message in merge.sh (Stewart X Addison)
+                <a href="https://github.com/nodejs/node/pull/64495">#64495</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5d90e48175"
+                  ><code>5d90e48175</code></a
+                >] - <strong>tools</strong>: disable zipping tarballs on GHA (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/64423">#64423</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a909f4540"
+                  ><code>8a909f4540</code></a
+                >] - <strong>tools</strong>: fix redundant conditions in v8.gyp for riscv64 and
+                loong64 (Jamie Magee) <a href="https://github.com/nodejs/node/pull/62608">#62608</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9e171710fa"
+                  ><code>9e171710fa</code></a
+                >] - <strong>tools</strong>: remove <code>envinfo</code> from our workflows (Antoine
+                du Hamel) <a href="https://github.com/nodejs/node/pull/64259">#64259</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3fb722054f"
+                  ><code>3fb722054f</code></a
+                >] - <strong>tools</strong>: avoid test/fixtures/wpt/README.md conflicts (Filip
+                Skokan) <a href="https://github.com/nodejs/node/pull/63938">#63938</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5755712920"
+                  ><code>5755712920</code></a
+                >] - <strong>tools</strong>: add lint rule for aborted AbortController (Trivikram
+                Kamat) <a href="https://github.com/nodejs/node/pull/63541">#63541</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e88d5b78bc"
+                  ><code>e88d5b78bc</code></a
+                >] - <strong>typings</strong>: add heap_utils internalBinding types (Donghoon Kang)
+                <a href="https://github.com/nodejs/node/pull/64816">#64816</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ae93bc8ad1"
+                  ><code>ae93bc8ad1</code></a
+                >] - <strong>typings</strong>: remove isDataView from types binding (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64738">#64738</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c00bd1427d"
+                  ><code>c00bd1427d</code></a
+                >] - <strong>url</strong>: create URLPattern result properties in WebIDL order
+                (Archkon) <a href="https://github.com/nodejs/node/pull/64733">#64733</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a07969e28"
+                  ><code>8a07969e28</code></a
+                >] - <strong>util</strong>: make MIMEParams accessors case-insensitive (Daijiro
+                Wachi) <a href="https://github.com/nodejs/node/pull/64123">#64123</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bf86741167"
+                  ><code>bf86741167</code></a
+                >] - <strong>v8</strong>: report minor mark-sweep in GCProfiler (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64688">#64688</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d937c8c6cd"
+                  ><code>d937c8c6cd</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>wasm</strong>: enable JSPI (Guy
+                Bedford) <a href="https://github.com/nodejs/node/pull/59941">#59941</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/9016ddabb9"
+                  ><code>9016ddabb9</code></a
+                >] - <strong>wasm</strong>: register missing SetURL function (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64679">#64679</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e599b9428b"
+                  ><code>e599b9428b</code></a
+                >] - <strong>zlib</strong>: validate pledgedSrcSize as a safe integer (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64604">#64604</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1f1adc89da"
+                  ><code>1f1adc89da</code></a
+                >] - <strong>zlib</strong>: accept ArrayBuffer dictionary in Zstd (Ryuhei Shima)
+                <a href="https://github.com/nodejs/node/pull/64599">#64599</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ee91ead8b"
+                  ><code>0ee91ead8b</code></a
+                >] - <strong>zlib</strong>: reject truncated zstd input (Archkon)
+                <a href="https://github.com/nodejs/node/pull/64593">#64593</a>
+              </li>
+            </ul>
+            <p>
+              Windows 64-bit Installer:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-x64.msi"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-x64.msi</a
+              >
+              <br />
+              <!-- -->Windows ARM 64-bit Installer:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-arm64.msi"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-arm64.msi</a
+              >
+              <br />
+              <!-- -->Windows 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/win-x64/node.exe"
+                >https://nodejs.org/dist/v24.20.0/win-x64/node.exe</a
+              >
+              <br />
+              <!-- -->Windows ARM 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/win-arm64/node.exe"
+                >https://nodejs.org/dist/v24.20.0/win-arm64/node.exe</a
+              >
+              <br />
+              <!-- -->macOS 64-bit Installer:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0.pkg"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0.pkg</a
+              >
+              <br />
+              <!-- -->macOS Apple Silicon 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-arm64.tar.gz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-arm64.tar.gz</a
+              >
+              <br />
+              <!-- -->macOS Intel 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-x64.tar.gz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-x64.tar.gz</a
+              >
+              <br />
+              <!-- -->Linux 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-x64.tar.xz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-x64.tar.xz</a
+              >
+              <br />
+              <!-- -->Linux PPC LE 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-ppc64le.tar.xz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-ppc64le.tar.xz</a
+              >
+              <br />
+              <!-- -->Linux s390x 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-s390x.tar.xz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-s390x.tar.xz</a
+              >
+              <br />
+              <!-- -->AIX 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-aix-ppc64.tar.gz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-aix-ppc64.tar.gz</a
+              >
+              <br />
+              <!-- -->ARMv8 64-bit Binary:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-arm64.tar.xz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-arm64.tar.xz</a
+              >
+              <br />
+              <!-- -->Source Code:
+              <a href="https://nodejs.org/dist/v24.20.0/node-v24.20.0.tar.gz"
+                >https://nodejs.org/dist/v24.20.0/node-v24.20.0.tar.gz</a
+              >
+              <br />
+              <!-- -->Other release files:
+              <a href="https://nodejs.org/dist/v24.20.0/">https://nodejs.org/dist/v24.20.0/</a>
+              <br />
+              <!-- -->Documentation:
+              <a href="https://nodejs.org/docs/v24.20.0/api/"
+                >https://nodejs.org/docs/v24.20.0/api/</a
+              >
+            </p>
+            <h3 id="shasums"><a href="#shasums">SHASUMS</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>-----BEGIN</span><span> </span><span>PGP</span><span> </span><span>SIGNED</span><span> </span><span>MESSAGE-----</span></span>
+<span class="line"><span>Hash:</span><span> </span><span>SHA256</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>14b5bd7ad40ab5f4715fb4e2f964858d820d9425fe291d3d65f98926e6b89c1e</span><span> </span><span></span><span> </span><span>node-v24.20.0-aix-ppc64.tar.gz</span></span>
+<span class="line"><span>15130c76b7a3a5f58233a3c383944ebd0da924d2fc80e50916769a4b7b9af6f8</span><span> </span><span></span><span> </span><span>node-v24.20.0-arm64.msi</span></span>
+<span class="line"><span>40e5607e5ecb3db9192723776da2d75d966260fc74a7a9e731c1bd67dda96bc8</span><span> </span><span></span><span> </span><span>node-v24.20.0-darwin-arm64.tar.gz</span></span>
+<span class="line"><span>b7bf7707070b950ba1ec5f1af3bb6de0f2b1962c5033973d94068ab021ef3014</span><span> </span><span></span><span> </span><span>node-v24.20.0-darwin-arm64.tar.xz</span></span>
+<span class="line"><span>9e5b2644cf107befb6aefca676b96d3296bc10138096f022ed378d6233ed81f4</span><span> </span><span></span><span> </span><span>node-v24.20.0-darwin-x64.tar.gz</span></span>
+<span class="line"><span>26fc30891004603d094eed11de5efcd03bbd2efbc35c177fc72648d5d7a7701b</span><span> </span><span></span><span> </span><span>node-v24.20.0-darwin-x64.tar.xz</span></span>
+<span class="line"><span>7b2141e77e66ab23ead6b200c546afc5837136e3075d8a3ac5a67e540dcc59c1</span><span> </span><span></span><span> </span><span>node-v24.20.0-headers.tar.gz</span></span>
+<span class="line"><span>cb5420ff135b64fdcb3d050223146ecc3e257c413abe915604d48e589498ae47</span><span> </span><span></span><span> </span><span>node-v24.20.0-headers.tar.xz</span></span>
+<span class="line"><span>3515603e2487879a39bc75716f1a2affd027500c64ba50e845cf72cb33219013</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-arm64.tar.gz</span></span>
+<span class="line"><span>5f4ddab610c1ab2016b3c227cebdbf6d9495161487e4739c7b90090595f465f7</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-arm64.tar.xz</span></span>
+<span class="line"><span>a734b36c8d1d16ce455c0eb9c329b07dd121c2c8554355064a9861bc96c3adcc</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-ppc64le.tar.gz</span></span>
+<span class="line"><span>341307dcee20d88332307008f2a480450c54f42d5149e7c4c8a18d937e37b5c1</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-ppc64le.tar.xz</span></span>
+<span class="line"><span>d8c224b46ef01f078a523d9b7db79282306fae281e986a15a2dbffe947c5301e</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-s390x.tar.gz</span></span>
+<span class="line"><span>ca381121cb5a8d38c2954b6699cea09a83fba1b03141a71a8348f08df02de245</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-s390x.tar.xz</span></span>
+<span class="line"><span>d6e6d1bbb9ad4acb16d580b89be8a9c9a7e490926e93bd3c30a20d46e152bf8a</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-x64-musl.tar.gz</span></span>
+<span class="line"><span>3b69570a286102090f592447cdfd53abbaa928f20f895cc1df2757b1281dc52a</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-x64-musl.tar.xz</span></span>
+<span class="line"><span>855d581f8a4eb1a8117e3426de25fe02770592febcfb31369aee1ffbfee9e8ec</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-x64.tar.gz</span></span>
+<span class="line"><span>2f2c0da162318f0de47665410c7c8c2ed3d36c8f3105de4bbc61176c70a7cbf2</span><span> </span><span></span><span> </span><span>node-v24.20.0-linux-x64.tar.xz</span></span>
+<span class="line"><span>15097cd9371fc1f0ed49ea8b36d753031a232ae1cf5927c9df358a0e692ae1b7</span><span> </span><span></span><span> </span><span>node-v24.20.0-win-arm64.7z</span></span>
+<span class="line"><span>31c6799744de8a54601643098040c68c3697e56c94e407d61d0e5fa5f34191d7</span><span> </span><span></span><span> </span><span>node-v24.20.0-win-arm64.zip</span></span>
+<span class="line"><span>6996eedc271e26371c6b2a284461b01b97fcec2d9f770d003b0408657cb3496e</span><span> </span><span></span><span> </span><span>node-v24.20.0-win-x64.7z</span></span>
+<span class="line"><span>6cac9ffbca8f6a47091e4b5c772e0606049c3871cb67d900c0cedde630e545ba</span><span> </span><span></span><span> </span><span>node-v24.20.0-win-x64.zip</span></span>
+<span class="line"><span>28b69132c35ccc033bf8f2a67cd10c9d75ef5822593363309da448f2afff2d8a</span><span> </span><span></span><span> </span><span>node-v24.20.0-x64.msi</span></span>
+<span class="line"><span>8b7ee3d72b265866f7d5bbb705c898720613fde3703ebb4c1c0a863aedef613c</span><span> </span><span></span><span> </span><span>node-v24.20.0.pkg</span></span>
+<span class="line"><span>987113866ab9018998f09f74072afe7136f3da8b934e35d89531e1e49890062f</span><span> </span><span></span><span> </span><span>node-v24.20.0.tar.gz</span></span>
+<span class="line"><span>2732fc3f588dd335cd6779c06864f7cd424bb1b5ff9a1743059a66c54f9ca4a1</span><span> </span><span></span><span> </span><span>node-v24.20.0.tar.xz</span></span>
+<span class="line"><span>92949e7764e56e305cb84ea3d575912e822c79e85599362e8d408b04b9ffd326</span><span> </span><span></span><span> </span><span>win-arm64/node.exe</span></span>
+<span class="line"><span>88dea6ff6656445ee22ed8843816d8d90d707c3d05228bd0a3ad56ea30e8a395</span><span> </span><span></span><span> </span><span>win-arm64/node.lib</span></span>
+<span class="line"><span>d5e5a9043145392e4db85567d34abf7c070126ad35d2a7ee40399af2a5482f04</span><span> </span><span></span><span> </span><span>win-arm64/node_pdb.7z</span></span>
+<span class="line"><span>07725b0c16bd32876f44a0315e251aafa84568b0b1d98c9b76991873174e2637</span><span> </span><span></span><span> </span><span>win-arm64/node_pdb.zip</span></span>
+<span class="line"><span>5c976096e04e5c2c1f091938926234cc9fbebfe9787ddd149351b3b0ecc707b5</span><span> </span><span></span><span> </span><span>win-x64/node.exe</span></span>
+<span class="line"><span>63ec831bbf164d1b23197d6fac1944dfb146534e332889ca0755d250e8dedff9</span><span> </span><span></span><span> </span><span>win-x64/node.lib</span></span>
+<span class="line"><span>491cc4a1487a8b2e32dd469a1d5fd59296bd96ae009fc426309354f4aaa5d396</span><span> </span><span></span><span> </span><span>win-x64/node_pdb.7z</span></span>
+<span class="line"><span>27a5ed0f346bb2ca58e6429a2f0082016433126e80c646b0def96cb547422ea1</span><span> </span><span></span><span> </span><span>win-x64/node_pdb.zip</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>-----BEGIN</span><span> </span><span>PGP</span><span> </span><span>SIGNATURE-----</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>iHUEARYIAB0WIQRb6KP2yKXAHRBsCtggsaOQsWjTVgUCao73YAAKCRAgsaOQsWjT</span></span>
+<span class="line"><span>VgY5AP9hgzGRThBJscP/dA2MkF0KwXP7K989SLyPFpGMqtjdCwEA+PqpfxC5m4Ul</span></span>
+<span class="line"><span>IG1x2GxuiSI9aeLxQQ5KiojtpyQalw4=</span></span>
+<span class="line"><span>=byQt</span></span>
+<span class="line"><span>-----END</span><span> </span><span>PGP</span><span> </span><span>SIGNATURE-----</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a class="index-module__A9kfJq__crossLink" href="/en/blog/release/v26.8.0"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content">Node.js 26.8.0 (Current)</span></a
+              ><a class="index-module__A9kfJq__crossLink" href="/en/blog/release/v26.7.0"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Node.js 26.7.0 (Current)</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Aug 26, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>22 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/release/v24.20.0.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#2026-08-26-version-24200-krypton-lts-aduh95"
+                    >2026-08-26, Version 24.20.0 &#x27;Krypton&#x27; (LTS), @aduh95</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#notable-changes">Notable Changes</a></li>
+                <li class="pl-2"><a class="" href="#commits">Commits</a></li>
+                <li class="pl-2"><a class="" href="#shasums">SHASUMS</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

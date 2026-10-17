@@ -1,0 +1,500 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by H company on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/6264f9655f6f2e14d6ac981c/GJ6FUbgFpq1x8RNOqzmz-.webp" />
+
+		<meta property="og:title" content="NeoMME: an efficient Multimodal-native and Multilingual Encoder" />
+
+		<meta property="og:description" content="A Blog post by H company on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/Hcompany/neomme" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/6264f9655f6f2e14d6ac981c/GJ6FUbgFpq1x8RNOqzmz-.webp" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/Hcompany/neomme">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>NeoMME: an efficient Multimodal-native and Multilingual Encoder</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="neomme-an-efficient-multimodal-native-and-multilingual-encoder" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#neomme-an-efficient-multimodal-native-and-multilingual-encoder" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		NeoMME: an efficient Multimodal-native and Multilingual Encoder
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[0--><span>Team</span><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					September 3, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2FHcompany%2Fneomme" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">122</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ABonnetH" style="content-visibility:auto;"><!--[0--><a href="/ABonnetH" title="ABonnetH"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68c435c869d3aa0e590b0361/RZcEZherMz2CeJo5kuWHh.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ivanv4" style="content-visibility:auto;"><!--[0--><a href="/ivanv4" title="ivanv4"><img class="overflow-hidden rounded-full" alt="" src="/avatars/871961801ee9242f5bcd77e097720a54.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="enzo-damion-h" style="content-visibility:auto;"><!--[0--><a href="/enzo-damion-h" title="enzo-damion-h"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/gCLGNIpWsU7LJC0U9fEZc.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Diazmathh" style="content-visibility:auto;"><!--[0--><a href="/Diazmathh" title="Diazmathh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/cb119b58fabbb25ca80c7cc975581a9e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rghermi-h" style="content-visibility:auto;"><!--[0--><a href="/rghermi-h" title="rghermi-h"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4881b4bdf30634089ddba7d607108c1e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="vincentcoyette" style="content-visibility:auto;"><!--[0--><a href="/vincentcoyette" title="vincentcoyette"><img class="overflow-hidden rounded-full" alt="" src="/avatars/e15d64d814c3ee65ffc7fe39d82969ea.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+116</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/tonywu71"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Tony Wu's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6264f9655f6f2e14d6ac981c/bJ5lPjGaOfatQne--KQ10.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/tonywu71"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Tony Wu">Tony Wu</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">tonywu71</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/Hcompany" class="mr-1.5 flex-none" title="H company"><img class="rounded-sm! size-4 select-none" alt="H company's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/677d3f355f847864bb644112/OQyAJ33sssiTDIQEQ7oH_.png" loading="lazy"/></a> <a href="/Hcompany" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">Hcompany</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/h-aurelien-lac"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Aurélien Lac's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68af0743185daab16434e152/3JIwr-47ulQ-swvPvmLHl.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/h-aurelien-lac"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Aurélien Lac">Aurélien Lac</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">h-aurelien-lac</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/Hcompany" class="mr-1.5 flex-none" title="H company"><img class="rounded-sm! size-4 select-none" alt="H company's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/677d3f355f847864bb644112/OQyAJ33sssiTDIQEQ7oH_.png" loading="lazy"/></a> <a href="/Hcompany" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">Hcompany</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://hf.co/collections/Hcompany/neomme" rel="nofollow"><img src="https://img.shields.io/badge/Collection-FFD21E?style=for-the-badge&amp;logo=huggingface&amp;logoColor=000" alt="Hugging Face"></a>
+<a href="https://huggingface.co/papers/2609.01657"><img src="https://img.shields.io/badge/HF_Paper-FFD21E?style=for-the-badge&amp;logo=huggingface&amp;logoColor=000" alt="Hugging Face Paper"></a>
+<a href="https://arxiv.org/abs/2609.01657" rel="nofollow"><img src="https://img.shields.io/badge/arXiv-2609.01657-b31b1b.svg?style=for-the-badge" alt="arXiv"></a></p>
+<p align="left">
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/6ef1332da6bcb48c7ef1f19b25bfa555be7031a8/assets/neomme/neomme_logo.webp?raw=true" alt="NeoMME logo" style="max-height: 140px;">
+</p>
+
+<h2 class="relative group flex items-baseline">
+	<a id="tldr" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tldr" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		TL;DR
+	</span>
+</h2>
+<p>We introduce <em><strong>NeoMME</strong></em>, a family of 260M and 800M multilingual multimodal encoders. Unlike many generative visual language models, <em>NeoMME</em> does not use a separate pretrained vision tower or a causal language model. A single bidirectional Transformer processes both text tokens and raw image patches, and we train the entire model from scratch with a masked discrete-diffusion objective.</p>
+<p>We fine-tuned <em>NeoMME</em> for visual document retrieval using ColPali's page-image approach. <em>NeoMME</em>-Retriever returns dense and late-interaction embeddings in one forward pass. Both model sizes lie on the ViDoRe v3 Pareto frontier for nDCG@10 and model size. At a matched 2048×2048 image input size on an NVIDIA L40S GPU, the 260M model encodes about 51 pages per second, or about twice ColModernVBERT's throughput. Hierarchical token pooling and asymmetric quantization reduce late-interaction index storage from roughly 1.5 MB to 6 kB per page (255× smaller) while retaining more than 95% of baseline nDCG@10.</p>
+<p><em>NeoMME</em> is available in Hugging Face Transformers. We release all model checkpoints under the Apache 2.0 license.</p>
+<ul>
+<li>🤗 <a href="https://hf.co/collections/Hcompany/neomme" rel="nofollow"><em>NeoMME</em> collection</a></li>
+<li>📄 <a href="https://huggingface.co/papers/2609.01657">Technical report</a></li>
+<li>🔎 <a href="https://huggingface.co/spaces/tonywu71/neomme-retriever-demo">Visual RAG demo</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="why-another-multimodal-encoder" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-another-multimodal-encoder" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why another multimodal encoder?
+	</span>
+</h2>
+<p>Many recent visual document retrievers are adapted from pretrained generative visual language models. A separately pretrained vision encoder produces visual features, which a projector maps into the language model's input space. A causal decoder then processes the combined image and text representations. Retrieval, classification, and token labeling do not generate text autoregressively, so they do not require a causal decoder or the parameter and compute overhead of this architecture.</p>
+<p><a href="https://huggingface.co/blog/modernbert">ModernBERT</a> brought efficient architecture and training improvements to bidirectional encoders. For visual document retrieval, <a href="https://huggingface.co/blog/paultltc/modernvbert">ModernVBERT</a> applied a bidirectional ModernBERT-style text encoder while retaining a separate pretrained SigLIP2 vision tower. We wanted to push this even further by designing and training a multimodal encoder without having to carry over the parameter and compute overhead of a VLM.</p>
+<p><em><strong>NeoMME</strong></em> (pronounced "nee-oh-me", IPA /ˈniː.oʊ.mi/) is a multilingual, multimodal foundation encoder that generates vector representations for input text and/or images using a single Transformer encoder. It is not based on an existing pretrained vision tower, text encoder, or text decoder.</p>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/481c6ec8866f6f5d39d2d9dd06b5547c2d9a67fa/assets/neomme/architecture.webp?raw=true" alt="Comparison of dual-tower, VLM, ModernVBERT, and NeoMME input paths">
+  <figcaption>Unlike dual-tower and VLM encoders, <em>NeoMME</em> processes image patches and text tokens in one bidirectional Transformer, without a pretrained vision tower or a pretrained text encoder or decoder.</figcaption>
+</figure>
+
+<p>Images and text use the same computational path, so <em>NeoMME</em> can more easily support pretraining, fine-tuning, parallelization, and serving across both modalities.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="neomme-encoder-backbone" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#neomme-encoder-backbone" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		<em>NeoMME</em> encoder backbone
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="one-transformer-for-images-and-text" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#one-transformer-for-images-and-text" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		One Transformer for images and text
+	</span>
+</h3>
+<p><em>NeoMME</em> comes in two sizes, <a href="https://huggingface.co/Hcompany/NeoMME-260M">260M</a> and <a href="https://huggingface.co/Hcompany/NeoMME-800M">800M</a>. Both variants share the same architecture:</p>
+<ul>
+<li><strong>Native multimodal inputs:</strong> text inputs use factorized token embeddings, while images are divided into a grid of non-overlapping 32×32 patches and projected with a small MLP. Both enter the same Transformer encoder.</li>
+<li><strong>Dynamic image resolution:</strong> images keep their aspect ratio and size. This allows the model to use more tokens on a high-resolution, information-dense document page than on a smaller image with less content.</li>
+<li><strong>Long bidirectional context:</strong> both models have a context length of 16,384 tokens (enough for up to two standard 3840×2160 4K UHD images). Most layers use symmetric sliding-window attention, while every sixth layer and the final layer use global attention.</li>
+<li><strong>A modern encoder stack:</strong> <em>NeoMME</em> uses recent encoder improvements such as grouped-query attention, query-key normalization, gated attention, 2D rotary position embeddings, and squared-ReLU MLPs, among others.</li>
+<li><strong>Multilingual text:</strong> we trained a BPE tokenizer with a 131k-token vocabulary from scratch on multilingual text, code, mathematics, and machine-produced image transcripts.</li>
+</ul>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/481c6ec8866f6f5d39d2d9dd06b5547c2d9a67fa/assets/neomme/encoder-stack.webp?raw=true" alt="Alternating sliding-window and global-attention layers in NeoMME">
+  <figcaption>Alternating sliding-window and global-attention layers in the <em>NeoMME</em> encoder stack.</figcaption>
+</figure>
+
+<h3 class="relative group flex items-baseline">
+	<a id="learning-from-images-through-masked-text" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#learning-from-images-through-masked-text" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Learning from images through masked text
+	</span>
+</h3>
+<p>We pretrain <em>NeoMME</em> from scratch as a discrete masked-diffusion text denoiser. For each text-only example, we sample a corruption rate uniformly between 0 and 1. Each eligible text token is then independently masked at that rate.</p>
+<p>Multimodal examples use corruption rates between 0.3 and 1. The image patches remain visible while <em>NeoMME</em> reconstructs masked text. With light masking, the model can often recover a missing word from the surrounding text alone. For example, "cat" is a plausible completion of "The [MASK] sat on the mat," even without an image. But high masking forces the model to learn image-grounded descriptions with little to no signal from the non-masked input text tokens.</p>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/481c6ec8866f6f5d39d2d9dd06b5547c2d9a67fa/assets/neomme/masked-diffusion.webp?raw=true" alt="Effect of text corruption on the textual and visual evidence available to NeoMME">
+  <figcaption>Higher text corruption removes language-only shortcuts and encourages <em>NeoMME</em> to use visible image evidence.</figcaption>
+</figure>
+
+<p>Pretraining mixes multilingual text, code, mathematics, natural images, and document images. Each model processes about 524 billion packed input tokens, including 290 billion tokens from text-only examples. This text budget is relatively small compared with ModernBERT's 2 trillion training token budget. Hence, we chose the NorMuon optimizer to improve data efficiency during training.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="neomme-retriever" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#neomme-retriever" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		<em>NeoMME</em>-Retriever
+	</span>
+</h2>
+<p>To get a meaningful downstream evaluation of the backbone, we fine-tune <em>NeoMME</em> for visual document retrieval using the page-image methodology introduced by <a href="https://huggingface.co/blog/manu/colpali">ColPali</a>. While traditional text-based retrieval consists of retrieving text chunks, <em>NeoMME</em>-Retriever ranks document page screenshots and bypasses all the preprocessing OCR steps necessary to extract text from PDFs. Treating the pages as images preserves layout, charts, tables, font type and size, and other visual clues that cannot be captured even by a perfect OCR model.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="a-dual-head-design-for-dense-and-late-interaction-retrieval" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#a-dual-head-design-for-dense-and-late-interaction-retrieval" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		A dual-head design for dense and late-interaction retrieval
+	</span>
+</h3>
+<p><em>NeoMME</em>-Retriever reuses the <em>NeoMME</em> backbone but adds two jointly trained heads on top of it for retrieval:</p>
+<ul>
+<li>The dense head averages the backbone's hidden state vectors into a normalized vector (mean pooling). Dense embeddings are most common today: they are compact and work naturally with approximate nearest-neighbor (ANN) techniques for fast retrieval.</li>
+<li>The late-interaction head projects each text token or image patch from the backbone's output hidden states to a 128-dimensional normalized vector. Compared to dense embeddings, the finer granularity preserves local matches between individual query tokens and image regions.</li>
+</ul>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/481c6ec8866f6f5d39d2d9dd06b5547c2d9a67fa/assets/neomme/retrieval-heads.webp?raw=true" alt="Late-interaction and dense retrieval heads for NeoMME">
+  <figcaption>Late-interaction and dense retrieval heads for both <em>NeoMME</em> model sizes.</figcaption>
+</figure>
+
+<blockquote class="note">
+<p>Omar Khattab, who introduced late-interaction in ColBERT, <a href="https://x.com/lateinteraction/status/1894696983077785980" rel="nofollow">explains why</a> the term is more precise than "multi-vector." It describes the granularity and learnability of the scoring function, not simply the number of stored vectors.</p>
+<p>To learn more about late-interaction, we recommend reading <a href="https://meet.ameliechatelain.com/lectures/multi-vector-search/" rel="nofollow">this crash course</a> by Amélie Chatelain.</p>
+</blockquote>
+<p>One <em>NeoMME</em>-Retriever forward pass returns both representations, which gives you flexibility no matter your use case and infrastructure. We recommend using late-interaction embeddings in general since they are more powerful and can be used easily with open-source libraries like <a href="https://github.com/lightonai/next-plaid" rel="nofollow">NextPlaid</a>. However, if you have a very large corpora, you can run a single forward pass with <em>NeoMME</em>-Retriever to get the dense embedding, retrieve a small number of documents through an ANN index, and then use late-interaction to rerank the retrieved candidates.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="competitive-retrieval-at-compact-model-sizes" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#competitive-retrieval-at-compact-model-sizes" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Competitive retrieval at compact model sizes
+	</span>
+</h3>
+<p>We report nDCG@10 on ViDoRe v3. <em>NeoMME</em>-Retriever-260M reaches 0.523, the highest score among evaluated models strictly below 800M parameters. It is within 0.002 nDCG@10 of ColQwen2.5 while using about 14× fewer parameters. <em>NeoMME</em>-Retriever-800M reaches 0.556, within 0.009 nDCG@10 of the similarly sized <a href="https://huggingface.co/vultr/VultronRetrieverFlash-Qwen3.5-0.8B">Vultron Retriever Flash (0.8B)</a>. Both <em>NeoMME</em>-Retriever models lie on the model-size Pareto frontier.</p>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/c5e737e7e474363822b6f2d95290c0120e0fa993/assets/neomme/vidore-v3-model-size.webp?raw=true" alt="ViDoRe v3 nDCG@10 versus model size">
+  <figcaption>ViDoRe v3 nDCG@10 versus model size.</figcaption>
+</figure>
+
+<p>ViDoRe v1 and v2 use nDCG@5. On both benchmarks, <em>NeoMME</em>-Retriever-260M outperforms ColModernVBERT and the twice-larger ColSmol-500M. <em>NeoMME</em>-Retriever-800M outperforms ColPali v1.3 while using 3.6 times fewer parameters.</p>
+<table>
+  <caption>Visual document retrieval performance on the ViDoRe benchmarks.</caption>
+  <thead>
+    <tr>
+      <th colspan="2" scope="colgroup">Model details</th>
+      <th colspan="3" scope="colgroup">ViDoRe (nDCG@<em>k</em>)</th>
+    </tr>
+    <tr>
+      <th scope="col">Model</th>
+      <th scope="col">Params.</th>
+      <th scope="col">v3 (@10)</th>
+      <th scope="col">v2 (@5)</th>
+      <th scope="col">v1 (@5)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th colspan="5" scope="rowgroup">&lt;300M</th>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/ModernVBERT/colmodernvbert">ColModernVBERT</a></td>
+      <td>250M</td>
+      <td>0.261<sup>†</sup></td>
+      <td>0.407<sup>‡</sup></td>
+      <td>0.806<sup>‡</sup></td>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/vidore/colSmol-256M">ColSmol-256M</a><sup>†</sup></td>
+      <td>256M</td>
+      <td>0.207</td>
+      <td>0.348</td>
+      <td>0.797</td>
+    </tr>
+    <tr style="background-color: rgba(146, 81, 247, 0.12);">
+      <td><a href="https://huggingface.co/Hcompany/NeoMME-260M-Retriever"><em>NeoMME</em>-260M</a><sup>‡</sup></td>
+      <td>260M</td>
+      <td><strong>0.523</strong></td>
+      <td><strong>0.522</strong></td>
+      <td><strong>0.860</strong></td>
+    </tr>
+    <tr>
+      <th colspan="5" scope="rowgroup">300M to 1B</th>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/vidore/colSmol-500M">ColSmol-500M</a></td>
+      <td>500M</td>
+      <td>0.340<sup>‡</sup></td>
+      <td>0.455<sup>†</sup></td>
+      <td>0.825<sup>†</sup></td>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/vultr/VultronRetrieverFlash-Qwen3.5-0.8B">Vultron Flash</a><sup>†</sup></td>
+      <td>850M</td>
+      <td><strong>0.565</strong></td>
+      <td><strong>0.604</strong></td>
+      <td><strong>0.882</strong></td>
+    </tr>
+    <tr style="background-color: rgba(146, 81, 247, 0.12);">
+      <td><a href="https://huggingface.co/Hcompany/NeoMME-800M-Retriever"><em>NeoMME</em>-800M</a><sup>‡</sup></td>
+      <td>800M</td>
+      <td>0.556</td>
+      <td>0.559</td>
+      <td>0.874</td>
+    </tr>
+    <tr>
+      <th colspan="5" scope="rowgroup">&gt;1B</th>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/vidore/colqwen2.5-v0.2">ColQwen2.5-v0.2</a><sup>†</sup></td>
+      <td>3.75B</td>
+      <td><strong>0.524</strong></td>
+      <td><strong>0.601</strong></td>
+      <td><strong>0.895</strong></td>
+    </tr>
+    <tr>
+      <td><a href="https://huggingface.co/vidore/colpali-v1.3">ColPali v1.3</a><sup>†</sup></td>
+      <td>2.92B</td>
+      <td>0.430</td>
+      <td>0.547</td>
+      <td>0.848</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><small><sup>†</sup> Scores from MTEB. <sup>‡</sup> Results from our own evaluations.</small></p>
+<h3 class="relative group flex items-baseline">
+	<a id="making-high-resolution-retrieval-practical-for-late-interaction" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#making-high-resolution-retrieval-practical-for-late-interaction" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Making high-resolution retrieval practical for late-interaction
+	</span>
+</h3>
+<p>Late-interaction storage scales linearly with the number of vectors in the output embedding. Higher-resolution images contain more patches, so they produce larger embeddings. For example, a 2048×2048 square page produces embeddings containing 4,200 vectors with <em>NeoMME</em>-Retriever, or about 2.1 MB in float32. Across the ViDoRe v3 benchmark, the measured average is about 1.5 MB per document.</p>
+<p>To reduce the storage footprint of the late-interaction index, we combine two complementary compression methods:</p>
+<ol>
+<li><a href="https://www.answer.ai/posts/colbert-pooling.html" rel="nofollow">Hierarchical token pooling</a> clusters similar document vectors in a given multi-vector embedding and replaces each cluster with its mean, hence reducing the number of vectors stored for each page.</li>
+<li><a href="https://www.mixedbread.com/blog/asymmetric-quant" rel="nofollow">Asymmetric quantization</a> quantizes document embeddings to int8 or binary. Because query embeddings are not stored and only generated on-the-fly, they can be kept at a higher precision.</li>
+</ol>
+<p>We tested this setup on ViDoRe v3. With a pooling factor 10 and int8 queries and documents, storage decreased from about 1.5 MB to 39 kB per page, a 39× reduction, while keeping more than 99% of the baseline nDCG@10. A more aggressive configuration uses pooling factor 8, int8 queries, and binary documents. That version uses 6 kB per page (255× smaller) and keeps more than 95% of the original retrieval quality.</p>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/481c6ec8866f6f5d39d2d9dd06b5547c2d9a67fa/assets/neomme/compression-frontier-260m.webp?raw=true" alt="Quality and storage frontier for the NeoMME-260M late-interaction index">
+  <figcaption>Quality and storage frontier for the <em>NeoMME</em>-260M late-interaction index on ViDoRe v3. Labels show pool factor, retained quality, compression, and storage.</figcaption>
+</figure>
+
+<p>Users can pick a compression setting from that frontier based on storage budget and required retrieval quality.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="fast-inference-for-cheaper-multimodal-corpus-indexing" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#fast-inference-for-cheaper-multimodal-corpus-indexing" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Fast inference for cheaper multimodal corpus indexing
+	</span>
+</h4>
+<p>Before you can search a corpus, a retriever model must turn your documents into embeddings, which will be stored in a vector store like Qdrant, Weaviate, or Milvus. Faster encoding makes building and adding new documents to the index faster, thus reducing the GPU uptime and compute cost required.</p>
+<p>So we measured image encoding speeds for <em>NeoMME</em>-Retriever against other multimodal document retrievers. We used preprocessed image tensors and calibrated the batch size separately for each model and image size. At a matched 2048×2048 input size on one NVIDIA L40S, <em>NeoMME</em>-Retriever-260M encodes about 51 pages per second, nearly twice ColModernVBERT's 26 pages per second. Both 260M and 800M <em>NeoMME</em>-Retriever models are also faster than the other models we compared on smaller input images.</p>
+<figure>
+  <img src="https://github.com/tonywu71/colpali-cookbooks/blob/c5e737e7e474363822b6f2d95290c0120e0fa993/assets/neomme/indexing-throughput-l40s.webp?raw=true" alt="Document-encoding throughput across image resolutions on an NVIDIA L40S">
+  <figcaption>Document-encoding throughput by retriever and input resolution on one NVIDIA L40S.</figcaption>
+</figure>
+
+<h3 class="relative group flex items-baseline">
+	<a id="try-neomme-retriever-yourself" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-neomme-retriever-yourself" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try <em>NeoMME</em>-Retriever yourself!
+	</span>
+</h3>
+<p><em>NeoMME</em>-Retriever (<a href="https://huggingface.co/Hcompany/NeoMME-260M-Retriever">260M</a> and <a href="https://huggingface.co/Hcompany/NeoMME-800M-Retriever">800M</a>) returns dense and multi-vector embeddings together. The example below scores two text queries against two document-page images with MeanMaxSim late interaction and dense cosine similarity.</p>
+<details>
+<summary>Click to see the complete 🤗 <code>transformers</code> example snippet</summary>
+
+<pre><code class="language-bash"><span class="hljs-comment"># accelerate is an optional dependency needed only when using device_map="auto".</span>
+pip install -U accelerate <span class="hljs-string">"transformers @ git+https://github.com/huggingface/transformers.git@main"</span> <span class="hljs-string">"sentence-transformers&gt;=6.0.0"</span>
+</code></pre>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Any</span>, <span class="hljs-type">Literal</span>
+
+<span class="hljs-keyword">import</span> requests
+<span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image
+<span class="hljs-keyword">from</span> sentence_transformers.util <span class="hljs-keyword">import</span> cos_sim, mean_maxsim
+
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> BatchFeature, NeoMMEForRetrieval, NeoMMEProcessor
+
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params"></span>
+<span class="hljs-params">    messages: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">list</span>[<span class="hljs-built_in">dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>]]],</span>
+<span class="hljs-params">    task: <span class="hljs-type">Literal</span>[<span class="hljs-string">"query"</span>, <span class="hljs-string">"document"</span>],</span>
+<span class="hljs-params"></span>) -&gt; BatchFeature:
+    <span class="hljs-keyword">return</span> processor.apply_chat_template(
+        messages,
+        task=task,
+        tokenize=<span class="hljs-literal">True</span>,
+        return_dict=<span class="hljs-literal">True</span>,
+        return_tensors=<span class="hljs-string">"pt"</span>,
+        processor_kwargs={<span class="hljs-string">"padding"</span>: <span class="hljs-string">"longest"</span>},
+    )
+
+
+model_name = <span class="hljs-string">"Hcompany/NeoMME-260M-Retriever"</span>
+processor = NeoMMEProcessor.from_pretrained(model_name)
+model = NeoMMEForRetrieval.from_pretrained(model_name, device_map=<span class="hljs-string">"auto"</span>)
+
+<span class="hljs-comment"># Document images (our corpus)</span>
+image_urls = [
+    <span class="hljs-string">"https://github.com/tonywu71/colpali-cookbooks/blob/6ef1332da6bcb48c7ef1f19b25bfa555be7031a8/examples/data/shift_kazakhstan.jpg?raw=true"</span>,
+    <span class="hljs-string">"https://github.com/tonywu71/colpali-cookbooks/blob/6ef1332da6bcb48c7ef1f19b25bfa555be7031a8/examples/data/energy_electricity_generation.jpg?raw=true"</span>,
+]
+documents = [Image.<span class="hljs-built_in">open</span>(requests.get(url, stream=<span class="hljs-literal">True</span>).raw) <span class="hljs-keyword">for</span> url <span class="hljs-keyword">in</span> image_urls]
+
+<span class="hljs-comment"># Queries</span>
+queries = [
+    <span class="hljs-string">"Quelle partie de la production pétrolière du Kazakhstan provient de champs en mer ?"</span>,
+    <span class="hljs-string">"Which hour of the day had the highest overall electricity generation in 2019?"</span>,
+]
+
+document_messages = [
+    [{<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: [{<span class="hljs-string">"type"</span>: <span class="hljs-string">"image"</span>, <span class="hljs-string">"image"</span>: document}]}] <span class="hljs-keyword">for</span> document <span class="hljs-keyword">in</span> documents
+]
+query_messages = [[{<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: query}] <span class="hljs-keyword">for</span> query <span class="hljs-keyword">in</span> queries]
+
+inputs_documents = encode(document_messages, <span class="hljs-string">"document"</span>).to(model.device)
+inputs_text = encode(query_messages, <span class="hljs-string">"query"</span>).to(model.device)
+
+<span class="hljs-keyword">with</span> torch.inference_mode():
+    document_outputs = model(**inputs_documents)
+    query_outputs = model(**inputs_text)
+
+late_scores = mean_maxsim(
+    query_outputs.embeddings,
+    document_outputs.embeddings,
+    a_mask=inputs_text[<span class="hljs-string">"attention_mask"</span>],
+    b_mask=inputs_documents[<span class="hljs-string">"attention_mask"</span>],
+)
+dense_scores = cos_sim(query_outputs.dense_embeddings, document_outputs.dense_embeddings)
+
+<span class="hljs-comment"># Expected: late_scores[0, 0] &gt; late_scores[0, 1] and late_scores[1, 1] &gt; late_scores[1, 0].</span>
+<span class="hljs-built_in">print</span>(late_scores, dense_scores)
+</code></pre>
+</details>
+
+<h3 class="relative group flex items-baseline">
+	<a id="fine-tuning-with-sentence-transformers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#fine-tuning-with-sentence-transformers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Fine-tuning with Sentence Transformers
+	</span>
+</h3>
+<p>We provide separate <a href="https://huggingface.co/Hcompany/NeoMME-260M-Retriever-ST-dense">dense</a> and <a href="https://huggingface.co/Hcompany/NeoMME-260M-Retriever-ST-late">late-interaction</a> checkpoints for fine-tuning with <a href="https://huggingface.co/blog/multi-vector-encoder">Sentence Transformers v6</a>. Following the same pattern as text encoders such as ModernBERT, Sentence Transformers loads the backbone through <a href="https://huggingface.co/docs/transformers/main/en/model_doc/neomme#transformers.NeoMMEModel"><code>NeoMMEModel</code></a> rather than the dual-head <a href="https://huggingface.co/docs/transformers/main/en/model_doc/neomme#transformers.NeoMMEForRetrieval"><code>NeoMMEForRetrieval</code></a> class. Sentence Transformers currently supports one retrieval head per model, so each checkpoint lets you fine-tune the dense or late-interaction head independently. To train both heads together, use <code>NeoMMEForRetrieval</code> with a custom <code>Trainer</code>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="from-retrieval-to-visual-rag" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#from-retrieval-to-visual-rag" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		From retrieval to visual RAG
+	</span>
+</h3>
+<p>Visual document retrieval can be used as the first stage of a visual retrieval-augmented generation (RAG) system. Unlike text RAG, which retrieves extracted text chunks, visual RAG retrieves the original page images and sends them to a visual language model. The model can then use tables, plots, diagrams, and page layout that text extraction may flatten or omit. Here is how visual RAG works:</p>
+<ol>
+<li>Indexing: Convert each PDF page to an image, generate an embedding with a retrieval model, and store the embeddings in a vector store.</li>
+<li>Retrieval: Generate an embedding for the user's query with the same model and retrieve the top-k most relevant pages.</li>
+<li>Generation: Append the images after the query in the chat message (<em>e.g.</em>, <code>{query}{img_1}{img_2}...{img_k}</code>) and send it to a VLM to generate the answer.</li>
+</ol>
+<p>You can test visual RAG directly with <em>NeoMME</em>-Retriever in our HF Space: 🤗 <a href="https://huggingface.co/spaces/tonywu71/neomme-retriever-demo">tonywu71/neomme-retriever-demo</a>.</p>
+<video controls="" width="640">
+  <source src="https://raw.githubusercontent.com/tonywu71/colpali-cookbooks/fedbdbfaae4b935993f96fc8fcc8ec7478a80b19/assets/neomme/neomme-retriever-demo.mp4" type="video/mp4">
+</video>
+
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p><em>NeoMME</em> replaces separate pretrained image and text encoders with one long-context bidirectional Transformer. We train it from scratch to process both multilingual text tokens and raw 32×32 image patches.</p>
+<p><em>NeoMME</em>-Retriever is a fine-tuned version of <em>NeoMME</em> for visual document retrieval. One forward pass produces both dense and late-interaction representations. The 260M model outperforms all evaluated models strictly below 800M parameters and, at a matched 2048×2048 input size, encodes pages at about 2× ColModernVBERT's throughput. To reduce the large storage footprint of late-interaction embeddings for high-resolution documents, we experimented with hierarchical token pooling and asymmetric quantization and managed to reduce the late-interaction embeddings from roughly 1.5 MB to 6 kB per page, a 255× compression, while retaining more than 95% of the baseline nDCG@10.</p>
+<p>We release all <em>NeoMME</em> model checkpoints and a day-zero Hugging Face Transformers implementation to allow practitioners to build efficient multimodal and multilingual representation models on top of our work.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="acknowledgements" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#acknowledgements" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Acknowledgements
+	</span>
+</h2>
+<p><em>NeoMME</em> began as a side quest between two good friends. We worked with limited time and compute, and we decided to share the results so the community can build on them. We thank H Company for supporting the work and providing the compute used to train <em>NeoMME</em>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="citation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#citation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Citation
+	</span>
+</h2>
+<pre><code class="language-bibtex">@misc{lac2026neommesingletowermultimodalnativemultilingual,
+      title={NeoMME: A Single-Tower Multimodal-Native Multilingual Foundation Encoder for Efficient Fine-Tuning and Inference},
+      author={Aurélien Lac and Tony Wu},
+      year={2026},
+      eprint={2609.01657},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2609.01657},
+}
+</code></pre>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">7</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/Hcompany/holo4"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/69fc7e49052f11ab9931b672/yzjxvlmlZKtjASwAYu6bN.jpeg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Holo4: powering generalist computer-use agents</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Hcompany" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/677d3f355f847864bb644112/OQyAJ33sssiTDIQEQ7oH_.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 95</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 28, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/Hcompany/holo31"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[-1--><div class="bg-linear-to-br absolute inset-0 overflow-hidden from-indigo-600 to-yellow-600 group-hover:scale-102 transition-transform duration-300 ease-in-out"></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Holo3.1: Fast &amp; Local Computer Use Agents</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Hcompany" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/677d3f355f847864bb644112/OQyAJ33sssiTDIQEQ7oH_.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 51</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 2, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6aae5b490697c66c468d3bd2" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/8e0877b85afc752a2f4915ece27ffbb8.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/rafal007">rafal007</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6aae5b490697c66c468d3bd2" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-19T09:52:09" title="Sat, 19 Sep 2026 09:52:09 GMT">28 days ago</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Super artykuł</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6ab0f4241206c7fba1755e24" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/la0--17-buALCQ061eM_v.png" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/Skeyij">Skeyij</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6ab0f4241206c7fba1755e24" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-21T09:08:52" title="Mon, 21 Sep 2026 09:08:52 GMT">26 days ago</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Amazing</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2FHcompany%2Fneomme">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2FHcompany%2Fneomme">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2FHcompany%2Fneomme" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">122</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ABonnetH" style="content-visibility:auto;"><!--[0--><a href="/ABonnetH" title="ABonnetH"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68c435c869d3aa0e590b0361/RZcEZherMz2CeJo5kuWHh.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ivanv4" style="content-visibility:auto;"><!--[0--><a href="/ivanv4" title="ivanv4"><img class="overflow-hidden rounded-full" alt="" src="/avatars/871961801ee9242f5bcd77e097720a54.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="enzo-damion-h" style="content-visibility:auto;"><!--[0--><a href="/enzo-damion-h" title="enzo-damion-h"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/gCLGNIpWsU7LJC0U9fEZc.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Diazmathh" style="content-visibility:auto;"><!--[0--><a href="/Diazmathh" title="Diazmathh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/cb119b58fabbb25ca80c7cc975581a9e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rghermi-h" style="content-visibility:auto;"><!--[0--><a href="/rghermi-h" title="rghermi-h"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4881b4bdf30634089ddba7d607108c1e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="vincentcoyette" style="content-visibility:auto;"><!--[0--><a href="/vincentcoyette" title="vincentcoyette"><img class="overflow-hidden rounded-full" alt="" src="/avatars/e15d64d814c3ee65ffc7fe39d82969ea.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="emricksini-h" style="content-visibility:auto;"><!--[0--><a href="/emricksini-h" title="emricksini-h"><img class="overflow-hidden rounded-full" alt="" src="/avatars/c9920b2a634b67720b5f9e72895a2e0c.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="GeoffroyRecruit" style="content-visibility:auto;"><!--[0--><a href="/GeoffroyRecruit" title="GeoffroyRecruit"><img class="overflow-hidden rounded-full" alt="" src="/avatars/8460159705ac1d164708fe37d537843f.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="antonioloison" style="content-visibility:auto;"><!--[0--><a href="/antonioloison" title="antonioloison"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6377b63b24d97f9f7ec70064/vBl68PAwwp353MOeOahMH.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="VictorGoubet" style="content-visibility:auto;"><!--[0--><a href="/VictorGoubet" title="VictorGoubet"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b0b759dff09f3aff8396f1955a798cc6.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mbrunel-H" style="content-visibility:auto;"><!--[0--><a href="/mbrunel-H" title="mbrunel-H"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4f454f97611c1f6a0e2bf16d846072c5.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jrhcompany" style="content-visibility:auto;"><!--[0--><a href="/jrhcompany" title="jrhcompany"><img class="overflow-hidden rounded-full" alt="" src="/avatars/82fa6ee9beae1c52f988a5b4d47d09ae.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+110</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">7</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

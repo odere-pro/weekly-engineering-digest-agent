@@ -1,0 +1,887 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/flux3/thumbnail.png" />
+
+		<meta property="og:title" content="Welcome FLUX.3 Image Klein in Diffusers" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/flux-3" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/flux3/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/flux-3">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Welcome FLUX.3 Image Klein in Diffusers</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="welcome-flux3-image-klein-in-diffusers-the-latest-open-image-generation-model-from-black-forest-labs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#welcome-flux3-image-klein-in-diffusers-the-latest-open-image-generation-model-from-black-forest-labs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Welcome FLUX.3 Image Klein in Diffusers: The latest open image generation model from Black Forest Labs
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					October 15, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/flux-3.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fflux-3" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">34</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[0--><a href="/sayakpaul" title="sayakpaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Steveeeeeeen" style="content-visibility:auto;"><!--[0--><a href="/Steveeeeeeen" title="Steveeeeeeen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/654bcb6fae75d15300d48205/T4L1RZUgCZgdik4ZhEWCq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="linoyts" style="content-visibility:auto;"><!--[0--><a href="/linoyts" title="linoyts"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/638f308fc4444c6ca870b60a/Q11NK-8-JbiilJ-vk2LAR.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="suvadityamuk" style="content-visibility:auto;"><!--[0--><a href="/suvadityamuk" title="suvadityamuk"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62449192f555de1927aa7d00/gGiMTU3YVwk0M1ltXdVfV.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+28</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ariG23498"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Aritra Roy Gosthipaty's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ariG23498"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Aritra Roy Gosthipaty">Aritra Roy Gosthipaty</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ariG23498</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sayakpaul"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sayak Paul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sayakpaul"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sayak Paul">Sayak Paul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sayakpaul</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/linoyts"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Linoy Tsaban's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/638f308fc4444c6ca870b60a/Q11NK-8-JbiilJ-vk2LAR.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/linoyts"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Linoy Tsaban">Linoy Tsaban</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">linoyts</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://huggingface.co/black-forest-labs">Black Forest Labs</a> FLUX.3 Image Klein is here, and it runs in Diffusers from day one. One model does text-to-image and multi-reference image-to-image, and it adds something new, the <strong>layout control</strong>. You write bounding boxes into the prompt to say where each part of the image should go, or which parts of a reference image to move.</p>
+<p>Both open checkpoints are in the <a href="https://huggingface.co/collections/black-forest-labs/flux-3-image-klein">FLUX.3 Image Klein collection</a>:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Checkpoint</th>
+<th align="center">What it is</th>
+<th align="center">Defaults</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center"><a href="https://huggingface.co/black-forest-labs/flux-3-image-klein"><code>black-forest-labs/flux-3-image-klein</code></a></td>
+<td align="center">Time step distilled, for fast inference</td>
+<td align="center">16 steps, no CFG</td>
+</tr>
+<tr>
+<td align="center"><a href="https://huggingface.co/black-forest-labs/flux-3-image-klein-base"><code>black-forest-labs/flux-3-image-klein-base</code></a></td>
+<td align="center">Base model</td>
+<td align="center">50 steps, CFG</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/hero.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/hero.png" alt="a red fox in a snowy forest (text-to-image), the same fox re-rendered from that image (image-to-image), a black stippled running silhouette on a chartreuse background, drawn inside its labeled bounding box, and a knitted knight moved from a &quot;from&quot; box to a &quot;to&quot; box next to a knitted dragon (layout editing)"></a></p>
+<p>You can head on to the <a href="https://huggingface.co/spaces/black-forest-labs/flux-3-image-klein">Hugging Face space</a> and generate some images right now!</p>
+<h2 class="relative group flex items-baseline">
+	<a id="tldr" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tldr" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		TL;DR
+	</span>
+</h2>
+<ul>
+<li>One model for text-to-image, multi-reference image-to-image, and bounding-box layout control.</li>
+<li>The distilled checkpoint makes a 1024 × 1024 image in about <strong>2 seconds</strong> on an H100.</li>
+<li>NVFP4 and FP8 weights load with <code>from_single_file</code>, for smaller GPUs.</li>
+<li>LoRA training scripts for both text-to-image and image editing.</li>
+<li>Ships as a <a href="#modular-diffusers" rel="nofollow">Modular Diffusers</a> pipeline, so you can pop blocks out or add your own.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="contents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#contents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Contents
+	</span>
+</h2>
+<ul>
+<li><a href="#getting-started" rel="nofollow">Getting started</a></li>
+<li><a href="#what-flux3-can-do" rel="nofollow">What FLUX.3 can do</a></li>
+<li><a href="#base-model-and-quantized-variants" rel="nofollow">Base model and quantized variants</a></li>
+<li><a href="#lora-finetuning" rel="nofollow">LoRA finetuning</a></li>
+<li><a href="#what-it-costs-to-run" rel="nofollow">What it costs to run</a></li>
+<li><a href="#the-architecture" rel="nofollow">The architecture</a></li>
+<li><a href="#modular-diffusers" rel="nofollow">Modular Diffusers</a></li>
+<li><a href="#try-it" rel="nofollow">Try it</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting started
+	</span>
+</h2>
+<p>Install the latest <code>diffusers</code> and <code>transformers</code> (for the Qwen3-VL text encoder):</p>
+<pre><code class="language-bash">pip install -U diffusers transformers
+</code></pre>
+<p>Load the distilled checkpoint and generate an image:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> ModularPipeline
+
+pipe = ModularPipeline.from_pretrained(<span class="hljs-string">"black-forest-labs/flux-3-image-klein"</span>)
+pipe.load_components(dtype=torch.bfloat16)
+pipe.to(<span class="hljs-string">"cuda"</span>)
+
+pipe(prompt=<span class="hljs-string">"a red fox"</span>, output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>].save(<span class="hljs-string">"fox.png"</span>)
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="what-flux3-can-do" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-flux3-can-do" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What FLUX.3 can do
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="text-to-image" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#text-to-image" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Text-to-image
+	</span>
+</h3>
+<p>FLUX.3 responds best to a full scene description with the subject, the setting, the light, the composition, and the style. The <a href="https://docs.bfl.ai/guides/prompting_summary" rel="nofollow">official prompting guide</a> from Black Forest Labs has more tips. The distilled checkpoint generates a <code>1024 × 1024</code> image in <code>16</code> steps by default. Pass <code>height</code>, <code>width</code>, or <code>num_inference_steps</code> to change them.</p>
+<pre><code class="language-python">prompt = (
+    <span class="hljs-string">"A wide-angle wildlife photograph of a red fox standing alert in a snow-covered forest clearing at golden hour. "</span>
+    <span class="hljs-string">"The fox is centered in the frame, its thick orange winter coat contrasting with the fresh white snow, breath "</span>
+    <span class="hljs-string">"visible in the cold air. Snow-laden pine trees fill the softly blurred background, and low warm sunlight rakes "</span>
+    <span class="hljs-string">"across the scene from the left, casting long blue shadows."</span>
+)
+
+fox = pipe(
+    prompt=prompt,
+    generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>),
+    output=<span class="hljs-string">"images"</span>
+)[<span class="hljs-number">0</span>]
+fox.save(<span class="hljs-string">"fox.png"</span>)
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/t2i.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/t2i.png" alt="A red fox standing alert in a snow-covered forest clearing, lit by low golden sunlight from the left"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Text to image</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="image-to-image" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#image-to-image" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Image-to-image
+	</span>
+</h3>
+<p>Pass a reference image (or more) with the <code>image</code> argument. Write the prompt as a caption of the image you <em>want</em>, with the change included.</p>
+<pre><code class="language-python">prompt = (
+    <span class="hljs-string">"The same red fox in the same snow-covered forest clearing, now at night under a full moon: cool blue "</span>
+    <span class="hljs-string">"moonlight, deep shadows, stars visible through the pine branches, the fox's eyes catching the light."</span>
+)
+night = pipe(
+    prompt=prompt,
+    image=fox, <span class="hljs-comment"># from the previous text to image example</span>
+    generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>),
+    output=<span class="hljs-string">"images"</span>,
+)[<span class="hljs-number">0</span>]
+night.save(<span class="hljs-string">"night.png"</span>)
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i.png" alt="The fox from the previous image, relit in cold blue light"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Image to image</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>With several references, refer to them in the prompt as <code>&lt;ref_image_0&gt;</code>, <code>&lt;ref_image_1&gt;</code>, ... in the order they are passed to <code>image</code>:</p>
+<pre><code class="language-python">red_fox = pipe(prompt=<span class="hljs-string">"a red fox"</span>, generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>), output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>]
+bench = pipe(prompt=<span class="hljs-string">"a wooden bench"</span>, generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>), output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>]
+
+combined = pipe(
+    prompt=<span class="hljs-string">"The fox from &lt;ref_image_0&gt; sitting on the wooden bench from &lt;ref_image_1&gt; in a snowy setting."</span>,
+    image=[red_fox, bench],
+    output=<span class="hljs-string">"images"</span>,
+)[<span class="hljs-number">0</span>]
+
+combined.save(<span class="hljs-string">"combined.png"</span>)
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i_fox.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i_fox.png" alt="A red fox sitting on dry grass"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i_bench.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/i2i_bench.png" alt="A slatted wooden bench against a plain grey wall"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/combined.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/combined.png" alt="The same fox sitting on the same bench, with snow on the ground"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center"><code>&lt;ref_image_0&gt;</code>: a red fox</td>
+<td align="center"><code>&lt;ref_image_1&gt;</code>: a wooden bench</td>
+<td align="center">The fox on the bench</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="layout-control" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#layout-control" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Layout control
+	</span>
+</h3>
+<p>Add a JSON list of regions after the caption. Each region has an <code>id</code>, a <code>bbox</code>, and a <code>desc</code>, and the caption mentions it as <code>&lt;id&gt;</code>.</p>
+<blockquote class="note">
+<p>Boxes are written as <code>[y_min, x_min, y_max, x_max]</code>, <strong>y first</strong>, on a 0–1000 scale. Because the scale is normalized, the same box works at any image size.</p>
+</blockquote>
+<h4 class="relative group flex items-baseline">
+	<a id="placing-regions-in-a-new-image" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#placing-regions-in-a-new-image" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Placing regions in a new image
+	</span>
+</h4>
+<pre><code class="language-python">layout_prompt = (
+    <span class="hljs-string">"Minimalist graphic illustration featuring a black silhouette of a person &lt;silhouette_1&gt; centered against a "</span>
+    <span class="hljs-string">"solid, vibrant chartreuse background &lt;background_1&gt;. The figure is captured in a dynamic, mid-stride running "</span>
+    <span class="hljs-string">"pose, facing toward the left side of the frame. "</span>
+    <span class="hljs-string">'[{"id": "background_1", "bbox": [0, 0, 1000, 1000], "desc": "A flat field of neon yellow-green with a subtle '</span>
+    <span class="hljs-string">'paper texture and fine, organic grain."}, {"id": "silhouette_1", "bbox": [150, 150, 850, 850], "desc": "A '</span>
+    <span class="hljs-string">"black silhouette of a person in motion, made of dense stippled ink. The leading edges are solid; the trailing "</span>
+    <span class="hljs-string">'arm and leg dissolve into coarse square pixels and scattered dots."}]'</span>
+)
+
+runner = pipe(prompt=layout_prompt, generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>), output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>]
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/bbox-layout.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/bbox-layout.png" alt="Diagram: the caption and the two region descriptions on the left, the two boxes on a 0–1000 grid in the middle, and the generated image on the right, where a black stippled runner fills the silhouette box on a chartreuse background"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Each region's <code>desc</code> is drawn inside its <code>bbox</code></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h4 class="relative group flex items-baseline">
+	<a id="moving-regions-within-a-reference-image" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#moving-regions-within-a-reference-image" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Moving regions within a reference image
+	</span>
+</h4>
+<p>For edits, each region says where its content comes <strong>from</strong> (<code>src_bbox</code> in the reference) and where it goes (<code>tgt_bbox</code> in the output). A region with the same two boxes stays where it is.</p>
+<p>This example moves the knitted knight up and to the left, and pins the backdrop, the cliff, the needle, the dragon, and the fire:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> diffusers.utils <span class="hljs-keyword">import</span> load_image
+
+knight_image = load_image(<span class="hljs-string">"knight_orig.png"</span>)
+edit_prompt = (
+    <span class="hljs-string">"In &lt;ref_image_0&gt;, move the miniature grey amigurumi knight figure &lt;knight_1&gt; upwards and to the left along the "</span>
+    <span class="hljs-string">"yarn cliff &lt;cliff_1&gt;. Keep the rest of the image completely unchanged, preserving the blurred yarn backdrop "</span>
+    <span class="hljs-string">"&lt;backdrop_1&gt;, the large knitted dragon &lt;dragon_1&gt;, and the fiery orange thread &lt;fire_1&gt;. "</span>
+    <span class="hljs-string">'[{"id": "knight_1", "from": "ref_image_0", "src_bbox": [500, 150, 850, 350], "tgt_bbox": [194, 55, 544, 255], '</span>
+    <span class="hljs-string">'"desc": "A miniature amigurumi knight crocheted from thick grey woolen yarn."}, '</span>
+    <span class="hljs-string">'{"id": "backdrop_1", "from": "ref_image_0", "src_bbox": [0, 0, 1000, 1000], "tgt_bbox": [0, 0, 1000, 1000], '</span>
+    <span class="hljs-string">'"desc": "A soft, out-of-focus backdrop of cream and indigo knitted yarn."}, '</span>
+    <span class="hljs-string">'{"id": "cliff_1", "from": "ref_image_0", "src_bbox": [300, 0, 1000, 450], "tgt_bbox": [300, 0, 1000, 450], '</span>
+    <span class="hljs-string">'"desc": "A steep cliff of stacked yarn skeins in mustard, terracotta, and indigo."}, '</span>
+    <span class="hljs-string">'{"id": "needle_1", "from": "ref_image_0", "src_bbox": [420, 250, 550, 450], "tgt_bbox": [420, 250, 550, 450], '</span>
+    <span class="hljs-string">'"desc": "An oversized polished steel tapestry needle."}, '</span>
+    <span class="hljs-string">'{"id": "dragon_1", "from": "ref_image_0", "src_bbox": [100, 600, 950, 1000], "tgt_bbox": [100, 600, 950, 1000], '</span>
+    <span class="hljs-string">'"desc": "A large, fluffy knitted dragon in terracotta and mustard yarn."}, '</span>
+    <span class="hljs-string">'{"id": "fire_1", "from": "ref_image_0", "src_bbox": [350, 400, 650, 650], "tgt_bbox": [350, 400, 650, 650], '</span>
+    <span class="hljs-string">'"desc": "Curled puffs of fiery orange angora thread suspended in mid-air."}]'</span>
+)
+
+moved = pipe(prompt=edit_prompt, image=knight_image, generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>), output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>]
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/knight.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/knight.png" alt="Left: the reference with the knight's source box. Right: the output with an arrow from the source box to the target box; the pinned regions are outlined in white"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">The knight moves from its <code>src_bbox</code> to its <code>tgt_bbox</code>, and the rest of the scene stays put</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="base-model-and-quantized-variants" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#base-model-and-quantized-variants" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Base model and quantized variants
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="base-model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#base-model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Base model
+	</span>
+</h3>
+<p>Everything above uses the distilled checkpoint. The base checkpoint runs 50 steps with classifier-free guidance, and it's the one to fine-tune (see <a href="#lora-finetuning" rel="nofollow">LoRA finetuning</a>).</p>
+<pre><code class="language-python">pipe = ModularPipeline.from_pretrained(<span class="hljs-string">"black-forest-labs/flux-3-image-klein-base"</span>)
+pipe.load_components(dtype={<span class="hljs-string">"vae"</span>: torch.float32, <span class="hljs-string">"default"</span>: torch.bfloat16})
+pipe.to(<span class="hljs-string">"cuda"</span>)
+
+pipe.guider = pipe.guider.new(guidance_scale=<span class="hljs-number">5.0</span>)  <span class="hljs-comment"># optional</span>
+image = pipe(prompt=prompt, output=<span class="hljs-string">"images"</span>)[<span class="hljs-number">0</span>]
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="single-file-format-checkpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#single-file-format-checkpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Single-file format checkpoints
+	</span>
+</h3>
+<p>Black Forest Labs also ships the transformer as a single file, in <code>bf16</code> and in two quantized formats: <code>fp8r</code> (rowwise FP8) and <code>nvfp4</code>. Load any of them with <code>from_single_file</code>, then load the other components by name so the bf16 transformer isn't downloaded too.</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> BFLQuantizationConfig, Flux3Transformer2DModel, ModularPipeline
+
+model_id = <span class="hljs-string">"black-forest-labs/flux-3-image-klein-base"</span>
+variant = <span class="hljs-string">"fp8r"</span>  <span class="hljs-comment"># or "nvfp4"</span>
+
+transformer = Flux3Transformer2DModel.from_single_file(
+    <span class="hljs-string">f"https://huggingface.co/<span class="hljs-subst">{model_id}</span>/blob/main/variants/<span class="hljs-subst">{variant}</span>/model.safetensors"</span>,
+    config=model_id,
+    subfolder=<span class="hljs-string">"transformer"</span>,
+    quantization_config=BFLQuantizationConfig(compute_dtype=torch.bfloat16),
+    dtype=torch.bfloat16,
+)
+
+pipe = ModularPipeline.from_pretrained(model_id)
+pipe.load_components(dtype=torch.bfloat16)
+pipe.update_components(transformer=transformer)
+pipe.to(<span class="hljs-string">"cuda"</span>)
+</code></pre>
+<p>For the unquantized single file, use <code>https://huggingface.co/{model_id}/blob/main/model.safetensors</code> and drop <code>quantization_config</code>.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Variant</th>
+<th align="center">Fast kernels on</th>
+<th align="center">Other GPUs</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center"><code>fp8r</code></td>
+<td align="center">Compute capability 8.9+ (Ada, Hopper, Blackwell)</td>
+<td align="center">Weights are dequantized each step: lower memory, no speedup</td>
+</tr>
+<tr>
+<td align="center"><code>nvfp4</code></td>
+<td align="center">Blackwell, with <code>flashinfer-python</code> and <code>flashinfer-cubin</code> at the same version</td>
+<td align="center">Same as above</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="lora-finetuning" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#lora-finetuning" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		LoRA finetuning
+	</span>
+</h2>
+<p>FLUX.3 works for both text-to-image and image-to-image, which makes it a great base for custom LoRAs. <code>diffusers</code> ships DreamBooth LoRA training scripts for both tasks (you can also train with <a href="https://github.com/ostris/ai-toolkit" rel="nofollow">Ostris' AI Toolkit</a>).</p>
+<p>Here is a text-to-image example that learns a tarot-card style from the <a href="https://huggingface.co/datasets/multimodalart/1920-raider-waite-tarot-public-domain"><code>multimodalart/1920-raider-waite-tarot-public-domain</code></a> dataset, triggered with <code>trtcrd</code>:</p>
+<pre><code class="language-bash">accelerate launch train_dreambooth_lora_flux3_klein.py \
+  --pretrained_model_name_or_path=<span class="hljs-string">"black-forest-labs/flux-3-image-klein-base"</span> \
+  --dataset_name=<span class="hljs-string">"multimodalart/1920-raider-waite-tarot-public-domain"</span> \
+  --caption_column=<span class="hljs-string">"caption"</span> \
+  --instance_prompt=<span class="hljs-string">"trtcrd"</span> \
+  --output_dir=<span class="hljs-string">"trained-flux3-tarot-lora"</span> \
+  --mixed_precision=<span class="hljs-string">"bf16"</span> \
+  --resolution=1024 \
+  --use_aspect_ratio_buckets \
+  --train_batch_size=1 \
+  --rank=16 \
+  --lora_alpha=16 \
+  --learning_rate=1e-4 \
+  --lr_scheduler=<span class="hljs-string">"constant"</span> \
+  --max_train_steps=1500 \
+  --validation_prompt=<span class="hljs-string">"a trtcrd of a cat, tarot style"</span> \
+  --validation_epochs=25 \
+  --seed=0 \
+  --push_to_hub
+</code></pre>
+<blockquote class="note">
+<p>To reduce memory usage, add a few optimization flags:</p>
+<pre><code class="language-bash">  --gradient_checkpointing \
+  --cache_latents \
+  --use_8bit_adam
+</code></pre>
+<p><code>--gradient_checkpointing</code> recomputes activations in the backward pass (lower VRAM, slightly slower), <code>--cache_latents</code> pre-encodes the images and frees the VAE, and <code>--use_8bit_adam</code> keeps the optimizer states in 8-bit.</p>
+</blockquote>
+<p>A couple of knobs are worth experimenting with. The grid below trains the same tarot style with different LoRA ranks and optimizers; the adapters are on the Hub at <a href="https://huggingface.co/diffusers-modular/flux3-tarot-lora"><code>diffusers-modular/flux3-tarot-lora</code></a>. More training features and configurations are documented in the <a href="https://github.com/huggingface/diffusers/blob/main/examples/dreambooth/README_flux3_klein.md" rel="nofollow">DreamBooth FLUX.3 README</a>.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/tarot-lora-sweep.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/tarot-lora-sweep.png" alt="FLUX.3 tarot-style LoRA across ranks and optimizers: the base model with no LoRA, then rank 16, rank 8 and rank 32 (AdamW, lr 1e-4) and a Prodigy run, on two held-out prompts"></a></p>
+<p>For instruction-based editing, the image-to-image script (<code>train_dreambooth_lora_flux3_klein_img2img.py</code>) trains on (reference image, target image, instruction) triplets, where the reference is addressed in the prompt as <code>&lt;ref_image_0&gt;</code>.</p>
+<p>See the <a href="https://github.com/huggingface/diffusers/blob/main/examples/dreambooth/README_flux3_klein.md" rel="nofollow">DreamBooth FLUX.3 README</a> for all options and the full image-to-image example.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-it-costs-to-run" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-it-costs-to-run" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What it costs to run
+	</span>
+</h2>
+<p>In this section, we will talk about the memory consumption and the speed of generation of the models.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="memory" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#memory" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Memory
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">name</th>
+<th align="center">peak allocated (after load) GiBs</th>
+<th align="center">peak allocated (after inference) GiBs</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">nvfp4 (RTX6000)</td>
+<td align="center">13.4</td>
+<td align="center">15.3</td>
+</tr>
+<tr>
+<td align="center">fp8r (H100)</td>
+<td align="center">14.35</td>
+<td align="center">16.27</td>
+</tr>
+<tr>
+<td align="center">bf16 (H100)</td>
+<td align="center">18.80</td>
+<td align="center">20.72</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>If you have less memory:</p>
+<ul>
+<li>Load a <a href="#base-model-and-quantized-variants" rel="nofollow">quantized transformer</a>.</li>
+<li>Run the text encoder separately and free it. It only runs once per image, before denoising (see <a href="#encode-once-generate-many" rel="nofollow">Encode once, generate many</a>).</li>
+<li>Turn on automatic CPU offloading, which moves each component to the GPU only while it runs (we didn't benchmark this)</li>
+</ul>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> ComponentsManager, ModularPipeline
+
+manager = ComponentsManager()
+manager.enable_auto_cpu_offload(device=<span class="hljs-string">"cuda"</span>)
+
+pipe = ModularPipeline.from_pretrained(<span class="hljs-string">"black-forest-labs/flux-3-image-klein"</span>, components_manager=manager)
+pipe.load_components(dtype={<span class="hljs-string">"vae"</span>: torch.float32, <span class="hljs-string">"default"</span>: torch.bfloat16})
+<span class="hljs-comment"># no pipe.to("cuda"): the manager handles device placement</span>
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="speed" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#speed" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Speed
+	</span>
+</h3>
+<p>End-to-end timings for the distilled checkpoint (16 steps), averaged over three runs after a warmup:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Workflow</th>
+<th align="center">Output size</th>
+<th align="center">Time</th>
+<th align="center">Peak memory</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Text-to-image</td>
+<td align="center">1024 × 1024</td>
+<td align="center">1.93 s</td>
+<td align="center">23.8 GiB</td>
+</tr>
+<tr>
+<td align="center">Image-to-image, one 1024 × 1024 reference</td>
+<td align="center">1024 × 1024</td>
+<td align="center">3.87 s</td>
+<td align="center">23.8 GiB</td>
+</tr>
+<tr>
+<td align="center">Layout editing (the knight), one 1360 × 768 reference</td>
+<td align="center">1360 × 768</td>
+<td align="center">4.10 s</td>
+<td align="center">23.8 GiB</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<blockquote class="note">
+<p>Single NVIDIA H100 80GB, no offloading, default attention backend.</p>
+</blockquote>
+<p>A reference image roughly doubles the time. Reference tokens join the same sequence as the text and the image being generated, so a 1024 × 1024 reference adds 4,096 tokens to every transformer call</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/tokens-per-workflow.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/tokens-per-workflow.png" alt="Stacked bars of tokens per transformer call: text-to-image 4,256 tokens; image-to-image 8,272; layout text-to-image 4,336; layout image-to-image 8,800"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Stacked bars of tokens per transformer call: text-to-image 4,256 tokens; image-to-image 8,272; layout text-to-image 4,336; layout image-to-image 8,800</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="the-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The architecture
+	</span>
+</h2>
+<p>Let's open the model up, one piece at a time. The model takes three kinds of tokens:</p>
+<ol>
+<li><strong>text</strong></li>
+<li>the <strong>noisy image</strong> being generated</li>
+<li>and optional <strong>reference images</strong></li>
+</ol>
+<h3 class="relative group flex items-baseline">
+	<a id="from-pixels-to-tokens" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#from-pixels-to-tokens" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		From pixels to tokens
+	</span>
+</h3>
+<p>FLUX.3 is a latent-space flow model for image generation. This means that the denoiser takes latents as inputs and produces latents as outputs. We use a VAE to decode the latents back to pixels. FLUX.3 uses the same VAE architecture as Flux.2. </p>
+<p>The FLUX.2 VAE compresses an image 8× in each direction into 32 channels, and then every 2 × 2 patch of that latent is packed into a single token with 128 channels.</p>
+<p>So <strong>one token covers a 16 × 16 pixel patch</strong>, and a 1024 × 1024 image becomes a 64 × 64 grid of 4,096 tokens. The noisy image starts as random noise of exactly that shape. A reference image goes through the same VAE encoder and packing, and keeps its own size.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="from-prompt-to-tokens" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#from-prompt-to-tokens" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		From prompt to tokens
+	</span>
+</h3>
+<p>The text encoder is Qwen3-VL, a vision-language model. FLUX.3 doesn't just take its last layer. It reads the hidden states of <strong>eight</strong> of its 36 layers (layers 4, 8, …, 32) and stacks them, so each text token becomes a 8 × 2560 = 20,480-dimensional vector before a linear layer projects it to the transformer's width of 3072.</p>
+<p>This gives the transformer features from several depths of the language model, not just its final layer. The prompt is padded to a multiple of 80 tokens, and the transformer attends to the padding too, which is why the pipeline takes one prompt per call.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="two-stages" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#two-stages" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Two stages
+	</span>
+</h3>
+<p>The transformer processes the tokens in two stages:</p>
+<ol>
+<li><strong>Stage 1: per-mode blocks.</strong> Each stream goes through 5 blocks with its own weights. Text has its own blocks, the noisy image has its own, and the reference images have their own.</li>
+<li><strong>Stage 2: joint blocks.</strong> The streams are concatenated into one sequence, <code>[text | image | reference]</code>, which goes through 28 blocks that share one set of weights.</li>
+</ol>
+<p>The two stages differ in <em>who can attend to whom</em>.</p>
+<p>In stage 1, each stream only attends to itself, so each kind of token gets refined on its own terms first. In stage 2, everything attends to everything, where the image learns from the text and from the references. For comparison, FLUX.2's double-stream blocks also give text and image separate weights, but let them attend to each other from the start. FLUX.3 keeps the streams fully apart first, then merges them.</p>
+<p>At the end, the text and reference tokens are simply dropped. Only the image tokens go through the output layers, which predict how to move them one step toward a clean image.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="inside-one-block" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inside-one-block" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inside one block
+	</span>
+</h3>
+<p>Every block, in either stage, has the same shape. Attention and the MLP run <strong>in parallel</strong> on the same normalized input, and their sum is added back to the residual stream.</p>
+<p>Each block starts with a LayerNorm that has no learned scale or shift of its own. The scale, shift, and gate come from a timestep embedding instead (this is called <em>modulation</em>). Inside the attention, the queries and keys are RMS-normalized and get rotary position embeddings (RoPE), which we look at below.</p>
+<p>In a joint block, all tokens share the same weights, but text, image, and reference tokens each get their own scale, shift, and gate.</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">block</span>(<span class="hljs-params">x, shift, scale, gate</span>):      <span class="hljs-comment"># shift, scale, gate come from the token's timestep embedding</span>
+    h = layer_norm(x)                  <span class="hljs-comment"># no learned scale or shift</span>
+    h = (<span class="hljs-number">1</span> + scale) * h + shift
+    q, k, v = to_q(h), to_k(h), to_v(h)
+    q, k = rope(rms_norm(q)), rope(rms_norm(k))
+    out = attention(q, k, v) + mlp(h)  <span class="hljs-comment"># parallel, MLP is SwiGLU</span>
+    <span class="hljs-keyword">return</span> x + gate * out
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="every-token-gets-its-own-timestep" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#every-token-gets-its-own-timestep" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Every token gets its own timestep
+	</span>
+</h3>
+<p>In FLUX.1 and FLUX.2, one timestep embedding modulates every token. In FLUX.3, the modulation depends on the kind of token.</p>
+<p>The noisy image tokens are modulated by the current timestep <code>t</code>. The text and reference tokens are always modulated by timestep <strong>0</strong>, which means "clean, nothing to denoise here". So even a reference that looks almost the same as the output is marked as given context, not as something to generate.</p>
+<p>The distilled checkpoint is a <em>flow map</em>. It is also told the timestep each step jumps to. That second timestep gets its own embedding, which is added to every token's modulation, so each of its 16 steps can make a larger jump.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="positions-in-four-dimensions" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#positions-in-four-dimensions" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Positions in four dimensions
+	</span>
+</h3>
+<p>Attention on its own doesn't know where a token is (this phenomenon is called permutation equivariance). RoPE fixes that by rotating each query and key by an amount that depends on the token's position. FLUX.3 uses four position axes, <code>(t, h, w, l)</code> (timestep, height, width, length of sequence), and gives each one a quarter (32 dimensions) of every 128-dimensional attention head:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Tokens</th>
+<th align="center">t: timestep</th>
+<th align="center">h: height</th>
+<th align="center">w: width</th>
+<th align="center">l: length of sequence</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">text token <em>i</em></td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center"><em>i</em></td>
+</tr>
+<tr>
+<td align="center">image token at (row, col)</td>
+<td align="center">0</td>
+<td align="center">row / 2</td>
+<td align="center">col / 2</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">reference <em>k</em> at (row, col)</td>
+<td align="center">0</td>
+<td align="center">row / 2</td>
+<td align="center">col / 2</td>
+<td align="center">−(<em>k</em> + 1)</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Text tokens line up along <code>l</code>, like words in a sentence. The image and the references are 2D grids in <code>(h, w)</code>, separated from each other along <code>l</code>. Because a reference uses the same <code>(h, w)</code> coordinates as the output, "the same spot in the reference" has a precise meaning to the model, which is what the <code>src_bbox</code> / <code>tgt_bbox</code> editing relies on.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-denoising-loop" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-denoising-loop" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The denoising loop
+	</span>
+</h3>
+<p>FLUX.3 is a flow-matching model. Generation starts from pure noise, and at each of the 50 steps the transformer predicts a <em>velocity</em>. This is the direction from noise toward a clean image. The scheduler takes one step along it.</p>
+<p>At every step you can also read off the model's current guess of the final image. Decoding that guess at a few steps shows how the image takes shape:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step01.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step01.png" alt="step01"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step05.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step05.png" alt="step05"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step10.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step10.png" alt="step10"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step15.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step15.png" alt="step15"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step25.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step25.png" alt="step25"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step50.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/flux3/traj_step50.png" alt="step50"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Step 1</td>
+<td align="center">Step 5</td>
+<td align="center">Step 10</td>
+<td align="center">Step 15</td>
+<td align="center">Step 25</td>
+<td align="center">Step 50</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The fox, its pose, and the light are already in place by step 10, while the noise level is still 0.97. The snow-laden branches and the texture of the fur only appear in the last few steps. FLUX.3's scheduler uses a large time shift (6.93), which keeps the noise level high for most of the run: 44 of the 50 steps happen above σ = 0.5. We built this figure by adding one small block to the pipeline, which brings us to Modular Diffusers.</p>
+<blockquote class="note">
+<p>If you are new to flow matching, we have a beginner <a href="https://huggingface.co/spaces/ariG23498/flow-matching">friendly tutorial</a> and a <a href="https://youtu.be/hXQZ6lyRCsI" rel="nofollow">video</a> for you to understand how it works.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="modular-diffusers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#modular-diffusers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Modular Diffusers
+	</span>
+</h2>
+<p>FLUX.3 ships as a <a href="https://huggingface.co/docs/diffusers/main/en/modular_diffusers/overview">Modular Diffusers</a> pipeline.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="see-the-workflows" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#see-the-workflows" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		See the workflows
+	</span>
+</h3>
+<p>You can list the workflows and print the exact blocks of each one, without loading any weights.</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> Flux3AutoBlocks
+
+blocks = Flux3AutoBlocks()
+<span class="hljs-built_in">print</span>(blocks.available_workflows)
+<span class="hljs-comment"># ['text2image', 'image_conditioned']</span>
+
+<span class="hljs-built_in">print</span>(<span class="hljs-built_in">list</span>(blocks.get_workflow(<span class="hljs-string">"text2image"</span>).sub_blocks))
+<span class="hljs-comment"># ['text_encoder', 'denoise.input', 'denoise.prepare_latents', 'denoise.set_timesteps',</span>
+<span class="hljs-comment">#  'denoise.prepare_rope_inputs', 'denoise.denoise', 'denoise.after_denoise', 'decode']</span>
+</code></pre>
+<p><code>get_workflow()</code> resolves the auto branches and gives you the plain sequence of steps that will run. <code>print(blocks.get_workflow("image_conditioned").doc)</code> prints the components, inputs, defaults, and outputs of that workflow.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="encode-once-generate-many" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#encode-once-generate-many" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Encode once, generate many
+	</span>
+</h3>
+<p>Pop the text encoder out, encode the prompt once, free it, and generate from the cached embeddings.</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> ModularPipeline
+
+model_id = <span class="hljs-string">"black-forest-labs/flux-3-image-klein-base"</span>
+
+blocks = ModularPipeline.from_pretrained(model_id).blocks
+text_blocks = blocks.sub_blocks.pop(<span class="hljs-string">"text_encoder"</span>)  <span class="hljs-comment"># `blocks` now starts at the VAE encoder</span>
+
+text_pipe = text_blocks.init_pipeline(model_id)
+text_pipe.load_components(dtype=torch.bfloat16)
+text_pipe.to(<span class="hljs-string">"cuda"</span>)
+
+state = text_pipe(prompt=prompt, negative_prompt=<span class="hljs-string">""</span>)  <span class="hljs-comment"># no guider here, so ask for the negative embeddings</span>
+
+prompt_embeds = state.get(<span class="hljs-string">"prompt_embeds"</span>)
+negative_prompt_embeds = state.get(<span class="hljs-string">"negative_prompt_embeds"</span>)
+
+<span class="hljs-keyword">del</span> text_pipe
+torch.cuda.empty_cache()
+
+image_pipe = blocks.init_pipeline(model_id)  <span class="hljs-comment"># no text encoder to load</span>
+image_pipe.load_components(dtype={<span class="hljs-string">"vae"</span>: torch.float32, <span class="hljs-string">"default"</span>: torch.bfloat16})
+image_pipe.to(<span class="hljs-string">"cuda"</span>)
+
+<span class="hljs-keyword">for</span> seed <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):
+    image = image_pipe(
+        prompt_embeds=prompt_embeds,
+        negative_prompt_embeds=negative_prompt_embeds,
+        generator=torch.Generator().manual_seed(seed),
+        output=<span class="hljs-string">"images"</span>,
+    )[<span class="hljs-number">0</span>]
+    image.save(<span class="hljs-string">f"<span class="hljs-subst">{seed}</span>.png"</span>)
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="add-a-step-inside-the-loop" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#add-a-step-inside-the-loop" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Add a step inside the loop
+	</span>
+</h3>
+<p>The denoising figure above came from one extra block that records the model's guess of the clean image at every step:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> diffusers.modular_pipelines <span class="hljs-keyword">import</span> Flux3AutoBlocks, InputParam, ModularPipelineBlocks, OutputParam
+
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Flux3PreviewStep</span>(<span class="hljs-title class_ inherited__">ModularPipelineBlocks</span>):
+    model_name = <span class="hljs-string">"flux3"</span>
+
+<span class="hljs-meta">    @property</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">inputs</span>(<span class="hljs-params">self</span>):
+        <span class="hljs-keyword">return</span> [InputParam(<span class="hljs-string">"latents"</span>), InputParam(<span class="hljs-string">"noise_pred"</span>)]
+
+<span class="hljs-meta">    @property</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">intermediate_outputs</span>(<span class="hljs-params">self</span>):
+        <span class="hljs-keyword">return</span> [OutputParam(<span class="hljs-string">"x0_previews"</span>, type_hint=<span class="hljs-built_in">list</span>)]
+
+<span class="hljs-meta">    @torch.no_grad()</span>
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, components, block_state, i, t</span>):
+        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:
+            block_state.x0_previews = []
+        sigma = t / <span class="hljs-number">1000</span>  <span class="hljs-comment"># timesteps are sigmas scaled to [0, 1000]</span>
+        block_state.x0_previews.append(block_state.latents - sigma * block_state.noise_pred)  <span class="hljs-comment"># x0 = x_t - sigma * v</span>
+        <span class="hljs-keyword">return</span> components, block_state
+
+
+blocks = Flux3AutoBlocks()
+denoise_loop = blocks.sub_blocks[<span class="hljs-string">"denoise"</span>].sub_blocks[<span class="hljs-string">"text2image"</span>].sub_blocks[<span class="hljs-string">"denoise"</span>]
+denoise_loop.sub_blocks.insert(<span class="hljs-string">"preview"</span>, Flux3PreviewStep(), <span class="hljs-number">1</span>)  <span class="hljs-comment"># between "denoiser" and "after_denoiser"</span>
+
+pipe = blocks.init_pipeline(model_id)
+pipe.load_components(dtype={<span class="hljs-string">"vae"</span>: torch.float32, <span class="hljs-string">"default"</span>: torch.bfloat16})
+pipe.to(<span class="hljs-string">"cuda"</span>)
+
+out = pipe(prompt=prompt, generator=torch.Generator().manual_seed(<span class="hljs-number">0</span>), output=[<span class="hljs-string">"x0_previews"</span>, <span class="hljs-string">"images"</span>])
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="try-it" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#try-it" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Try it
+	</span>
+</h2>
+<ul>
+<li><strong>Models:</strong> <a href="https://huggingface.co/collections/black-forest-labs/flux-3-image-klein">FLUX.3 Image Klein collection</a></li>
+<li><strong>Docs:</strong> <a href="https://huggingface.co/docs/diffusers/main/en/api/pipelines/flux3">FLUX.3 in Diffusers</a></li>
+<li><strong>Fine-tune:</strong> <a href="https://github.com/huggingface/diffusers/blob/main/examples/dreambooth/README_flux3_klein.md" rel="nofollow">DreamBooth LoRA scripts</a></li>
+<li><strong>Prompting:</strong> <a href="https://docs.bfl.ai/guides/prompting_summary" rel="nofollow">Black Forest Labs prompting guide</a></li>
+</ul>
+<p>Built something with FLUX.3? Share your LoRAs and pipelines on the Hub. We'd love to see them! 😎</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/flux-2"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/flux2/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">diffusers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">flux</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">quantization</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Diffusers welcomes FLUX-2</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="YiYiXu" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677857909367-624ef9ba9d608e459387b34e.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dg845" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/35e7257e357064e77cfdcae384afe36f.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="OzzyGT" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63df091910678851bb0cd0e0/FUXFt0C-rUFSppIAu5ZDN.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+4</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 191</div><!--]--> <!--[0--><span class="whitespace-nowrap">November 25, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/flux-qlora"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/flux-qlora/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">diffusers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">quantization</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">(LoRA) Fine-Tuning FLUX.1-dev on Consumer Hardware</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="derekl35" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/e5b8331c9a96cd96b679f38afd30422e.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="marcsun13" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63ce875d199b36f7552d4f07/bpUrvhXDagzRqZ3vxTcSF.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 108</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 19, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/flux-3&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/flux-3&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6ad0efbb876e7cb185952434&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;ariG23498&quot;,&quot;sayakpaul&quot;,&quot;linoyts&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fflux-3">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fflux-3">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fflux-3" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">34</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[0--><a href="/sayakpaul" title="sayakpaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Steveeeeeeen" style="content-visibility:auto;"><!--[0--><a href="/Steveeeeeeen" title="Steveeeeeeen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/654bcb6fae75d15300d48205/T4L1RZUgCZgdik4ZhEWCq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="linoyts" style="content-visibility:auto;"><!--[0--><a href="/linoyts" title="linoyts"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/638f308fc4444c6ca870b60a/Q11NK-8-JbiilJ-vk2LAR.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="suvadityamuk" style="content-visibility:auto;"><!--[0--><a href="/suvadityamuk" title="suvadityamuk"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62449192f555de1927aa7d00/gGiMTU3YVwk0M1ltXdVfV.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[0--><a href="/sergiopaniego" title="sergiopaniego"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="OzzyGT" style="content-visibility:auto;"><!--[0--><a href="/OzzyGT" title="OzzyGT"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63df091910678851bb0cd0e0/FUXFt0C-rUFSppIAu5ZDN.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="YiYiXu" style="content-visibility:auto;"><!--[0--><a href="/YiYiXu" title="YiYiXu"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677857909367-624ef9ba9d608e459387b34e.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="EmmaScharfmann" style="content-visibility:auto;"><!--[0--><a href="/EmmaScharfmann" title="EmmaScharfmann"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/vzx7ZhfOJEJM9ba5TRC1Y.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Manni1000" style="content-visibility:auto;"><!--[0--><a href="/Manni1000" title="Manni1000"><img class="overflow-hidden rounded-full" alt="" src="/avatars/1fa19f49ebd000ad588b7c6a1b353a7a.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lhoestq" style="content-visibility:auto;"><!--[0--><a href="/lhoestq" title="lhoestq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e9ecfc04957053f60648a3e/UY4H1oMtmXVo1p-HnKV6l.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+22</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

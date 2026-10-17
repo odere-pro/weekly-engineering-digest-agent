@@ -1,0 +1,501 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — OpenSSL Security Advisory Assessment, January 2026</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://nodejs.org/en/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nodejs.org/en/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="es"
+      href="https://nodejs.org/es/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://nodejs.org/fr/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="id"
+      href="https://nodejs.org/id/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="ja"
+      href="https://nodejs.org/ja/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="ko"
+      href="https://nodejs.org/ko/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt"
+      href="https://nodejs.org/pt/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="ro"
+      href="https://nodejs.org/ro/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="ta"
+      href="https://nodejs.org/ta/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://nodejs.org/tr/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="uk"
+      href="https://nodejs.org/uk/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/vulnerability.xml"
+    />
+    <meta
+      property="og:title"
+      content="Node.js — OpenSSL Security Advisory Assessment, January 2026"
+    />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/vulnerability/Node.js%20%E2%80%94%20OpenSSL%20Security%20Advisory%20Assessment,%20January%202026"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta
+      name="twitter:title"
+      content="Node.js — OpenSSL Security Advisory Assessment, January 2026"
+    />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <div class="index-module__VYslka__alertBox index-module__VYslka__warning">
+              <span class="index-module__VYslka__title"></span
+              ><span class="index-module__VYslka__content"
+                >Commercial support for versions past the Maintenance LTS phase is available through
+                our
+                <a href="/en/about/eol">OpenJS Ecosystem Sustainability Program partners</a></span
+              >
+            </div>
+            <h1>OpenSSL Security Advisory Assessment, January 2026</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/nodejs"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >TNJP</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>The Node.js Project</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__vulnerability">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                OpenSSL Security Advisory Assessment, January 2026
+              </div>
+            </div>
+            <h2 id="summary"><a href="#summary">Summary</a></h2>
+            <p>
+              The OpenSSL project released a security advisory that includes 12 CVEs. After
+              assessment, we have concluded that three CVEs affect Node.js (severity Low to
+              Moderate). Given the limited attack surface, the OpenSSL updates will be included in
+              upcoming regular Node.js releases rather than dedicated security releases.
+            </p>
+            <h2 id="analysis"><a href="#analysis">Analysis</a></h2>
+            <p>
+              All three vulnerabilities relate to how Node.js processes PFX (PKCS#12) certificate
+              files, which are used when configuring TLS connections via the
+              <code>pfx</code> option. An attacker would need to provide a specially crafted PFX
+              file to trigger any of these issues. Since PFX files typically come from trusted local
+              sources (e.g., your own private keys and certificates), the attack surface is limited
+              in practice.
+            </p>
+            <h3 id="cve-2025-11187-stack-buffer-overflow-in-pbmac1-mac-verification---moderate">
+              <a href="#cve-2025-11187-stack-buffer-overflow-in-pbmac1-mac-verification---moderate"
+                >CVE-2025-11187: Stack buffer overflow in PBMAC1 MAC verification - Moderate</a
+              >
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Branch</th>
+                  <th>OpenSSL Version</th>
+                  <th>Affected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Branch">v20.x</td>
+                  <td data-label="OpenSSL Version">3.0.15</td>
+                  <td data-label="Affected">No</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v22.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v24.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v25.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">main</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              OpenSSL 3.0 (used by v20.x) does not support PBMAC1 and is therefore not affected.
+            </p>
+            <h3 id="cve-2025-69421-null-pointer-dereference-in-pkcs12_item_decrypt_d2i_ex---low">
+              <a href="#cve-2025-69421-null-pointer-dereference-in-pkcs12_item_decrypt_d2i_ex---low"
+                >CVE-2025-69421: NULL pointer dereference in PKCS12_item_decrypt_d2i_ex() - Low</a
+              >
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Branch</th>
+                  <th>OpenSSL Version</th>
+                  <th>Affected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Branch">v20.x</td>
+                  <td data-label="OpenSSL Version">3.0.15</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v22.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v24.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v25.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">main</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              This function is called internally by <code>PKCS12_parse()</code>. All branches are
+              affected.
+            </p>
+            <h3 id="cve-2026-22795-type-confusion-during-pkcs12-parsing---low">
+              <a href="#cve-2026-22795-type-confusion-during-pkcs12-parsing---low"
+                >CVE-2026-22795: Type confusion during PKCS#12 parsing - Low</a
+              >
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Branch</th>
+                  <th>OpenSSL Version</th>
+                  <th>Affected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Branch">v20.x</td>
+                  <td data-label="OpenSSL Version">3.0.15</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v22.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v24.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">v25.x</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+                <tr>
+                  <td data-label="Branch">main</td>
+                  <td data-label="OpenSSL Version">3.5.4</td>
+                  <td data-label="Affected">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>Both OpenSSL 3.0 and 3.5 are vulnerable. All branches are affected.</p>
+            <h2 id="cves-that-do-not-affect-nodejs">
+              <a href="#cves-that-do-not-affect-nodejs">CVEs that do not affect Node.js</a>
+            </h2>
+            <p>The following 9 CVEs do not affect Node.js on any branch:</p>
+            <ul>
+              <li>
+                <strong>CVE-2025-15467 (High, CMS AuthEnvelopedData):</strong> Node.js does not use
+                CMS APIs.
+              </li>
+              <li>
+                <strong>CVE-2025-15468 (Low, SSL_CIPHER_find + QUIC):</strong> Node.js never calls
+                <code>SSL_CIPHER_find()</code>.
+              </li>
+              <li>
+                <strong>CVE-2025-15469 (Low, openssl dgst truncation):</strong> Command-line tool
+                only.
+              </li>
+              <li>
+                <strong>CVE-2025-66199 (Low, TLS 1.3 CompressedCertificate):</strong> Node.js builds
+                with <code>OPENSSL_NO_COMP</code> on all branches, so certificate compression is
+                disabled.
+              </li>
+              <li>
+                <strong>CVE-2025-68160 (Low, BIO_f_linebuffer):</strong> Node.js does not use this
+                BIO filter.
+              </li>
+              <li>
+                <strong>CVE-2025-69418 (Low, low-level OCB):</strong> Node.js uses the EVP API,
+                which the advisory confirms avoids the vulnerable path.
+              </li>
+              <li>
+                <strong>CVE-2025-69419 (Low, PKCS12_get_friendlyname):</strong> Node.js does not
+                call this function; the advisory notes <code>PKCS12_parse()</code> uses a separate
+                safe path.
+              </li>
+              <li>
+                <strong>CVE-2025-69420 (Low, TS_RESP_verify_response):</strong> Node.js does not use
+                timestamp protocol APIs.
+              </li>
+              <li>
+                <strong>CVE-2026-22796 (Low, PKCS7_digest_from_attributes):</strong> Node.js does
+                not call PKCS#7 signature verification APIs.
+              </li>
+            </ul>
+            <h2 id="contact-and-future-updates">
+              <a href="#contact-and-future-updates">Contact and future updates</a>
+            </h2>
+            <p>
+              The current Node.js security policy can be found at
+              <a href="https://github.com/nodejs/node/security/policy#security"
+                >https://github.com/nodejs/node/security/policy#security</a
+              >, including information on how to report a vulnerability in Node.js.
+            </p>
+            <p>
+              Subscribe to the low-volume announcement-only <strong>nodejs-sec</strong> mailing list
+              at
+              <a href="https://groups.google.com/forum/#!forum/nodejs-sec"
+                >https://groups.google.com/forum/#!forum/nodejs-sec</a
+              >
+              to stay up to date on security vulnerabilities and security-related releases of
+              Node.js and the projects maintained in the
+              <a href="https://github.com/nodejs">nodejs GitHub organization</a>.
+            </p>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/march-2026-security-releases"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content"
+                  >Tuesday, March 24, 2026 Security Releases</span
+                ></a
+              ><a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Mitigating Denial-of-Service Vulnerability from Unrecoverable Stack Space
+                  Exhaustion for React, Next.js, and APM Users</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Jan 28, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>2 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/vulnerability/openssl-fixes-in-regular-releases-jan2026.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class=""><a class="" href="#summary">Summary</a></li>
+                <li class=""><a class="" href="#analysis">Analysis</a></li>
+                <li class="pl-2">
+                  <a
+                    class=""
+                    href="#cve-2025-11187-stack-buffer-overflow-in-pbmac1-mac-verification---moderate"
+                    >CVE-2025-11187: Stack buffer overflow in PBMAC1 MAC verification - Moderate</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a
+                    class=""
+                    href="#cve-2025-69421-null-pointer-dereference-in-pkcs12_item_decrypt_d2i_ex---low"
+                    >CVE-2025-69421: NULL pointer dereference in PKCS12_item_decrypt_d2i_ex() -
+                    Low</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#cve-2026-22795-type-confusion-during-pkcs12-parsing---low"
+                    >CVE-2026-22795: Type confusion during PKCS#12 parsing - Low</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#cves-that-do-not-affect-nodejs"
+                    >CVEs that do not affect Node.js</a
+                  >
+                </li>
+                <li class="">
+                  <a class="" href="#contact-and-future-updates">Contact and future updates</a>
+                </li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

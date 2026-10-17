@@ -94,9 +94,10 @@ frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `
   a fragment.
 - **Date.** `published` wins over `updated`; RSS `pubDate` and `dc:date` count too. A date with a
   time but no zone is read as UTC, so the digest does not change with the machine's time zone.
-- **Summary.** The entry's description, summary or content, with tags and `<script>` and
-  `<style>` text removed and entities decoded, so `Vec&lt;T&gt;` in a post reads `Vec<T>`. The
-  text is cut to 600 characters.
+- **Summary.** The fullest text the entry carries (`content:encoded`, then `content`, then
+  `summary`, then `description`), with tags and `<script>` and `<style>` text removed and
+  entities decoded, so `Vec&lt;T&gt;` in a post reads `Vec<T>`. The text is cut to 600
+  characters. An entry with no text at all gets its page, see below.
 - **One bad entry** is skipped; it does not fail the source. A feed with entries that could not
   be read, or whose entries all lack a usable link or date, gets one warning in the log.
 - **Failures and retries.** A timeout, a network error, a 5xx, a 408 or a 429 is tried again
@@ -108,6 +109,35 @@ frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `
   A quiet week looks the same. The run record does not list it.
 - **Item cap.** The fetchers cut their result to `maxItems`, newest first. The collect step
   checks it again as a second guard, after items another source already supplied are removed.
+
+## Adapters and article pages
+
+Every source goes through one pipeline ([`pipeline.ts`](../src/adapters/sources/pipeline.ts)):
+the adapter of its `kind` requests the response and parses it into raw entries; one shared
+step turns them into items, then the list is validated, cut to the window, sorted newest first
+and capped. A recorded response for each default source, with the items it must yield, lives
+in `evals/sources/` and is checked on every commit.
+
+- **`rss`** is parsed by [`rssAdapter.ts`](../src/adapters/sources/rssAdapter.ts): RSS 2.0 and
+  Atom. It reads the title, the `rel="alternate"` link, the date (`published` before `updated`)
+  and the text (see Summary above).
+- **`github`** is parsed by [`githubAtomAdapter.ts`](../src/adapters/sources/githubAtomAdapter.ts)
+  (the `releases.atom` feed, no token) or [`githubRestAdapter.ts`](../src/adapters/sources/githubRestAdapter.ts)
+  (the REST API, when `GITHUB_TOKEN` is set). Both read the tag, the release name, the link,
+  the date and the release notes; the REST adapter leaves out drafts and prereleases.
+
+**Article pages.** An `rss` entry that has no text in the feed (`huggingface-blog`,
+`nodejs-blog`, and part of `google-deepmind-blog` and `mistral-news`) gets the first
+paragraphs of its own page instead: the first `<article>` or `<main>` (without navigation,
+header, footer, script and style), else the page's `og:description` or description. This runs
+after the window and the cap, so a source costs at most `maxItems` extra requests per run, four
+at a time, and the pages together get 4 s of the source's 10 s. A page is read only up to
+2 MiB, and only when it is on the feed's own host (the same rule as a redirect): a page that
+sends the reader elsewhere is not followed, so `google-deepmind-blog` entries that redirect to
+`blog.google` keep an empty summary. A page that fails leaves its entry as it was. GitHub
+sources never fetch pages. `azure-updates` items link to `azure.microsoft.com`, a host this
+file does not list (the feed is served from `www.microsoft.com`); the link check still accepts
+them because the links come from the collected items.
 
 ## Verified but not included
 

@@ -1,0 +1,768 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/train-to-paint-with-code/thumbnail.png" />
+
+		<meta property="og:title" content="Training a coding model to paint watercolours with TRL and OpenEnv" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/train-to-paint-with-code" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/train-to-paint-with-code/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/train-to-paint-with-code">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Training a coding model to paint watercolours with TRL and OpenEnv</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="training-a-coding-model-to-paint-watercolours-with-trl-and-openenv" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-a-coding-model-to-paint-watercolours-with-trl-and-openenv" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training a coding model to paint watercolours with TRL and OpenEnv
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					September 3, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/train-to-paint-with-code.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftrain-to-paint-with-code" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">78</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cosmic643" style="content-visibility:auto;"><!--[0--><a href="/cosmic643" title="cosmic643"><img class="overflow-hidden rounded-full" alt="" src="/avatars/37fbe542a4b20de9180698b05d977206.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="viansv" style="content-visibility:auto;"><!--[0--><a href="/viansv" title="viansv"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/LP2Ig-9G8u8jihRIwifxy.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="DDDSSS" style="content-visibility:auto;"><!--[0--><a href="/DDDSSS" title="DDDSSS"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5cf28cb13b96407ce3001e98fa667199.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MadMike477" style="content-visibility:auto;"><!--[0--><a href="/MadMike477" title="MadMike477"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68b232dcf6027d00161fb46c/FwXMNqgpoXBb2NWJ3X_Pq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="victor" style="content-visibility:auto;"><!--[0--><a href="/victor" title="victor"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5f17f0a0925b9863e28ad517/78BR8GuQiX9a8wbbRlSAC.webp" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+72</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;61929226ded356549e20c5da&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg&quot;,&quot;fullname&quot;:&quot;Sergio Paniego&quot;,&quot;name&quot;:&quot;sergiopaniego&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:true,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:2037,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sergiopaniego"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sergio Paniego's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sergiopaniego"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sergio Paniego">Sergio Paniego</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sergiopaniego</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/thumbnail.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/thumbnail.png" alt="Training a coding model to paint watercolours"></a></p>
+<p>On 23 August, <a href="https://x.com/kickingkeys/status/2091570990048276897" rel="nofollow">Surya
+Narreddi</a> posted a beautiful video
+of watercolours painted by a language model. The model writes JavaScript through
+<a href="https://github.com/acamposuribe/p5.brush" rel="nofollow">p5.brush</a>, a library that "adds natural
+drawing tools to p5.js". The video went viral fast, over 1.5M views at the time of
+writing.</p>
+<p>The video came with <a href="https://surya.website/rling-qwen-to-paint-with-code" rel="nofollow">a blog
+post</a> explaining the training
+behind an earlier and narrower stage of the project, close-up flowers rather than the
+full compositions in the video, sadly without open artifacts yet. His site says a full
+technical report is coming, so ensure you follow him. The original idea is his, coming from the art and design side, where <a href="https://x.com/kickingkeys/status/2094901433149612118" rel="nofollow">his skills are way beyond mine</a>. My attempt is on the engineering side, reproducing the recipe in the open with every piece published.</p>
+<blockquote>
+<p><strong>Note:</strong> for the context behind the project, told by Surya himself, watch <a href="https://vimeo.com/1190839818" rel="nofollow">this
+video of his thesis</a>.</p>
+</blockquote>
+<p>In this article I try and reproduce his idea with <a href="https://huggingface.co/docs/trl">TRL</a> and
+<a href="https://github.com/huggingface/OpenEnv" rel="nofollow">OpenEnv</a>. The reference pool dataset, the RL
+environment, the training scripts and the trained models, all open.</p>
+<p>The whole pipeline runs on Hugging Face, end to end:</p>
+<ul>
+<li>training on <a href="https://huggingface.co/docs/huggingface_hub/guides/jobs">Jobs</a></li>
+<li>the RL environment and the scorer model as <a href="https://huggingface.co/docs/hub/spaces">Spaces</a></li>
+<li>the pairwise judge through <a href="https://huggingface.co/docs/inference-providers">Inference Providers</a></li>
+<li>and every artifact on the Hub, gathered in <a href="https://huggingface.co/collections/HuggingEnvs/paint-with-code-6a955b79d63f67f1631d9be6">one collection</a></li>
+</ul>
+<p>Once the two Spaces are up, the recipe is one command. Duplicate the
+<a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-env">environment</a> and the
+<a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-hpsv3">scorer model</a>, set two
+environment variables for the reward mix, and launch:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> uv run train/watercolour_grpo.py --flavor h200 --<span class="hljs-built_in">timeout</span> 48h --secrets HF_TOKEN -- \
+  --env-url https://&lt;you&gt;-watercolour-env.hf.space \
+  --model Qwen/Qwen3.5-35B-A3B --lora --all-linear --bf16 --gradient-checkpointing \
+  --subject <span class="hljs-string">'a peach hibiscus'</span> --references 4 \
+  --top-p 0.95 --top-k 20 \
+  --lr 5e-5 --lr-scheduler constant_with_warmup --warmup-steps 5 \
+  --scale-rewards none \
+  --steps 110 --n-episodes 240 --num-generations 8 \
+  --per-device-batch-size 1 --gradient-accumulation-steps 8 \
+  --max-completion-length 8192 \
+  --run-tag my-run --out &lt;you&gt;/watercolour-grpo --push-to-hub
+</code></pre>
+<p>The rest of this article is the story of getting there, and <a href="https://github.com/adithya-s-k/HuggingEnvs/tree/main/02-watercolour" rel="nofollow">every piece is in the
+repo</a>.</p>
+<p>I have followed the original blog step by step, and only changed something when strictly needed. Every idea of my own went into a list instead of into the experiment, and that list became "What I would try next" at the end, next to the full list of published artifacts. If you have already read his post, the framing and
+the reward design will be familiar. The new material is the open implementation, the
+hand-rated pool, and three reward mixes trained and compared, and it starts at <a href="#the-rl-environment-you-need-to-build" rel="nofollow">The RL
+environment you need to build</a>.</p>
+<figure class="image text-center">
+  <video controls="" autoplay="" muted="" loop="" playsinline="" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/three-runs-evolution.mp4" title="Three runs evolving in parallel"></video>
+  <figcaption>Three runs, one per reward mix, evolving in parallel. Each frame shows the median painting of a step. No need to tell them apart yet, the article explains which run is which.</figcaption>
+</figure>
+
+<h2 class="relative group flex items-baseline">
+	<a id="why-people-loved-it" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-people-loved-it" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why people loved it
+	</span>
+</h2>
+<p>The paintings look loose, imperfect, handmade, at a moment when image models produce perfect (statistically average) pictures. My guess is that this contrast is a big part of why the video went
+viral. It reminded me of the early days of generative AI art, when the point was
+to explore the medium. <a href="https://research.google/blog/inceptionism-going-deeper-into-neural-networks/" rel="nofollow">DeepDream</a> (2015) was a debugging tool that people turned into art, works like <a href="https://en.wikipedia.org/wiki/Edmond_de_Belamy" rel="nofollow">Edmond de
+Belamy</a> (2018) came from artists probing
+what a GAN could do, and artists like <a href="https://quasimondo.com" rel="nofollow">Mario Klingemann</a> spent those years making <a href="https://artsandculture.google.com/asset/memories-of-passerby-i-mario-klingemann/aAHG7iV3aXme8g" rel="nofollow">dreamy portraits with neural networks</a>.</p>
+<p>This project feels closer to those early days. In his thesis, Surya describes the path
+that led here. He started by prompting text-to-image models, where the prompt is the
+only lever you can pull, and more detail buys more control only up to a point. Training
+the model itself goes further. The
+other half of the idea is the medium. The model writes a program of about 150
+lines of JavaScript that paints the image. That model output is code. You can read it, edit it and run it
+again, and the decision behind each brushstroke is visible. And the style comes from a
+restriction where the model is only allowed <em>ten of the library's methods</em>. More on that below.</p>
+<p>In that same period, <a href="https://annaridler.com/works/myriad-tulips" rel="nofollow">Anna Ridler</a>
+photographed thousands of tulips, hand-labelled every one, exhibited the dataset itself
+as the artwork, and later trained a model on it. I found her work through the references
+AI agents brought back while building this project and loved it because this
+project does something very similar by curating a set of images by hand, and then training against them.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="rl-over-taste" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#rl-over-taste" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		RL over taste
+	</span>
+</h2>
+<p>Most of the recent RL work on language models uses rewards you can verify. For example, math problems with a known answer, code that passes tests, or graders that are right or wrong and cheap to run. This project is closer to the older exception, RLHF, where the model learns a reward model from human preferences.</p>
+<p>Here the reward is aesthetic preference. There is no <em>correct</em> answer. The real question
+of the project is whether you can do RL over taste.</p>
+<p>The reward, as his blog defines it and as the RL environment I built implements it:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>term</th>
+<th>weight</th>
+<th>what it measures</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><code>gate</code></td>
+<td>0.05</td>
+<td>the sketch compiles, paints something, does not cheat</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td>0.05</td>
+<td>a soft push towards longer code snippets</td>
+</tr>
+<tr>
+<td>pairwise judge</td>
+<td>0.60</td>
+<td>style, compared against references drawn from a pool</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/MizzenAI/HPSv3">HPSv3</a></td>
+<td>0.30</td>
+<td>aesthetic preference on the render</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><a href="https://huggingface.co/MizzenAI/HPSv3">HPSv3</a> is an open 7B preference model. Give it an image and a text description, and it returns
+a score for how much a person would prefer that image. It was trained on a large set of
+human choices between pairs of images, so its score is an average of many people's taste. The pairwise judge is
+<a href="https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct">Qwen3-VL-30B-A3B-Instruct</a>, a
+general vision model called through HF Inference Providers. The pairwise judge sees the candidate
+painting
+next to four references randomly selected from the pool, guided by a written description of what to weigh (bleeds, translucent washes, soft edges),
+each comparison in both presentation orders, and its score is the share of comparisons
+the candidate wins. Its only standard is the pool, so its score is my taste, as encoded
+in those ratings.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/reward-diagram.png" alt="The reward pipeline, piece by piece">
+  <figcaption>Two of the four terms in the reward function are models. Both are proxies for someone's taste.</figcaption>
+</figure>
+
+<p>Those are the weights Narreddi converged on. The pool defines taste here. That moves the work from tuning hyperparameters
+to building the set that decides what is beautiful.</p>
+<p>I trained three runs with this reward. They differ only in how the weight splits between
+the two model judges:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>run</th>
+<th>pairwise judge</th>
+<th>HPSv3</th>
+<th>role</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><code>judge-led</code></td>
+<td>0.60</td>
+<td>0.30</td>
+<td>the original mix, stopped at step 110</td>
+</tr>
+<tr>
+<td><code>hps-led</code></td>
+<td>0.30</td>
+<td>0.60</td>
+<td>the middle point, stopped at step 110</td>
+</tr>
+<tr>
+<td><code>hps-only</code></td>
+<td>0.00</td>
+<td>0.90</td>
+<td>the validation run, stopped at step 60</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>I started with <code>hps-only</code> to validate that the pipeline could learn at all. Once the reward was going up and the metrics were healthy, there was no reason to run it longer, so I launched the two longer runs instead. The question that the longer runs ask is how much of HPSv3's power can you hand to the pairwise judge? The more weight the judge carries, the more
+the reward means <em>my</em> taste instead of everyone's, and the harder it should be to climb. Incidentally, if you push it far enough or your style is too far from the average, the model could stop entirely.</p>
+<p>Fortunately, it did not stop and both runs with the pairwise judge on learned too. The hand-rated pool
+can steer the policy, at least as far as the metrics and the final paintings show. The
+numbers are below.</p>
+<blockquote>
+<p><strong>Disclaimer.</strong> If we use a frontier model, it can already generate the JavaScript code that paints watercolour from a prompt. That's the starting point. The work here is about teaching a smaller model to do it combined with a person's own artistic preferences.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="the-rl-environment-you-need-to-build" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-rl-environment-you-need-to-build" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The RL environment you need to build
+	</span>
+</h2>
+<p>The environment wraps everything that sits between the model and the reward, including the JavaScript library that the model uses for painting, the system prompt that restricts it, the headless Chromium that renders each sketch, and the gate that rejects cheats.</p>
+<p>The library does more of the work than it seems.
+<a href="https://github.com/acamposuribe/p5.brush" rel="nofollow">p5.brush</a>, by
+<a href="https://x.com/acamposuribe" rel="nofollow">@acamposuribe</a>, simulates a medium rather than drawing
+shapes: pigment bleeds past the edges of a fill, paper has texture, strokes have mass,
+flow fields drag brushwork around. When the model calls <code>brush.fillBleed(0.25)</code> it is deciding how far the ink
+runs.</p>
+<blockquote>
+<p><strong>Note.</strong> The author of p5.brush had been trying to teach a machine to paint long
+before any of this. In 2022 he made a generative art series that hides a diary about
+teaching p5.js to draw like a child: <em>"It is barely able to use the crayons [...] It
+cannot follow simple commands. I'm done for today, very infuriating."</em> The series was
+meant to have three pieces, and he made two. When Surya's video went viral, <a href="https://x.com/acamposuribe/status/2091668313449316651" rel="nofollow">he
+quoted it</a>, sharing that diary
+and saying this work is the third piece arriving on its own.</p>
+</blockquote>
+<p>p5.brush exposes 47 methods. The prompt allows 10: <code>scaleBrushes</code>, <code>noStroke</code>, <code>fill</code>, <code>noFill</code>, <code>fillBleed</code>, <code>fillTexture</code>, <code>beginShape</code>, <code>vertex</code>, <code>endShape</code> and <code>circle</code>. What the other thirty-seven add, lines, hatching, custom brushes, would break the watercolour look. With these ten the model can only paint filled shapes, and the library adds the bleed to every one of them.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/sketch-and-render.png" alt="A generated sketch and the painting it produces">
+  <figcaption>Part of one rollout's <code>draw()</code> and what it renders to. The comments are the model's own. Reward 0.864, 129 lines, step 22. The full source of every painting is in the rollouts dataset.</figcaption>
+</figure>
+
+
+<p>His blog post saved me a lot of time I could have wasted iterating on the prompt. 
+A long API reference makes the model
+invent methods that do not exist, and his 200 GEPA iterations converged on a strict
+allowlist with no documentation. I saw the same failures and wrote the allowlist by
+hand. My only addition to that recipe is one sentence: paint
+each petal two or three times, a big pass first and a smaller, more opaque one inside
+it. This small change made my outputs a lot more colorful.</p>
+<blockquote>
+<p><strong>Note.</strong> If it's the first time you hear about
+<a href="https://huggingface.co/papers/2507.19457">GEPA</a>, it is an automatic prompt optimizer.
+A language model reflects in plain words on where the current prompt failed and
+proposes a better one, and the loop repeats.</p>
+</blockquote>
+<p>The gate is the final piece. The sketch has to compile, use the library instead of direct p5 calls, put real pigment on the canvas, and not try to trick the scorer, for example by writing text on the canvas.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-pool-is-the-reward-function" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-pool-is-the-reward-function" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The pool is the reward function
+	</span>
+</h2>
+<p>The pool consists of <a href="https://huggingface.co/datasets/HuggingEnvs/watercolour-reference-pool">178 paintings</a> divided into
+two tiers based on my personal preferences, <code>love</code> and <code>okay</code>. All of them are actually generated by a model. Four open-weight models,
+called through Inference Providers, wrote p5.brush sketches, each one working from a
+real, openly licensed photo of a hibiscus from iNaturalist. A vision model gave written
+feedback on every sketch, over three refinement iterations. Every final render was then rated one at a time, by me, and 178 made the cut.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>generator</th>
+<th>number of paintings</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><a href="https://huggingface.co/zai-org/GLM-5.2">GLM-5.2</a></td>
+<td>64</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/moonshotai/Kimi-K3">Kimi-K3</a></td>
+<td>57</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3-Coder-Next">Qwen3-Coder-Next</a></td>
+<td>35</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3.5-122B-A10B">Qwen3.5-122B-A10B</a></td>
+<td>22</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Here I chose four different families of models to test their different styles. These four were the open models that produced a valid sketch every time in a quick reliability check, and two other candidates were dropped for failing it. If you want to produce your own pool, you might choose others.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/love-and-okay.png" alt="A love reference beside an okay one">
+  <figcaption>The two tiers, as they actually look. Disagreeing with the rating is reasonable, somebody's judgement is now the reward function.</figcaption>
+</figure>
+
+<p>The tiers do real work in the reward. When the pairwise judge draws four references,
+half come from <code>love</code> and half from <code>okay</code>, so the policy always faces some rivals it
+can sometimes beat, and a win pays the same against either tier. This is one of my few
+deliberate changes: the original compares against its top tier only, and I kept the
+easier tier in the draw so a weak early policy still gets signal.</p>
+<p>No human-made painting is in there, which is a real limitation. p5.brush is a niche
+library, and the human work that exists in it with accessible code is a handful of pieces, nowhere near what a training corpus
+would need, as his blog also notes.</p>
+<p>The interesting idea here, as I've already discussed previously, is that the model will learn to imitate what the pool contains. If we point the environment at a different dataset, the reward would automatically change without touching a single line of code. For the dataset I generated and openly share, I also include the source sketch.</p>
+<p>If we look closer at the judges, the two of them answer different questions. HPSv3 decides whether it is a flower, and
+the pairwise judge decides whether it is well painted in the style I chose.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="just-one-more-yolo-run" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#just-one-more-yolo-run" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Just one more yolo run
+	</span>
+</h2>
+<p>Before anything worked, there was a long stretch of flat reward curves. If you've tried to reproduce a research paper/blog without open artifacts, you probably can relate. Every run
+tested what I thought was a reasonable theory about what was wrong. A run takes a lot
+of time, so I queued the next one while still going through the last one's results. As always, starting from something easier that works and then building on top of that was the answer.
+A simple control task, with no browser and no judges, was the first attempt that learned, and the reason was that my learning rate was just too low.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/four-curves.png" alt="Three reward experiments flat against the run that worked">
+  <figcaption>Three experiments on the reward, three flat lines. I swapped the pool, removed renderer noise and turned the pairwise judge off, and none of it moved the curve. The run that moves changed the trainer configuration, so the difference is the trainer, not the reward mix.</figcaption>
+</figure>
+
+<p>Another change that cost me time to find was adjusting the LoRA parameters correctly. The usual <code>target_modules</code> list assumes a dense model, and <a href="https://huggingface.co/Qwen/Qwen3.5-35B-A3B"><code>Qwen/Qwen3.5-35B-A3B</code></a> is a mixture of experts that names most of its projections differently, so the adapter was training ten layers out of forty. I solved this by changing it to <code>all-linear</code>, which reaches every linear layer. The routed experts in this architecture are fused tensors that even <code>all-linear</code> leaves frozen, but everything else gets an adapter, and that was enough to learn.</p>
+<p>The fix was four changes in TRL's <a href="https://huggingface.co/docs/trl/grpo_trainer"><code>GRPOTrainer</code></a>:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>setting</th>
+<th>from</th>
+<th>to</th>
+<th>why</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>learning rate</td>
+<td>2e-5</td>
+<td><strong>5e-5</strong></td>
+<td>the ceiling <em>LoRA Without Regret</em> uses for GRPO</td>
+</tr>
+<tr>
+<td>scheduler</td>
+<td><code>linear</code></td>
+<td><strong><code>constant_with_warmup</code></strong></td>
+<td>linear decay had spent most of the learning rate by mid-run, so the reward never took off</td>
+</tr>
+<tr>
+<td><code>scale_rewards</code></td>
+<td><code>group</code></td>
+<td><strong><code>none</code></strong></td>
+<td>one gate rejection was shrinking every other advantage in the group</td>
+</tr>
+<tr>
+<td><code>target_modules</code></td>
+<td>hand list</td>
+<td><strong><code>all-linear</code></strong></td>
+<td>reach every linear layer</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>These four changes unlocked the first successful run (<code>hps-only</code>), with the reward clearly improving.</p>
+<p>With that configuration, all three runs learn. Both judge runs were launched for 200 steps and stopped at 110, with the reward still climbing slowly. A step takes fifteen to eighteen minutes, and the comparison between mixes was already stable, so I stopped both to save compute. Mean group reward over the first and final third of each run:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>run</th>
+<th>steps</th>
+<th>first third</th>
+<th>final third</th>
+<th>Δ</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><code>hps-only</code></td>
+<td>60</td>
+<td>0.58</td>
+<td>0.71</td>
+<td>+0.13</td>
+</tr>
+<tr>
+<td><code>judge-led</code></td>
+<td>110</td>
+<td>0.45</td>
+<td>0.72</td>
+<td>+0.27</td>
+</tr>
+<tr>
+<td><code>hps-led</code></td>
+<td>110</td>
+<td>0.57</td>
+<td>0.82</td>
+<td>+0.24</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/three-mixes.png" alt="The three runs, one curve each">
+</figure>
+
+<p>The three curves line up with how much weight my taste carries. The more the judge
+weighs, the lower the start and the noisier the climb. <code>judge-led</code> spent its first thirty steps nearly flat
+before it moved. It is the same move that solved the debugging. Shrink the problem until
+something learns, then add the hard parts back one at a time.</p>
+<p>The pairwise judge term itself climbed in the two runs that used it. The model wins more
+comparisons against the pool as training advances, which is the claim <code>hps-only</code> could
+not make. No group in any run collapsed to identical rewards, the GRPO failure mode that
+kills the gradient. For the curious, the per-metric curves (HPSv3, paint coverage,
+entropy) are <a href="https://github.com/adithya-s-k/HuggingEnvs/tree/main/02-watercolour/results" rel="nofollow">in the
+repository as CSV</a>.</p>
+<p>The full launch command, the hardware and the two environment variables that turn this
+into the other two runs are in <a href="https://github.com/adithya-s-k/HuggingEnvs/tree/main/02-watercolour" rel="nofollow">the
+recipe</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-it-actually-learned" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-it-actually-learned" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What it actually learned
+	</span>
+</h2>
+<p><strong>In every run, the first thing the model learned was to stop producing bad
+paintings</strong>, the near-blank canvases and shapeless washes that score under 0.3 in total
+reward. In
+<code>hps-only</code>, three quarters of the rise in the group mean comes from bad paintings
+becoming rare. In the judge runs the collapse is even steeper: rollouts under 0.3 fall
+from 99 to 16 across <code>judge-led</code>'s thirds, and from 37 to 4 in <code>hps-led</code>.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/median-vs-best.png" alt="Median against best, per step">
+</figure>
+
+<p>This is why the obvious visual, the best painting of each step, shows almost no difference in
+<code>hps-only</code>. It moves <strong>+0.034</strong> across the run while the median moves <strong>+0.155</strong>. The
+learning is visible in the middle of the distribution.</p>
+<p><strong>What the pairwise judge changes is the top.</strong> In <code>hps-only</code>, paintings got more
+reliable without getting better. The quality of the good ones added just +0.03 to the
+group mean, and once HPSv3 saw petals around a centre and a stem, it stopped asking for
+more pigment. With the judge on, the other half of the story appears. <em>Better</em> here means closer to
+the pool, so closer to what I rated as "good" or something I liked more. That added +0.12 in <code>judge-led</code> and +0.16
+in <code>hps-led</code>, the best of each step rose too, and
+paint coverage doubled in both runs (0.11 to 0.23, and 0.13 to 0.30) where <code>hps-only</code>
+barely moved it. With a reference left to beat, a good painting can still get better,
+and the model starts being rewarded for using more pigment.</p>
+<p>One more finding. The model ignores an explicit instruction, and it is right to. The
+system prompt asks for fifteen to thirty filled shapes. If we look at the real mean, it is between 7 and 9, and
+<code>n_shapes</code> barely correlates with reward in any run (+0.000, −0.14, +0.07). The policy
+is not rewarded for obeying that sentence, so it does not obey it.</p>
+<p>There is also a ceiling on the <code>hps-only</code> route. If every rollout matched its good
+ones, that run's mean would sit at 0.771. Whether more steps would break it is
+an open question.</p>
+<p>The paintings also show something that the tables miss. Within each run, they all look
+similar. As training advances, the rewards inside each group get closer together, and the
+median paintings in the opening video look like takes of the same flower. That is GRPO
+doing what it is designed to do with a pool built from one subject. The pool decides
+what counts as variety, the same way it decides what counts as quality. If the reward
+only pays for matching one flower, the model learns to paint that one flower. More diverse output would need a
+more diverse pool, and building one is more curation work. Surya's newer compositions are an example of this. <a href="https://x.com/alexyango/status/2091696296931574217" rel="nofollow">Alex Yango's animal
+paintings</a> are the same recipe with
+different choices in the pool. This is the biggest difference between an aesthetic
+reward and a maths grader. Behind the number there is a very human job, deciding what
+belongs in the reward set. <a href="https://x.com/jxnlco/status/2073819508729684462" rel="nofollow">Jason Liu's essay on
+taste</a> says the general version in one
+line. AI shifted the bottleneck from making to noticing.</p>
+<p>Surya closes his blog with some of his favourites. Instead of picking mine, below is a
+wall with the 178 paintings the reward scored highest across the two judge runs, the
+same number the reference pool holds, in no particular order. Open it and pick your own.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/pick-your-favourites.png" alt="178 paintings from the two judge runs, unlabelled">
+  <figcaption>The reward's 178 favourites from the two judge runs, shuffled. Now pick yours.</figcaption>
+</figure>
+
+<p>To choose, you looked at many and kept a few, and that is exactly the job that built the
+reward of this project. Every painting of every run, with its sketch and its reward, is
+in the rollouts datasets, and browsable in <a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-gallery">this gallery</a>.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/three-styles.png" alt="The median painting of the last step of each run">
+  <figcaption>The last step's median painting of each run, in the same order as the opening video. Same base model, same pool, three reward mixes, three styles.</figcaption>
+</figure>
+
+<p>Since the reward was partly based on my taste, it is fair to close with my verdict as a viewer. To my
+eye, <code>judge-led</code> is the run that ends up the most diverse and the most artistically
+interesting. <code>hps-led</code> paints convincing watercolours, but its best ones share a soft,
+wet-on-wet look that is almost a style of its own. <code>hps-only</code> converges the hardest, and
+most of its paintings settle on the same colours. You can judge for yourself in <a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-gallery">the
+gallery</a>, which has every painting of
+every run, sortable by step and by reward.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="infra-is-hard" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#infra-is-hard" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Infra is hard
+	</span>
+</h2>
+<p>This project is mostly infra. A run needs a trainer, two Spaces, an inference router and
+a websocket to stay healthy for hours straight, and every piece that fails quietly turns
+into a wrong number somewhere else. Half the work is checking that the number you read
+matches what actually happened.</p>
+<p><strong>Failures of the infrastructure were entering the reward as zeros.</strong> A render that
+timed out or a scorer that did not answer scored the same as a bad painting, 0.0 inside
+the group. Across all my runs that was about 1.5% of rollouts, and in the worst run it
+reached 5.2%. That trains the model on noise, so those paths now
+return <code>None</code> and the rollout is excluded from the group.</p>
+<p><strong>I also found a bug in OpenEnv, and sent the fix upstream.</strong> The client keeps one
+persistent websocket, and a socket closed by the far end stayed cached, so every later
+call failed even though the environment was healthy. It cost me two half-finished runs
+to find it. The fix is <a href="https://github.com/huggingface/OpenEnv/pull/1103" rel="nofollow">submitted
+upstream</a>, and the runs launched with
+it have been running clean since.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/step-11-vs-step-12.png" alt="Steps 11 and 12 of the judge-led run, best four of each">
+  <figcaption>Two consecutive steps of the <code>judge-led</code> run, best four of each. Whether step 12's paintings look half a point worse is for you to decide.</figcaption>
+</figure>
+
+<p><strong>The reward of a step depends on which references it drew.</strong> The pairwise judge
+samples four references per step, so every step faces a different set of rivals, and
+some draws are simply harder. GRPO itself is mostly safe, because advantages are
+computed inside the group and a hard draw moves the whole group together. The curve I
+was reading was not safe, and some of what looked like a bad step was just a hard draw.
+The image above is one example. Step 12 scored half a point below step 11 mostly because
+it drew the hardest references of the run, while the paintings themselves look close.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-it-costs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-it-costs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What it costs
+	</span>
+</h2>
+<p>Rounded numbers, and only for the runs that finished.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>piece</th>
+<th>what it needs</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>trainer</td>
+<td>1 H200. <strong>18 hours</strong> for 60 steps, about <strong>34</strong> for 110</td>
+</tr>
+<tr>
+<td>HPSv3</td>
+<td>an <code>a100-large</code> Space, up for the whole run</td>
+</tr>
+<tr>
+<td>the environment</td>
+<td>a <code>cpu-upgrade</code> Space, which renders comfortably in time</td>
+</tr>
+<tr>
+<td>the pairwise judge</td>
+<td>Inference Providers quota for <code>Qwen/Qwen3-VL-30B-A3B-Instruct</code></td>
+</tr>
+<tr>
+<td>the pool, one-off</td>
+<td>openly licensed photos from iNaturalist, Inference Providers quota for the four generators, and rating is your own hours</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>A step is eight rollouts and takes fifteen to eighteen minutes, of which <strong>70 to 80% is
+rendering</strong>. A single render takes 69 to 96 seconds against a 90 second deadline. Part of that is
+expected, the Space has no GPU, so Chromium renders the WEBGL canvas in software and
+p5.brush's bleeds and textures are heavy pixel work. Even so, I expected it to be
+faster, and I have not found the full cause.</p>
+<p>A scorer can cost more than the training that uses it: HPSv3 has to be up for the whole
+run, so pause the Space, or set its sleep timer, when the run ends.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-to-paint-with-code/infra-diagram.png" alt="The infrastructure: what is billed during a run, and what outlives it">
+  <figcaption>Four paid services have to stay healthy at once. Only the Hub and trackio outlive the run.</figcaption>
+</figure>
+
+<p>Everything runs on <a href="https://huggingface.co/docs/huggingface_hub/guides/jobs">HF
+Jobs</a>, with the environment as
+a <a href="https://huggingface.co/docs/hub/spaces-sdks-docker">Docker Space</a> and metrics in
+<a href="https://huggingface.co/docs/trackio">trackio</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-i-would-try-next" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-i-would-try-next" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What I would try next
+	</span>
+</h2>
+<p>The rule of this project was to reproduce the recipe with every resource open, not to
+improve it, so a list of untried ideas piled up along the way. These are the ones I
+would actually try, in order of how much evidence there is.</p>
+<p><strong>Multi-step, and letting the model see what it paints.</strong> This is the first thing I
+would try. The original blog trains single turn, so I trained single turn, and in this
+setup the model paints with its eyes closed. No image ever goes in, and the only
+feedback it gets is one number. The evidence that a feedback loop works is the pool
+itself. The reference paintings came from models iterating three rounds under a vision
+critic, and the later rounds are better. The material that defines the reward was made
+with a loop the policy never gets.</p>
+<p><strong>Smaller models.</strong> There is evidence that 35B is more than needed. In my side
+experiments a 4B already wrote valid sketches that passed the gate. If a 4B can learn
+this, the cost of the experiment drops by an order of magnitude.</p>
+<p>Other ideas on the list are SFT on the pool sources before starting RL, rewarding pigment
+explicitly, moving the judge's reference mix from easy to hard as the run advances until
+only <code>love</code> remains, widening the ten-method allowlist for more visual range (my
+attempts on this crashed more sketches and broke the watercolour look), and checking how consistent the pairwise judge really is by
+scoring the same image twice.</p>
+<p>And the method is not specific to flowers. <a href="https://x.com/alexyango/status/2091696296931574217" rel="nofollow">Alex Yango painted animals with the same
+mechanism</a>, and <a href="https://x.com/brendanh0gan/status/2092650655789855222" rel="nofollow">Brendan Hogan
+trained canvas animations</a>
+against a pool of hand-rated clips. I had also played with something similar before using <a href="https://huggingface.co/blog/sergiopaniego/pelican-env-openenv">Simon
+Willison's pelican
+benchmark</a>, where code is
+rendered to an image and scored.</p>
+<p>And underneath all of it sits the question this project cannot close. <strong>178 paintings
+made by models define what this trained model considers beautiful.</strong> The pool is the bottleneck,
+and it is the part of the pipeline with no principled answer.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-i-changed-from-the-original" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-i-changed-from-the-original" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What I changed from the original
+	</span>
+</h2>
+<p>For anyone reproducing this, there are two deliberate divergences from Narreddi's
+recipe, both argued earlier in the article:</p>
+<ul>
+<li>The pairwise judge draws its references half from <code>love</code> and half from <code>okay</code>, instead
+of comparing against the top tier only, so a weak early policy still gets signal.</li>
+<li>One small sentence of craft in the prompt, paint each petal two or three times, a big
+pass first and a smaller, more opaque one inside it.</li>
+</ul>
+<p>The rest, <code>all-linear</code> for the LoRA, infrastructure failures returning <code>None</code> instead
+of 0.0, stopping the judge runs at step 110, are decisions I had to make along the way
+because his blog does not specify them. His implementation is not published, so
+I cannot tell whether they match his choices or diverge from them.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="everything-is-published" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#everything-is-published" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Everything is published
+	</span>
+</h2>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>artifact</th>
+<th>where</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>the recipe, and how to reproduce it</td>
+<td><a href="https://github.com/adithya-s-k/HuggingEnvs/tree/main/02-watercolour" rel="nofollow"><code>02-watercolour/</code></a></td>
+</tr>
+<tr>
+<td>the reference pool, with every source sketch</td>
+<td><a href="https://huggingface.co/datasets/HuggingEnvs/watercolour-reference-pool"><code>watercolour-reference-pool</code></a></td>
+</tr>
+<tr>
+<td>the environment, ready to duplicate</td>
+<td><a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-env"><code>watercolour-env</code></a></td>
+</tr>
+<tr>
+<td>the HPSv3 scorer, ready to duplicate</td>
+<td><a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-hpsv3"><code>watercolour-hpsv3</code></a></td>
+</tr>
+<tr>
+<td>the hps-only adapter and rollouts</td>
+<td><a href="https://huggingface.co/HuggingEnvs/watercolour-grpo-hps-only"><code>watercolour-grpo-hps-only</code></a> · <a href="https://huggingface.co/datasets/HuggingEnvs/watercolour-rollouts-hps-only"><code>watercolour-rollouts-hps-only</code></a></td>
+</tr>
+<tr>
+<td>the judge-led adapter and rollouts</td>
+<td><a href="https://huggingface.co/HuggingEnvs/watercolour-grpo-judge-led"><code>watercolour-grpo-judge-led</code></a> · <a href="https://huggingface.co/datasets/HuggingEnvs/watercolour-rollouts-judge-led"><code>watercolour-rollouts-judge-led</code></a></td>
+</tr>
+<tr>
+<td>the hps-led adapter and rollouts</td>
+<td><a href="https://huggingface.co/HuggingEnvs/watercolour-grpo-hps-led"><code>watercolour-grpo-hps-led</code></a> · <a href="https://huggingface.co/datasets/HuggingEnvs/watercolour-rollouts-hps-led"><code>watercolour-rollouts-hps-led</code></a></td>
+</tr>
+<tr>
+<td>the gallery, every painting browsable</td>
+<td><a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-gallery"><code>watercolour-gallery</code></a></td>
+</tr>
+<tr>
+<td>the training curves</td>
+<td>live: <a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-trackio-judge-led"><code>judge-led</code></a> · <a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-trackio-hps-led"><code>hps-led</code></a> · <a href="https://huggingface.co/spaces/HuggingEnvs/watercolour-trackio-hps-only"><code>hps-only</code></a>, and the CSV files in <code>results/</code></td>
+</tr>
+<tr>
+<td>all of it</td>
+<td><a href="https://huggingface.co/collections/HuggingEnvs/paint-with-code-6a955b79d63f67f1631d9be6">Paint with Code</a></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The per-rollout numbers in this article can be recomputed from the published datasets.
+Nothing here depends on any Space staying switched on.</p>
+<p>The method and original idea are Surya Narreddi's. The library is Alejandro Campos Uribe's.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">7</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/grpo-with-trl-ifstruct"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/grpo-with-trl-ifstruct/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">nlp</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">community</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="iamleonie" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/33af1a607a8bf7780b98d6f70ea19999.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 151</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 3, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/reflection-beam"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/reflection-beam/thumbnail.jpg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">open-source-collab</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">transformers</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Welcome Beam: a 501B open model you can own, customize, and scale</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 19</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6aa7699662ecc9c379fe6a15" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/97c3c64f0d266a521a2605178cfbe66d.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/blakegger">blakegger</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6aa7699662ecc9c379fe6a15" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-14T03:27:18" title="Mon, 14 Sep 2026 03:27:18 GMT">Sep 14</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>great job</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6aba5ac0097303f1f02d8ade" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/4lXIBgkbcKDx83-H7sjiA.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/xshubhamg">xshubhamg</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6aba5ac0097303f1f02d8ade" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-28T12:17:04" title="Mon, 28 Sep 2026 12:17:04 GMT">19 days ago</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Awesome this is so COOL</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Ftrain-to-paint-with-code">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Ftrain-to-paint-with-code">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftrain-to-paint-with-code" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">78</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="cosmic643" style="content-visibility:auto;"><!--[0--><a href="/cosmic643" title="cosmic643"><img class="overflow-hidden rounded-full" alt="" src="/avatars/37fbe542a4b20de9180698b05d977206.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="viansv" style="content-visibility:auto;"><!--[0--><a href="/viansv" title="viansv"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/LP2Ig-9G8u8jihRIwifxy.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="DDDSSS" style="content-visibility:auto;"><!--[0--><a href="/DDDSSS" title="DDDSSS"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5cf28cb13b96407ce3001e98fa667199.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MadMike477" style="content-visibility:auto;"><!--[0--><a href="/MadMike477" title="MadMike477"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68b232dcf6027d00161fb46c/FwXMNqgpoXBb2NWJ3X_Pq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="victor" style="content-visibility:auto;"><!--[0--><a href="/victor" title="victor"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5f17f0a0925b9863e28ad517/78BR8GuQiX9a8wbbRlSAC.webp" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[0--><a href="/kashif" title="kashif"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sroecker" style="content-visibility:auto;"><!--[0--><a href="/sroecker" title="sroecker"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/630b4269e67c604e9b7a429c/qsmA2ObMFfLwPIAyveo9F.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pandeyps" style="content-visibility:auto;"><!--[0--><a href="/pandeyps" title="pandeyps"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/679b9f3e1287f5a64ebdfcd1/KZTZbvWJZcnTcsMhGzoA0.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="EmmaScharfmann" style="content-visibility:auto;"><!--[0--><a href="/EmmaScharfmann" title="EmmaScharfmann"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/vzx7ZhfOJEJM9ba5TRC1Y.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="multimodalart" style="content-visibility:auto;"><!--[0--><a href="/multimodalart" title="multimodalart"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649143001781-624bebf604abc7ebb01789af.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="anakin87" style="content-visibility:auto;"><!--[0--><a href="/anakin87" title="anakin87"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/626505d493e0b04d75710566/9rfJc9ORXU9J5a42Ev3v6.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+66</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">7</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

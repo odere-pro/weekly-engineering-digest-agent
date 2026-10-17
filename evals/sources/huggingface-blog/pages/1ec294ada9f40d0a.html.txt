@@ -1,0 +1,343 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by Microsoft on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/688797c1629e0ef013c2556c/Dn2wmfWGM83ZhuQ-C5jPo.png" />
+
+		<meta property="og:title" content="Hugging Face Models on Foundry Managed Compute" />
+
+		<meta property="og:description" content="A Blog post by Microsoft on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/microsoft/foundry-managed-compute" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/688797c1629e0ef013c2556c/Dn2wmfWGM83ZhuQ-C5jPo.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/microsoft/foundry-managed-compute">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Hugging Face Models on Foundry Managed Compute</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="hugging-face-models-on-foundry-managed-compute" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hugging-face-models-on-foundry-managed-compute" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hugging Face Models on Foundry Managed Compute
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[-1--><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					July 7, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fmicrosoft%2Ffoundry-managed-compute" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">21</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="shambhuraje" style="content-visibility:auto;"><!--[0--><a href="/shambhuraje" title="shambhuraje"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/6_zRBNm5Sbeh5JcfbNtJt.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dominika12" style="content-visibility:auto;"><!--[0--><a href="/dominika12" title="dominika12"><img class="overflow-hidden rounded-full" alt="" src="/avatars/51aeef6e002dd7bdb885510b90346c13.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ositanachi" style="content-visibility:auto;"><!--[0--><a href="/ositanachi" title="ositanachi"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Fo0ehdRXafrOg0jqWuCaw.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tnr1337" style="content-visibility:auto;"><!--[0--><a href="/tnr1337" title="tnr1337"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/669262e284d3e8b483f21dbf/Cak6pdRE1_-Y8ZgdrucnC.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dpk45deepak" style="content-visibility:auto;"><!--[0--><a href="/dpk45deepak" title="dpk45deepak"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6926cf37dcee30339e7f51f7/b51pJbZAQrH7PaVhDou2c.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+15</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/manojsb"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Manoj Bableshwar's avatar" src="/avatars/421af1377c858f6137b6ad9089fc624c.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/manojsb"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Manoj Bableshwar">Manoj Bableshwar</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">manojsb</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/microsoft" class="mr-1.5 flex-none" title="Microsoft"><img class="rounded-sm! size-4 select-none" alt="Microsoft's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png" loading="lazy"/></a> <a href="/microsoft" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">microsoft</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ositanachi"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Osi's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Fo0ehdRXafrOg0jqWuCaw.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ositanachi"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Osi">Osi</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ositanachi</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/microsoft" class="mr-1.5 flex-none" title="Microsoft"><img class="rounded-sm! size-4 select-none" alt="Microsoft's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png" loading="lazy"/></a> <a href="/microsoft" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">microsoft</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->At Microsoft Build 2026, we announced <strong>Foundry Managed Compute</strong> and <strong>Hugging Face models on Foundry</strong> — a curated catalog of open-weight models from the Hugging Face ecosystem, refreshed weekly, deployable in one click onto Foundry Managed Compute. Weights are pre-staged in Azure, runtimes are built and scanned by Microsoft, and every model in the Collection ships with the same enterprise security, governance, observability, and billing that applies to every other model on Foundry.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-platform-microsoft-foundry-and-managed-compute" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-platform-microsoft-foundry-and-managed-compute" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Platform: Microsoft Foundry and Managed Compute
+	</span>
+</h2>
+<p>Microsoft Foundry is a platform for building and operating agentic AI applications. Foundry starts with the widest model selection on any cloud — models from Microsoft, OpenAI, Anthropic, Meta, Mistral, DeepSeek, Hugging Face, and others, spanning frontier, open-source, and custom weights — all accessible through a single endpoint and a single set of SDKs in Python, C#, JavaScript, and Java.</p>
+<p>On top of those models sits the <strong>Foundry Agent Service</strong>: multi-agent orchestration with built-in memory, knowledge grounding through Foundry IQ, and a catalog of connectable tools via agentic protocols, so agents can work with enterprise data. Once agents are running, Foundry provides end-to-end tracing, real-time monitoring, continuous evaluations, and a prompt optimizer that improves agent behavior based on eval results — observability and quality loops that are part of the platform.</p>
+<p>Alongside that, developers get access to:</p>
+<ul>
+<li>Content safety filters</li>
+<li>Task-adherence guardrails</li>
+<li>An AI Red Teaming Agent for adversarial testing</li>
+<li>Unified RBAC</li>
+<li>Private networking</li>
+<li>Azure Policy integration directly within the platform</li>
+</ul>
+<p>Alongside pay-per-token (lowest-friction path to get started) and provisioned throughput (predictable, high-performance production workloads on frontier models), <strong>Foundry Managed Compute</strong> is the third deployment option in Foundry: a managed GPU platform-as-a-service for open-source and custom models.</p>
+<p>You deploy a model instance described by the things that matter to your workload — parameter count, context length, and whether you want to optimize for latency or throughput — and Foundry handles the GPU topology underneath, whether the instance lands on one accelerator or several, so you think and plan in model terms.</p>
+<p>Microsoft takes care of the machine: container updates, runtime upgrades, and security patches happen automatically on the supported runtimes — <strong>vLLM, SGLang, TensorRT-LLM, NIM, TEI, llama.cpp</strong> — without redeploying your model, while model configuration, deployment behavior, and routing stay with you.</p>
+<p>That consistency carries through the developer surface — pay-per-token, provisioned throughput, and Managed Compute share:</p>
+<ul>
+<li>A single endpoint</li>
+<li>The same SDKs</li>
+<li>The same authentication</li>
+<li>The same observability</li>
+<li>A single bill</li>
+</ul>
+<p>Open-source models integrate with Foundry Agents the same way frontier models do, so you can mix model types in a single agent without a separate integration path.</p>
+<p>Managed Compute offers:</p>
+<ul>
+<li><strong>Global deployments</strong> — broadest capacity and best pricing</li>
+<li><strong>Data Zone deployments</strong> — residency and sovereignty</li>
+</ul>
+<p>Same code, same workflow. Quota is aligned to accelerator families, so a plan built on the H100 family today carries forward as new hardware generations come online.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-hugging-face" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-hugging-face" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why Hugging Face
+	</span>
+</h2>
+<p>Hugging Face is the public square of open AI: <strong>15 million builders, 400,000 organizations, and over 3 million open models published</strong>, with new frontier capabilities — agentic coding, video segmentation, speech, embeddings — landing weekly. It's the GitHub of open models, where the community publishes weights, writes model cards, compares evaluations, and pulls models for experimentation.</p>
+<p>Open models have closed the gap with proprietary models on benchmark after benchmark, and they unlock things proprietary endpoints can't:</p>
+<ul>
+<li><strong>State-of-the-art is now open.</strong> Leading open-weight models are competitive with the top closed frontier models on the most widely used benchmarks.</li>
+<li><strong>Deep customization.</strong> Full weights make it possible to fine-tune, distill, quantize, and adapt with LoRA — tailoring models to your domain, your data, and your latency and cost targets.</li>
+<li><strong>Your model, your hosting.</strong> Weights run in your tenant on infrastructure you control, behind your inference endpoint, with your identity and network boundaries.</li>
+<li><strong>Cost shaping.</strong> Pay for accelerators by the hour, scale to zero when idle, and right-size GPUs to the specific model — useful for steady, high-volume, or latency-sensitive workloads where per-token pricing is harder to predict.</li>
+<li><strong>Version control.</strong> Pin a specific model version, evaluate it, deploy it, and move forward or roll back on your own release cadence.</li>
+</ul>
+<p>The catch has always been the operational layer: discovery, license review, security screening, runtime selection, GPU sizing, image building, CVE patching, and standing the model up behind an enterprise-grade endpoint. Hugging Face, by itself, is not an enterprise serving platform. <strong>Hugging Face models on Foundry is that operational layer, run by Microsoft.</strong></p>
+<h2 class="relative group flex items-baseline">
+	<a id="hugging-face-models-on-foundry" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hugging-face-models-on-foundry" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hugging Face Models on Foundry
+	</span>
+</h2>
+<p>The Hugging Face Collection brings a curated subset of models directly into the Foundry Model Catalog:</p>
+<ul>
+<li><strong>Refreshed weekly</strong> — trending models from the Hugging Face ecosystem are added continuously as the community publishes them.</li>
+<li><strong>Every modality</strong> — text, vision, audio, and multimodal: LLMs and VLMs for chat and agents, ASR and speech translation, embeddings, segmentation, image generation.</li>
+<li><strong>Safetensors only, no untrusted code</strong> — every model in the Collection is security-screened and ships in the SafeTensors weight format, with no <code>trust_remote_code</code> execution paths unless rigorously reviewed.</li>
+<li><strong>The right runtime for the model</strong> — vLLM and SGLang for LLMs, TensorRT-LLM and NIM where applicable, TEI for embeddings, llama.cpp for CPU — Foundry picks the engine that matches the model.</li>
+</ul>
+<p>From your side, an open-weight model in the Hugging Face Collection looks and behaves like any other model in the Foundry Model Catalog, and every model in the Collection has been put through a multi-stage publishing pipeline before it ever shows up there.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-curation-pipeline" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-curation-pipeline" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The Curation Pipeline
+	</span>
+</h3>
+<p>Hugging Face and Microsoft work together to bring the most popular open-weight models from the Hugging Face ecosystem to Microsoft Foundry — production-ready for enterprise environments — through a systematic curation process:</p>
+<ol>
+<li><strong>Identify trending models</strong> in the Hugging Face ecosystem — based on community signals, partner requests, and customer demand — and select candidates for enterprise readiness.</li>
+<li><strong>Screen for compliance and security</strong> — model licenses are reviewed against Microsoft's enterprise distribution policy (with license metadata captured and preserved on the catalog model card), and repositories are inspected for <code>trust_remote_code</code> patterns and custom executable code; any model that would require executing third-party Python at load time is either remediated or excluded.</li>
+<li><strong>Build, scan, and publish runtimes</strong> — Microsoft builds inference container images on supported runtimes (vLLM, SGLang, TensorRT-LLM, NIM, TEI, llama.cpp), scans them for CVEs, and signs and publishes them to a Microsoft-managed container registry.</li>
+<li><strong>Upload weights to secure Azure storage</strong> — model weights are pulled from Hugging Face once, validated against the published model card, and stored in Microsoft-managed Azure storage in the regions where the model is served.</li>
+<li><strong>Validate and publish to the catalog</strong> — every model + runtime + accelerator combination is tested for API conformance (chat completions, embeddings, rerank, etc.) and performance (latency, throughput, time-to-first-token, inter-token decode time), then the validated model — with its templates, runtime images, and weights — is published to the Foundry Model Catalog with a one-click deploy path onto Managed Compute.</li>
+</ol>
+<p>Because weights are pre-staged in Azure storage and runtime images live in a Microsoft-managed registry, your deployments won't need outbound network access to Hugging Face Hub — you can deploy to production inside a private network.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="model-runtimes" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#model-runtimes" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Model Runtimes
+	</span>
+</h2>
+<p>Hugging Face models on Foundry are powered by a versatile collection of community-built, open-source inference runtimes — each selected and tuned for Foundry Managed Compute, and matched to the model architectures it serves best. Across all runtimes, the systematic curation process means new versions and patches land on Foundry quickly, and existing model deployments are upgraded automatically — without requiring you to redeploy.</p>
+<ul>
+<li><p><strong>vLLM</strong> — the default high-throughput serving engine for open large language models, tuned for production GPU workloads. Because Hugging Face is a direct contributor to vLLM, any model in the Transformers library can run on vLLM out of the box — so when a new model lands on Hugging Face, it can be served on Foundry the same day, with no waiting on a custom integration.</p>
+</li>
+<li><p><strong>SGLang</strong> — a serving engine for language and multi-modal models, with strong support for structured outputs (JSON, regex, grammar-constrained generation) that agentic and tool-using workloads depend on. Hugging Face and the SGLang team have built a Transformers backend integration for SGLang, so any model in the Transformers library runs on SGLang out of the box — and reaches Foundry the same day it lands on Hugging Face.</p>
+</li>
+<li><p><strong>Text Embeddings Inference (TEI)</strong> — the runtime for embedding, reranker, and sequence-classification models. Accelerator-specific images ship with kernels compiled for each GPU and CPU family Foundry supports, keeping the embedding hot path lean for RAG and semantic-search workloads.</p>
+</li>
+<li><p><strong>llama.cpp</strong> — the CPU and small-GPU path for GGUF-quantized models. Useful for cost-optimized deployments, smaller models, and CPU-only regions, with the same OpenAI-compatible API as vLLM and SGLang.</p>
+</li>
+<li><p><strong>TensorRT-LLM and NIM</strong> — used on NVIDIA hardware where NVIDIA's optimized kernels and Triton-based serving deliver meaningfully better latency or throughput for specific model families.</p>
+</li>
+<li><p><strong>hf-serve</strong> — Hugging Face's own multi-model inference server, used for model architectures outside the LLM and embedding fast paths (vision, audio, segmentation, and other Transformers-native pipelines) so the Collection can cover every modality with a consistent serving layer.</p>
+</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="deploying-and-scoring-an-open-weight-model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deploying-and-scoring-an-open-weight-model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deploying and Scoring an Open-Weight Model
+	</span>
+</h2>
+<p>The Hugging Face Collection in the Foundry Model Catalog is where you start, and deployment is five steps:</p>
+<ol>
+<li><strong>Browse the catalog and pick a model</strong> — the deploy wizard also surfaces the model id, deployment template id, and <code>acceleratorType</code> you'll need if you're scripting the deploy via SDK or REST.</li>
+<li><strong>Choose a deployment template</strong> — latency- vs throughput-optimized, accelerator family, context length, quantization.</li>
+<li><strong>Configure instance count</strong> — scale throughput by adding model instances.</li>
+<li><strong>Deploy</strong> — from the portal, CLI, SDK, or REST.</li>
+<li><strong>Score</strong> via the unified Foundry endpoint with the SDK you already use.</li>
+</ol>
+<h3 class="relative group flex items-baseline">
+	<a id="deployment-templates" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deployment-templates" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deployment Templates
+	</span>
+</h3>
+<p>A deployment template is the unit of choice in step 2: a named, versioned asset that pins the runtime, the accelerator family and count, the context length, and the runtime-specific tuning needed to serve the model well — so picking a template is the only knob you turn for "how do I want this model to run."</p>
+<p><code>qwen3-32b</code>, for example, ships with four templates the deploy wizard exposes side by side:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Template</th>
+<th>Runtime</th>
+<th>Accelerator</th>
+<th>Context</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><code>qwen–qwen3-32b–40k-nvidia-a100</code></td>
+<td>vLLM</td>
+<td>1 × A100 80 GB</td>
+<td>40K</td>
+</tr>
+<tr>
+<td><code>qwen–qwen3-32b–40k-nvidia-h100</code></td>
+<td>vLLM</td>
+<td>1 × H100 80 GB</td>
+<td>40K</td>
+</tr>
+<tr>
+<td><code>qwen–qwen3-32b–128k-nvidia-2xa100</code></td>
+<td>vLLM</td>
+<td>2 × A100 80 GB</td>
+<td>128K</td>
+</tr>
+<tr>
+<td><code>qwen–qwen3-32b–128k-nvidia-2xh100</code></td>
+<td>vLLM</td>
+<td>2 × H100 80 GB</td>
+<td>128K</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Each template arrives pre-tuned for the model — runtime settings, tool-call and reasoning parsers, scoring path, health probes, request concurrency, and any model-specific context-extension settings are all set by Microsoft, with any trade-offs called out inline in the template description. When you script the deploy, you reference the template and Foundry handles the rest.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="deploy--python-sdk" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deploy--python-sdk" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deploy — Python SDK
+	</span>
+</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> azure.identity <span class="hljs-keyword">import</span> DefaultAzureCredential
+<span class="hljs-keyword">from</span> azure.mgmt.cognitiveservices <span class="hljs-keyword">import</span> CognitiveServicesManagementClient
+
+client = CognitiveServicesManagementClient(DefaultAzureCredential(), SUBSCRIPTION_ID)
+
+deployment = client.managed_compute_deployments.begin_create_or_update(
+    resource_group_name=RESOURCE_GROUP,
+    account_name=ACCOUNT_NAME,
+    deployment_name=<span class="hljs-string">"qwen3-32b"</span>,
+    resource={
+        <span class="hljs-string">"sku"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"GlobalManagedCompute"</span>, <span class="hljs-string">"capacity"</span>: <span class="hljs-number">1</span>},
+        <span class="hljs-string">"properties"</span>: {
+            <span class="hljs-string">"model"</span>: <span class="hljs-string">"azureml://registries/azure-huggingface/models/qwen--qwen3-32b/versions/1"</span>,
+            <span class="hljs-string">"deploymentTemplate"</span>: <span class="hljs-string">"azureml://registries/azure-huggingface/deploymenttemplates/qwen--qwen3-32b--40k-nvidia-h100/labels/latest"</span>,
+            <span class="hljs-string">"acceleratorType"</span>: <span class="hljs-string">"H100_80GB"</span>,
+        },
+    },
+).result()
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="score--openai-sdk" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#score--openai-sdk" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Score — OpenAI SDK
+	</span>
+</h3>
+<p>The deployment is reachable through the unified Foundry endpoint with the OpenAI SDK — the `model` field takes the deployment name you just created:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI
+
+api_key  = client.accounts.list_keys(RESOURCE_GROUP, ACCOUNT_NAME).key1
+endpoint = <span class="hljs-string">f"https://<span class="hljs-subst">{ACCOUNT_NAME}</span>.services.ai.azure.com/openai/v1"</span>
+
+openai_client = OpenAI(base_url=endpoint, api_key=api_key)
+
+completion = openai_client.chat.completions.create(
+    model=deployment.name,
+    messages=[{<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is the capital of France?"</span>}],
+)
+
+<span class="hljs-built_in">print</span>(completion.choices[<span class="hljs-number">0</span>].message)
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="use-it-in-an-agent" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#use-it-in-an-agent" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Use It in an Agent
+	</span>
+</h3>
+<p>A chat-completions model from the Collection slots into Foundry Agents as an admin-connected model and is callable through the Foundry Responses API with the same OpenAI SDK — same auth, same endpoint, same observability.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="whats-available-today" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#whats-available-today" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What's Available Today
+	</span>
+</h2>
+<p><strong>Available now in preview:</strong> the Hugging Face Collection in the Microsoft Foundry Model Catalog — thousands of models across every modality, refreshed weekly, deployable onto Foundry Managed Compute with NVIDIA A100, NVIDIA H100, or AMD MI300X accelerators in Global and Data Zone scopes, behind a unified Foundry endpoint with Playground support, first-class Azure Monitor metrics, per-deployment billing tags, and curated runtime upgrades and CVE patching applied automatically to your deployments.</p>
+<p><strong>On the roadmap:</strong> broader coverage of the Hugging Face ecosystem, additional accelerator families, and Bring Your Own Weights for fine-tuned and proprietary variants deployed through the same templates and governance as Collection models.</p>
+<p>Hugging Face is where open models are published and discovered. Microsoft Foundry is where enterprises operationalize them — on curated, license-screened, security-screened weights hosted in Azure; on community-built and CVE-scanned runtimes; behind a single endpoint with enterprise identity, networking, observability, and agent integration on top. The breadth of the open-source ecosystem, with the operational layer Microsoft runs underneath. For a deep dive on Foundry Managed Compute — pricing, accelerator SKUs, data residency, enterprise readiness, observability, and the full Responses API + memory pattern — see the <a href="https://devblogs.microsoft.com/foundry/announcing-foundry-managed-compute/" rel="nofollow">Managed Compute launch blog</a>.</p>
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/microsoft/thinkingbox"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/64b8491203124195cd795cad/NStwJm1AafDELVsU4KGwS.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">The Agent Said It Was Done. The Database Disagreed.</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="microsoft" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 83</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 3, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/microsoft/diff-attn-v2"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/5df85abada6d0311fd3d5408/ULgU7-Z51YYJN4fl1FnWH.jpeg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Differential Transformer V2</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="microsoft" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 53</div><!--]--> <!--[0--><span class="whitespace-nowrap">January 20, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/microsoft/foundry-managed-compute&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/microsoft/foundry-managed-compute&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a4c43e3e031658bfe890cfb&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;manojsb&quot;,&quot;ositanachi&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fmicrosoft%2Ffoundry-managed-compute">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fmicrosoft%2Ffoundry-managed-compute">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fmicrosoft%2Ffoundry-managed-compute" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">21</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="clem" style="content-visibility:auto;"><!--[0--><a href="/clem" title="clem"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1583857146757-5e67bdd61009063689407479.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="shambhuraje" style="content-visibility:auto;"><!--[0--><a href="/shambhuraje" title="shambhuraje"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/6_zRBNm5Sbeh5JcfbNtJt.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dominika12" style="content-visibility:auto;"><!--[0--><a href="/dominika12" title="dominika12"><img class="overflow-hidden rounded-full" alt="" src="/avatars/51aeef6e002dd7bdb885510b90346c13.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ositanachi" style="content-visibility:auto;"><!--[0--><a href="/ositanachi" title="ositanachi"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Fo0ehdRXafrOg0jqWuCaw.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tnr1337" style="content-visibility:auto;"><!--[0--><a href="/tnr1337" title="tnr1337"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/669262e284d3e8b483f21dbf/Cak6pdRE1_-Y8ZgdrucnC.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dpk45deepak" style="content-visibility:auto;"><!--[0--><a href="/dpk45deepak" title="dpk45deepak"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6926cf37dcee30339e7f51f7/b51pJbZAQrH7PaVhDou2c.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ammoreira" style="content-visibility:auto;"><!--[0--><a href="/ammoreira" title="ammoreira"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61ed66bb335cd3c34f6a965b/eAhmxFEBMd6erttmHAywk.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Snaseem2026" style="content-visibility:auto;"><!--[0--><a href="/Snaseem2026" title="Snaseem2026"><img class="overflow-hidden rounded-full" alt="" src="/avatars/1a93b4d868458d13b056a912a2b1e796.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="milezdeep13" style="content-visibility:auto;"><!--[0--><a href="/milezdeep13" title="milezdeep13"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/682992a9eb20903424da405e/uA7aONIbuWK1OscV5FvSA.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Furtadex" style="content-visibility:auto;"><!--[0--><a href="/Furtadex" title="Furtadex"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/4XR0bajtQTLF15CJ_7MkQ.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="luke-loan-atlas" style="content-visibility:auto;"><!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pagezyhf" style="content-visibility:auto;"><!--[0--><a href="/pagezyhf" title="pagezyhf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/w3Z6xyKVBA6np65Tb16dP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+9</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

@@ -1,0 +1,1429 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <meta name="next-size-adjust" content="" />
+    <title>Node.js — Node.js 25.0.0 (Current)</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nodejs.org/en/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="x-default" href="https://nodejs.org/en/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="en" href="https://nodejs.org/en/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="es" href="https://nodejs.org/es/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="fr" href="https://nodejs.org/fr/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="id" href="https://nodejs.org/id/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="ja" href="https://nodejs.org/ja/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="ko" href="https://nodejs.org/ko/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="pt-br" href="https://nodejs.org/pt-br/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="pt" href="https://nodejs.org/pt/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="ro" href="https://nodejs.org/ro/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="ta" href="https://nodejs.org/ta/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="tr" href="https://nodejs.org/tr/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="uk" href="https://nodejs.org/uk/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="zh-cn" href="https://nodejs.org/zh-cn/blog/release/v25.0.0" />
+    <link rel="alternate" hreflang="zh-tw" href="https://nodejs.org/zh-tw/blog/release/v25.0.0" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="https://nodejs.org/en/feed/releases.xml"
+    />
+    <meta property="og:title" content="Node.js — Node.js 25.0.0 (Current)" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/release/Node.js%20%E2%80%94%20Node.js%2025.0.0%20(Current)"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Node.js 25.0.0 (Current)" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Node.js 25.0.0 (Current)</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/RafaelGSS"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >RG</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>Rafael Gonzaga</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__release">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Node.js 25.0.0 (Current)
+              </div>
+            </div>
+            <h2 id="2025-10-15-version-2500-current-rafaelgss">
+              <a href="#2025-10-15-version-2500-current-rafaelgss"
+                >2025-10-15, Version 25.0.0 (Current), @RafaelGSS</a
+              >
+            </h2>
+            <p>
+              Node.js 25 is here! We have upgraded V8 to <strong>14.1</strong>, bringing major
+              <code>JSON.stringify</code> performance improvements, built-in
+              <code>Uint8Array</code> base64/hex conversion, and ongoing WebAssembly and JIT
+              pipeline optimizations.
+            </p>
+            <p>
+              This release doubles down on secure-by-default apps and web-standard APIs: the
+              permission model gains <code>--allow-net</code>, Web Storage is enabled by default,
+              and <code>ErrorEvent</code> is now a global.
+            </p>
+            <p>
+              We’ve also removed or finalized long-deprecated APIs such as SlowBuffer, and added
+              quality-of-life improvements like a portable compile cache and JSPI for WebAssembly.
+            </p>
+            <h3 id="notable-changes"><a href="#notable-changes">Notable Changes</a></h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8bc7dfd16f"
+                  ><code>8bc7dfd16f</code></a
+                >] - <strong>build</strong>: test on Python 3.14 release candidate 3 (Christian
+                Clauss) <a href="https://github.com/nodejs/node/pull/59983">#59983</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/663554abdf"
+                  ><code>663554abdf</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>lib</strong>: expose global ErrorEvent
+                (Richie Bendall) <a href="https://github.com/nodejs/node/pull/58920">#58920</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3312e4e946"
+                  ><code>3312e4e946</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: unflag
+                --experimental-webstorage by default (Daniel M Brasil)
+                <a href="https://github.com/nodejs/node/pull/57666">#57666</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/462c74181d"
+                  ><code>462c74181d</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src,permission</strong>: add
+                --allow-net permission (Rafael Gonzaga)
+                <a href="https://github.com/nodejs/node/pull/58517">#58517</a>
+              </li>
+            </ul>
+            <h3 id="deprecations-and-removals">
+              <a href="#deprecations-and-removals">Deprecations and Removals</a>
+            </h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d33f4b539a"
+                  ><code>d33f4b539a</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>assert</strong>: move assert.fail with
+                multiple arguments to eol (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58532">#58532</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b21574d63b"
+                  ><code>b21574d63b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>assert</strong>: move CallTracker to
+                EOL (James M Snell) <a href="https://github.com/nodejs/node/pull/58006">#58006</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/308b6bc6de"
+                  ><code>308b6bc6de</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>async_hooks</strong>: move
+                <code>asyncResource</code> property on bound function to EOL (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58618">#58618</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/daced4ab98"
+                  ><code>daced4ab98</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>buffer</strong>: move SlowBuffer to EOL
+                (Filip Skokan) <a href="https://github.com/nodejs/node/pull/58220">#58220</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/df16f0fd8d"
+                  ><code>df16f0fd8d</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>child_process</strong>: move _channel
+                to end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58527">#58527</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a472745958"
+                  ><code>a472745958</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>crypto</strong>: runtime-deprecate
+                default shake128/256 output lengths (Filip Skokan)
+                <a href="https://github.com/nodejs/node/pull/59008">#59008</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c3b986853c"
+                  ><code>c3b986853c</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>crypto</strong>: move deprecated hash
+                and mgf1Hash options to EOL (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58706">#58706</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/66632648ba"
+                  ><code>66632648ba</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>crypto</strong>: runtime deprecate
+                ECDH.setPublicKey() (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58620">#58620</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a5f9ca1f77"
+                  ><code>a5f9ca1f77</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>dns</strong>: move falsy hostname in
+                lookup to end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58619">#58619</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2bb7667475"
+                  ><code>2bb7667475</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>fs</strong>: move FileHandle close on
+                GC to EOL (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58536">#58536</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/eec0302088"
+                  ><code>eec0302088</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>fs</strong>: move rmdir recursive
+                option to end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58616">#58616</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/25dd206c29"
+                  ><code>25dd206c29</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>fs</strong>: remove
+                <code>fs.F_OK</code>, <code>fs.R_OK</code>, <code>fs.W_OK</code>,
+                <code>fs.X_OK</code> (Livia Medeiros)
+                <a href="https://github.com/nodejs/node/pull/55862">#55862</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/91dadf2897"
+                  ><code>91dadf2897</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>http</strong>: deprecate writeHeader
+                (Sebastian Beltran) <a href="https://github.com/nodejs/node/pull/59060">#59060</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4e06a648ff"
+                  ><code>4e06a648ff</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>perf_hooks</strong>: move deprecated
+                accessors to EOF (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58531">#58531</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a3dfca90d1"
+                  ><code>a3dfca90d1</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>process</strong>: move multipleResolves
+                event to EOL (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58707">#58707</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/790acc8689"
+                  ><code>790acc8689</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tls</strong>: move IP-address
+                servername deprecation to eol (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58533">#58533</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3aaa2ebe19"
+                  ><code>3aaa2ebe19</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>url</strong>: move bad port deprecation
+                in legacy url to end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58617">#58617</a>
+              </li>
+            </ul>
+            <h3 id="semver-major-commits">
+              <a href="#semver-major-commits">Semver-Major Commits</a>
+            </h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7c9fbc15bc"
+                  ><code>7c9fbc15bc</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>assert,util</strong>: fail promise
+                comparison in deep equal checks (Ruben Bridgewater)
+                <a href="https://github.com/nodejs/node/pull/59448">#59448</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/11222f1a27"
+                  ><code>11222f1a27</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>assert,util</strong>: handle invalid
+                dates as equal in deep comparison (Ruben Bridgewater)
+                <a href="https://github.com/nodejs/node/pull/57627">#57627</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/acce2e8f87"
+                  ><code>acce2e8f87</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>build</strong>: reset embedder string
+                to &quot;-node.0&quot; (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8a87ba031b"
+                  ><code>8a87ba031b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>build</strong>: bump minimum Clang
+                version to 19 (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59048">#59048</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/21b131e93a"
+                  ><code>21b131e93a</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>build</strong>: reset embedder string
+                to &quot;-node.0&quot; (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f31c88021b"
+                  ><code>f31c88021b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>build</strong>: stop distributing
+                Corepack (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/57617">#57617</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b3238442d8"
+                  ><code>b3238442d8</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: patch V8 for illumos
+                (Dan McDonald) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2a1da3260d"
+                  ><code>2a1da3260d</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: patch V8 to avoid
+                duplicated zlib symbol (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/54077">#54077</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7772a2df9d"
+                  ><code>7772a2df9d</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: update V8 to 14.1.146.11
+                (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6d61175db0"
+                  ><code>6d61175db0</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: backport
+                1d3362c55396 (Shu-yu Guo)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/974773572e"
+                  ><code>974773572e</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: cherry-pick
+                4f38995c8295 (Shu-yu Guo)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/70bfc398e9"
+                  ><code>70bfc398e9</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: cherry-pick
+                044b9b6f589d (Rezvan Mahdavi Hezaveh)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6bfc525cf0"
+                  ><code>6bfc525cf0</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: cherry-pick
+                d2ad518a0b57 (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/754d28e34f"
+                  ><code>754d28e34f</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: revert 6d6c1e680c7b
+                (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/8c508b9399"
+                  ><code>8c508b9399</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: V8: revert e3cddbedb205
+                (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/88ca8287b6"
+                  ><code>88ca8287b6</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: use std::map in MSVC STL
+                for EphemeronRememberedSet (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/838e2332a5"
+                  ><code>838e2332a5</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: patch V8 for illumos
+                (Dan McDonald) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3522731d9a"
+                  ><code>3522731d9a</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: remove problematic
+                comment from v8-internal (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d234475a33"
+                  ><code>d234475a33</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: define V8_PRESERVE_MOST
+                as no-op on Windows (Stefan Stojanovic)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a738eb4a7f"
+                  ><code>a738eb4a7f</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: fix FP16 bitcasts.h
+                (Stefan Stojanovic) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1744c7d991"
+                  ><code>1744c7d991</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: patch V8 to avoid
+                duplicated zlib symbol (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fff0d1554d"
+                  ><code>fff0d1554d</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>deps</strong>: update V8 to 13.7.152.9
+                (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/968e2f47c8"
+                  ><code>968e2f47c8</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>dgram</strong>: move deprecated APIs to
+                EOL (James M Snell) <a href="https://github.com/nodejs/node/pull/58474">#58474</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5623194a6b"
+                  ><code>5623194a6b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>doc,src,test</strong>: replace use of
+                deprecated <code>GetIsolate</code> (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/823ca6991f"
+                  ><code>823ca6991f</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>fs</strong>: make
+                <code>processReadResult()</code> and <code>readSyncRecursive()</code> private (Livia
+                Medeiros) <a href="https://github.com/nodejs/node/pull/58672">#58672</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a273674dee"
+                  ><code>a273674dee</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>fs</strong>: move fs stream open method
+                to eol (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58529">#58529</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/39d73036e7"
+                  ><code>39d73036e7</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>lib</strong>: use validators for
+                argument validation (Nam Yooseong)
+                <a href="https://github.com/nodejs/node/pull/59416">#59416</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cd68e35704"
+                  ><code>cd68e35704</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>lib</strong>: deprecate
+                <code>_stream_*</code> modules (Dario Piotrowicz)
+                <a href="https://github.com/nodejs/node/pull/58337">#58337</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a822a1cbe7"
+                  ><code>a822a1cbe7</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>lib</strong>: deprecate _tls_common and
+                _tls_wrap (Dario Piotrowicz)
+                <a href="https://github.com/nodejs/node/pull/57643">#57643</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/705bcc2a00"
+                  ><code>705bcc2a00</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>module</strong>: move Module._debug to
+                end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58473">#58473</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5fe7800683"
+                  ><code>5fe7800683</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>node-api</strong>: add warning for
+                NAPI_EXPERIMENTAL (Miguel Marcondes Filho)
+                <a href="https://github.com/nodejs/node/pull/58280">#58280</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e1d4d6ab49"
+                  ><code>e1d4d6ab49</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>repl</strong>: eol deprecate
+                instantiating without new (Aviv Keller)
+                <a href="https://github.com/nodejs/node/pull/59495">#59495</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ed94bc48f3"
+                  ><code>ed94bc48f3</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: update
+                crypto.getCipherInfo() to use DictionaryTemplate (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/60036">#60036</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/37a3df3556"
+                  ><code>37a3df3556</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: fix calls to
+                v8::Object::wrap (Andreas Haas)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/801ae26fa3"
+                  ><code>801ae26fa3</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: update
+                NODE_MODULE_VERSION to 141 (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/10df38a38b"
+                  ><code>10df38a38b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: improve performance of
+                dotenv ToObject (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/60038">#60038</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/075936b413"
+                  ><code>075936b413</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: use std::string_view from
+                node_report (iknoom) <a href="https://github.com/nodejs/node/pull/60006">#60006</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/234c26cca3"
+                  ><code>234c26cca3</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: store
+                <code>Local</code> for <code>CallbackScope</code> on stack (Anna Henningsen)
+                <a href="https://github.com/nodejs/node/pull/59705">#59705</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/708fd1945b"
+                  ><code>708fd1945b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: remove node.h APIs to
+                make callback without an async context (Chengzhong Wu)
+                <a href="https://github.com/nodejs/node/pull/58471">#58471</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/56989d33f5"
+                  ><code>56989d33f5</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: remove deprecated
+                node::EmitBeforeExit and node::EmitExit (Chengzhong Wu)
+                <a href="https://github.com/nodejs/node/pull/58469">#58469</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d429aa2d17"
+                  ><code>d429aa2d17</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: remove deprecated
+                node::CreatePlatform and node::FreePlatform (Chengzhong Wu)
+                <a href="https://github.com/nodejs/node/pull/58470">#58470</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e0ae14ce73"
+                  ><code>e0ae14ce73</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: remove deprecated
+                node::InitializeNodeWithArgs (Chengzhong Wu)
+                <a href="https://github.com/nodejs/node/pull/58470">#58470</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/db1700e4b5"
+                  ><code>db1700e4b5</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>src</strong>: update
+                NODE_MODULE_VERSION to 138 (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0a87084150"
+                  ><code>0a87084150</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>test</strong>: update cppgc-object
+                addon config (StefanStojanovic)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7dd49d7da4"
+                  ><code>7dd49d7da4</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>test</strong>: spin longer for
+                sequential/test-worker-prof (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/faba50df96"
+                  ><code>faba50df96</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>test</strong>: remove
+                <code>--always-turbofan</code> flag (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/496f12dec6"
+                  ><code>496f12dec6</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>test</strong>: update snapshot for V8
+                14.1 (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/05aa3a1c70"
+                  ><code>05aa3a1c70</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>test,win</strong>: split addon tests
+                (StefanStojanovic) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/308de27255"
+                  ><code>308de27255</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tools</strong>: update V8 gypfiles for
+                14.0 (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b736370c07"
+                  ><code>b736370c07</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tools</strong>: update V8 gypfiles for
+                13.9 (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/085a94ac9b"
+                  ><code>085a94ac9b</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tools</strong>: update V8 gypfiles for
+                13.8 (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a71ae18ac8"
+                  ><code>a71ae18ac8</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tools</strong>: enable leaptiering for
+                aix/ibmi (Abdirahim Musse)
+                <a href="https://github.com/nodejs/node/pull/59805">#59805</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a8217a9eb8"
+                  ><code>a8217a9eb8</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>tools</strong>: update V8 gypfiles for
+                13.7 (Michaël Zasso) <a href="https://github.com/nodejs/node/pull/58064">#58064</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fdef0725de"
+                  ><code>fdef0725de</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>util,console</strong>: colorize regexp
+                groups, character classes, etc (Ruben Bridgewater)
+                <a href="https://github.com/nodejs/node/pull/59710">#59710</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/411cc42d22"
+                  ><code>411cc42d22</code></a
+                >] - <strong>(SEMVER-MAJOR)</strong> <strong>worker</strong>: move terminate
+                callback to end-of-life (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/58528">#58528</a>
+              </li>
+            </ul>
+            <h3 id="semver-minor-commits">
+              <a href="#semver-minor-commits">Semver-Minor Commits</a>
+            </h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/94422e8a40"
+                  ><code>94422e8a40</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>src</strong>: add an option to make
+                compile cache portable (Aditi)
+                <a href="https://github.com/nodejs/node/pull/58797">#58797</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/29738c7b42"
+                  ><code>29738c7b42</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>src,permission</strong>: add
+                --allow-inspector ability (Rafael Gonzaga)
+                <a href="https://github.com/nodejs/node/pull/59711">#59711</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f9fcc746f3"
+                  ><code>f9fcc746f3</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>v8</strong>: add cpu profile
+                (theanarkh) <a href="https://github.com/nodejs/node/pull/59807">#59807</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4396cf2d45"
+                  ><code>4396cf2d45</code></a
+                >] - <strong>(SEMVER-MINOR)</strong> <strong>wasm</strong>: enable JSPI (Guy
+                Bedford) <a href="https://github.com/nodejs/node/pull/59941">#59941</a>
+              </li>
+            </ul>
+            <h3 id="semver-patch-commits">
+              <a href="#semver-patch-commits">Semver-Patch Commits</a>
+            </h3>
+            <ul>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/91f035e597"
+                  ><code>91f035e597</code></a
+                >] - <strong>assert</strong>: resolve TODO and rename function (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/59451">#59451</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2e675c4fa3"
+                  ><code>2e675c4fa3</code></a
+                >] - <strong>benchmark</strong>: use non-deprecated WriteUtf8V2 method (Michaël
+                Zasso) <a href="https://github.com/nodejs/node/pull/60173">#60173</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0fb040603b"
+                  ><code>0fb040603b</code></a
+                >] - <strong>build</strong>: upgrade Python linter ruff, add rules ASYNC,PERF
+                (Christian Clauss) <a href="https://github.com/nodejs/node/pull/59984">#59984</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f468b6c72b"
+                  ><code>f468b6c72b</code></a
+                >] - <strong>build</strong>: update minimum Xcode version to 16.4 (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/60079">#60079</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0eda17ba20"
+                  ><code>0eda17ba20</code></a
+                >] - <strong>build</strong>: fix flags for ngtcp2 on IBM i (SRAVANI GUNDEPALLI)
+                <a href="https://github.com/nodejs/node/pull/60073">#60073</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/22a864a275"
+                  ><code>22a864a275</code></a
+                >] - <strong>build</strong>: remove corepack from release tarballs (Jordan Harband)
+                <a href="https://github.com/nodejs/node/pull/59835">#59835</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/7079041e0a"
+                  ><code>7079041e0a</code></a
+                >] - <strong>build</strong>: only mention Apple when on Apple (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59385">#59385</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/954d3f44ef"
+                  ><code>954d3f44ef</code></a
+                >] - <strong>build</strong>: check Apple clang version in configure script (Michaël
+                Zasso) <a href="https://github.com/nodejs/node/pull/59358">#59358</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2b4a09ef8b"
+                  ><code>2b4a09ef8b</code></a
+                >] - <strong>build</strong>: fix OpenSSL version detection (Richard Lau)
+                <a href="https://github.com/nodejs/node/pull/59353">#59353</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/af77e4bf2f"
+                  ><code>af77e4bf2f</code></a
+                >] - <strong>build</strong>: update macOS runner and Xcode (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59238">#59238</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/86bfdb5528"
+                  ><code>86bfdb5528</code></a
+                >] - <strong>build</strong>: remove <code>nocorepack</code>
+                <code>vcbuild</code> flag (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/57772">#57772</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b13f24c2da"
+                  ><code>b13f24c2da</code></a
+                >] - <strong>build, src</strong>: fix include paths for vtune files (Rahul)
+                <a href="https://github.com/nodejs/node/pull/59999">#59999</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/2216a3b1d5"
+                  ><code>2216a3b1d5</code></a
+                >] - <strong>deps</strong>: V8: cherry-pick 1e190bbb0396 (Richard Lau)
+                <a href="https://github.com/nodejs/node/pull/60206">#60206</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1b22f6049a"
+                  ><code>1b22f6049a</code></a
+                >] - <strong>deps</strong>: upgrade npm to 11.6.2 (npm team)
+                <a href="https://github.com/nodejs/node/pull/60168">#60168</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a1b73fe430"
+                  ><code>a1b73fe430</code></a
+                >] - <strong>deps</strong>: V8: cherry-pick 2abc61361dd4 (Richard Lau)
+                <a href="https://github.com/nodejs/node/pull/60177">#60177</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4eb6e6fd79"
+                  ><code>4eb6e6fd79</code></a
+                >] - <strong>deps</strong>: V8: cherry-pick 87356585659b (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/60069">#60069</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c0b8c80164"
+                  ><code>c0b8c80164</code></a
+                >] - <strong>deps</strong>: define V8_PRESERVE_MOST as no-op on Windows (Stefan
+                Stojanovic) <a href="https://github.com/nodejs/node/pull/56238">#56238</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/65a32bac18"
+                  ><code>65a32bac18</code></a
+                >] - <strong>deps</strong>: add ngtcp2 test binaries (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59946">#59946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ebfc28a037"
+                  ><code>ebfc28a037</code></a
+                >] - <strong>deps</strong>: update nghttp3 to 1.11.0 (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59249">#59249</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/dceb1fca40"
+                  ><code>dceb1fca40</code></a
+                >] - <strong>deps</strong>: update ngtcp2 to 1.14.0 (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59249">#59249</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ee36b86ba3"
+                  ><code>ee36b86ba3</code></a
+                >] - <strong>deps</strong>: patch V8 to 13.7.152.19 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/58713">#58713</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0b3fc0d7a8"
+                  ><code>0b3fc0d7a8</code></a
+                >] - <strong>deps</strong>: patch V8 to 13.7.152.14 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/58631">#58631</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/91b3bd3fe6"
+                  ><code>91b3bd3fe6</code></a
+                >] - <strong>deps</strong>: patch V8 to 13.7.152.13 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/58539">#58539</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f77a96cd76"
+                  ><code>f77a96cd76</code></a
+                >] - <strong>deps</strong>: patch V8 to 13.7.152.10 (Node.js GitHub Bot)
+                <a href="https://github.com/nodejs/node/pull/58446">#58446</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1cd16e5355"
+                  ><code>1cd16e5355</code></a
+                >] - <strong>doc</strong>: improve code snippet alternative of url.parse() using
+                WHATWG URL (Steven) <a href="https://github.com/nodejs/node/pull/60209">#60209</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d54e6aec9e"
+                  ><code>d54e6aec9e</code></a
+                >] - <strong>doc</strong>: <code>createSQLTagStore</code> -&gt;
+                <code>createTagStore</code> (Aviv Keller)
+                <a href="https://github.com/nodejs/node/pull/60182">#60182</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/aef3fc37eb"
+                  ><code>aef3fc37eb</code></a
+                >] - <strong>doc</strong>: use markdown when branch-diff major release (Rafael
+                Gonzaga) <a href="https://github.com/nodejs/node/pull/60179">#60179</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a2f088d516"
+                  ><code>a2f088d516</code></a
+                >] - <strong>doc</strong>: update teams in collaborator-guide.md and add links (Bart
+                Louwers) <a href="https://github.com/nodejs/node/pull/60065">#60065</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/75a6fff6be"
+                  ><code>75a6fff6be</code></a
+                >] - <strong>doc</strong>: disambiguate top-level <code>worker_threads</code> module
+                exports (René) <a href="https://github.com/nodejs/node/pull/59890">#59890</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/51df7b92bc"
+                  ><code>51df7b92bc</code></a
+                >] - <strong>doc</strong>: update macOS version used to build releases (Michaël
+                Zasso) <a href="https://github.com/nodejs/node/pull/60080">#60080</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/910c8796f9"
+                  ><code>910c8796f9</code></a
+                >] - <strong>doc</strong>: update BUILDING to reflect Clang 19 changes (Michaël
+                Zasso) <a href="https://github.com/nodejs/node/pull/59782">#59782</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/34f9b7eab9"
+                  ><code>34f9b7eab9</code></a
+                >] - <strong>doc</strong>: reserve NMV 140 for Electron 39 (David Sanders)
+                <a href="https://github.com/nodejs/node/pull/59627">#59627</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3f6f6db43f"
+                  ><code>3f6f6db43f</code></a
+                >] - <strong>doc</strong>: update minimum Xcode and VS versions (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/59358">#59358</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d9fe28bd6b"
+                  ><code>d9fe28bd6b</code></a
+                >] - <strong>doc</strong>: fix <code>CHANGELOG.md</code> version listing (Antoine du
+                Hamel) <a href="https://github.com/nodejs/node/pull/59299">#59299</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ab50c2768"
+                  ><code>0ab50c2768</code></a
+                >] - <strong>doc</strong>: reserve NMV 139 for Electron 38 (Calvin)
+                <a href="https://github.com/nodejs/node/pull/58779">#58779</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/516b4ebd3c"
+                  ><code>516b4ebd3c</code></a
+                >] - <strong>doc</strong>: mark Node.js 23 as End-of-Life (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/58563">#58563</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/59b70e5fe3"
+                  ><code>59b70e5fe3</code></a
+                >] - <strong>http</strong>: fix http client leaky with double response (theanarkh)
+                <a href="https://github.com/nodejs/node/pull/60062">#60062</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/5cf3c3e24c"
+                  ><code>5cf3c3e24c</code></a
+                >] - <strong>http2</strong>: rename variable to additionalPseudoHeaders (Tobias
+                Nießen) <a href="https://github.com/nodejs/node/pull/60208">#60208</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/535efea962"
+                  ><code>535efea962</code></a
+                >] - <strong>http2</strong>: do not crash on mismatched ping buffer length (René)
+                <a href="https://github.com/nodejs/node/pull/60135">#60135</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4bfa387f6d"
+                  ><code>4bfa387f6d</code></a
+                >] - <strong>lib</strong>: fix constructor in _errnoException stack tree (SeokHun)
+                <a href="https://github.com/nodejs/node/pull/60156">#60156</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4daeec11b9"
+                  ><code>4daeec11b9</code></a
+                >] - <strong>lib</strong>: fix typo in QuicSessionStats (SeokHun)
+                <a href="https://github.com/nodejs/node/pull/60155">#60155</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/15278252bb"
+                  ><code>15278252bb</code></a
+                >] - <strong>lib</strong>: remove redundant destroyHook checks (Gürgün Dayıoğlu)
+                <a href="https://github.com/nodejs/node/pull/60120">#60120</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/83052ff9ad"
+                  ><code>83052ff9ad</code></a
+                >] - <strong>lib</strong>: add <code>node:</code> prefix in sys module deprecation
+                warning (Dario Piotrowicz)
+                <a href="https://github.com/nodejs/node/pull/58442">#58442</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d5abfbf582"
+                  ><code>d5abfbf582</code></a
+                >] - <strong>lib</strong>: add module to use in module deprecation warnings (Dario
+                Piotrowicz) <a href="https://github.com/nodejs/node/pull/58442">#58442</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/db0121bedd"
+                  ><code>db0121bedd</code></a
+                >] - <strong>module</strong>: fix directory option in the enableCompileCache() API
+                (Joyee Cheung) <a href="https://github.com/nodejs/node/pull/59931">#59931</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/822a8c3244"
+                  ><code>822a8c3244</code></a
+                >] - <strong>perf_hooks</strong>: fix stack overflow error (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/60084">#60084</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d52cd04591"
+                  ><code>d52cd04591</code></a
+                >] - <strong>quic</strong>: continue working on quic api bits (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/60123">#60123</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/b4af647920"
+                  ><code>b4af647920</code></a
+                >] - <strong>quic</strong>: reduce boilerplate and other minor cleanups (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/59342">#59342</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cd9fd09a27"
+                  ><code>cd9fd09a27</code></a
+                >] - <strong>quic</strong>: multiple fixups and updates (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59342">#59342</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a6c5d27739"
+                  ><code>a6c5d27739</code></a
+                >] - <strong>quic</strong>: update more of the quic to the new compile guard (James
+                M Snell) <a href="https://github.com/nodejs/node/pull/59342">#59342</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ee7b8ab29c"
+                  ><code>ee7b8ab29c</code></a
+                >] - <strong>quic</strong>: few additional small comment edits in cid.h (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/59342">#59342</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/c8b64bd023"
+                  ><code>c8b64bd023</code></a
+                >] - <strong>quic</strong>: fixup NO_ERROR macro conflict on windows (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59381">#59381</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e2fefd78e2"
+                  ><code>e2fefd78e2</code></a
+                >] - <strong>quic</strong>: fixup windows coverage compile error (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59381">#59381</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/99c80e3a45"
+                  ><code>99c80e3a45</code></a
+                >] - <strong>quic</strong>: update the guard to check openssl version (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/59249">#59249</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0e754fa5d1"
+                  ><code>0e754fa5d1</code></a
+                >] - <strong>quic</strong>: start re-enabling quic with openssl 3.5 (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59249">#59249</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/200fe9e7f4"
+                  ><code>200fe9e7f4</code></a
+                >] - <strong>repl</strong>: move completion logic to internal module (Dario
+                Piotrowicz) <a href="https://github.com/nodejs/node/pull/59889">#59889</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/3ac88a7a66"
+                  ><code>3ac88a7a66</code></a
+                >] - <strong>src</strong>: use string_view in <code>WriteReport()</code> (Anna
+                Henningsen) <a href="https://github.com/nodejs/node/pull/60201">#60201</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/a1244f04de"
+                  ><code>a1244f04de</code></a
+                >] - <strong>src</strong>: make additional cleanups in node locks impl (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/60061">#60061</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/fdb6e66227"
+                  ><code>fdb6e66227</code></a
+                >] - <strong>src</strong>: update locks to use DictionaryTemplate (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/60061">#60061</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/367bcce6a6"
+                  ><code>367bcce6a6</code></a
+                >] - <strong>src</strong>: fix usage of deprecated V8 API (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/60174">#60174</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/23fa18444f"
+                  ><code>23fa18444f</code></a
+                >] - <strong>src</strong>: fix small compile warning in quic/streams.cc (James M
+                Snell) <a href="https://github.com/nodejs/node/pull/60118">#60118</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/0ec1d186f4"
+                  ><code>0ec1d186f4</code></a
+                >] - <strong>src</strong>: always use strong reference to
+                <code>napi_async_context</code> resource (Anna Henningsen)
+                <a href="https://github.com/nodejs/node/pull/59828">#59828</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ce748f6cae"
+                  ><code>ce748f6cae</code></a
+                >] - <strong>src</strong>: use <code>Global</code> for storing resource in Node-API
+                callback scope (Anna Henningsen)
+                <a href="https://github.com/nodejs/node/pull/59828">#59828</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/36256230b4"
+                  ><code>36256230b4</code></a
+                >] - <strong>src</strong>: cleanup quic TransportParams class (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59884">#59884</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/985e2fb383"
+                  ><code>985e2fb383</code></a
+                >] - <em><strong>Revert</strong></em> &quot;<strong>test</strong>: ensure message
+                event fires in worker message port test&quot; (Luigi Pinca)
+                <a href="https://github.com/nodejs/node/pull/60126">#60126</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/da9cd745c8"
+                  ><code>da9cd745c8</code></a
+                >] - <strong>test</strong>: ensure assertions are reachable in
+                <code>test/client-proxy</code> (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/60175">#60175</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/e105e821e9"
+                  ><code>e105e821e9</code></a
+                >] - <strong>test</strong>: skip quic tests that IBM i does not support (SRAVANI
+                GUNDEPALLI) <a href="https://github.com/nodejs/node/pull/60160">#60160</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bfc81ca228"
+                  ><code>bfc81ca228</code></a
+                >] - <strong>test</strong>: ensure assertions are reachable in
+                <code>test/async-hooks</code> (Antoine du Hamel)
+                <a href="https://github.com/nodejs/node/pull/60150">#60150</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/712cee951c"
+                  ><code>712cee951c</code></a
+                >] - <strong>test</strong>: skip tests that cause timeouts on IBM i (SRAVANI
+                GUNDEPALLI) <a href="https://github.com/nodejs/node/pull/60148">#60148</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f8a43f6f34"
+                  ><code>f8a43f6f34</code></a
+                >] - <strong>test</strong>: deflake test-fs-promises-watch-iterator (Luigi Pinca)
+                <a href="https://github.com/nodejs/node/pull/60060">#60060</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1f95d39997"
+                  ><code>1f95d39997</code></a
+                >] - <strong>test</strong>: prepare junit file attribute normalization (sangwook)
+                <a href="https://github.com/nodejs/node/pull/59432">#59432</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/eb159a8cfd"
+                  ><code>eb159a8cfd</code></a
+                >] - <strong>test</strong>: remove duplicated allocUnsafeSlow test (Michaël Zasso)
+                <a href="https://github.com/nodejs/node/pull/58524">#58524</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/d93cff5af3"
+                  ><code>d93cff5af3</code></a
+                >] - <em><strong>Revert</strong></em> &quot;<strong>test</strong>: fix watch tests
+                not including completion messages&quot; (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/58190">#58190</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6102159fa1"
+                  ><code>6102159fa1</code></a
+                >] - <strong>test</strong>: fix watch tests not including completion messages (Dario
+                Piotrowicz) <a href="https://github.com/nodejs/node/pull/58183">#58183</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ad2c1bf62e"
+                  ><code>ad2c1bf62e</code></a
+                >] - <strong>test,doc</strong>: skip --max-old-space-size-percentage on 32-bit
+                platforms (Asaf Federman)
+                <a href="https://github.com/nodejs/node/pull/60144">#60144</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/6dbf7086bb"
+                  ><code>6dbf7086bb</code></a
+                >] - <strong>test_runner</strong>: fix suite timeout (Moshe Atlow)
+                <a href="https://github.com/nodejs/node/pull/59853">#59853</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/f0aa073907"
+                  ><code>f0aa073907</code></a
+                >] - <strong>test_runner</strong>: add junit file attribute support (sangwook)
+                <a href="https://github.com/nodejs/node/pull/59432">#59432</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/cff138c6b1"
+                  ><code>cff138c6b1</code></a
+                >] - <strong>tests</strong>: start adding quic test server utilities (James M Snell)
+                <a href="https://github.com/nodejs/node/pull/59946">#59946</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/20dc4b514a"
+                  ><code>20dc4b514a</code></a
+                >] - <strong>tools</strong>: use cooldown property correctly (Rafael Gonzaga)
+                <a href="https://github.com/nodejs/node/pull/60134">#60134</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/ec26b1c01a"
+                  ><code>ec26b1c01a</code></a
+                >] - <strong>tools</strong>: add lint rule to ensure assertions are reached (Antoine
+                du Hamel) <a href="https://github.com/nodejs/node/pull/60125">#60125</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/bab752d4db"
+                  ><code>bab752d4db</code></a
+                >] - <strong>typings</strong>: add buffer internalBinding typing (방진혁)
+                <a href="https://github.com/nodejs/node/pull/60163">#60163</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/1986ee4b65"
+                  ><code>1986ee4b65</code></a
+                >] - <strong>vm</strong>: hint module identifier in instantiate errors (Chengzhong
+                Wu) <a href="https://github.com/nodejs/node/pull/60199">#60199</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/23b834058c"
+                  ><code>23b834058c</code></a
+                >] - <strong>wasm</strong>: revert enable JSPI as already enabled (Guy Bedford)
+                <a href="https://github.com/nodejs/node/pull/60014">#60014</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4bfcad1ac5"
+                  ><code>4bfcad1ac5</code></a
+                >] - <em><strong>Revert</strong></em> &quot;<strong>watch</strong>: fix watch args
+                not being properly filtered&quot; (Joyee Cheung)
+                <a href="https://github.com/nodejs/node/pull/58190">#58190</a>
+              </li>
+              <li>
+                [<a href="https://github.com/nodejs/node/commit/4acb854039"
+                  ><code>4acb854039</code></a
+                >] - <strong>watch</strong>: fix watch args not being properly filtered (Dario
+                Piotrowicz) <a href="https://github.com/nodejs/node/pull/57936">#57936</a>
+              </li>
+            </ul>
+            <p>
+              Windows 64-bit Installer:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-x64.msi"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-x64.msi</a
+              >
+              <br />
+              <!-- -->Windows ARM 64-bit Installer:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-arm64.msi"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-arm64.msi</a
+              >
+              <br />
+              <!-- -->Windows 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/win-x64/node.exe"
+                >https://nodejs.org/dist/v25.0.0/win-x64/node.exe</a
+              >
+              <br />
+              <!-- -->Windows ARM 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/win-arm64/node.exe"
+                >https://nodejs.org/dist/v25.0.0/win-arm64/node.exe</a
+              >
+              <br />
+              <!-- -->macOS 64-bit Installer:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0.pkg"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0.pkg</a
+              >
+              <br />
+              <!-- -->macOS Apple Silicon 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-darwin-arm64.tar.gz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-darwin-arm64.tar.gz</a
+              >
+              <br />
+              <!-- -->macOS Intel 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-darwin-x64.tar.gz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-darwin-x64.tar.gz</a
+              >
+              <br />
+              <!-- -->Linux 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-x64.tar.xz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-x64.tar.xz</a
+              >
+              <br />
+              <!-- -->Linux PPC LE 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-ppc64le.tar.xz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-ppc64le.tar.xz</a
+              >
+              <br />
+              <!-- -->Linux s390x 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-s390x.tar.xz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-s390x.tar.xz</a
+              >
+              <br />
+              <!-- -->AIX 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-aix-ppc64.tar.gz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-aix-ppc64.tar.gz</a
+              >
+              <br />
+              <!-- -->ARMv8 64-bit Binary:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-arm64.tar.xz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0-linux-arm64.tar.xz</a
+              >
+              <br />
+              <!-- -->Source Code:
+              <a href="https://nodejs.org/dist/v25.0.0/node-v25.0.0.tar.gz"
+                >https://nodejs.org/dist/v25.0.0/node-v25.0.0.tar.gz</a
+              >
+              <br />
+              <!-- -->Other release files:
+              <a href="https://nodejs.org/dist/v25.0.0/">https://nodejs.org/dist/v25.0.0/</a> <br />
+              <!-- -->Documentation:
+              <a href="https://nodejs.org/docs/v25.0.0/api/"
+                >https://nodejs.org/docs/v25.0.0/api/</a
+              >
+            </p>
+            <h3 id="shasums"><a href="#shasums">SHASUMS</a></h3>
+            <div class="index-module__HWYciG__root">
+              <pre
+                class="index-module__HWYciG__content"
+                tabindex="0"
+              ><code class="plain-text"><span class="line"><span>-----BEGIN</span><span> </span><span>PGP</span><span> </span><span>SIGNED</span><span> </span><span>MESSAGE-----</span></span>
+<span class="line"><span>Hash:</span><span> </span><span>SHA256</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>e06933eb919b3f27e9153b266eaf1763173cc743a26e3df109376d97800373be</span><span> </span><span></span><span> </span><span>node-v25.0.0-aix-ppc64.tar.gz</span></span>
+<span class="line"><span>7a274b502f4d304849f5b07c92b88a0976288217bfc5c554e85c6e2cf3fd337a</span><span> </span><span></span><span> </span><span>node-v25.0.0-arm64.msi</span></span>
+<span class="line"><span>e3734fe04ebebf5b88cb6e1db770d3fbf736bd861748597ca008ad3d51f165f8</span><span> </span><span></span><span> </span><span>node-v25.0.0-darwin-arm64.tar.gz</span></span>
+<span class="line"><span>6163bf1dd24f5872ef2564615918254b6629a03b169a567f68cd13ae67a7043f</span><span> </span><span></span><span> </span><span>node-v25.0.0-darwin-arm64.tar.xz</span></span>
+<span class="line"><span>a145d8ac4e70244ee5449d6fb7a4f1f0cd759c2bab02607252da7d1a43d7b78f</span><span> </span><span></span><span> </span><span>node-v25.0.0-darwin-x64.tar.gz</span></span>
+<span class="line"><span>b58ce5656e594d72a3e777a346c6d85729177c8b98fafbaa210dbde03fd0c7be</span><span> </span><span></span><span> </span><span>node-v25.0.0-darwin-x64.tar.xz</span></span>
+<span class="line"><span>860bfee03c9cfc34fca14d5c1a670df8aac3940e1412aa1aa5a9d9efb7b74522</span><span> </span><span></span><span> </span><span>node-v25.0.0-headers.tar.gz</span></span>
+<span class="line"><span>60c3e33630ee6f0023455f01dbd7fe71823ae77ac3f3bdb43305d0352b46265b</span><span> </span><span></span><span> </span><span>node-v25.0.0-headers.tar.xz</span></span>
+<span class="line"><span>748be87299963eda7aabefb072274808576bc2f67b109c3823eee3ac4ffc930a</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-arm64.tar.gz</span></span>
+<span class="line"><span>036d6aa6808e9e4ef5f419cbd9c5ba4de5e0b6046f380d4f228173459f2fbf1c</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-arm64.tar.xz</span></span>
+<span class="line"><span>fa3d4c0714762ffa9755b0f5fab16a096193ffde3a395d3df1a41e8ae547d590</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-ppc64le.tar.gz</span></span>
+<span class="line"><span>6721a8afcd267a97d49c8a1272acbd4c1a7d8c6eaac70f5f77af5aed74943673</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-ppc64le.tar.xz</span></span>
+<span class="line"><span>d6e91650f8ccda6a0adc9801b4c3831e0fd65d39a0e103593641382388bc525d</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-s390x.tar.gz</span></span>
+<span class="line"><span>4f951fb8628ddb680deae3662fca9a8dca676a08a024819ba879d5a6aea04533</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-s390x.tar.xz</span></span>
+<span class="line"><span>28dd46a6733192647d7c8267343f5a3f1c616f773c448e2c0d2539ae70724b40</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-x64.tar.gz</span></span>
+<span class="line"><span>14dd807cb4f1dbc2136849a668101a28446de6415fa20d46d776125deecb68e3</span><span> </span><span></span><span> </span><span>node-v25.0.0-linux-x64.tar.xz</span></span>
+<span class="line"><span>bc3111ae9c7700a1e1065915f4526c31a52fcf1d0ac21eb894c7b7503c12f5b1</span><span> </span><span></span><span> </span><span>node-v25.0.0-win-arm64.7z</span></span>
+<span class="line"><span>e6b4d700cf5e631d02dadb117856ac185a72126cfbec987074562619f780c11f</span><span> </span><span></span><span> </span><span>node-v25.0.0-win-arm64.zip</span></span>
+<span class="line"><span>f57361d4bfcefd3fe18d4b5e1930abd285049faf671152e86394859c0998a4b7</span><span> </span><span></span><span> </span><span>node-v25.0.0-win-x64.7z</span></span>
+<span class="line"><span>4ef3c23b13360e90ef894a48b9ceec509b03ea7a9a4ce54055ce8a744a30333c</span><span> </span><span></span><span> </span><span>node-v25.0.0-win-x64.zip</span></span>
+<span class="line"><span>7212eccfb7b5d4d7f27b67ea7cf0d3b69477c14a3ff8fd82f67fadbefd7efe5f</span><span> </span><span></span><span> </span><span>node-v25.0.0-x64.msi</span></span>
+<span class="line"><span>2fd8a02bae3891101806239c57e9f2437d6aaa7744cba35eada406c48387450f</span><span> </span><span></span><span> </span><span>node-v25.0.0.pkg</span></span>
+<span class="line"><span>446cde2b456d78d4f9ccf4a8287eb8322ccdbaf60b4cf7c58bce8b5dc0e8b03e</span><span> </span><span></span><span> </span><span>node-v25.0.0.tar.gz</span></span>
+<span class="line"><span>2822cd7b510c955f8c4d448fa483f01d2839251774220a356a6b9bc2ab2039ae</span><span> </span><span></span><span> </span><span>node-v25.0.0.tar.xz</span></span>
+<span class="line"><span>75dd34b0d168ec0c81891a193bba09ab478742e4296c795e611e879940784daa</span><span> </span><span></span><span> </span><span>win-arm64/node.exe</span></span>
+<span class="line"><span>e94b36a9222e4276035e6bb484d4445bccd2258063ec187e9c0f894f15845c4a</span><span> </span><span></span><span> </span><span>win-arm64/node.lib</span></span>
+<span class="line"><span>605874211f6db12e3317d6e037f4765d8bfeb1d9513c50a68666904c52eb4365</span><span> </span><span></span><span> </span><span>win-arm64/node_pdb.7z</span></span>
+<span class="line"><span>a585874307bb50cad6e1bb9f0b6788a54a91fe8e29ac75096c0b9688749766d7</span><span> </span><span></span><span> </span><span>win-arm64/node_pdb.zip</span></span>
+<span class="line"><span>97334a8da1af7efef5d1f8a90edd566a2fcfb2e2b11b68db9843ce14adf743ce</span><span> </span><span></span><span> </span><span>win-x64/node.exe</span></span>
+<span class="line"><span>829cfd9cfdc9dc1ed13273d746949b19a3fb9d1616fa1db4ff00c033df8fb305</span><span> </span><span></span><span> </span><span>win-x64/node.lib</span></span>
+<span class="line"><span>c1c5d12e218b9fa1c8e82751c907416cdbd0322178a1e5dd18f08d72d0a60003</span><span> </span><span></span><span> </span><span>win-x64/node_pdb.7z</span></span>
+<span class="line"><span>f78aa3ac3f2022253db88349d17cf0deff41b1d39267c31c7dc0c5c0047199e6</span><span> </span><span></span><span> </span><span>win-x64/node_pdb.zip</span></span>
+<span class="line"><span>-----BEGIN</span><span> </span><span>PGP</span><span> </span><span>SIGNATURE-----</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>iQGzBAEBCAAdFiEEiQwI24V5Fi/uDfnbi+q0389VXvQFAmjv1doACgkQi+q0389V</span></span>
+<span class="line"><span>XvSIygv/SJxAez/RJPtUpdU59DDimueOKhp6wT+NuGaQap0Z2r/jAQsAk9hnpKUd</span></span>
+<span class="line"><span>vW3x9QMlSEF7ZMRb5jRlvVBqTuWNSC0XMFOfxPhfkU78HTzc5fVQqx7RLfuQYalF</span></span>
+<span class="line"><span>kjor1VX0KbUVsmzpBIbS/nUNcCkrGLThO9f2WAqryIwTAR2AmQ2Q7vb6krSrQsQP</span></span>
+<span class="line"><span>Yp2esqZX88ALzpqR9W6+tIOvQJTJRf6AnV9tyiia1Fa0L6unIXycUEa5egJYxgFT</span></span>
+<span class="line"><span>K9sOuU9lMt6wxeG9n9jBSYSYTUqlfbrNigaVHkHdZHgHxwbVQvt1bFLEoyg3ICGE</span></span>
+<span class="line"><span>EQ5g7byH5IU23ZBTWayTtSzcZgudyWh9tFi462Dxt4OrDz/5rN6G+RpUTkkNND7h</span></span>
+<span class="line"><span>X6l2iQku0aVXxIalNSYqEN4XkelaMiE38kTzxK8KNbBbZ8zt6KWQiB7jrnJAXoi+</span></span>
+<span class="line"><span>oro4b8b/yyZywTpyuyzWzIblV35cFFZEGuqlffGR89Hn7ha+YPOT3zcDGR36x8qv</span></span>
+<span class="line"><span>QUgAPalO</span></span>
+<span class="line"><span>=YJHd</span></span>
+<span class="line"><span>-----END</span><span> </span><span>PGP</span><span> </span><span>SIGNATURE-----</span></span>
+<span class="line"><span></span></span>
+</code></pre>
+            </div>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a class="index-module__A9kfJq__crossLink" href="/en/blog/release/v22.21.0"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content">Node.js 22.21.0 (LTS)</span></a
+              ><a class="index-module__A9kfJq__crossLink" href="/en/blog/release/v24.10.0"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >Node.js 24.10.0 (Current)</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Oct 15, 2025</dd>
+            <dt>Reading Time</dt>
+            <dd>10 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/release/v25.0.0.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class="">
+                  <a class="" href="#2025-10-15-version-2500-current-rafaelgss"
+                    >2025-10-15, Version 25.0.0 (Current), @RafaelGSS</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#notable-changes">Notable Changes</a></li>
+                <li class="pl-2">
+                  <a class="" href="#deprecations-and-removals">Deprecations and Removals</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#semver-major-commits">Semver-Major Commits</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#semver-minor-commits">Semver-Minor Commits</a>
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#semver-patch-commits">Semver-Patch Commits</a>
+                </li>
+                <li class="pl-2"><a class="" href="#shasums">SHASUMS</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

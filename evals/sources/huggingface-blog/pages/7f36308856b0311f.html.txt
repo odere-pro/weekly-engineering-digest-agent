@@ -1,0 +1,1221 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/thinkingmachines-inkling/thumbnail.png" />
+
+		<meta property="og:title" content="Welcome Inkling by Thinking Machines" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/thinkingmachines-inkling" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/thinkingmachines-inkling/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/thinkingmachines-inkling">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Welcome Inkling by Thinking Machines</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="welcome-inkling-by-thinking-machines" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#welcome-inkling-by-thinking-machines" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Welcome Inkling by Thinking Machines
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					July 15, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/thinkingmachines-inkling.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fthinkingmachines-inkling" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">167</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="martin76ec" style="content-visibility:auto;"><!--[0--><a href="/martin76ec" title="martin76ec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/645b03425e6871b4b2d72f8a/-dSnWHaHbX8Vl0Zm-IlIC.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="liskasYR" style="content-visibility:auto;"><!--[0--><a href="/liskasYR" title="liskasYR"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68d1d3360ed5c275023f67fa/sKKJ1Q3HMJ7Um7MwJZfog.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Jeomon" style="content-visibility:auto;"><!--[0--><a href="/Jeomon" title="Jeomon"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/32WBXYRRKAGd14iQ-Cob_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="multimodalart" style="content-visibility:auto;"><!--[0--><a href="/multimodalart" title="multimodalart"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649143001781-624bebf604abc7ebb01789af.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="free-bit" style="content-visibility:auto;"><!--[0--><a href="/free-bit" title="free-bit"><img class="overflow-hidden rounded-full" alt="" src="/avatars/001c8f02e8ce794b2c21883628b2da72.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+161</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/burtenshaw"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="ben burtenshaw's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/burtenshaw"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="ben burtenshaw">ben burtenshaw</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">burtenshaw</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/merve"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="merve's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/merve"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="merve">merve</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">merve</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/pcuenq"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Pedro Cuenca's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/pcuenq"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Pedro Cuenca">Pedro Cuenca</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">pcuenq</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ariG23498"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Aritra Roy Gosthipaty's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ariG23498"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Aritra Roy Gosthipaty">Aritra Roy Gosthipaty</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ariG23498</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/andito"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Andres Marafioti's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65d66b494bbd0d92b641cdbb/6-7dm7B-JxcoS1QlCPdMN.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/andito"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Andres Marafioti">Andres Marafioti</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">andito</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<blockquote class="tip">
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Inkling now comes in smaller size 🤗 Inkling-Small is out by Thinking Machines Lab. We have updated this post with <a href="#benchmarks" rel="nofollow">performance</a>, and <a href="#deploying-inkling-and-inkling-small" rel="nofollow">deployment configurations</a> for the Inkling-Small and the Inkling-Small-NVFP4 variants. Here’s <a href="https://huggingface.co/collections/thinkingmachines/inkling">the collection</a> with all the Inkling models. We made it easier for you to deploy Inkling-Small with one-click on Inference Endpoints (getting up to 160 TPS). We also ship <a href="https://huggingface.co/spaces/HuggingFaceM4/hf-realtime-voice">a real-time voice and image demo</a> where you can interact with the model.</p>
+</blockquote>
+<p><a href="https://huggingface.co/thinkingmachines/Inkling">Inkling</a> is a large (1T params!) open model to natively accept image, text, and audio inputs.</p>
+<p>TLDR; Inkling by Thinking Machines is out on Hugging Face. Inkling is a huge multimodal LLM that understands all modalities (image, audio, text), has agentic capabilities, and supports 1M context. It comes in full BF16 and a well-calibrated NVFP4 variant, and includes speculative MTP layers for faster inference. There’s day-0 support in transformers, SGLang, vLLM, and llama.cpp. Thinking Machine Labs also released Inkling-Small with 276B total and 12B active parameters, as well as support for MXFP8 and NVFP4 weights, with the same architecture as Inkling.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-makes-inkling-special" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-makes-inkling-special" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What makes Inkling special?
+	</span>
+</h2>
+<p>Inkling is the first large open model with <strong>~1T parameters</strong> and <strong>1M context window</strong> to natively receive <strong>image, text, and audio inputs</strong>, trained on <strong>45 trillion tokens of text, images, audio and video.</strong> It’s focused on reasoning across modalities such as audio, images, and text; and is intended for domain adaptation via fine-tuning. We’ve tinkered with this model to build some demos and explore the architecture, and we think it’s great for building a new wave of multimodal reasoning apps.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="overall-capabilities-and-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#overall-capabilities-and-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Overall Capabilities and Architecture
+	</span>
+</h2>
+<p>Inkling is a decoder-only multimodal Mixture-of-Experts model with 975B total and 41B active parameters. There are a lot of things going on, so let’s break each part down:</p>
+<ul>
+<li>Decoder-only: This means that the architecture supports causal autoregressive generation, like in most state-of-the-art LLMs.</li>
+<li>Multimodal: The model can ingest text, audio, and images.</li>
+<li>Mixture of Experts (MoE): The feed forward networks inside each layer are sparse, achieving faster inference because only 41B parameters are active at any given time. The model has 256 experts, as we’ll see later.</li>
+</ul>
+<p>Here’s a quick glance of the architecture.</p>
+<p><strong>Relative attention:</strong> Instead of RoPE, which is the usual method to inject positional information in transformers models, Inkling uses relative attention to encode position information. Each attention layer learns position directly in the attention logits. Aside from key-query-values, there's a fourth projection producing a per-token, per-head relative feature R. This projection tensor is then tweaked with distance information (distance between the key and the query vector) and propagated into the attention module.</p>
+<p><a href="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/relative_attention.png" rel="nofollow"><img src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/relative_attention.png" alt="Inkling relative attention architecture"></a></p>
+<p><strong>Hybrid attention:</strong> The decoder layers alternate between global attention (attending to the full context length at once) and sliding window attention (attending to a fixed context window in a sliding fashion). The architecture has a pattern of 5:1 sliding window to global attention layers. This hybrid attention scheme provides efficiency in computation. The final layer uses global attention to help build feature-rich representations.</p>
+<p><strong>Short convolution:</strong> The model uses a distinctive short 1D convolution, or <code>SConv</code> over the hidden states. SConv reads the current token and the previous <code>W-1</code> hidden states, with <code>W</code> being the sliding window size. The intuition here is that SConv helps with local attention while freeing the attention and MoE modules from local representations.</p>
+<p><a href="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/sconv.png" rel="nofollow"><img src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/sconv.png" alt="Inkling short convolution architecture"></a></p>
+<p><strong>MoE with shared experts sink:</strong> In Inkling, the router scores both routed experts and shared experts. Top-k selection is performed over 6 experts, plus 2 shared experts always active.</p>
+<p><strong>Vision understanding:</strong> The model includes a simple hierarchical MLP patchifier consisting of several linear layers. Each layer merges pixels progressively, until the final layer produces one embedding per patch.</p>
+<p><strong>Audio understanding:</strong> The architecture employs a discretized mel spectrogram, where each of the audio chunks (of 100 ms) are converted to the mel scale and then classified into the exact mel spectrogram bin.</p>
+<p>The multimodal towers are relatively simple modules, unlike other models that employ separate encoders for each modality. Each image patch passes through the image embedding tower and the audio chunk is passed through the audio embedding tower to get both media embeddings. Image inputs also include an additional temporal dimension for video processing. We expect this capability to be useful for downstream fine-tuning, but we haven’t evaluated out-of-the-box video performance. The tower folds the patch grid, a small local block of neighboring tokens is stacked into the channel dimension and goes through hMLP. The audio waveform is converted to mel scale, which is then classified into a discrete mel bin. These mel bin values are embedded in the audio embedding tower and the embeddings are then summed to construct the final audio input.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="inference-support" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-support" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Support
+	</span>
+</h2>
+<p>Inkling comes with day-0 transformers support and is supported in major inference engines like SGLang and vLLM.</p>
+<p>This model is huge. The bf16 checkpoint requires 2 TB of VRAM, while the nvfp4 version requires 600 GB of VRAM. You can try the model through serverless inference routers like Inference Providers, or use ggml quants for local deployment with llama.cpp.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="transformers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#transformers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Transformers
+	</span>
+</h3>
+<p>The easiest way to infer with <code>transformers</code> directly is to use the <code>any-to-any</code> pipeline. You can use either the 16 bit <code>"thinkingmachines/Inkling"</code> on Hopper or later GPUs, or the quantized NVFP4 checkpoint <code>"thinkingmachines/Inkling-NVFP4"</code> on Blackwell Nvidia GPUs. Make sure to have the latest version of transformers (5.14.0 was released today) (<code>pip install -U transformers</code>).</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline
+
+model_id = <span class="hljs-string">"thinkingmachines/Inkling"</span>
+<span class="hljs-comment"># model_id = "thinkingmachines/Inkling-NVFP4"</span>
+
+pipe = pipeline(<span class="hljs-string">"any-to-any"</span>, model=model_id)
+</code></pre>
+<p>After initializing the pipeline, you can pass in the prompt as follows.</p>
+<pre><code class="language-python">image_url = (
+    <span class="hljs-string">"https://huggingface.co/datasets/merve/vl-test-suite/"</span>
+    <span class="hljs-string">"resolve/main/pills.jpg"</span>
+)
+messages = [
+    {
+        <span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>,
+        <span class="hljs-string">"content"</span>: [
+            {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"image"</span>,
+                <span class="hljs-string">"image"</span>: image_url,
+            },
+            {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"text"</span>,
+                <span class="hljs-string">"text"</span>: <span class="hljs-string">"Do components in this supplement interact with each other?"</span>,
+            },
+        ],
+    },
+]
+output = pipe(
+    messages,
+    max_new_tokens=<span class="hljs-number">2000</span>,
+    return_full_text=<span class="hljs-literal">False</span>,
+    reasoning_effort=<span class="hljs-string">"medium"</span>,
+)
+output[<span class="hljs-number">0</span>][<span class="hljs-string">"generated_text"</span>]
+</code></pre>
+<p>Going one level lower, you can use Auto classes. For inference, you can use the <code>AutoModelForMultimodalLM</code> class for models and <code>AutoProcessor</code> class for processors. For different reasoning tasks, the tokenizer takes in a <code>reasoning_effort</code> argument. Existing options for reasoning effort are <code>"none"</code>, <code>"minimal"</code>, <code>"low"</code>, <code>"medium"</code>, <code>"high"</code>, <code>"xhigh"</code>, and <code>"max"</code>.</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForMultimodalLM, AutoProcessor
+
+model_id = <span class="hljs-string">"thinkingmachines/Inkling"</span>
+processor = AutoProcessor.from_pretrained(model_id)
+model = AutoModelForMultimodalLM.from_pretrained(
+    model_id,
+    dtype=<span class="hljs-string">"auto"</span>,
+    device_map=<span class="hljs-string">"auto"</span>,
+)
+
+messages = [
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"system"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"You should only answer with a number."</span>},
+    {<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is 17 * 23?"</span>},
+]
+
+inputs = processor.apply_chat_template(
+    messages,
+    add_generation_prompt=<span class="hljs-literal">True</span>,
+    tokenize=<span class="hljs-literal">True</span>,
+    return_dict=<span class="hljs-literal">True</span>,
+    return_tensors=<span class="hljs-string">"pt"</span>,
+    reasoning_effort=<span class="hljs-string">"high"</span>,
+).to(model.device)
+
+output = model.generate(**inputs, max_new_tokens=<span class="hljs-number">2000</span>)
+generated_tokens = output[<span class="hljs-number">0</span>][inputs[<span class="hljs-string">"input_ids"</span>].shape[<span class="hljs-number">1</span>] :]
+<span class="hljs-built_in">print</span>(processor.decode(generated_tokens, skip_special_tokens=<span class="hljs-literal">False</span>))
+</code></pre>
+<p>For multimodal inference, you can use the same classes. We provide example snippets for each different modality in the model card.</p>
+<details>
+<summary>Text with image inference</summary>
+
+<pre><code class="language-python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForMultimodalLM, AutoProcessor
+
+model_id = <span class="hljs-string">"thinkingmachines/Inkling"</span>
+processor = AutoProcessor.from_pretrained(model_id)
+model = AutoModelForMultimodalLM.from_pretrained(
+    model_id,
+    dtype=<span class="hljs-string">"auto"</span>,
+    device_map=<span class="hljs-string">"auto"</span>,
+)
+
+image_url = (
+    <span class="hljs-string">"https://huggingface.co/datasets/merve/vl-test-suite/"</span>
+    <span class="hljs-string">"resolve/main/pills.jpg"</span>
+)
+messages = [
+    {
+        <span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>,
+        <span class="hljs-string">"content"</span>: [
+            {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"image"</span>,
+                <span class="hljs-string">"image"</span>: image_url,
+            },
+            {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"text"</span>,
+                <span class="hljs-string">"text"</span>: <span class="hljs-string">"Do any of the components in this supplement interact?"</span>,
+            },
+        ],
+    },
+]
+
+inputs = processor.apply_chat_template(
+    messages,
+    tokenize=<span class="hljs-literal">True</span>,
+    add_generation_prompt=<span class="hljs-literal">True</span>,
+    reasoning_effort=<span class="hljs-string">"medium"</span>,
+    return_dict=<span class="hljs-literal">True</span>,
+    return_tensors=<span class="hljs-string">"pt"</span>,
+).to(model.device)
+input_len = inputs[<span class="hljs-string">"input_ids"</span>].shape[-<span class="hljs-number">1</span>]
+
+outputs = model.generate(**inputs, max_new_tokens=<span class="hljs-number">2000</span>)
+response = processor.decode(outputs[<span class="hljs-number">0</span>][input_len:], skip_special_tokens=<span class="hljs-literal">False</span>)
+
+processor.parse_response(response)
+</code></pre>
+</details>
+
+<p>Inkling also takes in audio input. Below is an example inference snippet, which still uses the same <code>AutoModelForMultimodalLM</code> class.</p>
+<details>
+<summary>Text with audio inference</summary>
+
+<pre><code class="language-python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForMultimodalLM, AutoProcessor
+
+model_id = <span class="hljs-string">"thinkingmachines/Inkling"</span>
+
+processor = AutoProcessor.from_pretrained(model_id)
+model = AutoModelForMultimodalLM.from_pretrained(
+    model_id,
+    dtype=<span class="hljs-string">"auto"</span>,
+    device_map=<span class="hljs-string">"auto"</span>,
+)
+
+audio_url = (
+    <span class="hljs-string">"https://huggingface.co/datasets/merve/vl-test-suite/"</span>
+    <span class="hljs-string">"resolve/main/example_audio.mp3"</span>
+)
+messages = [
+    {
+        <span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>,
+        <span class="hljs-string">"content"</span>: [
+            {<span class="hljs-string">"type"</span>: <span class="hljs-string">"text"</span>, <span class="hljs-string">"text"</span>: <span class="hljs-string">"Transcribe the following speech to text."</span>},
+            {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"audio"</span>,
+                <span class="hljs-string">"audio"</span>: audio_url,
+            },
+        ],
+    },
+]
+
+inputs = processor.apply_chat_template(
+    messages,
+    tokenize=<span class="hljs-literal">True</span>,
+    return_dict=<span class="hljs-literal">True</span>,
+    return_tensors=<span class="hljs-string">"pt"</span>,
+    add_generation_prompt=<span class="hljs-literal">True</span>,
+).to(model.device)
+input_len = inputs[<span class="hljs-string">"input_ids"</span>].shape[-<span class="hljs-number">1</span>]
+
+outputs = model.generate(**inputs, max_new_tokens=<span class="hljs-number">512</span>)
+response = processor.decode(outputs[<span class="hljs-number">0</span>][input_len:], skip_special_tokens=<span class="hljs-literal">False</span>)
+
+processor.parse_response(response)
+</code></pre>
+</details>
+
+<p>For more realistic parallel deployment in a cluster of several nodes, please refer to the <a href="#slurm-scripts" rel="nofollow">Slurm</a> section below.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="sglang" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#sglang" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		SGLang
+	</span>
+</h3>
+<p>SGLang is one of the fastest deployment frameworks for Inkling at the time of release, as it includes a custom model implementation. The launch command below shards the model across 8 GPUs and serves an OpenAI-compatible API on port 30000.</p>
+<pre><code class="language-shell">pip install sglang
+
+python3 -m sglang.launch_server \
+ --model-path thinkingmachine/Inkling \
+ --tp-size 8 \
+ --served-model-name inkling \
+ --host 0.0.0.0 \
+ --port 30000
+</code></pre>
+<p>Match <code>--tp-size</code> to your GPU count. Add <code>--mem-fraction-static</code> (e.g. <code>0.85</code>) if you need to leave more headroom for the KV cache.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="vllm" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#vllm" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		vLLM
+	</span>
+</h3>
+<p>vLLM is strong for production serving. A single <code>vllm serve</code> command downloads the weights from the Hub, shards the model across your GPUs with tensor parallelism, and starts an OpenAI-compatible server on port 8000. You can view the vLLM Recipe for the model <a href="https://recipes.vllm.ai/thinkingmachines/Inkling" rel="nofollow">here</a> to customize to your hardware.</p>
+<pre><code class="language-shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">Requires nightly or vllm&gt;=0.26 (once released)</span>
+uv pip install -U vllm --pre \
+  --extra-index-url https://wheels.vllm.ai/nightly/cu130 \
+  --extra-index-url https://download.pytorch.org/whl/cu130 \
+  --index-strategy unsafe-best-match
+
+vllm serve thinkingmachines/Inkling-NVFP4 \
+  --trust-remote-code \
+  --tokenizer-mode inkling \
+  --tensor-parallel-size 8 \
+  --enable-auto-tool-choice \
+  --tool-call-parser inkling \
+  --reasoning-parser inkling \
+  --served-model-name inkling
+</code></pre>
+<p>In practice, you might need multiple nodes and a distribution tool like SLURM (see below). Key parameters are <code>--tensor-parallel-size</code> to the number of GPUs on your node, and use <code>--max-model-len</code> to cap the context window if you hit KV-cache memory limits.</p>
+<pre><code class="language-shell">curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "inkling",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="remote-inference-with-hugging-face-inference-providers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#remote-inference-with-hugging-face-inference-providers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Remote Inference with Hugging Face Inference Providers
+	</span>
+</h3>
+<p>You can infer with this model using several inference providers through Hugging Face. You can see all the code snippets to consume <a href="https://huggingface.co/thinkingmachines/inkling?inference_provider=fastest&amp;language=python&amp;client=openai&amp;inference_api=true">here</a>. Below you can see how to use with the OpenAI client.</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> os
+
+<span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="hljs-string">"https://router.huggingface.co/v1"</span>,
+    api_key=os.environ[<span class="hljs-string">"HF_TOKEN"</span>],
+)
+
+completion = client.chat.completions.create(
+    model=<span class="hljs-string">"thinkingmachines/Inkling:auto"</span>,
+    messages=[
+        {
+            <span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>,
+            <span class="hljs-string">"content"</span>: <span class="hljs-string">"What is the capital of France?"</span>,
+        },
+    ],
+)
+
+<span class="hljs-built_in">print</span>(completion.choices[<span class="hljs-number">0</span>].message)
+</code></pre>
+<p>Using the <code>“:auto”</code> suffix routes to your preferred provider in your settings; you can also use <code>“cheapest”</code> or <code>“:fastest”</code> as well. For this release, we cover the inference costs for 2 hours within the release for everyone.</p>
+<p>Note: audio support in Inference Providers is work in progress and will be added shortly.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="local-inference-with-llamacpp-and-unsloth" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#local-inference-with-llamacpp-and-unsloth" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Local Inference with llama.cpp and Unsloth
+	</span>
+</h3>
+<p>You can use <code>llama.cpp</code> to run quantized versions of the model on limited hardware. Unsloth have quantized the model down to 1-bit precision, reducing VRAM consumption by 95% over the original model.</p>
+<pre><code class="language-shell">llama serve -hf unsloth/inkling-GGUF:UD-IQ1_S
+</code></pre>
+<p>This starts an OpenAI-compatible server running at <a href="http://localhost:8080" rel="nofollow"><code>http://localhost:8080</code></a><code>/v1</code> that you connect to in your preferred tool or clients. Heading there, you can start chatting with the model, and set it up with your favorite MCPs, pass in images or files conveniently and more!</p>
+<p>Llama cpp also ships with a built-in UI that supports tools, mcp, and agentic workloads. Checkout Inkling running at 1-bit precision in the llama app:</p>
+<video controls="" width="100%" autoplay="" loop="" muted="">
+  <source src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/thinky.mp4" type="video/mp4">
+</video>
+
+<p>Inkling GGUFs are also runnable in Unsloth Studio with dynamic 1-bit GGUFs which retain ~74.2% of top-1% accuracy whilst being 86% smaller.</p>
+<p><a href="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/unsloth.png" rel="nofollow"><img src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/unsloth.png" alt="Inkling running in Unsloth Studio"></a></p>
+<h2 class="relative group flex items-baseline">
+	<a id="use-cases" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#use-cases" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Use Cases
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="agentic-coding-with-pi" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#agentic-coding-with-pi" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Agentic coding with Pi
+	</span>
+</h3>
+<p>Pi is a minimal coding agent harness you can use with different language models. You can use Pi with either an inference engine server endpoint, such as llama.cpp, or with Inference Providers on Hugging Face by adding this to your <code>~/.pi/agent/models.json</code> after installation.</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"providers"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"inference-providers"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"baseUrl"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"https://router.huggingface.co/v1"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"api"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"openai-completions"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"apiKey"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"hf_..."</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"models"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span>
+          <span class="hljs-attr">"id"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"thinkingmachines/Inkling"</span>
+        <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Then you can start Pi in your project directory by calling <code>pi</code> and you’re good to go! In this demo, we give the model a hard math reasoning problem and it uses tools in pi to solve it.</p>
+<p><a href="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/visual-reasoning.gif" rel="nofollow"><img src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/visual-reasoning.gif" alt="Visual reasoning gif demo"></a></p>
+<p>Inkling is focused on broad multimodality reasoning and low token consumption, so try it out with document processing or audio tasks.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="multi-token-prediction-drafters" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multi-token-prediction-drafters" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multi Token Prediction Drafters
+	</span>
+</h3>
+<p>MTP adds extra layers to the model that predict several tokens at once, not just the next one. During inference, the extra layers act as “drafters” for speculative decoding, speeding up generation without compromising performance. With MTP, you get the exact same generated outputs, multipliers in generation speed-up at small memory cost in VRAM (due to serving the drafter). Thinking Machines also provides an MTP drafter with this release.</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForMultimodalLM, AutoProcessor
+
+processor = AutoProcessor.from_pretrained(<span class="hljs-string">"thinkingmachines/Inkling"</span>)
+model = AutoModelForMultimodalLM.from_pretrained(
+    <span class="hljs-string">"thinkingmachines/Inkling"</span>,
+    dtype=torch.bfloat16,
+    device_map=<span class="hljs-string">"auto"</span>,
+)
+
+<span class="hljs-comment"># Preprocess the inputs.</span>
+...
+generated = model.generate(
+    **inputs,
+    max_new_tokens=<span class="hljs-number">1000</span>,
+    do_sample=<span class="hljs-literal">False</span>,
+    use_mtp=<span class="hljs-literal">True</span>,
+)
+<span class="hljs-built_in">print</span>(processor.decode(generated[<span class="hljs-number">0</span>], skip_special_tokens=<span class="hljs-literal">True</span>))
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="multimodal-vision" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multimodal-vision" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multimodal Vision
+	</span>
+</h3>
+<p>We have prepared a small suite of reasoning questions from expert-level sources and university entrance exams. We have taken photos of the screen with watermarks in the screenshot to challenge the model. The model has solved all of them on high one, failed one in highest and medium reasoning efforts, so we provide a link to the model answers for you to check out how the model sounds and provide the number of tokens the model has taken to solve each of them. Note that we provide no system prompts in these vibe evals, and these reasoning questions should often be run with a good system prompt. The vibe eval images and results live <a href="https://huggingface.co/buckets/merve/inkling">here</a>.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Category</th>
+<th align="left">Question</th>
+<th align="left">Number of Tokens (Reasoning Effort Medium)</th>
+<th align="left">Number of Tokens (Reasoning Effort High)</th>
+<th align="left">Number of Tokens (Reasoning Effort Max)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Open-ended Drug Interactions</td>
+<td align="left">Which components interact here?</td>
+<td align="left">1,893 ✅</td>
+<td align="left">2,367 ✅</td>
+<td align="left">3,688 ✅</td>
+</tr>
+<tr>
+<td align="left">Physics Question (MMMU-Pro)</td>
+<td align="left">Answer the question in the image.</td>
+<td align="left">1,357 ✅</td>
+<td align="left">3,323 ✅</td>
+<td align="left">3,314 ✅</td>
+</tr>
+<tr>
+<td align="left">Multilingual Physics Question</td>
+<td align="left">Answer the Turkish question given in the image.</td>
+<td align="left">1,435 ✅</td>
+<td align="left">2,129 ✅</td>
+<td align="left">3,162 ✅</td>
+</tr>
+<tr>
+<td align="left">Bar Exam</td>
+<td align="left">Answer the question in the image.</td>
+<td align="left">1,117 ✅</td>
+<td align="left">2,137 ✅</td>
+<td align="left">1,676 ✅</td>
+</tr>
+<tr>
+<td align="left">Infographics Question Answering (Open-ended)</td>
+<td align="left">Based on the information presented, approximately how many times larger is the projected summer warming period in the Arctic than the time over which substantial Arctic warming has already been observed?</td>
+<td align="left">1,378 ❌</td>
+<td align="left">3,859 ✅</td>
+<td align="left">6000 (exceeded token budget)</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>Few notes on vibes:</strong></p>
+<ul>
+<li>Instead of directly answering the question on infographic, the model first turns text on image to text to ground itself.</li>
+<li>Prompting matters a lot to save tokens in reasoning, for instance, asking vague questions like “which components interact here?” with an image of the back of a pill, the model first needs to see what we mean by interactions here.</li>
+<li>Multi-choice question answers helped the model a lot in structuring its own reasoning, for open-ended questions the model struggled compared to MCQA, however, this is a common issue for many models. The usual chain of thought was OCR → characterize → evaluate each option → answer.</li>
+<li>0.7 reasoning effort (medium) seems to provide a good trade-off.</li>
+</ul>
+<h3 class="relative group flex items-baseline">
+	<a id="multimodal-audio" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multimodal-audio" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multimodal Audio
+	</span>
+</h3>
+<p>We have vibe-evaluated the model on some audio reasoning examples from BigBenchAudio and a few multilingual audio examples of <a href="https://huggingface.co/datasets/iNLP-Lab/GlobeAudio">GlobeAudio</a> (Russian and Chinese multi-choice questions asking the last word in transcription). The <a href="https://huggingface.co/datasets/ArtificialAnalysis/big_bench_audio">BigBenchAudio</a> examples we tested consist of logical statements and questions that either ask for formal fallacies (whether an argument can be logically deduced from the context given in audio) or object counting (stating multiple distinctive objects in the audio, asking for the total count of a certain one). Although this benchmark is initially made for speech-to-speech reasoning, we just want to see audio reasoning capabilities of this model. For GlobeAudio, the questions are relatively straightforward, so we ran with reasoning efforts of 0.1. We ran the first example of each language within GlobeAudio. All tests pass on all questions and efforts, except for second formal fallacy example on lowest effort, so we only provide the number of tokens spent in each question against reasoning effort. Vibe eval results and audio files live <a href="https://huggingface.co/buckets/merve/inkling">here</a>.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">GlobeAudio</th>
+<th align="left">Question</th>
+<th align="left">Number of completion tokens (Reasoning effort lowest)</th>
+<th align="left">Number of completion tokens (Reasoning effort medium)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Russian (asks for last word)</td>
+<td align="left">Какое последнее слово в аудиозаписи? 1. Россия 2. Свидетелем 3. Москва 4. Событий Choose the single correct option and answer with its exact text.</td>
+<td align="left">130</td>
+<td align="left">179</td>
+</tr>
+<tr>
+<td align="left">Russian (asks for profession of the speaker)</td>
+<td align="left">Кем, скорее всего, работает говорящая? 1. Репортершей 2. Блоггершей 3. Учительницей истории 4. Ведущей развлекательного шоу Choose the single correct option and answer with its exact text.</td>
+<td align="left">105</td>
+<td align="left">136</td>
+</tr>
+<tr>
+<td align="left">Chinese (asks for speaking rate)</td>
+<td align="left">播报员的语速有何变化？ 1. 突然变快 2. 突然变慢 3. 保持不变 4. 时快时慢 Choose the single correct option and answer with its exact text.</td>
+<td align="left">111</td>
+<td align="left">289</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Big Bench Audio</th>
+<th align="left">Completion Tokens (lowest)</th>
+<th align="left">Completion Tokens (medium)</th>
+<th align="left">Number of completion tokens ( highest)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Formal Fallacy (10)</td>
+<td align="left">285</td>
+<td align="left">335</td>
+<td align="left">444</td>
+</tr>
+<tr>
+<td align="left">Formal Fallacy (39)</td>
+<td align="left">275 (fails)</td>
+<td align="left">555</td>
+<td align="left">778</td>
+</tr>
+<tr>
+<td align="left">Object Counting (680)</td>
+<td align="left">150</td>
+<td align="left">233</td>
+<td align="left">161</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>Some notes on the vibes:</strong></p>
+<ul>
+<li>Similar to vision, the model first transcribes the speech before answering the question.</li>
+<li>It resists decoys: in Russian test, the model picked the right answer despite other answers appearing in the audio.</li>
+<li>Similar to vision, usual chain of thought is transcribe → characterize → evaluate each option → answer.</li>
+<li>The effort helps reasoning and not hearing. Audio question answering was much cheaper than images.</li>
+</ul>
+<h3 class="relative group flex items-baseline">
+	<a id="post-training" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#post-training" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Post-training
+	</span>
+</h3>
+<p>If you would like to use Inkling for post-training, Thinking Machines have built <code>tinker</code>, a managed tool for post-training open weight models. Their cookbook includes examples for fine-tuning, distillation, and reinforcement learning.</p>
+<p>We post trained Inkling with tinker and OpenEnv, an agentic RL environment tool. We used the ECHO algorithm that trains a model to predict the environment without a verifier, applying next-token cross-entropy loss to tokens produced by the environment, alongside the usual policy learning on agent actions. This teaches the policy an implicit world model without requiring a separate model, teacher, or additional rollouts. Check out the <a href="https://github.com/huggingface/OpenEnv/blob/main/examples/echo_world_model/backends/tinker_echo_demo.py" rel="nofollow">example</a>.</p>
+<p><a href="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/trackio.png" rel="nofollow"><img src="https://huggingface.co/buckets/huggingface/inkling-blog-assets/resolve/trackio.png" alt="Inkling post-training metrics"></a></p>
+<details>
+<summary>RL Example with Tinker and OpenEnv</summary>
+
+<pre><code>git clone https://github.com/huggingface/OpenEnv.git
+cd OpenEnv
+
+# Add TINKER_API_KEY=... to .env, then run:
+uv run --env-file .env \
+  examples/echo_world_model/backends/tinker_echo_demo.py
+</code></pre>
+</details>
+
+<p>If you’re working with Transformers Reinforcement Learning we suggest using Inkling as a teacher model in a knowledge distillation setup. For example, take advantage of Inkling’s document understanding abilities to improve the performance of a smaller (on-device) model. In <a href="https://github.com/huggingface/trl/blob/main/examples/gold_chatbot_arena/gold_chatbot_arena.py" rel="nofollow">this example</a>, we use the transformer reinforcement learning library and the GOLD algorithm to distill knowledge. GOLD is handy here because it matches token logits between different tokenizers, so you can distill to any model on the hub.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="deploying-inkling-and-inkling-small" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deploying-inkling-and-inkling-small" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deploying Inkling and Inkling-Small
+	</span>
+</h2>
+<p>Below you can find each Inkling checkpoint as well as their VRAM requirements.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Model Variant</th>
+<th align="left">Aggregated VRAM</th>
+<th align="left">Recommended GPU Configurations</th>
+<th align="left">Deployment Notes</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><strong>Inkling (BF16)</strong></td>
+<td align="left">2 TB</td>
+<td align="left">• 8× NVIDIA B300 / GB200<br>• 16× NVIDIA H200</td>
+<td align="left">Full precision deployment; requires multi-node interconnect for H200 clusters.</td>
+</tr>
+<tr>
+<td align="left"><strong>Inkling (NVFP4)</strong></td>
+<td align="left">600 GB</td>
+<td align="left">• 4× NVIDIA B300 / GB200 (W4A4)<br>• 8× NVIDIA H200 (W4A16)</td>
+<td align="left">W4A4 requires Blackwell architecture (SM100+).</td>
+</tr>
+<tr>
+<td align="left"><strong>Inkling-Small (BF16)</strong></td>
+<td align="left">600 GB</td>
+<td align="left">• 4× NVIDIA B300 / GB200 (W4A4)<br>• 8× NVIDIA H200 (W4A16)</td>
+<td align="left">Does not require Blackwell architecture; easily deployed to 8× H200s.</td>
+</tr>
+<tr>
+<td align="left"><strong>Inkling-Small (NVFP4)</strong></td>
+<td align="left">180 GB</td>
+<td align="left">• 1× NVIDIA B300 (W4A4)<br>• 2× NVIDIA H200 (W4A16)</td>
+<td align="left">W4A4 supported on single Blackwell GPU; W4A16 supported on 2× H200s.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="deploying-inkling-on-a-cluster" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deploying-inkling-on-a-cluster" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deploying Inkling on a cluster
+	</span>
+</h2>
+<p>To deploy Inkling on a cluster, we provide SLURM scripts serving with transformers API, as well as how to query the endpoint with different modalities. You can adapt these scripts to vLLM or SGlang by updating the commands. These scripts live <a href="https://huggingface.co/buckets/merve/inkling">here</a>.</p>
+<ul>
+<li><a href="https://huggingface.co/buckets/merve/inkling/tree/slurm/submit_inkling_generate.sbatch">Submit inference job</a></li>
+<li><a href="https://huggingface.co/buckets/merve/inkling/tree/slurm/generate_inkling.py">Python generation script</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="deploying-inkling-small-on-inference-endpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#deploying-inkling-small-on-inference-endpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Deploying Inkling-Small on Inference Endpoints
+	</span>
+</h2>
+<p>You can deploy an Inkling-Small NVFP4 checkpoint using Inference Endpoints. We provide a pre-tested configuration to deploy it on 8 RTX PRO 6000s with an aggregated VRAM of·768 GB, giving large space for KV cache, costs $ 22 per hourly uptime (scales to zero when unused). To deploy, run hf endpoints catalog deploy --repo thinkingmachines/Inkling-Small-NVFP4 using the Hugging Face CLI or alternatively, head to <a href="https://endpoints.huggingface.co/new/thinkingmachines/Inkling-Small-NVFP4" rel="nofollow">https://endpoints.huggingface.co/new/thinkingmachines/Inkling-Small-NVFP4</a>. With this setup, you can get 140 TPS (single user inference, prepared for multi-user support with continuous batching)</p>
+<p>Once the endpoint is up, you can query as follows. </p>
+<pre><code class="language-sh">curl <span class="hljs-string">"YOUR_ENDPOINT_HERE"</span> \
+-X POST \
+-H <span class="hljs-string">"Authorization: Bearer <span class="hljs-variable">$HF_TOKEN</span>"</span> \
+-H <span class="hljs-string">"Content-Type: application/json"</span> \
+-d <span class="hljs-string">'{</span>
+<span class="hljs-string">    "model": "thinkingmachines/Inkling-Small-NVFP4",</span>
+<span class="hljs-string">    "messages": [</span>
+<span class="hljs-string">        {</span>
+<span class="hljs-string">            "role": "user",</span>
+<span class="hljs-string">            "content": [</span>
+<span class="hljs-string">                {</span>
+<span class="hljs-string">                    "type": "image_url",</span>
+<span class="hljs-string">                    "image_url": {</span>
+<span class="hljs-string">                        "url": "https://endpoints.hf.co/media-examples/img1.png"</span>
+<span class="hljs-string">                    }</span>
+<span class="hljs-string">                },</span>
+<span class="hljs-string">                {</span>
+<span class="hljs-string">                    "type": "text",</span>
+<span class="hljs-string">                    "text": "Describe this image in one sentence."</span>
+<span class="hljs-string">                }</span>
+<span class="hljs-string">            ]</span>
+<span class="hljs-string">        }</span>
+<span class="hljs-string">    ],</span>
+<span class="hljs-string">    "stream": true,</span>
+<span class="hljs-string">    "max_tokens": 100</span>
+<span class="hljs-string">}'</span>
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="benchmark-results" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#benchmark-results" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Benchmark Results
+	</span>
+</h2>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th></th>
+<th></th>
+<th>Inkling Small</th>
+<th>Inkling</th>
+<th>Nemotron 3 Ultra</th>
+<th>Kimi K2.5</th>
+<th>Kimi K2.6</th>
+<th>GLM 5.2</th>
+<th>DeepSeek V4 Pro</th>
+<th>Gemini 3.1 Pro (high)</th>
+<th>Claude Fable 5 (max)</th>
+<th>GPT 5.6 Sol (xhigh)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><strong>Reasoning</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>HLE (text only)</td>
+<td>31.6%</td>
+<td>29.7%</td>
+<td>26.6%</td>
+<td>29.4%</td>
+<td>35.9%</td>
+<td>40.1%</td>
+<td>35.9%</td>
+<td>44.7%</td>
+<td>53.3%</td>
+<td>47.2%</td>
+</tr>
+<tr>
+<td></td>
+<td>HLE (with tools)</td>
+<td>47.8%</td>
+<td>46.0%</td>
+<td>37.4%</td>
+<td>50.2%</td>
+<td>54.0%</td>
+<td>54.7%</td>
+<td>48.2%</td>
+<td>51.4%</td>
+<td>64.5%</td>
+<td>55.0%</td>
+</tr>
+<tr>
+<td></td>
+<td>AIME 2026</td>
+<td>95.5%</td>
+<td>97.1%</td>
+<td>94.2%</td>
+<td>95.8%</td>
+<td>96.4%</td>
+<td>99.2%</td>
+<td>96.7%</td>
+<td>98.3%</td>
+<td>–</td>
+<td>99.9%</td>
+</tr>
+<tr>
+<td></td>
+<td>GPQA Diamond</td>
+<td>89.5%</td>
+<td>87.2%</td>
+<td>86.7%    0</td>
+<td>87.9%</td>
+<td>91.1%</td>
+<td>89.5%</td>
+<td>88.8%</td>
+<td>94.1%</td>
+<td>92.6%</td>
+<td>94.1%</td>
+</tr>
+<tr>
+<td><strong>Agentic (coding)</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>SWEBench Verified</td>
+<td>80.2%</td>
+<td>77.6%</td>
+<td>70.7%</td>
+<td>76.8%</td>
+<td>80.2%</td>
+<td>–</td>
+<td>80.6%</td>
+<td>80.6%</td>
+<td>95.0%</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td>SWEBench Pro (Public)</td>
+<td>55.9%</td>
+<td>54.3%</td>
+<td>46.4%</td>
+<td>50.7%</td>
+<td>58.6%</td>
+<td>62.1%</td>
+<td>55.4%</td>
+<td>54.2%</td>
+<td>80.0%</td>
+<td>64.6%</td>
+</tr>
+<tr>
+<td></td>
+<td>Terminal Bench 2.1 (Best Harness)</td>
+<td>64.69</td>
+<td>63.8</td>
+<td>56.4</td>
+<td>51.3</td>
+<td>71.3</td>
+<td>82.7</td>
+<td>64</td>
+<td>73.8</td>
+<td>84.6</td>
+<td>89.5</td>
+</tr>
+<tr>
+<td></td>
+<td>GDPVal-AA v2</td>
+<td>1269</td>
+<td>1233</td>
+<td>1164</td>
+<td>1009</td>
+<td>1190</td>
+<td>1514</td>
+<td>1307</td>
+<td>962</td>
+<td>1760</td>
+<td>1748</td>
+</tr>
+<tr>
+<td><strong>Agentic (general)</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>MCP Atlas</td>
+<td>79.2%</td>
+<td>74.1%</td>
+<td>44.7%</td>
+<td>64.0%</td>
+<td>68.1%</td>
+<td>77.8%</td>
+<td>73.2%</td>
+<td>78.2%</td>
+<td>83.3%</td>
+<td>81.8%</td>
+</tr>
+<tr>
+<td></td>
+<td>Tau 3 Banking</td>
+<td>15.5%</td>
+<td>23.7%</td>
+<td>13.8%</td>
+<td>13.2%</td>
+<td>20.6%</td>
+<td>26.8%</td>
+<td>25.8%</td>
+<td>16.5%</td>
+<td>26.8%</td>
+<td>33.0%</td>
+</tr>
+<tr>
+<td><strong>Factuality</strong></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>BrowseComp (w/ Ctx)</td>
+<td>77.4%</td>
+<td>77.1%</td>
+<td>–</td>
+<td>74.9%</td>
+<td>83.2%</td>
+<td>–</td>
+<td>83.4%</td>
+<td>85.9%</td>
+<td>88.0%</td>
+<td>89.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>SimpleQA Verified</td>
+<td>20.6%</td>
+<td>43.9%</td>
+<td>32.4%</td>
+<td>36.9%</td>
+<td>38.7%</td>
+<td>38.1%</td>
+<td>57.0%</td>
+<td>77.3%</td>
+<td>68.3%</td>
+<td>71.6%</td>
+</tr>
+<tr>
+<td></td>
+<td>AA Omniscience</td>
+<td>-9</td>
+<td>1.0%</td>
+<td>-1.0%</td>
+<td>-8.0%</td>
+<td>6.0%</td>
+<td>4.0%</td>
+<td>-10.0%</td>
+<td>33.0%</td>
+<td>40.0%</td>
+<td>22.0%</td>
+</tr>
+<tr>
+<td><strong>Chat</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>IFBench</td>
+<td>82.2%</td>
+<td>79.8%</td>
+<td>81.4%</td>
+<td>70.2%</td>
+<td>76.0%</td>
+<td>73.3%</td>
+<td>76.5%</td>
+<td>77.1%</td>
+<td>63.5%</td>
+<td>72.7%</td>
+</tr>
+<tr>
+<td></td>
+<td>Global-MMLU-Lite</td>
+<td>86.7%</td>
+<td>88.7%</td>
+<td>85.6%</td>
+<td>84.0%</td>
+<td>88.4%</td>
+<td>89.2%</td>
+<td>89.3%</td>
+<td>92.7%</td>
+<td>93.3%</td>
+<td>91.8%</td>
+</tr>
+<tr>
+<td><strong>Vision</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr>
+<td></td>
+<td>MMMU Pro (Standard 10)</td>
+<td>74.0%</td>
+<td>73.3%</td>
+<td>–</td>
+<td>75.0%</td>
+<td>79.0%</td>
+<td>–</td>
+<td>–</td>
+<td>82.0%</td>
+<td>84.2%</td>
+<td>83.0%</td>
+</tr>
+<tr>
+<td></td>
+<td>Charxiv RQ</td>
+<td>77.4%</td>
+<td>78.1%</td>
+<td>–</td>
+<td>77.5%</td>
+<td>80.4%</td>
+<td>–</td>
+<td>–</td>
+<td>80.2%</td>
+<td>86.5%</td>
+<td>84.7%</td>
+</tr>
+<tr>
+<td></td>
+<td>Charxiv RQ (with python)</td>
+<td>82.3%</td>
+<td>82.0%</td>
+<td>–</td>
+<td>78.7%</td>
+<td>86.7%</td>
+<td>–</td>
+<td>–</td>
+<td>89.9%</td>
+<td>89.4%</td>
+<td>87.8%</td>
+</tr>
+<tr>
+<td><strong>Audio</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>Audio MC</td>
+<td>54.9%</td>
+<td>56.6%</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>66.8%</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td>MMAU</td>
+<td>77.0%</td>
+<td>77.2%</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>82.5%</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td>VoiceBench</td>
+<td>90.1%</td>
+<td>91.4%</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>94.3%     0</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>Safety</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>FORTRESS (Adversarial)</td>
+<td>71.6%</td>
+<td>78.0%</td>
+<td>77.6%</td>
+<td>54.1%</td>
+<td>65.6%</td>
+<td>71.3%</td>
+<td>36.0%</td>
+<td>65.2%</td>
+<td>96.0%</td>
+<td>82.4%            stationary</td>
+</tr>
+<tr>
+<td></td>
+<td>FORTRESS (Benign)</td>
+<td>96.9%</td>
+<td>95.9%</td>
+<td>90.5%</td>
+<td>98.3%</td>
+<td>97.2%</td>
+<td>90.0%</td>
+<td>98.5%</td>
+<td>98.0%</td>
+<td>55.1%</td>
+<td>98.1%</td>
+</tr>
+<tr>
+<td></td>
+<td>StrongREJECT</td>
+<td>98.4%</td>
+<td>98.6%</td>
+<td>98.7%</td>
+<td>99.5%</td>
+<td>99.8%</td>
+<td>98.5%</td>
+<td>98.6%</td>
+<td>98.0%</td>
+<td>98.7%</td>
+<td>98.5%</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/train-multimodal-sentence-transformers"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/train-sentence-transformers/st-hf-thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">multimodal</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">nlp</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">community</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Training and Finetuning Multimodal Embedding &amp; Reranker Models with Sentence Transformers</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 83</div><!--]--> <!--[0--><span class="whitespace-nowrap">April 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/multimodal-sentence-transformers"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/train-sentence-transformers/st-hf-thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">multimodal</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">nlp</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">community</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Multimodal Embedding &amp; Reranker Models with Sentence Transformers</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 75</div><!--]--> <!--[0--><span class="whitespace-nowrap">April 9, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a718b94b1022ece3d53bcb3" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/9ea2021879affa3c3d0c7ab538d6ea82.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/josecontrerass">josecontrerass</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a718b94b1022ece3d53bcb3" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-04T06:49:56" title="Tue, 04 Aug 2026 06:49:56 GMT">Aug 4</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by josecontrerass" href="#6a718b94b1022ece3d53bcb3"><!--[0-->edited Aug 4<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Releasing a natively multimodal model (text, vision, and audio) open-weights is a huge step forward for the open-source AI ecosystem! Having variable and controllable thinking effort built into a MoE architecture makes Inkling a really attractive foundation for fine-tuning. Excited to test out the smaller 12B active parameter variant for local agent workflows at <a href="https://geometrydashsubzero.io" rel="nofollow">https://geometrydashsubzero.io</a></p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🔥</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9c77ddffb6f48dbea323fb" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[-1--><div class="mr-2">deleted</div><!--]--> <a href="#6a9c77ddffb6f48dbea323fb" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-05T20:13:17" title="Sat, 05 Sep 2026 20:13:17 GMT">Sep 5</time></a> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <span class="truncate text-xs italic text-gray-400 sm:text-sm">This comment has been hidden</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[-1--><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fthinkingmachines-inkling">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fthinkingmachines-inkling">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fthinkingmachines-inkling" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">167</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[0--><a href="/pcuenq" title="pcuenq"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="martin76ec" style="content-visibility:auto;"><!--[0--><a href="/martin76ec" title="martin76ec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/645b03425e6871b4b2d72f8a/-dSnWHaHbX8Vl0Zm-IlIC.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="liskasYR" style="content-visibility:auto;"><!--[0--><a href="/liskasYR" title="liskasYR"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68d1d3360ed5c275023f67fa/sKKJ1Q3HMJ7Um7MwJZfog.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Jeomon" style="content-visibility:auto;"><!--[0--><a href="/Jeomon" title="Jeomon"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/32WBXYRRKAGd14iQ-Cob_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="multimodalart" style="content-visibility:auto;"><!--[0--><a href="/multimodalart" title="multimodalart"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649143001781-624bebf604abc7ebb01789af.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="free-bit" style="content-visibility:auto;"><!--[0--><a href="/free-bit" title="free-bit"><img class="overflow-hidden rounded-full" alt="" src="/avatars/001c8f02e8ce794b2c21883628b2da72.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[0--><a href="/sergiopaniego" title="sergiopaniego"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[0--><a href="/burtenshaw" title="burtenshaw"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rocca" style="content-visibility:auto;"><!--[0--><a href="/rocca" title="rocca"><img class="overflow-hidden rounded-full" alt="" src="/avatars/8213f0ffc9106d7663c4b5f29f4ec9e5.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kramp" style="content-visibility:auto;"><!--[0--><a href="/kramp" title="kramp"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d6c40ba71903fb4c1e3261/SQGmYShjtveXBf8HVpxPp.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kennethli319" style="content-visibility:auto;"><!--[0--><a href="/kennethli319" title="kennethli319"><img class="overflow-hidden rounded-full" alt="" src="/avatars/97860007206bc088f2098f1561ed28b1.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+155</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

@@ -1,0 +1,629 @@
+<!doctype html>
+<html
+  data-dpl-id="dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+  class="ibm_plex_mono_fa1c4097-module__3uH8Nq__variable open_sans_7e595750-module__pAAqPq__variable"
+  dir="ltr"
+  lang="en-GB"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/ibm_plex_mono-s.p.3b79ptryv7i2h.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="preload"
+      href="/_next/static/immutable/media/open_sans-s.p.1fv0ljb2xxwp5.woff2"
+      as="font"
+      crossorigin=""
+      type="font/woff2"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/3-3yw0a72ptja.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/1fclkr0g3zaij.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/4500vlwubf1mv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2ufy7ayt8q76z.css"
+      data-precedence="next"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/immutable/chunks/2nq6hgby487zv.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/immutable/chunks/0rnqd3pwk0akn.js"
+    />
+    <meta name="next-size-adjust" content="" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" />
+    <title>Node.js — Evolving the Node.js Release Schedule</title>
+    <meta
+      name="description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://nodejs.org/en/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nodejs.org/en/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nodejs.org/en/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="es"
+      href="https://nodejs.org/es/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://nodejs.org/fr/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="id"
+      href="https://nodejs.org/id/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="ja"
+      href="https://nodejs.org/ja/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="ko"
+      href="https://nodejs.org/ko/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt-br"
+      href="https://nodejs.org/pt-br/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="pt"
+      href="https://nodejs.org/pt/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="ro"
+      href="https://nodejs.org/ro/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="ta"
+      href="https://nodejs.org/ta/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://nodejs.org/tr/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="uk"
+      href="https://nodejs.org/uk/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://nodejs.org/zh-cn/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-tw"
+      href="https://nodejs.org/zh-tw/blog/announcements/evolving-the-nodejs-release-schedule"
+    />
+    <link rel="alternate" type="application/rss+xml" href="https://nodejs.org/en/feed/blog.xml" />
+    <meta property="og:title" content="Node.js — Evolving the Node.js Release Schedule" />
+    <meta
+      property="og:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta
+      property="og:image"
+      content="https://nodejs.org/en/next-data/og/announcements/Node.js%20%E2%80%94%20Evolving%20the%20Node.js%20Release%20Schedule"
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@nodejs" />
+    <meta name="twitter:title" content="Node.js — Evolving the Node.js Release Schedule" />
+    <meta
+      name="twitter:description"
+      content="Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts."
+    />
+    <meta name="twitter:image" content="https://nodejs.org/static/images/logo-hexagon-card.png" />
+    <meta name="twitter:image:alt" content="The Node.js Hexagon Logo" />
+    <link rel="icon" href="/static/images/favicons/favicon.png" />
+  </head>
+  <body>
+    <div hidden=""><!--$--><!--/$--></div>
+    <div class="layouts-module__mzYk8q__baseLayout">
+      <div><a href="#main" class="index-module__wVBY_W__skipToContent">Skip to content</a></div>
+      <div class="layouts-module__mzYk8q__contentLayout">
+        <div></div>
+        <div class="layouts-module__mzYk8q__postLayout">
+          <main id="main" tabindex="-1">
+            <h1>Evolving the Node.js Release Schedule</h1>
+            <section>
+              <div class="index-module__mLkwoq__avatarGroup index-module__mLkwoq__medium">
+                <span
+                  class="index-module__j-1Igq__avatar index-module__j-1Igq__medium cursor-pointer"
+                  data-state="closed"
+                  ><a
+                    href="https://github.com/nodejs/release"
+                    target="_blank"
+                    class="index-module__j-1Igq__wrapper"
+                    ><span class="index-module__j-1Igq__item index-module__j-1Igq__medium"
+                      >NJRWG</span
+                    ></a
+                  ></span
+                >
+              </div>
+              <p>Node.js Releasers</p>
+            </section>
+            <div class="index-module__pL4wLa__root index-module__pL4wLa__announcements">
+              <div class="index-module__pL4wLa__container" aria-hidden="true">
+                Evolving the Node.js Release Schedule
+              </div>
+            </div>
+            <p>
+              Starting with 27.x, Node.js will move from two major releases per year to one. This
+              post explains what&#x27;s changing, why, and what it means for users. For the full
+              discussion and background, see
+              <a href="https://github.com/nodejs/Release/issues/1113">nodejs/Release#1113</a>.
+            </p>
+            <p>
+              <strong>TL;DR:</strong> If you already only upgrade to LTS versions, little changes
+              beyond version numbering. LTS support windows remain similar, and now every release
+              becomes LTS.
+            </p>
+            <p>
+              <strong>Library authors:</strong> Please integrate Alpha releases to your CI as early
+              as possible; if you only test on LTS releases, you will not be able to report bugs
+              before they affect your users.
+            </p>
+            <h2 id="why-this-change"><a href="#why-this-change">Why This Change</a></h2>
+            <p>
+              The current release schedule is 10 years old. It was created during the io.js merger
+              to balance the needs of a growing ecosystem. As one contributor put it at the time, it
+              was &quot;an educated guess of what enterprises would need.&quot;
+            </p>
+            <p>We now have a decade of data showing how people actually use Node.js:</p>
+            <ul>
+              <li>
+                Odd-numbered releases see minimal adoption. Most users wait for Long-Term Support.
+              </li>
+              <li>The odd/even distinction confuses newcomers.</li>
+              <li>
+                Many organizations skip odd releases entirely, upgrading only to LTS versions.
+              </li>
+            </ul>
+            <p>
+              We also recognize that enterprises need predictability. The new schedule is designed
+              to be well-defined, so teams can plan upgrades and allocate resources accordingly.
+            </p>
+            <h3 id="volunteer-sustainability">
+              <a href="#volunteer-sustainability">Volunteer Sustainability</a>
+            </h3>
+            <p>
+              Node.js is maintained primarily by volunteers. While some contributors receive
+              sponsorship, most of the work (reviewing Pull Requests, handling security issues,
+              cutting releases, backporting fixes) is done by people in their spare time.
+            </p>
+            <p>
+              Managing security releases across four or five active release lines has become
+              difficult to sustain. Each additional line increases backporting complexity. By
+              reducing the number of concurrent release lines, we can focus on better supporting the
+              releases people actually use.
+            </p>
+            <h2 id="whats-changing"><a href="#whats-changing">What&#x27;s Changing</a></h2>
+            <p>As of October 2026:</p>
+            <ul>
+              <li>
+                <strong>One major release per year</strong> (April), with LTS promotion in October.
+              </li>
+              <li>
+                <strong>Every release becomes LTS</strong>. No more odd/even distinction - Node.js
+                27 will become LTS.
+              </li>
+              <li>
+                <strong>Alpha channel for early testing</strong> with semver-major changes allowed.
+              </li>
+              <li>
+                <strong>Alpha versioning</strong> follows semver prerelease format (e.g.,
+                <code>27.0.0-alpha.1</code>).
+              </li>
+              <li>
+                <strong
+                  >Version numbers align with the calendar year of their initial Current
+                  release</strong
+                >: 27.0.0 in 2027, 28.0.0 in 2028.
+              </li>
+              <li><strong>Reduced Releasers&#x27; burden</strong>.</li>
+            </ul>
+            <h3 id="new-schedule"><a href="#new-schedule">New Schedule</a></h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th>Duration</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Phase">Alpha</td>
+                  <td data-label="Duration">6 months</td>
+                  <td data-label="Description">Oct to Mar. Early testing, semver-major allowed</td>
+                </tr>
+                <tr>
+                  <td data-label="Phase">Current</td>
+                  <td data-label="Duration">6 months</td>
+                  <td data-label="Description">Apr to Oct. Stabilization</td>
+                </tr>
+                <tr>
+                  <td data-label="Phase">LTS</td>
+                  <td data-label="Duration">30 months</td>
+                  <td data-label="Description">Long-term support with security fixes</td>
+                </tr>
+                <tr>
+                  <td data-label="Phase">EOL</td>
+                  <td data-label="Duration">Infinity</td>
+                  <td data-label="Description">The project no longer provides any support</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Total support: 36 months from first Current release to
+              <a href="https://nodejs.org/en/about/eol">End of Life (EOL)</a>.
+            </p>
+            <h3 id="about-the-alpha-channel">
+              <a href="#about-the-alpha-channel">About the Alpha Channel</a>
+            </h3>
+            <p>
+              The Alpha channel fills the early-testing role that odd-numbered releases once served,
+              but with a key difference: semver-major changes are allowed during Alpha. Alpha
+              releases are signed, tagged, and tested through
+              <a href="https://github.com/nodejs/citgm">CITGM</a>. CITGM (Canary in the Goldmine) is
+              a tool we maintain that runs the test suite of major open-source packages on the
+              upcoming version of Node.js, which can let us detect ecosystem breakage and notify the
+              package authors ahead of the release.
+            </p>
+            <p>
+              This is different from
+              <a href="https://nodejs.org/download/nightly/">Nightly builds</a>, which remain
+              available as automated untested builds from <code>main</code> – Alpha releases may not
+              contain all changes from <code>main</code>, a change may not be included in an Alpha
+              release if:
+            </p>
+            <ul>
+              <li>
+                during Pull Request review, reviewers add a label requesting the change not to be
+                backported (e.g. if an API is getting runtime deprecated in an Alpha release, the
+                change actually removing that API should not land until the next release line).
+              </li>
+              <li>
+                during the Alpha release preparation, the releaser ultimately decides which commits
+                actually make the release (e.g. if a dependency update contains a major bug).
+              </li>
+            </ul>
+            <p>
+              <strong>Who it&#x27;s for:</strong> Library authors and CI pipelines testing
+              compatibility with upcoming breaking changes. Not intended for production use.
+            </p>
+            <p><strong>What to expect:</strong></p>
+            <ul>
+              <li>Releases are signed and tagged (unlike nightly).</li>
+              <li>API may change between releases.</li>
+              <li>
+                The release cadence is flexible; the Release Team will determine the timing and
+                frequency of Alpha releases based on the volume of changes and project needs.
+              </li>
+            </ul>
+            <p>
+              <strong>Why:</strong> Provides early feedback on breaking changes with quality gates
+              that Nightly builds lack. Also allows landing V8 updates earlier in the cycle.
+            </p>
+            <p>
+              The rules for shipping semver-major commits in Alpha versions will be defined by the
+              Release Team and documented in the
+              <a href="https://github.com/nodejs/Release">Release repository</a>.
+            </p>
+            <h2 id="whats-not-changing">
+              <a href="#whats-not-changing">What&#x27;s NOT Changing</a>
+            </h2>
+            <ul>
+              <li><strong>Long-Term Support duration</strong> remains similar (30 months).</li>
+              <li>
+                <strong>Migration windows preserved</strong>. Overlap between LTS versions remains.
+              </li>
+              <li>
+                <strong>Quality standards unchanged</strong>. Same testing, same CITGM, same
+                security process.
+              </li>
+              <li><strong>Predictable schedule</strong>. April releases, October LTS promotion.</li>
+              <li>
+                <strong>V8 adoption cycle</strong>. Node.js latest releases will still include a
+                version of V8 that&#x27;s at most about 6 months old.
+              </li>
+            </ul>
+            <h2 id="timeline"><a href="#timeline">Timeline</a></h2>
+            <p>
+              <img
+                alt="New Node.js Release Schedule"
+                loading="lazy"
+                width="0"
+                height="0"
+                decoding="async"
+                data-nimg="1"
+                class="h-auto w-auto"
+                style="color: transparent"
+                src="/static/images/blog/announcements/2026-new-release-schedule.svg?dpl=dpl_DSXcRQ8YRvS6n2eoM9w49G8ejCtw"
+              />
+            </p>
+            <h3 id="nodejs-26-schedule-existing-model">
+              <a href="#nodejs-26-schedule-existing-model">Node.js 26 Schedule (existing model)</a>
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Milestone">26.0.0</td>
+                  <td data-label="Date">April 2026</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">Enters LTS</td>
+                  <td data-label="Date">October 2026</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">Maintenance</td>
+                  <td data-label="Date">October 2027</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">End of Life</td>
+                  <td data-label="Date">April 2029</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Node.js 26 follows the existing schedule. This is the last release line under the
+              current model.
+            </p>
+            <h3 id="nodejs-27-schedule-new-model">
+              <a href="#nodejs-27-schedule-new-model">Node.js 27 Schedule (new model)</a>
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Milestone">Alpha begins</td>
+                  <td data-label="Date">October 2026</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">27.0.0</td>
+                  <td data-label="Date">April 2027</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">Enters LTS</td>
+                  <td data-label="Date">October 2027</td>
+                </tr>
+                <tr>
+                  <td data-label="Milestone">End of Life</td>
+                  <td data-label="Date">April 2030</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>Node.js 27 is the first release line under the new schedule.</p>
+            <h3 id="the-next-10-years"><a href="#the-next-10-years">The Next 10 Years</a></h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Version</th>
+                  <th>Alpha</th>
+                  <th>Current</th>
+                  <th>LTS</th>
+                  <th>End of Life</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Version">27.x</td>
+                  <td data-label="Alpha">Oct 2026</td>
+                  <td data-label="Current">Apr 2027</td>
+                  <td data-label="LTS">Oct 2027</td>
+                  <td data-label="End of Life">Apr 2030</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">28.x</td>
+                  <td data-label="Alpha">Oct 2027</td>
+                  <td data-label="Current">Apr 2028</td>
+                  <td data-label="LTS">Oct 2028</td>
+                  <td data-label="End of Life">Apr 2031</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">29.x</td>
+                  <td data-label="Alpha">Oct 2028</td>
+                  <td data-label="Current">Apr 2029</td>
+                  <td data-label="LTS">Oct 2029</td>
+                  <td data-label="End of Life">Apr 2032</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">30.x</td>
+                  <td data-label="Alpha">Oct 2029</td>
+                  <td data-label="Current">Apr 2030</td>
+                  <td data-label="LTS">Oct 2030</td>
+                  <td data-label="End of Life">Apr 2033</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">31.x</td>
+                  <td data-label="Alpha">Oct 2030</td>
+                  <td data-label="Current">Apr 2031</td>
+                  <td data-label="LTS">Oct 2031</td>
+                  <td data-label="End of Life">Apr 2034</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">32.x</td>
+                  <td data-label="Alpha">Oct 2031</td>
+                  <td data-label="Current">Apr 2032</td>
+                  <td data-label="LTS">Oct 2032</td>
+                  <td data-label="End of Life">Apr 2035</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">33.x</td>
+                  <td data-label="Alpha">Oct 2032</td>
+                  <td data-label="Current">Apr 2033</td>
+                  <td data-label="LTS">Oct 2033</td>
+                  <td data-label="End of Life">Apr 2036</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">34.x</td>
+                  <td data-label="Alpha">Oct 2033</td>
+                  <td data-label="Current">Apr 2034</td>
+                  <td data-label="LTS">Oct 2034</td>
+                  <td data-label="End of Life">Apr 2037</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">35.x</td>
+                  <td data-label="Alpha">Oct 2034</td>
+                  <td data-label="Current">Apr 2035</td>
+                  <td data-label="LTS">Oct 2035</td>
+                  <td data-label="End of Life">Apr 2038</td>
+                </tr>
+                <tr>
+                  <td data-label="Version">36.x</td>
+                  <td data-label="Alpha">Oct 2035</td>
+                  <td data-label="Current">Apr 2036</td>
+                  <td data-label="LTS">Oct 2036</td>
+                  <td data-label="End of Life">Apr 2039</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              This schedule is not final and may be amended. Refer to the
+              <a href="https://github.com/nodejs/Release/blob/HEAD/schedule.json"
+                ><code>schedule.json</code></a
+              >
+              for an up-to-date record of the support claims from the project.
+            </p>
+            <h2 id="thank-you"><a href="#thank-you">Thank You</a></h2>
+            <p>
+              This change is the result of discussions across GitHub issues, Release Working Group
+              meetings, and
+              <a href="https://youtu.be/ppi87YjU9x0?si=NFF5WKIGDJE_U-_V&amp;t=6524"
+                >the Collaboration Summit Chesapeake 2025</a
+              >. We will continue discussing this topic at the upcoming Collaboration Summit in
+              London. We thank everyone who contributed feedback.
+            </p>
+            <p>
+              For questions or comments, see
+              <a href="https://github.com/nodejs/Release/issues/1113">nodejs/Release#1113</a>.
+            </p>
+            <div class="max-ml:grid-cols-1 mt-4 grid w-full grid-cols-2 gap-4">
+              <a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/announcements/discontinuing-security-bug-bounties"
+                ><span class="index-module__A9kfJq__header"> Previous</span
+                ><span class="index-module__A9kfJq__content"
+                  >Security Bug Bounty Program Paused Due to Loss of Funding</span
+                ></a
+              ><a
+                class="index-module__A9kfJq__crossLink"
+                href="/en/blog/announcements/hackerone-signal-requirement"
+                ><span class="index-module__A9kfJq__header index-module__A9kfJq__reverse">
+                  Next</span
+                ><span class="index-module__A9kfJq__content index-module__A9kfJq__reverse"
+                  >New HackerOne Signal Requirement for Vulnerability Reports</span
+                ></a
+              >
+            </div>
+          </main>
+        </div>
+        <aside class="index-module__0yZVBa__wrapper" aria-label="Article metadata">
+          <dl>
+            <dt>Last Updated</dt>
+            <dd>Mar 10, 2026</dd>
+            <dt>Reading Time</dt>
+            <dd>4 min</dd>
+            <dt>Contribute</dt>
+            <dd>
+              <a
+                href="https://github.com/nodejs/nodejs.org/blob/main/apps/site/pages/en/blog/announcements/evolving-the-nodejs-release-schedule.md"
+                >Edit this page</a
+              >
+            </dd>
+            <dt>Table of Contents</dt>
+            <dd>
+              <ol>
+                <li class=""><a class="" href="#why-this-change">Why This Change</a></li>
+                <li class="pl-2">
+                  <a class="" href="#volunteer-sustainability">Volunteer Sustainability</a>
+                </li>
+                <li class=""><a class="" href="#whats-changing">What&#x27;s Changing</a></li>
+                <li class="pl-2"><a class="" href="#new-schedule">New Schedule</a></li>
+                <li class="pl-2">
+                  <a class="" href="#about-the-alpha-channel">About the Alpha Channel</a>
+                </li>
+                <li class="">
+                  <a class="" href="#whats-not-changing">What&#x27;s NOT Changing</a>
+                </li>
+                <li class=""><a class="" href="#timeline">Timeline</a></li>
+                <li class="pl-2">
+                  <a class="" href="#nodejs-26-schedule-existing-model"
+                    >Node.js 26 Schedule (existing model)</a
+                  >
+                </li>
+                <li class="pl-2">
+                  <a class="" href="#nodejs-27-schedule-new-model"
+                    >Node.js 27 Schedule (new model)</a
+                  >
+                </li>
+                <li class="pl-2"><a class="" href="#the-next-10-years">The Next 10 Years</a></li>
+                <li class=""><a class="" href="#thank-you">Thank You</a></li>
+              </ol>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+      <!--$--><!--/$-->
+    </div>
+    <a rel="me" aria-hidden="true" class="hidden" href="https://social.lfx.dev/@nodejs"></a
+    ><!--$--><!--/$-->
+  </body>
+</html>

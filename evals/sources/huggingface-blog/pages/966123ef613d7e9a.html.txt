@@ -1,0 +1,391 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/pwc-search/thumbnail.png" />
+
+		<meta property="og:title" content="How Hugging Face Inference Endpoints, Jobs, and Buckets Power Search on Papers with Code" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/pwc-search" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/pwc-search/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/pwc-search">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>How Hugging Face Inference Endpoints, Jobs, and Buckets Power Search on Papers with Code</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="how-hugging-face-inference-endpoints-jobs-and-buckets-power-search-on-papers-with-code" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-hugging-face-inference-endpoints-jobs-and-buckets-power-search-on-papers-with-code" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How Hugging Face Inference Endpoints, Jobs, and Buckets Power Search on Papers with Code
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 21, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/pwc-search.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fpwc-search" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">34</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nielsr" style="content-visibility:auto;"><!--[0--><a href="/nielsr" title="nielsr"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="patrickfleith" style="content-visibility:auto;"><!--[0--><a href="/patrickfleith" title="patrickfleith"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/635bf083445de485328c56ad/w0NN4AqehApXwsb5wtPhm.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kshitijthakkar" style="content-visibility:auto;"><!--[0--><a href="/kshitijthakkar" title="kshitijthakkar"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67af2623dad5fcb9007967e4/LhJQ78BF1lvK0aXSqFSEl.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dragonkue" style="content-visibility:auto;"><!--[0--><a href="/dragonkue" title="dragonkue"><img class="overflow-hidden rounded-full" alt="" src="/avatars/76c794c7c17503ae9a0d5336395bd132.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="oplatek" style="content-visibility:auto;"><!--[0--><a href="/oplatek" title="oplatek"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63e4bcb2d6278c161be4d623/dC4I7tCJtl9RR8zDSNjQz.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+28</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;5f1158120c833276f61f1a84&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg&quot;,&quot;fullname&quot;:&quot;Niels Rogge&quot;,&quot;name&quot;:&quot;nielsr&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:false,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:1336,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/nielsr"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Niels Rogge's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/nielsr"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Niels Rogge">Niels Rogge</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">nielsr</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->3 months ago, we started a <a href="https://www.reddit.com/r/MachineLearning/comments/1tgmwqr/reviving_paperswithcode_by_hugging_face_p/" rel="nofollow">revival</a> of <a href="https://paperswithcode.co" rel="nofollow">Papers with Code</a> (see also the <a href="https://x.com/NielsRogge/status/2056366395605078252" rel="nofollow">announcement tweet</a>). Its goal is to make open AI research accessible and digestible, so that people can easily find the artifacts related to a paper, find state-of-the-art (SOTA) across the various domains of AI, share interesting research and build on top of each other's work. In other words, its goal is to power the wave of research that leads to the next <a href="https://paperswithcode.co/paper/1706.03762" rel="nofollow">Transformer</a>.</p>
+<p>Of course, making AI research accessible requires a powerful search engine, so that humans and agents can quickly find relevant and related work, either through the website or the <code>pwc search</code> <a href="https://github.com/huggingface/pwc-cli" rel="nofollow">CLI command</a>, which agents can use via the <a href="https://github.com/huggingface/pwc-cli/blob/main/standalone_cli/SKILL.md" rel="nofollow">Skill</a>.</p>
+<p>It's important to note that searching for research is not quite the same as searching for regular text. A useful paper search engine should find an exact title or arXiv identifier, but it should also understand a query such as “small language models for code generation” even when those words do not appear together in a paper. It needs to recognize that “the original BERT paper” is a navigational request, tolerate an incomplete title or typos, and still respond quickly when a model service is cold or temporarily unavailable.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/search-results.png" alt="Papers with Code search results for the query 'DINO'" width="600">
+  <figcaption>Search results on Papers with Code for the query DINO.</figcaption>
+</figure>
+
+<p>For <a href="https://paperswithcode.co" rel="nofollow">Papers with Code</a>, we built this as a <strong>hybrid search</strong> system. This is also based on our prior experience at <a href="http://ml6.eu/" rel="nofollow">ML6</a>, where we developed <a href="https://paperswithcode.co/paper/2005.11401" rel="nofollow">RAG</a>-based systems for clients. It turned out that hybrid search typically outperforms keyword- and vector-based search systems, as it combines the best of both worlds (see also <a href="https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/azure-ai-search-outperforming-vector-search-with-hybrid-retrieval-and-reranking/3929167" rel="nofollow">this blog</a> for more info). Keyword search finds exact mentions, whereas vector search finds more fuzzy, semantically similar terms. Note that <a href="https://www.pinecone.io/learn/series/rag/rerankers/" rel="nofollow">rerankers</a> (also called cross-encoders) can further improve the results, although they also come with additional overhead and latency.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/hybrid-search.png" alt="Chart showing hybrid retrieval outperforming vector-only and keyword search" width="600">
+  <figcaption>Hybrid retrieval outperforms keyword- and vector-only search. Figure from Microsoft, <a href="https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/azure-ai-search-outperforming-vector-search-with-hybrid-retrieval-and-reranking/3929167" rel="nofollow">Azure AI Search: Outperforming vector search with hybrid retrieval and reranking</a> (2023).</figcaption>
+</figure>
+
+<p>Papers with Code relies on a PostgreSQL database, hence its full-text search capabilities provide a fast lexical baseline. For dense embeddings, <a href="https://github.com/pgvector/pgvector" rel="nofollow">pgvector</a> is used to add semantic recall, and the <a href="https://www.elastic.co/docs/reference/elasticsearch/rest-apis/reciprocal-rank-fusion" rel="nofollow">reciprocal rank fusion (RRF)</a> algorithm combines the two. Three Hugging Face services are used for the dense embeddings:</p>
+<ul>
+<li><a href="https://huggingface.co/docs/hub/jobs">Hugging Face Jobs</a> gives us burstable GPU compute for embedding the paper corpus.</li>
+<li><a href="https://huggingface.co/docs/hub/storage-buckets">Hugging Face Storage Buckets</a> provides the durable handoff between our database, experiments, and Jobs.</li>
+<li><a href="https://huggingface.co/docs/inference-endpoints/index">Hugging Face Inference Endpoints</a> serves low-latency embeddings for live queries and incremental updates.</li>
+</ul>
+<p>Today, the system maintains embeddings for more than 110,000 current papers sourced from <a href="https://arxiv.org/" rel="nofollow">arXiv</a> and <a href="https://hf.co/papers" rel="nofollow">Daily Papers</a>. This post explains the architecture, the design decisions behind it, and the lessons we learned while taking it to production.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="tldr" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tldr" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		TL;DR
+	</span>
+</h2>
+<p>We deliberately split search into an offline corpus build and an online search service:</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/architecture.png" alt="Architecture diagram of the offline corpus build and online hybrid search pipeline" width="600">
+  <figcaption>Architecture of the offline corpus build and online hybrid search pipeline.</figcaption>
+</figure>
+
+<p>The expensive, throughput-oriented work runs as Jobs. Durable artifacts live in a Bucket. Only the small query-embedding step sits on the request path, behind a protected Inference Endpoint, to power the online search. If that endpoint is cold, busy, or unhealthy, search immediately falls back to full-text retrieval. This separation makes the system both powerful and fast.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="start-with-a-strict-embedding-contract" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#start-with-a-strict-embedding-contract" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Start with a strict embedding contract
+	</span>
+</h2>
+<p>Embedding pipelines often fail in subtle ways: a model revision changes, query and document prompts are mixed up, vectors are truncated differently, or an updated abstract no longer matches its stored vector.</p>
+<p>We avoid this by treating the embedding format as a versioned API. Every paper is encoded as:</p>
+<pre><code class="language-text">normalized title + "\n\n" + normalized abstract
+</code></pre>
+<p>For each vector generation, we record:</p>
+<ul>
+<li>the model repository and exact revision;</li>
+<li>the output dimension;</li>
+<li>the input-format version;</li>
+<li>whether the input is a query or a document;</li>
+<li>the normalization method;</li>
+<li>a content hash for the source title and abstract.</li>
+</ul>
+<p>Our production generation uses <a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B"><code>Qwen/Qwen3-Embedding-0.6B</code></a>, pinned to an exact revision, with 256-dimensional L2-normalized vectors. We selected the model with help from the <a href="https://huggingface.co/spaces/mteb/leaderboard">MTEB leaderboard</a>, the go-to benchmark for comparing embedding models. Note that newer embedding models like Qwen3 allow for 2 new features:</p>
+<ul>
+<li>one can specify a <strong>dynamic embedding size</strong>, which allows to trade-off quality with speed/storage costs. Qwen models call this "MRL" which is short for <a href="https://paperswithcode.co/paper/2205.13147" rel="nofollow">Matryoshka Representation Learning</a>. You can learn all about it <a href="https://huggingface.co/blog/matryoshka">here</a>. We chose an embedding size of 256 to make the search fast.</li>
+<li>one can provide an <strong>instruction prompt</strong>. Qwen embedding models support a <code>document</code> prompt (which we use to embed the papers) and live searches use their <code>query</code> prompt (to embed the user query).</li>
+</ul>
+<p>This contract follows an embedding from export, through GPU inference, into PostgreSQL, and finally into online retrieval.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="jobs-turn-a-database-snapshot-into-a-vector-corpus" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#jobs-turn-a-database-snapshot-into-a-vector-corpus" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Jobs turn a database snapshot into a vector corpus
+	</span>
+</h2>
+<p>Full-corpus embedding is a classic batch workload. It needs a GPU for a relatively short period, benefits from high throughput, and should not consume resources between runs. <a href="https://huggingface.co/docs/huggingface_hub/guides/jobs">Hugging Face Jobs</a> fits that shape well: a Job is defined by a command, a <a href="https://huggingface.co/docs/hub/main/en/jobs-pricing#pricing">hardware flavor</a>, and optionally a Docker image, and can run <a href="https://docs.astral.sh/uv/" rel="nofollow">uv</a> scripts with their dependencies declared inline.</p>
+<p>Our corpus build starts by exporting the latest version of every paper from a repeatable-read PostgreSQL snapshot. The exporter streams rows rather than loading the catalog into memory, writes bounded JSONL shards, and creates a manifest containing row counts and SHA-256 checksums.</p>
+<p>We sync that immutable run directory to a private <a href="https://huggingface.co/docs/hub/storage-buckets">Storage Bucket</a> and mount the Bucket directly (using <a href="https://github.com/huggingface/hf-mount" rel="nofollow">hf-mount</a>) into an <code>l4x1</code> Job (an NVIDIA L4 GPU, which has 24GB of VRAM). From the worker's perspective it is simply a filesystem:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> uv run \
+  --flavor l4x1 \
+  --<span class="hljs-built_in">timeout</span> 6h \
+  --volume hf://buckets/OWNER/pwc-paper-embeddings:/bucket \
+  embed_papers_job.py \
+  --input /bucket/runs/RUN_ID/input \
+  --output /bucket/runs/RUN_ID/output \
+  --model Qwen/Qwen3-Embedding-0.6B \
+  --revision MODEL_REVISION \
+  --dimensions 256 \
+  --allow-matryoshka
+</code></pre>
+<p>The worker:</p>
+<ol>
+<li>verifies the input manifest and every shard checksum;</li>
+<li>loads the pinned model revision;</li>
+<li>sorts texts by length to reduce padding;</li>
+<li>calls <code>encode_document</code> in batches (as noted in the <a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B">model card</a>);</li>
+<li>reduces the batch size automatically if the GPU runs out of memory;</li>
+<li>truncates the <a href="https://huggingface.co/blog/matryoshka">Matryoshka representation</a> to 256 dimensions and normalizes it;</li>
+<li>writes float16 Parquet shards atomically; and</li>
+<li>records throughput, package versions, hardware, peak VRAM, row counts, and output checksums.</li>
+</ol>
+<p>Each completed shard has its own marker, so a restarted Job can skip verified work. This is useful for a large corpus: retrying should just resume work rather than overwriting existing embeddings.</p>
+<p>In our 5,000-paper pilot, the Qwen Job encoded about 75 papers per second at 1024 dimensions on an L4 GPU. The same pass could be deterministically materialized at 512 and 256 dimensions, so we could compare the storage and retrieval trade-offs without paying for more inference.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="buckets-are-the-connective-tissue" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#buckets-are-the-connective-tissue" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Buckets are the connective tissue
+	</span>
+</h2>
+<p><a href="https://huggingface.co/docs/hub/storage-buckets">Storage Buckets</a> are mutable, S3-like object storage on the Hub, optimized for AI workloads. They can be accessed through <code>hf://buckets/...</code> paths and <a href="https://github.com/huggingface/hf-mount" rel="nofollow">mounted</a> read-write in Jobs without building a separate storage integration.</p>
+<p>For us, the Bucket is more than a place to put vectors. It is the boundary between three systems with different lifecycles:</p>
+<ul>
+<li>the production database exports source records;</li>
+<li>ephemeral Jobs consume those records and produce vectors;</li>
+<li>the importer validates the results before touching the search index.</li>
+</ul>
+<p>We organize artifacts under immutable run prefixes:</p>
+<pre><code class="language-text">runs/&lt;run-id&gt;/
+├── input/
+│   ├── manifest.json
+│   └── papers-*.jsonl
+└── output/
+    ├── manifest.json
+    ├── embeddings-*.parquet
+    └── embeddings-*.complete.json
+</code></pre>
+<p>Buckets themselves are intentionally mutable, so immutability is an application-level rule: a run ID is never overwritten, and every artifact is covered by a manifest and checksum.</p>
+<p>This gives us several useful properties:</p>
+<ul>
+<li><strong>Reproducibility:</strong> we can trace a database generation back to an exact corpus snapshot, model revision, and set of artifacts.</li>
+<li><strong>Safe retries:</strong> Jobs can resume from completed shards in the same run prefix.</li>
+<li><strong>Cheap experiments:</strong> several models or dimensions can reuse one verified input snapshot.</li>
+<li><strong>Controlled rollout:</strong> importing a generation does not activate it. We first validate coverage and build its index.</li>
+<li><strong>Simple rollback:</strong> the previous generation and its artifacts remain available until the new one is proven stable.</li>
+</ul>
+<p>Only after the importer rechecks schemas, checksums, dimensions, normalization, unique paper IDs, and current content hashes do we load the vectors into PostgreSQL. We then build a separate <a href="https://en.wikipedia.org/wiki/Hierarchical_navigable_small_world" rel="nofollow">HNSW</a> index for the new generation and atomically mark it active only when every eligible current paper is covered (HNSW is the graph-based algorithm that enables fast vector search).</p>
+<h2 class="relative group flex items-baseline">
+	<a id="inference-endpoints-put-semantic-search-on-the-request-path" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-endpoints-put-semantic-search-on-the-request-path" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Endpoints put semantic search on the request path
+	</span>
+</h2>
+<p>Batch embeddings solve the document side of retrieval. A user query still needs to be embedded at request time using the same model contract.</p>
+<p>We deploy the pinned model as an authenticated <a href="https://huggingface.co/docs/inference-endpoints/index">Inference Endpoint</a> backed by <a href="https://github.com/huggingface/text-embeddings-inference" rel="nofollow">Text Embeddings Inference (TEI)</a>. The endpoint accepts the query text and returns a normalized 256-dimensional vector using the model's <code>query</code> prompt. Note that one could also leverage <a href="https://github.com/vllm-project/vllm" rel="nofollow">vLLM</a> or <a href="https://github.com/sgl-project/sglang" rel="nofollow">SGLang</a> here.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/inference-endpoint.png" alt="Hugging Face Inference Endpoint overview for the Papers with Code query embedding model" width="800">
+  <figcaption>Hugging Face Inference Endpoint for the Papers with Code query embedding model.</figcaption>
+</figure>
+
+<p>The API then performs a cosine-distance search over the active pgvector generation:</p>
+<pre><code class="language-sql"><span class="hljs-keyword">SELECT</span> paper_id,
+       embedding <span class="hljs-operator">&lt;=&gt;</span> <span class="hljs-built_in">CAST</span>(:query_vector <span class="hljs-keyword">AS</span> halfvec(<span class="hljs-number">256</span>)) <span class="hljs-keyword">AS</span> distance
+<span class="hljs-keyword">FROM</span> paper_embeddings
+<span class="hljs-keyword">WHERE</span> generation_id <span class="hljs-operator">=</span> :active_generation
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> embedding <span class="hljs-operator">&lt;=&gt;</span> <span class="hljs-built_in">CAST</span>(:query_vector <span class="hljs-keyword">AS</span> halfvec(<span class="hljs-number">256</span>))
+LIMIT <span class="hljs-number">50</span>;
+</code></pre>
+<p>The HNSW index keeps this lookup fast. On our 5,000-paper pilot, the 256-dimensional Qwen index achieved 0.9955 Recall@20 against exact search, with 1.31 ms p50 and 2.21 ms p95 HNSW lookup latency. Its table and index used about 27% of the storage of the 1024-dimensional version while retaining essentially the same ANN recall in that test.</p>
+<p>The Endpoint is configured with a maximum of one replica and can <a href="https://huggingface.co/docs/inference-endpoints/guides/autoscaling">scale to zero</a> when idle. That is a useful cost lever, as this means you're not paying when there's no usage. However, this also means cold starts must be part of the application design rather than treated as an exceptional event, as it takes some time for the endpoint to spin up and serve traffic.</p>
+<p>Our query client therefore has deliberately strict behavior:</p>
+<ul>
+<li>a one-second production timeout;</li>
+<li>a non-blocking concurrency limit;</li>
+<li>response dimension, finiteness, and norm validation;</li>
+<li>a short cache keyed by the query and embedding generation;</li>
+<li>a circuit breaker after repeated failures; and</li>
+<li>no raw query text in logs, only a normalized fingerprint.</li>
+</ul>
+<p>If the endpoint is scaling up, times out, returns a malformed vector, or has no concurrency available, we skip the semantic branch immediately. Users still receive lexical results instead of waiting for an unreliable dependency.</p>
+<p>Inference Endpoints works really reliably, and includes a nice dashboard so you can quickly see key analytics.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/endpoint-analytics.png" alt="Hugging Face Inference Endpoint analytics dashboard showing request volume, errors, latency, and replica state" width="600">
+  <figcaption>Inference Endpoint analytics showing request volume, errors, latency, and replica state.</figcaption>
+</figure>
+
+<h2 class="relative group flex items-baseline">
+	<a id="hybrid-retrieval-is-stronger-than-either-branch-alone" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hybrid-retrieval-is-stronger-than-either-branch-alone" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hybrid retrieval is stronger than either branch alone
+	</span>
+</h2>
+<p>For every query, the lexical branch retrieves up to 50 candidates using weighted PostgreSQL full-text search. The semantic branch retrieves up to 50 candidates from pgvector.</p>
+<p>We combine their ranks using weighted reciprocal rank fusion (RRF):</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mtext>score</mtext><mo stretchy="false">(</mo><mi>d</mi><mo stretchy="false">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>r</mi><mtext> </mtext><mo>∈</mo><mtext> </mtext><mo stretchy="false">{</mo><mtext>lexical</mtext><mo separator="true">,</mo><mtext> </mtext><mtext>semantic</mtext><mo stretchy="false">}</mo></mrow></munder><mfrac><msub><mi>w</mi><mi>r</mi></msub><mrow><mi>k</mi><mo>+</mo><msub><mtext>rank</mtext><mi>r</mi></msub><mo stretchy="false">(</mo><mi>d</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow>
+\text{score}(d) = \sum_{r \,\in\, \{\text{lexical},\, \text{semantic}\}} \frac{w_r}{k + \text{rank}_r(d)}
+</math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord mathnormal">d</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height: 2.6236em; vertical-align: -1.516em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.05em;"><span style="top: -1.809em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">r</span><span class="mspace mtight" style="margin-right: 0.1952em;"></span><span class="mrel mtight">∈</span><span class="mspace mtight" style="margin-right: 0.1952em;"></span><span class="mopen mtight">{</span><span class="mord text mtight"><span class="mord mtight">lexical</span></span><span class="mpunct mtight">,</span><span class="mspace mtight" style="margin-right: 0.1952em;"></span><span class="mord text mtight"><span class="mord mtight">semantic</span></span><span class="mclose mtight">}</span></span></span></span><span style="top: -3.05em;"><span class="pstrut" style="height: 3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.516em;"><span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.1076em;"><span style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0315em;">k</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mord"><span class="mord text"><span class="mord">rank</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.1514em;"><span style="top: -2.55em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">r</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">d</span><span class="mclose">)</span></span></span><span style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.1514em;"><span style="top: -2.55em; margin-left: -0.0269em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">r</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>RRF is simple and robust, because it combines ranks rather than scores from two systems with different scales. Basically, if a paper is ranked high both by the lexical branch and the semantic branch, it has a higher chance of being ranked high by the hybrid search. We currently use equal branch weights and (k=60) (k is the "rank constant", a hyperparameter of the RRF algorithm).</p>
+<p>Dense retrieval improves recall for conceptual queries. Full-text retrieval remains excellent for exact terminology, identifiers, and rare names. We also preserve deterministic identity behavior on top of the fused ranking:</p>
+<ul>
+<li>exact titles and arXiv IDs stay at the top;</li>
+<li>the <a href="https://paperswithcode.co/methods" rel="nofollow">method taxonomy</a> recognizes navigational searches such as “the original BERT paper”;</li>
+<li>incomplete titles and bounded spelling mistakes use conservative trigram candidates; and</li>
+<li>ambiguous fuzzy matches abstain rather than forcing a bad result.</li>
+</ul>
+<p>Note: hybrid search isn't always the best option, it is recommended to start with keyword search as a cheap and fast baseline, and only adding semantic and/or hybrid search when it turns out those give a reasonable boost in retrieval quality. One could further improve the search by adding a reranker after keyword/semantic/hybrid retrieval, using a model like <a href="https://huggingface.co/collections/Qwen/qwen3-reranker">Qwen3-Reranker</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="one-endpoint-two-update-paths" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#one-endpoint-two-update-paths" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		One Endpoint, two update paths
+	</span>
+</h2>
+<p>The large initial corpus is embedded with Jobs, but Papers with Code changes continuously. New papers arrive, abstracts are corrected, and new arXiv versions become current.</p>
+<p>Launching a GPU Job for a handful of changed rows would add unnecessary startup and orchestration overhead. Instead, an hourly incremental process selects missing or content-changed papers and sends a bounded delta to the same TEI Endpoint, this time with the <code>document</code> prompt.</p>
+<p>Each run processes at most 500 papers in batches of 16. Before an embedding is written, the source row is locked and its content hash is checked again. If a paper changed during inference, that vector is discarded and picked up by the next run.</p>
+<p>This gives us a useful division of labor:</p>
+<ul>
+<li><strong>Jobs</strong> handle full rebuilds, new model generations, and large backfills.</li>
+<li><strong>Inference Endpoints</strong> handle interactive query embeddings and small incremental document updates.</li>
+<li><strong>Buckets</strong> preserve the large-build artifacts and make those builds resumable and auditable.</li>
+</ul>
+<p>The hourly path keeps the active index close to the live catalog without turning an online endpoint into an unbounded batch processor.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="related-papers-become-almost-free-online" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#related-papers-become-almost-free-online" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Related papers become almost free online
+	</span>
+</h2>
+<p>The same document embeddings also power related-paper recommendations on each paper page.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/pwc-search/related_papers.png" alt="Related papers feature" width="400">
+  <figcaption>Related papers for <a href="https://paperswithcode.co/paper/2605.12500" rel="nofollow">SenseNova-U1</a>.</figcaption>
+</figure>
+
+<p>Because the source paper already has a stored vector, related-paper retrieval requires no model call at request time. It is a single nearest-neighbor query over the active generation. If a vector is temporarily missing, the application can use a previous arXiv version or fill results from the existing task- and citation-based fallback. We fetch citation data through the <a href="https://www.semanticscholar.org/product/api" rel="nofollow">Semantic Scholar API</a> and also built <a href="https://github.com/huggingface/s2-cli" rel="nofollow"><code>s2-cli</code></a>, a command-line interface for querying its citation graph. The latter is used by the agent at <a href="https://paperswithcode.co/chat" rel="nofollow">https://paperswithcode.co/chat</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-we-learned" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-we-learned" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What we learned
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="1-separate-throughput-work-from-latency-sensitive-work" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#1-separate-throughput-work-from-latency-sensitive-work" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		1. Separate throughput work from latency-sensitive work
+	</span>
+</h3>
+<p>Corpus embedding and query embedding use the same model, but they are different infrastructure problems. Jobs optimize for throughput and bounded cost; Inference Endpoints optimize for availability and request latency.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="2-make-storage-the-explicit-contract-between-compute-and-production" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#2-make-storage-the-explicit-contract-between-compute-and-production" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		2. Make storage the explicit contract between compute and production
+	</span>
+</h3>
+<p>Buckets provide an explicit handoff between compute and production. Checksummed artifacts create a reviewable boundary before data enters the production index.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="3-pin-more-than-the-model-name" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#3-pin-more-than-the-model-name" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		3. Pin more than the model name
+	</span>
+</h3>
+<p>The revision, dimension, prompt, normalization, and input formatter all affect retrieval. Store them together and validate them everywhere.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="4-design-for-cold-starts" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#4-design-for-cold-starts" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		4. Design for cold starts
+	</span>
+</h3>
+<p>Scale-to-zero is valuable when traffic is intermittent, but only if the product has a fast fallback. Hybrid search gave us that fallback naturally: lexical search is always useful on its own.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="5-smaller-vectors-can-be-a-systems-feature" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#5-smaller-vectors-can-be-a-systems-feature" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		5. Smaller vectors can be a systems feature
+	</span>
+</h3>
+<p>Matryoshka embeddings let us evaluate quality, memory, index size, and latency as one trade-off. In our pilot, 256 dimensions preserved ANN recall while materially shrinking storage compared with 1024 dimensions.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="6-activation-should-be-boring" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#6-activation-should-be-boring" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		6. Activation should be boring
+	</span>
+</h3>
+<p>New generations are imported beside the current one, indexed independently, checked for complete and current coverage, and then activated atomically. Rollback is a configuration change, not an emergency recomputation.</p>
+<p>Feel free to try out the search at <a href="https://paperswithcode.co" rel="nofollow">https://paperswithcode.co</a> or the chat interface at <a href="https://paperswithcode.co/chat" rel="nofollow">https://paperswithcode.co/chat</a>, and let us know any feedback!</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/vllm-jobs"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/vllm-jobs/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">vllm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">inference</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Run a vLLM Server on HF Jobs in One Command</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 14</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 26, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/reflection-beam"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/reflection-beam/thumbnail.jpg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">open-source-collab</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">transformers</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Welcome Beam: a 501B open model you can own, customize, and scale</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="burtenshaw" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 19</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/pwc-search&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/pwc-search&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a8d7d07c788ea6d2df743ac&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;nielsr&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fpwc-search">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fpwc-search">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fpwc-search" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">34</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nielsr" style="content-visibility:auto;"><!--[0--><a href="/nielsr" title="nielsr"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="patrickfleith" style="content-visibility:auto;"><!--[0--><a href="/patrickfleith" title="patrickfleith"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/635bf083445de485328c56ad/w0NN4AqehApXwsb5wtPhm.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kshitijthakkar" style="content-visibility:auto;"><!--[0--><a href="/kshitijthakkar" title="kshitijthakkar"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67af2623dad5fcb9007967e4/LhJQ78BF1lvK0aXSqFSEl.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="dragonkue" style="content-visibility:auto;"><!--[0--><a href="/dragonkue" title="dragonkue"><img class="overflow-hidden rounded-full" alt="" src="/avatars/76c794c7c17503ae9a0d5336395bd132.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="oplatek" style="content-visibility:auto;"><!--[0--><a href="/oplatek" title="oplatek"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63e4bcb2d6278c161be4d623/dC4I7tCJtl9RR8zDSNjQz.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="gbatchkala" style="content-visibility:auto;"><!--[0--><a href="/gbatchkala" title="gbatchkala"><img class="overflow-hidden rounded-full" alt="" src="/avatars/a78a01e1d3ffc11bd098b88fc4ba86f0.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kalyan-ks" style="content-visibility:auto;"><!--[0--><a href="/kalyan-ks" title="kalyan-ks"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/RADdMmNPDp2u0pTsc0IV9.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Bonkh" style="content-visibility:auto;"><!--[0--><a href="/Bonkh" title="Bonkh"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66a66b834e8e8af943a81535/xWdYjyCmEd36bru_rZKlS.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hiepnh" style="content-visibility:auto;"><!--[0--><a href="/hiepnh" title="hiepnh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/15720cf8cd69a7fecfc749f5524c2500.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ridha" style="content-visibility:auto;"><!--[0--><a href="/ridha" title="ridha"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60dd662c276bdf34b244163f/GsV4wpuI_qcV-lDdF9xB1.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="bezzam" style="content-visibility:auto;"><!--[0--><a href="/bezzam" title="bezzam"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6384db7fb2906edaf835a91d/MOTXxaOmjlTZ8wONYifnD.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+22</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Collections mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

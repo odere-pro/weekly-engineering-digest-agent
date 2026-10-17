@@ -1,0 +1,323 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/vllm-jobs/thumbnail.png" />
+
+		<meta property="og:title" content="Run a vLLM Server on HF Jobs in One Command" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/vllm-jobs" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/vllm-jobs/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/vllm-jobs">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Run a vLLM Server on HF Jobs in One Command</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="run-a-vllm-server-on-hf-jobs-in-one-command" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#run-a-vllm-server-on-hf-jobs-in-one-command" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Run a vLLM Server on HF Jobs in One Command
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 26, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/vllm-jobs.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fvllm-jobs" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">14</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wnagai" style="content-visibility:auto;"><!--[0--><a href="/wnagai" title="wnagai"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/qhFBLwRiN2qD3nOyTiH5q.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mrdbourke" style="content-visibility:auto;"><!--[0--><a href="/mrdbourke" title="mrdbourke"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659922312540-610a70f35a40a8bfebfbf09b.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tgohblio" style="content-visibility:auto;"><!--[0--><a href="/tgohblio" title="tgohblio"><img class="overflow-hidden rounded-full" alt="" src="/avatars/337163973a95b2215075bc7d848a19ec.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[0--><a href="/sergiopaniego" title="sergiopaniego"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mishig" style="content-visibility:auto;"><!--[0--><a href="/mishig" title="mishig"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+8</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;631ce4b244503b72277fc89f&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg&quot;,&quot;fullname&quot;:&quot;Quentin Gallouédec&quot;,&quot;name&quot;:&quot;qgallouedec&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:true,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:729,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/qgallouedec"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Quentin Gallouédec's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/qgallouedec"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Quentin Gallouédec">Quentin Gallouédec</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">qgallouedec</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->You can spin up a private, OpenAI-compatible LLM endpoint on Hugging Face infrastructure with a single command — no servers to provision, no Kubernetes, pay-per-second. Once it's up, you can query it from your laptop, a notebook, or anywhere else.</p>
+<p>It's the quickest way to stand up a model for tests, evals, or batch generation. (If you're after a managed, production-ready service instead, that's what <a href="https://huggingface.co/docs/inference-endpoints">Inference Endpoints</a> are for — <a href="#hf-jobs-or-inference-endpoints" rel="nofollow">more on when to pick which</a> at the end.)</p>
+<p>Here's the whole thing end to end.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="prerequisites" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#prerequisites" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Prerequisites
+	</span>
+</h2>
+<ul>
+<li>A payment method or a positive prepaid credit balance (Jobs is billed per‑minute by hardware usage).</li>
+<li><code>huggingface_hub &gt;= 1.20.0</code>: <code>pip install -U "huggingface_hub&gt;=1.20.0"</code>.</li>
+<li>Logged in locally: <code>hf auth login</code>.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="launch-the-server" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#launch-the-server" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Launch the server
+	</span>
+</h2>
+<p><code>hf jobs run</code> is <code>docker run</code> for HF infrastructure. We use the official <code>vllm/vllm-openai</code> image, ask for a GPU with <code>--flavor</code>, and expose vLLM's port with <code>--expose</code>:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> run --flavor a10g-large --expose 8000 --<span class="hljs-built_in">timeout</span> 2h \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3-4B --host 0.0.0.0 --port 8000
+</code></pre>
+<p><code>--expose 8000</code> routes the container's port through HF's public jobs proxy (see the <a href="https://huggingface.co/docs/hub/jobs-serving">Serve Models guide</a> for the full reference). The command prints the URL your server is reachable at:</p>
+<pre><code>✓ Job started
+  id: 6a381ca1953ed90bfb947332
+  url: https://huggingface.co/jobs/qgallouedec/6a381ca1953ed90bfb947332
+Hint: Exposed ports are reachable at (requires an HF token with read access to the job):
+  https://6a381ca1953ed90bfb947332--8000.hf.jobs
+</code></pre>
+<p><code>6a381ca1953ed90bfb947332</code> is your job ID. Keep track of it, we'll need it. We'll use <code>&lt;job_id&gt;</code> as a placeholder for it in the rest of the post.</p>
+<p>Give it a couple of minutes to download weights and boot. When the logs show <code>Application startup complete</code>, you're live.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="query-it-from-anywhere" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#query-it-from-anywhere" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Query it from anywhere
+	</span>
+</h2>
+<p>vLLM speaks the OpenAI API, and every request just needs your HF token as a bearer token. The quickest way to hit it is curl:</p>
+<pre><code class="language-bash">curl https://&lt;job_id&gt;--8000.hf.jobs/v1/chat/completions \
+  -H <span class="hljs-string">"Authorization: Bearer <span class="hljs-subst">$(hf auth token)</span>"</span> \
+  -H <span class="hljs-string">"Content-Type: application/json"</span> \
+  -d <span class="hljs-string">'{</span>
+<span class="hljs-string">    "model": "Qwen/Qwen3-4B",</span>
+<span class="hljs-string">    "messages": [{"role": "user", "content": "Hello!"}],</span>
+<span class="hljs-string">    "chat_template_kwargs": {"enable_thinking": false}</span>
+<span class="hljs-string">  }'</span>
+</code></pre>
+<p>which returns the usual OpenAI-style JSON, with <code>choices[0].message.content</code> holding <code>"Hello! How can I assist you today? 😊"</code>.</p>
+<p>Or, from Python, point the OpenAI client at the exposed URL and pass the token as the API key:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> huggingface_hub <span class="hljs-keyword">import</span> get_token
+<span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="hljs-string">"https://&lt;job_id&gt;--8000.hf.jobs/v1"</span>,
+    api_key=get_token(),
+)
+resp = client.chat.completions.create(
+    model=<span class="hljs-string">"Qwen/Qwen3-4B"</span>,
+    messages=[{<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: <span class="hljs-string">"Hello!"</span>}],
+    extra_body={<span class="hljs-string">"chat_template_kwargs"</span>: {<span class="hljs-string">"enable_thinking"</span>: <span class="hljs-literal">False</span>}},
+)
+<span class="hljs-built_in">print</span>(resp.choices[<span class="hljs-number">0</span>].message.content)
+</code></pre>
+<pre><code>Hello! How can I assist you today? 😊
+</code></pre>
+<p>Quick health check before you start: <code>curl https://&lt;job_id&gt;--8000.hf.jobs/v1/models -H "Authorization: Bearer $(hf auth token)"</code> should list the model.</p>
+<blockquote class="warning">
+<p><strong>🔐 The endpoint is gated, not public.</strong> Every request must carry an HF token with <strong>read access to the job's namespace</strong>. A plain browser visit will be rejected. In effect, the jobs proxy <em>is</em> your API gate: access is scoped to you (and your org). That's fine for private use, but treat the URL accordingly: don't share it expecting it to be open, and don't paste your token into untrusted places. If you need finer-grained or public access, put a proper gateway in front instead. Or see <a href="#hf-jobs-or-inference-endpoints" rel="nofollow">HF Jobs or Inference Endpoints?</a> below.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="clean-up" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#clean-up" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Clean up
+	</span>
+</h2>
+<p>Jobs are billed per second, so stop the server when you're done:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> cancel &lt;job_id&gt;
+</code></pre>
+<p>The <code>--timeout</code> you set is a safety net (it'll auto-stop), but cancelling explicitly is cheaper. An <code>a10g-large</code> runs at $1.50/hour — check <code>hf jobs hardware</code> for the full price list and pick the smallest flavor that fits your model.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="going-further-bigger-models" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#going-further-bigger-models" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Going further: bigger models
+	</span>
+</h2>
+<p>The same command scales to much larger models — pick a beefier <code>--flavor</code> and tell vLLM to shard the model across the GPUs with <code>--tensor-parallel-size</code>. For example, the 122B Qwen3.5 mixture-of-experts model on 2× H200:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> run --flavor h200x2 --expose 8000 --<span class="hljs-built_in">timeout</span> 2h \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3.5-122B-A10B \
+  --host 0.0.0.0 --port 8000 --tensor-parallel-size 2 \
+  --max-model-len 32768 --max-num-seqs 256
+</code></pre>
+<p><code>--tensor-parallel-size</code> should match the number of GPUs in the flavor (<code>h200x2</code> → 2, <code>h200x8</code> → 8). Run <code>hf jobs hardware</code> to see what's available and give bigger models a longer <code>--timeout</code>, since they take longer to download and load. For large models, H200 flavors are usually the best value.</p>
+<p>The <code>--max-model-len 32768 --max-num-seqs 256</code> flags are specific to this model: Qwen3.5-122B is a hybrid Mamba/attention architecture with a 256K-token default context, which doesn't leave enough memory for vLLM's default batch settings. Capping the context length and concurrent-sequence count keeps it within the GPUs' memory. If a model fails to start with an out-of-memory or cache-block error, dialing these two down is the first thing to try. Everything else (the exposed URL, the OpenAI client, the token auth) stays exactly the same.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="going-further-chat-with-it-in-a-ui" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#going-further-chat-with-it-in-a-ui" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Going further: Chat with it in a UI
+	</span>
+</h2>
+<p>Prefer a chat window over curl? A few lines of <a href="https://www.gradio.app/" rel="nofollow">Gradio</a> point at the same endpoint. Add <code>--reasoning-parser deepseek_r1</code> to the <code>vllm serve</code> command so Qwen3's thinking comes back as a separate field (not necessary, but helpful), then run this code locally (you'll just need the job ID):</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr
+<span class="hljs-keyword">from</span> gradio <span class="hljs-keyword">import</span> ChatMessage
+<span class="hljs-keyword">from</span> huggingface_hub <span class="hljs-keyword">import</span> get_token
+<span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI
+
+client = OpenAI(base_url=<span class="hljs-string">"https://&lt;job_id&gt;--8000.hf.jobs/v1"</span>, api_key=get_token())
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">chat</span>(<span class="hljs-params">message, history</span>):
+    messages = [{<span class="hljs-string">"role"</span>: m[<span class="hljs-string">"role"</span>], <span class="hljs-string">"content"</span>: m[<span class="hljs-string">"content"</span>]} <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> history <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> m.get(<span class="hljs-string">"metadata"</span>)]
+    messages.append({<span class="hljs-string">"role"</span>: <span class="hljs-string">"user"</span>, <span class="hljs-string">"content"</span>: message})
+    stream = client.chat.completions.create(model=<span class="hljs-string">"Qwen/Qwen3-4B"</span>, messages=messages, stream=<span class="hljs-literal">True</span>)
+
+    thinking, answer = <span class="hljs-string">""</span>, <span class="hljs-string">""</span>
+    <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> stream:
+        delta = chunk.choices[<span class="hljs-number">0</span>].delta
+        thinking += delta.model_extra.get(<span class="hljs-string">"reasoning"</span>, <span class="hljs-string">""</span>)
+        answer += delta.content <span class="hljs-keyword">or</span> <span class="hljs-string">""</span>
+        out = []
+        <span class="hljs-keyword">if</span> thinking.strip():
+            status = <span class="hljs-string">"done"</span> <span class="hljs-keyword">if</span> answer.strip() <span class="hljs-keyword">else</span> <span class="hljs-string">"pending"</span>
+            out.append(ChatMessage(role=<span class="hljs-string">"assistant"</span>, content=thinking, metadata={<span class="hljs-string">"title"</span>: <span class="hljs-string">"💭 Thinking"</span>, <span class="hljs-string">"status"</span>: status}))
+        <span class="hljs-keyword">if</span> answer.strip():
+            out.append(ChatMessage(role=<span class="hljs-string">"assistant"</span>, content=answer))
+        <span class="hljs-keyword">yield</span> out
+
+gr.ChatInterface(chat).launch()
+</code></pre>
+<p>Run it, open <code>http://127.0.0.1:7860</code>, and chat — reasoning streams into the collapsible panel, the answer below.</p>
+<video alt="vllm-jobs-chat-ui" autoplay="" loop="" muted="" playsinline="">
+  <source src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vllm-jobs/demo.mp4" type="video/mp4">
+</video>
+
+<h2 class="relative group flex items-baseline">
+	<a id="going-further-ssh-into-the-running-server" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#going-further-ssh-into-the-running-server" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Going further: SSH into the running server
+	</span>
+</h2>
+<p>Need to debug a startup failure, watch GPU memory, or tail logs interactively? You can open a shell straight into the running job. Launch it with <code>--ssh</code> and make sure your public key is registered at <a href="https://huggingface.co/settings/keys">huggingface.co/settings/keys</a>:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> run --flavor a10g-large --expose 8000 --<span class="hljs-built_in">timeout</span> 2h --ssh \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3-4B --host 0.0.0.0 --port 8000
+</code></pre>
+<p>then connect with the job ID:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> ssh &lt;job_id&gt;
+</code></pre>
+<p>You're now inside the container, where you can run <code>nvidia-smi</code>, inspect the process, or poke at the model directly — which makes debugging and monitoring much easier than reading logs from the outside. SSH support requires <code>huggingface_hub &gt;= 1.20.0</code>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="going-further-use-it-as-a-coding-agent-backend-with-pi" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#going-further-use-it-as-a-coding-agent-backend-with-pi" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Going further: Use it as a coding-agent backend with Pi
+	</span>
+</h2>
+<p>The same endpoint can back a terminal coding agent. <a href="https://pi.dev" rel="nofollow">Pi</a> is a provider-agnostic agent harness. Point it at the job and you get a Read/Write/Edit/Bash agent running on your own self-hosted model.</p>
+<p>One thing to set up first: agents drive the model through tool calls, and vLLM only accepts those if the server is launched with tool calling enabled. So relaunch with <code>--enable-auto-tool-choice</code> and a <code>--tool-call-parser</code> matching the model family (<code>hermes</code> for Qwen3). Agents also benefit from a stronger model, so this is a good place to bring in the bigger one:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> run --flavor h200x2 --expose 8000 --<span class="hljs-built_in">timeout</span> 2h \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3.5-122B-A10B \
+  --host 0.0.0.0 --port 8000 --tensor-parallel-size 2 \
+  --max-model-len 32768 --max-num-seqs 256 \
+  --reasoning-parser deepseek_r1 \
+  --enable-auto-tool-choice --tool-call-parser hermes
+</code></pre>
+<p>Then add the job as a custom provider in <code>~/.pi/agent/models.json</code>:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"providers"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"hf-jobs"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"baseUrl"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"https://&lt;job_id&gt;--8000.hf.jobs/v1"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"api"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"openai-completions"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"apiKey"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"!hf auth token"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"models"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span> <span class="hljs-attr">"id"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Qwen/Qwen3.5-122B-A10B"</span> <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>Then launch the agent against it:</p>
+<pre><code class="language-bash">pi
+</code></pre>
+<p>The model you spun up a couple of commands ago, now driving an interactive coding agent in your terminal.</p>
+<video alt="vllm-jobs-pi" autoplay="" loop="" muted="" playsinline="">
+  <source src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vllm-jobs/pi.mp4" type="video/mp4">
+</video>
+
+<h2 class="relative group flex items-baseline">
+	<a id="hf-jobs-or-inference-endpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hf-jobs-or-inference-endpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		HF Jobs or Inference Endpoints?
+	</span>
+</h2>
+<p>HF Jobs isn't the only way to serve a model on Hugging Face. <a href="https://huggingface.co/docs/inference-endpoints">Inference Endpoints</a> are our managed product for the same job, and which one fits depends on what you're after.</p>
+<p>Reach for <strong>HF Jobs</strong> when you want maximum flexibility and control: it's just <code>docker run</code> on HF infrastructure, so you pick the image, the exact <code>vllm serve</code> flags, and the hardware, and you pay per second for as long as the job runs. That makes it a great fit for experiments, one-off evals, batch generation, or kicking the tires on a model before committing to anything.</p>
+<p>Reach for <strong>Inference Endpoints</strong> when you want something more production-ready. They add the operational niceties a long-lived service needs: finer-grained access control (an endpoint can be public, protected, or private), and scale-to-zero, so you're not billed during periods of inactivity. If you're standing up a durable endpoint rather than running a job, that's the tool to grab.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="further-reading" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#further-reading" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Further reading
+	</span>
+</h2>
+<p>This post sticks to vLLM, but the same expose-a-port pattern works with any OpenAI-compatible server. To serve GGUFs with llama.cpp or run SGLang instead, see the <a href="https://huggingface.co/docs/hub/jobs-serving">Serve Models on Jobs guide</a>, which walks through those backends.</p>
+<!----></div></div></div> <!--[-1--><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/pwc-search"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/pwc-search/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">research</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">search</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">embeddings</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">How Hugging Face Inference Endpoints, Jobs, and Buckets Power Search on Papers with Code</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nielsr" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 34</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 21, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/native-speed-vllm-transformers-backend"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/native-speed-vllm-transformers-backend/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">vllm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">transformers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">inference</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Native-speed vLLM transformers modeling backend</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hmellor" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/ov-55uEKP4mJhavhdQ42x.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lysandre" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e3aec01f55e2b62848a5217/PMKS0NNB4MJQlTSFzh918.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 77</div><!--]--> <!--[0--><span class="whitespace-nowrap">July 8, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/vllm-jobs&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/vllm-jobs&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a3d8fbf76fe2df5764b4f40&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;qgallouedec&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fvllm-jobs">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fvllm-jobs">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fvllm-jobs" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">14</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wnagai" style="content-visibility:auto;"><!--[0--><a href="/wnagai" title="wnagai"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/qhFBLwRiN2qD3nOyTiH5q.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mrdbourke" style="content-visibility:auto;"><!--[0--><a href="/mrdbourke" title="mrdbourke"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1659922312540-610a70f35a40a8bfebfbf09b.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tgohblio" style="content-visibility:auto;"><!--[0--><a href="/tgohblio" title="tgohblio"><img class="overflow-hidden rounded-full" alt="" src="/avatars/337163973a95b2215075bc7d848a19ec.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[0--><a href="/sergiopaniego" title="sergiopaniego"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mishig" style="content-visibility:auto;"><!--[0--><a href="/mishig" title="mishig"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60a551a34ecc5d054c8ad93e/Z3GDwcXyTyiAXfoeO7tEt.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hf-dwarez" style="content-visibility:auto;"><!--[0--><a href="/hf-dwarez" title="hf-dwarez"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a15be1b0c5fef54b92c60ab/qOXkTss_QR0gy6dSzXI8T.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Aanuoluwapo65" style="content-visibility:auto;"><!--[0--><a href="/Aanuoluwapo65" title="Aanuoluwapo65"><img class="overflow-hidden rounded-full" alt="" src="/avatars/129d1e86bbaf764b507501f4feb177db.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Pegasus10" style="content-visibility:auto;"><!--[0--><a href="/Pegasus10" title="Pegasus10"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/SUSAsNhSj4_KHqyDGJnkr.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Tabbab321" style="content-visibility:auto;"><!--[0--><a href="/Tabbab321" title="Tabbab321"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0e2a406f3c8ae3d17e7e67139aca4553.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Mayank682682" style="content-visibility:auto;"><!--[0--><a href="/Mayank682682" title="Mayank682682"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b44c9784698ee3c4658e9bbe6b31d9b3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+2</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[-1--><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

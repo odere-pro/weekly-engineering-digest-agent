@@ -1,0 +1,1595 @@
+<!doctype html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <meta name="description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="fb:app_id" content="1321688464574422" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:site" content="@huggingface" />
+
+    <meta
+      name="twitter:image"
+      content="https://cdn-thumbnails.huggingface.co/social-thumbnails/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots.png"
+    />
+
+    <meta property="og:title" content="Direct Preference Optimization Beyond Chatbots" />
+
+    <meta property="og:description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:url"
+      content="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+    />
+
+    <meta
+      property="og:image"
+      content="https://cdn-thumbnails.huggingface.co/social-thumbnails/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots.png"
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+    <link
+      rel="preload"
+      href="/front/build/kube-1f021fd/katex.css"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+
+    <noscript>
+      <link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+    </noscript>
+
+    <link
+      rel="canonical"
+      href="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+    />
+    <!--g2q6vf-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/blog/feed.xml"
+      title="Hugging Face Blog"
+    />
+    <!---->
+    <title>Direct Preference Optimization Beyond Chatbots</title>
+
+    <link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+  </head>
+  <body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+    <!--[-->
+    <div class="flex min-h-dvh flex-col">
+      <div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}">
+        <!---->
+      </div>
+      <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}">
+        <!---->
+      </div>
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="SystemThemeMonitor"
+        data-props='{"isLoggedIn":false}'
+      >
+        <!---->
+      </div>
+      <!--[0-->
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="MainHeader"
+        data-props='{"classNames":"","isWide":false,"isZh":false,"canCreateKernels":false,"isPro":false}'
+      >
+        <!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]-->
+      <!--[-1--><!--]--><!---->
+      <!--[-1--><!--]--><!---->
+      <!--[0-->
+      <div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}">
+        <!--[-1--><!--]--><!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]--><!---->
+      <main class="flex flex-1 flex-col">
+        <div class="container relative flex flex-row justify-center gap-12">
+          <div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl">
+            <div class="max-lg:overflow-hidden">
+              <div
+                class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"
+              >
+                <div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}">
+                  <div></div>
+                  <!---->
+                </div>
+                <div class="mb-4">
+                  <a
+                    href="/blog"
+                    class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"
+                  >
+                    <!---->
+                    Back to Articles</a
+                  >
+                </div>
+                <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden">
+                  <!---->
+                  <a
+                    id="direct-preference-optimization-beyond-chatbots"
+                    class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                    href="#direct-preference-optimization-beyond-chatbots"
+                    rel="nofollow"
+                  >
+                    <span class="header-link"> </span>
+                  </a>
+                  <span> Direct Preference Optimization Beyond&nbsp;Chatbots </span>
+                  <!---->
+                </h1>
+                <div>
+                  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+                    <!--[0--><a
+                      href="/blog"
+                      class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"
+                      ><!--[0--><span
+                        class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs"
+                        ><!--[0--><span>Team</span><!--]--></span
+                      ><!---->
+                      <span>Article</span><!--]--></a
+                    ><!--]-->
+                    <div class="flex items-center gap-x-4">
+                      <!--[0--><span class="whitespace-nowrap text-sm sm:text-base"
+                        >Published June 3, 2026</span
+                      ><!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                  </div>
+                  <!--[-1--><!--]-->
+                </div>
+                <!---->
+                <div class="not-prose mb-6 font-sans xl:hidden">
+                  <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1 z-1 lg:sticky lg:top-8">
+                      <!--[0--><a
+                        href="/login?next=%2Fblog%2FDharma-AI%2Fdirect-preference-optimization-beyond-chatbots"
+                        class="self-start"
+                        ><!--[0--><!---->
+                        <div
+                          role="checkbox"
+                          class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                        >
+                          <input disabled="" type="checkbox" class="peer hidden" />
+                          <!---->
+                          Upvote
+                          <div class="font-semibold text-orange-500">12</div>
+                          <!---->
+                        </div>
+                        <!----><!--]-->
+                        <!--[-1--><!--]--><!----></a
+                      ><!--]-->
+                      <!--[0--><!--[0-->
+                      <ul class="flex items-center text-gray-600 flex-row text-base">
+                        <!--[-->
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="lucas-treuke"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="kashif"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/kashif" title="kashif"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="pcuenq"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/pcuenq" title="pcuenq"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="vadapavlover"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/vadapavlover" title="vadapavlover"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Lgfv6PZzBD6mbl8jLrpFw.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="ariG23498"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/ariG23498" title="ariG23498"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="luke-loan-atlas"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <!--]-->
+                        <!--[0-->
+                        <li
+                          class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                        >
+                          <!--[--><!--[0--><button
+                            class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                          >
+                            +6</button
+                          ><!--]--><!--]-->
+                        </li>
+                        <!--]-->
+                      </ul>
+                      <!--]--><!--]-->
+                    </div>
+                    <!--[-1--><!--]-->
+                    <dialog
+                      class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose"
+                    >
+                      <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                        <!--[-1--><!--]-->
+                      </div>
+                    </dialog>
+                    <!----><!---->
+                  </div>
+                </div>
+                <div class="not-prose">
+                  <div
+                    class="SVELTE_HYDRATER contents"
+                    data-target="BlogAuthorsByline"
+                    data-props=""
+                  >
+                    <div class="not-prose">
+                      <div
+                        class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"
+                      >
+                        <!--[-->
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/ErickvL"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Erick Lachmann's avatar"
+                                  src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/ErickvL"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Erick Lachmann"
+                                >Erick Lachmann</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >ErickvL</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/GabrielPimenta99"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Gabriel Pimenta de Freitas Cardoso's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/GabrielPimenta99"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Gabriel Pimenta de Freitas Cardoso"
+                                >Gabriel Pimenta de Freitas Cardoso</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >GabrielPimenta99</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/falves9101"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Francisco de Almeida Rocha Alves's avatar"
+                                  src="/avatars/ab4695681deba13fac2846ce4e641240.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/falves9101"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Francisco de Almeida Rocha Alves"
+                                >Francisco de Almeida Rocha Alves</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >falves9101</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <!--]-->
+                      </div>
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                  </div>
+                </div>
+                <!---->
+                <!--[-1--><!--]-->
+                <div
+                  class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"
+                >
+                  <!---->
+                  <h2 class="relative group flex items-baseline">
+                    <!--[--><!--[0-->
+                    <div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block">
+                      <div class="sticky top-4 flex">
+                        <div class="h-7 pt-[0.175rem]">
+                          <span class="peer" tabindex="0"
+                            ><button
+                              class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"
+                            >
+                              <!---->
+                            </button></span
+                          >
+                          <div
+                            class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--]--><!--]-->
+                    <a
+                      id="using-rejection-pairs-from-your-models-own-failures"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#using-rejection-pairs-from-your-models-own-failures"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Using Rejection Pairs From Your Model's Own&nbsp;Failures </span>
+                  </h2>
+                  <p>
+                    In April, we released DharmaOCR, our specialized structured OCR model (<a
+                      href="https://huggingface.co/Dharma-AI/Dharma-OCR-LITE"
+                      >available on Hugging Face</a
+                    >) along with a
+                    <a href="https://arxiv.org/abs/2604.14314" rel="nofollow">paper</a> detailing
+                    the methodology behind it and a benchmark demonstrating its superior quality and
+                    cost efficiency. The paper benchmarked leading vision-language model
+                    families - both open-source and commercial - on a structured document extraction
+                    task: OCR on Brazilian Portuguese text. Among the reported metrics was text
+                    degeneration rate: the frequency with which a model produces a repetition loop
+                    instead of a transcription.
+                  </p>
+                  <p>
+                    Across the tested open-source families, vanilla degeneration rates ranged from
+                    below 1% to above 33%. Supervised fine-tuning reduced those rates for most
+                    models - but rarely to production-acceptable levels. The pattern points to a
+                    structural limitation: SFT optimizes for correct outputs, but does not
+                    explicitly penalize degeneration. There appears to be a ceiling on how much
+                    task-focused fine-tuning alone can reduce this failure mode (<a
+                      href="https://huggingface.co/blog/Dharma-AI/text-degeneration-a-production-failure-mode"
+                      >Text Degeneration Article</a
+                    >).
+                  </p>
+                  <p>
+                    A second training stage - applied after supervised fine-tuning (SFT), on the
+                    same documents, using the same model - reduced text degeneration in every family
+                    tested. No exceptions. Average reduction: 59.4%. Best case: 87.6%.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/o-TBg6d-3_PbbSouY5tGM.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/o-TBg6d-3_PbbSouY5tGM.png"
+                        alt="image"
+                    /></a>
+                    <code
+                      >Figure 1: DPO reduced degeneration relative to SFT in every family
+                      tested - average reduction of 59.4%, peak of 87.6% (Nanonets-OCR2–3B: 1.61% to
+                      0.20%). The direction is invariant; only the magnitude varies.</code
+                    >
+                  </p>
+                  <p>
+                    That second stage was Direct Preference Optimization (DPO). Almost all published
+                    DPO applications target chat alignment - models trained on human judgments about
+                    helpfulness or harmlessness (example: Rafailov et al., 2023). OCR carries none
+                    of that subjectivity: the task is objective, and there is no conversational
+                    context. There is, however, a clear preference signal. A correct transcription
+                    is chosen; a degeneration loop is rejected. DharmaOCR used that binary to
+                    construct a DPO training set, testing the technique not for alignment, but as a
+                    direct mitigation tool for a specific failure mode.
+                  </p>
+                  <p>
+                    The training signal came from the model itself - specifically from the outputs
+                    it produced when it failed. How a failure mode becomes a training signal is a
+                    structural question about the failure, not the model.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="the-loop-survives-fine-tuning"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#the-loop-survives-fine-tuning"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> The Loop Survives Fine-Tuning </span>
+                  </h3>
+                  <p>
+                    Why SFT has a ceiling on degeneration is still an open question - but the
+                    leading conjecture points to loss granularity. SFT trains token by token: each
+                    prediction is evaluated in isolation, and a repetition loop is never penalized
+                    as a completion-level failure. DPO inverts that logic. The training signal is
+                    the full output - chosen or rejected - which means a degenerated completion can
+                    be explicitly labeled as the wrong outcome, not just a sequence of locally
+                    probable tokens.
+                  </p>
+                  <p>
+                    When a training objective maximizes the likelihood of observed sequences, it
+                    concentrates probability mass in the regions of distribution space those
+                    sequences occupy. A model that enters one of those high-probability attractor
+                    regions during inference assigns elevated probability to the same token at the
+                    next step - which increases the probability further, which sustains the loop
+                    until the sequence hits the maximum token limit. Text degeneration is the output
+                    of this geometry: a self-reinforcing repetition loop that an autoregressive
+                    model cannot exit without external intervention (Holtzman et al., 2020). It is
+                    not purely a decoding artifact. The attractor involves the training objective,
+                    the learned distribution, and how probability mass concentrates during
+                    inference - a systems-level failure rather than a failure localized to any
+                    single component.
+                  </p>
+                  <p>The geometry of this failure is visible at the token level.</p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/kJIgJGSsa8HJqLNkm4Ho8.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/kJIgJGSsa8HJqLNkm4Ho8.png"
+                        alt="image"
+                    /></a>
+                    <code
+                      >Figure 2: When a token dominates its own conditional distribution, every
+                      sampling step deepens the attractor. The decoder samples from this geometry;
+                      it does not determine it.</code
+                    >
+                  </p>
+                  <p>
+                    Inference-layer interventions - repetition penalties, temperature adjustments,
+                    early-abort logic - operate on the sampling step. They contain the symptom
+                    without touching the distribution that produces it. The attractor persists.
+                  </p>
+                  <p>
+                    Supervised fine-tuning moves the distribution closer to the task domain. For a
+                    structured generation pipeline, this means training on domain-specific
+                    documents, in the target language, with the required output format. The model
+                    gains fluency with longer sequences, constrained syntax, domain vocabulary. What
+                    SFT does not do is attack degeneration directly. Its objective - maximizing the
+                    likelihood of observed sequences - has no term that penalizes repetition loops.
+                    The failure mode is simply outside the scope of what the training signal
+                    optimizes for.
+                  </p>
+                  <p>
+                    One model family in the DharmaOCR benchmark showed an unexpected pattern:
+                    vanilla degeneration rate of 0.60%, rising to 3.23% after SFT, before a
+                    subsequent DPO stage brought it to 1.41%. It is a single data point - an
+                    exception, not a rule - and it would be overstating the evidence to treat it as
+                    proof of a mechanism. What it does illustrate is that SFT does not reliably
+                    reduce degeneration. Capability and degeneration resistance can move
+                    independently.
+                  </p>
+                  <p>
+                    The distinction matters structurally. SFT and DPO are not interchangeable
+                    training stages performing the same operation at different intensities. SFT
+                    closes the distance between the model's prior distribution and the task domain.
+                    What it does not do is target degeneration as an objective - its effect on the
+                    failure mode is incidental, and the benchmark results show it is not consistent.
+                    The attractor that produces degeneration is not a problem with the model's
+                    proximity to the task - it is a problem with the shape of the distribution space
+                    the model now occupies.
+                  </p>
+                  <p>
+                    Addressing that geometry requires a training signal built specifically to point
+                    the model away from its own failure modes. For a structured, non-conversational
+                    task with no human preference labels and no conventional "helpful versus
+                    harmful" distinction, constructing that signal is a design decision.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="the-design-decision-degenerate-outputs-as-rejection-pairs"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#the-design-decision-degenerate-outputs-as-rejection-pairs"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> The Design Decision: Degenerate Outputs as Rejection Pairs </span>
+                  </h3>
+                  <p>
+                    The DharmaOCR pipeline's contribution to DPO methodology is specific: it used
+                    the SFT model's own degenerate outputs as the rejected examples - not as noise
+                    to remove, but as the negative training signal the optimization needed.
+                  </p>
+                  <p>
+                    DPO requires preference pairs: a chosen output and a rejected output for the
+                    same input, with a quality difference clear enough for the optimization to learn
+                    from. In chat alignment, human annotators produce those judgments - rating
+                    responses as more or less helpful, accurate, or safe. Structured generation
+                    tasks have no equivalent annotation source. An OCR pipeline either produces a
+                    correct transcription or it does not. Quality differences exist, but they are
+                    not produced by human preference rankings - they are produced by the task's own
+                    criteria for correctness.
+                  </p>
+                  <p>
+                    The DharmaOCR pipeline identified a preference signal that structured generation
+                    tasks already produce: the range of outputs the SFT model generates in
+                    inference. A model capable of performing a structured task is also capable of
+                    failing at it in characteristic ways. Those failures - outputs that enter the
+                    degeneration attractor - are not noise to filter. They are the most informative
+                    negative signal available.
+                  </p>
+                  <p>
+                    The paper implemented this on 23,726 training documents, generating multiple
+                    candidate responses per document with the SFT model and scoring each with an
+                    automated LLM judge. The pipeline is shown below.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/o6z7skgMtLq22aFGkeYvw.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/o6z7skgMtLq22aFGkeYvw.png"
+                        alt="image"
+                    /></a>
+                    <code
+                      >Figure 3: The critical design decision is not in the pipeline's
+                      structure - it is in what the pipeline preserved: outputs displaying text
+                      degeneration were deliberately labeled as rejected examples, not filtered out
+                      as low-quality noise.</code
+                    >
+                  </p>
+                  <p>
+                    The conventional response when degenerate outputs appear in training data is to
+                    remove them. They are low-quality signal; filtering produces a cleaner dataset.
+                    The DharmaOCR approach inverted this logic. Degenerate outputs were deliberately
+                    retained as the rejected examples in each (chosen, rejected) pair, because they
+                    represent exactly the failure mode the DPO stage was designed to suppress.
+                    Removing them would have discarded the clearest target available.
+                  </p>
+                  <p>
+                    The paper describes this as "preference-guided implicit unlikelihood" - the
+                    model is trained not only toward better outputs but away from a specific class
+                    of failure. Where SFT maximizes the likelihood of high-quality outputs, the DPO
+                    stage simultaneously penalizes outputs displaying the degeneration attractor
+                    geometry. The direction of the optimization is explicit in a way SFT alone
+                    cannot achieve.
+                  </p>
+                  <p>
+                    Degenerate outputs are particularly well-suited as rejection examples because
+                    they represent a consistent failure mode rather than varied low-quality outputs.
+                    A transcription that misses words is low quality, but its failure is
+                    case-specific. Repetition loops, by contrast, appeared persistently across
+                    documents and model families even after SFT - a pattern consistent with a
+                    failure mode that likelihood-based optimization does not reliably correct. DPO
+                    applies its loss differently: at the completion level, with explicit rejection
+                    signals. The post-hoc analysis cannot establish causality, but the evidence
+                    suggests that what SFT's objective leaves unresolved, DPO's may address.
+                  </p>
+                  <p>
+                    This approach requires no specialized annotation infrastructure - only a model
+                    capable of producing both acceptable and identifiable-failure outputs, and a
+                    scoring model to label preference pairs. A rule-based mechanism could detect
+                    repetition loops mechanically - but it could not identify which outputs
+                    represented high-quality transcriptions worth preserving as chosen examples.
+                  </p>
+                  <p>
+                    The scoring model does both: it flags degeneration as the rejected output and
+                    validates clean extractions as the chosen one, keeping the model's extraction
+                    capability intact while the DPO signal penalizes the failure mode. Whether the
+                    resulting training signal successfully moves the distribution in the intended
+                    direction - and whether it does so consistently across architectures - is the
+                    evidence question.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="consistent-across-five-model-families"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#consistent-across-five-model-families"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Consistent Across Five Model&nbsp;Families </span>
+                  </h3>
+                  <p>
+                    The DPO stage reduced text degeneration in every model family tested - with
+                    reductions ranging from 37% to 88% and an average of 59.4% relative to SFT
+                    alone. The result held across architectures, parameter scales, and starting
+                    degeneration profiles that differed by more than one order of magnitude. One
+                    case in the dataset saw degeneration increase after the SFT stage before DPO
+                    corrected it. That case does not complicate the consistency. It confirms the
+                    mechanism more directly than any of the others.
+                  </p>
+                  <p>
+                    Figure 1 shows the three-stage degeneration rate for each of the five model
+                    families tested: Vanilla, SFT, and SFT+DPO. In four of the five families,
+                    degeneration falls at each stage. The fifth family's bars move differently - and
+                    that difference is the most analytically important data point in the study.
+                  </p>
+                  <p>
+                    The Qwen2.5-VL-3B result, read carefully, is not a complication. It is a
+                    confirmation. The model's vanilla degeneration rate was 0.60% - not because it
+                    was stable, but because it was too generic to produce long structured outputs at
+                    all. The model was not entering the degeneration attractor because it was not
+                    attempting the task seriously enough to find it.
+                  </p>
+                  <p>
+                    SFT changed that. After domain adaptation, Qwen2.5-VL-3B became capable of the
+                    task - producing longer, more structured outputs with the domain vocabulary and
+                    format the pipeline required. That capability brought it into proximity with the
+                    degeneration attractor for the first time. Its degeneration rate rose to 3.23%.
+                  </p>
+                  <p>
+                    This is the mechanism made empirically visible: SFT moved the model toward the
+                    task and toward the task's failure geometry simultaneously. These are not
+                    necessarily the same operation. A training stage that increases task capability
+                    can increase failure-mode exposure as a side effect - particularly when the
+                    failure mode lives at the edge of the capability frontier. Treated as the same
+                    operation, the Qwen2.5-VL-3B result looks like an error. Treated as distinct
+                    operations - which is what the SFT + DPO pipeline formally does - the result is
+                    consistent with the hypothesis that SFT and DPO address different failure
+                    dimensions.
+                  </p>
+                  <p>
+                    The DPO stage then brought the degeneration rate to 1.41%. It did not restore
+                    the vanilla baseline because it was not designed to: the model after SFT was
+                    more capable than it had been, and a return to 0.60% would have required undoing
+                    that capability. What the DPO stage did was address the failure geometry the SFT
+                    stage had introduced.
+                  </p>
+                  <p>
+                    The remaining four model families add quantitative weight to the same
+                    conclusion. Figure 1 shows the SFT-to-SFT+DPO comparison for all five.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/zhNY8YL4WieHlJ1JV0Rd-.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/zhNY8YL4WieHlJ1JV0Rd-.png"
+                        alt="image"
+                    /></a>
+                    <code
+                      >Figure 1: DPO reduced degeneration relative to SFT in every family
+                      tested - average reduction of 59.4%, peak of 87.6% (Nanonets-OCR2–3B: 1.61% to
+                      0.20%). The direction is invariant; only the magnitude varies.</code
+                    >
+                  </p>
+                  <p>
+                    No model family showed degeneration increasing after DPO. No family was immune
+                    to its effect. The consistency extends to gemma-3–4b-it, which entered the
+                    benchmark with the highest vanilla degeneration rate by an order of
+                    magnitude - 33.96%, compared to the next highest at 2.62% - and still reached a
+                    75% reduction after the DPO stage. The reduction range - 37.3% to
+                    87.6% - reflects differences in starting configuration and architecture, not
+                    inconsistency in the intervention's direction.
+                  </p>
+                  <p>
+                    This is not a proof of universal applicability. DPO may not transfer to every
+                    domain, failure mode, or model family. What the DharmaOCR benchmark provides is
+                    evidence across five OCR architectures that the core hypothesis holds:
+                    optimizing over complete preference pairs - rather than maximizing token-level
+                    likelihood - addresses a failure mode that SFT structurally cannot target. The
+                    result was consistent in direction across every model family tested. That
+                    consistency, within the scope of this benchmark, is what the evidence supports.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="the-pattern-beyond-ocr"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#the-pattern-beyond-ocr"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> The Pattern Beyond&nbsp;OCR </span>
+                  </h3>
+                  <p>
+                    The DharmaOCR approach was possible because this pipeline satisfied a set of
+                    structural conditions that allowed a DPO training stage to function as
+                    designed - conditions whose presence or absence determines whether the same
+                    methodology applies elsewhere (<a
+                      href="https://arxiv.org/abs/2604.14314"
+                      rel="nofollow"
+                      >Dharma OCR Paper on ArXiv</a
+                    >). It was not possible because OCR is a unique domain.
+                  </p>
+                  <p>
+                    The first condition is that the failure mode be identifiable as a distinct class
+                    of output, not just a point on a quality continuum. Text degeneration qualifies
+                    because a repetition loop is categorically different from a transcription that
+                    misses words or misreads a character. The output is not merely suboptimal - it
+                    is broken in a specific, behaviorally recognizable way. That categorical
+                    distinctness is what allowed the pipeline to construct preference pairs where
+                    the rejected examples represented a coherent failure geometry, not noise. A task
+                    whose failure modes blend into its range of acceptable variation lacks this
+                    property.
+                  </p>
+                  <p>
+                    The second condition is that a scoring mechanism can reliably distinguish
+                    acceptable outputs from failure-mode outputs without requiring human annotation.
+                    In the DharmaOCR pipeline, an automated LLM judge scored candidate responses
+                    against four task-specific criteria. The scoring did not need to be perfect - it
+                    needed to be consistent enough to produce preference pairs with a meaningful
+                    quality gap between chosen and rejected. Pairs with ambiguous quality
+                    differences contribute noise to DPO training, not signal. The judge's
+                    consistency was a design requirement, not an incidental feature.
+                  </p>
+                  <p>
+                    The third condition is sufficient volume - enough inference outputs to generate
+                    a preference dataset with meaningful variance in quality. This is not an
+                    extraordinary requirement by fine-tuning standards, but it is a real one.
+                  </p>
+                  <p>
+                    When all three conditions are present, the methodological move is structurally
+                    available. The design decision at the center of the DharmaOCR
+                    pipeline - treating the model's own failure outputs as the rejected examples
+                    rather than filtering them - applies wherever a model's failures are
+                    categorically identifiable, scoreable, and sufficiently numerous.
+                  </p>
+                  <p>
+                    The practical implication for ML engineers building structured generation
+                    pipelines is direct. SFT is necessary - it closes the distance between a
+                    generalist model and a task-capable one. It is not sufficient for structured
+                    output reliability, because task capability and degeneration resistance are
+                    different properties of the distribution. A DPO stage after SFT is a one-time
+                    training investment. In the DharmaOCR results, the degeneration reduction did
+                    not come at the cost of extraction quality - the paper's benchmark results show
+                    both moving together (<a
+                      href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                      >Specialization Beats Scale article</a
+                    >).
+                  </p>
+                  <p>
+                    What makes a failure mode usable as training signal is not the domain - it is
+                    whether the failures are consistent enough, identifiable enough, and numerous
+                    enough to constitute a legible signal. In the DharmaOCR pipeline, they were.
+                    Whether the same holds in another context is a structural question about the
+                    task's failure mode, not a question about the model family or the domain.
+                  </p>
+                  <p>
+                    The DharmaOCR result does not depend on the domain being special. It depends on
+                    the failures being useful.
+                  </p>
+                  <p>
+                    Text degeneration qualifies as useful because it is categorically distinct from
+                    acceptable outputs, consistently produced across inference runs, and reliably
+                    scoreable without human annotation. Those three properties - not the OCR
+                    context, not the model family, not the language - determined whether the
+                    preference dataset was tractable. A failure mode that satisfies them is not
+                    noise to remove. It is the most direct evidence available of where the
+                    distribution should not go.
+                  </p>
+                  <p>
+                    The DPO stage used that evidence. Degeneration fell in every model family
+                    tested - in models that entered the benchmark with vanilla rates below 1% and in
+                    models that entered with rates above 33%. The direction held. The pipeline did
+                    not discard its failures. It trained on them.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="sources"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#sources"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Sources </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      Cardoso, Gabriel Pimenta de Freitas, et al. "DharmaOCR: Specialized Small
+                      Language Models for Structured OCR that outperform Open-Source and Commercial
+                      Baselines."
+                      <a href="https://arxiv.org/abs/2604.14314" rel="nofollow"
+                        >arXiv preprint arXiv:2604.14314</a
+                      >
+                      (2026).
+                    </li>
+                    <li>
+                      Dharma AI. "<a
+                        href="https://huggingface.co/blog/Dharma-AI/text-degeneration-a-production-failure-mode"
+                        >Text Degeneration: The Production Failure Mode That LLM Benchmarks
+                        Ignore</a
+                      >." Medium (2026).
+                    </li>
+                    <li>
+                      Dharma AI. "<a
+                        href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                        >Specialization Beats Scale: A Strategic Variable Most AI Procurement
+                        Decisions Overlook</a
+                      >." Medium (2026).
+                    </li>
+                    <li>
+                      Holtzman, Ari, et al. "The Curious Case of Neural Text Degeneration."
+                      <a href="https://arxiv.org/abs/1904.09751" rel="nofollow"
+                        >arXiv preprint arXiv:1904.09751</a
+                      >
+                      (2020).
+                    </li>
+                    <li>
+                      Rafailov, Rafael, et al. "Direct Preference Optimization: Your Language Model
+                      is Secretly a Reward Model."
+                      <a href="https://arxiv.org/abs/2305.18290" rel="nofollow"
+                        >arXiv preprint arXiv:2305.18290</a
+                      >
+                      (2023).
+                    </li>
+                  </ul>
+                  <!---->
+                </div>
+              </div>
+            </div>
+            <!--[0-->
+            <div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden">
+              <div class="flex flex-col gap-6">
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Models mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+                <!--[-1--><!--]-->
+                <!--[-1--><!--]-->
+                <!--[-1--><!--]-->
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto mt-16 max-w-7xl border-t border-gray-200">
+              <div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6">
+                  <p class="col-span-1 mb-4 text-center text-lg font-semibold">
+                    More from this author
+                  </p>
+                  <!--[-->
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management-pt2"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/6a725daa5ca641a21ab61956/wOnyrU6-UQAM5hOwpaw3-.jpeg"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          Same Cluster, 33 Points More Utilization: What Changed Was the Order
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              20
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">August 17, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Ih3Nn6Wc1U_w_QpvEMXRY.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          GPU Management: Why Idle GPUs Are the New Grounded Aircraft
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              97
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">July 30, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <!--]-->
+                </div>
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8">
+              <h3 class="mb-6 flex items-center text-lg font-semibold"><!---->Community</h3>
+              <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="">
+                <div class="relative -mx-2.5">
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <div
+                  class="overflow-hidden rounded-lg border border-gray-200 bg-white rounded-b-none border-b-0 mt-6"
+                >
+                  <div
+                    class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"
+                  >
+                    <div class="flex h-full items-stretch">
+                      <!--[--><button class="tab active" type="button">Edit</button
+                      ><button class="tab" type="button">Preview</button><!--]-->
+                    </div>
+                    <div><!--[-1--><!--]--></div>
+                  </div>
+                  <!---->
+                  <div class="p-4">
+                    <div class="contents">
+                      <!--[-->
+                      <div class="contents">
+                        <!--[--><textarea
+                          class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2"
+                          name="comment"
+                          placeholder="Start discussing this article"
+                          required=""
+                          disabled=""
+                          rows="3"
+                        ></textarea
+                        ><!--]-->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                    <label
+                      class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"
+                      ><!--[-1-->
+                      <!--]-->
+                      <div class="hidden md:block">
+                        Upload images, audio, and videos by dragging in the text input, pasting, or
+                        <span class="cursor-pointer underline">clicking here</span>.
+                      </div>
+                      <div class="md:hidden">Tap or paste here to upload images</div>
+                      <input
+                        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav"
+                        class="hidden"
+                        disabled=""
+                        type="file"
+                        multiple=""
+                    /></label>
+                  </div>
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <!---->
+                <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200">
+                  <div class="p-4">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div
+                      class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"
+                    >
+                      <button class="btn btn-large" disabled="">
+                        <!---->
+                        Comment
+                      </button>
+                      <!--[0-->
+                      <p class="py-1 text-gray-800">
+                        <span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span>
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/join?next=%2Fblog%2FDharma-AI%2Fdirect-preference-optimization-beyond-chatbots"
+                          >Sign up</a
+                        >
+                        or
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/login?next=%2Fblog%2FDharma-AI%2Fdirect-preference-optimization-beyond-chatbots"
+                          >log in</a
+                        >
+                        to comment
+                      </p>
+                      <!--]-->
+                    </div>
+                  </div>
+                </div>
+                <!---->
+              </div>
+            </div>
+            <!--]-->
+          </div>
+          <div
+            class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"
+          >
+            <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+              <div
+                class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"
+              >
+                <!--[0--><a
+                  href="/login?next=%2Fblog%2FDharma-AI%2Fdirect-preference-optimization-beyond-chatbots"
+                  class="self-start"
+                  ><!--[0--><!---->
+                  <div
+                    role="checkbox"
+                    class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                  >
+                    <input disabled="" type="checkbox" class="peer hidden" />
+                    <!---->
+                    Upvote
+                    <div class="font-semibold text-orange-500">12</div>
+                    <!---->
+                  </div>
+                  <!----><!--]-->
+                  <!--[-1--><!--]--><!----></a
+                ><!--]-->
+                <!--[0--><!--[0-->
+                <ul class="flex items-center text-gray-600 flex-row text-base">
+                  <!--[-->
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="lucas-treuke"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="kashif"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/kashif" title="kashif"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="pcuenq"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/pcuenq" title="pcuenq"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="vadapavlover"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/vadapavlover" title="vadapavlover"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/Lgfv6PZzBD6mbl8jLrpFw.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ariG23498"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ariG23498" title="ariG23498"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="luke-loan-atlas"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/luke-loan-atlas" title="luke-loan-atlas"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/7sTK8Q_gZRoOz0uaKnVNJ.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="amitpuri"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/amitpuri" title="amitpuri"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/62a0baa7c6754e9bfabf7e76/aogJMfrZ_Cvgx1ka_IDTV.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="ntgiang71096"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/ntgiang71096" title="ntgiang71096"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/fbbbc7ee769f8efb65efa0de3289535d.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="BlueYellowGreen"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/BlueYellowGreen" title="BlueYellowGreen"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/6836932945dbe04c398bec23bcae6262.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="weant"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/weant" title="weant"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/69fdf31b4d21db3801410f5d/zHC9nC8vw-76hVL09B0Vy.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="M0Hervier"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/M0Hervier" title="M0Hervier"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/e9824addf2cf0aa172bf3b7953a51810.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="GabrielPimenta99"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <!--]-->
+                  <!--[0-->
+                  <li
+                    class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                  >
+                    <!--[--><!--[-1--><!--]--><!--]-->
+                  </li>
+                  <!--]-->
+                </ul>
+                <!--]--><!--]-->
+              </div>
+              <!--[-1--><!--]-->
+              <dialog
+                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base"
+              >
+                <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                  <!--[-1--><!--]-->
+                </div>
+              </dialog>
+              <!----><!---->
+            </div>
+            <!--[0-->
+            <div class="mt-8 flex flex-col gap-6 pb-8">
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Models mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+              <!--[-1--><!--]-->
+              <!--[-1--><!--]-->
+              <!--[-1--><!--]-->
+            </div>
+            <!--]-->
+          </div>
+        </div>
+        <!---->
+      </main>
+      <!--[1-->
+      <!--]--><!---->
+    </div>
+    <!--]-->
+
+    <!-- Stripe -->
+  </body>
+</html>

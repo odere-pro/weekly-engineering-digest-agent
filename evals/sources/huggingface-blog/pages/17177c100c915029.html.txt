@@ -1,0 +1,1216 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/train-sentence-transformers/st-hf-thumbnail.png" />
+
+		<meta property="og:title" content="Training and Finetuning Multi-Vector Embedding Models with Sentence Transformers" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/train-multi-vector-encoder" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/train-sentence-transformers/st-hf-thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/train-multi-vector-encoder">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Training and Finetuning Multi-Vector Embedding Models with Sentence Transformers</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="training-and-finetuning-multi-vector-embedding-models-with-sentence-transformers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-and-finetuning-multi-vector-embedding-models-with-sentence-transformers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training and Finetuning Multi-Vector Embedding Models with Sentence Transformers
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 26, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/train-multi-vector-encoder.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftrain-multi-vector-encoder" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">145</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yjoonjang" style="content-visibility:auto;"><!--[0--><a href="/yjoonjang" title="yjoonjang"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65a4c4ed2548c41ad9b1421c/bMQbowjHKvq-bKpzalvWm.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MichelleRuwen" style="content-visibility:auto;"><!--[0--><a href="/MichelleRuwen" title="MichelleRuwen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/60b6127e4e144373f3fb4decee3b0690.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="paulomouraj" style="content-visibility:auto;"><!--[0--><a href="/paulomouraj" title="paulomouraj"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67e184d667350657a7d68aac/I4e1DvZbdv7zQUqndrRgX.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="adaamko" style="content-visibility:auto;"><!--[0--><a href="/adaamko" title="adaamko"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646264832538819c729e32ba/MVxNj8FCQzyDEcBuUvivo.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeremyjeje" style="content-visibility:auto;"><!--[0--><a href="/jeremyjeje" title="jeremyjeje"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/dgcTA0FdU3AOhDTklnspq.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+139</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;6317233cc92fd6fee317e030&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png&quot;,&quot;fullname&quot;:&quot;Tom Aarsen&quot;,&quot;name&quot;:&quot;tomaarsen&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:false,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:4618,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/tomaarsen"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Tom Aarsen's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/tomaarsen"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Tom Aarsen">Tom Aarsen</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">tomaarsen</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://sbert.net/" rel="nofollow">Sentence Transformers</a> is a Python library for using and training embedding and reranker models for a wide range of applications, such as retrieval augmented generation, semantic search, semantic textual similarity, and more. Its v6.0 update introduces a fourth model type: <code>MultiVectorEncoder</code>, for ColBERT-style late interaction retrieval, alongside a complete training approach for it. In this blogpost, I'll show you how to use it to finetune a multi-vector model that outperforms general-purpose retrievers on your data. This method can also train strong new multi-vector models from scratch. Everything below runs on <code>pip install -U "sentence-transformers[train]"</code>.</p>
+<p>Finetuning multi-vector models involves several components: the model itself, datasets, loss functions, training arguments, evaluators, and the trainer class. I'll have a look at each of these components, accompanied by practical examples of how they can be used for finetuning strong multi-vector models.</p>
+<p>Lastly, in the <a href="#evaluation" rel="nofollow">Evaluation</a> section, I'll show you that my finetuned <a href="https://huggingface.co/multi-vector-encoder/mLateOn-medical">multi-vector-encoder/mLateOn-medical</a> model, trained in 14.5 hours on a single RTX 3090 alongside this blogpost, easily outperforms every general-purpose retrieval model I could find on my medical retrieval evaluation: dense, sparse, lexical, and multi-vector alike.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_model_size_ndcg.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_model_size_ndcg.png" alt="NDCG@10 on MIRIAD versus active parameters: the finetuned mLateOn-medical reaches the top at a fraction of the size of the strongest general-purpose models"></a></p>
+<p>If you're interested in finetuning dense embedding models, sparse embedding models, or rerankers instead, then consider reading through my prior <a href="https://huggingface.co/blog/train-sentence-transformers">Training and Finetuning Embedding Models</a>, <a href="https://huggingface.co/blog/train-sparse-encoder">Training and Finetuning Sparse Embedding Models</a>, and <a href="https://huggingface.co/blog/train-reranker">Training and Finetuning Reranker Models</a> blogposts.</p>
+<blockquote class="tip">
+<p>This blogpost is about <em>training</em> multi-vector models. If you want to learn how to <em>use</em> them, from loading and encoding to indexing in vector databases, see the companion <a href="https://huggingface.co/blog/multi-vector-encoder">Multi-Vector (Late Interaction) Embedding Models with Sentence Transformers</a> blogpost.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="table-of-contents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#table-of-contents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Table of Contents
+	</span>
+</h2>
+<ul>
+<li><a href="#what-are-multi-vector-models" rel="nofollow">What are Multi-Vector models?</a></li>
+<li><a href="#why-finetune" rel="nofollow">Why Finetune?</a></li>
+<li><a href="#training-components" rel="nofollow">Training Components</a></li>
+<li><a href="#model" rel="nofollow">Model</a><ul>
+<li><a href="#finetuning-an-existing-multi-vector-model" rel="nofollow">Finetuning an existing multi-vector model</a></li>
+<li><a href="#building-one-from-a-base-transformer" rel="nofollow">Building one from a base transformer</a></li>
+<li><a href="#which-starting-point-should-you-pick" rel="nofollow">Which starting point should you pick?</a></li>
+</ul>
+</li>
+<li><a href="#dataset" rel="nofollow">Dataset</a><ul>
+<li><a href="#data-on-the-hugging-face-hub" rel="nofollow">Data on the Hugging Face Hub</a></li>
+<li><a href="#local-data" rel="nofollow">Local Data</a></li>
+<li><a href="#dataset-format" rel="nofollow">Dataset Format</a></li>
+</ul>
+</li>
+<li><a href="#loss-function" rel="nofollow">Loss Function</a></li>
+<li><a href="#training-arguments" rel="nofollow">Training Arguments</a></li>
+<li><a href="#evaluator" rel="nofollow">Evaluator</a></li>
+<li><a href="#trainer" rel="nofollow">Trainer</a><ul>
+<li><a href="#callbacks" rel="nofollow">Callbacks</a></li>
+<li><a href="#multi-dataset-training" rel="nofollow">Multi-Dataset Training</a></li>
+</ul>
+</li>
+<li><a href="#evaluation" rel="nofollow">Evaluation</a><ul>
+<li><a href="#optimizing-the-index" rel="nofollow">Optimizing the index</a></li>
+</ul>
+</li>
+<li><a href="#acknowledgements" rel="nofollow">Acknowledgements</a></li>
+<li><a href="#additional-resources" rel="nofollow">Additional Resources</a><ul>
+<li><a href="#training-examples" rel="nofollow">Training Examples</a></li>
+<li><a href="#documentation" rel="nofollow">Documentation</a></li>
+</ul>
+</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="what-are-multi-vector-models" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-are-multi-vector-models" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What are Multi-Vector models?
+	</span>
+</h2>
+<p>A dense embedding model compresses a whole text into a single vector, and similarity is one dot product between two such summaries. A multi-vector model (also called a late-interaction or ColBERT-style model) skips that compression. It keeps <strong>one small vector per token</strong> and scores a query against a document with the MaxSim operator, where every query token finds its best-matching document token and the scores are summed. Token-level matching preserves exactly the fine-grained signals that a single vector has to average away, which usually means stronger retrieval, at the cost of a bigger index.</p>
+<p>The companion <a href="https://huggingface.co/blog/multi-vector-encoder">Multi-Vector Embedding Models</a> blogpost covers the architecture, encoding, scoring, and indexing in detail, so I'll keep this section short and get to the training.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/multi-vector-encoder/maxsim_explainer.gif" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/multi-vector-encoder/maxsim_explainer.gif" alt="Dense embedding versus multi-vector late interaction"></a></p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-finetune" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-finetune" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why Finetune?
+	</span>
+</h2>
+<p>Finetuning multi-vector models significantly improves their retrieval performance on your specific domain: the vocabulary, the query style, and the notion of relevance all differ between web search, legal discovery, code search, and scientific literature review. Because queries and documents are matched token by token, multi-vector models pick up fine-grained domain signals that single-vector models tend to average away, and they respond very well to even modest amounts of in-domain finetuning data.</p>
+<p>Beyond that, most released retrieval models were configured for short passages. The classic ColBERT checkpoints truncate documents at 180 or 300 tokens, and many popular dense models at 256 or 512, because their MS MARCO-style training data rarely goes beyond that. If your documents are long, these models silently discard most of every document before scoring it. On my medical evaluation with passages averaging 941 tokens, I measured that this truncation costs up to 0.24 NDCG@10, considerably more than any difference between model architectures. When you train your own model, you configure the document length that <em>your</em> data needs.</p>
+<p>LightOn ran into this same dynamic with code retrieval, where general <a href="https://huggingface.co/lightonai/LateOn">LateOn</a> wasn't enough and they trained <a href="https://huggingface.co/lightonai/LateOn-Code">LateOn-Code</a>. Your domain, whether that's medical, legal, financial, or your company's internal documents, is not getting an official model. This blogpost shows you how to build it yourself, in a matter of hours, on a single consumer GPU.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="training-components" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-components" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training Components
+	</span>
+</h2>
+<p>Training MultiVectorEncoder models involves the following components:</p>
+<ol>
+<li><a href="#model" rel="nofollow"><strong>Model</strong></a>: The model to finetune or the architecture to build fresh.</li>
+<li><a href="#dataset" rel="nofollow"><strong>Dataset</strong></a>: The data used for training and evaluation.</li>
+<li><a href="#loss-function" rel="nofollow"><strong>Loss Function</strong></a>: A function that measures the model's performance and guides the optimization process.</li>
+<li><a href="#training-arguments" rel="nofollow"><strong>Training Arguments</strong></a> (optional): Parameters that impact training performance, tracking, and debugging.</li>
+<li><a href="#evaluator" rel="nofollow"><strong>Evaluator</strong></a> (optional): A class for evaluating the model before, during, or after training.</li>
+<li><a href="#trainer" rel="nofollow"><strong>Trainer</strong></a>: Brings together all training components.</li>
+</ol>
+<p>Let's take a closer look at each component.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Model
+	</span>
+</h2>
+<p>Multi-vector training gives you a real choice of starting point, and it matters more than you might expect.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="finetuning-an-existing-multi-vector-model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#finetuning-an-existing-multi-vector-model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Finetuning an existing multi-vector model
+	</span>
+</h3>
+<p>If you want to further finetune an existing multi-vector model, you don't have to worry about the architecture at all:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> MultiVectorEncoder
+
+<span class="hljs-comment"># Loading in fp32 is preferred for training if your memory can handle it</span>
+model = MultiVectorEncoder(
+    <span class="hljs-string">"lightonai/mLateOn-unsupervised"</span>,
+    model_kwargs={<span class="hljs-string">"torch_dtype"</span>: <span class="hljs-string">"float32"</span>},
+    processor_kwargs={<span class="hljs-string">"model_max_length"</span>: <span class="hljs-number">8192</span>},  <span class="hljs-comment"># the tokenizer-level token limit</span>
+)
+</code></pre>
+<p>The checkpoint brings its own recipe along: its query and document marker tokens, its projection head, its scoring skiplist. For finetuning, you generally want to keep all of that and change only what your data demands. The first thing to check is the length configuration, since many released checkpoints cap documents at 180 to 512 tokens (see <a href="#why-finetune" rel="nofollow">Why Finetune?</a>), and my medical passages run to 1,400 tokens. The mLateOn family already serves the backbone's full 8192 token context, but if your starting checkpoint carries caps, lift them:</p>
+<pre><code class="language-python"><span class="hljs-comment"># Let the model read full documents instead of the caps it was trained with,</span>
+<span class="hljs-comment"># e.g. GTE-ModernColBERT-v1 ships with query_length=48 and document_length=300</span>
+model[<span class="hljs-number">0</span>].query_length = <span class="hljs-literal">None</span>
+model[<span class="hljs-number">0</span>].document_length = <span class="hljs-literal">None</span>
+</code></pre>
+<p>With the per-task caps unset, truncation falls back to the tokenizer's <code>model_max_length</code>, which is why I configure that limit at load time above.</p>
+<p>I made one more change, adding a punctuation skiplist that excludes punctuation tokens from document-side scoring and storage. In a 4-way ablation (none, punctuation, stopwords, both) it modestly won on quality, and it shrinks the document index by 9.6% on this data for free:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> string
+
+<span class="hljs-comment"># model[2] is the MultiVectorMask module</span>
+model[<span class="hljs-number">2</span>].skiplist_words = <span class="hljs-built_in">list</span>(string.punctuation)
+model[<span class="hljs-number">2</span>].resolve_with_tokenizer(model.tokenizer)  <span class="hljs-comment"># token ids are cached, so re-resolve after changing</span>
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="building-one-from-a-base-transformer" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#building-one-from-a-base-transformer" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Building one from a base transformer
+	</span>
+</h3>
+<p>You can also point <code>MultiVectorEncoder</code> at any base transformer, and a fresh, randomly initialized token-level projection is appended for you:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> MultiVectorEncoder
+
+model = MultiVectorEncoder(<span class="hljs-string">"answerdotai/ModernBERT-base"</span>, model_kwargs={<span class="hljs-string">"torch_dtype"</span>: <span class="hljs-string">"float32"</span>})
+<span class="hljs-comment"># MultiVectorEncoder(</span>
+<span class="hljs-comment">#   (0): Transformer({..., 'architecture': 'ModernBertModel'})</span>
+<span class="hljs-comment">#   (1): Dense({'in_features': 768, 'out_features': 128, 'bias': False, ...})</span>
+<span class="hljs-comment">#   (2): MultiVectorMask({'skiplist_words': [], 'skiplist_tasks': ['document'], ...})</span>
+<span class="hljs-comment">#   (3): Normalize({...})</span>
+<span class="hljs-comment"># )</span>
+</code></pre>
+<p>That's the classic ColBERT pipeline: a <code>Transformer</code> producing contextualized token embeddings, a token-level <code>Dense</code> projecting each of them down to 128 dimensions, a <code>MultiVectorMask</code> deciding which tokens count during scoring, and a token-level <code>Normalize</code>. The projection starts random, so training is required before this model is useful. Interestingly, this works with strong dense embedding backbones too. A fresh projection on <a href="https://huggingface.co/Alibaba-NLP/gte-modernbert-base">Alibaba-NLP/gte-modernbert-base</a> reached within 0.03 of the existing-checkpoint starting points in my experiments, from nothing but the projection and 25k training pairs.</p>
+<p>The classic ColBERT tokenization tricks (<code>[MASK]</code> query expansion, <code>[Q]</code> / <code>[D]</code> prefix tokens, a document length cap, a punctuation skiplist) are all off by default and configurable. See <a href="https://sbert.net/docs/multi_vector_encoder/usage/custom_models.html" rel="nofollow">Creating Custom Models</a> for the full set. For what it's worth, I tested <code>[MASK]</code> query expansion in four configurations for my domain finetune and none of them made a measurable difference, so don't feel obliged to reach for the classic recipe.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="which-starting-point-should-you-pick" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#which-starting-point-should-you-pick" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Which starting point should you pick?
+	</span>
+</h3>
+<p>I measured this directly while preparing this blogpost, taking six starting points and training each with the identical recipe on 25k medical question-passage pairs from <a href="https://huggingface.co/datasets/tomaarsen/miriad-4.4M-split">MIRIAD</a>, then evaluating on 1,000 held-out questions against a 50,000 passage corpus:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Starting point</th>
+<th align="right">Zero-shot NDCG@10</th>
+<th align="right">After 25k pairs</th>
+<th align="right">Delta</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><a href="https://huggingface.co/lightonai/mLateOn-unsupervised">lightonai/mLateOn-unsupervised</a></td>
+<td align="right">0.9087</td>
+<td align="right"><strong>0.9398</strong></td>
+<td align="right"><strong>+0.0311</strong></td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/mLateOn">lightonai/mLateOn</a></td>
+<td align="right">0.9277</td>
+<td align="right">0.9319</td>
+<td align="right">+0.0042</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn-unsupervised">lightonai/LateOn-unsupervised</a></td>
+<td align="right">0.9026</td>
+<td align="right"><strong>0.9206</strong></td>
+<td align="right"><strong>+0.0180</strong></td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn">lightonai/LateOn</a></td>
+<td align="right">0.9185</td>
+<td align="right">0.9105</td>
+<td align="right">-0.0080</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/GTE-ModernColBERT-v1">lightonai/GTE-ModernColBERT-v1</a></td>
+<td align="right">0.9198</td>
+<td align="right">0.9007</td>
+<td align="right">-0.0191</td>
+</tr>
+<tr>
+<td>Fresh head on <a href="https://huggingface.co/Alibaba-NLP/gte-modernbert-base">gte-modernbert-base</a></td>
+<td align="right">-</td>
+<td align="right">0.9177</td>
+<td align="right">-</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The result surprised me, and it replicated across two model families. *The <code>-unsupervised</code> checkpoints adapt to a new domain far better than their finished siblings, overtaking them despite starting lower. These checkpoints sit after large-scale contrastive pretraining but before supervised finetuning on general retrieval, so they carry all the late-interaction structure with none of the general-purpose tuning that domain training then has to undo. The finished checkpoints, by contrast, barely moved or even regressed, at every learning rate I tried.</p>
+<p>So, if the model family you like publishes a pre-supervised checkpoint, start there. If not, a fresh projection on a strong retrieval-pretrained backbone is a close runner-up. Continuing from a fully finished checkpoint is the weakest option for domain adaptation, despite being the most natural-feeling one.</p>
+<h2 class="relative group flex items-baseline">
+	<a class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#dataset" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Dataset
+	</span>
+</h2>
+<p>The <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/trainer.html" rel="nofollow"><code>MultiVectorEncoderTrainer</code></a> uses <a href="https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.Dataset"><code>datasets.Dataset</code></a> or <a href="https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.DatasetDict"><code>datasets.DatasetDict</code></a> instances for training and evaluation. You can load data from the <a href="https://huggingface.co/datasets">Hugging Face Datasets Hub</a> or use local data in whatever format you prefer (e.g. CSV, JSON, Parquet, Arrow, or SQL).</p>
+<p><strong>Note:</strong> Lots of public datasets that work out of the box with Sentence Transformers have been tagged with <code>sentence-transformers</code> on the Hugging Face Hub, so you can easily find them on <a href="https://huggingface.co/datasets?other=sentence-transformers">https://huggingface.co/datasets?other=sentence-transformers</a>. Consider browsing through these to find ready-to-go datasets that might be useful for your tasks, domains, or languages.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="data-on-the-hugging-face-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#data-on-the-hugging-face-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Data on the Hugging Face Hub
+	</span>
+</h3>
+<p>You can use the <a href="https://huggingface.co/docs/datasets/main/en/package_reference/loading_methods#datasets.load_dataset"><code>load_dataset</code></a> function to load data from datasets on the Hub:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset
+
+train_dataset = load_dataset(<span class="hljs-string">"tomaarsen/miriad-4.4M-split"</span>, split=<span class="hljs-string">"train"</span>)
+
+<span class="hljs-built_in">print</span>(train_dataset)
+<span class="hljs-string">"""</span>
+<span class="hljs-string">Dataset({</span>
+<span class="hljs-string">    features: ['question', 'passage_text'],</span>
+<span class="hljs-string">    num_rows: 4467542</span>
+<span class="hljs-string">})</span>
+<span class="hljs-string">"""</span>
+</code></pre>
+<p>This is the dataset I'll train on in this blogpost: 4.4 million medical questions from <a href="https://huggingface.co/datasets/miriad/miriad-4.4M">MIRIAD</a>, each paired with the source passage that contains its answer (averaging 941 tokens). Simple (query, relevant passage) pairs like these are the easiest retrieval training data to collect for your own domain, and as you'll see, they're all you need.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="local-data" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#local-data" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Local Data
+	</span>
+</h3>
+<p>You can also use <a href="https://huggingface.co/docs/datasets/main/en/package_reference/loading_methods#datasets.load_dataset"><code>load_dataset</code></a> for loading local data in common file formats:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset
+
+dataset = load_dataset(<span class="hljs-string">"csv"</span>, data_files=<span class="hljs-string">"my_file.csv"</span>)
+<span class="hljs-comment"># or</span>
+dataset = load_dataset(<span class="hljs-string">"json"</span>, data_files=<span class="hljs-string">"my_file.json"</span>)
+</code></pre>
+<p>And if your local data requires pre-processing, you can use <a href="https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.Dataset.from_dict"><code>datasets.Dataset.from_dict</code></a> to initialize your dataset with a dictionary of lists:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> Dataset
+
+queries = []
+documents = []
+<span class="hljs-comment"># Open a file, perform preprocessing, filtering, cleaning, etc.</span>
+<span class="hljs-comment"># and append to the lists</span>
+
+dataset = Dataset.from_dict({
+    <span class="hljs-string">"query"</span>: queries,
+    <span class="hljs-string">"document"</span>: documents,
+})
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="dataset-format" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#dataset-format" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Dataset Format
+	</span>
+</h3>
+<p>It is important that your dataset format matches your loss function (or that you choose a loss function that matches your dataset format). Verifying whether a dataset format works with a loss function involves two steps:</p>
+<ol>
+<li>If your loss function requires a <em>Label</em> according to the <a href="https://sbert.net/docs/multi_vector_encoder/loss_overview.html" rel="nofollow">Loss Overview</a> table, then your dataset must have a <strong>column named "label" or "score"</strong>. This column is automatically taken as the label.</li>
+<li>All columns not named "label" or "score" are considered <em>Inputs</em> according to the <a href="https://sbert.net/docs/multi_vector_encoder/loss_overview.html" rel="nofollow">Loss Overview</a> table. The number of remaining columns must match the number of valid inputs for your chosen loss. The names of these columns are <strong>irrelevant</strong>, only the <strong>order matters</strong>.</li>
+</ol>
+<p>There are two multi-vector specific conventions on top of this:</p>
+<ul>
+<li>Positional query and document assignment: the first column is embedded as the <em>query</em> and all following columns as <em>documents</em>, regardless of the column names. This default can be overridden per column via the standard <code>router_mapping</code> training argument.</li>
+<li>Knowledge distillation format: one column per candidate document, i.e. <code>(query, document_1, ..., document_N, scores)</code> where <code>scores</code> is a list of N teacher scores per row. For KD datasets that store query and document <em>IDs</em> alongside separate text datasets (e.g. <a href="https://huggingface.co/datasets/lightonai/ms-marco-en-bge">lightonai/ms-marco-en-bge</a>), you can use <a href="https://sbert.net/docs/package_reference/util.html#sentence_transformers.util.dataset.resolve_ids" rel="nofollow"><code>resolve_ids</code></a> to resolve the IDs to texts on the fly.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="loss-function" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#loss-function" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Loss Function
+	</span>
+</h2>
+<p>Loss functions quantify how well a model performs for a given batch of data, allowing an optimizer to update the model weights to produce more favourable (i.e., lower) loss values. The right loss function for your task depends on the data you have and what you're trying to achieve. You can find a full list of options in the <a href="https://sbert.net/docs/multi_vector_encoder/loss_overview.html" rel="nofollow">Loss Overview</a>.</p>
+<p>For the common case of question-answer or question-passage pairs, the workhorse is in-batch negatives training with <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/losses.html#multivectormultiplenegativesrankingloss" rel="nofollow"><code>MultiVectorMultipleNegativesRankingLoss</code></a>, where every other document in the batch acts as a negative for each query. Bigger batches mean more negatives and stronger training, so in practice you'll want its GradCache variant, <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/losses.html#cachedmultivectormultiplenegativesrankingloss" rel="nofollow"><code>CachedMultiVectorMultipleNegativesRankingLoss</code></a>, which decouples the effective batch size from what fits on your GPU:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> MultiVectorEncoder
+<span class="hljs-keyword">from</span> sentence_transformers.multi_vector_encoder.losses <span class="hljs-keyword">import</span> CachedMultiVectorMultipleNegativesRankingLoss
+
+model = MultiVectorEncoder(<span class="hljs-string">"lightonai/mLateOn-unsupervised"</span>, model_kwargs={<span class="hljs-string">"torch_dtype"</span>: <span class="hljs-string">"float32"</span>})
+
+loss = CachedMultiVectorMultipleNegativesRankingLoss(
+    model=model,
+    mini_batch_size=<span class="hljs-number">16</span>,  <span class="hljs-comment"># how many documents to encode per chunk: bounds memory, not quality</span>
+)
+</code></pre>
+<p>The <code>mini_batch_size</code> parameter bounds the memory by encoding documents in chunks of this size, while the effective contrastive batch size (128 in my run below, and in my ablations bigger batches bought nothing further) stays a free choice. GradCache guarantees identical results regardless of the chunk size, so lower it for smaller GPUs at only a wall-clock cost. When your document lengths vary a lot, consider its sibling <code>mini_batch_num_tokens</code>, which packs each chunk to a total token budget instead of a document count, so a chunk of unusually long documents can never spike your memory (my <code>mini_batch_size=16</code> at roughly 940 tokens per document corresponds to <code>mini_batch_num_tokens=15_000</code>).</p>
+<p>One multi-vector specific trap is that the contrastive losses default to <code>scale=1.0</code>, unlike the dense embedding equivalent which defaults to <code>scale=20.0</code>. That 20.0 exists because a cosine similarity is a single value in [-1, 1], too narrow a range for a sharp softmax. A MaxSim score instead sums one best-match similarity per query token, so it already spans roughly [0, query_length]: a 32-token query can score up to 32. So don't copy <code>scale=20.0</code> over from a dense training script, since it would saturate the softmax and kill your gradients.</p>
+<p>For distillation from a stronger teacher, which is how the strongest general-purpose late-interaction models are trained, see <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/losses.html#multivectordistillkldivloss" rel="nofollow"><code>MultiVectorDistillKLDivLoss</code></a> and the Knowledge Distillation tab in the <a href="https://sbert.net/docs/multi_vector_encoder/training_overview.html#trainer" rel="nofollow">Training Overview</a> documentation.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="training-arguments" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-arguments" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training Arguments
+	</span>
+</h2>
+<p>You can customize the training process using the <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/training_args.html" rel="nofollow"><code>MultiVectorEncoderTrainingArguments</code></a> class. This class lets you adjust parameters that can impact training speed and help you understand what's happening during training.</p>
+<p>For more information on the most useful training arguments, check out the <a href="https://sbert.net/docs/multi_vector_encoder/training_overview.html#training-arguments" rel="nofollow">Multi-Vector Encoder &gt; Training Overview &gt; Training Arguments</a>. It's worth reading to get the most out of your training.</p>
+<p>Here's an example, using the values from my actual training run:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> MultiVectorEncoderTrainingArguments
+<span class="hljs-keyword">from</span> sentence_transformers.base.sampler <span class="hljs-keyword">import</span> BatchSamplers
+
+args = MultiVectorEncoderTrainingArguments(
+    <span class="hljs-comment"># Required parameter:</span>
+    output_dir=<span class="hljs-string">"models/mLateOn-medical"</span>,
+    <span class="hljs-comment"># Optional training parameters:</span>
+    num_train_epochs=<span class="hljs-number">1</span>,
+    per_device_train_batch_size=<span class="hljs-number">128</span>,  <span class="hljs-comment"># the effective contrastive batch, thanks to GradCache</span>
+    per_device_eval_batch_size=<span class="hljs-number">16</span>,
+    learning_rate=<span class="hljs-number">1e-4</span>,
+    warmup_steps=<span class="hljs-number">0.05</span>,
+    prompts={<span class="hljs-string">"question"</span>: <span class="hljs-string">"[Q] "</span>, <span class="hljs-string">"passage_text"</span>: <span class="hljs-string">"[D] "</span>},  <span class="hljs-comment"># the checkpoint's markers, keyed by training column</span>
+    fp16=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># Set to True if you have a GPU that supports FP16</span>
+    bf16=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># Set to True if you have a GPU that supports BF16</span>
+    batch_sampler=BatchSamplers.NO_DUPLICATES,  <span class="hljs-comment"># in-batch negatives benefit from no duplicates</span>
+    <span class="hljs-comment"># Optional tracking/debugging parameters:</span>
+    eval_strategy=<span class="hljs-string">"steps"</span>,
+    eval_steps=<span class="hljs-number">0.1</span>,
+    save_strategy=<span class="hljs-string">"steps"</span>,
+    save_steps=<span class="hljs-number">0.05</span>,
+    logging_steps=<span class="hljs-number">0.01</span>,
+    run_name=<span class="hljs-string">"mLateOn-medical"</span>,  <span class="hljs-comment"># Will be used in e.g. Trackio, W&amp;B, etc.</span>
+)
+</code></pre>
+<p>A few of these deserve a comment:</p>
+<ul>
+<li><code>prompts</code>: training does not automatically apply the prompts stored in the model, so map them onto your training columns explicitly. Here that is the checkpoint's <code>[Q] </code> marker for the question column and <code>[D] </code> for the passage column, keeping training consistent with inference.</li>
+<li><code>max_length</code> (deliberately not set): this argument caps tokenization during <em>training only</em>, for when you want cheaper training than the model's full serving length. I measured what that shortcut costs on this data. Training at 512 tokens lost about 0.015 NDCG@10 for about 2x the speed, and the deficit did not shrink with more data, because the model simply never sees what got cut off. Leave it unset so training matches inference, unless you need the speedup more than the quality.</li>
+<li><code>learning_rate=1e-4</code>: after a sweep from 5e-6 to 2e-4, I had the best luck with this higher-than-usual learning rate.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="evaluator" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#evaluator" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Evaluator
+	</span>
+</h2>
+<p>To track your model's performance during training, you can pass an <code>eval_dataset</code> to the trainer for evaluation loss, but concrete retrieval metrics are much more informative. Sentence Transformers includes the following built-in evaluators for multi-vector models:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Evaluator</th>
+<th>Required Data</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectorinformationretrievalevaluator" rel="nofollow"><code>MultiVectorInformationRetrievalEvaluator</code></a></td>
+<td>Queries, corpus, and relevant document mappings</td>
+</tr>
+<tr>
+<td><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectornanobeirevaluator" rel="nofollow"><code>MultiVectorNanoBEIREvaluator</code></a></td>
+<td>No data required</td>
+</tr>
+<tr>
+<td><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectortripletevaluator" rel="nofollow"><code>MultiVectorTripletEvaluator</code></a></td>
+<td>(anchor, positive, negative) triplets</td>
+</tr>
+<tr>
+<td><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectorrerankingevaluator" rel="nofollow"><code>MultiVectorRerankingEvaluator</code></a></td>
+<td>List of <code>{'query': '...', 'positive': [...], 'negative': [...]}</code> dictionaries</td>
+</tr>
+<tr>
+<td><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectordistillationevaluator" rel="nofollow"><code>MultiVectorDistillationEvaluator</code></a></td>
+<td>Queries with candidate documents and teacher scores</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>For domain finetuning, the <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/evaluation.html#multivectorinformationretrievalevaluator" rel="nofollow"><code>MultiVectorInformationRetrievalEvaluator</code></a> built from your own held-out data is the one that matters. One tip on constructing it is that the corpus should be hard enough that models can be told apart. In my case the MIRIAD questions are generated from their own source passages, which makes retrieval unusually easy. Against just the 10k gold passages, nearly every model scored above 0.97 NDCG@10. If your evaluation saturates like that, add <em>distractor</em> passages (I use deduplicated passages from the training split) until the scores spread out:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset
+<span class="hljs-keyword">from</span> sentence_transformers.multi_vector_encoder.evaluation <span class="hljs-keyword">import</span> MultiVectorInformationRetrievalEvaluator
+
+dataset = load_dataset(<span class="hljs-string">"tomaarsen/miriad-4.4M-split"</span>)
+
+<span class="hljs-comment"># Gold: 1,000 evaluation questions, each mapping to its own passage, with the</span>
+<span class="hljs-comment"># eval split's full ~10k unique passages as the initial corpus</span>
+corpus = {}
+queries = {}
+relevant_docs = {}
+passage_to_id = {}
+<span class="hljs-keyword">for</span> idx, row <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(dataset[<span class="hljs-string">"eval"</span>]):
+    <span class="hljs-keyword">if</span> row[<span class="hljs-string">"passage_text"</span>] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> passage_to_id:
+        passage_to_id[row[<span class="hljs-string">"passage_text"</span>]] = <span class="hljs-string">f"p<span class="hljs-subst">{<span class="hljs-built_in">len</span>(passage_to_id)}</span>"</span>
+        corpus[passage_to_id[row[<span class="hljs-string">"passage_text"</span>]]] = row[<span class="hljs-string">"passage_text"</span>]
+    <span class="hljs-keyword">if</span> idx &lt; <span class="hljs-number">1_000</span>:
+        queries[<span class="hljs-string">f"q<span class="hljs-subst">{idx}</span>"</span>] = row[<span class="hljs-string">"question"</span>]
+        relevant_docs[<span class="hljs-string">f"q<span class="hljs-subst">{idx}</span>"</span>] = {passage_to_id[row[<span class="hljs-string">"passage_text"</span>]]}
+
+<span class="hljs-comment"># Distractors: unique train passages that make the haystack realistic</span>
+seen = <span class="hljs-built_in">set</span>(passage_to_id)
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">"train"</span>]:
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(corpus) &gt;= <span class="hljs-number">200_000</span>:
+        <span class="hljs-keyword">break</span>
+    <span class="hljs-keyword">if</span> row[<span class="hljs-string">"passage_text"</span>] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen:
+        seen.add(row[<span class="hljs-string">"passage_text"</span>])
+        corpus[<span class="hljs-string">f"d<span class="hljs-subst">{<span class="hljs-built_in">len</span>(corpus)}</span>"</span>] = row[<span class="hljs-string">"passage_text"</span>]
+
+evaluator = MultiVectorInformationRetrievalEvaluator(
+    queries=queries,
+    corpus=corpus,
+    relevant_docs=relevant_docs,
+    name=<span class="hljs-string">"miriad-dev"</span>,
+    batch_size=<span class="hljs-number">16</span>,
+)
+<span class="hljs-comment"># results = evaluator(model)</span>
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="trainer" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#trainer" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Trainer
+	</span>
+</h2>
+<p>The <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/trainer.html" rel="nofollow"><code>MultiVectorEncoderTrainer</code></a> is where all previous components come together. Here is the complete script that trained <a href="https://huggingface.co/multi-vector-encoder/mLateOn-medical">multi-vector-encoder/mLateOn-medical</a>, the model from the introduction:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> logging
+<span class="hljs-keyword">import</span> string
+<span class="hljs-keyword">import</span> traceback
+
+<span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset
+
+<span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> (
+    MultiVectorEncoder,
+    MultiVectorEncoderModelCardData,
+    MultiVectorEncoderTrainer,
+    MultiVectorEncoderTrainingArguments,
+)
+<span class="hljs-keyword">from</span> sentence_transformers.base.sampler <span class="hljs-keyword">import</span> BatchSamplers
+<span class="hljs-keyword">from</span> sentence_transformers.multi_vector_encoder.evaluation <span class="hljs-keyword">import</span> MultiVectorInformationRetrievalEvaluator
+<span class="hljs-keyword">from</span> sentence_transformers.multi_vector_encoder.losses <span class="hljs-keyword">import</span> CachedMultiVectorMultipleNegativesRankingLoss
+
+logging.basicConfig(<span class="hljs-built_in">format</span>=<span class="hljs-string">"%(asctime)s - %(message)s"</span>, datefmt=<span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>, level=logging.INFO)
+
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+    <span class="hljs-comment"># 1. Load the starting checkpoint: contrastively pretrained, not yet supervised</span>
+    <span class="hljs-comment"># Loading in fp32 is preferred for training if your memory can handle it</span>
+    model = MultiVectorEncoder(
+        <span class="hljs-string">"lightonai/mLateOn-unsupervised"</span>,
+        model_kwargs={<span class="hljs-string">"torch_dtype"</span>: <span class="hljs-string">"float32"</span>},
+        processor_kwargs={<span class="hljs-string">"model_max_length"</span>: <span class="hljs-number">8192</span>},
+        model_card_data=MultiVectorEncoderModelCardData(
+            language=<span class="hljs-string">"en"</span>,
+            license=<span class="hljs-string">"apache-2.0"</span>,
+            model_name=<span class="hljs-string">"mLateOn finetuned on MIRIAD medical retrieval"</span>,
+        ),
+    )
+
+    <span class="hljs-comment"># 2. Lift the per-task length caps so training and inference see full medical passages</span>
+    model[<span class="hljs-number">0</span>].query_length = <span class="hljs-literal">None</span>
+    model[<span class="hljs-number">0</span>].document_length = <span class="hljs-literal">None</span>
+
+    <span class="hljs-comment"># 3. Skip punctuation tokens during scoring: a small quality win and a 9.6% smaller index</span>
+    model[<span class="hljs-number">2</span>].skiplist_words = <span class="hljs-built_in">list</span>(string.punctuation)
+    model[<span class="hljs-number">2</span>].resolve_with_tokenizer(model.tokenizer)
+
+    <span class="hljs-comment"># 4. Load 1 million medical question-passage pairs</span>
+    train_dataset = load_dataset(<span class="hljs-string">"tomaarsen/miriad-4.4M-split"</span>, split=<span class="hljs-string">"train"</span>).select(<span class="hljs-built_in">range</span>(<span class="hljs-number">1_000_000</span>))
+
+    <span class="hljs-comment"># 5. In-batch negatives with GradCache: large effective batch, memory-bounded chunks</span>
+    loss = CachedMultiVectorMultipleNegativesRankingLoss(model=model, mini_batch_size=<span class="hljs-number">16</span>)
+
+    <span class="hljs-comment"># 6. A light dev evaluator to watch progress during training: 500 held-out questions</span>
+    <span class="hljs-comment"># against the eval split's ~10k unique passages. The full 200k protocol runs afterwards.</span>
+    eval_split = load_dataset(<span class="hljs-string">"tomaarsen/miriad-4.4M-split"</span>, split=<span class="hljs-string">"eval"</span>)
+    corpus, queries, relevant_docs, passage_to_id = {}, {}, {}, {}
+    <span class="hljs-keyword">for</span> idx, row <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(eval_split):
+        <span class="hljs-keyword">if</span> row[<span class="hljs-string">"passage_text"</span>] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> passage_to_id:
+            passage_to_id[row[<span class="hljs-string">"passage_text"</span>]] = <span class="hljs-string">f"p<span class="hljs-subst">{<span class="hljs-built_in">len</span>(passage_to_id)}</span>"</span>
+            corpus[passage_to_id[row[<span class="hljs-string">"passage_text"</span>]]] = row[<span class="hljs-string">"passage_text"</span>]
+        <span class="hljs-keyword">if</span> idx &lt; <span class="hljs-number">500</span>:
+            queries[<span class="hljs-string">f"q<span class="hljs-subst">{idx}</span>"</span>] = row[<span class="hljs-string">"question"</span>]
+            relevant_docs[<span class="hljs-string">f"q<span class="hljs-subst">{idx}</span>"</span>] = {passage_to_id[row[<span class="hljs-string">"passage_text"</span>]]}
+    dev_evaluator = MultiVectorInformationRetrievalEvaluator(
+        queries=queries, corpus=corpus, relevant_docs=relevant_docs, name=<span class="hljs-string">"miriad-dev"</span>, batch_size=<span class="hljs-number">16</span>
+    )
+
+    <span class="hljs-comment"># 7. Training arguments, as discussed above</span>
+    run_name = <span class="hljs-string">"mLateOn-medical"</span>
+    args = MultiVectorEncoderTrainingArguments(
+        output_dir=<span class="hljs-string">f"models/<span class="hljs-subst">{run_name}</span>"</span>,
+        num_train_epochs=<span class="hljs-number">1</span>,
+        per_device_train_batch_size=<span class="hljs-number">128</span>,
+        per_device_eval_batch_size=<span class="hljs-number">16</span>,
+        learning_rate=<span class="hljs-number">1e-4</span>,
+        warmup_steps=<span class="hljs-number">0.05</span>,
+        prompts={<span class="hljs-string">"question"</span>: <span class="hljs-string">"[Q] "</span>, <span class="hljs-string">"passage_text"</span>: <span class="hljs-string">"[D] "</span>},
+        fp16=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># Set to True if you have a GPU that supports FP16</span>
+        bf16=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># Set to True if you have a GPU that supports BF16</span>
+        batch_sampler=BatchSamplers.NO_DUPLICATES,
+        eval_strategy=<span class="hljs-string">"steps"</span>,
+        eval_steps=<span class="hljs-number">0.1</span>,
+        save_strategy=<span class="hljs-string">"steps"</span>,
+        save_steps=<span class="hljs-number">0.05</span>,
+        logging_steps=<span class="hljs-number">0.01</span>,
+        run_name=run_name,
+    )
+
+    <span class="hljs-comment"># 8. Create a trainer &amp; train</span>
+    trainer = MultiVectorEncoderTrainer(
+        model=model,
+        args=args,
+        train_dataset=train_dataset,
+        loss=loss,
+        evaluator=dev_evaluator,
+    )
+    trainer.train()
+
+    <span class="hljs-comment"># 9. Save the trained model</span>
+    model.save_pretrained(<span class="hljs-string">f"models/<span class="hljs-subst">{run_name}</span>/final"</span>)
+
+    <span class="hljs-comment"># 10. (Optional) Push it to the Hugging Face Hub</span>
+    <span class="hljs-keyword">try</span>:
+        model.push_to_hub(run_name)
+    <span class="hljs-keyword">except</span> Exception:
+        logging.error(<span class="hljs-string">f"Error uploading model to the Hugging Face Hub:\n<span class="hljs-subst">{traceback.format_exc()}</span>"</span>)
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    main()
+</code></pre>
+<p>That's the whole recipe: a pre-supervised checkpoint, a million domain pairs, in-batch negatives, full document length, and a higher-than-usual learning rate. The run took 14.5 hours on my single RTX 3090 at a peak of 17.5 GB VRAM, and every one of those choices was the winner of a measured comparison rather than a guess.</p>
+<p>For readers on smaller budgets, my scaling experiments put 100k pairs (75 minutes of training) within 0.012 NDCG@10 of the full million-pair run. Most of the gain comes in the first hour.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="callbacks" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#callbacks" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Callbacks
+	</span>
+</h3>
+<p>The MultiVectorEncoder trainer supports various <a href="https://huggingface.co/docs/transformers/main_classes/callback#transformers.TrainerCallback"><code>transformers.TrainerCallback</code></a> subclasses, including:</p>
+<ul>
+<li><a href="https://huggingface.co/docs/transformers/en/main_classes/callback#transformers.integrations.WandbCallback"><code>WandbCallback</code></a> for logging training metrics to W&amp;B if <code>wandb</code> is installed</li>
+<li><a href="https://huggingface.co/docs/transformers/en/main_classes/callback#transformers.integrations.TensorBoardCallback"><code>TensorBoardCallback</code></a> for logging training metrics to TensorBoard if <code>tensorboard</code> is accessible</li>
+<li><a href="https://huggingface.co/docs/transformers/en/main_classes/callback#transformers.integrations.CodeCarbonCallback"><code>CodeCarbonCallback</code></a> for tracking carbon emissions during training if <code>codecarbon</code> is installed</li>
+</ul>
+<p>Enable these via the <code>report_to</code> training argument, e.g. <code>report_to=["wandb", "codecarbon"]</code>, with the required dependencies installed. It defaults to <code>"none"</code>, and <code>report_to="all"</code> activates every integration whose dependency is installed.</p>
+<p>Refer to the <a href="https://huggingface.co/docs/transformers/en/main_classes/callback">Transformers Callbacks documentation</a> for more information on these callbacks and how to create your own.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="multi-dataset-training" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#multi-dataset-training" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Multi-Dataset Training
+	</span>
+</h3>
+<p>Typically, top-performing general-purpose models are trained on multiple datasets simultaneously. However, this approach can be challenging due to the varying formats of each dataset. Fortunately, the <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/trainer.html" rel="nofollow"><code>MultiVectorEncoderTrainer</code></a> allows you to train on multiple datasets without requiring a uniform format. Additionally, it provides the flexibility to apply different loss functions to each dataset. Here are the steps to train with multiple datasets at once:</p>
+<ul>
+<li>Use a dictionary of <a href="https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.Dataset"><code>datasets.Dataset</code></a> instances (or a <a href="https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.DatasetDict"><code>datasets.DatasetDict</code></a>) as the <code>train_dataset</code> (and optionally also <code>eval_dataset</code>).</li>
+<li>(Optional) Use a dictionary of loss functions mapping dataset names to losses. Only required if you wish to use different loss functions for different datasets.</li>
+</ul>
+<p>Each training/evaluation batch will only contain samples from one of the datasets. The order in which batches are sampled from the multiple datasets is defined by the <a href="https://sbert.net/docs/package_reference/sentence_transformer/sampler.html#sentence_transformers.training_args.MultiDatasetBatchSamplers" rel="nofollow"><code>MultiDatasetBatchSamplers</code></a> enum, which can be passed to the <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/training_args.html" rel="nofollow"><code>MultiVectorEncoderTrainingArguments</code></a> via <code>multi_dataset_batch_sampler</code>. Valid options are:</p>
+<ul>
+<li><code>MultiDatasetBatchSamplers.ROUND_ROBIN</code>: Round-robin sampling from each dataset until one is exhausted. With this strategy, it's likely that not all samples from each dataset are used, but each dataset is sampled from equally.</li>
+<li><code>MultiDatasetBatchSamplers.PROPORTIONAL</code> (default): Sample from each dataset in proportion to its size. With this strategy, all samples from each dataset are used and larger datasets are sampled from more frequently.</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="evaluation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#evaluation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Evaluation
+	</span>
+</h2>
+<p>To find out where the finetuned model stands, I evaluated it against over 50 retrieval model configurations across four architecture families on the MIRIAD evaluation set, built exactly as in the <a href="#evaluator" rel="nofollow">Evaluator</a> section above, with 1,000 held-out medical questions searching 200,000 unique passages (the 10k gold passages hidden among 190k deduplicated distractors from the training split). This corpus is four times the size of the 50,000-passage one from <a href="#which-starting-point-should-you-pick" rel="nofollow">Which starting point should you pick?</a>, so scores are not comparable between the two tables.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_model_size_ndcg.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_model_size_ndcg.png" alt="NDCG@10 versus active parameters on the MIRIAD 200k benchmark, with an arrow marking the finetuning jump from mLateOn-unsupervised to mLateOn-medical"></a></p>
+<p>The headline results, with the full table in the collapsible below:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Model</th>
+<th>Family</th>
+<th align="right">NDCG@10</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><a href="https://huggingface.co/multi-vector-encoder/mLateOn-medical"><strong>multi-vector-encoder/mLateOn-medical (mine)</strong></a></td>
+<td><strong>Multi-vector, finetuned</strong></td>
+<td align="right"><strong>0.9139</strong></td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/mLateOn">lightonai/mLateOn</a></td>
+<td>Multi-vector, zero-shot</td>
+<td align="right">0.8520</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/GTE-ModernColBERT-v1">lightonai/GTE-ModernColBERT-v1</a> (cap lifted)</td>
+<td>Multi-vector, zero-shot</td>
+<td align="right">0.8502</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B">Qwen/Qwen3-Embedding-4B</a></td>
+<td>Dense, zero-shot</td>
+<td align="right">0.7817</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/voyageai/voyage-4-nano">voyageai/voyage-4-nano</a></td>
+<td>Dense, zero-shot</td>
+<td align="right">0.7563</td>
+</tr>
+<tr>
+<td>BM25</td>
+<td>Lexical</td>
+<td align="right">0.7501</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/naver/splade-v3">naver/splade-v3</a></td>
+<td>Sparse, zero-shot</td>
+<td align="right">0.6853</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The finetuned model tops the table, beating the strongest zero-shot model of any architecture by +0.062 NDCG@10. In other words, the strongest zero-shot model returns the right passage as the very first hit for 75.8% of the queries, while the finetuned model does so for 84.9%, cutting the rank-1 error by more than a third.</p>
+<p>The architecture pattern is just as clear, with the top of the table exclusively late interaction. On long documents, one vector per token beats one vector per document, even at matched training and matched backbones. DenseOn and LateOn share training data and architecture except for the head, and the late-interaction sibling wins by +0.12, with the multilingual pair (mDenseOn and mLateOn) replicating this at +0.13. Scale doesn't rescue single vectors either. <a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B">Qwen3-Embedding-4B</a>, the strongest dense model with roughly 33x the active (non-embedding) parameters of mine, still stops 0.13 short, and the 8B version scores lower than the 4B.</p>
+<p>BM25 also performs surprisingly well, beating every sparse model, every truncation-capped multi-vector model, and all but three dense models: the multi-billion <a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B">Qwen3-Embedding-4B</a> and <a href="https://huggingface.co/Qwen/Qwen3-Embedding-8B">8B</a>, and <a href="https://huggingface.co/voyageai/voyage-4-nano">voyage-4-nano</a>, which reads its full 32k token context to edge past by just 0.006. Don't expect that to transfer to your own data though. MIRIAD's questions are generated from the passages, so the lexical overlap between a query and its gold passage is far larger than in typical retrieval, and BM25's unlimited context length lets it use every one of those overlapping words while most neural checkpoints truncate. A BM25 baseline is cheap and always worth running, just don't count on this margin.</p>
+<p>The full field at a glance, sorted by score and colored by architecture family.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_ndcg_by_model.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_ndcg_by_model.png" alt="Sorted NDCG@10 on the MIRIAD 200k benchmark for every evaluated model, colored by architecture family"></a></p>
+<details><summary>Click to see the full evaluation table</summary>
+
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Model</th>
+<th>Family</th>
+<th align="right">NDCG@10</th>
+<th align="right">acc@1</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><a href="https://huggingface.co/multi-vector-encoder/mLateOn-medical"><strong>multi-vector-encoder/mLateOn-medical (mine)</strong></a></td>
+<td>Multi-vector, finetuned</td>
+<td align="right"><strong>0.9139</strong></td>
+<td align="right">0.849</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/mLateOn">lightonai/mLateOn</a></td>
+<td>Multi-vector</td>
+<td align="right">0.8520</td>
+<td align="right">0.758</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/GTE-ModernColBERT-v1">lightonai/GTE-ModernColBERT-v1</a> @1024</td>
+<td>Multi-vector</td>
+<td align="right">0.8502</td>
+<td align="right">0.763</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn">lightonai/LateOn</a> @1024</td>
+<td>Multi-vector</td>
+<td align="right">0.8485</td>
+<td align="right">0.760</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/mLateOn-unsupervised">lightonai/mLateOn-unsupervised</a></td>
+<td>Multi-vector</td>
+<td align="right">0.8304</td>
+<td align="right">0.733</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/mixedbread-ai/mxbai-edge-colbert-v0-32m">mixedbread-ai/mxbai-edge-colbert-v0-32m</a> @1024</td>
+<td>Multi-vector</td>
+<td align="right">0.8186</td>
+<td align="right">0.727</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B">Qwen/Qwen3-Embedding-4B</a></td>
+<td>Dense</td>
+<td align="right">0.7817</td>
+<td align="right">0.669</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3-Embedding-8B">Qwen/Qwen3-Embedding-8B</a></td>
+<td>Dense</td>
+<td align="right">0.7747</td>
+<td align="right">0.654</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/perplexity-ai/pplx-embed-v1-late-0.6b">perplexity-ai/pplx-embed-v1-late-0.6b</a> @1024</td>
+<td>Multi-vector</td>
+<td align="right">0.7702</td>
+<td align="right">0.632</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/ColBERT-Zero">lightonai/ColBERT-Zero</a></td>
+<td>Multi-vector</td>
+<td align="right">0.7613</td>
+<td align="right">0.675</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/LiquidAI/LFM2.5-ColBERT-350M">LiquidAI/LFM2.5-ColBERT-350M</a></td>
+<td>Multi-vector</td>
+<td align="right">0.7582</td>
+<td align="right">0.664</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/voyageai/voyage-4-nano">voyageai/voyage-4-nano</a></td>
+<td>Dense</td>
+<td align="right">0.7563</td>
+<td align="right">0.638</td>
+</tr>
+<tr>
+<td>BM25</td>
+<td>Lexical</td>
+<td align="right">0.7501</td>
+<td align="right">0.641</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/jinaai/jina-embeddings-v5-text-small-retrieval">jinaai/jina-embeddings-v5-text-small-retrieval</a></td>
+<td>Dense</td>
+<td align="right">0.7470</td>
+<td align="right">0.620</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B">Qwen/Qwen3-Embedding-0.6B</a></td>
+<td>Dense</td>
+<td align="right">0.7408</td>
+<td align="right">0.620</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/perplexity-ai/pplx-embed-v1-0.6b">perplexity-ai/pplx-embed-v1-0.6b</a></td>
+<td>Dense</td>
+<td align="right">0.7384</td>
+<td align="right">0.615</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/mixedbread-ai/mxbai-edge-colbert-v0-32m">mixedbread-ai/mxbai-edge-colbert-v0-32m</a></td>
+<td>Multi-vector</td>
+<td align="right">0.7350</td>
+<td align="right">0.639</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/mixedbread-ai/mxbai-edge-colbert-v0-17m">mixedbread-ai/mxbai-edge-colbert-v0-17m</a></td>
+<td>Multi-vector</td>
+<td align="right">0.7271</td>
+<td align="right">0.631</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/answerdotai/answerai-colbert-small-v1">answerdotai/answerai-colbert-small-v1</a> @512</td>
+<td>Multi-vector</td>
+<td align="right">0.7264</td>
+<td align="right">0.615</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/DenseOn">lightonai/DenseOn</a> @1024</td>
+<td>Dense</td>
+<td align="right">0.7239</td>
+<td align="right">0.597</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/mDenseOn">lightonai/mDenseOn</a> @1024</td>
+<td>Dense</td>
+<td align="right">0.7227</td>
+<td align="right">0.585</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/jinaai/jina-embeddings-v5-text-nano-retrieval">jinaai/jina-embeddings-v5-text-nano-retrieval</a></td>
+<td>Dense</td>
+<td align="right">0.7206</td>
+<td align="right">0.587</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/microsoft/harrier-oss-v1-0.6b">microsoft/harrier-oss-v1-0.6b</a></td>
+<td>Dense</td>
+<td align="right">0.7126</td>
+<td align="right">0.572</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Alibaba-NLP/gte-modernbert-base">Alibaba-NLP/gte-modernbert-base</a></td>
+<td>Dense</td>
+<td align="right">0.7102</td>
+<td align="right">0.582</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/Snowflake/snowflake-arctic-embed-l-v2.0">Snowflake/snowflake-arctic-embed-l-v2.0</a></td>
+<td>Dense</td>
+<td align="right">0.7068</td>
+<td align="right">0.568</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/perplexity-ai/pplx-embed-v1-late-0.6b">perplexity-ai/pplx-embed-v1-late-0.6b</a></td>
+<td>Multi-vector</td>
+<td align="right">0.7008</td>
+<td align="right">0.570</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/google/embeddinggemma-300m">google/embeddinggemma-300m</a></td>
+<td>Dense</td>
+<td align="right">0.7000</td>
+<td align="right">0.563</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/DenseOn">lightonai/DenseOn</a></td>
+<td>Dense</td>
+<td align="right">0.6943</td>
+<td align="right">0.570</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/naver/splade-v3">naver/splade-v3</a></td>
+<td>Sparse</td>
+<td align="right">0.6853</td>
+<td align="right">0.574</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/ibm-granite/granite-embedding-small-english-r2">ibm-granite/granite-embedding-small-english-r2</a></td>
+<td>Dense</td>
+<td align="right">0.6813</td>
+<td align="right">0.546</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/naver/splade-v3-distilbert">naver/splade-v3-distilbert</a></td>
+<td>Sparse</td>
+<td align="right">0.6806</td>
+<td align="right">0.567</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/codefuse-ai/F2LLM-v2-0.6B">codefuse-ai/F2LLM-v2-0.6B</a></td>
+<td>Dense</td>
+<td align="right">0.6799</td>
+<td align="right">0.536</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/colbert-ir/colbertv2.0">colbert-ir/colbertv2.0</a> @512</td>
+<td>Multi-vector</td>
+<td align="right">0.6785</td>
+<td align="right">0.571</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/prithivida/Splade_PP_en_v1">prithivida/Splade_PP_en_v1</a></td>
+<td>Sparse</td>
+<td align="right">0.6755</td>
+<td align="right">0.577</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn">lightonai/LateOn</a></td>
+<td>Multi-vector</td>
+<td align="right">0.6713</td>
+<td align="right">0.561</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/tomaarsen/embeddinggemma-300m-miriad-unsloth">tomaarsen/embeddinggemma-300m-miriad-unsloth</a></td>
+<td>Dense, finetuned</td>
+<td align="right">0.6705</td>
+<td align="right">0.530</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn-regularized">lightonai/LateOn-regularized</a></td>
+<td>Multi-vector</td>
+<td align="right">0.6673</td>
+<td align="right">0.554</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/LateOn-unsupervised">lightonai/LateOn-unsupervised</a></td>
+<td>Multi-vector</td>
+<td align="right">0.6672</td>
+<td align="right">0.553</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/lightonai/GTE-ModernColBERT-v1">lightonai/GTE-ModernColBERT-v1</a></td>
+<td>Multi-vector</td>
+<td align="right">0.6612</td>
+<td align="right">0.555</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/opensearch-project/opensearch-neural-sparse-encoding-v2-distill">opensearch-project/opensearch-neural-sparse-encoding-v2-distill</a></td>
+<td>Sparse</td>
+<td align="right">0.6518</td>
+<td align="right">0.531</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/nomic-ai/nomic-embed-text-v1.5">nomic-ai/nomic-embed-text-v1.5</a> (prompted)</td>
+<td>Dense</td>
+<td align="right">0.6387</td>
+<td align="right">0.498</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1">mixedbread-ai/mxbai-embed-large-v1</a></td>
+<td>Dense</td>
+<td align="right">0.6355</td>
+<td align="right">0.502</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/BAAI/bge-large-en-v1.5">BAAI/bge-large-en-v1.5</a></td>
+<td>Dense</td>
+<td align="right">0.6308</td>
+<td align="right">0.498</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/jinaai/jina-colbert-v2">jinaai/jina-colbert-v2</a> @1024</td>
+<td>Multi-vector</td>
+<td align="right">0.6218</td>
+<td align="right">0.504</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/nomic-ai/nomic-embed-text-v1.5">nomic-ai/nomic-embed-text-v1.5</a></td>
+<td>Dense</td>
+<td align="right">0.6203</td>
+<td align="right">0.487</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/answerdotai/answerai-colbert-small-v1">answerdotai/answerai-colbert-small-v1</a></td>
+<td>Multi-vector</td>
+<td align="right">0.6184</td>
+<td align="right">0.514</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/tomaarsen/splade-modernbert-base-miriad">tomaarsen/splade-modernbert-base-miriad</a></td>
+<td>Sparse, finetuned</td>
+<td align="right">0.6142</td>
+<td align="right">0.473</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/NeuML/biomedbert-base-colbert">NeuML/biomedbert-base-colbert</a></td>
+<td>Multi-vector</td>
+<td align="right">0.5963</td>
+<td align="right">0.463</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/BAAI/bge-base-en-v1.5">BAAI/bge-base-en-v1.5</a></td>
+<td>Dense</td>
+<td align="right">0.5930</td>
+<td align="right">0.454</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/BAAI/bge-small-en-v1.5">BAAI/bge-small-en-v1.5</a></td>
+<td>Dense</td>
+<td align="right">0.5881</td>
+<td align="right">0.457</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/sentence-transformers/all-mpnet-base-v2">sentence-transformers/all-mpnet-base-v2</a></td>
+<td>Dense</td>
+<td align="right">0.5159</td>
+<td align="right">0.396</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/jinaai/jina-colbert-v2">jinaai/jina-colbert-v2</a></td>
+<td>Multi-vector</td>
+<td align="right">0.4992</td>
+<td align="right">0.401</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/mixedbread-ai/mxbai-colbert-large-v1">mixedbread-ai/mxbai-colbert-large-v1</a></td>
+<td>Multi-vector</td>
+<td align="right">0.4690</td>
+<td align="right">0.358</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/sentence-transformers/static-retrieval-mrl-en-v1">sentence-transformers/static-retrieval-mrl-en-v1</a></td>
+<td>Dense</td>
+<td align="right">0.4614</td>
+<td align="right">0.323</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</a></td>
+<td>Dense</td>
+<td align="right">0.4458</td>
+<td align="right">0.321</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/colbert-ir/colbertv2.0">colbert-ir/colbertv2.0</a></td>
+<td>Multi-vector</td>
+<td align="right">0.4347</td>
+<td align="right">0.346</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Models marked <code>@N</code> are evaluated with their document length cap lifted to N tokens, since their native caps (180 to 512 tokens) would otherwise truncate the 941-token average passages. For every multi-vector model this lift was worth +0.08 to +0.24 NDCG@10 over the as-served row, and even the dense DenseOn gained +0.03 from the same treatment.</p>
+</details>
+
+<p>Note that this does not mean that <a href="https://huggingface.co/multi-vector-encoder/mLateOn-medical">multi-vector-encoder/mLateOn-medical</a> is the strongest model on <em>all</em> domains. It's simply the strongest in <em>my</em> domain. This is totally fine, as I just need this model to work well on my data.</p>
+<p>Don't underestimate the power of finetuning multi-vector models on your domain. Fourteen and a half hours on a single consumer GPU produced a model that no general-purpose retriever comes close to on this data, and the recipe is a single script with no teacher model and no mined negatives!</p>
+<h3 class="relative group flex items-baseline">
+	<a id="optimizing-the-index" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#optimizing-the-index" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Optimizing the index
+	</span>
+</h3>
+<p>The fair objection to multi-vector retrieval is index size, and this domain is close to the worst case for it. Storing one vector per token, my model needs about 878 vectors per passage, so the 200,000-passage corpus takes roughly 45 GB at fp16, where a dense model needs well under 1 GB. Document length is what makes that gap so wide. The Natural Questions passages in the <a href="https://huggingface.co/blog/multi-vector-encoder">companion post</a> average about 125 token vectors each, seven times fewer, so a corpus of short passages starts from a far smaller index than this one does. The <a href="https://sbert.net/docs/package_reference/multi_vector_encoder/modules.html#hierarchicaltokenpooling" rel="nofollow"><code>HierarchicalTokenPooling</code></a> module compresses exactly this by clustering each document's token embeddings and storing the cluster means, keeping roughly <code>1 / pool_factor</code> of the vectors:</p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> sentence_transformers.multi_vector_encoder.modules <span class="hljs-keyword">import</span> HierarchicalTokenPooling
+
+pooling = HierarchicalTokenPooling(pool_factor=<span class="hljs-number">4</span>)
+document_embeddings = model.encode_document(passages, token_pooling=pooling)
+</code></pre>
+<p>I measured it post-hoc on the finished model, with no pooling-aware training, and on long documents it is remarkably cheap.</p>
+<p><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_index_size_ndcg.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/train-multi-vector-encoder/mve_medical_index_size_ndcg.png" alt="Embedding size for the 200,000-passage corpus versus NDCG@10, with the token pooling trajectory sweeping the multi-vector index into dense-model territory"></a></p>
+<p>The solid points are uncompressed embeddings, so that every family is counted the same way and scored with exact search. You would not deploy any of them like that, though. Dense indexes routinely use int8 or binary quantization with rescoring, sparse indexes compress their postings, and multi-vector indexes use PLAID-style residual compression. Don't read those points as the disk you need to buy, but as relative storage cost.</p>
+<p>Token pooling is the solid line. Halving the vector count costs 0.0033 NDCG@10 and leaves rank-1 accuracy untouched, and keeping only a quarter of them, at 11.2 GB, still scores 0.8991. The curve keeps going (I measured out to a tenth of the vectors, still at 0.8765) but there is little reason to push pooling that far once quantization is on the table, which is what the dashed line below is about.</p>
+<p>The dashed line is what a real deployment might look like. I gave Omar Khattab early access to the model and the benchmark, and he measured these configurations with <a href="https://github.com/lightonai/fast-plaid" rel="nofollow">fast-plaid</a> at 1-bit residual quantization, using compact 17-bit centroid ids and 18-bit document ids instead of its ordinary unpacked 64-bit integers, plus document-side pruning:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>configuration</th>
+<th align="right">vectors kept</th>
+<th align="right">index</th>
+<th align="right">NDCG@10</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>1-bit PLAID, all vectors</td>
+<td align="right">100%</td>
+<td align="right">3.37 GB</td>
+<td align="right">0.8984</td>
+</tr>
+<tr>
+<td>1-bit PLAID + pruning</td>
+<td align="right">65%</td>
+<td align="right">2.23 GB</td>
+<td align="right">0.8830</td>
+</tr>
+<tr>
+<td>1-bit PLAID + pruning</td>
+<td align="right">42%</td>
+<td align="right">1.45 GB</td>
+<td align="right">0.8642</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>That first row is 13x smaller than the raw embeddings, for 0.0155 NDCG@10. That is a far better trade than anywhere on the pooling curve. Quantization shrinks each vector while pooling and pruning cut how many you keep, so they compose, and quantization is the one to reach for first. Push further and the last row lands at 1.45 GB, <em>smaller</em> than the fp16 embeddings of <a href="https://huggingface.co/Qwen/Qwen3-Embedding-8B">Qwen3-Embedding-8B</a> (1.64 GB), while scoring 0.0895 higher. The objection that multi-vector indexes are too big does not survive a properly configured index.</p>
+<p>The pruning here is naive, meant only to establish that token reduction works on top of quantization, so read the bottom two rows as a floor rather than the frontier. If you would rather not hand-tune quantization at all, the <a href="https://huggingface.co/blog/multi-vector-encoder#indexing">Indexing</a> section of the companion post covers fast-plaid, Qdrant, Weaviate, and Vespa.</p>
+<p>Multi-vector retrieval is only as expensive as its index. The raw embeddings for this corpus are 45 GB, and a properly configured index is at least 7x smaller at nearly the same accuracy. The index deserves as much of your attention as the checkpoint.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="acknowledgements" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#acknowledgements" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Acknowledgements
+	</span>
+</h2>
+<p>Thanks to <a href="https://github.com/okhat" rel="nofollow">Omar Khattab</a> for measuring the quantized and pruned index configurations in <a href="#optimizing-the-index" rel="nofollow">Optimizing the index</a>, and for the discussions around late-interaction index costs.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="additional-resources" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#additional-resources" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Additional Resources
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="training-examples" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-examples" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training Examples
+	</span>
+</h3>
+<p>These pages have training examples with explanations as well as links to training scripts. You can use them to get familiar with the multi-vector training loop:</p>
+<ul>
+<li><a href="https://sbert.net/examples/multi_vector_encoder/training/miriad/README.html" rel="nofollow">MIRIAD</a>: domain-specific training on medical retrieval, an earlier and simpler cousin of this blogpost's recipe</li>
+<li><a href="https://sbert.net/examples/multi_vector_encoder/training/msmarco/README.html" rel="nofollow">MS MARCO</a>: contrastive and knowledge distillation recipes</li>
+<li><a href="https://sbert.net/examples/multi_vector_encoder/training/multimodal/README.html" rel="nofollow">Multimodal</a>: ColPali-style visual document retrieval training</li>
+<li><a href="https://sbert.net/examples/multi_vector_encoder/training/peft/README.html" rel="nofollow">PEFT Adapters</a>: parameter-efficient finetuning with LoRA</li>
+</ul>
+<h3 class="relative group flex items-baseline">
+	<a id="documentation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#documentation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Documentation
+	</span>
+</h3>
+<p>For further learning, you may also want to explore the following resources on Sentence Transformers:</p>
+<ul>
+<li><a href="https://sbert.net/docs/installation.html" rel="nofollow">Installation</a></li>
+<li><a href="https://sbert.net/docs/quickstart.html" rel="nofollow">Quickstart</a></li>
+<li><a href="https://sbert.net/docs/multi_vector_encoder/usage/usage.html" rel="nofollow">Usage</a></li>
+<li><a href="https://sbert.net/docs/multi_vector_encoder/usage/custom_models.html" rel="nofollow">Creating Custom Models</a></li>
+<li><a href="https://sbert.net/docs/multi_vector_encoder/pretrained_models.html" rel="nofollow">Pretrained Models</a></li>
+<li><a href="https://sbert.net/docs/multi_vector_encoder/training_overview.html" rel="nofollow">Training Overview</a> (This blogpost is a distillation of the Training Overview documentation)</li>
+<li><a href="https://sbert.net/docs/multi_vector_encoder/loss_overview.html" rel="nofollow">Loss Overview</a></li>
+<li><a href="https://sbert.net/docs/package_reference/multi_vector_encoder/index.html" rel="nofollow">API Reference</a></li>
+</ul>
+<p>And here is an advanced page that might interest you:</p>
+<ul>
+<li><a href="https://sbert.net/docs/sentence_transformer/training/distributed.html" rel="nofollow">Distributed Training</a></li>
+</ul>
+<p>And the companion blogpost, covering everything about <em>using</em> these models:</p>
+<ul>
+<li><a href="https://huggingface.co/blog/multi-vector-encoder">Multi-Vector (Late Interaction) Embedding Models with Sentence Transformers</a></li>
+</ul>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">10</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/multi-vector-encoder"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/multi-vector-encoder/st-hf-lighton-thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">nlp</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">community</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Multi-Vector (Late Interaction) Embedding Models with Sentence Transformers</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="NohTow" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1620819560688-609bbe2f4932693ca2009d6a.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="raphaelsty" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1641910720684-61dd91afdb45389905634d35.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 119</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 18, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/embeddinggemma"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/embeddinggemma/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 via-orange-400/8 to-yellow-200/20 dark:to-yellow-700/10 bg-gradient-to-r from-red-500/10 dark:from-red-900/15 dark:via-orange-800/10"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">open-source</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">community</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">nlp</span><!--]--><!--]--></div> <!--[0--><span class="flex items-center gap-1 rounded bg-orange-100 px-1.5 py-0.5 font-mono text-xs text-orange-700 dark:bg-orange-900/50 dark:text-orange-300"> <!----> Hot</span><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Welcome EmbeddingGemma, Google's new efficient embedding model</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Xenova" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b253b7ac5ecaae3d1efe0c/hwiQ0uvz3t-L5a-NtBIO6.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alvarobartt" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/60f0608166e5701b80ed3f02/H9LNnlf0W4fiOJhQMxnbW.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+2</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 281</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 4, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9568127ad218c11fb28b63" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/z6wm8qqOetyubIG-yoI1A.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/lucilamorgan">lucilamorgan</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a9568127ad218c11fb28b63" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-31T11:40:02" title="Mon, 31 Aug 2026 11:40:02 GMT">Aug 31</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><blockquote>
+<p>Finetuning multi-vector models involves several components: the model itself, datasets, loss functions, training arguments, evaluators, and the trainer class. I'll have a look at each of <a href="https://www.playfyhd.app/" rel="nofollow">playfy</a> these components, accompanied by practical examples of how they can be used for finetuning strong multi-vector models.</p>
+</blockquote>
+<p>This is a really interesting deep dive into multi-vector embedding models... 🔥 The introduction of <code>MultiVectorEncoder</code> in Sentence Transformers v6.0 looks especially useful for ColBERT-style late interaction retrieval, where keeping multiple representations can capture much finer-grained matching than a single dense embedding. The fact that the same framework supports RAG, semantic search, and reranking makes this a very practical direction for modern retrieval systems. 🚀</p>
+<p>I also like how the post breaks the finetuning process down into the individual pieces... datasets, loss functions, training arguments, evaluators, and the trainer class. 🧠 Having practical examples around each component makes the approach much easier to understand and reproduce, especially for people who want to move beyond using a general-purpose retriever and actually optimize a model for their own domain.</p>
+<p>The medical retrieval results are probably the most impressive part... 💡 Training the mLateOn-medical multi-vector encoder for just 14.5 hours on a single RTX 3090 and getting better results than dense, sparse, lexical, and other multi-vector approaches shows how valuable domain-specific finetuning can be. It’s a great reminder that the biggest gains in retrieval often come from matching the model and training data closely to the actual search task rather than simply choosing the newest general-purpose model. 👏📚</p>
+<p>Overall, this is a great practical resource for anyone experimenting with advanced retrieval pipelines... ⚡ The ability to train strong multi-vector models from scratch as well as finetune existing ones opens up plenty of possibilities for specialized search and RAG applications. I especially appreciate that the whole workflow can be set up with <code>sentence-transformers[train]</code>... it makes an otherwise fairly complex retrieval training process feel much more approachable. 👍🤖</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9c7652ffb6f48dbea323f1" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[-1--><div class="mr-2">deleted</div><!--]--> <a href="#6a9c7652ffb6f48dbea323f1" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-09-05T20:06:42" title="Sat, 05 Sep 2026 20:06:42 GMT">Sep 5</time></a> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <span class="truncate text-xs italic text-gray-400 sm:text-sm">This comment has been hidden</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[-1--><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Ftrain-multi-vector-encoder">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Ftrain-multi-vector-encoder">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftrain-multi-vector-encoder" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">145</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yjoonjang" style="content-visibility:auto;"><!--[0--><a href="/yjoonjang" title="yjoonjang"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65a4c4ed2548c41ad9b1421c/bMQbowjHKvq-bKpzalvWm.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MichelleRuwen" style="content-visibility:auto;"><!--[0--><a href="/MichelleRuwen" title="MichelleRuwen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/60b6127e4e144373f3fb4decee3b0690.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="paulomouraj" style="content-visibility:auto;"><!--[0--><a href="/paulomouraj" title="paulomouraj"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67e184d667350657a7d68aac/I4e1DvZbdv7zQUqndrRgX.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="adaamko" style="content-visibility:auto;"><!--[0--><a href="/adaamko" title="adaamko"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646264832538819c729e32ba/MVxNj8FCQzyDEcBuUvivo.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeremyjeje" style="content-visibility:auto;"><!--[0--><a href="/jeremyjeje" title="jeremyjeje"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/dgcTA0FdU3AOhDTklnspq.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ClementeH" style="content-visibility:auto;"><!--[0--><a href="/ClementeH" title="ClementeH"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646b711d31968a60a01f6312/VKHmIuuV0GFd0hKIpxWDH.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Rupyeez" style="content-visibility:auto;"><!--[0--><a href="/Rupyeez" title="Rupyeez"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/Z1REfy4SyX4UaP88tLf8x.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Lauler" style="content-visibility:auto;"><!--[0--><a href="/Lauler" title="Lauler"><img class="overflow-hidden rounded-full" alt="" src="/avatars/8fedebb29532e2fb1648814a291a96d4.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TomSchelsen" style="content-visibility:auto;"><!--[0--><a href="/TomSchelsen" title="TomSchelsen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/573d75f42dafdc49b6836511822f3c38.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="joe32140" style="content-visibility:auto;"><!--[0--><a href="/joe32140" title="joe32140"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/628805861de4db5bc56ac7c7/M9VeN9ghMYk6JzCHlXiKL.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="samforeman" style="content-visibility:auto;"><!--[0--><a href="/samforeman" title="samforeman"><img class="overflow-hidden rounded-full" alt="" src="/avatars/460be23a3e2eb8d344633c3dfdab8a18.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+133</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">10</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

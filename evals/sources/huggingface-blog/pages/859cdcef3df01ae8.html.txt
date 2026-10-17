@@ -1,0 +1,2544 @@
+<!doctype html>
+<html class="">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <meta name="description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="fb:app_id" content="1321688464574422" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:site" content="@huggingface" />
+
+    <meta
+      name="twitter:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Ih3Nn6Wc1U_w_QpvEMXRY.png"
+    />
+
+    <meta
+      property="og:title"
+      content="GPU Management: Why Idle GPUs Are the New Grounded Aircraft"
+    />
+
+    <meta property="og:description" content="A Blog post by Dharma-AI on Hugging Face" />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:url" content="https://huggingface.co/blog/Dharma-AI/gpu-management" />
+
+    <meta
+      property="og:image"
+      content="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/Ih3Nn6Wc1U_w_QpvEMXRY.png"
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+    <link
+      rel="preload"
+      href="/front/build/kube-1f021fd/katex.css"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+
+    <noscript>
+      <link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+    </noscript>
+
+    <link rel="canonical" href="https://huggingface.co/blog/Dharma-AI/gpu-management" />
+    <!--g2q6vf-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/blog/feed.xml"
+      title="Hugging Face Blog"
+    />
+    <!---->
+    <title>GPU Management: Why Idle GPUs Are the New Grounded Aircraft</title>
+
+    <link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+  </head>
+  <body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+    <!--[-->
+    <div class="flex min-h-dvh flex-col">
+      <div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}">
+        <!---->
+      </div>
+      <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}">
+        <!---->
+      </div>
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="SystemThemeMonitor"
+        data-props='{"isLoggedIn":false}'
+      >
+        <!---->
+      </div>
+      <!--[0-->
+      <div
+        class="SVELTE_HYDRATER contents"
+        data-target="MainHeader"
+        data-props='{"classNames":"","isWide":false,"isZh":false,"canCreateKernels":false,"isPro":false}'
+      >
+        <!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]-->
+      <!--[-1--><!--]--><!---->
+      <!--[-1--><!--]--><!---->
+      <!--[0-->
+      <div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}">
+        <!--[-1--><!--]--><!---->
+      </div>
+      <!--]-->
+      <!--[-1--><!--]--><!---->
+      <main class="flex flex-1 flex-col">
+        <div class="container relative flex flex-row justify-center gap-12">
+          <div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl">
+            <div class="max-lg:overflow-hidden">
+              <div
+                class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"
+              >
+                <div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}">
+                  <div></div>
+                  <!---->
+                </div>
+                <div class="mb-4">
+                  <a
+                    href="/blog"
+                    class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"
+                  >
+                    <!---->
+                    Back to Articles</a
+                  >
+                </div>
+                <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden">
+                  <!---->
+                  <a
+                    id="gpu-management-why-idle-gpus-are-the-new-grounded-aircraft"
+                    class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                    href="#gpu-management-why-idle-gpus-are-the-new-grounded-aircraft"
+                    rel="nofollow"
+                  >
+                    <span class="header-link"> </span>
+                  </a>
+                  <span> GPU Management: Why Idle GPUs Are the New Grounded Aircraft </span>
+                  <!---->
+                </h1>
+                <div>
+                  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
+                    <!--[0--><a
+                      href="/blog"
+                      class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"
+                      ><!--[0--><span
+                        class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs"
+                        ><!--[0--><span>Team</span><!--]--></span
+                      ><!---->
+                      <span>Article</span><!--]--></a
+                    ><!--]-->
+                    <div class="flex items-center gap-x-4">
+                      <!--[0--><span class="whitespace-nowrap text-sm sm:text-base"
+                        >Published July 30, 2026</span
+                      ><!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                  </div>
+                  <!--[-1--><!--]-->
+                </div>
+                <!---->
+                <div class="not-prose mb-6 font-sans xl:hidden">
+                  <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1 z-1 lg:sticky lg:top-8">
+                      <!--[0--><a
+                        href="/login?next=%2Fblog%2FDharma-AI%2Fgpu-management"
+                        class="self-start"
+                        ><!--[0--><!---->
+                        <div
+                          role="checkbox"
+                          class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                        >
+                          <input disabled="" type="checkbox" class="peer hidden" />
+                          <!---->
+                          Upvote
+                          <div class="font-semibold text-orange-500">97</div>
+                          <!---->
+                        </div>
+                        <!----><!--]-->
+                        <!--[-1--><!--]--><!----></a
+                      ><!--]-->
+                      <!--[0--><!--[0-->
+                      <ul class="flex items-center text-gray-600 flex-row text-base">
+                        <!--[-->
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="rozsival"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/rozsival" title="rozsival"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/xLHXNrgOEg-64hSxTMjJs.png"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="BrenoBeleza"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/BrenoBeleza" title="BrenoBeleza"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/506583318c7aa57f91ddfaa554e5a377.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="arthuropa"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/arthuropa" title="arthuropa"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/5c9bf94e2b2ea1fda83d64b43018b1b1.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="lucas-treuke"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="GabrielPimenta99"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <li
+                          class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                          title="Braias42"
+                          style="content-visibility: auto"
+                        >
+                          <!--[0--><a href="/Braias42" title="Braias42"
+                            ><img
+                              class="overflow-hidden rounded-full"
+                              alt=""
+                              src="/avatars/3c59b4ac64e53e352d32917ce3f431a0.svg"
+                              loading="lazy" /></a
+                          ><!--]-->
+                        </li>
+                        <!--]-->
+                        <!--[0-->
+                        <li
+                          class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                        >
+                          <!--[--><!--[0--><button
+                            class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                          >
+                            +91</button
+                          ><!--]--><!--]-->
+                        </li>
+                        <!--]-->
+                      </ul>
+                      <!--]--><!--]-->
+                    </div>
+                    <!--[-1--><!--]-->
+                    <dialog
+                      class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose"
+                    >
+                      <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                        <!--[-1--><!--]-->
+                      </div>
+                    </dialog>
+                    <!----><!---->
+                  </div>
+                </div>
+                <div class="not-prose">
+                  <div
+                    class="SVELTE_HYDRATER contents"
+                    data-target="BlogAuthorsByline"
+                    data-props=""
+                  >
+                    <div class="not-prose">
+                      <div
+                        class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"
+                      >
+                        <!--[-->
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/ErickvL"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Erick Lachmann's avatar"
+                                  src="/avatars/6bf88c4bbb6f3e0eb9a359e50d08b6e8.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/ErickvL"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Erick Lachmann"
+                                >Erick Lachmann</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >ErickvL</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/GabrielPimenta99"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Gabriel Pimenta de Freitas Cardoso's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/GabrielPimenta99"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Gabriel Pimenta de Freitas Cardoso"
+                                >Gabriel Pimenta de Freitas Cardoso</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >GabrielPimenta99</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex min-w-0 items-center font-sans leading-tight">
+                          <span class="inline-block flex-none"
+                            ><span class="contents"
+                              ><a href="/gustavolucchetti"
+                                ><img
+                                  class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12"
+                                  alt="Gustavo Lucchetti's avatar"
+                                  src="/avatars/307ec618976a34fd01ec52fd3739bf37.svg" /></a
+                              ><!----><!----></span
+                            >
+                            <!--[-1--><!--]--></span
+                          ><!---->
+                          <div class="min-w-0 text-gray-900 dark:text-gray-300">
+                            <a href="/gustavolucchetti"
+                              ><span
+                                class="fullname block truncate font-sans font-semibold max-sm:text-sm"
+                                title="Gustavo Lucchetti"
+                                >Gustavo Lucchetti</span
+                              >
+                              <div class="my-0.5 flex items-center gap-x-2">
+                                <span class="inline-block min-w-0"
+                                  ><span class="contents"
+                                    ><span
+                                      class="leading-tight! block truncate font-mono text-xs underline"
+                                      >gustavolucchetti</span
+                                    ><!----><!----></span
+                                  >
+                                  <!--[-1--><!--]--></span
+                                ><!---->
+                                <div role="button" tabindex="0">
+                                  <!--[0-->
+                                  <div class="relative flex items-center gap-1.5">
+                                    <!--[0--><button
+                                      class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 w-18 h-[20px] text-xs border-transparent bg-black text-white dark:bg-white dark:text-black"
+                                      type="button"
+                                    >
+                                      <div
+                                        class="flex h-full flex-1 items-center justify-center rounded-full"
+                                      >
+                                        <!--[-1-->Follow<!--]-->
+                                      </div></button
+                                    ><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]--><!---->
+                                </div>
+                              </div></a
+                            >
+                            <div class="flex items-center pt-0.5">
+                              <!--[0--><a
+                                href="/Dharma-AI"
+                                class="mr-1.5 flex-none"
+                                title="Dharma-AI"
+                                ><img
+                                  class="rounded-sm! size-4 select-none"
+                                  alt="Dharma-AI's avatar"
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                              /></a>
+                              <a
+                                href="/Dharma-AI"
+                                class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700"
+                                >Dharma-AI</a
+                              ><!--]-->
+                            </div>
+                          </div>
+                        </div>
+                        <!--]-->
+                      </div>
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                  </div>
+                </div>
+                <!---->
+                <!--[-1--><!--]-->
+                <div
+                  class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"
+                >
+                  <!---->
+                  <h2 class="relative group flex items-baseline">
+                    <!--[--><!--[0-->
+                    <div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block">
+                      <div class="sticky top-4 flex">
+                        <div class="h-7 pt-[0.175rem]">
+                          <span class="peer" tabindex="0"
+                            ><button
+                              class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"
+                            >
+                              <!---->
+                            </button></span
+                          >
+                          <div
+                            class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--]--><!--]-->
+                    <a
+                      id="utilization-not-intelligence-is-the-next-real-constraint-in-ai"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#utilization-not-intelligence-is-the-next-real-constraint-in-ai"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Utilization, not intelligence, is the next real constraint in AI. </span>
+                  </h2>
+                  <p>
+                    Aviation learned this the hard way. For most of the industry's history, the
+                    number that best predicted whether an airline would survive was how much of the
+                    day each aircraft spent on the ground.
+                  </p>
+                  <p>
+                    The reason is structural. An aircraft's costs accrue by the calendar hour:
+                    financing, depreciation, hull insurance, scheduled maintenance, crew contracts.
+                    Its revenue accrues only by the flight hour. Every hour spent on the ground
+                    shrinks the output side of that equation while the cost side keeps running
+                    exactly as before. Utilization also sits downstream of almost everything else an
+                    airline does. Turnaround discipline, network design, maintenance planning, crew
+                    rostering, and spare parts availability all eventually show up in that one
+                    number, because a broken operation underneath it keeps planes on the ground no
+                    matter what else goes right.
+                  </p>
+                  <p>
+                    A bigger fleet still helps. More aircraft means more available capacity, plainly
+                    and simply. But two airlines flying comparable fleets on comparable routes can
+                    end up with very different economics, and most of that gap traces back to one
+                    measurement rather than fleet size.
+                  </p>
+                  <p>
+                    Enterprise AI is running into the same structure, on a different piece of
+                    hardware. A GPU accrues cost by the calendar hour too, through financing,
+                    depreciation, power, and cooling, whether or not it's doing anything useful in a
+                    given moment. Its output only accrues by the compute hour. More GPUs helps in
+                    roughly the way a bigger fleet helps an airline: real capacity, a genuine
+                    advantage, and still no guarantee of the result that actually decides who wins.
+                    Two companies with comparable GPU budgets increasingly diverge based on how much
+                    of that hardware is doing something useful at any given moment, not on how much
+                    of it either one owns. That same number, like an airline's utilization rate,
+                    sits downstream of nearly every other infrastructure decision a company makes.
+                    Intelligence has carried the industry this far. Utilization is where the next
+                    real constraint is forming.
+                  </p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="the-bottleneck-moved-from-models-to-compute"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#the-bottleneck-moved-from-models-to-compute"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> The Bottleneck Moved From Models to Compute </span>
+                  </h3>
+                  <p>
+                    The scarcity didn't disappear as AI scaled. It moved up the chain, landing on a
+                    different resource entirely.
+                  </p>
+                  <p>
+                    The first wave of enterprise AI was won on model quality. Bigger models, trained
+                    on more compute, evaluated against tougher benchmarks: parameter count and
+                    leaderboard position dominated the conversation, and the race produced models
+                    genuinely good enough to run real enterprise workloads. That capability arrives
+                    bundled with a dependency, though. Production AI runs on specialized hardware,
+                    and today that hardware is almost entirely GPUs.
+                  </p>
+                  <p>
+                    GPUs are expensive, supply constrained, and in demand far beyond what's
+                    available, and this holds even at the very top of the market. In 2020, Microsoft
+                    built OpenAI a dedicated supercomputer: over 10,000 GPUs and 285,000 CPU cores,
+                    reported at the time as one of the five largest systems in the world, assembled
+                    to train what became GPT-3. At the time, it looked like an almost unimaginable
+                    concentration of hardware, the kind of number that made compute look like a
+                    solved problem for whoever could get access to it. Six years later, that number
+                    reads more like a starting point than a ceiling. By 2026, even the best
+                    capitalized labs on the planet were treating compute access as a live strategic
+                    constraint rather than a settled one. Anthropic alone was running simultaneous
+                    multi-gigawatt commitments across four separate hardware platforms, Amazon,
+                    Google, Microsoft, and AMD, layered within months of one another, while Meta
+                    signed a comparable multi-gigawatt deal of its own. Spreading commitments across
+                    four vendors at once is what compute scarcity looks like when a buyer has
+                    effectively unlimited capital and still can't get enough from any single source.
+                  </p>
+                  <p>
+                    Six years apart, both events marked the frontier of what a lab needed just to
+                    stay competitive. What changed in between has less to do with AI getting more
+                    capable, and everything to do with capability no longer being the binding
+                    constraint.
+                  </p>
+                  <p>
+                    The same pattern shows up downstream of the labs, in a different form.
+                    Enterprises consuming these models through an API run into a pricing problem
+                    more than a hardware one. Cost scales linearly with tokens used, and that single
+                    fact separates the economics of a proof of concept from the economics of
+                    production almost completely. A PoC processing a few thousand requests a month
+                    looks affordable. The same workload at production volume can turn into a cost
+                    line that never quite clears. The alternative gaining ground is straightforward
+                    enough: enterprises acquiring their own GPUs and running models locally, trading
+                    a variable, linearly scaling cost for a fixed capital one.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/rPuuLzwC5gUqx1nAgQg_f.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/rPuuLzwC5gUqx1nAgQg_f.png"
+                        alt="dharma_fig1_cost_curve (1)"
+                    /></a>
+                    <code
+                      >API cost rises with usage, while owned infrastructure stays close to fixed.
+                      Past the breakeven point, the trade reverses.</code
+                    >
+                  </p>
+                  <p>
+                    That shift turns the GPU into infrastructure rather than a line item, sized for
+                    growth, sized for demand peaks, and therefore sized above what any given week
+                    actually needs. Which means the purchase doesn't close the problem. It opens a
+                    new one. The day the cluster comes online, the question stops being
+                    <em>can we get accelerators</em> and becomes <em>can we keep them busy</em>, and
+                    only the first question had a procurement team assigned to it. Signing for the
+                    hardware is the part with a deadline and an owner. Keeping it off the ground is
+                    the part that quietly decides whether the deal was worth signing.
+                  </p>
+                  <p>
+                    These deals describe capacity commitments, not efficiency. How well that
+                    capacity gets used is a separate question, owned by different people, measured
+                    far less rigorously, and considerably further from being solved.
+                  </p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="why-busy-clusters-still-waste-capacity"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#why-busy-clusters-still-waste-capacity"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Why Busy Clusters Still Waste Capacity </span>
+                  </h3>
+                  <p>
+                    A cluster full of busy GPUs can still be wasting most of its potential, and the
+                    reason is almost always the same one. GPUs run continuously, day and night,
+                    while the demand placed on them does not. Infrastructure has to be sized for the
+                    peak, the moment training runs, batch jobs, and real time traffic all land at
+                    once, which leaves a meaningful share of capacity provisioned and unused outside
+                    that peak. Better forecasting could solve that on its own if every GPU could
+                    absorb every kind of work equally well. Few can, and that turns out to be the
+                    harder half of the problem.
+                  </p>
+                  <p>The mismatch begins one layer deeper.</p>
+                  <p>
+                    In the first generation of enterprise AI, a GPU's job was largely singular: run
+                    inference. Today the same hardware supports training, fine-tuning, quantization,
+                    real-time inference, batch inference, embedding generation, and model
+                    evaluation, often for the same organization, sometimes for the same model, on
+                    the same cluster. Each of these workloads wants something different from the
+                    hardware, and the differences run deep. Real-time inference needs low latency
+                    above nearly everything else, because a slow response counts as a failed one.
+                    Batch work cares about throughput and tolerates delay, sometimes for hours.
+                    Training can occupy a GPU continuously for a stretch measured in hours or days.
+                    Quantization needs a large amount of capacity, but only briefly. A scheduler
+                    tuned for one of these will misallocate the other three almost by default. The
+                    failure doesn't always show up on a utilization dashboard either. A cluster can
+                    report high average occupancy while several queued jobs wait for a GPU shape
+                    that happens to be busy running something else entirely.
+                  </p>
+                  <p>
+                    The exact workload mix varies by organization. The shape of the problem does
+                    not. This is also where the aircraft analogy runs into its limit, and the limit
+                    teaches something rather than just qualifying the comparison. An idle aircraft
+                    can usually be redeployed to any route in the fleet: a 737 sitting in Chicago
+                    can fly to Denver instead of Dallas without much penalty. An idle GPU can only
+                    absorb a workload whose memory, latency, and duration profile it can actually
+                    serve. That difference makes orchestration harder than fleet scheduling, and
+                    it's why the question stops being whether GPUs are occupied and turns into which
+                    workload should run on which GPU, at what time, with what priority. Buying
+                    another rack of GPUs adds capacity and cost, not a fix for the mismatch, and
+                    that new capacity can sit in the wrong shape at the wrong moment just as easily
+                    as the capacity already installed.
+                  </p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="intelligence-moves-into-the-infrastructure"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#intelligence-moves-into-the-infrastructure"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Intelligence Moves Into the Infrastructure </span>
+                  </h3>
+                  <p>
+                    Maximizing GPU ROI takes more than a one-time provisioning decision. It calls
+                    for continuous, active management of the infrastructure itself, running every
+                    hour rather than only at procurement time. What's emerging in response is a
+                    distinct discipline, GPU Management, an orchestration layer sitting between
+                    workloads, models, and hardware. Its job is to decide, continuously, which
+                    workload runs, when it runs, how it runs, and on which specific GPU in the
+                    cluster. None of this is exotic in concept. It's closer to what a good
+                    operations team already does by instinct, just formalized and running
+                    continuously instead of depending on someone noticing a problem.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/qVOVbLxbkm4xCsB6sZJgo.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/qVOVbLxbkm4xCsB6sZJgo.png"
+                        alt="dharma_fig2_gpu_orchestration_v2_radial"
+                    /></a>
+                    <code
+                      >Intelligence doesn't stop at the model boundary. The orchestration layer is
+                      making real-time allocation decisions the model itself has no visibility
+                      into.</code
+                    >
+                  </p>
+                  <p>
+                    Intelligence used to sit almost entirely in the model: bigger, better trained,
+                    more capable, and that was most of the game. Now it also has to sit in the
+                    infrastructure, in the layer deciding, moment to moment, which of several
+                    competing workloads gets the GPU that just freed up, and at what priority
+                    relative to everything else waiting in the queue. Keeping GPUs busy stops being
+                    the goal on its own, since busy is easy to fake by running low priority work
+                    that could have waited. Maximizing the return generated by each installed GPU
+                    becomes the actual target, and that turns out to be a far more continuous
+                    problem than the provisioning question that came before it.
+                  </p>
+                  <p>
+                    Provisioning well doesn't make this go away so much as change its shape. A
+                    provisioning decision gets made once, at purchase time. An allocation decision
+                    gets made constantly: every time a job finishes, every new request that arrives,
+                    every shift in priority between a customer facing service and an internal
+                    training run. That frequency explains why the decision has moved from something
+                    a person handles case by case into something that has to run automatically. No
+                    engineer is watching a dashboard at three in the morning to decide whether a
+                    finished training run should hand its GPU to a queued batch job or hold it for
+                    an incoming burst of customer traffic. Something else has to make that call,
+                    continuously, and make it correctly often enough that nobody needs to check.
+                  </p>
+                  <p>
+                    The discipline is new enough that its tooling and conventions are still forming,
+                    and no single playbook has emerged yet for what a mature GPU Management practice
+                    looks like. What has settled, at least, is where the constraint moved.
+                  </p>
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="specialization-frees-capacity-orchestration-spends-it"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#specialization-frees-capacity-orchestration-spends-it"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span> Specialization Frees Capacity; Orchestration Spends It </span>
+                  </h3>
+                  <p>
+                    Specialization and orchestration solve different halves of the same problem.
+                  </p>
+                  <p>
+                    Specialized, smaller models can perform specific tasks at a fraction of the
+                    resource cost a large generalist model would need for the same job, without
+                    giving up the quality the task requires. That has a direct effect on
+                    utilization. Workloads that once required a single, large model, occupying a
+                    large share of a cluster's capacity for the full duration of the job, can
+                    instead run on smaller, task-specific models occupying a fraction of that
+                    footprint. Capacity that used to be entirely spoken for is suddenly free.
+                  </p>
+                  <p>
+                    How much capacity specialization frees varies by workload and model, but the
+                    freed capacity still has to go somewhere or it just sits there. A smaller
+                    specialized model only converts into GPU ROI if something is actively deciding
+                    what happens next with the space it frees up, reallocating it to another
+                    workload, another model, another queue waiting behind it. Left unmanaged, freed
+                    capacity becomes a different flavor of idle rather than a win, invisible in a
+                    different way than an obviously unused GPU, but no more productive.
+                  </p>
+                  <p>
+                    <a
+                      href="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/uYM6Wj9TrcySE-l-LlI8O.png"
+                      rel="nofollow"
+                      ><img
+                        src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/uYM6Wj9TrcySE-l-LlI8O.png"
+                        alt="dharma_fig3_specialization_matrix"
+                    /></a>
+                    <code
+                      >Specialization without orchestration frees capacity nobody reclaims.
+                      Orchestration without specialization has less capacity worth reclaiming.
+                      Neither lever does the whole job alone.</code
+                    >
+                  </p>
+                  <p>
+                    Specialization without orchestration frees capacity that nobody reclaims.
+                    Orchestration without specialization has less capacity worth reclaiming in the
+                    first place, because the models are still large and the footprint they leave
+                    behind is small. Neither lever does the whole job alone; each one raises the
+                    ceiling on what the other lever can achieve. Neither is optional if the goal is
+                    to actually close the gap between installed capacity and useful output, rather
+                    than shifting where the waste happens to sit.
+                  </p>
+                  <p>
+                    This is why model architecture and GPU management are two ways to address the
+                    same problem, approached from two different directions that end up leaning on
+                    each other. One shrinks what each workload needs. The other decides,
+                    continuously, where the difference goes.
+                  </p>
+                  <hr />
+                  <p>
+                    A bigger fleet has always been a real advantage, and nothing here argues
+                    otherwise. Among airlines with comparable fleets, sometimes even a smaller one
+                    facing a larger rival, the winner was usually whichever one flew what it had
+                    more completely, carrying the weight of everything the airline did well
+                    underneath it. Enterprise AI is arriving at the same discipline from a different
+                    direction. GPUs are already installed, already depreciating, already committed.
+                    Specialized models and GPU Management are parallel solutions, or bivalent
+                    strategies. Specialization shrinks what each workload needs. Management
+                    maximizes the return on infrastructure. Enterprises that master both will set
+                    the pace of AI competition for the next decade.
+                  </p>
+                  <hr />
+                  <h3 class="relative group flex items-baseline">
+                    <a
+                      id="further-reading"
+                      class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full"
+                      href="#further-reading"
+                      rel="nofollow"
+                    >
+                      <span class="header-link"> </span>
+                    </a>
+                    <span>
+                      <strong>Further Reading</strong>
+                    </span>
+                  </h3>
+                  <ul>
+                    <li>
+                      <a href="https://huggingface.co/blog/Dharma-AI/newer-models-same-advantages"
+                        >Newer Models, Same Advantage</a
+                      >
+                      — Despite newer architectures, DharmaOCR outperformed Mistral OCR4 and
+                      Unlimited-OCR on Brazilian Portuguese through domain specialization and
+                      targeted training. This article presents the evidence and the mechanism behind
+                      that advantage.
+                    </li>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/why-specialization-is-inevitable"
+                        >Why Specialization Is Inevitable</a
+                      >
+                      — The structural and theoretical foundation for the specialization argument.
+                      Optimization theory, evolutionary biology, competitive markets, and machine
+                      learning all converge on the same prediction: under finite resources and
+                      selection pressure, fit beats breadth.
+                    </li>
+                    <li>
+                      <a href="https://huggingface.co/blog/Dharma-AI/specialization-beats-scale"
+                        >Specialization Beats Scale: A Strategic Variable Most AI Procurement
+                        Decisions Overlook</a
+                      >
+                      — The empirical and strategic complement to this article. Where the No Free
+                      Lunch theorem establishes why specialization is structurally predicted, this
+                      piece examines the evidence that it outperforms in practice — and why it
+                      remains underweighted in most AI procurement decisions.
+                    </li>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/text-degeneration-a-production-failure-mode"
+                        >Text Degeneration: A Production Failure Mode That Most Benchmarks Do Not
+                        Track</a
+                      >
+                      — A documented failure mode that emerges when language models operate outside
+                      the boundaries of their effective domain.
+                    </li>
+                    <li>
+                      <a
+                        href="https://huggingface.co/blog/Dharma-AI/direct-preference-optimization-beyond-chatbots"
+                        >Direct Preference Optimization Beyond Chatbots</a
+                      >
+                      — How preference optimization techniques extend into specialized domains
+                      beyond conversational AI — a concrete instantiation of the domain focus
+                      strategy this article argues is structurally predicted.
+                    </li>
+                  </ul>
+                  <p>---</p>
+                  <p>
+                    <em>Explore</em>
+                    <a href="https://huggingface.co/Dharma-AI"
+                      ><em>Dharma AI on Hugging Face</em></a
+                    >
+                    <em>to</em>
+                    <a href="https://huggingface.co/spaces/Dharma-AI/DharmaOCR-demo"
+                      ><em>try our interactive demos</em></a
+                    ><em>,</em>
+                    <a href="https://huggingface.co/Dharma-AI/Dharma-OCR-LITE"
+                      ><em>download our open-source models</em></a
+                    ><em
+                      >, and discover how specialized AI systems outperform general-purpose models
+                      in real enterprise applications.</em
+                    >
+                  </p>
+                  <!---->
+                </div>
+              </div>
+            </div>
+            <!--[0-->
+            <div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden">
+              <div class="flex flex-col gap-6">
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Models mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+                <!--[0-->
+                <div>
+                  <h2
+                    class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                  >
+                    <!---->
+                    Spaces mentioned in this article
+                    <span class="ml-3 font-normal text-gray-400">1</span>
+                  </h2>
+                </div>
+                <!--]-->
+                <!--[-1--><!--]-->
+                <!--[-1--><!--]-->
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto mt-16 max-w-7xl border-t border-gray-200">
+              <div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6">
+                  <p class="col-span-1 mb-4 text-center text-lg font-semibold">
+                    More from this author
+                  </p>
+                  <!--[-->
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/gpu-management-pt2"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/6a725daa5ca641a21ab61956/wOnyrU6-UQAM5hOwpaw3-.jpeg"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          Same Cluster, 33 Points More Utilization: What Changed Was the Order
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              20
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">August 17, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props="">
+                    <a
+                      class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch"
+                      href="/blog/Dharma-AI/newer-models-same-advantages"
+                      ><div
+                        class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"
+                      >
+                        <!--[0-->
+                        <div
+                          class="relative flex h-full w-full items-center justify-center overflow-hidden"
+                        >
+                          <!--[0-->
+                          <div
+                            class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"
+                          ></div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <img
+                            loading="lazy"
+                            src="https://cdn-uploads.huggingface.co/production/uploads/69d815b52c6db28cfdfdd422/3HJgWuzAFymnAq6TqEdL7.png"
+                            class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible"
+                            alt=""
+                            onload="this.__e = event"
+                            onerror="this.__e = event"
+                          />
+                        </div>
+                        <!--]-->
+                      </div>
+                      <div
+                        class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"
+                      >
+                        <div class="mb-2 flex items-center justify-between gap-1.5">
+                          <div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div>
+                          <!--[-1--><!--]-->
+                        </div>
+                        <h2
+                          class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl"
+                        >
+                          Newer Models, Same Advantage
+                        </h2>
+                        <div
+                          class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"
+                        >
+                          <div class="flex-none">
+                            <!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-base">
+                              <!--[-->
+                              <li
+                                class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="Dharma-AI"
+                                style="content-visibility: auto"
+                              >
+                                <!--[1--><img
+                                  class="overflow-hidden"
+                                  alt=""
+                                  src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/5XWR_0JJv0gy6PRN9WDMF.png"
+                                  loading="lazy"
+                                /><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                              >
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                          </div>
+                          <!--[-1--><!--]-->
+                          <div class="ml-auto flex flex-none items-center gap-3">
+                            <!--[0-->
+                            <div class="flex items-center">
+                              <!--[-1-->
+                              <!--]-->
+                              58
+                            </div>
+                            <!--]-->
+                            <!--[0--><span class="whitespace-nowrap">July 16, 2026</span><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <span
+                          class="invisible absolute whitespace-nowrap font-mono text-sm"
+                          aria-hidden="true"
+                        ></span></div></a
+                    ><!---->
+                  </div>
+                  <!--]-->
+                </div>
+              </div>
+            </div>
+            <!--]-->
+            <!--[0-->
+            <div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8">
+              <h3 class="mb-6 flex items-center text-lg font-semibold"><!---->Community</h3>
+              <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="">
+                <div class="relative -mx-2.5">
+                  <!--[-1--><!--]-->
+                  <!--[-->
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-0 pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a6b8fcace3e4a2fd6c3dc17" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/31cf43fab2e1aaa5c4a6aa2310c8e193.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/Mikeleton"
+                                    >Mikeleton</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a6b8fcace3e4a2fd6c3dc17"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-07-30T17:54:18"
+                                title="Thu, 30 Jul 2026 17:54:18 GMT"
+                                >Jul 30</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              The next frontier is managing an entire fleet of agents and there is
+                              nothing stopping it.
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="GabrielPimenta99"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  1 reply</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a6d0a73f2f02aadd53c048e" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline text-blue-500"
+                                          href="/GabrielPimenta99"
+                                          >GabrielPimenta99</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[0--><span
+                                    class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2"
+                                    >Article author<!----></span
+                                  ><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a6d0a73f2f02aadd53c048e"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-07-31T20:49:55"
+                                      title="Fri, 31 Jul 2026 20:49:55 GMT"
+                                      >Jul 31</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>
+                                    Agreed. And the part that isn't priced in yet: a fleet of agents
+                                    makes per-token cost scale linearly with the business. At some
+                                    point large enterprises stop paying that curve and bring the
+                                    models in-house — which doesn't remove the cost, it just trades
+                                    a vendor price list for a utilization number. And agent fleets
+                                    are brutal on utilization: real-time inference under latency
+                                    SLAs, batch jobs, retraining, evals — all bursty, all fighting
+                                    over the same finite pool. Managing the fleet is going to be, in
+                                    large part, a GPU scheduling problem.
+                                  </p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[-->
+                                      <div>
+                                        <span class="inline-block"
+                                          ><span class="contents"
+                                            ><button
+                                              class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                            >
+                                              <div class="mr-2 text-[0.9rem]">👍</div>
+                                              <div class="invisible">1</div>
+                                              <!---->
+                                              <div class="absolute right-2">1</div>
+                                              <!----></button
+                                            ><!----></span
+                                          >
+                                          <!--[-1--><!--]--></span
+                                        ><!---->
+                                      </div>
+                                      <!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[-1-->+<!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a6c42007f3b7929687d3a8f" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="/avatars/76248e5f0f20e0b0e8e95336e5abb52c.svg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/blacker521"
+                                    >blacker521</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a6c42007f3b7929687d3a8f"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-07-31T06:34:40"
+                                title="Fri, 31 Jul 2026 06:34:40 GMT"
+                                >Jul 31</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              Scheduling is the core bottleneck of this problem. A CPU-like
+                              isolation mechanism, or a sandbox-based architecture on GPUs, could
+                              significantly alleviate this issue.
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[0--><!--[0-->
+                            <ul class="flex items-center text-gray-600 flex-row text-xs mr-1.5">
+                              <!--[-->
+                              <li
+                                class="-mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                                title="BrenoBeleza"
+                                style="content-visibility: auto"
+                              >
+                                <!--[0--><a href="/BrenoBeleza" title="BrenoBeleza"
+                                  ><img
+                                    class="overflow-hidden"
+                                    alt=""
+                                    src="/avatars/506583318c7aa57f91ddfaa554e5a377.svg"
+                                    loading="lazy" /></a
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                              <!--[0-->
+                              <li
+                                class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"
+                              >
+                                <!--[--><button
+                                  class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"
+                                >
+                                  1 reply</button
+                                ><!--]-->
+                              </li>
+                              <!--]-->
+                            </ul>
+                            <!--]--><!---->
+                            <span class="mr-2 text-gray-300">·</span><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[0-->
+                        <div class="mt-4 flex flex-col ml-2">
+                          <!--[-->
+                          <div class="border-l pl-1 xl:pl-2">
+                            <!--[-1--><!--]-->
+                            <dialog
+                              class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                            >
+                              <div
+                                tabindex="-1"
+                                class="outline-none focus:ring-0 focus-visible:ring-0"
+                              >
+                                <!--[-1--><!--]-->
+                              </div>
+                            </dialog>
+                            <!---->
+                            <div id="6a709886abfb77b0f07169d3" class="relative scroll-mt-4">
+                              <div class="flex h-10 items-center justify-between gap-1 px-3">
+                                <div class="flex max-w-full items-center overflow-hidden">
+                                  <!--[0--><span class="inline-block"
+                                    ><span class="contents"
+                                      ><div class="mr-2 flex shrink-0 items-center">
+                                        <div class="flex-none mr-2">
+                                          <img
+                                            alt=""
+                                            class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                            src="/avatars/506583318c7aa57f91ddfaa554e5a377.svg"
+                                            crossorigin="anonymous"
+                                          />
+                                          <!--[-1--><!--]-->
+                                        </div>
+                                        <!---->
+                                        <a
+                                          class="whitespace-nowrap font-semibold hover:underline"
+                                          href="/BrenoBeleza"
+                                          >BrenoBeleza</a
+                                        >
+                                      </div>
+                                      <!----><!----></span
+                                    >
+                                    <!--[-1--><!--]--></span
+                                  ><!---->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]--><!--]-->
+                                  <a
+                                    href="#6a709886abfb77b0f07169d3"
+                                    class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                                    ><time
+                                      datetime="2026-08-03T13:32:54"
+                                      title="Mon, 03 Aug 2026 13:32:54 GMT"
+                                      >Aug 3</time
+                                    ></a
+                                  >
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                  <!--[-1--><!--]-->
+                                  <!--[0-->
+                                  <div class="relative flex items-center">
+                                    <button
+                                      class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                      aria-expanded="false"
+                                      type="button"
+                                    >
+                                      <!--[0-->
+                                      <!----><!--]-->
+                                      <!--[-1--><!--]-->
+                                    </button>
+                                    <!--[-1--><!--]-->
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!--]-->
+                                </div>
+                              </div>
+                              <!--[1-->
+                              <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                                <!--[2-->
+                                <div
+                                  class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                                >
+                                  <!--[-1--><!--]-->
+                                  <!---->
+                                  <p>
+                                    Good point, isolation is a real part of the picture. CPU-style
+                                    boundaries (and the GPU sandboxing now landing, like the Kata
+                                    Containers work) are what make it safe to co-locate unrelated
+                                    workloads on the same card without fault or memory-contention
+                                    risk, which widens the set of placements a scheduler is even
+                                    allowed to make.
+                                  </p>
+                                  <p>
+                                    Taking that a step further: once co-location is safe, we have to
+                                    decide which workload runs on which GPU, at what time, at what
+                                    priority, given that each one wants something different from the
+                                    hardware (memory footprint, latency tolerance, duration).
+                                    Isolation gives you a bigger, safer decision space; something
+                                    still has to pick the right point in it. And rigid partitioning
+                                    can even cut utilization, since an idle slice can't lend
+                                    capacity to a busy neighbor.
+                                  </p>
+                                  <p>
+                                    That's exactly the direction we're taking next: an intelligent
+                                    solution for job scheduling. We've got a follow-up article on it
+                                    in the works, which will be published next week. Would be
+                                    curious to get your read when it's out.
+                                  </p>
+                                  <!---->
+                                </div>
+                                <!--[-1--><!--]--><!--]-->
+                                <!--[0-->
+                                <div class="mt-1 leading-tight">
+                                  <!--[0--><!--[-1--><button
+                                    class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                                  >
+                                    See translation</button
+                                  ><!--]--><!--]-->
+                                  <!--[-1--><!--]-->
+                                </div>
+                                <!--]-->
+                                <div class="mt-3 flex items-center gap-2">
+                                  <!--[-1--><!--]-->
+                                  <div
+                                    class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                                  >
+                                    <div
+                                      class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                                    >
+                                      <!--[-->
+                                      <div>
+                                        <span class="inline-block"
+                                          ><span class="contents"
+                                            ><button
+                                              class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"
+                                            >
+                                              <div class="mr-2 text-[0.9rem]">👍</div>
+                                              <div class="invisible">2</div>
+                                              <!---->
+                                              <div class="absolute right-2">2</div>
+                                              <!----></button
+                                            ><!----></span
+                                          >
+                                          <!--[-1--><!--]--></span
+                                        ><!---->
+                                      </div>
+                                      <!--]-->
+                                    </div>
+                                    <!--[-1--><!--]--><!---->
+                                    <!--[-1--><!--]-->
+                                    <div>
+                                      <!--[-->
+                                      <div class="flex" slot="anchor">
+                                        <button class="group z-10 select-none">
+                                          <span
+                                            class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                            ><!--[-1-->+<!--]--></span
+                                          >
+                                        </button>
+                                      </div>
+                                      <!--]-->
+                                      <!--[--><!--[-1--><!--]--><!--]-->
+                                    </div>
+                                    <!----><!---->
+                                  </div>
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </div>
+                              <!--]-->
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!---->
+                              <!--[0--><!--[-1--><!--]-->
+                              <dialog
+                                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                              >
+                                <div
+                                  tabindex="-1"
+                                  class="outline-none focus:ring-0 focus-visible:ring-0"
+                                >
+                                  <!--[-1--><!--]-->
+                                </div>
+                              </dialog>
+                              <!--]-->
+                            </div>
+                            <!---->
+                          </div>
+                          <!--]-->
+                          <!--[-1--><!--]-->
+                          <!--[0-->
+                          <div class="mx-2 mt-1">
+                            <input
+                              type="text"
+                              class="form-input w-full cursor-pointer py-1.5"
+                              placeholder="Reply in thread"
+                            />
+                          </div>
+                          <!--]-->
+                        </div>
+                        <!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-3">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a7703cfc961dfc90e3e3ecb" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[-1-->
+                            <div class="mr-2">deleted</div>
+                            <!--]-->
+                            <a
+                              href="#6a7703cfc961dfc90e3e3ecb"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-08-08T10:24:15"
+                                title="Sat, 08 Aug 2026 10:24:15 GMT"
+                                >Aug 8</time
+                              ></a
+                            >
+                            <!--[0-->
+                            <div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div>
+                            <span class="truncate text-xs italic text-gray-400 sm:text-sm"
+                              >This comment has been hidden</span
+                            ><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                        </div>
+                        <!--[-1--><!--]-->
+                        <!--[0--><!--[-1--><!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <div class="relative">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div class="relative pt-3! pb-0">
+                      <!--[-1--><!--]-->
+                      <!--[0--><!--[-1--><!--]-->
+                      <dialog
+                        class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl"
+                      >
+                        <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                          <!--[-1--><!--]-->
+                        </div>
+                      </dialog>
+                      <!---->
+                      <div id="6a7b322f18c8c3ca299106af" class="relative scroll-mt-4">
+                        <div class="flex h-10 items-center justify-between gap-1 px-3">
+                          <div class="flex max-w-full items-center overflow-hidden">
+                            <!--[0--><span class="inline-block"
+                              ><span class="contents"
+                                ><div class="mr-2 flex shrink-0 items-center">
+                                  <div class="flex-none mr-2">
+                                    <img
+                                      alt=""
+                                      class="max-w-none size-3.5 rounded-full flex-none select-none"
+                                      src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/U9AwsZyvT017uoE5buqC0.jpeg"
+                                      crossorigin="anonymous"
+                                    />
+                                    <!--[-1--><!--]-->
+                                  </div>
+                                  <!---->
+                                  <a
+                                    class="whitespace-nowrap font-semibold hover:underline"
+                                    href="/scifiscrivener"
+                                    >scifiscrivener</a
+                                  >
+                                </div>
+                                <!----><!----></span
+                              >
+                              <!--[-1--><!--]--></span
+                            ><!---->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]--><!--]-->
+                            <a
+                              href="#6a7b322f18c8c3ca299106af"
+                              class="truncate text-xs text-gray-400 hover:underline sm:text-sm"
+                              ><time
+                                datetime="2026-08-11T14:31:11"
+                                title="Tue, 11 Aug 2026 14:31:11 GMT"
+                                >Aug 11</time
+                              ></a
+                            >
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <div class="flex items-center space-x-2">
+                            <!--[-1--><!--]-->
+                            <!--[0-->
+                            <div class="relative flex items-center">
+                              <button
+                                class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400"
+                                aria-expanded="false"
+                                type="button"
+                              >
+                                <!--[0-->
+                                <!----><!--]-->
+                                <!--[-1--><!--]-->
+                              </button>
+                              <!--[-1--><!--]-->
+                              <!--[-1--><!--]-->
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--[1-->
+                        <div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1">
+                          <!--[2-->
+                          <div
+                            class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"
+                          >
+                            <!--[-1--><!--]-->
+                            <!---->
+                            <p>
+                              I expect we will see GPU rental systems become a thing. There are a
+                              lot of high-end GPUs sitting in consumer computers doing absolutely
+                              nothing for 90% of the day. Imagine if individuals could allow a
+                              training model to access their GPU remotely and in return pay them
+                              something in return. Yes, remote GPUs is not optimal, but with the
+                              consumer taking on the maintenance, power bill, and ownership of the
+                              GPU, any use the training model gets is a net positive.
+                            </p>
+                            <!---->
+                          </div>
+                          <!--[-1--><!--]--><!--]-->
+                          <!--[0-->
+                          <div class="mt-1 leading-tight">
+                            <!--[0--><!--[-1--><button
+                              class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400"
+                            >
+                              See translation</button
+                            ><!--]--><!--]-->
+                            <!--[-1--><!--]-->
+                          </div>
+                          <!--]-->
+                          <div class="mt-3 flex items-center gap-2">
+                            <!--[-1--><!--]-->
+                            <div
+                              class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"
+                            >
+                              <div
+                                class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"
+                              >
+                                <!--[--><!--]-->
+                              </div>
+                              <!--[-1--><!--]--><!---->
+                              <!--[-1--><!--]-->
+                              <div>
+                                <!--[-->
+                                <div class="flex" slot="anchor">
+                                  <button class="group z-10 select-none">
+                                    <span
+                                      class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"
+                                      ><!--[0-->
+                                      <!--]--></span
+                                    >
+                                  </button>
+                                </div>
+                                <!--]-->
+                                <!--[--><!--[-1--><!--]--><!--]-->
+                              </div>
+                              <!----><!---->
+                            </div>
+                            <!--[0-->
+                            <div class="ml-auto">
+                              <button
+                                class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"
+                              >
+                                <!---->Reply
+                              </button>
+                            </div>
+                            <!--]-->
+                          </div>
+                        </div>
+                        <!--]-->
+                        <!--[0--><!--[-1--><!--]-->
+                        <!--[-1--><!--]--><!--]-->
+                        <!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!---->
+                        <!--[0--><!--[-1--><!--]-->
+                        <dialog
+                          class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl"
+                        >
+                          <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                            <!--[-1--><!--]-->
+                          </div>
+                        </dialog>
+                        <!--]-->
+                      </div>
+                      <!--]-->
+                    </div>
+                  </div>
+                  <!--]-->
+                </div>
+                <div
+                  class="overflow-hidden rounded-lg border border-gray-200 bg-white rounded-b-none border-b-0 mt-6"
+                >
+                  <div
+                    class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"
+                  >
+                    <div class="flex h-full items-stretch">
+                      <!--[--><button class="tab active" type="button">Edit</button
+                      ><button class="tab" type="button">Preview</button><!--]-->
+                    </div>
+                    <div><!--[-1--><!--]--></div>
+                  </div>
+                  <!---->
+                  <div class="p-4">
+                    <div class="contents">
+                      <!--[-->
+                      <div class="contents">
+                        <!--[--><textarea
+                          class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2"
+                          name="comment"
+                          placeholder="Start discussing this article"
+                          required=""
+                          disabled=""
+                          rows="3"
+                        ></textarea
+                        ><!--]-->
+                        <!--[-1--><!--]-->
+                      </div>
+                      <!--]-->
+                      <!--[-1--><!--]-->
+                    </div>
+                    <!---->
+                    <label
+                      class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"
+                      ><!--[-1-->
+                      <!--]-->
+                      <div class="hidden md:block">
+                        Upload images, audio, and videos by dragging in the text input, pasting, or
+                        <span class="cursor-pointer underline">clicking here</span>.
+                      </div>
+                      <div class="md:hidden">Tap or paste here to upload images</div>
+                      <input
+                        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav"
+                        class="hidden"
+                        disabled=""
+                        type="file"
+                        multiple=""
+                    /></label>
+                  </div>
+                  <!--[-1--><!--]-->
+                  <!--[--><!--]-->
+                </div>
+                <!---->
+                <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200">
+                  <div class="p-4">
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <!--[-1--><!--]-->
+                    <div
+                      class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"
+                    >
+                      <button class="btn btn-large" disabled="">
+                        <!---->
+                        Comment
+                      </button>
+                      <!--[0-->
+                      <p class="py-1 text-gray-800">
+                        <span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span>
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/join?next=%2Fblog%2FDharma-AI%2Fgpu-management"
+                          >Sign up</a
+                        >
+                        or
+                        <a
+                          class="underline hover:text-gray-500"
+                          href="/login?next=%2Fblog%2FDharma-AI%2Fgpu-management"
+                          >log in</a
+                        >
+                        to comment
+                      </p>
+                      <!--]-->
+                    </div>
+                  </div>
+                </div>
+                <!---->
+              </div>
+            </div>
+            <!--]-->
+          </div>
+          <div
+            class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"
+          >
+            <div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props="">
+              <div
+                class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"
+              >
+                <!--[0--><a
+                  href="/login?next=%2Fblog%2FDharma-AI%2Fgpu-management"
+                  class="self-start"
+                  ><!--[0--><!---->
+                  <div
+                    role="checkbox"
+                    class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850"
+                  >
+                    <input disabled="" type="checkbox" class="peer hidden" />
+                    <!---->
+                    Upvote
+                    <div class="font-semibold text-orange-500">97</div>
+                    <!---->
+                  </div>
+                  <!----><!--]-->
+                  <!--[-1--><!--]--><!----></a
+                ><!--]-->
+                <!--[0--><!--[0-->
+                <ul class="flex items-center text-gray-600 flex-row text-base">
+                  <!--[-->
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="rozsival"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/rozsival" title="rozsival"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/xLHXNrgOEg-64hSxTMjJs.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="BrenoBeleza"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/BrenoBeleza" title="BrenoBeleza"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/506583318c7aa57f91ddfaa554e5a377.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="arthuropa"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/arthuropa" title="arthuropa"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/5c9bf94e2b2ea1fda83d64b43018b1b1.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="lucas-treuke"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/lucas-treuke" title="lucas-treuke"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/0d795d47a124f73d85eee01d02e85358.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="GabrielPimenta99"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/GabrielPimenta99" title="GabrielPimenta99"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/67b22efa9b36260fe286e99f/vm2fyO1NSqmjcIuyeF6PQ.jpeg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Braias42"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Braias42" title="Braias42"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/3c59b4ac64e53e352d32917ce3f431a0.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="suzanamont"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/suzanamont" title="suzanamont"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/0074277b4edc91617019d5b43211f8cb.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="pedrovicente"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/pedrovicente" title="pedrovicente"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/e6eec37270b0ebd970987a09aea7800d.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="phranzia"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/phranzia" title="phranzia"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/2b2e9cb108e048c7574304808270784a.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="Mikeleton"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/Mikeleton" title="Mikeleton"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/31cf43fab2e1aaa5c4a6aa2310c8e193.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="gustavolucchetti"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/gustavolucchetti" title="gustavolucchetti"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="/avatars/307ec618976a34fd01ec52fd3739bf37.svg"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <li
+                    class="-mr-2 h-5 w-5 md:h-6 md:w-6 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800"
+                    title="robertofrjunior"
+                    style="content-visibility: auto"
+                  >
+                    <!--[0--><a href="/robertofrjunior" title="robertofrjunior"
+                      ><img
+                        class="overflow-hidden rounded-full"
+                        alt=""
+                        src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/rMfzd48rDttyGDxgjkbI0.png"
+                        loading="lazy" /></a
+                    ><!--]-->
+                  </li>
+                  <!--]-->
+                  <!--[0-->
+                  <li
+                    class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"
+                  >
+                    <!--[--><!--[0--><button
+                      class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs"
+                    >
+                      +85</button
+                    ><!--]--><!--]-->
+                  </li>
+                  <!--]-->
+                </ul>
+                <!--]--><!--]-->
+              </div>
+              <!--[-1--><!--]-->
+              <dialog
+                class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base"
+              >
+                <div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0">
+                  <!--[-1--><!--]-->
+                </div>
+              </dialog>
+              <!----><!---->
+            </div>
+            <!--[0-->
+            <div class="mt-8 flex flex-col gap-6 pb-8">
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Models mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+              <!--[0-->
+              <div>
+                <h2
+                  class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"
+                >
+                  <!---->
+                  Spaces mentioned in this article
+                  <span class="ml-3 font-normal text-gray-400">1</span>
+                </h2>
+              </div>
+              <!--]-->
+              <!--[-1--><!--]-->
+              <!--[-1--><!--]-->
+            </div>
+            <!--]-->
+          </div>
+        </div>
+        <!---->
+      </main>
+      <!--[1-->
+      <!--]--><!---->
+    </div>
+    <!--]-->
+
+    <!-- Stripe -->
+  </body>
+</html>

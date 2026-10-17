@@ -1,0 +1,517 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/nunchaku-diffusers/thumbnail.png" />
+
+		<meta property="og:title" content="Bringing Nunchaku 4-bit Diffusion Inference to Diffusers" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/nunchaku-diffusers" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/nunchaku-diffusers/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/nunchaku-diffusers">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Bringing Nunchaku 4-bit Diffusion Inference to Diffusers</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="bringing-nunchaku-4-bit-diffusion-inference-to-diffusers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#bringing-nunchaku-4-bit-diffusion-inference-to-diffusers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Bringing Nunchaku 4-bit Diffusion Inference to Diffusers
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					July 23, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/nunchaku-diffusers.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnunchaku-diffusers" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">70</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[0--><a href="/sayakpaul" title="sayakpaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="htrvu" style="content-visibility:auto;"><!--[0--><a href="/htrvu" title="htrvu"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1671283274285-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="khanhld" style="content-visibility:auto;"><!--[0--><a href="/khanhld" title="khanhld"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1652168442512-6263d9415753dad148484a6e.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="khainguyen1511" style="content-visibility:auto;"><!--[0--><a href="/khainguyen1511" title="khainguyen1511"><img class="overflow-hidden rounded-full" alt="" src="/avatars/9b77b96f60c218e484ab7593d6397ed5.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ElectricGoal" style="content-visibility:auto;"><!--[0--><a href="/ElectricGoal" title="ElectricGoal"><img class="overflow-hidden rounded-full" alt="" src="/avatars/3a264b1a374a596c9cab9c8c3731d792.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="quanlt9393" style="content-visibility:auto;"><!--[0--><a href="/quanlt9393" title="quanlt9393"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/VF2MEH1LuyU74Ofpbx8xu.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+64</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/rootonchair"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Pham Hong Vinh's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/655647bf2f76548766fce60f/mZhWuhJb-bzlzp-C3VoO_.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/rootonchair"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Pham Hong Vinh">Pham Hong Vinh</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">rootonchair</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[1--><span class="rounded-sm bg-gray-100 px-1 font-mono text-sm text-gray-600 dark:bg-gray-700">guest</span><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sayakpaul"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sayak Paul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sayakpaul"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sayak Paul">Sayak Paul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sayakpaul</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Large diffusion transformers can create stunning images (or even videos, audio snippets, and now text), but loading a modern text-to-image model in BF16 precision often requires 20-30 GB of VRAM, which puts these models out of reach of most consumer GPUs. Quantization is a powerful solution to this problem, and Diffusers already integrates several quantization backends such as bitsandbytes, GGUF, torchao, and Quanto, which we covered in <a href="https://huggingface.co/blog/diffusers-quantization">Exploring Quantization Backends in Diffusers</a>.</p>
+<p>Most of these backends are <em>weight-only</em>. This means that they store the weights in low precision and dequantize them back to high precision at compute time. This reduces memory usage significantly, but it usually does not make inference faster, and can even add a small latency overhead.</p>
+<p><a href="https://arxiv.org/abs/2411.05007" rel="nofollow">SVDQuant</a>, the quantization method behind the popular <a href="https://github.com/nunchaku-tech/nunchaku" rel="nofollow">Nunchaku</a> inference engine, takes a different approach. It runs the main transformer layers with 4-bit weights and activations (W4A4), reducing memory while also speeding up the denoising loop. The details are covered below, but until now, using these checkpoints required a separate inference library.</p>
+<p>With current Diffusers, loading a Nunchaku checkpoint is as simple as calling <code>from_pretrained()</code>, with no local CUDA compilation required thanks to the <a href="https://github.com/huggingface/kernels" rel="nofollow"><code>kernels</code></a> package. In addition, the companion <a href="https://github.com/rootonchair/diffuse-compressor" rel="nofollow">diffuse-compressor</a> toolkit lets you quantize new architectures yourself and publish them as regular Diffusers repositories.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/nunchaku-diffusers/contact_sheet_top3_metrics_bold.png" alt="Nunchaku Lite image quality and performance comparison">
+</figure>
+
+<h2 class="relative group flex items-baseline">
+	<a id="table-of-contents" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#table-of-contents" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Table of Contents
+	</span>
+</h2>
+<ul>
+<li><a href="#getting-started-with-nunchaku-lite" rel="nofollow">Getting started with Nunchaku Lite</a></li>
+<li><a href="#background-svdquant-and-nunchaku" rel="nofollow">Background: SVDQuant and Nunchaku</a></li>
+<li><a href="#introducing-nunchaku-lite" rel="nofollow">Introducing Nunchaku Lite</a></li>
+<li><a href="#native-loading-in-diffusers" rel="nofollow">Native loading in Diffusers</a></li>
+<li><a href="#getting-more-speed-and-lower-memory" rel="nofollow">Getting more speed and lower memory</a></li>
+<li><a href="#benchmarks" rel="nofollow">Benchmarks</a></li>
+<li><a href="#quantizing-your-own-model" rel="nofollow">Quantizing your own model</a></li>
+<li><a href="#ready-to-use-checkpoints" rel="nofollow">Ready-to-use checkpoints</a></li>
+<li><a href="#conclusion" rel="nofollow">Conclusion</a></li>
+<li><a href="#acknowledgements" rel="nofollow">Acknowledgements</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started-with-nunchaku-lite" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started-with-nunchaku-lite" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting started with Nunchaku Lite
+	</span>
+</h2>
+<p>First, install the requirements. You need a recent version of Diffusers and the Hugging Face <code>kernels</code> package:</p>
+<pre><code class="language-bash">pip install -U diffusers transformers accelerate kernels bitsandbytes
+</code></pre>
+<p>Then load a pre-quantized pipeline like any other Diffusers model:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> ErnieImagePipeline
+
+pipe = ErnieImagePipeline.from_pretrained(
+    <span class="hljs-string">"lite-infer/ERNIE-Image-Turbo-nunchaku-lite-nvfp4_r32-bnb4-text-encoder"</span>,
+    torch_dtype=torch.bfloat16,
+).to(<span class="hljs-string">"cuda"</span>)
+
+image = pipe(
+    prompt=<span class="hljs-string">"A cinematic portrait of a red fox in a misty forest at sunrise, "</span>
+           <span class="hljs-string">"detailed fur, volumetric light"</span>,
+    height=<span class="hljs-number">1024</span>,
+    width=<span class="hljs-number">1024</span>,
+    num_inference_steps=<span class="hljs-number">8</span>,
+    guidance_scale=<span class="hljs-number">1.0</span>,
+    generator=torch.Generator(<span class="hljs-string">"cuda"</span>).manual_seed(<span class="hljs-number">42</span>),
+).images[<span class="hljs-number">0</span>]
+image.save(<span class="hljs-string">"output.png"</span>)
+</code></pre>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/nunchaku-diffusers/fox_bf16_vs_nunchaku_no_metrics.png" alt="BF16 and Nunchaku Lite outputs for a red fox prompt">
+</figure>
+
+<p>No custom pipeline class or separate inference engine is needed, and there is nothing to compile locally. The NVFP4 kernels are downloaded from the Hub through the <a href="https://huggingface.co/kernels/rootonchair/nunchaku-lite-kernels">Nunchaku Lite kernels page</a> the first time they are used. This checkpoint pairs a Nunchaku NVFP4 transformer with a bitsandbytes NF4 text encoder, and generates a 1024x1024 image in about 1.7 seconds on an RTX 5090 with a peak memory usage of about 12 GB, compared with about 24 GB for the BF16 pipeline. You can find more details about the Nunchaku Lite checkpoint format in the <a href="https://huggingface.co/docs/diffusers/main/en/quantization/nunchaku">official Diffusers documentation</a>.</p>
+<blockquote class="note">
+<p>NVFP4 checkpoints require an NVIDIA Blackwell GPU (RTX 50 series, RTX PRO 6000, B200). For earlier generations, use the INT4 variants. See the <a href="#hardware-support" rel="nofollow">hardware support</a> table below for details.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="background-svdquant-and-nunchaku" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#background-svdquant-and-nunchaku" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Background: SVDQuant and Nunchaku
+	</span>
+</h2>
+<p><strong>SVDQuant</strong> is the quantization method behind <strong>Nunchaku</strong>, its reference CUDA inference engine. Standard 4-bit quantization is difficult for diffusion transformers because both weights and activations contain large outliers. SVDQuant handles this by moving activation outliers into the weights, representing the hardest part of each weight matrix with a small 16-bit low-rank branch, and quantizing the remaining residual to 4 bits. Nunchaku makes this fast with fused kernels for the 4-bit path and the low-rank branch.</p>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/nunchaku-diffusers/svdquant_kernel_fusion.png" alt="Nunchaku kernel fusion: the low-rank down projection is fused with input quantization, and the low-rank up projection is fused with the 4-bit matmul">
+  <figcaption>Nunchaku fuses the low-rank down projection with the quantization kernel and the low-rank up projection with the 4-bit compute kernel, eliminating the memory access overhead of the 16-bit branch. Figure from the <a href="https://arxiv.org/abs/2411.05007" rel="nofollow">SVDQuant paper</a>.</figcaption>
+</figure>
+
+<h2 class="relative group flex items-baseline">
+	<a id="introducing-nunchaku-lite" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#introducing-nunchaku-lite" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Introducing Nunchaku Lite
+	</span>
+</h2>
+<p>The original <a href="https://github.com/nunchaku-ai/nunchaku" rel="nofollow">Nunchaku engine</a> gets much of its speed from <a href="#quantizing-models-with-structural-rewrites" rel="nofollow">model-specific fused execution paths</a>, such as fused QKV projections and fused GELU/MLP kernels. Those optimizations are tied to each architecture's module layout and checkpoint format, so supporting a new model family usually requires model-specific integration work.</p>
+<p><strong>Nunchaku Lite</strong> is the new integration path in Diffusers. With it, Diffusers can load Nunchaku-style checkpoints without a custom pipeline or a separate inference engine. Under the hood, Nunchaku Lite patches the relevant <code>nn.Linear</code> modules of a stock Diffusers model with runtime SVDQ/AWQ linear layers before the checkpoint is loaded. The CUDA kernels come from the Hub through the <code>kernels</code> package. Two kernel families are used:</p>
+<ul>
+<li><strong><code>svdq_w4a4</code></strong>: 4-bit weights and activations with the SVDQuant low-rank correction. This layer is used for the transformer's attention and MLP projections, where nearly all of the compute is spent, and is available in INT4 and NVFP4 variants.</li>
+<li><strong><code>awq_w4a16</code></strong>: 4-bit weights with 16-bit activations, used for adaptive normalization and modulation projections such as FLUX <code>adanorm_single</code> / <code>adanorm_zero</code> or Qwen-Image modulation layers. These layers are memory-bound and precision-sensitive, making AWQ a good fit to preserve precision while still saving memory and space.</li>
+</ul>
+<p>The trade-off is that, without architecture-specific fused kernels and modules, Nunchaku Lite cannot match the speedup of the original Nunchaku engine. However, the bare-bones implementation still delivers around <strong>30% speedup</strong> while retaining the same level of <strong>VRAM reduction</strong>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="native-loading-in-diffusers" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#native-loading-in-diffusers" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Native loading in Diffusers
+	</span>
+</h2>
+<p>If you have used bitsandbytes or torchao in Diffusers, the mechanics will feel familiar. A Nunchaku Lite model repository is an ordinary Diffusers repository. The only special part is a <code>quantization_config</code> block inside the transformer's <code>config.json</code>:</p>
+<pre><code class="language-json"><span class="hljs-attr">"quantization_config"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"quant_method"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"nunchaku_lite"</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"compute_dtype"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"bfloat16"</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"svdq_w4a4"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"precision"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"nvfp4"</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"group_size"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"rank"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">32</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"targets"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+            <span class="hljs-string">"layers.0.self_attention.to_q"</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-string">"layers.0.self_attention.to_k"</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-string">"..."</span>
+        <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"awq_w4a16"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"precision"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"int4"</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"group_size"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">64</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">"targets"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+            <span class="hljs-string">"adaLN_modulation.1"</span><span class="hljs-punctuation">,</span>
+            <span class="hljs-string">"..."</span>
+        <span class="hljs-punctuation">]</span>
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>This config tells Diffusers which modules were quantized, which scheme they use, and which Nunchaku Lite runtime layer to instantiate (<code>SVDQW4A4Linear</code> or <code>AWQW4A16Linear</code>).</p>
+<p>Because the quantized model keeps the exact module structure of the dense one, everything downstream (schedulers, LoRA loading hooks, offloading, <code>torch.compile</code>) sees a normal Diffusers model.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="hardware-support" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#hardware-support" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Hardware support
+	</span>
+</h3>
+<p>Nunchaku Lite uses different kernel variants depending on the GPU generation and checkpoint precision:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Scheme</th>
+<th>Precision</th>
+<th>Supported GPUs</th>
+</tr>
+
+		</thead><tbody><tr>
+<td><code>svdq_w4a4</code></td>
+<td><code>nvfp4</code></td>
+<td>Blackwell (RTX 50 series, RTX PRO 6000, B200)</td>
+</tr>
+<tr>
+<td><code>svdq_w4a4</code></td>
+<td><code>int4</code></td>
+<td>Turing / Ampere / Ada (RTX 30 &amp; 40 series, A100, L40S)</td>
+</tr>
+<tr>
+<td><code>awq_w4a16</code></td>
+<td><code>int4</code></td>
+<td>Turing / Ampere / Ada (RTX 30 &amp; 40 series, A100, L40S)</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<blockquote class="warning">
+<p>Volta and Hopper GPUs are currently not supported by the 4-bit kernels. The quantizer validates the GPU's CUDA capability at load time and raises a clear error instead of producing incorrect outputs.</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-more-speed-and-lower-memory" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-more-speed-and-lower-memory" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting more speed and lower memory
+	</span>
+</h2>
+<p>Nunchaku Lite can be combined with other Diffusers memory and speed optimizations.</p>
+<p><strong><code>torch.compile</code>.</strong> Compiling the transformer improves the end-to-end speedup from 1.35x to 1.8x:</p>
+<pre><code class="language-python">pipe.transformer.<span class="hljs-built_in">compile</span>(fullgraph=<span class="hljs-literal">True</span>)
+
+<span class="hljs-comment"># or compile_repeated_blocks() for faster compilation</span>
+
+pipe.transformer.compile_repeated_blocks(fullgraph=<span class="hljs-literal">True</span>)
+</code></pre>
+<p><strong>Quantized text encoders.</strong> The transformer is not the only component with a large memory footprint. Text encoders such as T5 or Qwen3 can occupy several gigabytes on their own. Further quantizing the text encoder with bitsandbytes NF4 reduces peak VRAM by about 22% in our benchmark.</p>
+<p><strong>Offloading.</strong> Diffusers offloading helpers such as <code>enable_model_cpu_offload()</code> and <code>enable_sequential_cpu_offload()</code> work as usual if you need to fit the pipeline onto a smaller GPU.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="benchmarks" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#benchmarks" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Benchmarks
+	</span>
+</h2>
+<p>All numbers below were measured on an NVIDIA RTX PRO 6000 (Blackwell) at 1024x1024 using <a href="https://huggingface.co/rootonchair/ERNIE-Image-Turbo-nunchaku-lite-int4-bnb4-text-encoder">rootonchair/ERNIE-Image-Turbo-nunchaku-lite-int4-bnb4-text-encoder</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="end-to-end-latency-and-memory" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#end-to-end-latency-and-memory" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		End-to-end latency and memory
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Configuration</th>
+<th>Full pipeline</th>
+<th>Denoise loop</th>
+<th>Peak VRAM</th>
+<th>Speedup</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>BF16 baseline</td>
+<td>3.00 s</td>
+<td>2.86 s</td>
+<td>31.1 GB</td>
+<td>1.0x</td>
+</tr>
+<tr>
+<td>Nunchaku Lite NVFP4</td>
+<td>2.27 s</td>
+<td>2.13 s</td>
+<td>20.6 GB</td>
+<td>1.35x</td>
+</tr>
+<tr>
+<td>Nunchaku Lite NVFP4 + <code>torch.compile</code></td>
+<td>1.68 s</td>
+<td>1.53 s</td>
+<td>20.6 GB</td>
+<td>1.8x</td>
+</tr>
+<tr>
+<td>Nunchaku Lite NVFP4 + NF4 text encoder</td>
+<td>2.29 s</td>
+<td>2.13 s</td>
+<td>16.0 GB</td>
+<td>1.35x</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>As shown above, Nunchaku reduces peak VRAM by up to 50% while still improving latency by roughly 30%. The remaining overhead comes largely from extra kernel launches, which <code>torch.compile</code> can mitigate, bringing the full pipeline down to 1.68 s, or 1.8x faster than the BF16 baseline.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="image-quality" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#image-quality" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Image quality
+	</span>
+</h3>
+<figure class="image text-center">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/nunchaku-diffusers/quality_grid.png" alt="Quality comparison grid">
+  <figcaption>BF16 vs 4-bit outputs with identical seeds and settings.</figcaption>
+</figure>
+
+<h2 class="relative group flex items-baseline">
+	<a id="quantizing-your-own-model" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#quantizing-your-own-model" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Quantizing your own model
+	</span>
+</h2>
+<p>Nunchaku Lite support in Diffusers is architecture-agnostic, and the <a href="https://github.com/rootonchair/diffuse-compressor" rel="nofollow">diffuse-compressor</a> toolkit provides an end-to-end SVDQuant workflow for Diffusers models: calibrate, quantize, package, and publish.</p>
+<p>Below, we walk through quantizing FLUX.2 Klein 4B as an example. It covers the main steps: inspect the model, calibrate and quantize the transformer, package the result as a Diffusers pipeline, then verify and push it to the Hub. The <a href="https://github.com/rootonchair/diffuse-compressor/blob/main/docs/quantize_new_hf_model.md" rel="nofollow">full tutorial</a> covers every flag in detail.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="1-inspect-what-will-be-quantized" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#1-inspect-what-will-be-quantized" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		1. Inspect what will be quantized
+	</span>
+</h3>
+<p>The generic scanner walks the model and decides what to target: compatible linears inside the repeated transformer-block stack become SVDQ W4A4 targets, recognized modulation linears become AWQ W4A16 targets, and everything else stays dense.</p>
+<pre><code class="language-bash">python examples/text_to_image/quantize_hf.py black-forest-labs/FLUX.2-klein-4B \
+  --precision int4 --rank 32 --inspect-config
+</code></pre>
+<p>Always read this report before quantizing. For FLUX.2 Klein 4B, the expected result is 100 SVDQ targets, 3 AWQ targets, and 6 dense outer linears, with no missing patterns or duplicate names.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="2-run-quantization" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#2-run-quantization" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		2. Run quantization
+	</span>
+</h3>
+<p>The following command runs SVDQuant on the transformer and writes the quantized checkpoint to <code>outputs/checkpoints/svdq-int4_r32-flux-2-klein-4b.safetensors</code>:</p>
+<pre><code class="language-bash">python examples/text_to_image/quantize_hf.py black-forest-labs/FLUX.2-klein-4B \
+  --precision int4 \
+  --output outputs/checkpoints/svdq-int4_r32-flux-2-klein-4b.safetensors
+</code></pre>
+<p>Replace <code>--precision int4</code> with <code>nvfp4</code> to build Blackwell-native weights.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="3-package-a-diffusers-pipeline" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#3-package-a-diffusers-pipeline" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		3. Package a Diffusers pipeline
+	</span>
+</h3>
+<p>The converter combines the quantized transformer with the base pipeline's other components, writes the compact <code>nunchaku_lite</code> configuration into <code>transformer/config.json</code>, and can optionally convert text encoders to NF4:</p>
+<pre><code class="language-bash">python examples/convert_nunchaku_lite_diffusers.py \
+  --checkpoint outputs/checkpoints/svdq-int4_r32-flux-2-klein-4b.safetensors \
+  --model-id black-forest-labs/FLUX.2-klein-4B \
+  --bnb4-text-encoder text_encoder \
+  --compute-dtype bfloat16 \
+  --output-dir outputs/diffusers/FLUX.2-klein-4B-nunchaku-lite-int4-bnb4-text-encoder
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="4-load-verify-and-push-to-the-hub" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#4-load-verify-and-push-to-the-hub" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		4. Load, verify, and push to the Hub
+	</span>
+</h3>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">from</span> diffusers <span class="hljs-keyword">import</span> DiffusionPipeline
+
+pipe = DiffusionPipeline.from_pretrained(
+    <span class="hljs-string">"outputs/diffusers/FLUX.2-klein-4B-nunchaku-lite-int4-bnb4-text-encoder"</span>,
+    device_map=<span class="hljs-string">"cuda"</span>,
+)
+image = pipe(
+    <span class="hljs-string">"A glass robot in a greenhouse, cinematic lighting"</span>,
+    num_inference_steps=<span class="hljs-number">4</span>, guidance_scale=<span class="hljs-number">1.0</span>,
+    generator=torch.Generator(<span class="hljs-string">"cuda"</span>).manual_seed(<span class="hljs-number">12345</span>),
+).images[<span class="hljs-number">0</span>]
+</code></pre>
+<p>Once the outputs look good, run <code>pipe.push_to_hub("your-name/your-model-nunchaku-lite-int4")</code>. Other users can then load it with the same <code>from_pretrained()</code> pattern shown above.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="quantizing-models-with-structural-rewrites" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#quantizing-models-with-structural-rewrites" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Quantizing models with structural rewrites
+	</span>
+</h3>
+<p>Note that the generic path assumes the architecture can be quantized without structural rewrites. For additional speedup, the original Nunchaku engine rewrites groups of Diffusers layers as fused modules. The generic path cannot infer these changes on its own, such as combining separate Q, K, and V projections into one module or splitting a fused projection across several modules.</p>
+<p>FLUX.1-dev's QKV projection is a concrete example. <a href="https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/transformers/transformer_flux.py#L313-L329" rel="nofollow">Diffusers defines three separate modules</a>:</p>
+<pre><code class="language-python">self.to_q = torch.nn.Linear(query_dim, self.inner_dim, bias=bias)
+self.to_k = torch.nn.Linear(query_dim, self.inner_dim, bias=bias)
+self.to_v = torch.nn.Linear(query_dim, self.inner_dim, bias=bias)
+</code></pre>
+<p>The <a href="https://github.com/nunchaku-ai/nunchaku/blob/main/nunchaku/models/transformers/transformer_flux_v2.py#L63-L79" rel="nofollow">Nunchaku FLUX module combines those layers</a> into one quantized <code>to_qkv</code> module:</p>
+<pre><code class="language-python">to_qkv = fuse_linears([other.to_q, other.to_k, other.to_v])
+self.to_qkv = SVDQW4A4Linear.from_linear(to_qkv, **kwargs)
+</code></pre>
+<p>This grouped module is required because Nunchaku's fused operator consumes the QKV projection, Q/K normalization, and rotary embeddings together. By comparison, the <a href="https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/transformers/transformer_flux.py#L45-L116" rel="nofollow">default Diffusers path</a> executes them separately:</p>
+<pre><code class="language-python">query = attn.to_q(hidden_states)
+key = attn.to_k(hidden_states)
+value = attn.to_v(hidden_states)
+
+query = query.unflatten(-<span class="hljs-number">1</span>, (attn.heads, -<span class="hljs-number">1</span>))
+key = key.unflatten(-<span class="hljs-number">1</span>, (attn.heads, -<span class="hljs-number">1</span>))
+value = value.unflatten(-<span class="hljs-number">1</span>, (attn.heads, -<span class="hljs-number">1</span>))
+
+query = attn.norm_q(query)
+key = attn.norm_k(key)
+
+<span class="hljs-keyword">if</span> image_rotary_emb <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:
+    query = apply_rotary_emb(query, image_rotary_emb, sequence_dim=<span class="hljs-number">1</span>)
+    key = apply_rotary_emb(key, image_rotary_emb, sequence_dim=<span class="hljs-number">1</span>)
+</code></pre>
+<p>The <a href="https://github.com/nunchaku-ai/nunchaku/blob/main/nunchaku/models/attention_processors/flux.py#L69-L93" rel="nofollow">Nunchaku path</a> supplies the grouped projection, normalization modules, and rotary embeddings to one fused operator:</p>
+<pre><code class="language-python">qkv = fused_qkv_norm_rottary(
+    hidden_states, attn.to_qkv, attn.norm_q, attn.norm_k, image_rotary_emb
+)
+</code></pre>
+<p>This is the structural rewrite that the generic path cannot infer. Diffusers has three destination modules with <code>to_q</code>, <code>to_k</code>, and <code>to_v</code> parameter prefixes, while Nunchaku has one grouped module under <code>to_qkv</code>. A model-specific target config or adapter must state that the Q, K, and V parameters should be concatenated along the output dimension, in that order, and loaded into <code>to_qkv</code>.</p>
+<p>Structural rewrites like these are described by a model-specific target config during quantization and handled by a small runtime adapter when the checkpoint is loaded.
+The <a href="https://github.com/rootonchair/diffuse-compressor/blob/main/examples/text_to_image/quantize_flux2_klein_4b.py" rel="nofollow">FLUX.2 Klein 4B quantization script</a> provides a concrete target-config example for producing a structurally rewritten checkpoint, while <a href="https://github.com/rootonchair/nunchaku-lite" rel="nofollow">rootonchair/nunchaku-lite</a> provides the runtime adapters needed to load grouped QKV tensors, split fused projections, and other fused operations.
+For the complete workflow, you can check the <a href="https://github.com/rootonchair/diffuse-compressor/blob/main/docs/adding_new_model.md" rel="nofollow">Adding A New Model</a> guide.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="ready-to-use-checkpoints" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#ready-to-use-checkpoints" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Ready-to-use checkpoints
+	</span>
+</h2>
+<p>To get started right away, check out the following repositories:</p>
+<ul>
+<li><a href="https://huggingface.co/rootonchair/ERNIE-Image-Turbo-nunchaku-lite-int4-bnb4-text-encoder">rootonchair/ERNIE-Image-Turbo-nunchaku-lite-int4-bnb4-text-encoder</a>: INT4 ERNIE-Image-Turbo with a bitsandbytes NF4 text encoder</li>
+<li><a href="https://huggingface.co/rootonchair/ERNIE-Image-Turbo-nunchaku-lite-nvfp4-bnb4-text-encoder">rootonchair/ERNIE-Image-Turbo-nunchaku-lite-nvfp4-bnb4-text-encoder</a>: NVFP4 ERNIE-Image-Turbo with a bitsandbytes NF4 text encoder</li>
+<li><a href="https://huggingface.co/OzzyGT/Krea_2_Turbo_nunchaku_lite_nvfp4">OzzyGT/Krea_2_Turbo_nunchaku_lite_nvfp4</a>: NVFP4 Krea 2 Turbo checkpoint</li>
+<li><a href="https://huggingface.co/lite-infer">lite-infer</a>: more Nunchaku Lite checkpoints and collections</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p>Nunchaku's SVDQuant kernels are one of the most effective ways to run diffusion transformers efficiently on consumer hardware, and they are now natively supported in Diffusers. Pre-quantized checkpoints load with <code>from_pretrained()</code>, and the diffuse-compressor toolkit makes it possible to quantize new architectures without waiting for engine support. By quantizing both weights and activations, the W4A4 path lowers memory use while improving denoising latency, keeping image quality close to the BF16 original.</p>
+<p>If you quantize and publish a new model, we would love to hear about it. Share it on the Hub and let us know! If you have any questions about this feature, feel free to join our <a href="https://discord.gg/G7tWnz98XR" rel="nofollow">Discord</a>.</p>
+<p>To learn more, check out the following resources:</p>
+<ul>
+<li><a href="https://huggingface.co/docs/diffusers/quantization/nunchaku">Diffusers Nunchaku documentation</a></li>
+<li><a href="https://github.com/huggingface/diffusers/pull/14100" rel="nofollow">The integration PR (huggingface/diffusers#14100)</a></li>
+<li><a href="https://arxiv.org/abs/2411.05007" rel="nofollow">SVDQuant paper</a> and the <a href="https://github.com/nunchaku-tech/nunchaku" rel="nofollow">Nunchaku engine</a></li>
+<li><a href="https://github.com/rootonchair/diffuse-compressor" rel="nofollow">diffuse-compressor</a></li>
+<li>Previous posts: <a href="https://huggingface.co/blog/diffusers-quantization">Exploring Quantization Backends in Diffusers</a> and <a href="https://huggingface.co/blog/quanto-diffusers">Memory-efficient Diffusion Transformers with Quanto and Diffusers</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="acknowledgements" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#acknowledgements" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Acknowledgements
+	</span>
+</h2>
+<p>Thanks to the Diffusers maintainers for reviews and guidance throughout the integration, and to the MIT HAN Lab / Nunchaku team for the original SVDQuant work. Thanks to Marc Sun for providing feedback on the blog post. Thanks to Álvaro Somoza for trying out <code>nunchaku-lite</code> and for providing feedback.</p>
+<p><code>rootonchair</code> is also grateful to SilverAI for supporting this work and providing the environment in which much of this development took place.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/flux-qlora"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/flux-qlora/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">diffusers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">quantization</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">(LoRA) Fine-Tuning FLUX.1-dev on Consumer Hardware</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="derekl35" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/e5b8331c9a96cd96b679f38afd30422e.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="marcsun13" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63ce875d199b36f7552d4f07/bpUrvhXDagzRqZ3vxTcSF.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 108</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 19, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/diffusers-quantization"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/diffusers-quantization/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">diffusers</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">quantization</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Exploring Quantization Backends in Diffusers</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="derekl35" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/e5b8331c9a96cd96b679f38afd30422e.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="marcsun13" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63ce875d199b36f7552d4f07/bpUrvhXDagzRqZ3vxTcSF.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 45</div><!--]--> <!--[0--><span class="whitespace-nowrap">May 21, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/nunchaku-diffusers&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/nunchaku-diffusers&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a61c2bff8297f46df7d7968&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;rootonchair&quot;,&quot;sayakpaul&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fnunchaku-diffusers">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fnunchaku-diffusers">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnunchaku-diffusers" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">70</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[0--><a href="/sayakpaul" title="sayakpaul"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="htrvu" style="content-visibility:auto;"><!--[0--><a href="/htrvu" title="htrvu"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1671283274285-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="khanhld" style="content-visibility:auto;"><!--[0--><a href="/khanhld" title="khanhld"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1652168442512-6263d9415753dad148484a6e.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="khainguyen1511" style="content-visibility:auto;"><!--[0--><a href="/khainguyen1511" title="khainguyen1511"><img class="overflow-hidden rounded-full" alt="" src="/avatars/9b77b96f60c218e484ab7593d6397ed5.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ElectricGoal" style="content-visibility:auto;"><!--[0--><a href="/ElectricGoal" title="ElectricGoal"><img class="overflow-hidden rounded-full" alt="" src="/avatars/3a264b1a374a596c9cab9c8c3731d792.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="quanlt9393" style="content-visibility:auto;"><!--[0--><a href="/quanlt9393" title="quanlt9393"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/VF2MEH1LuyU74Ofpbx8xu.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ducdohuunguyen" style="content-visibility:auto;"><!--[0--><a href="/ducdohuunguyen" title="ducdohuunguyen"><img class="overflow-hidden rounded-full" alt="" src="/avatars/48dbeb01ce525cf3e77ae1c0a2607bda.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="KlisSu" style="content-visibility:auto;"><!--[0--><a href="/KlisSu" title="KlisSu"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0c88aee70bf3d5ebd20de54f5dc58a19.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tolgacangoz" style="content-visibility:auto;"><!--[0--><a href="/tolgacangoz" title="tolgacangoz"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/603bdba23249b99991dbcbc4/cxCnN1H-RXOhojHY3Wcxo.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rootonchair" style="content-visibility:auto;"><!--[0--><a href="/rootonchair" title="rootonchair"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/655647bf2f76548766fce60f/mZhWuhJb-bzlzp-C3VoO_.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Mutar51" style="content-visibility:auto;"><!--[0--><a href="/Mutar51" title="Mutar51"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/66f6ea28c6c9658d43bba8ae/dmZA1tgyHa_YvzLZIJ6Se.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="prithivMLmods" style="content-visibility:auto;"><!--[0--><a href="/prithivMLmods" title="prithivMLmods"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65bb837dbfb878f46c77de4c/23gZ_lBEwyoqjexFy9QLD.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+58</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

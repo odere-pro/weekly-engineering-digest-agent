@@ -1,0 +1,371 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/local-models-pr-triage/thumbnail.png" />
+
+		<meta property="og:title" content="We got local models to triage the OpenClaw repo for FREE!*" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/local-models-pr-triage" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/local-models-pr-triage/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/local-models-pr-triage">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>We got local models to triage the OpenClaw repo for FREE!*</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="we-got-local-models-to-triage-the-openclaw-repo-for-free" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#we-got-local-models-to-triage-the-openclaw-repo-for-free" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		We got local models to triage the OpenClaw repo for FREE!*
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 22, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/local-models-pr-triage.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Flocal-models-pr-triage" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">25</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jason1i" style="content-visibility:auto;"><!--[0--><a href="/jason1i" title="jason1i"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/631b71059edb6d320a0d78d1/RpEGZilUCfjI1VekGf9XY.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="marcelomachado5" style="content-visibility:auto;"><!--[0--><a href="/marcelomachado5" title="marcelomachado5"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a600bc5d5eec97d76fe739c/KIuwWBf1avOX6rpqUblsU.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lopezescandell" style="content-visibility:auto;"><!--[0--><a href="/lopezescandell" title="lopezescandell"><img class="overflow-hidden rounded-full" alt="" src="/avatars/2f4642f59f4a93fda55dd61f1d2a4994.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Gvge" style="content-visibility:auto;"><!--[0--><a href="/Gvge" title="Gvge"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/iA-Fve5ZSHk93BqkxO8hT.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="riad-hf" style="content-visibility:auto;"><!--[0--><a href="/riad-hf" title="riad-hf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/OmoNnIlTfndBTs9Dc9DA3.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="imtmh" style="content-visibility:auto;"><!--[0--><a href="/imtmh" title="imtmh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/f56a73523bf43265dd39cfce90b34f86.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+19</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/osolmaz"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Onur Solmaz's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/633413b18003819e16aee0aa/CglgixDB95u8ILW8WdxCU.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/osolmaz"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Onur Solmaz">Onur Solmaz</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">osolmaz</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/burtenshaw"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="ben burtenshaw's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62d648291fa3e4e7ae3fa6e8/oatOwf8Xqe5eDbCSuYqCd.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/burtenshaw"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="ben burtenshaw">ben burtenshaw</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">burtenshaw</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/evalstate"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="shaun smith's avatar" src="/avatars/909635453bf62a2a7118a01dd51b811c.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/evalstate"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="shaun smith">shaun smith</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">evalstate</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><em>*Free as in beer, excluding the cost of electricity, and assuming you already own the hardware</em></p>
+<p>June 2026 will go down as the moment that people realized closed models can be taken away. With the removal of Anthropic's latest flagship model Claude Fable 5 fresh in memory, one can see why it is more important than ever to own your AI stack and be able to run models locally, especially if you are building your business on top of AI.</p>
+<p>In that light, we wanted to share how we use local models like Gemma and Qwen in an agent harness, to run classification tasks<sup id="note-1-ref"><a href="#note-1" rel="nofollow">[1]</a></sup>. This approach is different from using a model like BERT for classification. A local model in an agent harness like Pi can be used in tandem with structured outputs, to assign labels. We chose this approach because we already had local models and the harness on hand, and have conviction that similar setups will increase in popularity as local models improve in capability.<sup id="note-2-ref"><a href="#note-2" rel="nofollow">[2]</a></sup></p>
+<p>Our starting point was open source contributions in the OpenClaw repo. OpenClaw gets hundreds of issues and PRs every day, which need to be triaged, prioritized and routed to maintainers. I, Onur, am working to make local models work well with OpenClaw. Being a maintainer of this specific vertical, I need to react quickly to any P0 issues.</p>
+<p>With SOTA closed models like GPT-5, Opus, or Sonnet, this is a pretty straightforward task. But I happen to sit on 128 GB of unified memory, namely an NVIDIA GB10. So I took on the task:</p>
+<blockquote>
+<p>Can I build a real-time notification system that filters and notifies me for only the issues that I am responsible for... with local open-weight models?</p>
+</blockquote>
+<figure class="image table text-center m-0 w-full" style="text-align: center;">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/local-models-pr-triage/dgx-spark.png" alt="NVIDIA DGX Spark" style="display: block; width: 50%; min-width: 280px; margin: 0 auto;">
+  <figcaption>This tiny box, a.k.a. DGX Spark, can run gemma-4-26b-a4b with high concurrency and generate hundreds of tokens per second.</figcaption>
+</figure>
+
+<p>If I set up my OpenClaw main agent running on a $200/mo ChatGPT Pro plan to trigger a job on every new issue or PR, that would use up my quota. I might instead set it to run every 2 hours, or 6 hours. This would batch issues over longer periods, so we would be trading real-time notifications for delayed processing.</p>
+<p>If I were to run this on a local model on the hardware I already have up and running, I would not only have near-instantaneous notifications, I would also be able to do it for free (or rather, for the cost of electricity).</p>
+<h2 class="relative group flex items-baseline">
+	<a id="categorizing-issues-and-prs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#categorizing-issues-and-prs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Categorizing issues and PRs
+	</span>
+</h2>
+<p>We came up with a finite set of labels representing the categories of issues we need to triage, and then use a local model to classify each issue into one of those categories, like <code>local_models</code>, <code>self_hosted_inference</code>, <code>acp</code>, <code>agent_runtime</code>, <code>codex</code>, <code>ui_tui</code> and so on.<sup id="note-3-ref"><a href="#note-3" rel="nofollow">[3]</a></sup></p>
+<p>But how do we classify pull requests? A simple single request to a Chat Completions endpoint with a tool JSON schema, with the topics as an enum?</p>
+<p>Kind of. But this is 2026, not 2023, and we have AGENTS. We can do better!</p>
+<p>For the local model choices, we tested <code>gemma-4-26b-a4b</code> and <code>qwen3.6-35b-a3b</code>. With performance optimizations, both can generate hundreds of tokens per second locally.</p>
+<p>We use an agent harness to drive the classification run. For this, we bundle <a href="https://pi.dev" rel="nofollow">pi</a> as a harness that can call local model endpoints.</p>
+<p>The agent by default receives the PR title, body and a truncated excerpt of the PR diff in the first prompt. Then, it can choose to use the <code>bash</code> tool to perform read-only operations on the OpenClaw repo (in case it needs to look at the codebase), or the <code>final_json</code> tool to submit the final classification result.</p>
+<p>You wouldn't want to give full bash access to a local model running in this high-throughput setting, because a prompt-injected issue or PR could otherwise steer the model into doing something unrelated to classification.</p>
+<p>For that reason, we use <a href="https://github.com/osolmaz/localpager/tree/main/reposhell" rel="nofollow"><code>reposhell</code></a> instead of <code>bash</code>: a restricted <code>bash</code>-like shell that only allows read-only operations (<code>ls</code>, <code>find</code>, <code>cat</code>, <code>grep</code>, etc.) on the OpenClaw repo. The model thinks it is using <code>bash</code>, but any operation that is not allowed is rejected:</p>
+<pre><code>reposhell bound cwd=/repo/openclaw repos=openclaw
+type help for allowed commands; exit or quit to leave
+
+reposhell /repo/openclaw&gt; help
+allowed: pwd, ls, find, rg, grep, sed -n, cat, head, tail, wc -l, git status --short, git show --name-only, git grep, git ls-files
+search: rg -n -i "lm studio" or grep -R -n -i "lm studio" .
+files: rg --files -g "*.ts" or git ls-files src
+examples: rg -n reposhell README.md | sed is not allowed; use one simple command at a time
+
+reposhell /repo/openclaw&gt; head README.md
+# 🦞 OpenClaw — Personal AI Assistant
+
+&lt;p align="center"&gt;
+    &lt;picture&gt;
+        &lt;source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text-dark.svg"&gt;
+        &lt;img src="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.svg" alt="OpenClaw" width="500"&gt;
+    &lt;/picture&gt;
+&lt;/p&gt;
+
+&lt;p align="center"&gt;
+
+reposhell /repo/openclaw&gt; curl localhost
+reposhell policy denied command: unsupported command "curl"
+exit_code=2
+
+reposhell /repo/openclaw&gt;
+</code></pre>
+<p>Here is a concrete example where this mattered. In one <a href="https://huggingface.co/datasets/dutifuldev/openclaw-classification-dataset/blob/main/session-examples/README.md">saved session example</a>, <code>qwen3.6-35b-a3b</code> was classifying <a href="https://github.com/openclaw/openclaw/pull/84621" rel="nofollow"><code>openclaw/openclaw#84621</code></a>, titled <code>Fix Kimi tool-call rewriting stop reason handling</code>. The thinking block shows the model initially considering <code>coding_agent_integrations</code> because the changed path <code>extensions/kimi-coding</code> made it look plausible. The model used reposhell to inspect the local repo with simple read-only commands like <code>ls extensions</code>, <code>ls extensions/kimi-coding</code>, and <code>cat extensions/kimi-coding/package.json</code>. That package metadata showed the extension was actually <code>@openclaw/kimi-provider</code>, an OpenClaw Kimi provider plugin. So the model corrected the final labels to <code>inference_api</code> and <code>tool_calling</code>, and explicitly excluded <code>coding_agent_integrations</code>.</p>
+<p>We have mentioned earlier that we bundle a specific <code>pi</code> configuration that can only perform read-only operations and return classification output. We call it <a href="https://github.com/osolmaz/localpager/tree/main/localpager-agent" rel="nofollow"><code>localpager-agent</code></a>, named after <code>localpager</code>, the main project here. Each PR and issue generates a prompt, which is then passed to the CLI like below, alongside other args:</p>
+<pre><code class="language-bash">localpager-agent \
+  --model <span class="hljs-string">"&lt;model-id&gt;"</span> \
+  --base-url <span class="hljs-string">"&lt;openai-compatible-base-url&gt;"</span> \
+  --session-dir <span class="hljs-string">"&lt;session-output-dir&gt;"</span> \
+  --final-schema <span class="hljs-string">"&lt;runtime-schema.json&gt;"</span> \
+  --tools bash,final_json \
+  --reposhell-socket <span class="hljs-string">"&lt;reposhell.sock&gt;"</span> \
+  --reposhell-default-repo <span class="hljs-string">"&lt;repo-id&gt;"</span> \
+  --reposhell-visible-repos <span class="hljs-string">"&lt;repo-id&gt;[,&lt;repo-id&gt;...]"</span> \
+  -p <span class="hljs-string">"<span class="hljs-subst">$(cat &lt;rendered-prompt.md&gt;)</span>"</span>
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="processing-incoming-prs-and-issues" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#processing-incoming-prs-and-issues" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Processing incoming PRs and issues
+	</span>
+</h2>
+<p>So then what orchestrates everything in between the incoming PR/issue and the final notification on Discord?</p>
+<figure class="image table text-center m-0 w-full" style="text-align: center;">
+  <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/local-models-pr-triage/discord-notification.jpg" alt="Localpager Discord notification" style="display: block; width: 100%; min-width: 300px; margin: 0 auto;">
+  <figcaption>This is what the final filtered Discord notification looks like: a PR about the desired vertical gets routed to me.</figcaption>
+</figure>
+
+<p>The orchestration around this is very simple; only the classification step involves an LLM:</p>
+<ol>
+<li>We use <a href="http://github.com/openclaw/gitcrawl" rel="nofollow">openclaw/gitcrawl</a> to act as a local mirror for the repo. Whenever there is a new PR or issue, each item is normalized into the same shape and written into localpager's own SQLite database. If the item is new, localpager creates a classification job for it.</li>
+<li>A worker then claims jobs from that queue. It builds a GitHub context object containing the issue or PR title, body, labels, author, state, and optionally comments, changed files, and selected diff excerpts. That means the local model does not need to browse GitHub or open the URL itself most of the time. It is handed all the relevant context.</li>
+<li>The context object is rendered into a prompt and passed to <code>localpager-agent</code> as described in the previous section. The agent can think and use reposhell, but must eventually output a classification result in the defined schema.</li>
+<li>The output is stored back in localpager SQLite database, and relayed to Discord based on the notification policy configured by the user (i.e. notify me for these topics, but not these other ones).</li>
+</ol>
+<p>Below is a figure showing the overall architecture of localpager:</p>
+<figure class="image table text-center m-0 w-full" style="text-align: center;">
+  <img src="/blog/assets/local-models-pr-triage/localpager-architecture.svg" alt="Localpager architecture" style="display: block; width: 70%; min-width: 300px; margin: 0 auto;">
+</figure>
+
+<p>The architecture is semi-agentic. Labeling is done agentically, while sending a notification is handled by deterministic rules. This is to make the notification pipeline faster by removing the need for inference for the most straightforward parts of the task. Local inference is free but each task has a resource contention cost: GPU bandwidth should be reserved for tasks where inference is absolutely needed. This also reduces chance of errors from notification.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="can-local-models-triage-prs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#can-local-models-triage-prs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Can local models triage PRs?
+	</span>
+</h2>
+<p>Let's be frank: the first local versions of this system were noisy. The first model tested - <code>gemma-4-e4b-it</code> was useful for getting the end-to-end local pipeline working, but it also had a tendency to put too many unrelated labels on a PR or issue. False positive labels make the Discord feed noisy and don't focus my attention on the right issues. That pushed us toward testing larger local models, including <code>gemma-4-26b-a4b</code> and <code>qwen3.6-35b-a3b</code>, on the 330-row evaluation set below.</p>
+<p>For early prompt work, we also used <code>DeepSeek-V4-Flash</code> through the antirez DS4 implementation<sup id="note-4-ref"><a href="#note-4" rel="nofollow">[4]</a></sup> to create the earlier dataset labels. That setup used the DS4 server over CUDA. We eventually gave up on DS4 as the labeler because it was not labeling consistently across runs. We also did not consider it as the main <code>localpager-agent</code> model because it was too big to get enough throughput on our hardware: the DS4 server gave us around 14 tokens per second, with maximum concurrency of 1.</p>
+<p>To test model performance, we selected and generated labels for 330 GitHub issues and PRs. Each item was labelled five times (3x GPT-5.5 and 2x Opus 4.8) with the models needing to be in agreement to be accepted. This process involved hand adjudicating, improving label definitions and highlighting internal product design choices for the models. This gave us a set of stable, reproducible labels to compare our smaller models against.</p>
+<p>We did not need to do prompt optimization for <code>gemma-4-26b-a4b</code> or <code>qwen3.6-35b-a3b</code> before getting useful results on this evaluation set. Using the same routing prompt, Gemma had higher recall and lower wall-clock time per row, while Qwen had higher precision, higher exact match, and fewer false positives. We also ran <code>DeepSeek-V4-Flash</code> on the same set as a reference. It had the fewest false positives, but the model size and throughput make it impractical for executing these tasks in real time on the NVIDIA GB10. Since each row can have multiple labels, false positives and false negatives are total label counts across all rows. The Qwen results below are after retrying structured-output failures where the model ran out of output tokens before calling <code>final_json</code>. For Gemma and Qwen, repeated-run metrics report mean ± sample standard deviation across three runs. <code>DeepSeek-V4-Flash</code> was run once as a reference.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Metric</th>
+<th align="right"><code>gemma-4-26b-a4b</code></th>
+<th align="right"><code>qwen3.6-35b-a3b</code></th>
+<th align="right"><code>DeepSeek-V4-Flash</code></th>
+</tr>
+
+		</thead><tbody><tr>
+<td>Precision</td>
+<td align="right">0.716 ± 0.010</td>
+<td align="right">0.831 ± 0.007</td>
+<td align="right">0.938</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td align="right">0.905 ± 0.004</td>
+<td align="right">0.818 ± 0.006</td>
+<td align="right">0.714</td>
+</tr>
+<tr>
+<td>F1</td>
+<td align="right">0.800 ± 0.008</td>
+<td align="right">0.824 ± 0.002</td>
+<td align="right">0.811</td>
+</tr>
+<tr>
+<td>Exact match</td>
+<td align="right">0.410 ± 0.014</td>
+<td align="right">0.540 ± 0.014</td>
+<td align="right">0.509</td>
+</tr>
+<tr>
+<td>False positives</td>
+<td align="right">227.0 ± 10.5</td>
+<td align="right">105.7 ± 6.4</td>
+<td align="right">30</td>
+</tr>
+<tr>
+<td>False negatives</td>
+<td align="right">60.0 ± 2.6</td>
+<td align="right">115.3 ± 4.0</td>
+<td align="right">181</td>
+</tr>
+<tr>
+<td>Wall seconds / row</td>
+<td align="right">1.41 ± 0.04</td>
+<td align="right">13.51 ± 0.79</td>
+<td align="right">144.14</td>
+</tr>
+<tr>
+<td>Output tok/s / worker</td>
+<td align="right">25</td>
+<td align="right">50</td>
+<td align="right">13</td>
+</tr>
+<tr>
+<td>Output tok/s aggregate</td>
+<td align="right">402.6</td>
+<td align="right">145.3</td>
+<td align="right">13</td>
+</tr>
+<tr>
+<td>Concurrency</td>
+<td align="right">16</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>Total parameters</td>
+<td align="right">26B</td>
+<td align="right">35B</td>
+<td align="right">284B</td>
+</tr>
+<tr>
+<td>Active parameters</td>
+<td align="right">4B</td>
+<td align="right">3B</td>
+<td align="right">13B</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The throughput and wall-clock numbers here are not definitive maximum performance numbers for these models on this hardware. They are the settings we used at the time with the optimizations we had available. For example, in a separate probe, <code>gemma-4-26b-a4b</code> also supported concurrency 32 and reached over 700 aggregate output tokens per second.</p>
+<figure class="image table text-center m-0 w-full" style="text-align: center;">
+  <img src="/blog/assets/local-models-pr-triage/benchmark-comparison.svg" alt="Benchmark comparison across the 330-row label set" style="display: block; width: 100%; min-width: 300px; margin: 0 auto;">
+  <figcaption>Benchmark comparison across the 330-row label set. Each panel uses its own vertical scale; blue marks the best value for that metric. Error bars on Precision and Recall show sample standard deviation across three runs for Gemma and Qwen.</figcaption>
+</figure>
+
+<p>For the Gemma benchmark, we served <code>gemma-4-26b-a4b</code> with vLLM using the optimizations we found available for this setup. A big part of that is the NVFP4 quantization: on GB10-class Blackwell hardware, it is not just a smaller model file, but a hardware-friendly format that can use the NVIDIA/vLLM execution path more directly than a portable GGUF quantization like Q4_K_M. In practice, that means less memory traffic and more room for batching. We also enabled prefix caching, FP8 KV cache, the CUTLASS MoE backend, and language-model-only mode. The full 330-row run finished in about 7.5 minutes at concurrency 16.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="tracking-and-validating-real-time-performance-using-openclaw" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#tracking-and-validating-real-time-performance-using-openclaw" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Tracking and validating real-time performance using OpenClaw
+	</span>
+</h2>
+<p>We have mentioned earlier that instead of running a job with a local model for every new issue or PR, we can run a batch job with a SOTA cloud model, like GPT-5.5 running in OpenClaw, every n hours (e.g. every 2 hours) to achieve the same end.<sup id="note-5-ref"><a href="#note-5" rel="nofollow">[5]</a></sup></p>
+<p>In that case, we would need a ChatGPT Pro plan. Since the model is SOTA, we can still expect it to perform reasonably well, despite batching 2 hours of issues/PRs together.</p>
+<p>Because we want to see how well the local classifier performs against GPT-5.5, we run both simultaneously, and let GPT-5.5 be the judge of false positives and negatives, every 2 hours.</p>
+<p>To be safe, we run the OpenClaw job in a sandbox, with only access to the <a href="https://github.com/osolmaz/onurclaw" rel="nofollow">public repo</a> we report results to. In our case, we let the OpenClaw job update a machine-readable file, then a simple script reads the Codex-assigned labels and computes the false positive/negative status. Example output:</p>
+<blockquote>
+<p>False negatives</p>
+<ul>
+<li>Issue #88499 openai-responses provider: 404 on previous_response_id when store=false (default)<ul>
+<li>inventory area: OpenAI-compatible/proxy; notifier topics: agent_runtime, api_surface, sessions; notification: none</li>
+</ul>
+</li>
+</ul>
+<p>False positives</p>
+<ul>
+<li>PR #88275 fix(models-config): allow self-hosted providers without apiKey in models.json (#88267)<ul>
+<li>notifier interest: i0; topics: self_hosted_inference, local_model_providers, config; notification: sent</li>
+</ul>
+</li>
+<li>PR #88266 refactor: extract model catalog core package<ul>
+<li>notifier interest: i1; topics: config, api_surface, local_model_providers; notification: sent</li>
+</ul>
+</li>
+<li>PR #88247 feat: add hosted model providers<ul>
+<li>notifier interest: i0; topics: local_model_providers, model_serving, docs, api_surface; notification: sent</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>The instructions on how to classify, edit the machine-readable file, get the false positives and false negatives using a script are present in an <a href="https://github.com/osolmaz/onurclaw/blob/main/.agents/skills/openclaw-onur-inventory/SKILL.md" rel="nofollow">agent skill</a> which is referenced in an <a href="https://docs.openclaw.ai/automation/cron-jobs" rel="nofollow">OpenClaw cron job</a> that runs every 2 hours. The OpenClaw agent then ingests any new issues or PRs, adds them to the JSON file with appropriate labels, runs the scripts and reports back in the same Discord channel. This way, we can observe the local model's performance every few hours, and get notified of the misses.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p>We think that the issue/PR triage task is a specific case of a broader set of tasks which we call "high throughput triage". This post explored the idea of using a local model to filter out information in real time in only one domain, that is, open source contributions. The ability of medium-sized local models like <code>gemma-4-26b-a4b</code> and <code>qwen3.6-35b-a3b</code> to zero-shot classify with good accuracy without any need for fine-tuning makes them a good first choice for quick prototyping, before one moves on to more cost-efficient traditional classifier models.</p>
+<p>However, the same approach can be applied to other domains as well:</p>
+<ul>
+<li>News categorization in journalism</li>
+<li>Filtering for posts of interest in social media and forums like X or Reddit</li>
+<li>Triaging customer support tickets</li>
+<li>Triaging content moderation appeals</li>
+<li>Filtering potential outreach while doing sales</li>
+<li>Filtering for certain topics on arXiv while doing research</li>
+</ul>
+<p>The list can be extended, but we think that the idea should be clear.</p>
+<p>Besides triaging, we have also explored how classification can be performed with agent harnesses running fast local models in a secure manner. A good naming for the approach would be <em>agentic classification</em>: the model is not fed the entire body of information upfront, but can search for more context before returning structured data. While we cannot exactly call this a novel approach, we hope for this blog post to be a good reference for the specific <a href="https://pi.dev" rel="nofollow">Pi</a>+a restricted shell+<code>final_json</code> recipe.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="footnotes" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#footnotes" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Footnotes
+	</span>
+</h2>
+<ol>
+  <li id="note-1">For the use case in this post, we have discovered that breaking down a PR/Issue in a way that means the product surface is understood and labelled correctly is a hard problem. <a href="#note-1-ref" rel="nofollow">back</a></li>
+  <li id="note-2">Although in our testing we didn't---it would be quite reasonable for a model to conclude a next-step to gather info, use an external classifier. The agentic approach and the traditional approach are not mutually exclusive. <a href="#note-2-ref" rel="nofollow">back</a></li>
+  <li id="note-3">See full list of topics and other configuration <a href="https://github.com/osolmaz/localpager/blob/main/examples/profiles/openclaw-routing-topics.json" rel="nofollow">here</a>. <a href="#note-3-ref" rel="nofollow">back</a></li>
+  <li id="note-4">We used <code>DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2.gguf</code> from <a href="https://huggingface.co/antirez/deepseek-v4-gguf">antirez/deepseek-v4-gguf</a>. <a href="#note-4-ref" rel="nofollow">back</a></li>
+  <li id="note-5">While we are aware that using an LLM as a judge negates the "free" aspect, our specific implementation does this for research purposes. In practice, a bigger and more expensive model can be used in tandem during a trial period for calibration, after which the system would transition fully to the smaller one. In recent runs, this audit loop used roughly 40k total GPT-5.5 tokens per 2-hour check, mostly cached context, costing about 2-3 cents per run at API pricing, or roughly $9/month at 12 runs per day. This was a single batch audit across all new items, not one judge call per item; doing it per item would likely be several times more expensive. <a href="#note-5-ref" rel="nofollow">back</a></li>
+</ol>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/skypilot-hf-storage"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/skypilot-hf-storage/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">partnerships</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">open-source-collab</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Run AI workloads on any cloud, store on Hugging Face: zero-egress storage with SkyPilot</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="njha" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/50200d00263e5e8a9aeb265a204dc085.svg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="michaelvll" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6429b84e8852afdf89beeae5/K5TdNld69Z8bgqFghYyBx.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hopechong" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a468f8e9a0f24346593df15/w2XYo_Hv7xJ5Cs-5XX9ra.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="XciD" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61a5dcedf14aa6d7c74925f7/ZbVN8MsvjWwanqOwUdIeC.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 38</div><!--]--> <!--[0--><span class="whitespace-nowrap">July 7, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/deploy-deepfloydif-using-bentoml"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/deploy-deepfloydif-using-bentoml/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">deployment</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">open-source-collab</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">bentoml</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Deploying Hugging Face Models with BentoML: DeepFloyd IF in Action</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Sherlockk" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64a24714914f0b62e3ee2a39/xLvWWvukB2GJXBKyFaedH.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="larme" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="/avatars/95d927325e85e0edfd0c51d6614f4d1b.svg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 3</div><!--]--> <!--[0--><span class="whitespace-nowrap">August 9, 2023</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/local-models-pr-triage&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/local-models-pr-triage&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a3a31dee7515e61b3e0826d&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;osolmaz&quot;,&quot;burtenshaw&quot;,&quot;evalstate&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Flocal-models-pr-triage">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Flocal-models-pr-triage">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Flocal-models-pr-triage" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">25</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jason1i" style="content-visibility:auto;"><!--[0--><a href="/jason1i" title="jason1i"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/631b71059edb6d320a0d78d1/RpEGZilUCfjI1VekGf9XY.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="marcelomachado5" style="content-visibility:auto;"><!--[0--><a href="/marcelomachado5" title="marcelomachado5"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a600bc5d5eec97d76fe739c/KIuwWBf1avOX6rpqUblsU.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lopezescandell" style="content-visibility:auto;"><!--[0--><a href="/lopezescandell" title="lopezescandell"><img class="overflow-hidden rounded-full" alt="" src="/avatars/2f4642f59f4a93fda55dd61f1d2a4994.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Gvge" style="content-visibility:auto;"><!--[0--><a href="/Gvge" title="Gvge"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/iA-Fve5ZSHk93BqkxO8hT.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="riad-hf" style="content-visibility:auto;"><!--[0--><a href="/riad-hf" title="riad-hf"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/OmoNnIlTfndBTs9Dc9DA3.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="imtmh" style="content-visibility:auto;"><!--[0--><a href="/imtmh" title="imtmh"><img class="overflow-hidden rounded-full" alt="" src="/avatars/f56a73523bf43265dd39cfce90b34f86.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="willingc" style="content-visibility:auto;"><!--[0--><a href="/willingc" title="willingc"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/mtw-TxwJ0jlUb_dlbvwHj.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="thebochord" style="content-visibility:auto;"><!--[0--><a href="/thebochord" title="thebochord"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0832b00363e15d51d7a2c7dfaef2af9c.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="yaseen-36" style="content-visibility:auto;"><!--[0--><a href="/yaseen-36" title="yaseen-36"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/UxmKUHvy39A1aHutvrFxk.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jasonnvidia" style="content-visibility:auto;"><!--[0--><a href="/jasonnvidia" title="jasonnvidia"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/VPijnvJLc_0q7Ws0s-hQx.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Soween" style="content-visibility:auto;"><!--[0--><a href="/Soween" title="Soween"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6a5730ad9828b80161b49c27/TyIhCmYExWzU-T3ahi_mt.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mathiasn1" style="content-visibility:auto;"><!--[0--><a href="/mathiasn1" title="mathiasn1"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1665133631770-63358001686c20e55973298d.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+13</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

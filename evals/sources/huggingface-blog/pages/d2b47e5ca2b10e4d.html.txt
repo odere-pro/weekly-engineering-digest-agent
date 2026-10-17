@@ -1,0 +1,404 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by IBM Research on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/iYCwB2Hl8qPTA8DCgDilB.png" />
+
+		<meta property="og:title" content="ScarfBench: Benchmarking AI Agents for Enterprise Java Framework Migration" />
+
+		<meta property="og:description" content="A Blog post by IBM Research on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/ibm-research/scarfbench" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/iYCwB2Hl8qPTA8DCgDilB.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/ibm-research/scarfbench">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>ScarfBench: Benchmarking AI Agents for Enterprise Java Framework Migration</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="scarfbench-benchmarking-ai-agents-for-enterprise-java-framework-migration" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#scarfbench-benchmarking-ai-agents-for-enterprise-java-framework-migration" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		ScarfBench: Benchmarking AI Agents for Enterprise Java Framework Migration
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[-1--><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 30, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-research%2Fscarfbench" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">27</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lilliecine" style="content-visibility:auto;"><!--[0--><a href="/lilliecine" title="lilliecine"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/D64nqMAYvzPhPPNFpAlS2.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="phranzia" style="content-visibility:auto;"><!--[0--><a href="/phranzia" title="phranzia"><img class="overflow-hidden rounded-full" alt="" src="/avatars/2b2e9cb108e048c7574304808270784a.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ayhansebin" style="content-visibility:auto;"><!--[0--><a href="/ayhansebin" title="ayhansebin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64e8143f6de557454220921e/aNouKBrKm1dnN9pI1JXlp.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="xuanliu" style="content-visibility:auto;"><!--[0--><a href="/xuanliu" title="xuanliu"><img class="overflow-hidden rounded-full" alt="" src="/avatars/1c3dab8e478304fe4a43fe09b76e09e8.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="brmcg" style="content-visibility:auto;"><!--[0--><a href="/brmcg" title="brmcg"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b71be4ef8a21d10746bdec6d271f055d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mimerler" style="content-visibility:auto;"><!--[0--><a href="/mimerler" title="mimerler"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6841a6c67ef1ce5356c4f98e/-qdi80Emh1wMSYZwCGbAF.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+21</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/rpavuluri"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Raju Pavuluri's avatar" src="/avatars/0191ed4719231d94d2189245fa2d3d3d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/rpavuluri"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Raju Pavuluri">Raju Pavuluri</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">rpavuluri</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/rkrsn"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Rahul Krishna's avatar" src="/avatars/dd008b10e6ede49df37a8923375d261d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/rkrsn"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Rahul Krishna">Rahul Krishna</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">rkrsn</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/stamilse"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Srikanth Govindaraj Tamilselvam's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1665084794669-63368949eb6d232b457432b8.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/stamilse"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Srikanth Govindaraj Tamilselvam">Srikanth Govindaraj Tamilselvam</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">stamilse</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/brmcg"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Bridget M's avatar" src="/avatars/b71be4ef8a21d10746bdec6d271f055d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/brmcg"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Bridget M">Bridget M</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">brmcg</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ashitasaxenaIBM"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Ashita Saxena's avatar" src="/avatars/a7dd44a7475bfc3923a909a9f135c159.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ashitasaxenaIBM"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Ashita Saxena">Ashita Saxena</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ashitasaxenaIBM</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/george-safta"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="George Safta's avatar" src="/avatars/984c788f3b244816729f4cab04ab0eca.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/george-safta"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="George Safta">George Safta</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">george-safta</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/apavuluri"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Advait Pavuluri's avatar" src="/avatars/2caab0d173b4bcbf88661df6d72ee7b5.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/apavuluri"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Advait Pavuluri">Advait Pavuluri</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">apavuluri</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/mimerler"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Michele Merler's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6841a6c67ef1ce5356c4f98e/-qdi80Emh1wMSYZwCGbAF.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/mimerler"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Michele Merler">Michele Merler</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">mimerler</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/ibm-research" class="mr-1.5 flex-none" title="IBM Research"><img class="rounded-sm! size-4 select-none" alt="IBM Research's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/></a> <a href="/ibm-research" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">ibm-research</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p style="margin: 1.75rem 0;">
+    <a href="https://github.com/scarfbench/benchmark" rel="nofollow" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 14px 28px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; text-decoration: none; color: #1a1200; background: linear-gradient(135deg, #ffd54f 0%, #ffb300 45%, #ff8f00 100%); border-radius: 999px; border: 2px solid #ffca28; box-shadow: 0 4px 14px rgba(255, 160, 0, 0.45), 0 0 24px rgba(255, 193, 7, 0.35);">
+      <span aria-hidden="true" style="font-size: 1.35rem; line-height: 1;">⭐</span>
+      Star ScarfBench on GitHub
+    </a>
+  </p>
+
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Modernizing enterprise applications is one of the largest and most expensive software engineering activities organizations undertake. Teams migrate applications across frameworks to improve maintainability, cloud readiness, developer productivity, and access to modern capabilities.</p>
+<p>Recent advances in coding agents have sparked excitement around AI-assisted modernization. But an important question remains:</p>
+<p><strong>Can AI agents reliably modernize real-world enterprise applications?</strong></p>
+<p>Existing software engineering benchmarks have demonstrated impressive progress in bug fixing and code generation, but framework migration presents a fundamentally different challenge. Success requires not only translating code, but also preserving behavior, adapting build systems, and navigating runtime dependencies.</p>
+<p>To address this gap, we introduce <strong>ScarfBench (Self-Contained Application Refactoring Benchmark)</strong>, an open benchmark for evaluating AI agents on cross-framework migration tasks in Enterprise Java.</p>
+<p>ScarfBench focuses on migrations across three major Java ecosystems:</p>
+<ul>
+<li>Spring</li>
+<li>Jakarta EE</li>
+<li>Quarkus</li>
+</ul>
+<p>Unlike traditional benchmarks that compare generated code against reference implementations, ScarfBench evaluates whether migrated applications actually build, deploy, and preserve behavior.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="why-migration-is-hard" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-migration-is-hard" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why Migration Is Hard
+	</span>
+</h2>
+<p>Framework migration is much more than replacing annotations.</p>
+<p>A simple repository migration can require changes across dependency injection, persistence configuration, queries, and framework descriptors. Small mistakes in any of these pieces can prevent successful deployment.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/3LDxVMx4nf_WEqEN2AQ7W.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/3LDxVMx4nf_WEqEN2AQ7W.png" alt="scarf-intro-anatomy"></a></p>
+<p align="center"><b>Figure: Spring → Jakarta Migration Example</b></p>
+
+<p align="center">Framework migration requires translating framework semantics, not just source code.</p>
+
+<h2 class="relative group flex items-baseline">
+	<a id="introducing-scarfbench" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#introducing-scarfbench" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Introducing ScarfBench
+	</span>
+</h2>
+<p><a href="https://huggingface.co/spaces/ibm-research/ScarfBench">ScarfBench</a> provides a systematic way to evaluate AI agents on enterprise Java framework migration tasks.</p>
+<p>Applications are required to:</p>
+<ol>
+<li>Build successfully.</li>
+<li>Deploy correctly.</li>
+<li>Pass behavioral validation.</li>
+</ol>
+<p>This provides a much more realistic measure of modernization quality.</p>
+<h2>Benchmark at a Glance</h2>
+
+<table style="display: inline-table; border-collapse: separate; border-spacing: 0; margin: 1.5rem 0; border: 1px solid #d1d5db; border-radius: 12px; overflow: hidden; background: white;">
+  <colgroup>
+    <col style="width: 420px;">
+    <col style="width: 160px;">
+  </colgroup>
+  <thead>
+    <tr style="background: #f4f7fb;">
+      <th style="padding: 16px 22px; border-bottom: 1px solid #d1d5db; border-right: 1px solid #e5e7eb; text-align: center; font-weight: 700;">Metric</th>
+      <th style="padding: 16px 22px; border-bottom: 1px solid #d1d5db; text-align: center; font-weight: 700;">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Applications</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">34</td></tr>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Framework implementations</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">102</td></tr>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Migration tasks</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">204</td></tr>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Lines of code</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">~151K</td></tr>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Source and test files</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">~2,000</td></tr>
+    <tr><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">Expert-written tests</td><td style="padding: 16px 22px; border-top: 1px solid #e5e7eb; text-align: right;">1,331</td></tr>
+  </tbody>
+</table>
+
+<p>ScarfBench includes both focused migration tasks and whole-application migrations.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/5njqb4qTj7sfutgRJ7QrF.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/5njqb4qTj7sfutgRJ7QrF.png" alt="scarf-intro-fig"></a></p>
+<p align="center"><b>Figure: ScarfBench Construction Pipeline</b></p>
+
+<p align="center">Starting from a JSR-based enterprise Java taxonomy, expert migrations create verified implementations across Spring, Jakarta EE, and Quarkus.</p>
+
+<h2 class="relative group flex items-baseline">
+	<a id="how-do-frontier-agents-perform" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-do-frontier-agents-perform" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How Do Frontier Agents Perform?
+	</span>
+</h2>
+<p>We evaluated several state-of-the-art coding agents on ScarfBench.</p>
+<p>Despite strong performance on traditional software engineering benchmarks, framework migration remains difficult. Success rates vary considerably across framework pairs and whole-application migrations remain particularly challenging.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/MrcQ5trSi8oKtfD2UEhm9.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/MrcQ5trSi8oKtfD2UEhm9.png" alt="leaderboard"></a></p>
+<p align="center"><b>Figure: Current Leaderboard</b></p>
+<div style="text-align: center;">
+  Source:
+<a href="https://scarfbench.info/leaderboard" style="color: #2563eb; text-decoration: underline;" rel="nofollow">
+  scarfbench.info/leaderboard
+</a>
+</div>
+Even the strongest current agents achieve less than 10% behavioral success, illustrating the gap between generating compilable code and preserving application behavior.
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/j7rihRrFe-Eo9oSxNFQS1.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/j7rihRrFe-Eo9oSxNFQS1.png" alt="scarf_aggregate_progression"></a></p>
+<p align="center"><b>Figure: Compile → Deploy → Test Progression</b></p>
+
+<p align="center">Compile success consistently exceeds deploy success, which in turn exceeds behavioral success. Build success alone significantly overestimates migration quality.</p>
+
+
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/mQhC1EtAb5dx2Q8d5nqmL.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/mQhC1EtAb5dx2Q8d5nqmL.png" alt="sankey"></a></p>
+<p align="center"><b>Figure: Migration Outcomes by Target Framework</b></p>
+
+<p align="center">Migration difficulty depends strongly on the target framework, with Jakarta EE proving particularly challenging.</p>
+
+<h2 class="relative group flex items-baseline">
+	<a id="what-we-learned-about-ai-agents-for-java-modernization" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-we-learned-about-ai-agents-for-java-modernization" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What We Learned About AI Agents for Java Modernization
+	</span>
+</h2>
+<p>Beyond measuring success rates, ScarfBench helps us understand how agents behave during modernization.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="can-agents-reliably-tell-when-a-migration-is-complete" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#can-agents-reliably-tell-when-a-migration-is-complete" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Can Agents Reliably Tell When a Migration Is Complete?
+	</span>
+</h3>
+<p>A migrated application is only useful if it actually builds and runs.</p>
+<p>We therefore compared agent-reported outcomes against independent build verification.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="finding-agents-are-overconfident" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#finding-agents-are-overconfident" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Finding: Agents Are Overconfident
+	</span>
+</h4>
+<p>Claude Code reported successful builds for 29 out of 30 whole applications.</p>
+<p>Only 22 of those applications actually built successfully.</p>
+<p>Meanwhile, the single application classified as failed by the agent ultimately built correctly.</p>
+<p>This suggests that agent self-assessment should not be treated as a reliable signal of migration completion.</p>
+<p>Independent build and test validation remains essential.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="how-do-agents-navigate-application-dependencies" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-do-agents-navigate-application-dependencies" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How Do Agents Navigate Application Dependencies?
+	</span>
+</h3>
+<p>Framework migrations rarely affect a single file or layer.</p>
+<p>Changes in configuration, services, databases, and web components often cascade across the application.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="finding-migration-is-iterative-rather-than-linear" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#finding-migration-is-iterative-rather-than-linear" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Finding: Migration Is Iterative Rather Than Linear
+	</span>
+</h4>
+<p>The most frequently visited layers were:</p>
+<ul>
+<li>Configuration</li>
+<li>Web</li>
+<li>Database</li>
+<li>Service</li>
+</ul>
+<p>Common transitions included:</p>
+<ul>
+<li>Configuration ↔ Web</li>
+<li>Service ↔ Database</li>
+</ul>
+<p>This suggests that migration is an iterative dependency-resolution process rather than a simple source-to-source transformation.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="where-do-agents-spend-most-of-their-effort" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#where-do-agents-spend-most-of-their-effort" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Where Do Agents Spend Most of Their Effort?
+	</span>
+</h3>
+<p>We used layer revisit frequency as a proxy for migration effort. Layers that required repeated visits typically involved debugging, dependency resolution, or framework adaptation.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="finding-configuration-dominates-migration-effort" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#finding-configuration-dominates-migration-effort" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Finding: Configuration Dominates Migration Effort
+	</span>
+</h4>
+<p>Rather than proceeding linearly, agents repeatedly returned to configuration-related artifacts while resolving framework differences and dependency issues.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="what-challenges-are-not-about-code-transformation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-challenges-are-not-about-code-transformation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What Challenges Are Not About Code Transformation?
+	</span>
+</h3>
+<p>Not every migration issue originates from source code.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="finding-environment-and-tooling-matter" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#finding-environment-and-tooling-matter" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Finding: Environment and Tooling Matter
+	</span>
+</h4>
+<p>Agents frequently struggled with environmental issues, including:</p>
+<ul>
+<li>Docker cache inconsistencies</li>
+<li>Port connectivity problems</li>
+<li>Maven wrapper and build tooling issues</li>
+</ul>
+<p>These operational concerns often delayed validation even when the source-code migration itself was largely complete.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/BtWLPGsif0O4VoQfVppIC.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/649c1276a83f996b4191a8f1/BtWLPGsif0O4VoQfVppIC.png" alt="failure-distribution"></a></p>
+<p align="center"><b>Figure: Failure Mode Distribution</b></p>
+
+<p align="center">Modernization failures span build systems, deployment environments, dependency injection, databases, endpoints, assertions, and infrastructure.</p>
+
+<h2 class="relative group flex items-baseline">
+	<a id="key-takeaway" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#key-takeaway" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Key Takeaway
+	</span>
+</h2>
+<p>The biggest challenge in framework modernization is not translating Java code.</p>
+<p>It is managing the web of dependencies across configuration, infrastructure, and runtime environments.</p>
+<p>While frontier agents can automate substantial portions of the migration process, reliable validation and architectural reasoning remain critical for achieving successful outcomes.</p>
+<p>ScarfBench helps expose these challenges and provides a standardized way to measure progress toward truly autonomous application modernization.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="explore-scarfbench" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#explore-scarfbench" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Explore ScarfBench
+	</span>
+</h2>
+<p>ScarfBench is designed as an open resource for researchers and practitioners.</p>
+<p>Resources include:</p>
+<ul>
+<li>Benchmark dataset</li>
+<li>Evaluation infrastructure</li>
+<li>Public leaderboard</li>
+<li>Documentation</li>
+<li>Open-source code</li>
+</ul>
+<p>Researchers can compare agent architectures and techniques. Practitioners can use ScarfBench to evaluate modernization solutions before deploying them in production environments.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="website" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#website" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Website
+	</span>
+</h3>
+<p><a href="https://scarfbench.info" rel="nofollow">https://scarfbench.info</a></p>
+<h3 class="relative group flex items-baseline">
+	<a class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#dataset" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Dataset
+	</span>
+</h3>
+<p><a href="https://huggingface.co/datasets/ibm-research/ScarfBench">https://huggingface.co/datasets/ibm-research/ScarfBench</a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="space" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#space" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Space
+	</span>
+</h3>
+<p><a href="https://huggingface.co/spaces/ibm-research/ScarfBench">https://huggingface.co/spaces/ibm-research/ScarfBench</a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="github-repository" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#github-repository" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		GitHub Repository
+	</span>
+</h3>
+<p><a href="https://github.com/scarfbench/scarfbench" rel="nofollow">https://github.com/scarfbench/scarfbench</a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="leaderboard" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#leaderboard" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Leaderboard
+	</span>
+</h3>
+<p><a href="https://scarfbench.info/leaderboard" rel="nofollow">https://scarfbench.info/leaderboard</a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="paper" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#paper" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Paper
+	</span>
+</h3>
+<p><a href="https://arxiv.org/abs/2605.06754" rel="nofollow">https://arxiv.org/abs/2605.06754</a></p>
+<p>Framework migration remains one of the largest unsolved problems in AI-assisted software engineering. We hope ScarfBench helps the community measure progress and accelerate the next generation of AI-assisted application modernization.</p>
+<p>We invite researchers, practitioners, and framework communities to evaluate their agents, contribute new migration scenarios and help advance the state of the art.</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-research/altk-evolve-consistency"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/6435a1131860001f144239ea/dI5J2sSc3TSprk9VB4EVJ.jpeg" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Your Agent Aced the Task. Will It Do It Again?</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-research" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 120</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 15, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/ibm-research/ibm-releases-sota-granite-time-series"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/69d3d41eef229c09afea5d83/KYse3pX6t3l8FnI-1pKsi.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">IBM releases SOTA Granite Time Series PatchTST-FM-r2 model with commercial-friendly license</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ibm-research" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/637bfdf60dc13843b468ac20/npxapKcW-cXX3J2JBl2vY.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 60</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 9, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fibm-research%2Fscarfbench">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fibm-research%2Fscarfbench">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fibm-research%2Fscarfbench" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">27</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="lilliecine" style="content-visibility:auto;"><!--[0--><a href="/lilliecine" title="lilliecine"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/D64nqMAYvzPhPPNFpAlS2.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="phranzia" style="content-visibility:auto;"><!--[0--><a href="/phranzia" title="phranzia"><img class="overflow-hidden rounded-full" alt="" src="/avatars/2b2e9cb108e048c7574304808270784a.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ayhansebin" style="content-visibility:auto;"><!--[0--><a href="/ayhansebin" title="ayhansebin"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64e8143f6de557454220921e/aNouKBrKm1dnN9pI1JXlp.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="xuanliu" style="content-visibility:auto;"><!--[0--><a href="/xuanliu" title="xuanliu"><img class="overflow-hidden rounded-full" alt="" src="/avatars/1c3dab8e478304fe4a43fe09b76e09e8.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="brmcg" style="content-visibility:auto;"><!--[0--><a href="/brmcg" title="brmcg"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b71be4ef8a21d10746bdec6d271f055d.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mimerler" style="content-visibility:auto;"><!--[0--><a href="/mimerler" title="mimerler"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6841a6c67ef1ce5356c4f98e/-qdi80Emh1wMSYZwCGbAF.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="DhavalPatel" style="content-visibility:auto;"><!--[0--><a href="/DhavalPatel" title="DhavalPatel"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/UT2mHX2WuCm5Ws4rGKyCB.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Ashitasaxena" style="content-visibility:auto;"><!--[0--><a href="/Ashitasaxena" title="Ashitasaxena"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4e80a3f753dfaff318e713a50f64e2a1.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stamilse" style="content-visibility:auto;"><!--[0--><a href="/stamilse" title="stamilse"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1665084794669-63368949eb6d232b457432b8.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="saurabhjha1" style="content-visibility:auto;"><!--[0--><a href="/saurabhjha1" title="saurabhjha1"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b4538a73b5aca8eaf24c5231676fec7c.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ilmg" style="content-visibility:auto;"><!--[0--><a href="/ilmg" title="ilmg"><img class="overflow-hidden rounded-full" alt="" src="/avatars/80cd2031e987859fd81b61bc3cc6cb5f.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Violette" style="content-visibility:auto;"><!--[0--><a href="/Violette" title="Violette"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1638698875017-noauth.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+15</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

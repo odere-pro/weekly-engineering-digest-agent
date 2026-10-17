@@ -8,6 +8,7 @@ import {
   conformanceProblems,
   evaluateSources,
   fetchFromRecording,
+  serveRecording,
   loadSourceRecordings,
   type SourceFetcherFactories,
   type SourceRecording,
@@ -50,6 +51,7 @@ function recording(
       bodyFile: 'body.xml',
     },
     body: '<rss/>',
+    pages: {},
     expected: {
       reviewed: true,
       entryCount: expectedItems.length,
@@ -190,6 +192,30 @@ describe('fetchFromRecording', () => {
   });
 });
 
+describe('serveRecording', () => {
+  const page = '<html><head><meta name="description" content="From the page."></head></html>';
+  const withPage = {
+    ...recording(feedA, [goodItem('feed-a', 1)]),
+    pages: { 'https://openai.com/news/post-1': page },
+  };
+
+  it('serves the feed for the recorded request url and a recorded page for its url', async () => {
+    const serve = serveRecording(withPage);
+
+    expect(await (await serve(feedA.url)).text()).toBe('<rss/>');
+    const served = await serve(new URL('https://openai.com/news/post-1'));
+    expect(await served.text()).toBe(page);
+    expect(served.headers.get('content-type')).toContain('text/html');
+  });
+
+  it('answers 404 for a url that was not recorded', async () => {
+    const serve = serveRecording(withPage);
+
+    expect((await serve('https://openai.com/news/other')).status).toBe(404);
+    expect((await serve(new Request('https://openai.com/constructor'))).status).toBe(404);
+  });
+});
+
 describe('conformanceProblems', () => {
   const expected = [goodItem('feed-a', 1), goodItem('feed-a', 2)];
 
@@ -266,6 +292,45 @@ describe('loadSourceRecordings', () => {
     expect(loaded?.source).toEqual(feedA);
     expect(loaded?.body).toBe('<rss/>');
     expect(loaded?.expected).toEqual({ ...expected, knownGaps: [] });
+  });
+
+  it('reads pages/<item id>.html.txt as the page of the expected item with that id', async () => {
+    const item = goodItem('feed-a', 1);
+    await write('feed-a', {
+      'response.json': response,
+      'body.xml': '<rss/>',
+      'expected.json': { ...expected, items: [item] },
+    });
+    await mkdir(join(root, 'feed-a', 'pages'), { recursive: true });
+    await writeFile(join(root, 'feed-a', 'pages', `${item.id}.html.txt`), '<html>one</html>');
+
+    const [loaded] = await loadSourceRecordings(root, [feedA]);
+
+    expect(loaded?.pages).toEqual({ [item.url]: '<html>one</html>' });
+  });
+
+  it('has no pages when the folder has none', async () => {
+    await write('feed-a', {
+      'response.json': response,
+      'body.xml': '<rss/>',
+      'expected.json': expected,
+    });
+
+    const [loaded] = await loadSourceRecordings(root, [feedA]);
+
+    expect(loaded?.pages).toEqual({});
+  });
+
+  it('throws on a page that matches no expected item', async () => {
+    await write('feed-a', {
+      'response.json': response,
+      'body.xml': '<rss/>',
+      'expected.json': expected,
+    });
+    await mkdir(join(root, 'feed-a', 'pages'), { recursive: true });
+    await writeFile(join(root, 'feed-a', 'pages', 'deadbeef.html.txt'), '<html/>');
+
+    await expect(loadSourceRecordings(root, [feedA])).rejects.toThrow(/deadbeef\.html/);
   });
 
   it('skips a source whose recording failed (an error and no body)', async () => {

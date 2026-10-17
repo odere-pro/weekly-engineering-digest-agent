@@ -1,0 +1,535 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by Z.ai on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/iaTHtYOBgeY0C3Xx3vymr.png" />
+
+		<meta property="og:title" content="GLM-5.2: Built for Long-Horizon Tasks" />
+
+		<meta property="og:description" content="A Blog post by Z.ai on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/zai-org/glm-52-blog" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/iaTHtYOBgeY0C3Xx3vymr.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/zai-org/glm-52-blog">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>GLM-5.2: Built for Long-Horizon Tasks</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="glm-52-built-for-long-horizon-tasks" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#glm-52-built-for-long-horizon-tasks" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		GLM-5.2: Built for Long-Horizon Tasks
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[0--><span>Team</span><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 17, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fzai-org%2Fglm-52-blog" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">144</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="libredove" style="content-visibility:auto;"><!--[0--><a href="/libredove" title="libredove"><img class="overflow-hidden rounded-full" alt="" src="/avatars/9faabe90c6c911d1bff53ea7c109f799.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="klazhe" style="content-visibility:auto;"><!--[0--><a href="/klazhe" title="klazhe"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68e9e82423b885354f85fc66/DE-LSxiEMwZrv9myNOMjz.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Lav-Panchal" style="content-visibility:auto;"><!--[0--><a href="/Lav-Panchal" title="Lav-Panchal"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/689ba4b4215d7c57df92ee8c/ndNhv2R62fuB_XJdHE1e2.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fujial" style="content-visibility:auto;"><!--[0--><a href="/fujial" title="fujial"><img class="overflow-hidden rounded-full" alt="" src="/avatars/547d1ec1d9a199f52c464ba4ae89aae1.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="irenetemptemp" style="content-visibility:auto;"><!--[0--><a href="/irenetemptemp" title="irenetemptemp"><img class="overflow-hidden rounded-full" alt="" src="/avatars/81a69b29b55e53b84c3cef91e9e5a2a3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="buildwithdon" style="content-visibility:auto;"><!--[0--><a href="/buildwithdon" title="buildwithdon"><img class="overflow-hidden rounded-full" alt="" src="/avatars/513e4d85a6df017d0ec6d783c32b7ab4.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+138</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/zaiorg"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Z.AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67066ea38a79951d7b8d4195/cQYGzliGVE1Q51EL5EiSk.webp"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/zaiorg"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Z.AI">Z.AI</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">zaiorg</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/zai-org" class="mr-1.5 flex-none" title="Z.ai"><img class="rounded-sm! size-4 select-none" alt="Z.ai's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62dc173789b4cf157d36ebee/i_pxzM2ZDo3Ub-BEgIkE9.png" loading="lazy"/></a> <a href="/zai-org" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">zai-org</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->We're introducing GLM-5.2, our latest flagship model for long-horizon tasks. It marks a substantial leap in long-horizon task capability over its predecessor GLM-5.1 and, for the first time, delivers that capability on a <strong>solid 1M-token context</strong>. GLM-5.2's new capabilities include:</p>
+<ul>
+<li><strong>Solid 1M Context:</strong> A solid 1M-token context that stably sustains long-horizon work</li>
+<li><strong>Advanced Coding with Flexible Effort</strong>: Stronger coding capabilities with multiple thinking effort levels to balance performance and latency</li>
+<li><strong>Improved Architecture</strong>: We propose <a href="https://arxiv.org/abs/2603.12201" rel="nofollow">IndexShare</a>, which reuses the same indexer across every four sparse attention layers, reducing per-token FLOPs by 2.9× at a 1M context length. We also improve GLM-5.2’s MTP layer for speculative decoding, increasing the acceptance length by up to 20%</li>
+<li><strong>Pure Open</strong>: An MIT open-source license — no regional limits, technical access without borders</li>
+</ul>
+<p>Supporting long-horizon tasks starts with making long context engineering-usable: the model must maintain quality across long, messy coding-agent trajectories, not just accept more tokens. A 1M context is easy to claim, but much harder to keep reliable under real engineering pressure. To this end, we substantially expanded 1M-context training for coding-agent scenarios, covering large-scale implementation, automated research, performance optimization, and complex debugging. The result is a long-context system that is not only wide in scope, but solid in execution: a practical substrate for sustained engineering work.</p>
+<p>This capability is reflected in GLM-5.2's performance on three long-horizon coding benchmarks. <a href="https://www.frontierswe.com" rel="nofollow">FrontierSWE</a> measures whether an agent can complete open-ended technical projects at the scale of hours to tens of hours, spanning systems optimization, large-scale code construction, and applied ML research. On this benchmark, GLM-5.2 trails Opus 4.8 by only 1%, while edging out GPT-5.5 by 1% and Opus 4.7 by 11%. On <a href="https://posttrainbench.com" rel="nofollow">PostTrainBench</a>, where each agent is given an H100 GPU and evaluated by how much it can improve small models through post-training, GLM-5.2 outperforms both Opus 4.7 and GPT-5.5, ranking second only to Opus 4.8. On <a href="https://swe-marathon.vercel.app" rel="nofollow">SWE-Marathon</a>, an ultra-long-horizon software engineering benchmark covering tasks such as building compilers, optimizing kernels, and developing production-grade services, GLM-5.2 still has room to grow, trailing Opus 4.8 by 13% while remaining second only to the Opus series. Across all three benchmarks, GLM-5.2 is the highest-ranked open-source model, showing that its 1M context has translated into practical long-horizon delivery capability.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/2w_Hx2JZ2eZFJPoVgggvu.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/2w_Hx2JZ2eZFJPoVgggvu.png" alt="figure1"></a></p>
+<p>On standard coding benchmarks, GLM-5.2 is the strongest open-source model, improving on GLM-5.1 by a wide margin: 81.0 vs. 63.5 on Terminal-Bench 2.1 and 62.1 vs. 58.4 on SWE-bench Pro. It also closes much of the gap to the closed-source frontier — on Terminal-Bench 2.1 (81.0) it lands within a few points of Claude Opus 4.8 (85.0) — while staying ahead of Gemini 3.1 Pro.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/grPxoFi2PIFnuUnlW1zNK.webp" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/grPxoFi2PIFnuUnlW1zNK.webp" alt="figure2"></a></p>
+<p>GLM-5.2 also introduces effort level control, enabling users to explicitly balance model capability against task execution speed and computational cost. As shown in the figure, GLM-5.2 delivers substantially stronger agentic coding performance than GLM-5.1 at comparable token budgets, with its capability roughly positioned between Claude Opus 4.7 and Claude Opus 4.8 under similar token consumption. Moreover, the Max effort level allows users to allocate additional computation when higher performance is required in challenging tasks, further extending the model’s coding capability. This design gives users greater flexibility when using GLM-5.2 for coding tasks, allowing them to select the most suitable reasoning mode for different scenarios.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/Ldcz9AqNEaCqWPwNXfCmS.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/Ldcz9AqNEaCqWPwNXfCmS.png" alt="figure3"></a></p>
+<h2 class="relative group flex items-baseline">
+	<a id="architecture-for-1m-context" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#architecture-for-1m-context" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Architecture for 1M Context
+	</span>
+</h2>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/beSnOOqWL0KuCMJX7vHi9.webp" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/beSnOOqWL0KuCMJX7vHi9.webp" alt="figure4"></a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="indexshare-for-dsa" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#indexshare-for-dsa" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		IndexShare for DSA
+	</span>
+</h3>
+<p>To support 1M context length, in GLM-5.2, we apply <a href="https://arxiv.org/abs/2603.12201" rel="nofollow">IndexShare</a> to reduce the computational cost of the indexer in DSA. Specifically, in GLM-5.2, every 4 transformer layers share a lightweight indexer. The indexer is placed at the first of 4 layers and topk indices are used for 4 layers. This reduces the computation of indexer dot product and topk operation in 3/4 layers. GLM-5.2 is trained with IndexShare from mid-training with 128K sequence length, outperforming GLM-5.1 on long-context benchmarks with less computation.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="mtp-with-indexshare-and-kvshare" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#mtp-with-indexshare-and-kvshare" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		MTP with IndexShare and KVShare
+	</span>
+</h3>
+<p>We improve the MTP layer of GLM-5.2 for speculative decoding with two objectives: 1) Minimize the cost of the MTP layer as draft model; 2) Maximize the acceptance rate of speculative decoding.</p>
+<p>For the first objective, we also apply IndexShare on the mtp layer. In multi-step MTP, the indexer is placed on the first step and topk indices are used for all the following steps. However, different from the backbone, the input tokens of different mtp steps are different. As the following figure shows, if we reuse the topk indices of $h_4$ for $h_5$, $h_5$ can only attend to $h_1$ to $h_4$, but not $h_5$. We will show that the property can help us achieve the second objective, by eliminating the training-inference discrepancy in GLM-5.1's mtp layer.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/7tRY5CRMpDyjeI7YxZBMo.webp" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/7tRY5CRMpDyjeI7YxZBMo.webp" alt="figure5"></a></p>
+<p>In the above figure we show the inference of a two-step MTP layer. In the first step, inference is consistent with training, with all the hidden states coming from the target model. However, in the second step, $h_{1:4}$ come from the target model and $h_5$ comes from the mtp layer. Therefore, the KV cache of $h_5$ is a mixture of $kv_{1:4}$ computed from the target model and $kv_5$ computed from the mtp layer. Instead, with IndexShare, the KV cache of $h_5$ includes only $kv_{1:4}$, all from the hidden states of the target model. For training, we reuse both kv cache and topk indices of the first mtp step. Note that the same as GLM-5.1, the parameters of different MTP steps are also shared. Furthermore, inspired by <a href="https://arxiv.org/abs/2606.12370" rel="nofollow">https://arxiv.org/abs/2606.12370</a>, we introduce rejection sampling for speculative decoding, and use end-to-end TV loss for training. </p>
+<p>The table below shows the ablation of techniques by acceptance length on the coding scenarios. In the experiment we use the backbone and training data of GLM-5.1. The number of MTP steps is set to 7 for both training and inference. Compared with the baseline, the acceptance length of the final MTP layer increases by 20%.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Method</th>
+<th>Acceptance Length</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>Baseline</td>
+<td>4.56</td>
+</tr>
+<tr>
+<td>+ IndexShare + KV Share</td>
+<td>5.10</td>
+</tr>
+<tr>
+<td>+ Rejection Sampling</td>
+<td>5.29</td>
+</tr>
+<tr>
+<td>+ End-to-end TV Loss</td>
+<td><strong>5.47</strong> (+20%)</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="efficiently-serving-1m-context-length" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#efficiently-serving-1m-context-length" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Efficiently Serving 1M Context Length
+	</span>
+</h3>
+<p>As GLM-5.2 extends the maximum context length from 200K to 1M tokens, coding workloads are expected to shift substantially toward longer prompts. This shifts the primary inference bottleneck from computation to KV-cache capacity, long-context kernel overhead, and CPU-side overhead. Although the new GLM-5.2 architecture reduces per-token computational FLOPs, it does not proportionally reduce per-token KV-cache size. As a result, supporting longer contexts, higher concurrency, and higher token throughput under limited GPU resources becomes a central challenge for inference engine optimization.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/Gh9wRyZdgUVwiDPmL8VcI.webp" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/67066ea38a79951d7b8d4195/Gh9wRyZdgUVwiDPmL8VcI.webp" alt="figure6"></a></p>
+<p>To address this challenge, we optimize the inference engine along three directions. First, building on LayerSplit, we introduce finer-grained memory management and parallelization strategies to increase KV-cache capacity and provide more usable cache space for ultra-long-context requests. Second, we optimize kernels whose cost grows with context length and better coordinate them with the cache transfer pipeline, minimizing the impact of cache transfer on both prefill and decode performance. Third, we optimize CPU-side cache management, request scheduling, and runtime execution paths to reduce bubbles in the GPU execution pipeline and improve end-to-end throughput. As shown in the figure, GLM-5.2 achieves an increasingly larger throughput advantage as context length grows, demonstrating stronger scalability in long-context inference scenarios.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="slime-for-agentic-rl" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#slime-for-agentic-rl" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		slime for Agentic RL
+	</span>
+</h2>
+<p>The agentic RL post-training of GLM-5.2 involves tasks at larger scale, across more domains, and with more complex execution patterns. Heterogeneous data and tasks need to be organized within a unified training process, while long-horizon interactions, tool use, sub-task decomposition, and multi-turn environment feedback all impose higher requirements on rollout and training orchestration. To support this process, slime serves as an integrated infrastructure layer from training to large-scale inference rollout. It supports multiple training and task organization modes, including white-box rollout, black-box rollout, compact trajectory, and sub-agent workflow, enabling the same system to scale to larger and more complex RL and OPD training workloads. In the post-training process of GLM-5.2, we used the slime framework to conduct parallel OPD training, efficiently merging more than ten expert models into the final model. The entire OPD training process took approximately two days, demonstrating high training efficiency.</p>
+<p>Agentic RL also places higher demands on system resources and inference infrastructure. slime provides a highly open and flexible interface to inference systems: the training side can connect to inference services in different forms, and flexibly adapt to different parallelism strategies, routing policies, PD disaggregation setups, and deployment patterns. At the same time, the configuration experience, scheduling strategies, and optimization paths accumulated during RL rollout can be reused and further refined in the production serving stage, allowing the training side and the serving side to reinforce each other. This creates a more direct path from post-training to production deployment. Together with flexible training-inference resource organization and KV-cache FP8, slime provides critical infrastructure support for GLM-5.2’s large-scale agentic RL training, further improving system efficiency, rollout throughput, and large-scale inference concurrency.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="rl-for-long-horizon-task-with-anti-hacking" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#rl-for-long-horizon-task-with-anti-hacking" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		RL for Long-Horizon Task with Anti-hacking
+	</span>
+</h2>
+<p><strong>RL for Long-Horizon Tasks</strong>. For GLM-5.2, long-horizon tasks produce substantially longer execution traces, and once a super-long trajectory is split by compaction into multiple sub-traces, different rollouts under the same prompt yield different numbers of trainable traces with highly variable lengths. We therefore move from group-wise optimization to a critic-based PPO formulation that learns from individual rollouts, relying on a critic to estimate token-level advantages rather than group-relative comparisons. This single-rollout formulation fits compaction naturally, as it places no constraint on how many traces a prompt produces or on their relative lengths: we bring compaction into training by including all compacted sub-traces as trainable trajectories, and apply a token-level loss to address their length imbalance.</p>
+<p><strong>Anti-Hack in Coding agents</strong>. Coding RL is especially vulnerable to reward hacking because the reward is typically a verifiable pass/fail signal. We find that GLM-5.2 shows more potential hacking behavior than GLM-5.1. This makes the verification signal easy to optimize, but fails to actually improve the fundamental capabilities of the model. An agent can read protected evaluation artifacts, copy answer content from references or upstream commits, or directly fetch the target source in GitHub-related tasks. For example, the agent may download solution via <code>curl https://raw.githubusercontent.com/&lt;path-to-file&gt;</code> or even chained leakage like</p>
+<pre><code class="language-bash">1. find /workspace -name <span class="hljs-string">"*hidden*"</span>
+2. <span class="hljs-built_in">cat</span> /workspace/.eval/secret_cases.json
+3. python solve.py --<span class="hljs-keyword">case</span> <span class="hljs-string">"<span class="hljs-subst">$(cat /workspace/.eval/secret_cases.json)</span>"</span>
+</code></pre>
+<p>These behaviors inflate rewards and corrupt the training signal, requiring a clear mechanism to separate real task-solving from shortcuts. To address this, we introduce an anti-hack module for both RL training and evaluation. The detection process has two stages: a rule-based filter first catches potential hacks to maximize recall, and then an LLM judge checks the intent of these flagged actions to keep precision high. We use an online strategy that monitors the tool calls at each step. If a hack is detected, the system blocks the call and returns dummy information as the result. Importantly, this online guard allows the model to continue the rollout even after a hacked action is caught. By handling the specific invalid behavior instead of rejecting the entire trajectory, this approach helps prevent the training instability and model collapse that can happen when rollouts are abruptly stopped.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="full-benchmark-table" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#full-benchmark-table" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Full Benchmark Table
+	</span>
+</h2>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Benchmark</th>
+<th align="center">GLM-5.2</th>
+<th align="center">GLM-5.1</th>
+<th align="center">Qwen3.7-Max</th>
+<th align="center">MiniMax M3</th>
+<th align="center">DeepSeek-V4-Pro</th>
+<th align="center">Claude Opus 4.8</th>
+<th align="center">GPT-5.5</th>
+<th align="center">Gemini 3.1 Pro</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Reasoning</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">HLE</td>
+<td align="center">40.5</td>
+<td align="center">31</td>
+<td align="center">41.4</td>
+<td align="center">37</td>
+<td align="center">37.7</td>
+<td align="center">49.8*</td>
+<td align="center">41.4*</td>
+<td align="center">45</td>
+</tr>
+<tr>
+<td align="left">HLE (w/ Tools)</td>
+<td align="center">54.7</td>
+<td align="center">52.3</td>
+<td align="center">53.5</td>
+<td align="center">-</td>
+<td align="center">48.2</td>
+<td align="center">57.9*</td>
+<td align="center">52.2*</td>
+<td align="center">51.4*</td>
+</tr>
+<tr>
+<td align="left">CritPt</td>
+<td align="center">16.7</td>
+<td align="center">4.6</td>
+<td align="center">13.4</td>
+<td align="center">3.7</td>
+<td align="center">12.9</td>
+<td align="center">20.9</td>
+<td align="center">27.1</td>
+<td align="center">17.7</td>
+</tr>
+<tr>
+<td align="left">AIME 2026</td>
+<td align="center">99.2</td>
+<td align="center">95.3</td>
+<td align="center">97</td>
+<td align="center">-</td>
+<td align="center">94.6</td>
+<td align="center">95.7</td>
+<td align="center">98.3</td>
+<td align="center">98.2</td>
+</tr>
+<tr>
+<td align="left">HMMT Nov. 2025</td>
+<td align="center">94.4</td>
+<td align="center">94</td>
+<td align="center">95</td>
+<td align="center">84.4</td>
+<td align="center">94.4</td>
+<td align="center">96.5</td>
+<td align="center">96.5</td>
+<td align="center">94.8</td>
+</tr>
+<tr>
+<td align="left">HMMT Feb. 2026</td>
+<td align="center">92.5</td>
+<td align="center">82.6</td>
+<td align="center">97.1</td>
+<td align="center">84.4</td>
+<td align="center">95.2</td>
+<td align="center">96.7</td>
+<td align="center">96.7</td>
+<td align="center">87.3</td>
+</tr>
+<tr>
+<td align="left">IMOAnswerBench</td>
+<td align="center">91.0</td>
+<td align="center">83.8</td>
+<td align="center">90</td>
+<td align="center">-</td>
+<td align="center">89.8</td>
+<td align="center">83.5</td>
+<td align="center">-</td>
+<td align="center">81</td>
+</tr>
+<tr>
+<td align="left">GPQA-Diamond</td>
+<td align="center">91.2</td>
+<td align="center">86.2</td>
+<td align="center">90</td>
+<td align="center">93</td>
+<td align="center">90.1</td>
+<td align="center">93.6</td>
+<td align="center">93.6</td>
+<td align="center">94.3</td>
+</tr>
+<tr>
+<td align="left">Coding</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">SWE-bench Pro</td>
+<td align="center">62.1</td>
+<td align="center">58.4</td>
+<td align="center">60.6</td>
+<td align="center">59</td>
+<td align="center">55.4</td>
+<td align="center">69.2</td>
+<td align="center">58.6</td>
+<td align="center">54.2</td>
+</tr>
+<tr>
+<td align="left">NL2Repo</td>
+<td align="center">48.9</td>
+<td align="center">42.7</td>
+<td align="center">47.2</td>
+<td align="center">42.1</td>
+<td align="center">35.5</td>
+<td align="center">69.7</td>
+<td align="center">50.7</td>
+<td align="center">33.4</td>
+</tr>
+<tr>
+<td align="left">DeepSWE</td>
+<td align="center">46.2</td>
+<td align="center">18</td>
+<td align="center">18</td>
+<td align="center">20</td>
+<td align="center">8</td>
+<td align="center">58</td>
+<td align="center">70</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="left">ProgramBench</td>
+<td align="center">63.7</td>
+<td align="center">50.9</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">47.8</td>
+<td align="center">71.9</td>
+<td align="center">70.8</td>
+<td align="center">39.5</td>
+</tr>
+<tr>
+<td align="left">Terminal Bench 2.1 (Terminus-2)</td>
+<td align="center">81.0</td>
+<td align="center">63.5</td>
+<td align="center">75</td>
+<td align="center">65</td>
+<td align="center">64</td>
+<td align="center">85</td>
+<td align="center">84</td>
+<td align="center">74</td>
+</tr>
+<tr>
+<td align="left">Terminal Bench 2.1 (Best Reported Harness)</td>
+<td align="center">82.7</td>
+<td align="center">69</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">78.9</td>
+<td align="center">83.4</td>
+<td align="center">70.7</td>
+</tr>
+<tr>
+<td align="left">FrontierSWE (Dominance)</td>
+<td align="center">74.4</td>
+<td align="center">30.5</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">29.0</td>
+<td align="center">75.1</td>
+<td align="center">72.6</td>
+<td align="center">39.6</td>
+</tr>
+<tr>
+<td align="left">PostTrainBench</td>
+<td align="center">34.3</td>
+<td align="center">20.1</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">37.2</td>
+<td align="center">28.4</td>
+<td align="center">21.6</td>
+</tr>
+<tr>
+<td align="left">SWE-Marathon</td>
+<td align="center">13.0</td>
+<td align="center">1.0</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">26.0</td>
+<td align="center">12.0</td>
+<td align="center">4.0</td>
+</tr>
+<tr>
+<td align="left">Agentic</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="left">MCP-Atlas (Public Set)</td>
+<td align="center">76.8</td>
+<td align="center">71.8</td>
+<td align="center">76.4</td>
+<td align="center">74.2</td>
+<td align="center">73.6</td>
+<td align="center">77.8</td>
+<td align="center">75.3</td>
+<td align="center">69.2</td>
+</tr>
+<tr>
+<td align="left">Tool-Decathlon</td>
+<td align="center">48.2</td>
+<td align="center">40.7</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">52.8</td>
+<td align="center">59.9</td>
+<td align="center">55.6</td>
+<td align="center">48.8</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started-with-glm-52" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started-with-glm-52" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting started with GLM-5.2
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="use-glm-52-with-glm-coding-plan" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#use-glm-52-with-glm-coding-plan" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Use GLM-5.2 with GLM Coding Plan
+	</span>
+</h3>
+<p>Try <strong>GLM-5.2</strong> in your favorite coding agents—<strong>ZCode, Claude Code, OpenCode</strong>, and more. <a href="https://docs.z.ai/devpack/overview" rel="nofollow">https://docs.z.ai/devpack/overview</a></p>
+<p><strong>For GLM Coding Plan subscribers:</strong> We already rolled out GLM-5.2 to all Coding Plan users. You can enable GLM-5.2 now by updating the model name to <code>"GLM-5.2"</code> (or GLM-5.2[1m] in Claude Code to enable 1M context length). You can also choose different <a href="https://docs.z.ai/guides/capabilities/thinking-mode" rel="nofollow">thinking effort</a>, High or Max, depending on the task. As our most capable model, GLM-5.2 consumes quota at 3× during peak hours and 2× during off-peak hours. As a limited-time promotion through the end of September, off-peak usage is billed at 1×. (Peak hours are 14:00–18:00 UTC+8 (Beijing Time) daily).</p>
+<p>Prefer a GUI? We offer <a href="https://zcode.z.ai" rel="nofollow"><strong>ZCode</strong></a> —a desktop agent powered by GLM-5.2, with /goal for long-horizon tasks, SSH remote development, and mobile control. <strong>Special offer</strong>: use GLM-5.2 through Coding Plan inside ZCode and get 1.5x effective quota until June 30.</p>
+<p><strong>Start building now:</strong> <a href="https://z.ai/subscribe" rel="nofollow">https://z.ai/subscribe</a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="chat-with-glm-52-on-zai" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#chat-with-glm-52-on-zai" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Chat with GLM-5.2 on Z.ai
+	</span>
+</h3>
+<p>GLM-5.2 is now available on <a href="https://chat.z.ai" rel="nofollow">Z.ai</a>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="serve-glm-52-locally" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#serve-glm-52-locally" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Serve GLM-5.2 Locally
+	</span>
+</h3>
+<p>The model weights of GLM-5.2 are publicly available on <a href="https://huggingface.co/zai-org/GLM-5.2">HuggingFace</a> and <a href="https://modelscope.cn/models/ZhipuAI/GLM-5.2" rel="nofollow">ModelScope</a>. For local deployment, GLM-5.2 supports inference frameworks including transformers, vLLM, SGLang, xLLM, ktransformers.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="footnote" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#footnote" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Footnote
+	</span>
+</h2>
+<ul>
+<li><strong>Humanity’s Last Exam (HLE) &amp; other reasoning tasks</strong>: We use sampling parameters of <code>temperature=1.0</code>, <code>top_p=0.95</code> for evaluation. We evaluate with a maximum generation length of <code>163,840</code> tokens. By default, we report the text-only subset; results marked with * are from the full set. For AIME, HMMT and IMOAnswerBench, we evaluate  each question using the following system prompt: <code>Your response should be in the following format:\nExplanation: {your explanation for your final answer}\nExact Answer: {your succinct, final answer}\nConfidence: {your confidence score between 0% and 100% for your answer}.</code> We use GPT-5.5 (medium) as the judge model. For HLE-with-tools, we use a maximum context length of 300,000 tokens, with no context management strategy.</li>
+<li><strong>SWE-Bench Pro</strong>: We run the SWE-Bench Pro suite with OpenHands using a tailored instruction prompt. Settings: <code>temperature=1</code>, <code>top_p=1</code>, <code>max_new_tokens=32k</code>, with a 400K context window.</li>
+<li><strong>NL2Repo</strong>: We evaluated NL2Repo with <code>temperature=1.0</code>, <code>top_p=1.0</code>, and <code>max_new_tokens=48k</code> under 400k context. To prevent hacking, we use rule-based and a LLM-based judgement to prevent malicious behaviors (e.g., unauthorized pip or curl operations).</li>
+<li><strong>DeepSWE</strong>: We run DeepSWE with the official pier evaluation framework and the mini-swe-agent harness (<code>temperature=1.0</code>, <code>top_p=1.0</code>, <code>timeout=2h</code>, 400K context). Each task is solved in an isolated container with 2 CPUs, 8 GB RAM, and no internet access.</li>
+<li><strong>ProgramBench</strong>: We evaluate ProgramBench (200 instances) with Claude-Code 2.1.156 using <code>temperature=1.0, top_p=1.0, max_tokens=64000, max_turns=2000, sample_timeout=6h, reasoning_effort=max</code>, with a 400K context window. Each instance runs in a (4 CPUs, 8 GB RAM) sandbox with internet access disabled.</li>
+<li><strong>Terminal-Bench 2.1 (Terminus 2)</strong>: We evaluate Terminal-Bench 2.1 with Terminus-2 framework using <code>parser=json</code>, <code>timeout=4h</code>, <code>temperature=1.0</code>, <code>top_p=1.0</code>, <code>max_new_tokens=48k</code>, <code>max_episodes=500</code>, with a 256K context window. Resource limits are capped at 4 CPUs and 8 GB RAM.</li>
+<li><strong>Terminal-Bench 2.1 (Claude Code)</strong>: We evaluate in Claude Code 2.1.167 with <code>temperature=1.0, top_p=0.95, max_new_tokens=131072</code>. We override max_new_tokens to 128k via a transparent proxy, bypassing the 64k CLI cap to restore the configurability of <code>CLAUDE_CODE_MAX_OUTPUT_TOKENS</code>. We remove wall-clock time limits, while preserving per-task CPU and memory constraints. Scores are averaged over 5 runs. </li>
+<li><strong>MCP-Atlas</strong>: All models were evaluated in think mode on the 500-task public subset with a 10-minute timeout per task. We use Gemini-3.0-Pro as the judge model for evaluation.</li>
+<li><strong>Tool-Decathlon</strong>: We use the official evaluation service and set max_token to 128K.</li>
+<li><strong>FrontierSWE</strong>: The evaluation was conducted by <a href="https://www.proximal.ai" rel="nofollow">Proximal</a> with 1M context length, max effort level, and 128K maximum output tokens. Dominance score reported as of 2026/06/16.</li>
+<li><strong>PostTrainBench</strong>: The evaluation was conducted by <a href="https://posttrainbench.com" rel="nofollow">PostTrainBench</a> with 1M context length, max effort level, and 128K maximum output tokens.</li>
+<li><strong>SWE-Marathon</strong>: The evaluation was conducted by <a href="https://www.abundant.ai" rel="nofollow">Abundant AI</a> with 1M context length, max effort level, and 128K maximum output tokens.</li>
+</ul>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a3265305e3457d3291f0f82" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/5e3aec01f55e2b62848a5217/PMKS0NNB4MJQlTSFzh918.jpeg" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/lysandre">lysandre</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a3265305e3457d3291f0f82" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-17T09:13:20" title="Wed, 17 Jun 2026 09:13:20 GMT">Jun 17</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Super impressive model and release, excited to try an Opus-level open model in open coding agents</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🚀</div> <div class="invisible">9</div> <!----><div class="absolute right-2">9</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a32689c5e3457d3291f0f88" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/1635650213759-noauth.png" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/Volotat">Volotat</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a32689c5e3457d3291f0f88" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-17T09:27:56" title="Wed, 17 Jun 2026 09:27:56 GMT">Jun 17</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited 2 times by Volotat" href="#6a32689c5e3457d3291f0f88"><!--[0-->edited Jun 17<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Can't wait for open models to shatter the closed once and bring back the good old pre-gtp-2 days of actually transparent frontier AI research and development.</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🔥</div> <div class="invisible">7</div> <!----><div class="absolute right-2">7</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">👍</div> <div class="invisible">3</div> <!----><div class="absolute right-2">3</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a391d4fca1b086e0d5cccb6" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/66683e1ddf9b20b27e9c4f7830cb7971.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/theainerd">theainerd</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a391d4fca1b086e0d5cccb6" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-22T11:32:31" title="Mon, 22 Jun 2026 11:32:31 GMT">Jun 22</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Really Impressive. 🥇 </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fzai-org%2Fglm-52-blog">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fzai-org%2Fglm-52-blog">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fzai-org%2Fglm-52-blog" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">144</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="libredove" style="content-visibility:auto;"><!--[0--><a href="/libredove" title="libredove"><img class="overflow-hidden rounded-full" alt="" src="/avatars/9faabe90c6c911d1bff53ea7c109f799.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="klazhe" style="content-visibility:auto;"><!--[0--><a href="/klazhe" title="klazhe"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68e9e82423b885354f85fc66/DE-LSxiEMwZrv9myNOMjz.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Lav-Panchal" style="content-visibility:auto;"><!--[0--><a href="/Lav-Panchal" title="Lav-Panchal"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/689ba4b4215d7c57df92ee8c/ndNhv2R62fuB_XJdHE1e2.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fujial" style="content-visibility:auto;"><!--[0--><a href="/fujial" title="fujial"><img class="overflow-hidden rounded-full" alt="" src="/avatars/547d1ec1d9a199f52c464ba4ae89aae1.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="irenetemptemp" style="content-visibility:auto;"><!--[0--><a href="/irenetemptemp" title="irenetemptemp"><img class="overflow-hidden rounded-full" alt="" src="/avatars/81a69b29b55e53b84c3cef91e9e5a2a3.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="buildwithdon" style="content-visibility:auto;"><!--[0--><a href="/buildwithdon" title="buildwithdon"><img class="overflow-hidden rounded-full" alt="" src="/avatars/513e4d85a6df017d0ec6d783c32b7ab4.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Harsha001" style="content-visibility:auto;"><!--[0--><a href="/Harsha001" title="Harsha001"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/LPOcdTBGezmvCR8ehXMqN.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="subrit" style="content-visibility:auto;"><!--[0--><a href="/subrit" title="subrit"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62bd227efd371b10cb706bf7/T0Y-HsAsvDRuCkoZJthnO.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="brulee-1" style="content-visibility:auto;"><!--[0--><a href="/brulee-1" title="brulee-1"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69931d6f796c8028559cd8e0/pKxHZ6Lbd4xRcsPKZsGUS.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rogerioth" style="content-visibility:auto;"><!--[0--><a href="/rogerioth" title="rogerioth"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63503e5bdc10894a3f67356a/QXSq2RCcXInDJJ_CbZWlG.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wesley-mtk" style="content-visibility:auto;"><!--[0--><a href="/wesley-mtk" title="wesley-mtk"><img class="overflow-hidden rounded-full" alt="" src="/avatars/85cfa4d3770884facea8b85a5047a68b.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Ateron" style="content-visibility:auto;"><!--[0--><a href="/Ateron" title="Ateron"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6390f888de25f9eda571b0f2/Z9iKcAf4Qs5NgxnqWLzsi.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+132</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

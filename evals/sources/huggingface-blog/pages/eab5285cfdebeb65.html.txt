@@ -1,0 +1,397 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by Liquid AI on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/ZMoThfdqzAz8cbxweVQfO.gif" />
+
+		<meta property="og:title" content="Up to 3.2x Faster Inference with LFM2.5-DSpark" />
+
+		<meta property="og:description" content="A Blog post by Liquid AI on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/LiquidAI/lfm25-dspark" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/ZMoThfdqzAz8cbxweVQfO.gif" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/LiquidAI/lfm25-dspark">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Up to 3.2x Faster Inference with LFM2.5-DSpark</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="up-to-32x-faster-inference-with-lfm25-dspark" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#up-to-32x-faster-inference-with-lfm25-dspark" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Up to 3.2x Faster Inference with LFM2.5-DSpark
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[0--><span>Team</span><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					August 20, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2FLiquidAI%2Flfm25-dspark" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">62</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fernandofernandes" style="content-visibility:auto;"><!--[0--><a href="/fernandofernandes" title="fernandofernandes"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646e57a5cb6ea6e6b6df1ad4/PlGhM2SUynFBUdYAylaZK.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mayankagarwal" style="content-visibility:auto;"><!--[0--><a href="/mayankagarwal" title="mayankagarwal"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6229237ed94a4a3d5efbacb5/GM-ec64-qx660keEKqU1c.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nathanrchn" style="content-visibility:auto;"><!--[0--><a href="/nathanrchn" title="nathanrchn"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ee4a89ebc7a0716e21deaebc86e062e6.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mmd-k" style="content-visibility:auto;"><!--[0--><a href="/mmd-k" title="mmd-k"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67379ceb30d6ac7169c5dc99/hQZ-atHUbYkcfjsgQ0ywE.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="FlameF0X" style="content-visibility:auto;"><!--[0--><a href="/FlameF0X" title="FlameF0X"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6615494716917dfdc645c44e/M_aMgH5QzSl_hm-srhJwW.webp" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+56</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/tugot17"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="xx's avatar" src="/avatars/6c9239f88512b97742b9c03adddbd725.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/tugot17"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="xx">xx</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">tugot17</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/LiquidAI" class="mr-1.5 flex-none" title="Liquid AI"><img class="rounded-sm! size-4 select-none" alt="Liquid AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/></a> <a href="/LiquidAI" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">LiquidAI</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/iamleonie"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Leonie Monigatti's avatar" src="/avatars/33af1a607a8bf7780b98d6f70ea19999.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/iamleonie"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Leonie Monigatti">Leonie Monigatti</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">iamleonie</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/LiquidAI" class="mr-1.5 flex-none" title="Liquid AI"><img class="rounded-sm! size-4 select-none" alt="Liquid AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/></a> <a href="/LiquidAI" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">LiquidAI</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/fernandofernandes"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Fernando Fernandes Neto's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646e57a5cb6ea6e6b6df1ad4/PlGhM2SUynFBUdYAylaZK.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/fernandofernandes"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Fernando Fernandes Neto">Fernando Fernandes Neto</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">fernandofernandes</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/LiquidAI" class="mr-1.5 flex-none" title="Liquid AI"><img class="rounded-sm! size-4 select-none" alt="Liquid AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/></a> <a href="/LiquidAI" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">LiquidAI</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/tdakhran"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Tarek Dakhran's avatar" src="/avatars/acd0c0a0fbd8126cc571e2876da9706d.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/tdakhran"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Tarek Dakhran">Tarek Dakhran</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">tdakhran</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/LiquidAI" class="mr-1.5 flex-none" title="Liquid AI"><img class="rounded-sm! size-4 select-none" alt="Liquid AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/></a> <a href="/LiquidAI" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">LiquidAI</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/nathanrchn"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="nathan ranchin's avatar" src="/avatars/ee4a89ebc7a0716e21deaebc86e062e6.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/nathanrchn"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="nathan ranchin">nathan ranchin</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">nathanrchn</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/LiquidAI" class="mr-1.5 flex-none" title="Liquid AI"><img class="rounded-sm! size-4 select-none" alt="Liquid AI's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/></a> <a href="/LiquidAI" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">LiquidAI</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->Today, we release <strong>DSpark draft model checkpoints</strong> for three models from our LFM2.5 family: LFM2.5-1.2B-Instruct, LFM2.5-2.6B, and LFM2.5-8B-A1B. These add a speculative decoding path that trades a minimal memory increase for a large decoding speedup without changing output quality:</p>
+<ul>
+<li><strong>Faster inference</strong>: up to 3.18 throughput improvement on a GPU and up to 2.87x on-device.  </li>
+<li><strong>Toward on-device agentic inference</strong>: cuts function-calling latency by 57% on average for LFM2.5-2.6B  </li>
+<li><strong>Day-one support for llama.cpp and SGLang</strong>: LFM-compatible DSpark integration is open-sourced upstream</li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="how-does-dspark-work" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-does-dspark-work" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How does DSpark work
+	</span>
+</h2>
+<p>The decode phase in LLM inference is traditionally memory-bound. Most latency comes from streaming weights from DRAM into SRAM, not from intense computation. Speculative decoding addresses this by using a lightweight draft model to produce candidate tokens, then having the target model verify them all in a single forward pass, sharing the cost of loading the weights across all tokens we verify.</p>
+<p>Over the years, multiple approaches of speculation have been proposed, with the most prominent being <a href="https://huggingface.co/papers/2503.01840">EAGLE-3</a>, <a href="https://huggingface.co/papers/2602.06036">DFlash</a>, and, most recently, <a href="https://huggingface.co/papers/2607.05147">DSpark</a>, which combines three components:</p>
+<ul>
+<li><strong>DFlash-style parallel backbone</strong> conditioned on the target model’s context features, producing hidden states for all draft tokens in a single forward pass.   </li>
+<li><strong>A lightweight sequential head</strong>, modeled as a Markov chain between neighboring tokens, that adds inter-token dependency, raising the acceptance rate at later positions.  </li>
+<li><strong>A confidence-scheduled verifier</strong> that predicts each token’s survival probability and prunes low-confidence suffixes when verification would cost more than it saves.</li>
+</ul>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/QSig7XupRwDH70cDopwv2.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/QSig7XupRwDH70cDopwv2.png" alt="DSpark"></a></p>
+<h2 class="relative group flex items-baseline">
+	<a id="training-and-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#training-and-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Training and Architecture
+	</span>
+</h2>
+<p>We follow the DSpark recipe with a larger and more diverse data mix covering SFT, chat, code, and function-calling data. Based on our ablations, the first versions of the draft models are simplified attention-only draft models, with 5 layers and a block of 9. For each draft model, we ran 15 epochs on the entire dataset and selected the epoch with the highest acceptance rate rather than the lowest loss. </p>
+<p>The resulting draft models are relatively small, with each around ~300M parameters.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Component</th>
+<th align="left">LFM2.5-1.2B-Instruct</th>
+<th align="left">LFM2.5-8B-A1B</th>
+<th align="left">LFM2.5-2.6B</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Decoder stack (5 layers)</td>
+<td align="left">241.2M</td>
+<td align="left">241.2M</td>
+<td align="left">241.2M</td>
+</tr>
+<tr>
+<td align="left">Hidden-state projection</td>
+<td align="left">21.0M</td>
+<td align="left">21.0M</td>
+<td align="left">21.0M</td>
+</tr>
+<tr>
+<td align="left">Markov head</td>
+<td align="left">33.6M</td>
+<td align="left">65.5M</td>
+<td align="left">65.5M</td>
+</tr>
+<tr>
+<td align="left">Norms + confidence head</td>
+<td align="left">27.5k</td>
+<td align="left">27.5k</td>
+<td align="left">27.5k</td>
+</tr>
+<tr>
+<td align="left"><strong>Total</strong></td>
+<td align="left"><strong>295.7M</strong></td>
+<td align="left"><strong>327.7M</strong></td>
+<td align="left"><strong>327.7M</strong></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="quality-parity" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#quality-parity" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Quality parity
+	</span>
+</h2>
+<p>Under greedy decoding, a draft token is only accepted if it matches the target model’s distribution. On rejection, the target model's own token takes its place. The emitted sequence is therefore <strong>identical to baseline greedy</strong> by construction, so benchmark accuracy (pass@1 or exact match) is unchanged.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="inference-speed-up-on-cpu-and-gpu" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#inference-speed-up-on-cpu-and-gpu" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Inference Speed Up on CPU and GPU
+	</span>
+</h2>
+<p>Our DSpark draft models for LFM2.5 ship with day-one support for <strong>llama.cpp</strong> (implementation <a href="https://github.com/ggml-org/llama.cpp/pull/27383" rel="nofollow">builds on top of the official codebase</a>, which we run with <a href="https://github.com/ggml-org/llama.cpp/pull/27441" rel="nofollow">experimental metal kernels</a>) and **SGLang (**implementation <a href="https://github.com/sgl-project/sglang/pull/31041" rel="nofollow">builds on the official SGLang implementation of DSpark</a>). </p>
+<p>We measure on-device throughput with llama.cpp and Metal on an M4 Max MacBook Pro using FP16 GGUF weights and up to 256 output tokens. We measure GPU throughput with SGLang on a single H100 80 GB in BF16. Both configurations use a DSpark block size of 9, a batch size of 1, and a temperature of 0. We evaluate them on five benchmark datasets.</p>
+<p>All three drafter models deliver noticeable throughput improvements on both the large-scale accelerator (H100) and the edge deployment (M4 Max MacBook). </p>
+<p>For <strong>LFM2.5-2.6B,</strong> speedup on the MacBook is especially noticeable, as it pushes the interactivity level a user can enjoy far beyond the throughput offered by most proprietary cloud models (around ~140 tok/s, depending on the dataset). </p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Dataset</th>
+<th align="left">Acceptance (of 10)</th>
+<th align="left">Speedup on H100</th>
+<th align="left">Speedup on M4 Max</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">MATH500</td>
+<td align="left">5.42</td>
+<td align="left"><strong>3.06x</strong> 326 → 1000 tok/s</td>
+<td align="left"><strong>2.25x</strong> 61 → 137 tok/s</td>
+</tr>
+<tr>
+<td align="left">HumanEval</td>
+<td align="left">4.54</td>
+<td align="left"><strong>2.56x</strong> 326 → 835 tok/s</td>
+<td align="left"><strong>2.63x</strong> 61 → 161 tok/s</td>
+</tr>
+<tr>
+<td align="left">MBPP</td>
+<td align="left">4.71</td>
+<td align="left"><strong>2.64x</strong> 326 → 861 tok/s</td>
+<td align="left"><strong>2.11x</strong> 62 → 132 tok/s</td>
+</tr>
+<tr>
+<td align="left">GSM8K</td>
+<td align="left">4.32</td>
+<td align="left"><strong>2.22x</strong> 312 → 693 tok/s</td>
+<td align="left"><strong>2.36x</strong> 60 → 143 tok/s</td>
+</tr>
+<tr>
+<td align="left">MT-Bench</td>
+<td align="left">5.07</td>
+<td align="left"><strong>2.87x</strong> 325 → 933 tok/s</td>
+<td align="left"><strong>1.99x</strong> 62 → 123 tok/s</td>
+</tr>
+<tr>
+<td align="left">Mean</td>
+<td align="left">4.81</td>
+<td align="left"><strong>2.67x</strong> 323 → 864 tok/s</td>
+<td align="left"><strong>2.27x</strong> 61 → 139 tok/s</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Across various multi-tool scenarios, DSpark reduces the latency by 57% on average for LFM2.5-2.6B.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/RTL-W6OBn97nMW7gkkT-e.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/RTL-W6OBn97nMW7gkkT-e.png" alt="bfcl_latency_mac"></a></p>
+<p>For <strong>LFM2.5-1.2B-Instruct</strong>, we see much more variance in dataset acceptance rates, so speedup varies by as much as 52% depending on the underlying text distribution.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Dataset</th>
+<th align="left">Acceptance (of 10)</th>
+<th align="left">Speedup on H100</th>
+<th align="left">Speedup on M4 Max</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">MATH500</td>
+<td align="left">6.02</td>
+<td align="left"><strong>2.56x</strong> 668 → 1712 tok/s</td>
+<td align="left"><strong>2.62x</strong> 140 → 366 tok/s</td>
+</tr>
+<tr>
+<td align="left">HumanEval</td>
+<td align="left">5.31</td>
+<td align="left"><strong>2.26x</strong> 664 → 1499 tok/s</td>
+<td align="left"><strong>2.87x</strong> 136 → 389 tok/s</td>
+</tr>
+<tr>
+<td align="left">MBPP</td>
+<td align="left">5.52</td>
+<td align="left"><strong>2.37x</strong> 667 → 1578 tok/s</td>
+<td align="left"><strong>2.74x</strong> 137 → 375 tok/s</td>
+</tr>
+<tr>
+<td align="left">GSM8K</td>
+<td align="left">4.34</td>
+<td align="left"><strong>1.67x</strong> 624 → 1041 tok/s</td>
+<td align="left"><strong>2.73x</strong> 140 → 381 tok/s</td>
+</tr>
+<tr>
+<td align="left">MT-Bench</td>
+<td align="left">3.90</td>
+<td align="left"><strong>1.66x</strong> 657 → 1091 tok/s</td>
+<td align="left"><strong>1.72x</strong> 137 → 237 tok/s</td>
+</tr>
+<tr>
+<td align="left">Mean</td>
+<td align="left">5.02</td>
+<td align="left"><strong>2.10x</strong> 656 → 1384 tok/s</td>
+<td align="left"><strong>2.54x</strong> 138 → 350 tok/s</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>For <strong>LFM2.5-8B-A1B</strong>, the acceptance rate increases compared to two dense models, yet on-device we get only an 18% improvement on average. This gap is due to the current MoE implementation in llama.cpp's Metal backend, and to the fact that verifying k tokens activates more experts and thus more weight traffic than a single decode step.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Dataset</th>
+<th align="left">Acceptance (of 10)</th>
+<th align="left">Speedup on H100</th>
+<th align="left">Speedup on M4 Max</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">MATH500</td>
+<td align="left">8.27</td>
+<td align="left"><strong>3.18x</strong> 428 → 1362 tok/s</td>
+<td align="left"><strong>1.21x</strong> 93 → 112 tok/s</td>
+</tr>
+<tr>
+<td align="left">HumanEval</td>
+<td align="left">7.02</td>
+<td align="left"><strong>2.58x</strong> 426 → 1100 tok/s</td>
+<td align="left"><strong>1.12x</strong> 91 → 101 tok/s</td>
+</tr>
+<tr>
+<td align="left">MBPP</td>
+<td align="left">6.93</td>
+<td align="left"><strong>2.64x</strong> 426 → 1122 tok/s</td>
+<td align="left"><strong>1.09x</strong> 89 → 97 tok/s</td>
+</tr>
+<tr>
+<td align="left">GSM8K</td>
+<td align="left">4.02</td>
+<td align="left"><strong>1.29x</strong> 385 → 496 tok/s</td>
+<td align="left"><strong>1.44x</strong> 90 → 129 tok/s</td>
+</tr>
+<tr>
+<td align="left">MT-Bench</td>
+<td align="left">8.52</td>
+<td align="left"><strong>3.02x</strong> 426 → 1288 tok/s</td>
+<td align="left"><strong>1.04x</strong> 87 → 90 tok/s</td>
+</tr>
+<tr>
+<td align="left">Mean</td>
+<td align="left">6.95</td>
+<td align="left"><strong>2.54x</strong> 418 → 1074 tok/s</td>
+<td align="left"><strong>1.18x</strong> 90 → 106 tok/s</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="how-to-use-lfm25-dspark" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#how-to-use-lfm25-dspark" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		How to use LFM2.5-DSpark
+	</span>
+</h2>
+<p>Running the DSpark draft models with <strong>SGLang</strong> requires an SGLang build with DSpark support for LFM2 targets (<a href="https://github.com/sgl-project/sglang/pull/31041" rel="nofollow">PR #31041</a>). Launch the target with the draft attached:</p>
+<pre><code class="language-shell">python -m sglang.launch_server \
+  --model-path LiquidAI/LFM2.5-2.6B \
+  --speculative-algorithm DSPARK \
+  --speculative-draft-model-path LiquidAI/LFM2.5-2.6B-DSpark \
+  --speculative-draft-attention-backend flashinfer \
+  --disable-radix-cache --mem-fraction-static 0.75 --port 30000
+</code></pre>
+<p>Then query the OpenAI-compatible endpoint at <code>http://localhost:30000/v1</code>. The block size is read from the draft's <code>config.json</code>; the baseline is the same command without the three <code>--speculative-*</code> flags.</p>
+<p>Running them with <strong>llama.cpp</strong> requires the respective llama.cpp build (<a href="https://github.com/ggml-org/llama.cpp/pull/27383" rel="nofollow">PR#27383</a>).</p>
+<pre><code class="language-shell">llama-server -m LFM2.5-2.6B-F16.gguf \
+  -md LFM2.5-2.6B-DSpark-F16.gguf \
+  --spec-type draft-dspark --spec-draft-n-max 10 --spec-draft-n-min 0 \
+  -fa on -ngl 99
+</code></pre>
+<p>The block size is read from the sidecar metadata (n-max is clamped to it). Speculative decoding is <strong>exact</strong>: the target verifies every proposed token, so greedy output equals the target alone; per-response <code>timings</code> report <code>draft_n</code> / <code>draft_n_accepted</code>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="get-started" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#get-started" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Get Started
+	</span>
+</h2>
+<p>The DSpark draft model checkpoints are available on Hugging Face as Safetensors and in GGUF format:</p>
+<ul>
+<li><strong>Safetensors</strong>: <a href="https://huggingface.co/LiquidAI/LFM2.5-2.6B-DSpark">LFM2.5-2.6B-DSpark</a>, <a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-DSpark">LFM2.5-1.2B-Instruct-DSpark</a>, and <a href="https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-DSpark">LFM2.5-8B-A1B-DSpark</a>  </li>
+<li><strong>GGUF</strong>: <a href="https://huggingface.co/LiquidAI/LFM2.5-2.6B-DSpark-GGUF">LFM2.5-2.6B-DSpark-GGUF</a>, <a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-DSpark-GGUF">LFM2.5-1.2B-Instruct-DSpark-GGUF</a>, <a href="https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-DSpark-GGUF">LFM2.5-8B-A1B-DSpark-GGUF</a></li>
+</ul>
+<p>We can’t wait to see what you build.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="citation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#citation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Citation
+	</span>
+</h2>
+<p>For citations, please use the following reference or BibTeX:</p>
+<p>Liquid AI, "LFM2.5-DSpark: Up to 3.2x Faster Inference from H100 to MacBook", Liquid AI Blog, Aug 2026.</p>
+<pre><code>@article{liquidAI2026dspark,
+  author = {Liquid AI},
+  title = {LFM2.5-DSpark: Up to 3.2x Faster Inference from H100 to MacBook},
+  journal = {Liquid AI Blog},
+  year = {2026},
+  note = {www.liquid.ai/blog/lfm2.5-dspark},
+}
+</code></pre>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">6</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/LiquidAI/lfm25-24b-a2b"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/YxGx9U6yV6_mumklCyMsE.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Run fast, private agents on-device with LFM2.5-24B-A2B</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="LiquidAI" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 60</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 13, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/LiquidAI/open-d1"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/644249b08443bce4c9890a0f/hLsllw4zhC04cVGiV69v0.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Multimodal open d1 decision models for the edge</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="LiquidAI" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61b8e2ba285851687028d395/EsTgVtnM2IqVRKgPdfqcB.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 39</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 7, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props="{&quot;apiBaseUrl&quot;:&quot;/api/blog/LiquidAI/lfm25-dspark&quot;,&quot;classNames&quot;:&quot;-mx-2.5&quot;,&quot;currentUrl&quot;:&quot;/blog/LiquidAI/lfm25-dspark&quot;,&quot;inputPlaceholder&quot;:&quot;Start discussing this article&quot;,&quot;discussion&quot;:{&quot;_id&quot;:&quot;6a8708606cec08618a8f4a12&quot;,&quot;title&quot;:&quot;Start discussing this article&quot;,&quot;isPullRequest&quot;:false,&quot;events&quot;:[],&quot;status&quot;:&quot;open&quot;,&quot;isReport&quot;:false,&quot;pinned&quot;:false,&quot;locked&quot;:false,&quot;collection&quot;:&quot;community_blogs&quot;},&quot;contextAuthors&quot;:[&quot;tugot17&quot;,&quot;iamleonie&quot;,&quot;fernandofernandes&quot;,&quot;tdakhran&quot;,&quot;nathanrchn&quot;],&quot;primaryEmailConfirmed&quot;:false,&quot;discussionRole&quot;:0,&quot;acceptLanguages&quot;:[&quot;*&quot;],&quot;withThread&quot;:true,&quot;cardDisplay&quot;:false,&quot;repoDiscussionsLocked&quot;:false,&quot;hideComments&quot;:true}"><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2FLiquidAI%2Flfm25-dspark">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2FLiquidAI%2Flfm25-dspark">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2FLiquidAI%2Flfm25-dspark" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">62</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="fernandofernandes" style="content-visibility:auto;"><!--[0--><a href="/fernandofernandes" title="fernandofernandes"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646e57a5cb6ea6e6b6df1ad4/PlGhM2SUynFBUdYAylaZK.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mayankagarwal" style="content-visibility:auto;"><!--[0--><a href="/mayankagarwal" title="mayankagarwal"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6229237ed94a4a3d5efbacb5/GM-ec64-qx660keEKqU1c.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nathanrchn" style="content-visibility:auto;"><!--[0--><a href="/nathanrchn" title="nathanrchn"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ee4a89ebc7a0716e21deaebc86e062e6.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tomaarsen" style="content-visibility:auto;"><!--[0--><a href="/tomaarsen" title="tomaarsen"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mmd-k" style="content-visibility:auto;"><!--[0--><a href="/mmd-k" title="mmd-k"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67379ceb30d6ac7169c5dc99/hQZ-atHUbYkcfjsgQ0ywE.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="FlameF0X" style="content-visibility:auto;"><!--[0--><a href="/FlameF0X" title="FlameF0X"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6615494716917dfdc645c44e/M_aMgH5QzSl_hm-srhJwW.webp" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ODanchi-1" style="content-visibility:auto;"><!--[0--><a href="/ODanchi-1" title="ODanchi-1"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/b3-Xov8BZ4gmTUDOe1wz7.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ludsvick" style="content-visibility:auto;"><!--[0--><a href="/ludsvick" title="ludsvick"><img class="overflow-hidden rounded-full" alt="" src="/avatars/5da6b01d9377592f8cd3170d0b700f3e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="mohsendev1" style="content-visibility:auto;"><!--[0--><a href="/mohsendev1" title="mohsendev1"><img class="overflow-hidden rounded-full" alt="" src="/avatars/473432078df13239e9a48a23ef36d3f4.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ironwill2000" style="content-visibility:auto;"><!--[0--><a href="/ironwill2000" title="ironwill2000"><img class="overflow-hidden rounded-full" alt="" src="/avatars/d78a1504df949d46e6e98156cc336e93.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="tahamajs" style="content-visibility:auto;"><!--[0--><a href="/tahamajs" title="tahamajs"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65cc6e71df78d51bb8bd237c/VKBdJPzcqU30PrAW_woq8.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="patraparnab25" style="content-visibility:auto;"><!--[0--><a href="/patraparnab25" title="patraparnab25"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6925170b7498c53accb82dcf/sw8GFcd3_z3oPhqVSi8xq.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+50</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">6</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Papers mentioned in this article <span class="ml-3 font-normal text-gray-400">3</span></h2>  </div><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

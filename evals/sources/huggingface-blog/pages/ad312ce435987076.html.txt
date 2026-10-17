@@ -1,0 +1,500 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/1N4GjIYBsZ6RCReRx_qBB.png" />
+
+		<meta property="og:title" content="Accelerating Transformers Fine-Tuning with NVIDIA NeMo AutoModel" />
+
+		<meta property="og:description" content="A Blog post by NVIDIA on Hugging Face" />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/nvidia/accelerating-fine-tuning-nvidia-nemo-automodel" />
+
+		<meta property="og:image" content="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/1N4GjIYBsZ6RCReRx_qBB.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/nvidia/accelerating-fine-tuning-nvidia-nemo-automodel">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Accelerating Transformers Fine-Tuning with NVIDIA NeMo AutoModel</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="accelerating-transformers-fine-tuning-with-nvidia-nemo-automodel" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#accelerating-transformers-fine-tuning-with-nvidia-nemo-automodel" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Accelerating Transformers Fine-Tuning with NVIDIA NeMo AutoModel
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[0--><a href="/blog" class="flex items-center gap-x-1.5 whitespace-nowrap rounded-full px-4 py-1.5 font-sans text-sm font-semibold no-underline bg-purple-500/10 hover:bg-purple-500/20"><!--[0--><span class="bg-linear-to-br inline-block -skew-x-12 whitespace-nowrap border border-gray-200 from-gray-800 to-gray-900 font-sans font-semibold leading-none text-white will-change-transform dark:from-gray-50 dark:to-gray-100 dark:text-gray-900 rounded-md px-1.5 py-0.5 text-xs "><!--[-1--><span>Enterprise</span> <!--[0--><span class="bg-linear-to-b inline-block translate-y-px from-white to-green-400 bg-clip-text font-extrabold text-transparent dark:from-black text-xs leading-[0.6]">+</span><!--]--><!--]--></span><!----> <span>Article</span><!--]--></a><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 24, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[-1--><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Faccelerating-fine-tuning-nvidia-nemo-automodel" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">41</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Sylendran95" style="content-visibility:auto;"><!--[0--><a href="/Sylendran95" title="Sylendran95"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68e99b690b6572f3d4bd6f92/YJeJyv5JdDxs6vKD8aT3i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="akoumpa" style="content-visibility:auto;"><!--[0--><a href="/akoumpa" title="akoumpa"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/657117c21a22eb9b09b1a872/wM_I5G1INruR8Knc4UxAN.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="todaysurprised" style="content-visibility:auto;"><!--[0--><a href="/todaysurprised" title="todaysurprised"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ae61aef77eed497354ddcd7581d06a53.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ManikandanBalasubrmanian" style="content-visibility:auto;"><!--[0--><a href="/ManikandanBalasubrmanian" title="ManikandanBalasubrmanian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6827098797fde5ca7222b6aa/PXDiVePTmt63kUjsT4wO8.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="darrowoflykos" style="content-visibility:auto;"><!--[0--><a href="/darrowoflykos" title="darrowoflykos"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/yu32gPCVLqnpeQd_MMZ74.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[0--><a href="/merve" title="merve"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+35</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/adil-asif"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Adil Asif's avatar" src="/avatars/9d7d9149f7584aade190d10a8b248ad7.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/adil-asif"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Adil Asif">Adil Asif</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">adil-asif</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/akoumpa"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Alexandros Koumparoulis's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/657117c21a22eb9b09b1a872/wM_I5G1INruR8Knc4UxAN.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/akoumpa"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Alexandros Koumparoulis">Alexandros Koumparoulis</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">akoumpa</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/wgao2021"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Wenwen Gao's avatar" src="/avatars/f8320b1054b46029f0b0299468a4b6f5.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/wgao2021"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Wenwen Gao">Wenwen Gao</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">wgao2021</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/Sylendran95"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sylendran Arunagiri's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68e99b690b6572f3d4bd6f92/YJeJyv5JdDxs6vKD8aT3i.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/Sylendran95"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sylendran Arunagiri">Sylendran Arunagiri</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">Sylendran95</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/davidsalmessina70"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="David Messina's avatar" src="/avatars/0eff81787fd51fe9cb8f4ec537347f80.svg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/davidsalmessina70"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="David Messina">David Messina</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">davidsalmessina70</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/bernardwin"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Bernard Nguyen's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/67046ab44d2db34694a9a84e/T6d-2ejwtSUWcotyaHk2T.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/bernardwin"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Bernard Nguyen">Bernard Nguyen</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">bernardwin</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[0--><a href="/nvidia" class="mr-1.5 flex-none" title="NVIDIA"><img class="rounded-sm! size-4 select-none" alt="NVIDIA's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/></a> <a href="/nvidia" class="min-w-0 truncate rounded-sm bg-gray-100 px-1 font-mono text-xs leading-normal text-gray-600 dark:bg-gray-700">nvidia</a><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->HuggingFace Transformers has become the foundation of the open-source AI ecosystem, and the recent <a href="https://github.com/huggingface/transformers/releases/tag/v5.0.0" rel="nofollow">Transformers v5</a> release strengthened it with first-class support for Mixture-of-Experts (MoE) models, now the dominant architecture for <a href="https://www.nvidia.com/en-us/glossary/frontier-models/" rel="nofollow">frontier models</a>. v5 ships the MoE foundations: expert backends, dynamic weight loading, and distributed execution that make MoE extensible and easy to build on. </p>
+<p><a href="https://github.com/NVIDIA-NeMo/Automodel" rel="nofollow">NVIDIA NeMo AutoModel</a> is an open library part of the <a href="https://github.com/NVIDIA-NeMo" rel="nofollow">NVIDIA NeMo framework</a> for building custom generative AI models at scale. NeMo AutoModel builds cleanly on top of v5, adding Expert Parallelism, DeepEP fused all-to-all dispatch, and TransformerEngine kernels, and it leans on v5's dynamic weight loading to bring those optimizations to a broad and growing set of model families. The payoff is <strong>3.4-3.7x higher training throughput</strong> and <strong>29-32% less GPU memory</strong> on fine-tuning MoE models than native Transformers v5, using the same from_pretrained() API: a single import line, with no other code changes. </p>
+<p>This blog details how this combination works and how users can fine-tune MoE models faster without changing their APIs.</p>
+<h1 class="relative group flex items-baseline">
+	<a id="background" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#background" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Background
+	</span>
+</h1>
+<p>The rise of MoE models has introduced new challenges to efficient training: Routing tokens across hundreds of experts, fusing expert matmuls into a single kernel, sharding weights across GPUs, and overlapping communication with computation all require infrastructure beyond what a general-purpose library provides out of the box.</p>
+<p><a href="https://github.com/huggingface/transformers/releases/tag/v5.0.0" rel="nofollow">Transformers v5</a> (“v5”) introduced first-class MoE support such as <a href="https://huggingface.co/docs/transformers/en/experts_interface">expert backends</a>, <a href="https://huggingface.co/docs/transformers/en/weightconverter">dynamic weight loading</a>, and tensor parallel plans for distributed execution. In addition, v5 made distributed training first-class by integrating PyTorch's DeviceMesh directly into from_pretrained().</p>
+<p><a href="https://github.com/NVIDIA-NeMo/Automodel" rel="nofollow">NeMo AutoModel</a> builds on top of v5 by subclassing AutoModelForCausalLM, and adding Expert Parallelism (EP), DeepEP fused all-to-all dispatch, and TransformerEngine kernels. DeepEP is the piece v5 doesn't have yet: it overlaps communication with expert compute. And because NeMo AutoModel rides v5's reversible weight conversion to load each model, it can focus its engineering on these reusable core ops instead of per-model checkpoint plumbing, while save_pretrained() still emits standard HF checkpoints that tools like vLLM and SGLang can load. </p>
+<p>The next section walks through how the two work together and the performance gains we measured, from full fine-tuning <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16">NVIDIA Nemotron 3 Ultra 550B A55B</a> across 16 nodes down to single-node models such as Qwen3-30B-A3B and <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16">Nemotron 3 Nano 30B A3B</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="nemo-automodel-same-api-more-performance" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#nemo-automodel-same-api-more-performance" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		NeMo AutoModel: Same API, More Performance
+	</span>
+</h2>
+<p>One of NeMo AutoModel's goals is API compatibility with HuggingFace Transformers to enable open-source community. NeMoAutoModelForCausalLM subclasses AutoModelForCausalLM, so any code that works with HF models works with AutoModel too.</p>
+<p>Here's what loading a model looks like in both. Only the import changes:</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/VTPq2Wp-RrEcP1eGUJxao.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/VTPq2Wp-RrEcP1eGUJxao.png" alt="nemo_and_hf"></a></p>
+<p>That single import does a lot of work. For popular MoE architectures like Qwen3, <a href="https://developer.nvidia.com/nemotron" rel="nofollow">NVIDIA Nemotron</a>, GPT-OSS, and DeepSeek V3, NeMo AutoModel ships <a href="https://github.com/NVIDIA-NeMo/Automodel/blob/main/nemo_automodel/_transformers/registry.py" rel="nofollow">hand-tuned implementations</a> with TransformerEngine attention, fused linear layers, and custom expert kernels. For everything else, it falls back to vanilla HF while still applying optimizations like <a href="https://github.com/linkedin/Liger-Kernel" rel="nofollow">Liger kernel</a> patching, among others. And whichever path it takes, the resulting model is ready to scale: pass a device_mesh and you have multi-GPU training without further rewrites.</p>
+<p>Where NeMo AutoModel really shines is scaling MoE models to multi-GPU training. To train <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16">Nemotron 3 Nano 30B A3B</a> with Expert Parallelism across 8 GPUs, one adds the distributed mesh configuration:</p>
+<pre><code class="language-py"><span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">import</span> torch.distributed <span class="hljs-keyword">as</span> dist
+<span class="hljs-keyword">from</span> nemo_automodel <span class="hljs-keyword">import</span> NeMoAutoModelForCausalLM
+<span class="hljs-keyword">from</span> nemo_automodel.recipes._dist_utils <span class="hljs-keyword">import</span> create_distributed_setup_from_config
+
+dist.init_process_group(backend=<span class="hljs-string">"nccl"</span>)
+torch.manual_seed(<span class="hljs-number">0</span>)
+torch.cuda.set_device(<span class="hljs-built_in">int</span>(os.environ.get(<span class="hljs-string">"LOCAL_RANK"</span>, <span class="hljs-number">0</span>)))
+
+dist_setup = create_distributed_setup_from_config(
+    {
+        <span class="hljs-string">"strategy"</span>: <span class="hljs-string">"fsdp2"</span>,
+        <span class="hljs-string">"ep_size"</span>: <span class="hljs-number">8</span>,
+    },
+)
+
+model = NeMoAutoModelForCausalLM.from_pretrained(
+    <span class="hljs-string">"nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"</span>,
+    dtype=torch.bfloat16,
+    distributed_setup=dist_setup,
+)
+
+dist.destroy_process_group()
+</code></pre>
+<p>This gives speed, scalability and memory-optimizations with FSDP2,  Expert Parallelism,  TransformerEngine kernels and DeepEP dispatch, all from a from_pretrained() call.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="performance-comparison" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#performance-comparison" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Performance Comparison
+	</span>
+</h2>
+<p>We evaluated NeMo AutoModel in two regimes: full fine-tuning a frontier-scale 550B model across 16 nodes, and training two 30B MoE models on a single node. The 550B result shows why Expert Parallelism is essential at scale; the 30B results quantify the per-GPU speedup over Transformers v5.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="nemotron-3-ultra-550b-a55b-full-fine-tune-multi-node" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#nemotron-3-ultra-550b-a55b-full-fine-tune-multi-node" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Nemotron 3 Ultra 550B A55B (full fine-tune, multi-node)
+	</span>
+</h3>
+<p><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16">Nemotron 3 Ultra 550B A55B</a> is a 550B-parameter hybrid model shipping with Mamba2, LatentMoE, and Multi-Token Prediction (MTP). We benchmark a <strong>full fine-tune</strong>: every parameter is updated and the Adam optimizer state is materialized, which at this scale spans <strong>16 H100 nodes (128 GPUs)</strong>.</p>
+<p><strong>Methodology:</strong></p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Parameter</th>
+<th align="left">Value</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Hardware</td>
+<td align="left">16x H100 80GB (128 GPUs)</td>
+</tr>
+<tr>
+<td align="left">Expert Parallelism</td>
+<td align="left">EP=64</td>
+</tr>
+<tr>
+<td align="left">Local batch size</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">Sequence length</td>
+<td align="left">4,096</td>
+</tr>
+<tr>
+<td align="left">Features</td>
+<td align="left">MTP, activation checkpointing, fused linear cross-entropy</td>
+</tr>
+<tr>
+<td align="left">Kernels</td>
+<td align="left">DeepEP dispatch + torch_mm experts + TransformerEngine</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Metric</th>
+<th align="left">NeMo AutoModel (EP=64)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">TPS/GPU (avg)</td>
+<td align="left">815</td>
+</tr>
+<tr>
+<td align="left">TFLOP/s/GPU</td>
+<td align="left">~293</td>
+</tr>
+<tr>
+<td align="left">Peak Memory</td>
+<td align="left">58.2 GiB</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>Why there is no Transformers v5 column.</strong> Transformers v5 runs out of memory at this scale, so there is no v5 number to report here. AutoModel's Expert Parallelism shards the experts across GPUs to bring the footprint within budget, which is what lets the full fine-tune run. The 30B comparisons below show the same advantage where v5 fits.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="single-node-30b-moe-benchmarks" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#single-node-30b-moe-benchmarks" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Single-node 30B MoE benchmarks
+	</span>
+</h3>
+<p>We benchmarked three approaches on a single node with 8x H100 80GB GPUs: HF Transformers v4 (hub code), HF Transformers v5 (with best available optimizations), and NeMo AutoModel (EP=8 + custom kernels).</p>
+<p><strong>Methodology:</strong></p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Parameter</th>
+<th align="left">Value</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">Hardware</td>
+<td align="left">8x H100 80GB (single node)</td>
+</tr>
+<tr>
+<td align="left">Sequence length</td>
+<td align="left">4,096</td>
+</tr>
+<tr>
+<td align="left">Local batch size</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>A note on the routing gate.</strong> The NeMo AutoModel numbers below use a balanced routing gate, which forces tokens to be distributed uniformly across experts. This emulates the <em>ideal</em> operating point an MoE is trained toward: a well-trained model's load-balancing loss drives expert utilization to near-uniform, so balanced routing reflects the steady-state a real workload converges to (and removes the straggler noise that random dummy tokens otherwise inject into expert parallelism). v4/v5 run their native router on the same dummy tokens. The balanced gate therefore measures NeMo AutoModel at its target MoE operating point, and the v4/v5 columns reflect their out-of-the-box behavior.</p>
+<p><a href="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/rbCVgV6a18c4UcDsiWfZN.png" rel="nofollow"><img src="https://cdn-uploads.huggingface.co/production/uploads/690d0a6c2c5acfe0e1f4777d/rbCVgV6a18c4UcDsiWfZN.png" alt="nemo_automodel_blog_chart_mockup_v5"></a></p>
+<h3 class="relative group flex items-baseline">
+	<a id="qwen3-30b-a3b" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#qwen3-30b-a3b" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Qwen3-30B-A3B
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Metric</th>
+<th align="left">v4</th>
+<th align="left">v5 (FA2 + grouped_mm)</th>
+<th align="left">NeMo AutoModel (EP=8)</th>
+<th align="left">v5 → NeMo AutoModel</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">TPS/GPU (avg)</td>
+<td align="left">deadlock</td>
+<td align="left">3,075</td>
+<td align="left">11,340</td>
+<td align="left"><strong>3.69x</strong></td>
+</tr>
+<tr>
+<td align="left">Peak Memory</td>
+<td align="left">—</td>
+<td align="left">68.2 GiB</td>
+<td align="left">48.1 GiB</td>
+<td align="left"><strong>-29%</strong></td>
+</tr>
+<tr>
+<td align="left">Avg Forward+Loss</td>
+<td align="left">—</td>
+<td align="left">582 ms</td>
+<td align="left">194 ms</td>
+<td align="left">3.00x</td>
+</tr>
+<tr>
+<td align="left">Avg Backward</td>
+<td align="left">—</td>
+<td align="left">758 ms</td>
+<td align="left">178 ms</td>
+<td align="left">4.26x</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>Why v4 deadlocks:</strong> Transformers v4 stores Qwen3 MoE experts as a ModuleList of 128 individual MLP modules, each separately FSDP-wrapped. The forward pass uses a data-dependent loop that only iterates experts that received tokens. With different data per rank, different ranks skip different experts, causing mismatched FSDP AllGather/ReduceScatter collectives and an indefinite hang. Transformers v5 fixes this by storing experts as fused 3D parameter tensors (no per-expert modules, no per-expert FSDP collectives).</p>
+<h3 class="relative group flex items-baseline">
+	<a id="nemotron-3-nano-30b-a3b" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#nemotron-3-nano-30b-a3b" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Nemotron 3 Nano 30B A3B
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Metric</th>
+<th align="left">v4 (hub code)</th>
+<th align="left">v5 (FA2 + grouped_mm + Mamba CUDA)</th>
+<th align="left">NeMo AutoModel (EP=8)</th>
+<th align="left">v5 → NeMo AutoModel</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">TPS/GPU (avg)</td>
+<td align="left">1,807</td>
+<td align="left">4,583</td>
+<td align="left">15,421</td>
+<td align="left"><strong>3.36x</strong></td>
+</tr>
+<tr>
+<td align="left">Peak Memory</td>
+<td align="left">61.9 GiB</td>
+<td align="left">62.1 GiB</td>
+<td align="left">42.5 GiB</td>
+<td align="left"><strong>-32%</strong></td>
+</tr>
+<tr>
+<td align="left">Avg Forward+Loss</td>
+<td align="left">1,024 ms</td>
+<td align="left">283 ms</td>
+<td align="left">109 ms</td>
+<td align="left">2.60x</td>
+</tr>
+<tr>
+<td align="left">Avg Backward</td>
+<td align="left">1,246 ms</td>
+<td align="left">611 ms</td>
+<td align="left">157 ms</td>
+<td align="left">3.89x</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><strong>v4 config:</strong> trust_remote_code=True (NVIDIA's hub modeling code). The hub code's expert loop is FSDP-safe (iterates all experts regardless of token assignment), so it doesn't deadlock like Qwen3 v4.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="where-the-speedup-comes-from" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#where-the-speedup-comes-from" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Where the speedup comes from
+	</span>
+</h3>
+<p>The 3.4-3.7x speedup from NeMo AutoModel over Transformers v5 comes from three sources:</p>
+<ol>
+<li><p><strong>Expert Parallelism reduces memory pressure.</strong> EP=8 distributes expert weights across GPUs, cutting the per-GPU MoE footprint by 8x. For Qwen3, this drops peak memory from 68.2 GiB to 48.1 GiB (-29%). For Nemotron Nano, it drops from 62.1 GiB to 42.5 GiB (-32%), freeing headroom for larger batch sizes or longer sequences.  </p>
+</li>
+<li><p><strong>DeepEP fuses communication with computation.</strong> Instead of separate AllGather/ReduceScatter collectives for expert routing, DeepEP fuses token dispatch and combines into optimized GPU kernels, overlapping communication with expert computation.  </p>
+</li>
+<li><p><strong>TransformerEngine kernels accelerate core operations.</strong> TE's fused attention, linear layers, and RMSNorm implementations provide consistent speedups over their PyTorch/Flash Attention equivalents across all layer types, not just MoE layers.</p>
+</li>
+</ol>
+<h2 class="relative group flex items-baseline">
+	<a id="transformers-v5-features-leveraged-by-huggingface-automodel" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#transformers-v5-features-leveraged-by-huggingface-automodel" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Transformers v5 Features Leveraged by HuggingFace AutoModel
+	</span>
+</h2>
+<h3 class="relative group flex items-baseline">
+	<a id="expert-backends" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#expert-backends" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Expert Backends
+	</span>
+</h3>
+<p>One of the most impactful features in Transformers v5 is the <a href="https://huggingface.co/docs/transformers/en/experts_interface">experts_implementation</a> parameter, which includes three expert backends:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">Backend</th>
+<th align="left">Description</th>
+<th align="left">Best for</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">eager</td>
+<td align="left">For-loop over selected experts</td>
+<td align="left">Debugging, compatibility, and correctness. Also available for v4.</td>
+</tr>
+<tr>
+<td align="left">batched_mm</td>
+<td align="left">Duplicates expert params, single batched GEMM via torch.bmm</td>
+<td align="left">Small inputs, fast with torch.compile. Added for v5</td>
+</tr>
+<tr>
+<td align="left">grouped_mm</td>
+<td align="left">Orders tokens by expert, single grouped GEMM via torch.nn.functional.grouped_mm</td>
+<td align="left">Training (memory efficient, no param duplication). Added for v5.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The grouped_mm backend is the key training optimization: instead of looping over experts one by one, it sorts tokens by their assigned expert and executes a single fused grouped matrix multiplication.</p>
+<p>NeMo AutoModel takes this further. For models with custom implementations, it uses DeepEP fused all-to-all dispatch combined with grouped GEMM kernels and TransformerEngine linear layers. The progression looks like:</p>
+<pre><code>v4 (eager for-loop) → v5 (grouped_mm) → NeMo AutoModel (DeepEP + GMM + TE)
+</code></pre>
+<p>In NeMo AutoModel, the expert backend is configured through BackendConfig:</p>
+<pre><code class="language-py"><span class="hljs-keyword">from</span> nemo_automodel.components.models.common.utils <span class="hljs-keyword">import</span> BackendConfig
+
+backend = BackendConfig(
+    attn=<span class="hljs-string">"te"</span>,           <span class="hljs-comment"># TransformerEngine attention</span>
+    linear=<span class="hljs-string">"te"</span>,         <span class="hljs-comment"># TransformerEngine linear layers</span>
+    experts=<span class="hljs-string">"torch_mm"</span>,  <span class="hljs-comment"># Grouped expert matmul</span>
+    dispatcher=<span class="hljs-string">"deepep"</span>, <span class="hljs-comment"># DeepEP fused all-to-all</span>
+)
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="expert-parallelism-and-deepep" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#expert-parallelism-and-deepep" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Expert Parallelism and DeepEP
+	</span>
+</h2>
+<p>Transformers v5 also ships an <a href="https://huggingface.co/docs/transformers/en/expert_parallelism">Expert Parallelism path</a>. It shards expert weights across GPUs. The <a href="https://github.com/huggingface/transformers/blob/v5.10.2/src/transformers/integrations/tensor_parallel.py#L1078" rel="nofollow">GroupedGemmParallel</a> style loads only each device's local experts, and <a href="https://github.com/huggingface/transformers/blob/v5.10.2/src/transformers/integrations/tensor_parallel.py#L1123" rel="nofollow">RouterParallel</a> routes tokens and combines results with an all_reduce. It's neatly built on v5's existing tensor-parallel machinery. Enabling it makes the model's tp_plan return its <a href="https://github.com/huggingface/transformers/blob/v5.10.2/src/transformers/modeling_utils.py#L1448" rel="nofollow">expert plan</a>, so expert parallelism shares the device budget with data parallelism (ep × dp = world_size). For the single-node 30B benchmarks here, we found plain data-parallel v5 (dp=8, ep=1) to be the fastest v5 configuration, so that's the v5 setup we report.</p>
+<p>NeMo AutoModel takes a complementary approach tuned for multi-GPU MoE training. It makes EP its own parallelism dimension, a dedicated moe_mesh alongside (rather than carved from) the data-parallel mesh, using PyTorch's DTensor with Shard(0). Because the expert mesh is orthogonal to data parallelism, the two compose on the same devices. On 8 GPUs NeMo AutoModel runs ep=8 and dp=8 together, so every GPU trains on its own data shard while holding only 1/8 of the experts. Expert weights are physically sharded across GPUs along the expert dimension.</p>
+<pre><code class="language-py"><span class="hljs-comment"># From nemo_automodel/components/moe/parallelizer.py</span>
+<span class="hljs-keyword">from</span> torch.distributed.tensor <span class="hljs-keyword">import</span> Shard, distribute_tensor
+
+<span class="hljs-comment"># Each GPU holds only 1/ep_size of the expert weights</span>
+distribute_tensor(param, device_mesh, [Shard(<span class="hljs-number">0</span>)])
+</code></pre>
+<p>With ep_size=8 on 8 GPUs, each GPU holds only 1/8 of the expert parameters. For a model like Nemotron-3-Nano-30B-A3B with ~55 GiB of expert weights, EP reduces the per-GPU expert footprint from ~55 GiB to ~6.8 GiB, making training possible where FSDP-only approaches run out of memory.</p>
+<p>On top of EP, NeMo AutoModel integrates <a href="https://github.com/deepseek-ai/DeepEP" rel="nofollow">DeepEP</a> that fuses the token routing into optimized GPU kernels, and delivers significant speedups when combined with grouped GEMM for grouped expert computation. In our <a href="https://github.com/NVIDIA-NeMo/Automodel/discussions/916" rel="nofollow">large-scale MoE benchmarks</a>, DeepEP + grouped GEMM reduced cost per iteration by 47% on the full DeepSeek V3 671B model compared to all-gather + looped expert baselines.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="dynamic-weight-loading" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#dynamic-weight-loading" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Dynamic Weight Loading
+	</span>
+</h3>
+<p>Transformers v5 also introduced a <a href="https://huggingface.co/docs/transformers/en/weightconverter">dynamic weight loading</a> system through WeightConverter and WeightRenaming. This enables MoE checkpoint to be stored in fused 3D tensors for more efficient execution. The WeightConverter applies composable operations to transform checkpoint tensors on-the-fly during from_pretrained().</p>
+<p>NeMo AutoModel is a direct consumer of this v5 API. Over <a href="https://github.com/NVIDIA-NeMo/Automodel/blob/main/nemo_automodel/components/checkpoint/conversion_mapping.py" rel="nofollow">20 model types</a> use this mechanism through MODELS_REQUIRING_TENSOR_MERGING, including Mixtral, Qwen2 MoE, Qwen3 MoE, DeepSeek V2/V3, OLMoE, and more. The conversions are fully reversible: save_pretrained() produces standard HF-format checkpoints that any downstream tool can load.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="getting-started" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#getting-started" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Getting Started
+	</span>
+</h2>
+<p>To try NeMo AutoModel, please visit our official documentation page to <a href="https://docs.nvidia.com/nemo/automodel/latest/get-started/installation" rel="nofollow">get started</a>.</p>
+<p>For more details, see:</p>
+<ul>
+<li><a href="https://docs.nvidia.com/nemo/automodel/latest/get-started/hf-compatibility" rel="nofollow">NeMo AutoModel HuggingFace API Compatibility Guide</a>  </li>
+<li><a href="https://docs.nvidia.com/nemo/automodel/latest/model-coverage/overview" rel="nofollow">NeMo AutoModel Model Coverage</a>  </li>
+<li><a href="https://docs.nvidia.com/nemo/automodel/latest/performance/performance-summary" rel="nofollow">NeMo AutoModel Performance Summary</a>  </li>
+<li><a href="https://huggingface.co/docs/transformers/en/community_integrations/nemo_automodel_finetuning">NeMo AutoModel on HuggingFace</a></li>
+</ul>
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p>NVIDIA NeMo AutoModel is the natural next step for HuggingFace users scaling up model training. By building directly on Transformers v5, AutoModel provides a zero-friction upgrade path: change one import line and get a model instance that is more than three times as fast.</p>
+<p>On Qwen3-30B-A3B and Nemotron 3 Nano 30B-A3B, this delivers 3.4-3.7x higher training throughput with 29-32% less GPU memory compared to the best Transformers v5 configuration. And because true Expert Parallelism shards experts across GPUs, the same path scales up to full fine-tuning a 550B model like Nemotron 3 Ultra across 16 nodes, the regime where Expert Parallelism becomes essential to fit the model in memory. Because NeMo AutoModel checkpoints are standard HF-format safetensors, you can deploy them on inference frameworks like vLLM and SGLang.</p>
+<p>The code, configs, and benchmark scripts are all available in the <a href="https://github.com/NVIDIA-NeMo/Automodel/tree/blog/transformers-v5-automodel/blog_experiments" rel="nofollow">NeMo AutoModel repository</a>.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="acknowledgements" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#acknowledgements" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Acknowledgements
+	</span>
+</h2>
+<p>Core contributors to this work, listed alphabetically by last name: Adil Asif, Hemil Desai, Alexandros Koumparoulis, and Huiying Li.  </p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More from this author</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/scaling-indic-pretraining"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="https://cdn-uploads.huggingface.co/production/uploads/68d2fec8856b85d927e44d32/x0aObe_0mduBjWFuKBGoV.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 from-purple-500/10 dark:from-purple-800/10 bg-gradient-to-r to-white dark:to-gray-950"><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Scaling Indic Pretraining: 2.8 Trillion Tokens and an Open Data Generation Pipeline</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 13</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 16, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/nvidia/fine-tune-asr-with-nvidia-nemotron-speech-skills"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[-1--><div class="bg-linear-to-br absolute inset-0 overflow-hidden from-indigo-600 to-yellow-600 group-hover:scale-102 transition-transform duration-300 ease-in-out"></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[-1--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Fine-Tune ASR for Your Domain with NVIDIA Speech Agent Skills</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-md border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nvidia" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 12</div><!--]--> <!--[0--><span class="whitespace-nowrap">October 13, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fnvidia%2Faccelerating-fine-tuning-nvidia-nemo-automodel">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fnvidia%2Faccelerating-fine-tuning-nvidia-nemo-automodel">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fnvidia%2Faccelerating-fine-tuning-nvidia-nemo-automodel" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">41</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Sylendran95" style="content-visibility:auto;"><!--[0--><a href="/Sylendran95" title="Sylendran95"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/68e99b690b6572f3d4bd6f92/YJeJyv5JdDxs6vKD8aT3i.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="akoumpa" style="content-visibility:auto;"><!--[0--><a href="/akoumpa" title="akoumpa"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/657117c21a22eb9b09b1a872/wM_I5G1INruR8Knc4UxAN.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="todaysurprised" style="content-visibility:auto;"><!--[0--><a href="/todaysurprised" title="todaysurprised"><img class="overflow-hidden rounded-full" alt="" src="/avatars/ae61aef77eed497354ddcd7581d06a53.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ManikandanBalasubrmanian" style="content-visibility:auto;"><!--[0--><a href="/ManikandanBalasubrmanian" title="ManikandanBalasubrmanian"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6827098797fde5ca7222b6aa/PXDiVePTmt63kUjsT4wO8.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="darrowoflykos" style="content-visibility:auto;"><!--[0--><a href="/darrowoflykos" title="darrowoflykos"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/yu32gPCVLqnpeQd_MMZ74.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="merve" style="content-visibility:auto;"><!--[0--><a href="/merve" title="merve"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6141a88b3a0ec78603c9e784/DJsxSmWV39M33JFheLobC.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Legendarylibrary" style="content-visibility:auto;"><!--[0--><a href="/Legendarylibrary" title="Legendarylibrary"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69b616ef882a0383ec31c697/8bSlfC8Q1o0Vb0U-UBEwU.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="jeffboudier" style="content-visibility:auto;"><!--[0--><a href="/jeffboudier" title="jeffboudier"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1605114051380-noauth.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="athitten" style="content-visibility:auto;"><!--[0--><a href="/athitten" title="athitten"><img class="overflow-hidden rounded-full" alt="" src="/avatars/11265cacc64cbc007c3f80fa5c142deb.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="amitpuri" style="content-visibility:auto;"><!--[0--><a href="/amitpuri" title="amitpuri"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/62a0baa7c6754e9bfabf7e76/aogJMfrZ_Cvgx1ka_IDTV.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Mingyu-Yang-1" style="content-visibility:auto;"><!--[0--><a href="/Mingyu-Yang-1" title="Mingyu-Yang-1"><img class="overflow-hidden rounded-full" alt="" src="/avatars/c21234714d6cebca376e5703fba30b4e.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="prithivMLmods" style="content-visibility:auto;"><!--[0--><a href="/prithivMLmods" title="prithivMLmods"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/65bb837dbfb878f46c77de4c/23gZ_lBEwyoqjexFy9QLD.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+29</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Models mentioned in this article <span class="ml-3 font-normal text-gray-400">2</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

@@ -1,0 +1,368 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/github-ci-hf-jobs/thumbnail.gif" />
+
+		<meta property="og:title" content="Migrating Your GitHub CI to Hugging Face Jobs" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/github-ci-hf-jobs" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/github-ci-hf-jobs/thumbnail.gif" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/github-ci-hf-jobs">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Migrating Your GitHub CI to Hugging Face Jobs</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="migrating-your-github-ci-to-hugging-face-jobs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#migrating-your-github-ci-to-hugging-face-jobs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Migrating Your GitHub CI to Hugging Face Jobs
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					June 9, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/github-ci-hf-jobs.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fgithub-ci-hf-jobs" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">16</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="okozymandias" style="content-visibility:auto;"><!--[0--><a href="/okozymandias" title="okozymandias"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/ZM0DLGwRv3IZEoyq9Ue8_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[0--><a href="/qgallouedec" title="qgallouedec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wrenchpilot" style="content-visibility:auto;"><!--[0--><a href="/wrenchpilot" title="wrenchpilot"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63c9595551b03e8e01b3a851/cqptrsICWcYFDzxdbYCRO.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="BeraBravo" style="content-visibility:auto;"><!--[0--><a href="/BeraBravo" title="BeraBravo"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d233beba452314fd9528/yg8pzGQRoqTLKjX2zbFIE.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="abidlabs" style="content-visibility:auto;"><!--[0--><a href="/abidlabs" title="abidlabs"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="littlehuangbc" style="content-visibility:auto;"><!--[0--><a href="/littlehuangbc" title="littlehuangbc"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/647035e7036229a8a71db5f6/CWJL24akSQ1eXcJfr2bA2.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+10</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props="{&quot;authors&quot;:[{&quot;author&quot;:{&quot;_id&quot;:&quot;608b8bb39d7c9519b4adae19&quot;,&quot;avatarUrl&quot;:&quot;https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png&quot;,&quot;fullname&quot;:&quot;Abubakar Abid&quot;,&quot;name&quot;:&quot;abidlabs&quot;,&quot;type&quot;:&quot;user&quot;,&quot;isPro&quot;:true,&quot;isHf&quot;:true,&quot;isHfAdmin&quot;:false,&quot;isMod&quot;:false,&quot;followerCount&quot;:1474,&quot;isUserFollowing&quot;:false}}],&quot;translators&quot;:[],&quot;proofreaders&quot;:[],&quot;lang&quot;:&quot;en&quot;}"><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/abidlabs"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Abubakar Abid's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/abidlabs"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Abubakar Abid">Abubakar Abid</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">abidlabs</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]-->If you have a GitHub repository and you have GitHub Actions enabled, you probably use GitHub-hosted runners for CI. That is the default for many projects because it is simple: add a workflow, write <code>runs-on: ubuntu-latest</code>, and GitHub gives you a machine.</p>
+<p>That default is convenient, but it also has limits. GitHub Actions can be slow or down for maintenance, the hosted machines are generic, and GPU access is not something most open-source projects can just turn on. For <a href="https://github.com/gradio-app/trackio" rel="nofollow">Trackio</a>, those limits started to matter. We wanted both reliable CPU CI for basic unit tests and frontend checks, but also GPU CI for tests that need to run on actual CUDA hardware.</p>
+<p>So built an alternative: keep GitHub Actions in charge of CI, but run the jobs on <a href="https://huggingface.co/docs/hub/en/jobs-overview">Hugging Face Jobs</a>.</p>
+<p>The result: Trackio's CI now runs on Hugging Face Jobs and streams back real-time logs, <strong>cutting our CI time for CPU jobs by about 30% and enabling a whole new test suite that runs on GPU machines</strong>!</p>
+<p>In this article, we explain step-by-step how to recreate the same setup for your GitHub repo. If you are using an agent, you can point it to this article, since we provide CLI instructions alongside browser-based instructions for us humans.</p>
+<p>Let's start with a quick intro to Hugging Face Jobs!</p>
+<h2 class="relative group flex items-baseline">
+	<a id="what-is-hugging-face-jobs" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#what-is-hugging-face-jobs" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		What is Hugging Face Jobs?
+	</span>
+</h2>
+<p><a href="https://huggingface.co/docs/hub/en/jobs-overview">Hugging Face Jobs</a> lets you run commands or scripts on Hugging Face's serverless infrastructure with almost any hardware flavor. A Job is essentially:</p>
+<ul>
+<li>a command to run</li>
+<li>a Docker image, from Docker Hub or a Hugging Face Space</li>
+<li>a hardware flavor, such as CPU or <code>t4-small</code> or <code>h200</code> GPU</li>
+<li>optional environment variables and secrets</li>
+</ul>
+<p>For example, you can run:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> run python:3.12 python -c <span class="hljs-string">"print('Hello world')"</span>
+</code></pre>
+<p>or </p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> uv run --flavor a10g-small <span class="hljs-string">"https://raw.githubusercontent.com/huggingface/trl/main/trl/scripts/sft.py"</span> 
+</code></pre>
+<p>That makes Jobs a natural fit for CI. CI jobs are already command-driven, already run in clean environments, and often benefit from choosing exactly the right hardware. For ML libraries, the GPU case is especially compelling: you can run a test suite on real GPU hardware without maintaining your own always-on runner.</p>
+<p>The key step is connecting GitHub Actions to HF Jobs, which we describe below.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="the-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The architecture
+	</span>
+</h2>
+<p>For this setup, we created <a href="https://github.com/huggingface/jobs-actions" rel="nofollow"><code>huggingface/jobs-actions</code></a>, a small bridge that turns a GitHub Actions job into an ephemeral self-hosted runner running inside an HF Job.</p>
+<p>The complete flow looks like this:</p>
+<ol>
+<li>A pull request triggers a GitHub Actions workflow.</li>
+<li>GitHub queues any job whose <code>runs-on</code> label is not available, for example <code>hf-jobs-cpu-upgrade</code> or <code>hf-jobs-t4-small</code>, and sends a signed <code>workflow_job.queued</code> webhook to the dispatcher through the GitHub App.</li>
+<li>The dispatcher Space verifies the webhook, checks for an <code>hf-jobs-*</code> label, mints a short-lived GitHub runner registration token, and starts an HF Job on the matching hardware.</li>
+<li>The HF Job boots an ephemeral GitHub Actions runner and registers it with the repo using that one-shot token.</li>
+<li>GitHub assigns the pending workflow job to that runner; the runner executes the CI job, reports status back to GitHub, and exits.</li>
+</ol>
+<p>From GitHub's point of view, this is just a self-hosted runner. From Hugging Face's point of view, it is just a Job that launches a container to run the workflow steps from the repo’s GitHub Actions.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-1-duplicate-the-dispatcher-space" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-1-duplicate-the-dispatcher-space" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 1: Duplicate the dispatcher Space
+	</span>
+</h2>
+<p>The first thing you need is the dispatcher. This is a small Docker Space that receives GitHub <code>workflow_job</code> webhook events and launches HF Jobs in response.</p>
+<p>Create this first because the GitHub App needs a webhook URL, and that URL comes from the Space. This Space should be under your own namespace or under a Hugging Face org that you have write access to.</p>
+<h4 class="relative group flex items-baseline">
+	<a id="web-setup" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#web-setup" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Web setup
+	</span>
+</h4>
+<p>Go to <a href="https://huggingface.co/spaces/huggingface/jobs-actions-dispatcher"><code>huggingface/jobs-actions-dispatcher</code></a> and click <strong>Duplicate this Space</strong>.</p>
+<img width="996" alt="image" src="https://github.com/user-attachments/assets/c8b450c3-b801-43dc-97ff-954d9bbaf975">
+
+
+<p>Use:</p>
+<pre><code class="language-text">Owner: your HF user or org
+Name: jobs-actions-dispatcher
+Hardware: cpu-upgrade
+</code></pre>
+<p>Use <code>cpu-upgrade</code> for real CI so the dispatcher stays available for GitHub webhooks. <code>cpu-basic</code> is fine for testing and will probably work, but it can sleep after inactivity; if GitHub's webhook arrives while it is waking up, the workflow may stay queued forever.</p>
+<p>After it builds, open the duplicated Space. You will see a section that says "Required Space secrets," which you can ignore for now. The landing page should display the GitHub App webhook URL you need in the next step. It will look like this:</p>
+<pre><code class="language-text">https://YOUR-HF-NAMESPACE-jobs-actions-dispatcher.hf.space/webhook
+</code></pre>
+<h4 class="relative group flex items-baseline">
+	<a id="cli-setup" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#cli-setup" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		CLI setup
+	</span>
+</h4>
+<p>If you'd prefer to set up the dispatcher Space with an agent or use a CLI workflow:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> HF_NAMESPACE=your-hf-user-or-org
+<span class="hljs-built_in">export</span> SPACE_ID=<span class="hljs-string">"<span class="hljs-variable">$HF_NAMESPACE</span>/jobs-actions-dispatcher"</span>
+
+hf repo duplicate huggingface/jobs-actions-dispatcher <span class="hljs-string">"<span class="hljs-variable">$SPACE_ID</span>"</span> \
+  --<span class="hljs-built_in">type</span> space \
+  --flavor cpu-upgrade \
+  --exist-ok
+</code></pre>
+<p>Then set:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> DISPATCHER_URL=<span class="hljs-string">"https://<span class="hljs-variable">${HF_NAMESPACE}</span>-jobs-actions-dispatcher.hf.space"</span>
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="step-2-create-and-install-the-github-app" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-2-create-and-install-the-github-app" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 2: Create and install the GitHub App
+	</span>
+</h2>
+<p>Next, create and install the GitHub App from the dispatcher Space itself. This App needs permission to listen for queued workflow jobs and create ephemeral self-hosted runner registration tokens.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="web-setup-1" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#web-setup-1" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Web setup
+	</span>
+</h3>
+<p>Open your duplicated dispatcher Space:</p>
+<pre><code class="language-text">https://YOUR-HF-NAMESPACE-jobs-actions-dispatcher.hf.space
+</code></pre>
+<p>In the setup form, enter the GitHub repo whose CI should run on HF Jobs:</p>
+<pre><code class="language-text">YOUR-GITHUB-ORG/YOUR-REPO
+</code></pre>
+<p>Then click the button to create the GitHub App. GitHub will ask you to choose a name for the App; the name can be anything, as long as it is available in your GitHub account or org. After you submit, the final screen tells you exactly how to upload the App credentials to the dispatcher Space with the <code>hf</code> CLI.</p>
+<p><strong>Important note</strong>: you will need to provide an <a href="https://huggingface.co/settings/tokens">Hugging Face token</a> that has permissions to launch Jobs, corresponding to your personal account or an org under which Jobs should be charged. This token should be saved as the <code>HF_TOKEN</code> secret in your dispatcher Space.</p>
+<p>Finally, you will install the App on the same GitHub repo you entered in the Space. In the Trackio setup, we installed it on <code>gradio-app/trackio</code>.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="agent-assisted-setup" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#agent-assisted-setup" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Agent-assisted setup
+	</span>
+</h3>
+<p>The GitHub App manifest flow is still browser-based, but an agent can follow the same Space-driven path:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> HF_NAMESPACE=your-hf-user-or-org
+<span class="hljs-built_in">export</span> GITHUB_REPO=YOUR-GITHUB-ORG/YOUR-REPO
+open <span class="hljs-string">"https://<span class="hljs-variable">${HF_NAMESPACE}</span>-jobs-actions-dispatcher.hf.space"</span>
+</code></pre>
+<p>Paste <code>$GITHUB_REPO</code> into the Space, click the GitHub App creation button, choose any available App name, and follow the generated GitHub instructions.</p>
+<p>After the App exists, install it on your repo from the App settings page. For a GitHub org, the installation settings are under:</p>
+<pre><code class="language-text">https://github.com/organizations/YOUR-GITHUB-ORG/settings/installations
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="step-3-final-dispatcher-settings" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-3-final-dispatcher-settings" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 3: Final dispatcher settings
+	</span>
+</h2>
+<p>At this point, the dispatcher Space should be configured. The GitHub App setup flow generated the commands that upload the App credentials, webhook secret, and Hugging Face token to the Space.</p>
+<img width="1317" alt="image" src="https://github.com/user-attachments/assets/0fc8ac73-f93a-419b-bd80-70da2756f50c">
+
+
+<p>By default, HF Jobs are launched under the same namespace as the dispatcher Space. Optionally, set <code>HF_NAMESPACE</code> as a Space variable if you want to bill jobs to a different Hugging Face user or org:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> SPACE_ID=YOUR-HF-NAMESPACE/jobs-actions-dispatcher
+hf spaces variables add <span class="hljs-string">"<span class="hljs-variable">$SPACE_ID</span>"</span> -e HF_NAMESPACE=your-billing-namespace
+hf spaces restart <span class="hljs-string">"<span class="hljs-variable">$SPACE_ID</span>"</span>
+</code></pre>
+<p>The token you set in Step 2 should correspond to this namespace.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-4-change-runs-on" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-4-change-runs-on" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 4: Change <code>runs-on</code>
+	</span>
+</h2>
+<p>The actual workflow change is small. Instead of:</p>
+<pre><code class="language-yaml"><span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+</code></pre>
+<p>use one of the labels handled by the dispatcher:</p>
+<pre><code class="language-yaml"><span class="hljs-attr">runs-on:</span> <span class="hljs-string">hf-jobs-cpu-upgrade</span>
+</code></pre>
+<p>For GPU tests, use a GPU label:</p>
+<pre><code class="language-yaml"><span class="hljs-attr">runs-on:</span> <span class="hljs-string">hf-jobs-t4-small</span>
+</code></pre>
+<p>For any GitHub Action you'd like to run on HF Jobs, this 1-line change is all you need!</p>
+<h2 class="relative group flex items-baseline">
+	<a id="step-5-test-it-out" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#step-5-test-it-out" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Step 5: Test it out
+	</span>
+</h2>
+<p>To add a minimal smoke-test workflow from the CLI:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p .github/workflows
+<span class="hljs-built_in">cat</span> &gt; .github/workflows/hf-jobs-test.yml &lt;&lt;<span class="hljs-string">'EOF'</span>
+name: HF Jobs Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+<span class="hljs-built_in">jobs</span>:
+  <span class="hljs-built_in">test</span>:
+    runs-on: hf-jobs-cpu-upgrade
+    steps:
+      - uses: actions/checkout@v4
+      - run: <span class="hljs-built_in">echo</span> <span class="hljs-string">"Hello from Hugging Face Jobs"</span>
+EOF
+
+git add .github/workflows/hf-jobs-test.yml
+git commit -m <span class="hljs-string">"Run CI on Hugging Face Jobs"</span>
+git push
+</code></pre>
+<p>To verify from the CLI:</p>
+<pre><code class="language-bash">gh run list --repo YOUR-GITHUB-ORG/YOUR-REPO --<span class="hljs-built_in">limit</span> 5
+hf <span class="hljs-built_in">jobs</span> ps --namespace <span class="hljs-string">"<span class="hljs-variable">$HF_NAMESPACE</span>"</span>
+hf spaces logs <span class="hljs-string">"<span class="hljs-variable">$SPACE_ID</span>"</span>
+</code></pre>
+<p>You should be able to see logs just like a regular GitHub Action—for example, in this <a href="https://github.com/gradio-app/trackio/pull/565" rel="nofollow">Trackio PR #565</a>.</p>
+<p>And that's it!</p>
+<p><em>Note on choosing the right Docker image</em></p>
+<p>Our first CPU setup used <code>ubuntu:22.04</code> and installed missing system packages during every run. That worked, but it was slower than it needed to be. GitHub's <code>ubuntu-latest</code> image includes a lot of developer tooling by default; a bare Ubuntu image does not.</p>
+<p>For Trackio, the UI tests need Playwright browsers, Node, ffmpeg, sqlite, git, and normal Linux build dependencies. Hugging Face Jobs supports using any <a href="https://huggingface.co/docs/hub/jobs-popular-images">Docker image</a>, so we switched to the Microsoft Playwright image, which worked well:</p>
+<pre><code class="language-text">mcr.microsoft.com/playwright:v1.60.0-jammy
+</code></pre>
+<p>For GPU jobs, we used:</p>
+<pre><code class="language-text">nvidia/cuda:12.4.0-runtime-ubuntu22.04
+</code></pre>
+<h2 class="relative group flex items-baseline">
+	<a id="results" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#results" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Results
+	</span>
+</h2>
+<p>Here are the numbers from the Trackio CI:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th>Runner setup</th>
+<th align="right">Runtime</th>
+<th align="right">Compared to GitHub average</th>
+</tr>
+
+		</thead><tbody><tr>
+<td>GitHub <code>ubuntu-latest</code> baseline</td>
+<td align="right"><code>1m40s</code></td>
+<td align="right">baseline</td>
+</tr>
+<tr>
+<td>HF Jobs CPU, Playwright image</td>
+<td align="right"><code>1m10s</code></td>
+<td align="right"><code>-30s</code>, about <code>30%</code> faster</td>
+</tr>
+<tr>
+<td>HF Jobs GPU, <code>t4-small</code> label</td>
+<td align="right"><code>45s</code></td>
+<td align="right">no GitHub-hosted GPU baseline</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The biggest win was GPU CI. The Trackio GPU check ran on HF Jobs and passed in <code>45s</code>, costing less than a cent at the <code>t4-small</code> rate for that duration.</p>
+<p>The CPU result was also encouraging. With the right image, the Linux test job was faster than the GitHub-hosted baseline. That suggests HF Jobs can be a practical CI backend, especially for ML projects that need custom images or accelerators.</p>
+<p>Logs were another pleasant surprise. GitHub Actions logs are useful, but the web UI can be heavy for large logs. HF Jobs logs are easy to fetch from the CLI:</p>
+<pre><code class="language-bash">hf <span class="hljs-built_in">jobs</span> logs &lt;job_id&gt; &gt; logs.txt
+</code></pre>
+<p>That makes them easy to inspect with local tools or coding agents. In our bridge, we also mirrored the GitHub Actions job log into the HF Job log, so either system had enough information to debug a run.</p>
+<p>Finally, although we didn't need them for Trackio's CI, HF Jobs also <a href="https://huggingface.co/docs/huggingface_hub/en/guides/jobs#mount-a-volume">supports mounting volumes</a>, which can be very helpful if you need to load datasets or models from Hugging Face quickly as part of your CI.</p>
+<p>Hopefully, this gives you all you need to try HF Jobs for running your GitHub Actions!</p>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/hello-hf-kernels"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/hello-hf-kernels/kernel-hub-five-mins-short.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">guide</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">hub</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">optimization</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Learn the Hugging Face Kernel Hub in 5 Minutes</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="drbh" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d5ba3f80ad88c77b2f05/yuvfzgqOeK8-bFxEZ2gg9.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="danieldk" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6310e9a107a76827902421d7/1e0GItqv3A6sOWYz5SXoe.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Narsil" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1608285816082-5e2967b819407e3277369b95.png" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+3</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 167</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 12, 2025</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/asyncgrpo-lora-hfjobs"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/asyncgrpo-lora-hfjobs/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">llm</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">rl</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">trl</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Async GRPO with LoRA across HF Jobs: a bucket, a proxy, and no NCCL</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="aminediroHF" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/69a5684704dd904ad8fdf1c6/_AC_1juch3FyFgy7mHCYa.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="kashif" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 53</div><!--]--> <!--[0--><span class="whitespace-nowrap">September 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a2bacd2f9dc3c32e30d5428" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/1662689222784-631a9ec4223d36c57073474c.png" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/k-l-lambda">k-l-lambda</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a2bacd2f9dc3c32e30d5428" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-12T06:53:06" title="Fri, 12 Jun 2026 06:53:06 GMT">Jun 12</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>GitHub CI is limitless and free. In Huggingface now I can't even run more 3 CPU spaces.</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs mr-1.5"><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="abidlabs" style="content-visibility:auto;"><!--[0--><a href="/abidlabs" title="abidlabs"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png" loading="lazy"/></a><!--]--></li><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="k-l-lambda" style="content-visibility:auto;"><!--[0--><a href="/k-l-lambda" title="k-l-lambda"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1662689222784-631a9ec4223d36c57073474c.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">3 replies</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">👍</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a2bad884e418d5b5d5ec3ce" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/abidlabs">abidlabs</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a2bad884e418d5b5d5ec3ce" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-12T06:56:08" title="Fri, 12 Jun 2026 06:56:08 GMT">Jun 12</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Hi <span class="SVELTE_PARTIAL_HYDRATER contents" data-target="UserMention" data-props="{&quot;user&quot;:&quot;k-l-lambda&quot;}"><span class="inline-block"><span class="contents"><a href="https://huggingface.co/k-l-lambda">@<span class="underline">k-l-lambda</span></a></span> </span></span> what error do you see when try to run more than 3 CPU Spaces? Can you share a bit more about your CI setup?</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[0--><button class="inline-flex h-10 items-center gap-1 text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400"> <!----> Expand 2
+						replies</button><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a2bad7b4e418d5b5d5ec3c8" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/abidlabs">abidlabs</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a2bad7b4e418d5b5d5ec3c8" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-12T06:55:55" title="Fri, 12 Jun 2026 06:55:55 GMT">Jun 12</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by abidlabs" href="#6a2bad7b4e418d5b5d5ec3c8"><!--[0-->edited Jun 12<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Please feel free to drop a comment if you need any help migrating your CI!</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Fgithub-ci-hf-jobs">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Fgithub-ci-hf-jobs">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Fgithub-ci-hf-jobs" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">16</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="okozymandias" style="content-visibility:auto;"><!--[0--><a href="/okozymandias" title="okozymandias"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/ZM0DLGwRv3IZEoyq9Ue8_.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="qgallouedec" style="content-visibility:auto;"><!--[0--><a href="/qgallouedec" title="qgallouedec"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1677431596830-631ce4b244503b72277fc89f.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="wrenchpilot" style="content-visibility:auto;"><!--[0--><a href="/wrenchpilot" title="wrenchpilot"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63c9595551b03e8e01b3a851/cqptrsICWcYFDzxdbYCRO.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="BeraBravo" style="content-visibility:auto;"><!--[0--><a href="/BeraBravo" title="BeraBravo"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6452d233beba452314fd9528/yg8pzGQRoqTLKjX2zbFIE.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="abidlabs" style="content-visibility:auto;"><!--[0--><a href="/abidlabs" title="abidlabs"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1621947938344-noauth.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="littlehuangbc" style="content-visibility:auto;"><!--[0--><a href="/littlehuangbc" title="littlehuangbc"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/647035e7036229a8a71db5f6/CWJL24akSQ1eXcJfr2bA2.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ggerganov" style="content-visibility:auto;"><!--[0--><a href="/ggerganov" title="ggerganov"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/63148d3b996c52bf0142cdbe/ec7pRNrQQy70d-11FiACq.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="davanstrien" style="content-visibility:auto;"><!--[0--><a href="/davanstrien" title="davanstrien"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1627505688463-60107b385ac3e86b3ea4fc34.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="MH0386" style="content-visibility:auto;"><!--[0--><a href="/MH0386" title="MH0386"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6423906a2d5965e7229efdc0/QDCWEO-pMQ3x3GOxLMYqx.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="andyolivers" style="content-visibility:auto;"><!--[0--><a href="/andyolivers" title="andyolivers"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/64f878172f7d3d945ce3c8a4/IdYrpypdFRG_WxT7l78Ld.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="alexchen-ml" style="content-visibility:auto;"><!--[0--><a href="/alexchen-ml" title="alexchen-ml"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/vfGwiYFFuO9Z5DFpUL99z.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+4</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Spaces mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

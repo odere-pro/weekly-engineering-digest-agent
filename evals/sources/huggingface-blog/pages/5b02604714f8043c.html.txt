@@ -1,0 +1,985 @@
+<!doctype html>
+<html class="">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+		<meta name="description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="fb:app_id" content="1321688464574422" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<meta name="twitter:site" content="@huggingface" />
+
+		<meta name="twitter:image" content="https://huggingface.co/blog/assets/torch-profiler/thumbnail.png" />
+
+		<meta property="og:title" content="Profiling in PyTorch (Part 1): A Beginner&#39;s Guide to torch.profiler" />
+
+		<meta property="og:description" content="We’re on a journey to advance and democratize artificial intelligence through open source and open science." />
+
+		<meta property="og:type" content="website" />
+
+		<meta property="og:url" content="https://huggingface.co/blog/torch-profiler" />
+
+		<meta property="og:image" content="https://huggingface.co/blog/assets/torch-profiler/thumbnail.png" />
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-400-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-600-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link
+			rel="preload"
+			href="/front/assets/fonts/source-sans-pro-latin-700-normal.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/front/build/kube-1f021fd/style.css" />
+
+		<link
+			rel="preload"
+			href="/front/build/kube-1f021fd/katex.css"
+			as="style"
+			onload="
+				this.onload = null;
+				this.rel = 'stylesheet';
+			"
+		/>
+
+		<noscript>
+			<link rel="stylesheet" href="/front/build/kube-1f021fd/katex.css" />
+		</noscript>
+
+		 
+<link rel="canonical" href="https://huggingface.co/blog/torch-profiler">
+<link rel="alternate" hreflang="zh" href="https://huggingface.co/blog/zh/torch-profiler">   <!--g2q6vf--><link rel="alternate" type="application/rss+xml" href="/blog/feed.xml" title="Hugging Face Blog"/><!---->
+		<title>Profiling in PyTorch (Part 1): A Beginner&#39;s Guide to torch.profiler</title>
+
+		 
+
+		 
+
+		 
+
+		<link rel="modulepreload" href="/front/build/kube-1f021fd/index.js" />
+
+		 
+		  
+	</head>
+	<body class="flex flex-col min-h-dvh bg-white dark:bg-gray-950 text-black BlogPage">
+		<!--[--><div class="flex min-h-dvh flex-col"><div class="SVELTE_HYDRATER contents" data-target="ClientErrorCatcher" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="DeviceProvider" data-props="{}"><!----></div> <div class="SVELTE_HYDRATER contents" data-target="SystemThemeMonitor" data-props="{&quot;isLoggedIn&quot;:false}"><!----></div> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="MainHeader" data-props="{&quot;classNames&quot;:&quot;&quot;,&quot;isWide&quot;:false,&quot;isZh&quot;:false,&quot;canCreateKernels&quot;:false,&quot;isPro&quot;:false}"> <!----></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!----> <!--[-1--><!--]--><!----> <!--[0--><div class="SVELTE_HYDRATER contents" data-target="SSOBanner" data-props="{}"><!--[-1--><!--]--><!----></div><!--]--> <!--[-1--><!--]--><!----> <main class="flex flex-1 flex-col"><div class="container relative flex flex-row justify-center gap-12"><div class="max-w-full pb-16 pt-6 lg:max-w-3xl lg:flex-1 lg:pt-16 2xl:max-w-4xl"><div class="max-lg:overflow-hidden"><div class="blog-content copiable-code-container [&amp;_h1]:mr-0! prose mx-auto mb-8 lg:prose-lg 2xl:prose-lg prose-h1:mb-3 lg:px-8"><div class="SVELTE_HYDRATER contents" data-target="RepoCodeCopy" data-props="{}"><div></div><!----></div> <div class="mb-4"><a href="/blog" class="text-gray-500! no-underline! hover:underline! flex items-center font-sans"> <!----> Back to Articles</a></div> <h1 class="group relative flex items-center max-md:[&amp;>a]:hidden"><!---->
+	<a id="profiling-in-pytorch-part-1-a-beginners-guide-to-torchprofiler" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#profiling-in-pytorch-part-1-a-beginners-guide-to-torchprofiler" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Profiling in PyTorch (Part 1): A Beginner's Guide to torch.profiler
+	</span>
+<!----></h1> <div><div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-base"><!--[-1--><!--]--> <div class="flex items-center gap-x-4"><!--[0--><span class="whitespace-nowrap text-sm sm:text-base">Published
+					May 29, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <!--[0--><a target="_blank" class="btn mb-5 font-sans text-sm no-underline" href="https://github.com/huggingface/blog/blob/main/torch-profiler.md">Update on GitHub</a><!--]--></div><!----> <div class="not-prose mb-6 font-sans xl:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1  z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftorch-profiler" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">182</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TensorCruncher" style="content-visibility:auto;"><!--[0--><a href="/TensorCruncher" title="TensorCruncher"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6865323e602283c66b9e82a2/LKWd6V6b3aa6Cr1SEFxTi.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stats-luke" style="content-visibility:auto;"><!--[0--><a href="/stats-luke" title="stats-luke"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4ec315b7ca47b5a588c6eb89f1994414.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="anib009" style="content-visibility:auto;"><!--[0--><a href="/anib009" title="anib009"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/wp9pxv_SoXwtJ9wbklbHL.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="divyansh89" style="content-visibility:auto;"><!--[0--><a href="/divyansh89" title="divyansh89"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b8901f0a583bd1ee1d08a3bd211d73f8.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="axrshz" style="content-visibility:auto;"><!--[0--><a href="/axrshz" title="axrshz"><img class="overflow-hidden rounded-full" alt="" src="/avatars/08dc1b5248d8dbfcaee660ec54cd3538.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SassyTeckel" style="content-visibility:auto;"><!--[0--><a href="/SassyTeckel" title="SassyTeckel"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/683cbfa8a69d5f276bbec3ca/V8rs4MVpvN0bEWp49_dNU.png" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+176</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base not-prose "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div></div> <div class="not-prose"><div class="SVELTE_HYDRATER contents" data-target="BlogAuthorsByline" data-props=""><div class="not-prose"><div class="mb-12 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-x-5 gap-y-3.5"><!--[--><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ariG23498"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Aritra Roy Gosthipaty's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ariG23498"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Aritra Roy Gosthipaty">Aritra Roy Gosthipaty</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ariG23498</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sayakpaul"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sayak Paul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sayakpaul"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sayak Paul">Sayak Paul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sayakpaul</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/sergiopaniego"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Sergio Paniego's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/sergiopaniego"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Sergio Paniego">Sergio Paniego</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">sergiopaniego</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/ror"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Rémi Ouazan Reboul's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/ror"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Rémi Ouazan Reboul">Rémi Ouazan Reboul</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">ror</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><div class="flex min-w-0 items-center font-sans leading-tight"><span class="inline-block flex-none"><span class="contents"><a href="/pcuenq"><img class="rounded-full! m-0 mr-2.5 size-9 sm:mr-3 sm:size-12" alt="Pedro Cuenca's avatar" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg"/></a><!----><!----></span> <!--[-1--><!--]--></span><!----> <div class="min-w-0 text-gray-900 dark:text-gray-300"><a href="/pcuenq"><span class="fullname block truncate font-sans font-semibold max-sm:text-sm" title="Pedro Cuenca">Pedro Cuenca</span> <div class="my-0.5 flex items-center gap-x-2"><span class="inline-block min-w-0"><span class="contents"><span class="leading-tight! block truncate font-mono text-xs underline">pcuenq</span><!----><!----></span> <!--[-1--><!--]--></span><!---->  <div role="button" tabindex="0"><!--[0--><div class="relative flex items-center gap-1.5  "><!--[0--><button class="flex items-center justify-center rounded-full border-[1.5px] transition-colors duration-200   w-18 h-[20px] text-xs  border-transparent bg-black text-white dark:bg-white dark:text-black" type="button"><div class="flex h-full flex-1 items-center justify-center rounded-full"><!--[-1-->Follow<!--]--></div></button><!--]--> <!--[-1--><!--]--></div><!--]--><!----></div></div></a> <div class="flex items-center pt-0.5"><!--[-1--><!--]--></div></div></div><!--]--></div> <!--[-1--><!--]--></div><!----></div></div><!----> <!--[-1--><!--]--> <div class="relative overflow-clip [overflow-clip-margin:3rem] [&amp;>:last-child]:mb-0"><!---->
+<p><!--[--><!--[0--><div class="absolute -left-12 bottom-0 top-0 z-30 not-prose hidden lg:block"><div class="sticky top-4 flex"><div class="h-7 pt-[0.175rem]"><span class="peer" tabindex="0"><button class="select-none text-gray-400 hover:cursor-pointer hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-400"> <!----></button></span> <div class="invisible w-0 -translate-x-8 -translate-y-6 overflow-hidden rounded-xl border bg-white transition-transform hover:visible hover:w-52 hover:translate-x-0 peer-focus-within:visible peer-focus-within:w-52 peer-focus-within:translate-x-0"> </div></div></div></div><!--]--><!--]--><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/thumbnail.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/thumbnail.png" alt="Thumbnail of the blog post"></a></p>
+<blockquote>
+<p><em>What you cannot profile, you cannot optimize.</em></p>
+</blockquote>
+<p>Whether you are trying to squeeze more tokens per second out of a Large Language Model (LLM), shave milliseconds off inference, or just understand why your training loop runs slower than the spec sheet promises, the path eventually runs through profiling.</p>
+<p>The catch is that profiling has a <strong>steep</strong> on-ramp. The traces are dense walls of colored rectangles. The events carry intimidating names. Most tutorials assume you can already read them. So even when we <em>know</em> we should be profiling, opening a trace can feel like a chore best left for later (or for someone else). This post, and the series it kicks off, is our attempt to lower that on-ramp.</p>
+<div style="border: 1px solid #1f5c48; border-radius: 6px; padding: 1.5rem 2rem; background: #17211f; color: #ddd; font-size: 1.1rem; line-height: 1.7;">
+
+  <p>
+    This is the opening post of Profiling in PyTorch, a series where we slowly build the skill of reading profiler traces and use it to drive optimization:
+  </p>
+
+  <ol>
+    <li>
+      <a href="https://huggingface.co/blog/torch-profiler" style="color: #10b981;">
+        Profiling in PyTorch (Part 1): A Beginner's Guide to torch.profiler
+      </a>
+      <em style="color: #aaa;">(current)</em>
+    </li>
+    <li>
+      <a href="https://huggingface.co/blog/torch-mlp-fusion" style="color: #10b981;">
+        Profiling in PyTorch (Part 2): From nn.Linear to a Fused MLP
+      </a>
+    </li>
+    <li>
+      <a href="https://huggingface.co/blog/torch-attention-profile" style="color: #10b981;">
+        Profiling in PyTorch (Part 3): Attention is all you profile
+      </a>
+    </li>
+  </ol>
+
+</div>
+
+<p>We document the journey from a beginner's point of view. No prerequisites apart from basic PyTorch. Treat this as a leisurely read with some "Aha!" moments. The structure of the post is intentionally question-led: we open a trace, ask "wait, why is <em>that</em> happening?", and chase the answer until something clicks. By the end you should know:</p>
+<ul>
+<li>how to set up <code>torch.profiler</code> and what it actually hands back,</li>
+<li>how to read the profiler table and the trace (CPU lane, GPU lane, and the suspicious gaps in between),</li>
+<li>the chain of events from a Python call all the way down to a CUDA kernel,</li>
+<li>what changes (and, more interestingly, what does <strong>not</strong> change) when you slap <code>torch.compile</code> on top.</li>
+</ul>
+<p>Before we begin, two definitions that will make everything below read better:</p>
+<ol>
+<li>A GPU <strong>kernel</strong> is a program that runs in parallel on many threads of the GPU.</li>
+<li>The CPU <strong>schedules and launches</strong> these kernels.</li>
+</ol>
+<p>You don't usually have to write GPU kernels yourself; when you use a PyTorch operation, it is automatically translated to one or more kernels that do the job on GPU.</p>
+<p>With those two ideas in your back pocket, let's start asking questions.</p>
+<blockquote class="note">
+<p>Here is the entire script that we use for the post: <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py"><code>01_matmul_add.py</code></a>. We recommend opening this script in a separate tab and walk through the code step by step. We use the <code>NVIDIA A100-SXM4-80GB</code> GPU to run the scripts. It is really easy to setup a GPU on the Hugging Face infrastructure and experiment with the scripts using the <a href="https://huggingface.co/docs/hub/spaces-dev-mode">Dev Mode with Spaces</a>. One could also run the scripts with the <a href="https://huggingface.co/docs/huggingface_hub/en/guides/jobs">Hugging Face Jobs pipeline</a>.<br>(Note: The traces in this blog were generated using PyTorch 2.13. If you are using a different version, some trace details like CompiledFxGraph might differ or be absent.)</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="the-matrix-multiplication-and-addition-operation" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-matrix-multiplication-and-addition-operation" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The matrix multiplication and addition operation
+	</span>
+</h2>
+<p>As correctly <a href="https://youtu.be/7knwihgj0fU?si=uvzGH-J9bsCHP4Nn&amp;t=2199" rel="nofollow">quipped by Dr. Sara Hooker</a>, just as we are primarily made up of water, Deep Neural Networks are primarily made up of matrix multiplies. As fundamental as they are, it would be a shame to start our profiling journey with anything else.</p>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">fn</span>(<span class="hljs-params">x, w, b</span>):
+  <span class="hljs-keyword">return</span> torch.add(torch.matmul(x, w), b)
+</code></pre>
+<blockquote>
+<p>The matrix addition along with the matrix multiplication mimics how weights and biases interact in a neuron. This addition (pun intended) will help us understand how it paves the way for compilation <a href="#lets-see-some-torch-compile-at-work" rel="nofollow">later in the post</a>.</p>
+</blockquote>
+<p>To profile, we will be using the <code>torch.profiler</code> module. The steps involved are:</p>
+<ol>
+<li>Have the <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L26-L27">code to profile ready</a> (here <code>def fn</code>, which wraps the matrix multiplication and matrix addition)</li>
+<li><a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L32">Annotate</a> the algorithm. While this is completely optional, we recommend doing this. The <code>record_function</code> annotates our function as <code>matmul_add</code>, which will be easy to navigate in the traces (as we note later)</li>
+</ol>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">step</span>():
+  <span class="hljs-keyword">with</span> torch.profiler.record_function(<span class="hljs-string">"matmul_add"</span>):
+    <span class="hljs-keyword">return</span> fn(x, w, b)
+</code></pre>
+<ol start="3">
+<li>Wrap the code with the <code>torch.profiler.profile</code> <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L53-L62">context manager</a></li>
+</ol>
+<pre><code class="language-py">  <span class="hljs-keyword">with</span> torch.profiler.profile(
+    activities=[
+        torch.profiler.ProfilerActivity.CPU,  <span class="hljs-comment"># the cpu activities</span>
+        torch.profiler.ProfilerActivity.CUDA, <span class="hljs-comment"># the gpu activities</span>
+    ],
+  ) <span class="hljs-keyword">as</span> prof:
+    <span class="hljs-comment"># it is recommended to run events multiple times to warm up the GPUs</span>
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>):
+      step()
+      prof.step()
+</code></pre>
+<ol start="4">
+<li>Export the <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L70">profile</a></li>
+</ol>
+<pre><code class="language-py"><span class="hljs-comment"># the profiler table</span>
+prof.key_averages().table(sort_by=<span class="hljs-string">"cuda_time_total"</span>, row_limit=<span class="hljs-number">15</span>)
+
+<span class="hljs-comment"># the profiler trace</span>
+prof.export_chrome_trace(trace_path)
+</code></pre>
+<p>The profiler exports two distinct artifacts:</p>
+<ol>
+<li>The profiler table: Provides the statistical summary of the algorithm. It answers "What is taking the most time". This becomes really helpful to figure out hotspots. A hotspot would be events that take the most amount of time, can be a bottleneck of the pipeline, or an event that is triggered a lot of times.</li>
+<li>The profiler trace: Provides the temporal execution view. Answers "When and Why an operation happened", depicting the activities taking place on the CPU and the GPU. This is helpful when we want to investigate the kernel(s) that were launched, any delays in launching them, any overlap between CPU and GPU activities, etc.</li>
+</ol>
+<p>Let's see the two in action with our first execution. (<a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py">Here is the entire <code>01_matmul_add.py</code> script</a>)</p>
+<blockquote class="note">
+<p>It is recommended to run this script on a machine with a GPU.</p>
+</blockquote>
+<pre><code class="language-bash">uv run 01_matmul_add.py --size 64
+</code></pre>
+<p>If you run the above script (on a GPU machine) you will find a folder <code>traces/01_matmul_add</code> with the two artifacts:</p>
+<pre><code class="language-bash">64_bf16_cold_eager.json
+64_bf16_cold_eager.txt
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/profile-table-64.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/profile-table-64.png" alt="Profiler table for matmul add on 64 sized matrices"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 1: Profiler table for matmul add on 64 sized matrices</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The <code>.txt</code> file holds the profiler table. Upon opening the file, as shown in Figure 1, one would be greeted with a big table with the first column consisting of the events that were triggered inside the scope of profile.</p>
+<p>The other columns are related to the time the event takes on the CPU or GPU or any other device(s) specified in <code>activities</code> within <code>torch.profiler.profile</code>. Look at which events take the most amount of time, and try to intuitively understand if that event should in fact take that time. It is also important to look at the column "# of Calls" which dictates how many times the event was triggered.</p>
+<p>While we are at it, let's also talk about "Self CPU/CUDA" vs "CPU/CUDA total". The "Self" columns measure time spent only inside the event itself, excluding its children. The "total" columns include the event and all of its children together. So if you look at the "CPU total" of <code>matmul_add</code>, it consists of the time it took on self plus the children events it triggered. This is an important nuance to note.</p>
+<p>If you look at the last two lines out of the table you would notice that the profiler tells us that</p>
+<pre><code class="language-bash">Self CPU time total: 2.314ms
+Self CUDA time total: 23.104us
+</code></pre>
+<p>The CPU time is in <code>ms</code> while the GPU time is in <code>us</code>. To put things in perspective, the time spent on GPUs (the kernel <code>ampere_bf16_s16816gemm...</code>) is less than 1% of the time spent on the CPU (the <code>matmul_add</code> operation).  The GPU stays idle most of the time, which is an immediate red flag. The reason this happens is that the GPU can compute a small matmul very quickly, so our code spends most of the time preparing the kernels, launching them on the GPU, sending the data to multiply and gathering the results. This concept is known as an <em>overhead-bound</em> algorithm.</p>
+<p>The easiest way to move out of this regime is to use bigger matrix multiplications.</p>
+<pre><code class="language-bash">uv run 01_matmul_add.py --size 4096 
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/profiler-table-4096.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/profiler-table-4096.png" alt="Profiler table for matmul add algorithm on 4096 sized matrices"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 2: Profiler table for matmul add on 4096 sized matrices</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>The last two lines in Figure 2 are:</p>
+<pre><code class="language-bash">Self CPU time total: 4.908ms
+Self CUDA time total: 4.495ms
+</code></pre>
+<p>Both times are in ms, which means we have materialized more GPU time just by increasing the size of the matrix multiplications. If you look at Figure 2 you would also notice that the most CUDA time is now taken by the GPU kernel (<code>ampere_bf16_s16816gemm_..</code>) and not by the CPU operation that launched it (<code>matmul_add</code>). This means that we were indeed able to move from overhead bound to compute bound.</p>
+<p>We now move into visualising the dispatch chain, which lives inside the <code>.json</code> artifacts. You can upload them to <a href="https://ui.perfetto.dev" rel="nofollow">Perfetto UI</a> and see the traces, or you can use <code>uvx trace-util -f traces -b &lt;hf_uname&gt;/traces</code> to generate the Perfetto links directly.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="64x64-traces" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#64x64-traces" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		64x64 traces
+	</span>
+</h2>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/64-matmul-add.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/64-matmul-add.png" alt="PyTorch profiler trace of a 64×64 bf16 matmul followed by an add on a CUDA GPU"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 3: Profiler trace for matmul and add on 64 sized matrices</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 3, we see the profiler trace for the matrix multiplication and addition. Here the bar width indicates the duration of an event, the vertical nesting is the call hierarchy, the CPU lane denotes the events that happen on the CPU, while the GPU lane shows the actual kernel executions. One might also notice the empty spaces which are the waiting or idle time.</p>
+<p>The script was run with default configurations which are:</p>
+<ul>
+<li>size 64: The inputs, weights and biases are sized (64, 64)</li>
+<li>dtype bf16: The data type is bfloat16</li>
+<li>no compile: We have not compiled the torch operations</li>
+<li>no warmup: We have not warmed up the GPU before profiling</li>
+</ul>
+<blockquote>
+<p>With Perfetto we suggest using the keyboard for quicker access to the trace. One could use "W A S D" for navigating the trace.</p>
+</blockquote>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gpu-cpu-trace.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gpu-cpu-trace.png" alt="PyTorch profiler trace with the CPU lane and GPU lane labelled side by side in Perfetto"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 4: The CPU and GPU lanes of a PyTorch profiler trace</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>There are two lanes in Figure 4, one for the CPU activity and one for the GPU activity. In the CPU lane one would notice three profile steps (starting from <code>ProfilerStep#2</code>). This comes from the <code>schedule</code>.</p>
+<pre><code class="language-py">schedule = torch.profiler.schedule(wait=<span class="hljs-number">1</span>, warmup=<span class="hljs-number">1</span>, active=<span class="hljs-number">3</span>, repeat=<span class="hljs-number">1</span>)
+</code></pre>
+<p>The <code>wait</code> skips noisy initializations (<code>ProfilerStep#0</code>), <code>warmup</code> runs through the profiler without recording (<code>ProfilerStep#1</code>), and <code>active</code> is what shows up in trace. One can find the schedule being used in the <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L58">script here</a>.</p>
+<p>Let's put on our detective hats and investigate the trace and ask some questions.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="why-does-the-profilerstep2-take-so-long" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-does-the-profilerstep2-take-so-long" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why does the ProfilerStep#2 take so long?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/why-is-step-2-big.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/why-is-step-2-big.png" alt="ProfileStep#2 in a PyTorch profiler trace appears wider than ProfileStep#3 and ProfileStep#4"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 5: <code>ProfileStep#2</code> is visibly wider than the steps that follow it</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 5, we notice that <code>ProfileStep#2</code> takes more time compared to the other steps, and upon looking closely you would see a similar pattern with the <code>matmul_add</code> annotation as well. The smoking gun is inside the annotation, not the annotation itself:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">Step</th>
+<th align="center"><code>matmul_add</code> start</th>
+<th align="center"><code>aten::matmul</code> start</th>
+<th align="center">gap</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">#2</td>
+<td align="center">138.736</td>
+<td align="center">366.493</td>
+<td align="center">227.757 µs</td>
+</tr>
+<tr>
+<td align="center">#3</td>
+<td align="center">517.926</td>
+<td align="center">523.447</td>
+<td align="center">5.521 µs</td>
+</tr>
+<tr>
+<td align="center">#4</td>
+<td align="center">610.039</td>
+<td align="center">614.527</td>
+<td align="center">4.488 µs</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gap-227.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gap-227.png" alt="228 microsecond gap between record_function matmul_add and the aten::matmul dispatch in profile step 2"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 6: The ~228 µs dead window between <code>record_function("matmul_add")</code> and <code>aten::matmul</code></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>That ~228 µs shown in Figure 6 is the "dead window" between entering <code>record_function("matmul_add")</code> and PyTorch actually dispatching <code>aten::matmul</code>. This can happen for multiple reasons, including workspace allocations, <a href="https://developer.nvidia.com/cublas" rel="nofollow">cuBLAS</a> (NVIDIA’s proprietary, GPU-accelerated library for performing fundamental linear algebra operations) heuristics, or lazy module loading. We can either look away or run <a href="https://huggingface.co/datasets/ariG23498/profiling-pytorch/blob/main/01_matmul_add.py#L35-L39">some more warmup steps</a> before we profile (which is the standard)</p>
+<p>In terms of profiling, warmup is when you run the events a couple of times before actually profiling it. The pre-work done by the GPU (including the above pointers) are one time efforts which we do not want to profile. In our example, we have two warmup stages, one where we actually loop over the function before entering the profiler, and two inside the profiler which is achieved by the <code>warmup</code> argument. In this section, we have enabled the actual iterations along with the schedule.</p>
+<pre><code class="language-bash">uv run 01_matmul_add.py --warmup
+</code></pre>
+<p><a href="https://ui.perfetto.dev/#!/?url=https://huggingface.co/buckets/ariG23498/traces/resolve/01_matmul_add/64_bf16_warm_eager.json" rel="nofollow">Perfetto Trace for 64x64 with Warmup</a></p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/warmup.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/warmup.png" alt="PyTorch profiler trace after warmup steps where ProfileStep#2 no longer shows cold-start overhead"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 7: After warming up, every profile step takes a similar amount of time</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 7 we see that each profile step takes a similar time, but this does not mean we were able to optimize the one time overheads. We warmed up the runs so that the overheads were not profiled. We think that closing this section abruptly without a hint to solving this would do injustice to the reader, so here is a <a href="https://pytorch.org/blog/accelerating-generative-ai-2/" rel="nofollow">link</a> to read about further optimizing launch overheads.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="why-is-there-an-offset-of-25-ms-between-the-cpu-and-gpu-lanes" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-is-there-an-offset-of-25-ms-between-the-cpu-and-gpu-lanes" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why is there an offset of ~2.5 ms between the CPU and GPU lanes?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gap-bw-kernel-launch.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/gap-bw-kernel-launch.png" alt="2.32 millisecond offset between the CPU lane and the GPU lane in a PyTorch profiler trace"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 8: The ~2.5 ms offset between the CPU and GPU lanes</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 8, we see that the CPU and GPU lanes have an offset of around 2.5 ms: this is the delay after the CPU submits the CUDA kernels and the time they actually start executing. One might think the warmup stage combined with the schedule's <code>wait</code> and <code>warmup</code> should keep a GPU busy and would diminish the offset.</p>
+<p>To uncover what is really happening, let's change our schedule a little:</p>
+<pre><code class="language-diff"><span class="hljs-deletion">- schedule = torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1)</span>
+<span class="hljs-addition">+ schedule = torch.profiler.schedule(wait=0, warmup=0, active=3, repeat=1)</span>
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/full-profile.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/full-profile.png" alt="PyTorch profiler trace with wait=0 warmup=0 showing an Activity Buffer Request between steps"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 9: With <code>wait=0</code> and <code>warmup=0</code>, the trace reveals an <code>Activity Buffer Request</code></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Figure 9 shows us that there is an <code>Activity Buffer Request</code> in the GPU lane before any operation. Let's zoom in a little more.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/mat-add-gap.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/mat-add-gap.png" alt="gap between matmul and add CUDA kernels caused by profiler buffer request"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 10: A gap appears between the matmul and add kernels on profile step 1</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Upon zooming into the GPU trace, we notice that the matmul and add kernels for <code>ProfileStep#0</code> (the CPU trace of which is not visible in the Figure) happen one after the other, while the kernels for <code>ProfileStep#1</code> have a window in between. The best explanation for this is that there was an overflow of buffers, and another buffer request (a request to allocate some memory on the GPU VRAM) was issued during the kernel execution.</p>
+<p>The best way to rule out other possibilities is to profile for more iterations and see whether a similar window appears in other parts of the trace. To do that we run with <code>active=20</code>.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/20-iters.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/20-iters.png" alt="PyTorch profiler trace of 20 active iterations confirming the buffer-request gap only appears once"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 11: With 20 active steps the gap only shows up once, confirming it is a buffer request</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>As shown in Figure 11, we see a similar trend in <code>ProfileStep#1</code>. This is aligned with our previous findings, and we can safely conclude that it was indeed another buffer request.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="the-chain-of-events" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#the-chain-of-events" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		The chain of events
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/cpu-nests.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/cpu-nests.png" alt="nested CPU dispatch chain in PyTorch profiler: ProfileStep, matmul_add, aten::matmul, aten::mm"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 12: The chain of dispatch</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 12, we see the nested CPU calls. This is an important visualization, where one gets to understand what a chain of dispatch really looks like.</p>
+<p>We begin with <code>ProfileStep#&lt;id&gt;</code> which encapsulates the profiling step. Due to us annotating the step, we see the <code>matmul_add</code> row. The <code>matmul_add</code> consists of two <code>aten</code> calls, one for matrix multiplication and one for matrix addition.</p>
+<p>The <code>aten::matmul</code> is the <a href="https://github.com/pytorch/pytorch/tree/main/aten/src/ATen" rel="nofollow">ATen-level</a> dispatch that those user-facing PyTorch matmul calls land on. <code>aten::mm</code> is the 2D matrix-matrix multiply backend.</p>
+<p>It is very interesting to note how PyTorch calls <code>aten::bmm</code> (batched matrix multiplication) if we add the batch axis to our matrices. Let's take a detour and see the <code>aten::bmm</code> in action.</p>
+<pre><code class="language-diff"><span class="hljs-deletion">- x = torch.randn(args.size, args.size, device=device, dtype=dtype)</span>
+<span class="hljs-deletion">- w = torch.randn( args.size, args.size, device=device, dtype=dtype)</span>
+<span class="hljs-deletion">- b = torch.randn(args.size, args.size, device=device, dtype=dtype)</span>
+
+<span class="hljs-addition">+ # adding a batch size of 8</span>
+<span class="hljs-addition">+ x = torch.randn(8, args.size, args.size, device=device, dtype=dtype)</span>
+<span class="hljs-addition">+ w = torch.randn(8, args.size, args.size, device=device, dtype=dtype)</span>
+<span class="hljs-addition">+ b = torch.randn(8, args.size, args.size, device=device, dtype=dtype)</span>
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/bmm.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/bmm.png" alt="PyTorch profiler trace showing aten::matmul dispatching aten::bmm for 3D batched tensors"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 13: Batched Matrix Multiplication</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 13, upon adding the batch axis to the inputs, <code>aten::matmul</code> now encapsulates a bunch of other prerequisite CUDA runtime calls along with <code>aten::bmm</code> (instead of <code>aten::mm</code>). This also hints at the heuristics that cuBLAS needs to do in order to dispatch the right (most suitable) kernel for the program.</p>
+<blockquote>
+<p>In the rest of the post, we will be working with simple 2D matrices, unless otherwise mentioned.</p>
+</blockquote>
+<h3 class="relative group flex items-baseline">
+	<a id="why-does-matmul-have-an-extra-cuda-runtime-call" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-does-matmul-have-an-extra-cuda-runtime-call" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why does matmul have an extra CUDA runtime call?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/cudaoccupancy.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/cudaoccupancy.png" alt="CPU lane showing cudaOccupancyMaxActiveBlocksPerMultiprocessor preceding the matmul cudaLaunchKernel"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 14: A CUDA occupancy query fires before the matmul kernel launch</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>We notice that for <code>aten::mm</code> there are two CUDA Runtime calls, namely <code>cudaOccupancyMaxActiveBlocksPerMultiprocessor</code> (boxed in Figure 14) and <code>cudaLaunchKernel</code>, while for <code>aten::add</code> there is only the <code>cudaLaunchKernel</code>.</p>
+<p><code>cudaOccupancyMaxActiveBlocksPerMultiprocessor</code> is a planning call and is purely CPU side. It asks: "given a kernel function, a chosen block size, and a chosen dynamic shared memory size, how many blocks of this kernel can simultaneously reside on one SM (Streaming Multiprocessor)?"</p>
+<p>This begs the question, why do we need planning for matmul and not for add?</p>
+<p>To understand this, we have to look at the kernel's resource footprint. If you click on the GPU kernels, you will be able to inspect the resource footprint for the respective kernel.</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/matmul-footprint.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/matmul-footprint.png" alt="cuBLAS matmul kernel resource footprint: registers, shared memory and block size in Perfetto"></a></th>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/add-footprint.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/add-footprint.png" alt="elementwise add CUDA kernel resource footprint with 32 registers and zero shared memory"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 15: Matmul footprint</td>
+<td align="center">Figure 16: Add footprint</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 15, we note that for matrix multiplication the <code>registers per thread</code> and <code>shared memory</code> are dynamic (based on the size of the matrix). cuBLAS ships hundreds of kernel variants, and each has a heuristic-driven launch path that needs runtime information about hardware capacity. The occupancy query is part of that heuristic. Conceptually, we can think of GPU-accelerated matmuls as <a href="https://alvinwan.com/how-to-tile-matrix-multiplication/" rel="nofollow">working on independent tiles</a>: how many tiles we use and how big each tile needs to be depends on the matrices and the hardware. Modern algorithms are way more complicated than that, but this is still a good reference framework.</p>
+<p>From Figure 16 we see that the footprint of addition says 32 registers and zero shared memory. That fits trivially. There's nothing to query, because no hardware resource is going to limit occupancy. The kernel is, by design, resource-light.</p>
+<blockquote class="note">
+<p>You can use this as a quick diagnostic when reading any trace. Scan the CPU lane for <code>cudaOccupancyMaxActiveBlocksPerMultiprocessor</code>. Each occurrence flags a "heavyweight, adaptively launched" kernel, usually a GEMM (GEneral Matrix Multiplication), conv, or similar. The kernels without a preceding occupancy query are the elementwise/reduction crowd that PyTorch launches mechanically.</p>
+</blockquote>
+<h3 class="relative group flex items-baseline">
+	<a id="why-is-cudadevicesynchronize-so-big-178-ms" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-is-cudadevicesynchronize-so-big-178-ms" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why is cudaDeviceSynchronize so big (~1.78 ms)?
+	</span>
+</h3>
+<p><code>cudaDeviceSynchronize</code> blocks the CPU until all GPU work on this device finishes. The profiler emits this sync at the end of the active window to flush events. Without it, kernel timings would be missing.</p>
+<p>A 1.78 ms sync covering 26 µs of real GPU work tells you this run was 98% idle. That's the textbook overhead-bound symptom.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="4096x4096-traces" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#4096x4096-traces" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		4096x4096 traces
+	</span>
+</h2>
+<p>We already know from the profiler table analysis (above) that providing bigger matrices to our algorithm moves it out from the overhead-bound region to being compute-bound. </p>
+<p>Let's run the command and dive deeper into the traces.</p>
+<pre><code class="language-bash">uv run 01_matmul_add.py --size 4096 --warmup
+</code></pre>
+<h3 class="relative group flex items-baseline">
+	<a id="why-does-the-same-kernel-take-more-time-compared-to-others" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#why-does-the-same-kernel-take-more-time-compared-to-others" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Why does the same kernel take more time compared to others?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/kernel-time.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/kernel-time.png" alt="4096x4096 bf16 matmul kernel timings varying across profiler steps on the same GPU"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 17: One matmul kernel runs longer than the others despite identical inputs</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 17, we notice that the matmul kernel for <code>ProfileStep#3</code> takes longer on the GPU than the other steps. This is particularly interesting to note, because the other kernels launched were the exact same, which means there were no cuBLAS heuristics involved. There are no scheduling gaps, the CPU launches are normal, and it is not a profiler artifact.</p>
+<p>This trace in Figure 17 makes a useful point that's easy to miss in idealized examples: kernel runtimes are not constants, even on the same hardware environment running identical code on identical data.</p>
+<p>Let's make this more concrete by modifying the script a little. We run the iteration 20 times, capturing each of the steps.</p>
+<pre><code class="language-diff"><span class="hljs-deletion">- schedule = torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1)</span>
+<span class="hljs-addition">+ schedule = torch.profiler.schedule(wait=0, warmup=0, active=20, repeat=1)</span>
+
+<span class="hljs-deletion">- for _ in range(5):</span>
+<span class="hljs-addition">+ for _ in range(20):</span>
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/20-iters-kernels.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/20-iters-kernels.png" alt="PyTorch profiler trace of 20 matmul iterations showing kernel runtime variance"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 18: Across 20 iterations the same matmul kernel runs at different speeds</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Figure 18 reveals a similar finding. While each kernel was the exact same, they time differently. The different compute times can be blamed on a bunch of reasons:</p>
+<ul>
+<li>GPU clocks on idle and boost</li>
+<li>GPU heating</li>
+<li>GPU power management</li>
+<li>Driver side housekeeping</li>
+</ul>
+<p>A reader who only saw the average would conclude that a matmul took ~1 ms (mean of 5 = 1084 µs); a reader who looked at the trace would see that the matmul takes ~580 µs except when the GPU throws a fit. Those are very different mental models, and only one of them is correct.</p>
+<h2 class="relative group flex items-baseline">
+	<a id="lets-see-some-torchcompile-at-work" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#lets-see-some-torchcompile-at-work" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Let's see some torch.compile at work
+	</span>
+</h2>
+<p>Working with <code>torch.compile</code> has always amazed us. One writes normal eager PyTorch code, but PyTorch tries to capture tensor-heavy regions, turn them into graphs, optimize them, and run generated code. The default backend is usually <code>TorchInductor</code>, and the broad pipeline is:</p>
+<ol>
+<li><code>TorchDynamo</code> captures Python execution into an FX graph</li>
+<li><code>AOTAutograd</code> prepares forward/backward graphs when gradients are involved</li>
+<li><code>Inductor</code> lowers the graph into optimized CPU or GPU code.</li>
+</ol>
+<p>In this section, we talk about compilation and look at the profiler traces.</p>
+<pre><code class="language-bash">uv run 01_matmul_add.py --size 4096 --warmup --compile
+</code></pre>
+<p>The <code>args.compile</code> flag triggers the following code:</p>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">fn</span>(<span class="hljs-params">x, w, b</span>):
+  <span class="hljs-keyword">return</span> torch.add(torch.matmul(x, w), b)
+
+fn = torch.<span class="hljs-built_in">compile</span>(fn) <span class="hljs-keyword">if</span> args.<span class="hljs-built_in">compile</span> <span class="hljs-keyword">else</span> fn
+</code></pre>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/compilation-region.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/compilation-region.png" alt="torch.compile region highlighted in a PyTorch profiler trace, showing TorchDynamo and Inductor frames"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 19: The compiled regions show up as TorchDynamo and Inductor frames in the trace</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>In Figure 19, we see the new CPU rows named <code>Torch-Compiled Region: 0/0</code> which points us to the compiled functions being used.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="did-we-fuse-the-matmul-and-add-kernels-into-one" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#did-we-fuse-the-matmul-and-add-kernels-into-one" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Did we fuse the matmul and add kernels into one?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/fused-ops.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/fused-ops.png" alt="Compiled trace showing aten::addmm replacing the eager aten::add and aten::mm pair"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 20: Compiled run dispatches a single <code>aten::addmm</code></td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Looking at Figure 20 we ask the question, did we actually fuse the multiplication and addition operations together into one?</p>
+<p>This is operator fusion at the graph level. Inductor took our <code>torch.add(torch.matmul(x, w), b)</code> and rewrote it into a single <code>aten::addmm(b, x, w)</code> call. The important thing to note here is that it did <strong>not</strong> produce a <strong>new</strong> fused CUDA kernel. The actual GPU work is still <code>ampere_bf16_s16816gemm_bf16_128x256_ldg8_f2f_stages_64x3_nn</code>, the same cuBLAS kernel eager mode used. So the "fusion" here is at the dispatcher level, not at the kernel level.</p>
+<blockquote class="note">
+<p>PyTorch provides the <a href="https://docs.pytorch.org/docs/2.12/generated/torch.addmm.html" rel="nofollow"><code>torch.addmm</code></a> function that does what we did in two steps, that is multiply and add. We encourage the reader to look at the traces of this function and comment your observations in the comments below!</p>
+</blockquote>
+<h3 class="relative group flex items-baseline">
+	<a id="torchcompiles-runtime-architecture" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#torchcompiles-runtime-architecture" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		torch.compile's runtime architecture
+	</span>
+</h3>
+<p>While we know in theory what happens when we compile our functions it is equally important to see it in action. Let's look at the CPU-side hierarchy which reflects <code>torch.compile</code>'s runtime architecture.</p>
+<p><strong>TorchDynamo Cache Lookup</strong> is where Dynamo checks that the current call still matches what was compiled with the same input shapes, dtypes, devices, and tensor metadata. If anything mismatched, Dynamo would recompile. This cost is paid every call, even after compilation.</p>
+<p><strong>Torch-Compiled Region</strong> is the wrapper that "enters" the compiled version. <strong>AOTDispatcher Runtime Wrapper Prologue</strong> is AOT Autograd's runtime wrapper. Even though we don't need gradients here, AOTDispatcher is always in the stack handling tensor metadata, view tracking, and would set up the backward pass if <code>requires_grad</code> were true.</p>
+<p><strong>## Call CompiledFxGraph </strong> is where the actual generated code runs. The string after "CompiledFxGraph" is the content hash of the FX graph. It's the same across all three active steps, confirming cache hits.</p>
+<blockquote class="tip">
+<p>You can find the generated code on disk under <code>/tmp/torchinductor_&lt;user&gt;/fxgraph</code> keyed by this hash, useful when you want to read the Triton/C++ that Inductor actually produced.</p>
+</blockquote>
+<h3 class="relative group flex items-baseline">
+	<a id="do-the-cuda-launches-go-down-by-half" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#do-the-cuda-launches-go-down-by-half" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Do the CUDA launches go down by half?
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center"><a href="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/memcpy.png" rel="nofollow"><img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/torch-profiler/memcpy.png" alt="compiled matmul trace showing Memcpy DtoD and GEMM kernels launched per step"></a></th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">Figure 21: Each compiled step still launches two GPU kernels, a Device-to-Device memcpy and the GEMM</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p>Looking at the traces in Figure 21, we were really happy to notice only one <code>cudaLaunchKernel</code> per step. This observation was directly contradicting what we were seeing in the GPU trace. There were still two kernels being launched per step, namely the <code>Memcpy DtoD (Device -&gt; Device)</code> and the GEMM. Going back to the CPU trace, we noticed that we had completely missed the <code>cudaMemcpyAsync</code> dispatch.</p>
+<p><code>addmm</code> computes <code>out = α·A·B + β·C</code>, and cuBLAS's GEMM-with-bias-add epilogue writes into a destination buffer that needs to already contain the bias. An epilogues can be thought of all the operations that happen <em>after</em> a GEMM. In the world of deep-learning we constantly come up with GEMM-Epilogues like activations, bias addition, normalization and many more. This is why there are cuBLAS GEMM-with- kernel variants.</p>
+<blockquote>
+<p>If you use different <code>mode</code>s for <code>torch.compile</code> you would notice different kernel variants being launched. You can try it for yourself and add a comment below about your observations!</p>
+</blockquote>
+<p>So Inductor-generated code does:</p>
+<ul>
+<li><code>out = copy(C)</code> ← that's the DtoD memcpy (32 MB, takes ~33 µs)</li>
+<li><code>out = α·(A·B) + β·out</code> ← GEMM with <code>α=β=1</code>, fusing the bias add into the writeback</li>
+</ul>
+<p>The result is mathematically still the same. The bias add isn't free, as we pay a memcpy upfront plus a slightly more expensive GEMM epilogue.</p>
+<p>The fusion one might have hoped for, where <code>x·w + b</code> (here <code>out = α·A·B + β·C</code>) collapses into a single kernel with no extra memory traffic, isn't what happened. Inductor preserved the two memory-touching operations, it just relabeled the bias copy as a memcpy and the addition as a GEMM epilogue.</p>
+<p>A truly fused implementation would skip the memcpy. That's what FlashAttention-style hand-written kernels do, and what Inductor can do via Triton codegen, but for a <code>4096×4096 bf16 matmul</code>, Inductor evidently decided "use cuBLAS, do the bias via epilogue setup" was the best path.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="cpu-overhead-went-up-not-down" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#cpu-overhead-went-up-not-down" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		CPU overhead went up, not down
+	</span>
+</h3>
+<p>This is the easiest thing to miss when comparing an eager and a compiled run:</p>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="center">step</th>
+<th align="center">eager dur (ms)</th>
+<th align="center">compile dur (ms)</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="center">#2</td>
+<td align="center">0.1</td>
+<td align="center">0.2</td>
+</tr>
+<tr>
+<td align="center">#3</td>
+<td align="center">0.07</td>
+<td align="center">0.1</td>
+</tr>
+<tr>
+<td align="center">#4</td>
+<td align="center">0.07</td>
+<td align="center">0.1</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<p><code>torch.compile</code> is roughly 2× more expensive on the CPU per step. That's because every call walks the full Dynamo &gt; AOTAutograd &gt; Inductor stack, on top of the same <code>aten::addmm</code> dispatch we have anyway. The compile pipeline is built for ML models with dozens of ops where the per-call overhead amortizes (for a single op it's a tax).</p>
+<blockquote class="tip">
+<p><code>torch.compile</code> has a <code>mode</code> argument. It is for the reader to take home as an assignment to read the documentation and come up with a <code>mode</code> that could take the CPU overhead down. 🤗</p>
+</blockquote>
+<h2 class="relative group flex items-baseline">
+	<a id="trace-reading-cheatsheet" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#trace-reading-cheatsheet" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Trace reading cheatsheet
+	</span>
+</h2>
+<p>A quick reference for the patterns we walked through. The idea is: if you see this in a trace, this is what it usually means.</p>
+<h3 class="relative group flex items-baseline">
+	<a id="profiler-table" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#profiler-table" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Profiler table
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">What you see</th>
+<th align="left">What it usually means</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><code>Self CPU time total</code> ≫ <code>Self CUDA time total</code> (CPU in ms, GPU in µs)</td>
+<td align="left">Overhead-bound. The CPU spends more time dispatching than the GPU spends computing. Make the work bigger (larger matrices, batched ops) or fuse calls.</td>
+</tr>
+<tr>
+<td align="left"><code>Self CPU time total</code> ≈ <code>Self CUDA time total</code>, both in ms</td>
+<td align="left">Compute-bound. The GPU is the bottleneck, which is usually what you want.</td>
+</tr>
+<tr>
+<td align="left">One event dominates <code>CUDA total</code></td>
+<td align="left">That's your hotspot. Start the optimization there.</td>
+</tr>
+<tr>
+<td align="left">One event has a huge <code># of Calls</code></td>
+<td align="left">A potential bottleneck even if each call is cheap. Check whether it can be fused or batched.</td>
+</tr>
+<tr>
+<td align="left"><code>CPU total</code> ≫ <code>Self CPU</code> for a row</td>
+<td align="left">Most of the cost lives in children. Drill into the nested events, not the parent.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="cpu-lane" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#cpu-lane" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		CPU lane
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">What you see</th>
+<th align="left">What it usually means</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">First <code>ProfileStep</code> much wider than the rest</td>
+<td align="left">Cold-start overhead: workspace allocation, cuBLAS heuristics, lazy module loading. Add warmup iterations and/or the schedule's <code>warmup</code> argument.</td>
+</tr>
+<tr>
+<td align="left">Big gap between <code>record_function("...")</code> start and the first <code>aten::*</code> inside it</td>
+<td align="left">Same cold-start tax, just zoomed in. The annotation entered, but the dispatch hadn't happened yet.</td>
+</tr>
+<tr>
+<td align="left"><code>cudaOccupancyMaxActiveBlocksPerMultiprocessor</code> before a <code>cudaLaunchKernel</code></td>
+<td align="left">A heavyweight, adaptively-launched kernel (GEMM, conv, etc.). cuBLAS is asking the driver how many blocks fit on an SM so it can pick a kernel variant.</td>
+</tr>
+<tr>
+<td align="left"><code>cudaLaunchKernel</code> with no preceding occupancy query</td>
+<td align="left">An elementwise or reduction kernel with a fixed, resource-light footprint. Nothing to plan.</td>
+</tr>
+<tr>
+<td align="left">A long <code>cudaDeviceSynchronize</code> at the end of the active window</td>
+<td align="left">The profiler flushing events. Its duration is mostly the GPU finishing pending work, not a real CPU cost. A sync covering tiny GPU work is a classic overhead-bound symptom.</td>
+</tr>
+<tr>
+<td align="left">A <code>cudaMemcpyAsync</code> you didn't write</td>
+<td align="left">Often a hidden Device-to-Device copy. Common when <code>addmm</code> seeds its destination buffer with the bias before the GEMM epilogue.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="gpu-lane" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#gpu-lane" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		GPU lane
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">What you see</th>
+<th align="left">What it usually means</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><code>Activity Buffer Request</code> on the GPU lane</td>
+<td align="left">The profiler is allocating/refilling its own event buffer. The first one usually accounts for the initial CPU↔GPU lane offset.</td>
+</tr>
+<tr>
+<td align="left">A gap between two kernels in a single step</td>
+<td align="left">Likely another buffer request mid-execution. Confirm by running more iterations: if it appears only once, it's the profiler, not your code.</td>
+</tr>
+<tr>
+<td align="left">The same kernel timing differently across steps</td>
+<td align="left">GPU clocks, thermals, power management, driver housekeeping. Read the trace, not just the mean.</td>
+</tr>
+<tr>
+<td align="left">A kernel named like <code>ampere_bf16_s16816gemm_...</code></td>
+<td align="left">The actual cuBLAS GPU work for a matmul. The kernel name is typically the same in eager and compiled mode for the same shapes/dtypes.</td>
+</tr>
+<tr>
+<td align="left"><code>Memcpy DtoD</code> immediately before a GEMM</td>
+<td align="left">The bias copy for an <code>addmm</code> epilogue. The "fusion" is at the dispatcher level, not in the kernel.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="dispatch-chain" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#dispatch-chain" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Dispatch chain
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">What you see</th>
+<th align="left">What it usually means</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left"><code>ProfileStep#N</code> → <code>&lt;record_function name&gt;</code> → <code>aten::*</code> → <code>aten::mm</code> / <code>aten::bmm</code> / <code>aten::add</code></td>
+<td align="left">The canonical nested call hierarchy. Self time excludes children; Total time includes them.</td>
+</tr>
+<tr>
+<td align="left"><code>aten::matmul</code> resolving to <code>aten::mm</code></td>
+<td align="left">2D × 2D matrix multiply.</td>
+</tr>
+<tr>
+<td align="left"><code>aten::matmul</code> resolving to <code>aten::bmm</code> (with extra CUDA runtime calls)</td>
+<td align="left">Batched matmul on 3D+ tensors. cuBLAS does more heuristic work to pick the variant.</td>
+</tr>
+<tr>
+<td align="left"><code>aten::addmm(b, x, w)</code> instead of a separate <code>aten::add</code> + <code>aten::mm</code> pair</td>
+<td align="left">Operator fusion at the dispatcher level. The GPU kernel is still the same GEMM, with the bias add folded into the epilogue.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h3 class="relative group flex items-baseline">
+	<a id="torchcompile" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#torchcompile" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		torch.compile
+	</span>
+</h3>
+<div class="max-w-full overflow-auto">
+	<table>
+		<thead><tr>
+<th align="left">What you see</th>
+<th align="left">What it usually means</th>
+</tr>
+
+		</thead><tbody><tr>
+<td align="left">A <code>Torch-Compiled Region: K/M</code> row in the CPU lane</td>
+<td align="left">You're inside a compiled function.</td>
+</tr>
+<tr>
+<td align="left"><code>TorchDynamo Cache Lookup</code> on every step</td>
+<td align="left">Dynamo is verifying shapes/dtypes/devices match the cached compile. Paid on every call, even after compilation.</td>
+</tr>
+<tr>
+<td align="left"><code>AOTDispatcher Runtime Wrapper Prologue</code> even with no grads</td>
+<td align="left">AOTAutograd's runtime wrapper is always in the stack, handling tensor metadata and view tracking.</td>
+</tr>
+<tr>
+<td align="left"><code>## Call CompiledFxGraph &lt;hash&gt;</code> with the same hash across steps</td>
+<td align="left">Cache hits on the generated code. The generated source lives under <code>/tmp/torchinductor_&lt;user&gt;/fxgraph/&lt;hash&gt;</code>.</td>
+</tr>
+<tr>
+<td align="left">Per-step CPU time higher under <code>torch.compile</code> than eager for a tiny op</td>
+<td align="left">Expected. The Dynamo → AOTAutograd → Inductor stack is a tax that only amortizes over many ops.</td>
+</tr>
+</tbody>
+	</table>
+</div>
+<h2 class="relative group flex items-baseline">
+	<a id="conclusion" class="block pr-1.5 text-lg md:absolute md:p-1.5 md:opacity-0 md:group-hover:opacity-100 md:right-full" href="#conclusion" rel="nofollow">
+		<span class="header-link"> </span>
+	</a>
+	<span>
+		Conclusion
+	</span>
+</h2>
+<p>We started with a tiny <code>matmul + add</code> and used it as an excuse to learn how to read a PyTorch profiler. Along the way we picked up a few mental models that travel well to bigger workloads. This was the first stop in the <strong>Profiling PyTorch</strong> series. <a href="https://huggingface.co/blog/torch-mlp-fusion">In the posts</a> that follow, we will gradually leave this two-op toy behind and walk up the ladder of complexity, looking at larger building blocks and, eventually, real models.</p>
+<p>Thanks to <a href="https://huggingface.co/NoeFlandre">Noe Flandre</a>, <a href="https://huggingface.co/suvadityamuk">Suvaditya Mukherjee</a>, and <a href="https://huggingface.co/ViditOstwal">Vidit Ostwal</a> for their reviews on the early draft of the post!</p>
+<blockquote class="note">
+<p>The blog post was polished using an LLM. This in no way means that we have let an agent run in the background and let it generate the blog. Some of us in the team are non-english speakers and think LLMs (which are mostly trained in the English Language) can rectify silly grammar mistakes or rephrase sentences that sound less intimidating and cleaner. Hope this helps with the idea of "why should I read, if this was LLM generated". 🤗</p>
+</blockquote>
+<!----></div></div></div> <!--[0--><div class="mx-auto mt-8 max-w-5xl border-t border-gray-200 pt-8 xl:hidden"><div class="flex flex-col gap-6"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><div class="mx-auto mt-16 max-w-7xl border-t border-gray-200"><div class="grid gap-4 px-4 py-8 sm:px-6 lg:px-8"><div class="grid grid-cols-1 gap-6"><p class="col-span-1 mb-4 text-center text-lg font-semibold">More Articles from our Blog</p> <!--[--><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/torch-mlp-fusion"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/torch-mlp-fusion/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">torch</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">profile</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">CUDA</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Profiling in PyTorch (Part 2): From nn.Linear to a Fused MLP</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="pcuenq" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><span class="mr-1.5">+1</span><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 65</div><!--]--> <!--[0--><span class="whitespace-nowrap">June 11, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><div class="SVELTE_HYDRATER contents" data-target="BlogThumbnail" data-props=""><a class="shadow-xs group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 transition-shadow hover:shadow-inner dark:border-gray-800 lg:col-span-1 lg:flex-row lg:items-stretch " href="/blog/torch-attention-profile"><div class="shadow-alternate relative aspect-[2/1] w-full flex-none overflow-hidden lg:aspect-[1.91/1] lg:w-72"><!--[0--><div class="relative flex h-full w-full items-center justify-center overflow-hidden "><!--[0--><div class="absolute inset-0 animate-pulse flex items-center justify-center bg-gray-200 dark:bg-gray-800"></div><!--]--> <!--[-1--><!--]--> <img loading="lazy" src="/blog/assets/torch-attention-profile/thumbnail.png" class="group-hover:scale-102 absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-in-out invisible" alt="" onload="this.__e=event" onerror="this.__e=event"/></div><!--]--></div> <div class="flex flex-1 flex-col justify-center px-4 py-4 lg:py-2 lg:pl-8 lg:pr-5 "><div class="mb-2 flex items-center justify-between gap-1.5"><div class="flex flex-wrap gap-1.5"><!--[0--><!--[--><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">torch</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">profile</span><span class="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-xs capitalize text-gray-600 dark:bg-gray-800 dark:text-gray-300">flash</span><!--]--><!--]--></div> <!--[-1--><!--]--></div> <h2 class="text-pretty font-serif text-xl font-semibold decoration-gray-400 group-hover:underline dark:decoration-gray-600 lg:line-clamp-2 lg:text-2xl">Profiling in PyTorch (Part 3): Attention is all you profile</h2> <div class="mt-1.5 flex max-w-full items-center gap-2 font-mono text-xs text-gray-500"><div class="flex-none"><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sergiopaniego" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/61929226ded356549e20c5da/ONUjP2S5fUWd07BiFXm0i.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="sayakpaul" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg" loading="lazy"/><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ror" style="content-visibility:auto;"><!--[1--><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6123945a0ed258ebc83f3d56/8wMHFQHEV24G_ljl4kPxQ.jpeg" loading="lazy"/><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[-1--><!--]--><!--]--></li><!--]--></ul><!--]--><!----></div> <!--[-1--><!--]--> <div class="ml-auto flex flex-none items-center gap-3"><!--[0--><div class="flex items-center"><!--[-1--> <!--]--> 54</div><!--]--> <!--[0--><span class="whitespace-nowrap">July 10, 2026</span><!--]--> <!--[-1--><!--]--></div></div> <span class="invisible absolute whitespace-nowrap font-mono text-sm" aria-hidden="true"></span></div></a><!----></div><!--]--></div></div></div><!--]--> <!--[0--><div class="mx-auto my-8 max-w-5xl border-t border-gray-200 py-8"><h3 class="mb-6 flex items-center text-lg font-semibold"> <!---->Community</h3> <div class="SVELTE_HYDRATER contents" data-target="DiscussionEvents" data-props=""><div class="relative -mx-2.5"><!--[-1--><!--]--> <!--[--><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-0 pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a327ecaf003711b1534e222" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/603bdba23249b99991dbcbc4/cxCnN1H-RXOhojHY3Wcxo.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/tolgacangoz">tolgacangoz</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a327ecaf003711b1534e222" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-17T11:02:34" title="Wed, 17 Jun 2026 11:02:34 GMT">Jun 17</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited 3 times by tolgacangoz" href="#6a327ecaf003711b1534e222"><!--[0-->edited Jun 18<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Thanks a bunch for this blog post series -really much needed! Especially the Trace reading cheatsheet sections are very beneficial.</p>
+<p>There are some parts I have been thinking about:</p>
+<ol>
+<li>Why are we setting <code>bias</code> to a 2D matrix? Isn't it supposed to be 1D? When I set it to a 1D vector, <code>cudaMemcpyAsync</code> is gone in the "Do the CUDA launches go down by half?" section, and there is only one kernel for <code>matmul_add</code>: <code>ampere_bf16_s16816gemm_bf16_128x256_ldg8_relu_f2f_stages_64x3_nn</code>.</li>
+<li>IMO, we don't need <code>torch.cuda.synchronize()</code> in the end, since doesn't the context manager's  <code>__exit__()</code> do it already?</li>
+</ol>
+<p>WDYT?</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs mr-1.5"><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">1 reply</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">❤️</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a35ff707ac232fe01a99ea2" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/ariG23498">ariG23498</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a35ff707ac232fe01a99ea2" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-20T02:48:16" title="Sat, 20 Jun 2026 02:48:16 GMT">Jun 20</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Firstly, thanks for the questions. To answer <code>2</code> you are right, the context manager should take care of it, but I personally like putting an extra sync to be sure. You can omit it in your own scripts.</p>
+<p>Coming to <code>1</code>, this was really interesting, I had to go back to docs to get more idea. You are right with your observation about <code>cudaMemcpyAsync</code> vanishing and only one kernel launch <code>..._ldg8_relu_f2f_stages_64x3_nn</code>. It turns out that the new kernels is a <code>relu</code> family kernel, which does the EPILOGUE properly where it falls under the contract of using a bias and broadcasting it across rows. Previously the bias was 2D and did not fall under the correct EPILOGUE contract, and hence there was an extra <code>cudaMemcpyAsync</code>.</p>
+<p>I hope this makes sense.</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">👍</div> <div class="invisible">3</div> <!----><div class="absolute right-2">3</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">❤️</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🤝</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[-1--><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a3f7d19c4cad1de31fa24d7" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/6454b26ca13edf669cd56375/UBucig3vxTgpSyvZ9dIlS.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/deependujha">deependujha</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a3f7d19c4cad1de31fa24d7" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-27T07:34:49" title="Sat, 27 Jun 2026 07:34:49 GMT">Jun 27</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>thanks for the great blog. :)</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs mr-1.5"><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">1 reply</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🔥</div> <div class="invisible">2</div> <!----><div class="absolute right-2">2</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">❤️</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a41773cd2efe4b4a9c93283" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/ariG23498">ariG23498</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a41773cd2efe4b4a9c93283" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-06-28T19:34:20" title="Sun, 28 Jun 2026 19:34:20 GMT">Jun 28</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Thanks for the kind words! Glad you liked it.</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[-1--><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-3"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a5507e9535e26d8c8f35bc6" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="https://cdn-avatars.huggingface.co/v1/production/uploads/6865323e602283c66b9e82a2/LKWd6V6b3aa6Cr1SEFxTi.jpeg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/TensorCruncher">TensorCruncher</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a5507e9535e26d8c8f35bc6" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-07-13T15:44:41" title="Mon, 13 Jul 2026 15:44:41 GMT">Jul 13</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Good read! Helped introduce me to the world of GPUs and lower level stuff.  While I understood the shape of things, it made me realise I have a lot of gaps in my knowledge wrt to this aspect of ML. </p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🚀</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><div><span class="inline-block "><span class="contents"><button class="bg-linear-to-r group relative flex h-[28px] flex-none items-center rounded-full border-none px-2 leading-none ring-1 ring-inset shadow-xs from-gray-50 to-transparent text-gray-500 ring-gray-100 hover:bg-gray-100 dark:bg-gray-900 dark:from-gray-950 dark:to-transparent dark:ring-gray-800 dark:hover:bg-gray-800"><div class="mr-2 text-[0.9rem]">🔥</div> <div class="invisible">1</div> <!----><div class="absolute right-2">1</div><!----></button><!----></span> <!--[-1--><!--]--></span><!----></div><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[-1-->+<!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[0--><div class="ml-auto"><button class="shadow-xs ml-1.5 flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm leading-none text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:shadow-inner dark:border-gray-800 dark:hover:bg-gray-900 dark:hover:text-gray-200"> <!---->Reply</button></div><!--]--></div></div><!--]--> <!--[0--><!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><div class="relative"><!--[-1--><!--]--> <!--[-1--><!--]--> <div class="relative pt-3! pb-0"><!--[-1--><!--]--> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a7dad730e3012bd3148063a" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none  mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none " src="/avatars/e68d0d213eaedead1fa25fedc4ba34ac.svg" crossorigin="anonymous"/> <!--[-1--><!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline " href="/spectre2004">spectre2004</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a7dad730e3012bd3148063a" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-13T11:41:39" title="Thu, 13 Aug 2026 11:41:39 GMT">Aug 13</time></a> <!--[-1--><!--]--> <!--[0--><div class="mx-1 text-xs text-gray-300 lg:mx-2">•</div> <a class="flex-1 truncate text-xs text-gray-400 hover:underline sm:text-sm" title="Edited by spectre2004" href="#6a7dad730e3012bd3148063a"><!--[0-->edited Aug 13<!--]--></a><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>It would be great if the PyTorch version that was used was mentioned here as well. I was stuck because my trace was not displaying <code>CompiledFxGraph</code>. It worked on Colab but not on my local machine. I was using PyTorch 2.8.0, which does not show <code>CompiledFxGraph</code> in the trace. </p>
+<p>Thanks for the awesome blog!</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row    text-xs mr-1.5"><!--[--><li class="    -mr-1.5 h-3 w-3 md:h-4 md:w-4 bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="ariG23498" style="content-visibility:auto;"><!--[0--><a href="/ariG23498" title="ariG23498"><img class="overflow-hidden" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-2"><!--[--><button class="ml-1 whitespace-nowrap text-sm text-gray-500 underline decoration-gray-200 underline-offset-2 hover:decoration-gray-400 dark:decoration-gray-600 dark:hover:decoration-gray-400">1 reply</button><!--]--></li><!--]--></ul><!--]--><!----> <span class="mr-2 text-gray-300">·</span><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[0--><!--[0--><div class="mt-4 flex flex-col ml-2"><!--[--><div class="border-l pl-1 xl:pl-2"><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-10/12 xl:w-8/12 2xl:w-7/12 max-w-[calc(100%-4rem)] lg:max-w-4xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <div id="6a9521c0ce722794e7902bff" class="relative scroll-mt-4 "><div class="flex h-10 items-center justify-between gap-1 px-3  "><div class="flex max-w-full items-center overflow-hidden"><!--[0--><span class="inline-block "><span class="contents"><div class="mr-2 flex shrink-0 items-center"><div class="flex-none bg-linear-to-br relative rounded-full from-pink-500 via-green-500 to-yellow-500 p-px mr-2"><img alt="" class="max-w-none size-3.5 rounded-full  flex-none select-none bg-white p-px" src="https://cdn-avatars.huggingface.co/v1/production/uploads/608aabf24955d2bfc3cd99c6/-YxmtpzEmf3NKOTktODRP.jpeg" crossorigin="anonymous"/> <!--[0--> <!--]--></div><!----> <a class="whitespace-nowrap font-semibold hover:underline text-blue-500" href="/ariG23498">ariG23498</a></div><!----><!----></span> <!--[-1--><!--]--></span><!----> <!--[0--><span class="max-w-[175px] truncate border font-semibold leading-snug sm:max-w-xs rounded-md px-1.5 border-blue-200 bg-blue-600/10 text-blue-500 dark:border-blue-800/60 dark:bg-blue-800/20 text-sm mr-2">Article author<!----></span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--><!--]--> <a href="#6a9521c0ce722794e7902bff" class="truncate text-xs text-gray-400 hover:underline sm:text-sm"><time datetime="2026-08-31T06:40:00" title="Mon, 31 Aug 2026 06:40:00 GMT">Aug 31</time></a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div> <div class="flex items-center space-x-2"><!--[-1--><!--]--> <!--[0--><div class="relative flex items-center"><button class="text-gray-500 focus:text-gray-900 dark:focus:text-gray-400 " aria-expanded="false" type="button"><!--[0--> <!----><!--]--> <!--[-1--><!--]--></button> <!--[-1--><!--]-->  <!--[-1--><!--]--></div><!--]--></div></div> <!--[1--><div class="break-words rounded-b-lg bg-white px-3.5 pb-2.5 pt-1"><!--[2--><div class="prose text-smd/6 sm:text-base/[1.6rem] prose-card hf-sanitized copiable-code-container"><!--[-1--><!--]--> <!----><p>Ah! This is an important pointer I missed in the blog. I was using 2.13 throughout the post. Thanks for catching it. Do you mind sending a PR to the blog (github.com/huggingface/blog) and I could merge it! 🤗</p>
+<!----></div> <!--[-1--><!--]--><!--]--> <!--[0--><div class="mt-1 leading-tight"><!--[0--><!--[-1--><button class="cursor-pointer text-sm text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">See translation</button><!--]--><!--]--> <!--[-1--><!--]--></div><!--]--> <div class="mt-3 flex items-center gap-2"><!--[-1--><!--]--> <div class="peer-first:mt-2! -ml-1 flex gap-y-1.5 space-x-1 overflow-hidden text-sm"><div class="scrollbar-hidden mr-1 flex select-none gap-x-1 overflow-x-auto overflow-y-hidden text-sm"><!--[--><!--]--></div> <!--[-1--><!--]--><!----> <!--[-1--><!--]--> <div><!--[--><div class="flex" slot="anchor"><button class="group z-10 select-none"><span class="group relative flex aspect-square size-7 flex-none select-none items-center justify-center rounded-full border-none text-lg leading-none text-gray-500/80 ring-1 ring-inset ring-gray-100 hover:bg-gray-100 hover:text-gray-700 active:ring-gray-300 dark:ring-gray-800 dark:hover:bg-gray-900 dark:hover:text-yellow-500 dark:active:ring-orange-500/30"><!--[0--> <!--]--></span></button></div><!--]--> <!--[--><!--[-1--><!--]--><!--]--></div><!----><!----></div> <!--[-1--><!--]--></div></div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!----></div><!--]--> <!--[-1--><!--]--> <!--[0--><div class="mx-2 mt-1"><input type="text" class="form-input w-full cursor-pointer py-1.5" placeholder="Reply in thread"/></div><!--]--></div><!--]--> <!--[-1--><!--]--><!--]--> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----> <!--[0--><!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full lg:w-7/12 max-w-[calc(100%-4rem)] md:max-w-2xl  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!--]--></div><!--]--></div></div><!--]--></div> <div class="overflow-hidden rounded-lg border border-gray-200 bg-white  rounded-b-none border-b-0 mt-6"><div class="flex h-9 items-center justify-between border-b border-gray-200 from-gray-100-to-white bg-linear-to-t"><div class="flex h-full items-stretch"><!--[--><button class="tab active" type="button">Edit</button><button class="tab " type="button">Preview</button><!--]--></div> <div><!--[-1--><!--]--></div></div><!----> <div class="p-4"><div class="contents"><!--[--><div class="contents"><!--[--><textarea class="form-input peer relative !mt-0 min-h-[140px] w-full resize-none overflow-y-hidden !rounded-b-none !border-b-0 px-3 pb-3 pt-2 " name="comment" placeholder="Start discussing this article" required="" disabled="" rows="3"></textarea><!--]--> <!--[-1--><!--]--></div><!--]--> <!--[-1--><!--]--></div><!----> <label class="border-t-1 flex cursor-default items-center rounded-b-lg border-b-2 border-l-2 border-r-2 border-gray-200 px-2.5 py-1.5 text-sm text-gray-400 shadow-sm cursor-not-allowed opacity-70"><!--[-1--> <!--]--> <div class="hidden md:block">Upload images, audio, and videos by dragging in the text input, pasting, or <span class="cursor-pointer underline">clicking here</span>.</div> <div class="md:hidden">Tap or paste here to upload images</div> <input accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/quicktime, video/webm, audio/mpeg, audio/wav" class="hidden" disabled="" type="file" multiple=""/></label></div> <!--[-1--><!--]--> <!--[--><!--]--></div><!----> <div class="mb-4 overflow-hidden rounded-lg rounded-t-none border border-gray-200"><div class="p-4"><!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-2 md:space-y-0"><button class="btn btn-large" disabled=""> <!----> Comment</button> <!--[0--><p class="py-1 text-gray-800"><span class="ml-2 mr-3.5 hidden text-gray-400 md:inline">·</span> <a class="underline hover:text-gray-500" href="/join?next=%2Fblog%2Ftorch-profiler">Sign up</a> or <a class="underline hover:text-gray-500" href="/login?next=%2Fblog%2Ftorch-profiler">log in</a> to comment</p><!--]--></div></div></div><!----></div></div><!--]--></div> <div class="w-88 sticky top-0 max-h-screen flex-none self-start overflow-y-auto pt-28 [scrollbar-width:none] max-xl:hidden [&amp;::-webkit-scrollbar]:hidden"><div class="SVELTE_HYDRATER contents" data-target="UpvoteControl" data-props=""><div class="flex flex-wrap items-center gap-2.5 pt-1 lg:max-w-60 lg:flex-col lg:items-start! lg:static! z-1 lg:sticky lg:top-8"><!--[0--><a href="/login?next=%2Fblog%2Ftorch-profiler" class="self-start"><!--[0--><!----><div role="checkbox" class="shadow-alternate group flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border pl-3 pr-3.5 border-gray-300 bg-white dark:bg-gray-850 "><input disabled="" type="checkbox" class="peer hidden"/>  <!----> Upvote <div class="font-semibold text-orange-500">182</div><!----></div><!----><!--]--> <!--[-1--><!--]--><!----></a><!--]--> <!--[0--><!--[0--><ul class="flex items-center text-gray-600  flex-row  text-base   "><!--[--><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="TensorCruncher" style="content-visibility:auto;"><!--[0--><a href="/TensorCruncher" title="TensorCruncher"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/6865323e602283c66b9e82a2/LKWd6V6b3aa6Cr1SEFxTi.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="stats-luke" style="content-visibility:auto;"><!--[0--><a href="/stats-luke" title="stats-luke"><img class="overflow-hidden rounded-full" alt="" src="/avatars/4ec315b7ca47b5a588c6eb89f1994414.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="anib009" style="content-visibility:auto;"><!--[0--><a href="/anib009" title="anib009"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/no-auth/wp9pxv_SoXwtJ9wbklbHL.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="divyansh89" style="content-visibility:auto;"><!--[0--><a href="/divyansh89" title="divyansh89"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b8901f0a583bd1ee1d08a3bd211d73f8.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="axrshz" style="content-visibility:auto;"><!--[0--><a href="/axrshz" title="axrshz"><img class="overflow-hidden rounded-full" alt="" src="/avatars/08dc1b5248d8dbfcaee660ec54cd3538.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="SassyTeckel" style="content-visibility:auto;"><!--[0--><a href="/SassyTeckel" title="SassyTeckel"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/683cbfa8a69d5f276bbec3ca/V8rs4MVpvN0bEWp49_dNU.png" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="thinhlpg" style="content-visibility:auto;"><!--[0--><a href="/thinhlpg" title="thinhlpg"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/640ea534474aa6f89559ad5e/TMkrOxhpBYUF2lH4yVljE.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="hoololi" style="content-visibility:auto;"><!--[0--><a href="/hoololi" title="hoololi"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/684839d36b8e58d64c96c2dc/37IgNzC2yrXYBIgCNZ5tG.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="rycerzes" style="content-visibility:auto;"><!--[0--><a href="/rycerzes" title="rycerzes"><img class="overflow-hidden rounded-full" alt="" src="https://cdn-avatars.huggingface.co/v1/production/uploads/654f790a2adb0688a0cd7e85/RJCcnH1EmQluj0Wa18Lce.jpeg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="nitinranjansharma1" style="content-visibility:auto;"><!--[0--><a href="/nitinranjansharma1" title="nitinranjansharma1"><img class="overflow-hidden rounded-full" alt="" src="/avatars/e4492d264ce0710914fbfa7c42020e12.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="Learner-Cc" style="content-visibility:auto;"><!--[0--><a href="/Learner-Cc" title="Learner-Cc"><img class="overflow-hidden rounded-full" alt="" src="/avatars/0dc2540c266e58687eb47c850813ea40.svg" loading="lazy"/></a><!--]--></li><li class="  -mr-2 h-5 w-5 md:h-6 md:w-6   bg-linear-to-br block flex-none rounded-full border-2 border-white from-gray-300 to-gray-100 dark:border-gray-900 dark:from-gray-600 dark:to-gray-800 " title="FM42" style="content-visibility:auto;"><!--[0--><a href="/FM42" title="FM42"><img class="overflow-hidden rounded-full" alt="" src="/avatars/b741531e2ea3e1069b6c1e93a1924df9.svg" loading="lazy"/></a><!--]--></li><!--]--> <!--[0--><li class="text-xs hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 order-last ml-3"><!--[--><!--[0--><button class="btn bg-linear-to-br -ml-3 translate-x-px rounded-full border-2 border-white px-1.5 py-0.5 text-xs">+170</button><!--]--><!--]--></li><!--]--></ul><!--]--><!--]--></div> <!--[-1--><!--]--> <dialog class="shadow-alternate z-40 mx-4 my-auto h-fit select-text overflow-hidden rounded-xl bg-white max-sm:max-w-[calc(100dvw-2rem)] sm:mx-auto lg:mt-26 md:portrait:mt-30 xl:mt-30 2xl:mt-32 w-full sm:w-96 max-w-[calc(100%-4rem)] text-base  "><div tabindex="-1" class="outline-none focus:ring-0 focus-visible:ring-0"><!--[-1--><!--]--></div></dialog><!----><!----></div> <!--[0--><div class="mt-8 flex flex-col gap-6 pb-8"><!--[-1--><!--]--> <!--[0--><div><h2 class="mb-5 flex items-baseline overflow-hidden whitespace-nowrap text-base font-semibold text-gray-800"> <!----> Datasets mentioned in this article <span class="ml-3 font-normal text-gray-400">1</span></h2>  </div><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></div><!--]--></div></div><!----></main> <!--[1--> <!--]--><!----></div><!--]-->
+		 
+		<!-- Stripe -->
+		 
+	</body>
+</html>

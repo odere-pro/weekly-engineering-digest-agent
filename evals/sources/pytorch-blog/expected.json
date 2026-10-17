@@ -8,7 +8,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/bringing-elastically-deterministic-data-loading-to-torchtitan-with-zephon/",
       "title": "Bringing Elastically Deterministic Data Loading to TorchTitan with Zephon",
-      "summary": "Why Zephon? The data that a model sees during training is one of the most powerful levers we have for influencing how well it performs. Much of the day-to-day work... The post Bringing Elastically Deterministic Data Loading to TorchTitan with Zephon appeared first on PyTorch .",
+      "summary": "Why Zephon? The data that a model sees during training is one of the most powerful levers we have for influencing how well it performs. Much of the day-to-day work of improving a model happens on the data side: we change the mixture, or the filters that we apply, or how we tokenize and pack the samples, and then we run an ablation experiment to see whether the change helped. The first problem with this is that each of these changes often requires us to do a full pass over our training corpus and run expensive offline operations to prepare the data and store it on disk before our ablation...",
       "publishedAt": "2026-10-16T16:30:46.000Z"
     },
     {
@@ -17,7 +17,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/muse-spark-open/",
       "title": "Muse Spark Is Now an Open-Weights Model",
-      "summary": "Today, Meta is releasing the weights for Muse Spark Open, the most capable US open-weights model to date. It’s available today on Hugging Face under the Muse Model License. Muse... The post Muse Spark Is Now an Open-Weights Model appeared first on PyTorch .",
+      "summary": "Today, Meta is releasing the weights for Muse Spark Open , the most capable US open-weights model to date. It’s available today on Hugging Face under the Muse Model License. Muse Spark Open runs optimized on the SGLang and vLLM inference engines, with optimization for NVIDIA, AMD, and Intel. Building on our August release of Muse Spark, this open weights version has additional safety post-training to make it more robust against misuse as a standalone model without system guardrails. The result is a model that is a top open source choice for safety. Muse Spark Open is an 816B total/42B...",
       "publishedAt": "2026-10-15T17:55:52.000Z"
     },
     {
@@ -26,7 +26,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/bringing-executorch-to-arm-cortex-m-cpus/",
       "title": "Bringing ExecuTorch to Arm Cortex-M CPUs",
-      "summary": "TL;DR Deploying PyTorch models on microcontrollers has historically required converting to other framework formats, maintaining separate toolchains, and debugging cross-framework numerical mismatches. ExecuTorch eliminates this conversion step entirely. The Cortex-M... The post Bringing ExecuTorch to Arm Cortex-M CPUs appeared first on PyTorch .",
+      "summary": "TL;DR Deploying PyTorch models on microcontrollers has historically required converting to other framework formats, maintaining separate toolchains, and debugging cross-framework numerical mismatches. ExecuTorch eliminates this conversion step entirely. The Cortex-M backend enables PyTorch models to run directly on Arm Cortex-M CPUs with Arm CMSIS-NN acceleration. It supports all capability tiers (Scalar, DSP, and MVE/Helium) from a single workflow. We benchmark four of the five models from the MLPerf Tiny suite on the Alif Ensemble E8. Each model runs in 21.5 ms or less and uses under 90...",
       "publishedAt": "2026-10-15T14:40:35.000Z"
     },
     {
@@ -35,7 +35,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/extending-inductor-for-the-ibm-spyre-accelerator/",
       "title": "Extending Inductor for the IBM Spyre Accelerator",
-      "summary": "TL;DR The PyTorch-based software stack for IBM’s Spyre accelerator recently moved its torch.compile backend from sendnn, a separate compilation stack built entirely from scratch, to backend=inductor, an open-source backend built... The post Extending Inductor for the IBM Spyre Accelerator appeared first on PyTorch .",
+      "summary": "TL;DR The PyTorch-based software stack for IBM’s Spyre accelerator recently moved its torch.compile backend from sendnn, a separate compilation stack built entirely from scratch, to backend=inductor, an open-source backend built by extending PyTorch’s own Inductor. Most of Inductor carried over untouched. The real work concentrated in three places where Spyre’s hardware asks a fundamentally different question of the compiler than a GPU does. Inductor turned out to be exactly the right substrate for this work, and the result is a compiler roughly 7x smaller than what it replaced. IBM...",
       "publishedAt": "2026-10-13T12:45:30.000Z"
     },
     {
@@ -44,7 +44,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/session-aware-agentic-inference-with-nvidia-dynamo/",
       "title": "Session-Aware Agentic Inference with NVIDIA Dynamo",
-      "summary": "TL;DR Agentic workloads change the traffic an inference server sees. Unlike single-turn chat, an agent session can involve a large initial prefill, repeated model calls, and subagents running in parallel,... The post Session-Aware Agentic Inference with NVIDIA Dynamo appeared first on PyTorch .",
+      "summary": "TL;DR Agentic workloads change the traffic an inference server sees. Unlike single-turn chat, an agent session can involve a large initial prefill, repeated model calls, and subagents running in parallel, with KV cache remaining resident while tools execute between turns. This technical blog post details how NVIDIA Dynamo uses a unified, session level identifier to transform request-level serving infrastructure into a program-aware system, unlocking session-aware routing, shared KV cache indexing, and programmatic cache movement across vLLM and SGLang. Introduction Agentic workloads have...",
       "publishedAt": "2026-10-08T18:13:46.000Z"
     },
     {
@@ -53,7 +53,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/building-spyre-as-a-native-pytorch-device/",
       "title": "Building Spyre as a Native PyTorch Device",
-      "summary": "TL;DR Spyre becomes a native PyTorch device by connecting PyTorch’s existing device, allocator, stream, and compiler abstractions through torch-spyre to the Spyre runtime and firmware. PrivateUse1 gives Spyre a real... The post Building Spyre as a Native PyTorch Device appeared first on PyTorch .",
+      "summary": "TL;DR Spyre becomes a native PyTorch device by connecting PyTorch’s existing device, allocator, stream, and compiler abstractions through torch-spyre to the Spyre runtime and firmware. PrivateUse1 gives Spyre a real device identity, PyTorch allocator storage keeps tensors resident on device=\"spyre\" , streams provide familiar ordering semantics, and runtime events connect dependent work across streams. FX graphs stay in the Inductor compiler path. This post focuses on the PyTorch-to-Spyre device/runtime integration: how device identity, allocator-backed storage, streams, events, and...",
       "publishedAt": "2026-10-08T12:45:49.000Z"
     },
     {
@@ -62,7 +62,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/modernizing-table-batched-embeddings-with-fbtriton/",
       "title": "Modernizing Table Batched Embeddings with FBTriton",
-      "summary": "This post explores the FBTriton kernel design for Table Batched Embedding (TBE) forward and backward passes. These core operators handle embedding lookups across thousands of sharded GPUs within recommendation systems.... The post Modernizing Table Batched Embeddings with FBTriton appeared first on PyTorch .",
+      "summary": "This post explores the FBTriton kernel design for Table Batched Embedding (TBE) forward and backward passes. These core operators handle embedding lookups across thousands of sharded GPUs within recommendation systems. Our Triton implementation successfully outperforms the legacy CUDA kernels on these workloads. Here, we explain the architectural design, detail the measured performance gains, and highlight future optimization opportunities. 1. What’s TBE TBE (Table-Batched Embedding) kernel efficiently performs embedding lookups and pooling across many tables in one GPU operation. TBE...",
       "publishedAt": "2026-10-06T22:57:33.000Z"
     },
     {
@@ -71,7 +71,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/evolution-of-the-pytorch-media-processing-landscape/",
       "title": "Evolution of the PyTorch Media Processing Landscape",
-      "summary": "TL;DR If you need to decode or encode media, whether it’s images, video, or audio, use TorchCodec. If you need to transform media, use TorchVision for images and video, and... The post Evolution of the PyTorch Media Processing Landscape appeared first on PyTorch .",
+      "summary": "TL;DR If you need to decode or encode media, whether it’s images, video, or audio, use TorchCodec . If you need to transform media, use TorchVision for images and video, and TorchAudio for audio. Everything else that used to live in these libraries (models, datasets, etc.) is better served today by the wider ecosystem, for example the HuggingFace libraries. Images, video and audio are now central to a lot of model development, from vision-language models to diffusion models that generate images and video. Training these models means decoding media into tensors and transforming them, and...",
       "publishedAt": "2026-10-05T20:45:50.000Z"
     },
     {
@@ -80,7 +80,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/pytorch-hardware-enablement-updates-from-the-acceleration-integration-working-group/",
       "title": "PyTorch Hardware Enablement: Updates from the Accelerator Integration Working Group",
-      "summary": "TL;DR The Accelerator Integration Working Group plays a vital role in standardizing how new hardware architectures connect to the open source AI ecosystem. As compute platforms diversify across cloud, edge,... The post PyTorch Hardware Enablement: Updates from the Accelerator Integration Working Group appeared first on PyTorch .",
+      "summary": "TL;DR The Accelerator Integration Working Group plays a vital role in standardizing how new hardware architectures connect to the open source AI ecosystem. As compute platforms diversify across cloud, edge, and specialized silicon, the Accelerator Integration Working Group establishes clear, vendor-neutral integration mechanisms that eliminate custom code patches and reduce ecosystem fragmentation. In this blog, we cover what the group achieved in H1 2026, including key infrastructure improvements, unified testing workflows, and reference backends across the entire PyTorch platform....",
       "publishedAt": "2026-10-05T13:12:59.000Z"
     },
     {
@@ -89,7 +89,7 @@
       "kind": "rss",
       "url": "https://pytorch.org/blog/building-a-high-performance-and-portable-vllm-linear-backend-with-helion/",
       "title": "Building a High-Performance and Portable vLLM Linear Backend with Helion",
-      "summary": "TL;DR We integrated Helion into vLLM’s linear backend to explore how an autotuned, high-level kernel DSL can improve LLM inference performance while reducing kernel implementation complexity. A single Helion general... The post Building a High-Performance and Portable vLLM Linear Backend with Helion appeared first on PyTorch .",
+      "summary": "TL;DR We integrated Helion into vLLM’s linear backend to explore how an autotuned, high-level kernel DSL can improve LLM inference performance while reducing kernel implementation complexity. A single Helion general matrix multiplication (GEMM) implementation can cover multiple algorithmic variants, including Standard GEMM, Split-K, and Swap-AB, with the best variant and config automatically selected through per-shape autotuning. On NVIDIA Hopper GPUs, the Helion linear backend combines per-shape tuning with hybrid dispatch to outperform the vLLM default CUTLASS and DeepGEMM backends...",
       "publishedAt": "2026-10-02T19:55:07.000Z"
     }
   ],
