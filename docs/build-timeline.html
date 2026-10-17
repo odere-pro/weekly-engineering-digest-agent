@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Digest Agent Build Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap"
+    />
+    <style>
+      /* Layout: one reading column; the timeline breaks out to full width and scrolls sideways on its own. */
+      :root {
+        --bg: #fbfbf9;
+        --surface: #f1f2ee;
+        --fg: #1b1f1d;
+        --muted: #5d6661;
+        --line: #d9ddd8;
+        --accent: #0b6e66;
+        --accent-soft: #d5ebe8;
+        --bar: #8fb9b3;
+        --good: #1d7a3a;
+        --bad: #b42318;
+        --warn: #a15c07;
+        --block: #f3e3cf;
+        --display: 'Newsreader', Georgia, serif;
+        --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #121614;
+          --surface: #1a201d;
+          --fg: #e6ebe7;
+          --muted: #9aa59f;
+          --line: #2c3530;
+          --accent: #5cc8bb;
+          --accent-soft: #19332f;
+          --bar: #3f6f68;
+          --good: #5ccf7e;
+          --bad: #ff8a7a;
+          --warn: #f0b860;
+          --block: #3a2c1c;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #121614;
+        --surface: #1a201d;
+        --fg: #e6ebe7;
+        --muted: #9aa59f;
+        --line: #2c3530;
+        --accent: #5cc8bb;
+        --accent-soft: #19332f;
+        --bar: #3f6f68;
+        --good: #5ccf7e;
+        --bad: #ff8a7a;
+        --warn: #f0b860;
+        --block: #3a2c1c;
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 15px/1.6 var(--body);
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-block: 40px 64px;
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        display: grid;
+        gap: 48px;
+      }
+      .col {
+        max-width: 720px;
+      }
+      h1 {
+        font: 600 2.4rem/1.1 var(--display);
+        margin: 0 0 12px;
+        text-wrap: balance;
+      }
+      h2 {
+        font: 600 1.5rem/1.2 var(--display);
+        margin: 0 0 8px;
+        text-wrap: balance;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+      .lede {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      .eyebrow {
+        font: 500 0.72rem/1 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        margin-top: 20px;
+      }
+      .facts div {
+        background: var(--bg);
+        padding: 12px 14px;
+      }
+      .facts b {
+        display: block;
+        font: 500 1.35rem/1.2 var(--mono);
+        font-variant-numeric: tabular-nums;
+      }
+      .facts span {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .scroll {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      svg text {
+        font-family: var(--mono);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        vertical-align: -2px;
+        margin-right: 6px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        font: 500 0.72rem/1.3 var(--mono);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      td.num,
+      td.t {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .pill {
+        display: inline-block;
+        font: 500 0.72rem/1 var(--mono);
+        padding: 4px 7px;
+        border-radius: 3px;
+        white-space: nowrap;
+      }
+      .right {
+        color: var(--good);
+        background: color-mix(in srgb, var(--good) 14%, transparent);
+      }
+      .wrong {
+        color: var(--bad);
+        background: color-mix(in srgb, var(--bad) 13%, transparent);
+      }
+      .part {
+        color: var(--warn);
+        background: color-mix(in srgb, var(--warn) 15%, transparent);
+      }
+      .red {
+        color: var(--bad);
+        font-weight: 500;
+      }
+      .green {
+        color: var(--good);
+        font-weight: 500;
+      }
+      .pend {
+        color: var(--muted);
+      }
+      .events {
+        display: grid;
+        gap: 0;
+        border-top: 1px solid var(--line);
+      }
+      .ev {
+        display: grid;
+        grid-template-columns: 34px 92px 1fr;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .ev .n {
+        font: 500 0.8rem/1.6 var(--mono);
+        color: var(--accent);
+      }
+      .ev .when {
+        font: 0.8rem/1.6 var(--mono);
+        color: var(--muted);
+      }
+      .ev h3 {
+        font: 600 0.98rem/1.4 var(--body);
+        margin: 0 0 2px;
+      }
+      .ev p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .ev > div {
+        min-width: 0;
+      }
+      code {
+        font: 0.86em var(--mono);
+        background: var(--surface);
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+      .note {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      @media (max-width: 560px) {
+        .ev {
+          grid-template-columns: 26px 1fr;
+        }
+        .ev .when {
+          grid-column: 2;
+        }
+        .ev > div {
+          grid-column: 2;
+        }
+        h1 {
+          font-size: 1.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="col">
+        <div class="eyebrow">weekly-engineering-digest-agent · git history of main</div>
+        <h1>From empty repo to a measured agent in 25 hours</h1>
+        <p class="lede">
+          The spec planned about a week to v0.1.0. The local tag landed 17 hours after the first
+          commit. This page shows how the work was ordered, where the reasoning was wrong, and how
+          measurement caught each wrong guess before it shipped as a fix.
+        </p>
+        <div class="facts">
+          <div><b>106</b><span>commits on main</span></div>
+          <div><b>17h 09m</b><span>first commit to v0.1.0 tag</span></div>
+          <div><b>78</b><span>issues across 7 waves</span></div>
+          <div><b>86 / 134</b><span>source files / test files</span></div>
+          <div><b>7h 12m</b><span>blocked on commit signing</span></div>
+        </div>
+      </header>
+
+      <section>
+        <div class="col">
+          <h2>Timeline</h2>
+          <p class="lede">
+            16 Oct 15:30 to 17 Oct 18:00, local time. Top row: commits per hour. Bars: when each
+            wave's commits landed. Numbered marks match the list below.
+          </p>
+        </div>
+        <div class="scroll">
+          <svg id="tl" role="img" aria-label="Timeline of commits, waves and key events"></svg>
+        </div>
+        <div class="legend">
+          <span><i style="background: var(--accent)"></i>commits per hour</span>
+          <span><i style="background: var(--bar)"></i>wave active (first to last commit)</span>
+          <span><i style="background: var(--block)"></i>commit signing blocked</span>
+          <span><i style="background: var(--bad)"></i>eval measurement</span>
+        </div>
+        <p class="note">
+          Times are author dates. A few rebased commits keep their original time, so they appear
+          slightly out of order. Waves 6 and 7 are still running at 17:30.
+        </p>
+      </section>
+
+      <section class="col">
+        <h2>How the goal was approached</h2>
+        <div class="events" id="events"></div>
+      </section>
+
+      <section>
+        <div class="col">
+          <h2>Hypotheses against measurements</h2>
+          <p class="lede">
+            Every guess about a failure, what tested it, and whether it held. Two of eight held. Six
+            were wrong or only partly right, and each was found by a measurement, not by review.
+          </p>
+        </div>
+        <div class="scroll" style="background: var(--bg)">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Hypothesis</th>
+                <th>Test</th>
+                <th>Finding</th>
+                <th>Verdict</th>
+              </tr>
+            </thead>
+            <tbody id="hyp"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="col">
+          <h2>The gates over time</h2>
+          <p class="lede">
+            Light profile, the only one this laptop runs. Full evals take about 45 minutes. The
+            targeted column is a re-check of the failing cases only, not a full eval.
+          </p>
+        </div>
+        <div class="scroll" style="background: var(--bg)">
+          <table>
+            <thead>
+              <tr>
+                <th>Gate</th>
+                <th>Kind</th>
+                <th>v0.1.0 baseline<br />17 Oct 07:49</th>
+                <th>After wave 5<br />17 Oct 12:12</th>
+                <th>Targeted re-checks<br />16:32 to 17:21</th>
+                <th>Wave 6 re-baseline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Link validity</td>
+                <td>hard</td>
+                <td class="num green">100%</td>
+                <td class="num green">100%</td>
+                <td>not re-checked</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Groundedness</td>
+                <td>hard</td>
+                <td class="num green">100%</td>
+                <td class="num green">100%</td>
+                <td class="num green">10 of 10 planted claims</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Format</td>
+                <td>hard</td>
+                <td class="num red">67%</td>
+                <td class="num red">83%</td>
+                <td>W39 passes after the link-check fix</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Attack handling</td>
+                <td>hard</td>
+                <td class="num green">100%</td>
+                <td class="num red">90%</td>
+                <td>guards alone 10 of 10, held-out 10 of 10</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Guard false blocks</td>
+                <td>soft, max 5%</td>
+                <td class="num green">0%</td>
+                <td class="num red">50%</td>
+                <td>Granite controls 0 of 10; clean items 2.2%</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Classifier accuracy</td>
+                <td>soft, min 80%</td>
+                <td class="num red">27%</td>
+                <td class="num red">27%</td>
+                <td>W6-08 rescoring running</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Stability</td>
+                <td>soft, min 4 of 5</td>
+                <td class="num red">0</td>
+                <td class="num red">1.33</td>
+                <td>W7-03 seed and fixed pick running</td>
+                <td class="pend">W6-06</td>
+              </tr>
+              <tr>
+                <td>Source summary fill</td>
+                <td>soft, min 90%</td>
+                <td>not measured</td>
+                <td>not measured</td>
+                <td>most sources 100%, DeepMind 98%</td>
+                <td class="pend">W6-06</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="col">
+          <h2>Plan against reality</h2>
+          <p class="lede">
+            The spec's five phases, each closed by a gate. The order held. The time did not, and one
+            gate was passed on a failing measurement by a rule the spec itself set.
+          </p>
+        </div>
+        <div class="scroll" style="background: var(--bg)">
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Planned</th>
+                <th>Actual</th>
+                <th>Exit gate</th>
+                <th>Met?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1 Skeleton</td>
+                <td class="t">day 1</td>
+                <td class="t">16 Oct 16:01 to 16:15</td>
+                <td>Dry run from mock models</td>
+                <td><span class="pill right">yes</span></td>
+              </tr>
+              <tr>
+                <td>2 Local chain</td>
+                <td class="t">days 2 to 3</td>
+                <td class="t">16 Oct 16:14 to 21:35</td>
+                <td>Real digest from a live week</td>
+                <td><span class="pill right">yes, 17 Oct 09:04</span></td>
+              </tr>
+              <tr>
+                <td>3 Evals</td>
+                <td class="t">days 4 to 5</td>
+                <td class="t">16 Oct 17:10 to 17 Oct 07:49</td>
+                <td>All hard gates green</td>
+                <td><span class="pill wrong">no, format 67%</span></td>
+              </tr>
+              <tr>
+                <td>4 Operations</td>
+                <td class="t">day 6</td>
+                <td class="t">16 Oct 21:58 to 17 Oct 09:01</td>
+                <td>Survives a missed week and a restart</td>
+                <td><span class="pill right">yes, in tests</span></td>
+              </tr>
+              <tr>
+                <td>5 Release</td>
+                <td class="t">day 7</td>
+                <td class="t">17 Oct 09:10</td>
+                <td>Fresh machine installs in under 10 minutes</td>
+                <td><span class="pill part">8 s install; tag not pushed</span></td>
+              </tr>
+              <tr>
+                <td>v1.0</td>
+                <td class="t">4 Mondays</td>
+                <td class="t">not started</td>
+                <td>Four unattended Mondays, all gates green</td>
+                <td><span class="pill part">0 of 4</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="col">
+        <h2>What the history says about the method</h2>
+        <p>
+          <b>Contracts first paid off.</b> Freezing the ports, schemas and stubs in the first 15
+          minutes let 17 modules land in the next 75 minutes, and all 24 by 21:58, with no merge
+          conflicts, because no two workers owned the same file.
+        </p>
+        <p>
+          <b>Recording data early paid off.</b> The six recorded weeks were frozen at 17:10 on day
+          one. Labeling them was the slowest human step, so it ran while the rest was built.
+        </p>
+        <p>
+          <b>First diagnoses were often wrong.</b> The W39 format failure had two wrong explanations
+          and one wrong fix (a writer retry) before a replay found a regex bug in the link check.
+          The real cause was in a check, not in a model.
+        </p>
+        <p>
+          <b
+            >Measuring before fixing caught the wrong guesses that came after it became the rule.</b
+          >
+          The one fix made without a replay, the writer retry, shipped and did not help. From wave 6
+          on, each issue measured on the real models before changing anything, and that turned three
+          planned fixes into no change, a different change, or a better one.
+        </p>
+        <p>
+          <b>The bottleneck was a person, not the code.</b> Commit signing waited 7 hours for a
+          1Password click. The agents kept working by staging commits and using the GPU for the
+          threshold capture and the first eval.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        const T0 = Date.parse('2026-10-16T15:30:00'),
+          T1 = Date.parse('2026-10-17T18:00:00');
+        const W = 1100,
+          padL = 120,
+          padR = 20,
+          plotW = W - padL - padR;
+        const x = (iso) => padL + ((Date.parse(iso) - T0) / (T1 - T0)) * plotW;
+        const hourly = [
+          ['2026-10-16T16', 23],
+          ['2026-10-16T17', 6],
+          ['2026-10-16T18', 2],
+          ['2026-10-16T21', 7],
+          ['2026-10-16T22', 4],
+          ['2026-10-16T23', 3],
+          ['2026-10-17T00', 2],
+          ['2026-10-17T01', 7],
+          ['2026-10-17T09', 17],
+          ['2026-10-17T10', 7],
+          ['2026-10-17T11', 6],
+          ['2026-10-17T12', 4],
+          ['2026-10-17T13', 5],
+          ['2026-10-17T16', 11],
+          ['2026-10-17T17', 2],
+        ];
+        const waves = [
+          ['W0 contracts', '2026-10-16T16:01', '2026-10-16T16:15', 8],
+          ['W1 modules', '2026-10-16T16:14', '2026-10-16T21:58', 24],
+          ['W2 integration', '2026-10-16T17:31', '2026-10-17T11:09', 12],
+          ['W3 evals', '2026-10-16T22:52', '2026-10-17T09:10', 5],
+          ['W4 release', '2026-10-17T01:38', '2026-10-17T09:10', 3],
+          ['W5 review fixes', '2026-10-17T09:33', '2026-10-17T17:03', 23],
+          ['W6 eval plan', '2026-10-17T11:12', '2026-10-17T18:00', 7],
+          ['W7 readiness', '2026-10-17T16:37', '2026-10-17T18:00', 7],
+        ];
+        const evals = [
+          ['2026-10-17T07:06', '2026-10-17T07:49'],
+          ['2026-10-17T11:11', '2026-10-17T11:57'],
+        ];
+        const events = [
+          [
+            '2026-10-16T16:01',
+            'Contracts frozen before any feature',
+            'Ports, schemas, config and a stub with its final signature for every module, plus CI. Reason: 24 workers could then build in parallel without touching the same file.',
+            '3707cd1',
+          ],
+          [
+            '2026-10-16T16:14',
+            '17 modules in 75 minutes',
+            'Collectors, models, guards, steps, delivery, store, evals. The other 7 of the 24 wave 1 modules landed by 21:58. Each issue owned its files, wrote tests first and ended with one signed commit.',
+            '187a01f',
+          ],
+          [
+            '2026-10-16T17:10',
+            'Six real weeks recorded on day one',
+            'Labeling them was the slowest human task, so the data was frozen early and labeled while the chain was wired.',
+            'e08705f',
+          ],
+          [
+            '2026-10-16T21:35',
+            'The whole chain wired to real adapters',
+            'Config to adapters in one composition root, then init, doctor, Docker and the scheduler within 25 minutes.',
+            '9aae397',
+          ],
+          [
+            '2026-10-17T01:49',
+            'Commit signing blocked for 7 hours',
+            'The 1Password signer waited for an approval nobody could give. Agents staged commits, prepared patches and used the idle GPU instead.',
+            'HANDOFF',
+          ],
+          [
+            '2026-10-17T07:49',
+            'First full eval: format gate red',
+            'Format 67%: week W39 lost its only draft to the link check. Committed as a failing baseline, as the spec requires, instead of tuned until green.',
+            'afd5d08',
+          ],
+          [
+            '2026-10-17T09:10',
+            'v0.1.0 tagged locally',
+            '17 hours after the first commit. Push and publishing stay with the maintainer.',
+            'af735f2',
+          ],
+          [
+            '2026-10-17T09:33',
+            'Review turned into wave 5',
+            '61 findings from a full review became 18 issues: safety fixes, writer retry, per-week eval detail.',
+            '8e2e1ce',
+          ],
+          [
+            '2026-10-17T10:30',
+            'Eval plan: measure the input too',
+            'Recorded weeks showed whole sources with empty summaries and no metric saw it. Plan: one pipeline per source, recorded contracts, per-source metrics.',
+            'EVAL-PLAN',
+          ],
+          [
+            '2026-10-17T12:10',
+            'One adapter pipeline for every source',
+            'Adapters parse, one step builds the item, pages fill missing text. Summary fill went from 0% to 100% for two sources.',
+            '04d876a',
+          ],
+          [
+            '2026-10-17T12:12',
+            'Re-baseline finds two regressions',
+            'Attack handling fell to 90% and guard false blocks rose to 50%. The wave 5 changes were measured, not assumed.',
+            '625be34',
+          ],
+          [
+            '2026-10-17T16:32',
+            'W39 root cause found by replay',
+            'The link check rejected valid https://www links. Not the writer. The headline guard check caused all 5 false blocks; fixed to 0 of 10.',
+            '3ce3f7a',
+          ],
+          [
+            '2026-10-17T17:21',
+            'Guards reach 10 of 10 on held-out attacks',
+            'Measured first: Granite was never broken, the metric counted only what a later guard added. The fix went to the policy questions instead.',
+            '8efb05d',
+          ],
+        ];
+        const hyps = [
+          [
+            '17 Oct 08:10',
+            'The second format failure in the baseline is a real defect.',
+            'Debug rerun with a per-week dump',
+            'Only W39 failed again. The other failure did not recur.',
+            'part',
+            'partly',
+          ],
+          [
+            '17 Oct 08:47',
+            'W39 fails because one writer has no second chance. A retry will fix it.',
+            'Writer retry shipped (W5-06), full re-baseline',
+            'W39 still failed with the retry. The fix did not touch the cause.',
+            'wrong',
+            'wrong',
+          ],
+          [
+            '17 Oct 12:12',
+            'The writer drops https:// from the Docker link.',
+            'Replay of W39 on real models (W5-11)',
+            'The link check regex matched www. inside a valid https:// URL. Any www. host failed.',
+            'wrong',
+            'wrong',
+          ],
+          [
+            '17 Oct 10:30',
+            'Empty summaries are a parser bug.',
+            'Hand check of every recorded feed body (W6-01)',
+            'The feeds carry no text at all. A parser cannot fix it; fetching the article page can.',
+            'wrong',
+            'wrong',
+          ],
+          [
+            '17 Oct 10:30',
+            'The light thresholds may be overfit: they were tuned and checked on the same labels.',
+            'Train and holdout split (W6-04)',
+            'Holdout filter accuracy 0.95 against 0.825 on train. The defaults hold.',
+            'wrong',
+            'wrong, good news',
+          ],
+          [
+            '17 Oct 12:12',
+            'The new Granite headline check causes the false blocks.',
+            '70 logged Granite calls on clean and planted drafts (W5-11)',
+            'All 5 false blocks came from that one call. Fixed to 0 of 10, planted claims still 10 of 10.',
+            'right',
+            'right',
+          ],
+          [
+            '17 Oct 13:05',
+            'Granite catches 0 of 10 attacks because its call shape is broken.',
+            'Per-guard measurement before any change (W6-05)',
+            'The metric counts only what a later guard adds. Granite alone catches 2 of 10, including its own two families.',
+            'wrong',
+            'wrong',
+          ],
+          [
+            '17 Oct 12:10',
+            'DeepMind summaries stay empty because of the same-host rule.',
+            'Page recordings and redirect check (follow-up)',
+            '30 of 33 pages redirect to blog.google. Allowing allowlisted hosts raised fill from 70% to 98%.',
+            'right',
+            'right',
+          ],
+        ];
+
+        const svg = document.getElementById('tl');
+        const rowH = 22,
+          histTop = 30,
+          histH = 70,
+          wavesTop = histTop + histH + 34,
+          evTop = wavesTop + waves.length * rowH + 14;
+        const H = evTop + 44;
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        const ns = 'http://www.w3.org/2000/svg';
+        const el = (tag, attrs, text) => {
+          const n = document.createElementNS(ns, tag);
+          for (const k in attrs) n.setAttribute(k, attrs[k]);
+          if (text != null) n.textContent = text;
+          svg.appendChild(n);
+          return n;
+        };
+
+        el('rect', {
+          x: x('2026-10-17T01:49'),
+          y: 18,
+          width: x('2026-10-17T09:01') - x('2026-10-17T01:49'),
+          height: H - 18,
+          fill: 'var(--block)',
+        });
+        el(
+          'text',
+          {
+            x: x('2026-10-17T05:25'),
+            y: histTop + 14,
+            'text-anchor': 'middle',
+            'font-size': 11,
+            fill: 'var(--muted)',
+          },
+          'signing blocked 01:49 to 09:01',
+        );
+        for (const [a, b] of evals)
+          el('rect', {
+            x: x(a),
+            y: 18,
+            width: Math.max(3, x(b) - x(a)),
+            height: H - 18,
+            fill: 'var(--bad)',
+            opacity: 0.18,
+          });
+
+        for (let t = T0 + 30 * 60e3; t <= T1; t += 3600e3) {
+          const h = new Date(t).getHours();
+          const xi = padL + ((t - T0) / (T1 - T0)) * plotW;
+          el('line', {
+            x1: xi,
+            x2: xi,
+            y1: histTop,
+            y2: H - 18,
+            stroke: 'var(--line)',
+            'stroke-width': 1,
+          });
+          if (h % 2 === 0)
+            el(
+              'text',
+              { x: xi, y: H - 4, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--muted)' },
+              String(h).padStart(2, '0'),
+            );
+        }
+        const mid = padL + ((Date.parse('2026-10-17T00:00:00') - T0) / (T1 - T0)) * plotW;
+        el('line', {
+          x1: mid,
+          x2: mid,
+          y1: 14,
+          y2: H - 18,
+          stroke: 'var(--muted)',
+          'stroke-width': 1,
+          'stroke-dasharray': '3 3',
+        });
+        el('text', { x: padL, y: 12, 'font-size': 11, fill: 'var(--muted)' }, 'Thu 16 Oct');
+        el('text', { x: mid + 4, y: 12, 'font-size': 11, fill: 'var(--muted)' }, 'Fri 17 Oct');
+
+        const maxC = 25,
+          base = histTop + histH;
+        el(
+          'text',
+          { x: padL - 10, y: base, 'text-anchor': 'end', 'font-size': 10, fill: 'var(--muted)' },
+          '0',
+        );
+        el(
+          'text',
+          {
+            x: padL - 10,
+            y: histTop + 8,
+            'text-anchor': 'end',
+            'font-size': 10,
+            fill: 'var(--muted)',
+          },
+          '25',
+        );
+        el(
+          'text',
+          { x: 8, y: histTop + histH / 2 + 4, 'font-size': 11, fill: 'var(--fg)' },
+          'commits / h',
+        );
+        const hourW = plotW / ((T1 - T0) / 3600e3);
+        for (const [hr, c] of hourly) {
+          const hx = x(hr + ':00:00'),
+            bh = (c / maxC) * histH;
+          el('rect', {
+            x: hx + 2,
+            y: base - bh,
+            width: hourW - 4,
+            height: bh,
+            fill: 'var(--accent)',
+          });
+          el(
+            'text',
+            {
+              x: hx + hourW / 2,
+              y: base - bh - 3,
+              'text-anchor': 'middle',
+              'font-size': 9,
+              fill: 'var(--fg)',
+            },
+            String(c),
+          );
+        }
+
+        waves.forEach(([name, a, b, n], i) => {
+          const y = wavesTop + i * rowH;
+          el('text', { x: 8, y: y + 14, 'font-size': 11, fill: 'var(--fg)' }, name);
+          el('rect', {
+            x: x(a),
+            y: y + 4,
+            width: Math.max(4, x(b) - x(a)),
+            height: rowH - 8,
+            rx: 2,
+            fill: 'var(--bar)',
+          });
+          el(
+            'text',
+            { x: x(b) + 5, y: y + 14, 'font-size': 10, fill: 'var(--muted)' },
+            n + ' commits' + (b.endsWith('18:00') ? ', running' : ''),
+          );
+        });
+
+        el('text', { x: 8, y: evTop + 18, 'font-size': 11, fill: 'var(--fg)' }, 'key events');
+        let lastX = -99,
+          lift = 0;
+        events.forEach(([t], i) => {
+          const ex = x(t);
+          lift = ex - lastX < 18 ? (lift ? 0 : 1) : 0;
+          lastX = ex;
+          const cy = evTop + 14 + lift * 16;
+          el('circle', {
+            cx: ex,
+            cy,
+            r: 8,
+            fill: 'var(--bg)',
+            stroke: 'var(--accent)',
+            'stroke-width': 1.5,
+          });
+          el(
+            'text',
+            { x: ex, y: cy + 3.5, 'text-anchor': 'middle', 'font-size': 9, fill: 'var(--accent)' },
+            String(i + 1),
+          );
+        });
+
+        const list = document.getElementById('events');
+        events.forEach(([t, h, p, ref], i) => {
+          const d = new Date(t),
+            day = d.getDate() === 16 ? '16 Oct' : '17 Oct';
+          const div = document.createElement('div');
+          div.className = 'ev';
+          div.innerHTML = `<span class="n">${i + 1}</span><span class="when">${day} ${t.slice(11, 16)}</span><div><h3></h3><p></p></div>`;
+          div.querySelector('h3').textContent = h;
+          div.querySelector('p').textContent =
+            p + ' ' + (/^[0-9a-f]{7}$/.test(ref) ? '(' + ref + ')' : '');
+          list.appendChild(div);
+        });
+
+        const tb = document.getElementById('hyp');
+        for (const [w, h, test, f, cls, label] of hyps) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="t"></td><td></td><td></td><td></td><td><span class="pill ${cls}"></span></td>`;
+          const c = tr.children;
+          c[0].textContent = w;
+          c[1].textContent = h;
+          c[2].textContent = test;
+          c[3].textContent = f;
+          c[4].firstChild.textContent = label;
+          tb.appendChild(tr);
+        }
+      })();
+    </script>
+  </body>
+</html>
