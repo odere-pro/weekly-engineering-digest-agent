@@ -75,6 +75,10 @@ export type GuardVerdict = z.infer<typeof GuardVerdictSchema>;
 export const WEEK_ID_PATTERN = /^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/;
 export const WeekIdSchema = z.string().regex(WEEK_ID_PATTERN, 'ISO week id like 2026-W43');
 
+/** How soon a reader should act on an item (W8): the digest groups its items by it. */
+export const UrgencySchema = z.enum(['act-now', 'worth-a-look', 'good-to-know']);
+export type Urgency = z.infer<typeof UrgencySchema>;
+
 export const DigestItemSchema = z.object({
   itemId: z.string().min(1),
   title: z.string().min(1),
@@ -82,6 +86,10 @@ export const DigestItemSchema = z.object({
   area: z.string().min(1),
   summary: z.string().min(1),
   whyItMatters: z.string().min(1),
+  /** Absent in drafts written before W8; read as 'worth-a-look'. */
+  urgency: UrgencySchema.optional(),
+  /** One short line: what to do (act-now) or who it is for (worth-a-look). */
+  action: z.string().max(200).optional(),
 });
 export type DigestItem = z.infer<typeof DigestItemSchema>;
 

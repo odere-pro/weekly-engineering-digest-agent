@@ -3,10 +3,13 @@ import { Command, InvalidArgumentError } from 'commander';
 import { doctorCommand } from './doctor.js';
 import { evalCommand } from './eval.js';
 import { feedbackCommand } from './feedback.js';
+import { fetchCommand } from './fetch.js';
 import { historyCommand } from './history.js';
 import { initCommand } from './init.js';
+import { previewCommand } from './preview.js';
 import { runCommand } from './run.js';
 import { serveCommand } from './serve.js';
+import { showCommand } from './show.js';
 
 function positiveInt(value: string): number {
   const n = Number(value);
@@ -57,8 +60,15 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .option('--dry-run', 'write the digest to disk and send nothing')
     .option('--force', 'run even if this week already has a sent digest')
     .option('--seed <n>', 'sampling seed for this run (overrides models.seed)', nonNegativeInt)
+    .option('--out <dir>', 'folder for the Markdown digest (default: delivery.markdown.dir)')
     .action(
-      async (options: { since?: string; dryRun?: boolean; force?: boolean; seed?: number }) => {
+      async (options: {
+        since?: string;
+        dryRun?: boolean;
+        force?: boolean;
+        seed?: number;
+        out?: string;
+      }) => {
         setExitCode(await runCommand(withConfig(options)));
       },
     );
@@ -69,6 +79,36 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .option('--profile <name>', 'profile name, or "all"')
     .action(async (options: { profile?: string }) => {
       setExitCode(await evalCommand(withConfig(options)));
+    });
+
+  program
+    .command('fetch')
+    .description('fetch the sources only, no models; save raw and parsed data for debugging')
+    .option('--source <id...>', 'only these source ids')
+    .option('--since <window>', 'collection window, e.g. 7d')
+    .option('--out <dir>', 'folder for the fetch output (default: dist/fetch)')
+    .action(async (options: { source?: string[]; since?: string; out?: string }) => {
+      setExitCode(await fetchCommand(withConfig(options)));
+    });
+
+  program
+    .command('show')
+    .description("print a run's saved data: items, scores, drafts, digest")
+    .argument('<week>', 'ISO week id, for example 2026-W42')
+    .option('--part <name>', 'items, scores, drafts, digest, run or review (default: a summary)')
+    .option('--json', 'print the saved JSON as it is')
+    .action(async (week: string, options: { part?: string; json?: boolean }) => {
+      setExitCode(await showCommand(withConfig({ week, ...options })));
+    });
+
+  program
+    .command('preview')
+    .description("render a run's digest for each channel into files, without sending")
+    .argument('<week>', 'ISO week id, for example 2026-W42')
+    .option('--channel <name>', 'markdown, email, slack or all (default: all)')
+    .option('--out <dir>', 'folder for the previews (default: dist/preview)')
+    .action(async (week: string, options: { channel?: string; out?: string }) => {
+      setExitCode(await previewCommand(withConfig({ week, ...options })));
     });
 
   program

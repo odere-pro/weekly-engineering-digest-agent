@@ -1386,7 +1386,7 @@ describe('doctorCommand', () => {
 
       await doctorCommand({}, h.io);
 
-      expect(seen).toContain(join(process.cwd(), 'data/digests'));
+      expect(seen).toContain(join(process.cwd(), 'dist/digests'));
     });
   });
 

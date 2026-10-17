@@ -4,7 +4,18 @@ import { buildProgram } from '../../src/cli/program.js';
 describe('CLI program', () => {
   it('registers every spec command', () => {
     const names = buildProgram(() => undefined).commands.map((c) => c.name());
-    expect(names).toEqual(['init', 'doctor', 'run', 'eval', 'history', 'feedback', 'serve']);
+    expect(names).toEqual([
+      'init',
+      'doctor',
+      'run',
+      'eval',
+      'fetch',
+      'show',
+      'preview',
+      'history',
+      'feedback',
+      'serve',
+    ]);
   });
 
   it('passes the global --config and command flags to the handler', async () => {

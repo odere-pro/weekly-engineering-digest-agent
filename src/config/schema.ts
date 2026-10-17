@@ -59,7 +59,7 @@ export const EmailDeliverySchema = z.object({
 
 export const DeliveryConfigSchema = z.object({
   /** Always on: the digest is written here. */
-  markdown: z.object({ dir: z.string().min(1).default('data/digests') }).prefault({}),
+  markdown: z.object({ dir: z.string().min(1).default('dist/digests') }).prefault({}),
   email: EmailDeliverySchema.optional(),
   /** The webhook URL lives in .env (SLACK_WEBHOOK_URL). */
   slack: z.object({ enabled: z.boolean().default(false) }).optional(),

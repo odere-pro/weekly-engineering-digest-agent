@@ -13,7 +13,7 @@ describe('config schema', () => {
       dedupeWeeks: 4,
       keepWeeks: 12,
       schedule: { cron: '45 7 * * 1', timeZone: 'Europe/Berlin' },
-      delivery: { markdown: { dir: 'data/digests' } },
+      delivery: { markdown: { dir: 'dist/digests' } },
       guards: {
         input: { enabled: true, mode: 'any', checks: { clefPolicy: true, graniteRisk: true } },
         output: {
