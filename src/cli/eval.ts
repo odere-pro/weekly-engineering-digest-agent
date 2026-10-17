@@ -1,6 +1,11 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { createEvalJudge, evalJudgeTag, type EvalJudge } from '../../evals/judge/evalJudge.js';
+import {
+  assertJudgeInstalled,
+  createEvalJudge,
+  evalJudgeTag,
+  type EvalJudge,
+} from '../../evals/judge/evalJudge.js';
 import { failedHardGates } from '../../evals/metrics.js';
 import { runEval, type EvalDeps, type EvalOptions } from '../../evals/runEval.js';
 import {
@@ -10,16 +15,17 @@ import {
   type Scorecard,
   type WeekDetail,
 } from '../../evals/schema.js';
-import { createOllamaProvider, type OllamaProviderOptions } from '../adapters/models/ollama.js';
-import { buildApp, type AppHandle } from '../app/container.js';
+import { buildApp, createModelProvider, type AppHandle } from '../app/container.js';
+import { knownSecrets } from '../app/redacting.js';
 import { loadConfig, platformOf, type LoadedConfig } from '../config/load.js';
 import { resolveProfile, type Platform } from '../config/profiles.js';
 import { ProfileNameSchema, type ProfileName } from '../config/schema.js';
 import { runDigest } from '../core/runDigest.js';
+import { createLogger } from '../observability/logger.js';
 import type { ModelProvider } from '../ports/ModelProvider.js';
 import { systemClock, type Clock } from '../shared/clock.js';
 import { DigestError } from '../shared/errors.js';
-import { noopLogger } from '../shared/telemetry.js';
+import type { Logger } from '../shared/telemetry.js';
 import { truncate } from '../shared/text.js';
 
 export interface EvalCommandOptions {
@@ -33,10 +39,10 @@ export interface EvalCommandOptions {
 export interface EvalCommandIo {
   /** Folder with the recorded weeks and cases; scorecards go to <casesDir>/scorecards. */
   casesDir: string;
-  /** Environment variables the command reads: EVAL_JUDGE names the judge model (F10). */
-  env: Readonly<Record<string, string | undefined>>;
-  /** Builds the model provider behind the eval judge. */
-  createProvider: (options: OllamaProviderOptions) => ModelProvider;
+  /** The logger the eval judge's provider writes to, so its retry and timeout warnings show. */
+  createEvalLogger: (loaded: LoadedConfig) => Logger;
+  /** Builds the eval judge's model provider: the container's one place for model providers. */
+  createProvider: (loaded: LoadedConfig, extras: { logger: Logger }) => ModelProvider;
   loadConfig: (options: { configPath?: string }) => Promise<LoadedConfig>;
   buildApp: (loaded: LoadedConfig) => Promise<AppHandle>;
   runDigest: EvalDeps['runDigest'];
@@ -69,8 +75,10 @@ const UNSAFE_TEXT =
 
 const defaultIo: EvalCommandIo = {
   casesDir: 'evals',
-  env: process.env,
-  createProvider: createOllamaProvider,
+  // The same logger the app builds for a run: JSON on stdout at LOG_LEVEL, secrets taken out.
+  createEvalLogger: ({ env, secrets }) =>
+    createLogger({ level: env.LOG_LEVEL, redactValues: knownSecrets(secrets) }),
+  createProvider: createModelProvider,
   loadConfig: (options) => loadConfig(options),
   buildApp,
   runDigest,
@@ -126,22 +134,21 @@ function withProfile(loaded: LoadedConfig, name: ProfileName, platform: Platform
 
 /**
  * The judge that scores the winning digest on a profile without one of its own, when EVAL_JUDGE
- * names a model; undefined otherwise, and the harness then leaves writing quality unmeasured.
+ * (from the loaded environment: `.env` or the shell) names a model; undefined otherwise, and the
+ * harness then leaves writing quality unmeasured. A tag Ollama cannot serve fails here, before
+ * the replay starts.
  */
-function buildEvalJudge(loaded: LoadedConfig, io: EvalCommandIo): EvalJudge | undefined {
-  const model = evalJudgeTag(io.env);
+async function prepareEvalJudge(
+  loaded: LoadedConfig,
+  io: EvalCommandIo,
+): Promise<EvalJudge | undefined> {
+  const model = evalJudgeTag(loaded.env);
   if (model === undefined) return undefined;
-  const { config, env, profile } = loaded;
-  const provider = io.createProvider({
-    baseUrl: env.OLLAMA_URL,
-    // The judge role resolves through the profile, and light and fast have no judge of their own.
-    profile: { ...profile, judge: model },
-    timeoutsMs: config.models.timeoutsMs,
-    think: config.models.think,
-    retries: config.models.retries,
-    logger: noopLogger,
-  });
-  return createEvalJudge({ provider, model, focusAreas: config.focusAreas });
+  // The judge role resolves through the profile, and light and fast have no judge of their own.
+  const judging: LoadedConfig = { ...loaded, profile: { ...loaded.profile, judge: model } };
+  const provider = io.createProvider(judging, { logger: io.createEvalLogger(loaded) });
+  await assertJudgeInstalled(provider, model);
+  return createEvalJudge({ provider, model, focusAreas: loaded.config.focusAreas });
 }
 
 async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Promise<number> {
@@ -150,7 +157,7 @@ async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Prom
   const profiles = requested ?? [loaded.config.profile];
   // The same host the loader used for the configured profile, so a container on a Mac matches it.
   const platform = platformOf(loaded);
-  const judge = buildEvalJudge(loaded, io);
+  const judge = await prepareEvalJudge(loaded, io);
   const deps: EvalDeps = {
     buildApp: (profile) => io.buildApp(withProfile(loaded, profile, platform)),
     runDigest: io.runDigest,

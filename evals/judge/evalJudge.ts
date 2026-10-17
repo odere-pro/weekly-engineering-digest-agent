@@ -1,17 +1,19 @@
 // The judge `digest eval` uses on a profile that has none (system-design D16, F10). The select
 // step skips the judge when `profile.judge` is null, so on `fast` and `light` the harness asks the
 // judge model itself, with the same rubric, about the winning draft of each replayed week.
+import type { Env } from '../../src/config/schema.js';
 import {
-  JUDGE_CRITERIA,
-  JUDGE_LEVELS,
   buildJudgeQuestions,
   buildJudgeState,
   resolveDraftSources,
-  type JudgeCriterion,
 } from '../../src/core/prompts/judge.js';
 import type { Draft, Item, JudgeScore } from '../../src/core/schemas.js';
-import type { DecisionAnswer, ModelProvider } from '../../src/ports/ModelProvider.js';
+import { toJudgeScore } from '../../src/core/steps/select.js';
+import type { ModelProvider } from '../../src/ports/ModelProvider.js';
 import { DigestError } from '../../src/shared/errors.js';
+
+/** The `user:pass@` in a URL such as `https://user:pass@host`; `digest doctor` strips it the same way. */
+const URL_CREDENTIALS = /(\bhttps?:\/\/)[^\s/@]+@/g;
 
 /** Scores one draft against the items it cites. */
 export interface EvalJudge {
@@ -30,10 +32,11 @@ export interface EvalJudgeOptions {
   focusAreas: readonly string[];
 }
 
-/** The judge model tag from the environment (`EVAL_JUDGE=clef:latest`); undefined when unset. */
-export function evalJudgeTag(
-  env: Readonly<Record<string, string | undefined>>,
-): string | undefined {
+/**
+ * The judge model tag from the loaded environment (`EVAL_JUDGE=clef:latest`, from `.env` or the
+ * shell as `loadConfig` merges them); undefined when unset or blank.
+ */
+export function evalJudgeTag(env: Pick<Env, 'EVAL_JUDGE'>): string | undefined {
   const tag = env.EVAL_JUDGE?.trim();
   return tag === undefined || tag === '' ? undefined : tag;
 }
@@ -54,31 +57,40 @@ export function createEvalJudge({ provider, model, focusAreas }: EvalJudgeOption
   };
 }
 
-// Same conversion as `toJudgeScore` in src/core/steps/select.ts, which does not export it.
-function toJudgeScore(
-  writer: string,
-  answers: Readonly<Record<string, DecisionAnswer>>,
-): JudgeScore {
-  const byCriterion: Record<string, number> = {};
-  for (const criterion of JUDGE_CRITERIA)
-    byCriterion[criterion] = toRating(writer, criterion, answers);
-  const ratings = Object.values(byCriterion);
-  const score = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-  return { writer, score, byCriterion };
-}
-
-/** Level index (0 is the lowest) to a 1-5 rating, kept inside the rubric's range. */
-function toRating(
-  writer: string,
-  criterion: JudgeCriterion,
-  answers: Readonly<Record<string, DecisionAnswer>>,
-): number {
-  const answer = answers[criterion];
-  if (answer?.type !== 'score' || !Number.isFinite(answer.level)) {
+/**
+ * Fails before a long replay starts when Ollama cannot serve the judge: unreachable, the tag not
+ * installed, or not a decision model. It only reads the model list; it never pulls a model.
+ */
+export async function assertJudgeInstalled(
+  provider: Pick<ModelProvider, 'health'>,
+  tag: string,
+): Promise<void> {
+  const health = await provider.health();
+  if (!health.reachable || health.error !== undefined) {
+    // The reason names the Ollama URL, which may carry credentials: they must not reach the terminal.
+    const reason = (health.error ?? 'Ollama is not reachable.').replace(URL_CREDENTIALS, '$1');
     throw new DigestError(
-      `Judge gave no usable score for "${criterion}" on the draft by ${writer}`,
-      { step: 'select' },
+      `Cannot check the eval judge "${tag}" (EVAL_JUDGE), so nothing was replayed. ${reason}`,
     );
   }
-  return Math.min(Math.max(answer.level, 0), JUDGE_LEVELS.length - 1) + 1;
+  const wanted = normalizeTag(tag);
+  const model = health.models.find((candidate) => normalizeTag(candidate.name) === wanted);
+  if (model === undefined) {
+    throw new DigestError(
+      `The eval judge "${tag}" (EVAL_JUDGE) is not installed in Ollama, so nothing was replayed. ` +
+        `Install it with "ollama pull ${tag}", or set EVAL_JUDGE to a model "ollama list" shows.`,
+    );
+  }
+  if (!model.capabilities.includes('decision')) {
+    throw new DigestError(
+      `The eval judge "${tag}" (EVAL_JUDGE) is installed, but it is not a decision model ` +
+        '(no "decision" capability), so nothing was replayed. Set EVAL_JUDGE to a decision model.',
+    );
+  }
+}
+
+/** Ollama lists an untagged name as ":latest" (the same rule `digest doctor` applies). */
+function normalizeTag(tag: string): string {
+  const name = tag.slice(tag.lastIndexOf('/') + 1); // a registry port ("host:5000/x") is not a version
+  return name.includes(':') ? tag : `${tag}:latest`;
 }

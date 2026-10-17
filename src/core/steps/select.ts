@@ -141,7 +141,12 @@ async function judgeOneByOne(
   return judged;
 }
 
-function toJudgeScore(
+/**
+ * The judge's answers about one draft as a 1-5 score per criterion and their mean. Exported so
+ * that the eval judge (evals/judge/evalJudge.ts) converts answers exactly as this step does.
+ * Throws a DigestError when a criterion has no usable score.
+ */
+export function toJudgeScore(
   writer: string,
   answers: Readonly<Record<string, DecisionAnswer>>,
 ): JudgeScore {

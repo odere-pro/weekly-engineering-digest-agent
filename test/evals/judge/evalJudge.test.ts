@@ -1,18 +1,30 @@
 // The judge the harness uses on a profile that has none (F10): it asks the judge model the same
 // four rubric questions the select step asks, about one draft at a time.
-import { describe, expect, it } from 'vitest';
-import { createEvalJudge, evalJudgeTag } from '../../../evals/judge/evalJudge.js';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  assertJudgeInstalled,
+  createEvalJudge,
+  evalJudgeTag,
+} from '../../../evals/judge/evalJudge.js';
 import {
   JUDGE_CRITERIA,
   buildJudgeQuestions,
   buildJudgeState,
   resolveDraftSources,
 } from '../../../src/core/prompts/judge.js';
-import type { DecisionAnswer } from '../../../src/ports/ModelProvider.js';
-import { selectStep } from '../../../src/core/steps/select.js';
+import type * as SelectModule from '../../../src/core/steps/select.js';
+import { toJudgeScore } from '../../../src/core/steps/select.js';
+import type { DecisionAnswer, ModelHealth } from '../../../src/ports/ModelProvider.js';
 import { DigestError } from '../../../src/shared/errors.js';
 import { makeDraft, makeItem } from '../../builders.js';
-import { FakeModelProvider, noopLogger } from '../../fakes/index.js';
+import { FakeModelProvider } from '../../fakes/index.js';
+
+// Wraps the select step's converter, so the tests can see the judge calls that one function
+// instead of a copy of it. It still does the real conversion.
+vi.mock('../../../src/core/steps/select.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof SelectModule>();
+  return { ...actual, toJudgeScore: vi.fn(actual.toJudgeScore) };
+});
 
 const FOCUS = ['AI models and tooling', 'Platform engineering'];
 
@@ -125,31 +137,129 @@ describe('createEvalJudge', () => {
     await expect(judge.score(draft, items)).rejects.toThrow('model unloaded');
   });
 
-  it('scores a draft exactly as the select step does, so the two profiles measure alike', async () => {
-    const drafts = [makeDraft(items, 'a'), makeDraft(items, 'b')];
-    // The same answers for each draft in turn, with levels outside the rubric to compare clamping.
-    const answers = [
-      { accuracy: 4, clarity: 3, whyItMatters: 2, focusFit: 1 },
-      { accuracy: 9, clarity: -2, whyItMatters: 0, focusFit: 3 },
-    ];
-    const providerWithTheAnswers = () => {
-      let call = 0;
-      return new FakeModelProvider({ decide: () => levels(answers[call++] ?? {})() });
-    };
+  it("converts the answers with the select step's toJudgeScore, not a copy of it", async () => {
+    const answers = levels({ accuracy: 4, clarity: 3, whyItMatters: 2, focusFit: 1 })();
+    const provider = new FakeModelProvider({ decide: () => answers });
+    const judge = createEvalJudge({ provider, model: 'clef:latest', focusAreas: FOCUS });
+    vi.mocked(toJudgeScore).mockClear();
 
-    const selected = await selectStep(drafts, items, {
-      model: providerWithTheAnswers(),
-      focusAreas: FOCUS,
-      writerOrder: ['a', 'b'],
-      logger: noopLogger,
-    });
-    const judge = createEvalJudge({
-      provider: providerWithTheAnswers(),
-      model: 'clef:latest',
-      focusAreas: FOCUS,
-    });
-    const scores = [await judge.score(drafts[0]!, items), await judge.score(drafts[1]!, items)];
+    const result = await judge.score(draft, items);
 
-    expect(scores).toEqual(selected.scores);
+    expect(toJudgeScore).toHaveBeenCalledTimes(1);
+    expect(toJudgeScore).toHaveBeenCalledWith('gemma', answers);
+    expect(result).toEqual(vi.mocked(toJudgeScore).mock.results[0]?.value);
+  });
+});
+
+describe('assertJudgeInstalled', () => {
+  const TAG = 'clef:latest';
+  const decision = ['completion', 'decision'];
+
+  const providerWith = (health: ModelHealth) => new FakeModelProvider({ health });
+  const installed = (...models: { name: string; capabilities?: string[] }[]): ModelHealth => ({
+    reachable: true,
+    version: '0.40.4',
+    models: models.map(({ name, capabilities = decision }) => ({ name, capabilities })),
+  });
+
+  it('passes when Ollama lists the tag as a decision model', async () => {
+    const provider = providerWith(installed({ name: 'gemma4:e4b-mlx' }, { name: TAG }));
+
+    await expect(assertJudgeInstalled(provider, TAG)).resolves.toBeUndefined();
+  });
+
+  it.each([
+    ['an untagged name for ":latest"', 'clef', 'clef:latest'],
+    ['a tag for the untagged name Ollama lists', 'clef:latest', 'clef'],
+    ['a registry path with a tag', 'hf.co/org/judge:Q4_K_M', 'hf.co/org/judge:Q4_K_M'],
+    [
+      'a registry port, which is not a version',
+      'localhost:5000/judge',
+      'localhost:5000/judge:latest',
+    ],
+  ])('matches %s', async (_name, tag, listed) => {
+    const provider = providerWith(installed({ name: listed }));
+
+    await expect(assertJudgeInstalled(provider, tag)).resolves.toBeUndefined();
+  });
+
+  it('does not take another version of the same model for the tag', async () => {
+    const provider = providerWith(installed({ name: 'clef:v2' }));
+
+    await expect(assertJudgeInstalled(provider, TAG)).rejects.toThrow('not installed');
+  });
+
+  it('fails with a DigestError that names the tag and EVAL_JUDGE when it is not installed', async () => {
+    const provider = providerWith(installed({ name: 'gemma4:e4b-mlx' }));
+
+    const failure = assertJudgeInstalled(provider, 'judge-typo:latest');
+
+    await expect(failure).rejects.toBeInstanceOf(DigestError);
+    await expect(failure).rejects.toThrow(
+      'The eval judge "judge-typo:latest" (EVAL_JUDGE) is not installed in Ollama',
+    );
+  });
+
+  it('tells the maintainer how to fix it, since it never pulls a model itself', async () => {
+    const failure = assertJudgeInstalled(providerWith(installed()), TAG);
+
+    await expect(failure).rejects.toThrow('ollama pull clef:latest');
+    await expect(failure).rejects.toThrow('nothing was replayed');
+  });
+
+  it('fails when the model is installed but is not a decision model', async () => {
+    const provider = providerWith(installed({ name: TAG, capabilities: ['completion'] }));
+
+    await expect(assertJudgeInstalled(provider, TAG)).rejects.toThrow(
+      'is not a decision model (no "decision" capability)',
+    );
+  });
+
+  it('fails with the reason when Ollama cannot be reached', async () => {
+    const provider = providerWith({
+      reachable: false,
+      models: [],
+      error: 'Ollama is not reachable at http://localhost:11434.',
+    });
+
+    const failure = assertJudgeInstalled(provider, TAG);
+
+    await expect(failure).rejects.toBeInstanceOf(DigestError);
+    await expect(failure).rejects.toThrow('Ollama is not reachable at http://localhost:11434.');
+    await expect(failure).rejects.toThrow('"clef:latest"');
+  });
+
+  it('keeps credentials in the Ollama URL out of the message', async () => {
+    const provider = providerWith({
+      reachable: false,
+      models: [],
+      error: 'Ollama is not reachable at https://admin:s3cret@ollama.internal:11434.',
+    });
+
+    const failure = assertJudgeInstalled(provider, TAG);
+
+    await expect(failure).rejects.toThrow('https://ollama.internal:11434.');
+    await expect(failure).rejects.not.toThrow('s3cret');
+    await expect(failure).rejects.not.toThrow('admin');
+  });
+
+  it('fails with the reason when the model list could not be read, not with "not installed"', async () => {
+    const provider = providerWith({
+      reachable: true,
+      version: '0.40.4',
+      models: [],
+      error: 'Ollama at http://localhost:11434 did not answer within 5000 ms',
+    });
+
+    const failure = assertJudgeInstalled(provider, TAG);
+
+    await expect(failure).rejects.toThrow('did not answer within 5000 ms');
+    await expect(failure).rejects.not.toThrow('not installed');
+  });
+
+  it('says so when Ollama is unreachable and gave no reason', async () => {
+    const provider = providerWith({ reachable: false, models: [] });
+
+    await expect(assertJudgeInstalled(provider, TAG)).rejects.toThrow('Ollama is not reachable');
   });
 });
