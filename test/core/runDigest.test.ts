@@ -798,3 +798,27 @@ describe('runDigest: housekeeping and model use', () => {
     ]);
   });
 });
+
+describe('runDigest: classifier hints', () => {
+  const source = { id: 'example-feed', kind: 'rss', url: 'https://example.com/feed.xml' } as const;
+
+  it('passes the source area tag into every classify call', async () => {
+    const h = setup({ config: { sources: [{ ...source, area: 'ai-tooling' }] } });
+
+    await h.run();
+
+    const states = decideCalls(h, 'classify').map((call) => call.state);
+    expect(states.length).toBeGreaterThan(0);
+    for (const state of states) expect(state).toContain('Source tag: ai-tooling');
+  });
+
+  it('leaves the prompt without a tag when the source has no area', async () => {
+    const h = setup();
+
+    await h.run();
+
+    const states = decideCalls(h, 'classify').map((call) => call.state);
+    expect(states.length).toBeGreaterThan(0);
+    for (const state of states) expect(state).not.toContain('Source tag');
+  });
+});

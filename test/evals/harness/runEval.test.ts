@@ -1066,6 +1066,32 @@ describe('runEval', () => {
       expect(scorecard.counts.classifier).toBe(2);
     });
 
+    it('passes the source area tag of the config into the classify prompt', async () => {
+      await writeClassifier(true);
+      const app = makeApp({
+        classify: { C1: { area: AREA_B, level: 3 }, C2: { area: AREA_A, level: 1 } },
+        config: makeConfig({
+          guards: { input: { mode: 'all' }, output: { enabled: false } },
+          sources: [
+            {
+              id: 'example-feed',
+              kind: 'rss',
+              url: 'https://example.com/feed.xml',
+              area: 'platform',
+            },
+          ],
+        }),
+      });
+
+      await runEval({ profile: 'quality', casesDir: root, minimums: NONE }, makeDeps(app, []));
+
+      const states = app.model.decideCalls
+        .filter((call) => call.role === 'classify')
+        .map((call) => call.state);
+      expect(states).toHaveLength(2);
+      for (const state of states) expect(state).toContain('Source tag: platform');
+    });
+
     it('flags labels the maintainer has not reviewed yet', async () => {
       await writeClassifier(false);
       const app = makeApp({

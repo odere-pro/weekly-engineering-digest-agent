@@ -38,7 +38,7 @@ import {
   type SourceKind,
   type StepName,
 } from './schemas.js';
-import { classifyStep } from './steps/classify.js';
+import { areaHintsOf, classifyStep } from './steps/classify.js';
 import { collectStep } from './steps/collect.js';
 import { guardInputStep } from './steps/guardInput.js';
 import { guardOutputStep } from './steps/guardOutput.js';
@@ -430,7 +430,12 @@ async function guardInput(ctx: RunContext, state: ChainState, logger: Logger): P
 
 async function classify(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
   const { model, config } = ctx.deps;
-  const scored = await classifyStep(state.kept, { model, focusAreas: config.focusAreas, logger });
+  const scored = await classifyStep(state.kept, {
+    model,
+    focusAreas: config.focusAreas,
+    logger,
+    areaHints: areaHintsOf(config.sources),
+  });
   const classifications = scored.map((item) => item.classification);
   const held = await keepArtifact(ctx, state, 'scores.json', toJson(classifications));
   return { ...held, scored };

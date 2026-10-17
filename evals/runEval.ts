@@ -19,7 +19,7 @@ import {
   type RunRecord,
   type Source,
 } from '../src/core/schemas.js';
-import { classifyStep } from '../src/core/steps/classify.js';
+import { areaHintsOf, classifyStep } from '../src/core/steps/classify.js';
 import { guardOutputStep } from '../src/core/steps/guardOutput.js';
 import type { InputGuard, OutputGuard } from '../src/ports/Guard.js';
 import type { RunStore } from '../src/ports/RunStore.js';
@@ -524,7 +524,12 @@ async function classifyCases(
   if (cases.length === 0) return [];
   const scored = await classifyStep(
     cases.map((c) => c.item),
-    { model: app.model, focusAreas: app.config.focusAreas, logger: app.logger },
+    {
+      model: app.model,
+      focusAreas: app.config.focusAreas,
+      logger: app.logger,
+      areaHints: areaHintsOf(app.config.sources),
+    },
   );
   if (scored.length !== cases.length) {
     throw new DigestError(`classify returned ${scored.length} results for ${cases.length} cases`, {
