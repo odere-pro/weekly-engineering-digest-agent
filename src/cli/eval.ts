@@ -9,7 +9,7 @@ import {
   type Scorecard,
 } from '../../evals/schema.js';
 import { buildApp, type AppHandle } from '../app/container.js';
-import { loadConfig, resolveHostPlatform, type LoadedConfig } from '../config/load.js';
+import { loadConfig, platformOf, type LoadedConfig } from '../config/load.js';
 import { resolveProfile, type Platform } from '../config/profiles.js';
 import { ProfileNameSchema, type ProfileName } from '../config/schema.js';
 import { runDigest } from '../core/runDigest.js';
@@ -32,8 +32,6 @@ export interface EvalCommandIo {
   runDigest: EvalDeps['runDigest'];
   runEval: (options: EvalOptions, deps: EvalDeps) => Promise<Scorecard>;
   clock: Clock;
-  /** Default: the host named in DIGEST_HOST_OS/DIGEST_HOST_ARCH, else the running process. */
-  platform?: Platform;
   mkdir: (path: string) => Promise<void>;
   writeFile: (path: string, content: string) => Promise<void>;
   stdout: (text: string) => void;
@@ -105,7 +103,7 @@ async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Prom
   const loaded = await io.loadConfig({ configPath: options.config });
   const profiles = requested ?? [loaded.config.profile];
   // The same host the loader used for the configured profile, so a container on a Mac matches it.
-  const platform = io.platform ?? resolveHostPlatform(loaded.env);
+  const platform = platformOf(loaded);
   const deps: EvalDeps = {
     buildApp: (profile) => io.buildApp(withProfile(loaded, profile, platform)),
     runDigest: io.runDigest,

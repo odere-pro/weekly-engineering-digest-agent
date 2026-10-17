@@ -9,10 +9,15 @@ const QUESTION_LIMITS = { min: 1, max: 64 } as const;
 const CHOICE_OPTION_LIMITS = { min: 2, max: 26 } as const;
 const SCORE_LEVEL_LIMITS = { min: 2, max: 10 } as const;
 
-/** strands-decider (any namespace) has a 4K context; every other decision model gets more. */
+/**
+ * strands-decider (any namespace) has a 4K context; every other decision model gets more. The
+ * budgets are for the questions and the state together (see `stateBudgetFor`).
+ */
 const SMALL_CONTEXT_MODEL = /(^|\/)strands-decider(:|$)/;
 const SMALL_CONTEXT_STATE_CHARS = 10_000;
 const DEFAULT_STATE_CHARS = 48_000;
+/** Least state a decide call keeps, however much room the questions take. */
+export const MIN_STATE_CHARS = 1_000;
 /** Share of a trimmed state kept from the end, so a closing data marker survives. */
 const TRIM_TAIL_SHARE = 0.1;
 const TRIM_MARKER = '\n[... trimmed ...]\n';
@@ -186,9 +191,18 @@ export function parseSystemOneResponse(
   };
 }
 
-/** Character budget for the `state` text of a decision model. */
-export function stateBudgetFor(model: string): number {
-  return SMALL_CONTEXT_MODEL.test(model) ? SMALL_CONTEXT_STATE_CHARS : DEFAULT_STATE_CHARS;
+/** Characters of the questions as they go over the wire (they share the context with the state). */
+export function questionSize(questions: Readonly<Record<string, SystemOneQuestion>>): number {
+  return JSON.stringify(questions).length;
+}
+
+/**
+ * Character budget for the `state` text of a decision model: the model's budget less the room the
+ * questions take, never below MIN_STATE_CHARS (a state cut to nothing would be answered blind).
+ */
+export function stateBudgetFor(model: string, questionChars = 0): number {
+  const budget = SMALL_CONTEXT_MODEL.test(model) ? SMALL_CONTEXT_STATE_CHARS : DEFAULT_STATE_CHARS;
+  return Math.max(budget - questionChars, MIN_STATE_CHARS);
 }
 
 function isLowSurrogate(text: string, index: number): boolean {

@@ -5,11 +5,11 @@ import { z } from 'zod';
 import { resolveProfile, type ModelProfile, type Platform } from './profiles.js';
 import { ConfigSchema, EnvSchema, SecretsSchema } from './schema.js';
 import type { Config, Env, Secrets } from './schema.js';
+import { createRedactor } from '../observability/redact.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 
 const DEFAULT_CONFIG_PATH = 'digest.config.json';
 const DEFAULT_ENV_PATH = '.env';
-const REDACTED = '[redacted]';
 
 export interface LoadOptions {
   /** Default: ./digest.config.json */
@@ -28,6 +28,11 @@ export interface LoadedConfig {
   secrets: Secrets;
   profile: ModelProfile;
   configPath: string;
+  /**
+   * The machine the profile was resolved for. `loadConfig` always sets it; it is optional only so
+   * that configs built by hand (tests) need not name one, and `platformOf` fills the gap.
+   */
+  platform?: Platform;
 }
 
 /** Reads and validates digest.config.json and .env with readable errors (W1-14). */
@@ -41,7 +46,12 @@ export async function loadConfig(options: LoadOptions = {}): Promise<LoadedConfi
   const platform = options.platform ?? resolveHostPlatform(env);
   const profile = resolveProfile(config.profile, platform, config.models.writers);
 
-  return { config, env, secrets, profile, configPath };
+  return { config, env, secrets, profile, configPath, platform };
+}
+
+/** The platform the profile was resolved for; recomputed from the environment for a hand-built config. */
+export function platformOf(loaded: Pick<LoadedConfig, 'env' | 'platform'>): Platform {
+  return loaded.platform ?? resolveHostPlatform(loaded.env);
 }
 
 /**
@@ -96,13 +106,101 @@ function toNodeArch(spelling: string): string | undefined {
   return undefined;
 }
 
-/** Replaces every secret value found in `text` with "[redacted]" (W1-14). */
+/**
+ * Replaces every secret value found in `text` with "[redacted]" (W1-14). It is the logger's
+ * redactor (observability/redact.ts), so text printed by a command is cleaned the way a log line is.
+ */
 export function redactSecrets(text: string, secrets: Secrets): string {
-  // Longest first, so a secret that contains another secret is redacted whole.
-  const values = Object.values(secrets)
-    .filter((value): value is string => typeof value === 'string' && value !== '')
-    .sort((a, b) => b.length - a.length);
-  return values.reduce((redacted, value) => redacted.replaceAll(value, REDACTED), text);
+  const values = Object.values(secrets).filter(
+    (value): value is string => typeof value === 'string',
+  );
+  return createRedactor(values).text(text);
+}
+
+// ---------------------------------------------------------------------------------------------
+// Writing .env: kept next to the reader (node:util parseEnv), so the two cannot disagree.
+
+const BARE_ENV_VALUE = /^[A-Za-z0-9_./:@%+,-]+$/;
+/** Also what keeps a key safe to put in a pattern. */
+const ENV_KEY = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+/** Quotes `value` so that `node:util` parseEnv (the loader's parser) reads it back unchanged. */
+export function formatEnvValue(key: string, value: string): string {
+  if (BARE_ENV_VALUE.test(value)) return value;
+  const unstorable = new DigestError(
+    `${key} cannot be stored in .env (a line break, or every kind of quote character). Choose a different value; nothing was written.`,
+  );
+  if (/[\r\n]/.test(value)) throw unstorable;
+  if (!value.includes("'")) return `'${value}'`;
+  // Double quotes expand a literal backslash-n, so they are only safe without one.
+  if (!value.includes('"') && !value.includes('\\n')) return `"${value}"`;
+  if (!value.includes('`')) return `\`${value}\``;
+  throw unstorable;
+}
+
+/** One `.env` setting to write. `key` is an upper-case variable name; `value` is the raw value. */
+export interface EnvUpdate {
+  key: string;
+  value: string;
+}
+
+/**
+ * Sets the keys in .env text and touches nothing else: comments, other keys, their order and the
+ * line endings stay as they were. A key that is there has each of its lines replaced (`export`
+ * kept); one that is not is added at the end. The result must read back, through the loader's own
+ * parser, as the old values plus the updates; otherwise a line belonged to a multi-line value
+ * and this throws, so that nothing is written. `path` only names the file in the error.
+ */
+export function mergeEnvText(current: string, updates: readonly EnvUpdate[], path: string): string {
+  for (const { key } of updates) {
+    if (!ENV_KEY.test(key))
+      throw new DigestError(`Cannot write "${key}" to .env: not a variable name.`);
+  }
+  const unsafe = new DigestError(
+    `Could not merge into ${path} safely: a setting init would change spans several lines or sits inside another value. Nothing was written. Edit the file by hand, or move it away and run "digest init" again.`,
+  );
+  const before = parseEnv(current);
+  // Replacing the first line of a multi-line value would leave the rest of it behind.
+  if (updates.some(({ key }) => before[key]?.includes('\n'))) throw unsafe;
+
+  const carriage = current.includes('\r\n') ? '\r' : '';
+  const finished = current.endsWith('\n');
+  // A last line without a newline still gets the carriage return, so a CRLF file stays CRLF.
+  const body = finished ? current.slice(0, -1) : `${current}${carriage}`;
+  const lines = updates.reduce(
+    (acc, { key, value }) => withEnvValue(acc, key, formatEnvValue(key, value), carriage),
+    body.split('\n'),
+  );
+  const merged = `${lines.join('\n')}\n`;
+  const expected = {
+    ...before,
+    ...Object.fromEntries(updates.map((update) => [update.key, update.value])),
+  };
+  if (!sameEntries(expected, parseEnv(merged))) throw unsafe;
+  return merged;
+}
+
+function withEnvValue(
+  lines: readonly string[],
+  key: string,
+  formatted: string,
+  carriage: string,
+): string[] {
+  const assignment = new RegExp(`^(\\s*(?:export\\s+)?)${key}\\s*=`);
+  const rewritten = (prefix: string): string => `${prefix}${key}=${formatted}${carriage}`;
+  if (!lines.some((line) => assignment.test(line))) return [...lines, rewritten('')];
+  return lines.map((line) => {
+    const match = assignment.exec(line);
+    return match ? rewritten(match[1] ?? '') : line;
+  });
+}
+
+function sameEntries(
+  expected: Readonly<Record<string, string | undefined>>,
+  actual: Readonly<Record<string, string | undefined>>,
+): boolean {
+  const keys = Object.keys(expected);
+  return keys.length === Object.keys(actual).length && keys.every((k) => actual[k] === expected[k]);
 }
 
 async function readConfig(configPath: string): Promise<Config> {

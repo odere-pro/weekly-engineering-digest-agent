@@ -53,10 +53,12 @@ const LINUX: Platform = { os: 'linux', arch: 'x64' };
 
 interface HarnessOptions {
   /**
-   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The io then carries no platform,
-   * as in production, so the command must resolve it from this env.
+   * DIGEST_HOST_OS/DIGEST_HOST_ARCH as the loader read them. The loaded config then carries no
+   * platform (a config built by hand), so the command must resolve it from this env.
    */
   hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
+  /** The platform the loader resolved the profile for; defaults to a Mac unless `hostEnv` is set. */
+  platform?: Platform;
 }
 
 /** Runs `run` while `process` claims to be `platform`; the real values come back afterwards. */
@@ -90,6 +92,7 @@ function harness(
     secrets: {},
     profile: PROFILES[configProfile],
     configPath: '/work/digest.config.json',
+    ...(options.platform || !options.hostEnv ? { platform: options.platform ?? MAC } : {}),
   };
   const loadConfig = vi.fn<EvalCommandIo['loadConfig']>(() => Promise.resolve(loaded));
   const buildApp = vi.fn<EvalCommandIo['buildApp']>(() =>
@@ -105,7 +108,6 @@ function harness(
     runDigest: () => Promise.reject(new Error('runDigest is not called by the fake')),
     runEval,
     clock: fixedClock('2026-10-16T09:00:00Z'),
-    ...(options.hostEnv ? {} : { platform: MAC }),
     mkdir: (path) => {
       dirs.push(path);
       return Promise.resolve();
@@ -333,6 +335,21 @@ describe('evalCommand', () => {
     it('takes the named host over a Mac process: a Linux host gets the untuned fallback', async () => {
       const h = harness(undefined, 'quality', {
         hostEnv: { DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
+      });
+
+      const built = await onProcess(MAC, () => builtProfiles(h));
+
+      expect(built).toEqual([
+        { ...NON_MAC_FALLBACK, name: 'quality' },
+        { ...NON_MAC_FALLBACK, name: 'fast' },
+        { ...NON_MAC_FALLBACK, name: 'light' },
+      ]);
+    });
+
+    it('judges the platform the loader resolved, not one recomputed from the environment', async () => {
+      const h = harness(undefined, 'quality', {
+        platform: LINUX,
+        hostEnv: { DIGEST_HOST_OS: 'darwin', DIGEST_HOST_ARCH: 'arm64' },
       });
 
       const built = await onProcess(MAC, () => builtProfiles(h));

@@ -100,7 +100,7 @@ async function checkItemRisks(
   return { check: 'graniteRisk', flagged: false };
 }
 
-/** Output guard: each digest item grounded in its source item (W1-05). */
+/** Output guard: each digest item grounded in its source item, and the headline and intro in the cited sources (W1-05, W5-02). */
 export function createGraniteGroundednessGuard(options: GraniteGuardOptions): OutputGuard {
   return {
     id: 'graniteGroundedness',
@@ -113,9 +113,14 @@ interface GroundingFindings {
   ungrounded: string[];
   unparsable: string[];
   noSource: string[];
+  /** What the one headline-and-intro call found; undefined when it was not made or was fine. */
+  headline?: 'ungrounded' | 'unparsable';
 }
 
-/** Checks every digest item against its own source item, one call at a time. */
+/**
+ * Checks every digest item against its own source item, one call at a time, then the headline
+ * and intro against all the sources the digest cites.
+ */
 async function checkDraftGrounding(
   options: GraniteGuardOptions,
   draft: Draft,
@@ -124,12 +129,14 @@ async function checkDraftGrounding(
 ): Promise<GuardVerdict> {
   const sourceById = new Map(sources.map((source) => [source.id, source]));
   const findings: GroundingFindings = { ungrounded: [], unparsable: [], noSource: [] };
+  const cited = new Map<string, Item>();
   for (const entry of draft.digest.items) {
     const source = sourceById.get(entry.itemId);
     if (!source) {
       findings.noSource.push(entry.itemId);
       continue;
     }
+    cited.set(source.id, source);
     const score = await judge(
       options,
       'groundedness',
@@ -138,6 +145,17 @@ async function checkDraftGrounding(
     );
     if (score === undefined) findings.unparsable.push(entry.itemId);
     else if (score === 'yes') findings.ungrounded.push(entry.itemId);
+  }
+  // Without a single source there is nothing to judge them against; noSource flags the draft.
+  if (cited.size > 0) {
+    const score = await judge(
+      options,
+      'groundedness',
+      headlinePrompt(draft, [...cited.values()]),
+      callOptions,
+    );
+    if (score === undefined) findings.headline = 'unparsable';
+    else if (score === 'yes') findings.headline = 'ungrounded';
   }
   return groundingVerdict(findings);
 }
@@ -153,6 +171,16 @@ function groundednessPrompt(source: Item, entry: DigestItem): string {
   return `Document:\n${document}\n\nText to check:\n${text}`;
 }
 
+/** Same layout for the headline and intro, which sum up the whole digest: every cited source is a document. */
+function headlinePrompt(draft: Draft, cited: readonly Item[]): string {
+  const documents = cited
+    .map((source) => wrapUntrusted(`document:${source.id}`, itemGuardText(source)))
+    .join('\n\n');
+  const { headline, intro } = draft.digest;
+  const text = wrapUntrusted('text:headline', `${headline}\n${intro}`);
+  return `Document:\n${documents}\n\nText to check:\n${text}`;
+}
+
 function groundingVerdict(findings: GroundingFindings): GuardVerdict {
   const ids = (list: readonly string[]): string =>
     list.map((id) => truncate(id, MAX_REASON_ID_CHARS)).join(', ');
@@ -160,6 +188,8 @@ function groundingVerdict(findings: GroundingFindings): GuardVerdict {
     findings.ungrounded.length > 0 && `ungrounded items: ${ids(findings.ungrounded)}`,
     findings.unparsable.length > 0 && `${UNPARSABLE_REASON} for items: ${ids(findings.unparsable)}`,
     findings.noSource.length > 0 && `no source item for: ${ids(findings.noSource)}`,
+    findings.headline === 'ungrounded' && 'ungrounded headline or intro',
+    findings.headline === 'unparsable' && `${UNPARSABLE_REASON} for headline and intro`,
   ].filter((part): part is string => part !== false);
   if (parts.length === 0) return { check: 'graniteGroundedness', flagged: false };
   return { check: 'graniteGroundedness', flagged: true, reason: parts.join('; ') };

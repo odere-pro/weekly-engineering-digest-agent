@@ -1,11 +1,17 @@
 import { randomUUID } from 'node:crypto';
-import { access, chmod, mkdir, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { access, chmod, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { totalmem } from 'node:os';
 import { dirname, resolve } from 'node:path';
+import { parseEnv } from 'node:util';
 import { checkbox, confirm, input, password, select } from '@inquirer/prompts';
 import { z } from 'zod';
 import { DEFAULT_FOCUS_AREAS, DEFAULT_SOURCES } from '../config/defaultSources.js';
-import { resolveHostPlatform } from '../config/load.js';
+import {
+  formatEnvValue,
+  mergeEnvText,
+  resolveHostPlatform,
+  type EnvUpdate,
+} from '../config/load.js';
 import {
   ConfigSchema,
   EmailDeliverySchema,
@@ -54,6 +60,8 @@ export interface InitIo {
   env: Readonly<Record<string, string | undefined>>;
   platform: NodeJS.Platform;
   totalMemoryBytes: number;
+  /** What a container is limited to (cgroup), in bytes; 0 or unset when there is no limit. */
+  memoryLimitBytes?: number;
   /** The IANA zone this process runs in; the default for `schedule.timeZone`. */
   timeZone: string;
   cwd: string;
@@ -65,6 +73,8 @@ export interface InitIo {
   exists: (path: string) => Promise<boolean>;
   /** True for an existing file with no content, such as the ones `make docker-init` creates. */
   isEmptyFile: (path: string) => Promise<boolean>;
+  /** The text of a file, undefined when it does not exist. Other failures reject. */
+  readFile: (path: string) => Promise<string | undefined>;
   /** Writes a normal file, creating its folder. */
   writeFile: (path: string, content: string) => Promise<void>;
   /**
@@ -80,7 +90,10 @@ export interface InitIo {
 const DEFAULT_CONFIG_PATH = 'digest.config.json';
 const DEFAULT_ENV_PATH = '.env';
 const DOCKERENV_PATH = '/.dockerenv';
-const QUALITY_MIN_RAM_BYTES = 32 * 1024 ** 3;
+const GIB = 1024 ** 3;
+const QUALITY_MIN_RAM_BYTES = 32 * GIB;
+/** A "32 GB" machine reports less (a Linux box about 31 GiB): the kernel keeps some for itself. */
+const RAM_TOLERANCE = 0.05;
 const SECRET_FILE_MODE = 0o600;
 const DEFAULT_SMTP_PORT = 587;
 const IMPLICIT_TLS_PORT = 465;
@@ -93,8 +106,15 @@ const IN_PLACE_FALLBACK_CODES: ReadonlySet<string> = new Set(['EBUSY', 'EXDEV', 
 /** What a container reports when TZ is not set. */
 const CONTAINER_DEFAULT_ZONES: ReadonlySet<string> = new Set(['UTC', 'Etc/UTC']);
 
+/** `light` is the 16 GB profile only where the tuned models run (a Mac with Apple silicon). */
+const LIGHT_OFF_MAC =
+  'Off a Mac with Apple silicon it uses the larger fallback models, which need much more than 16 GB; "digest doctor" shows what this machine gets.';
+
+const QUALITY_UNMEASURED =
+  'quality is not measured yet: one run took about 1 h on the reference laptop';
+
 const PROFILE_DESCRIPTIONS: Readonly<Record<ProfileName, string>> = {
-  quality: 'Two writers and a judge. Best output; about 32 GB RAM and 40 GB of disk.',
+  quality: `Two writers and a judge. Best output expected, but ${QUALITY_UNMEASURED}. About 32 GB RAM and 40 GB of disk.`,
   fast: 'One writer, no judge. Faster runs.',
   light: 'Smallest models. Fits in 16 GB of RAM.',
 };
@@ -102,9 +122,17 @@ const PROFILE_DESCRIPTIONS: Readonly<Record<ProfileName, string>> = {
 const FocusAreasSchema = ConfigSchema.shape.focusAreas;
 const HttpsUrlSchema = z.url({ protocol: /^https$/ });
 
-/** `quality` needs about 32 GB of RAM; anything smaller gets `light`. */
-export function recommendProfile(totalMemoryBytes: number): ProfileName {
-  return totalMemoryBytes >= QUALITY_MIN_RAM_BYTES ? 'quality' : 'light';
+/**
+ * `light` until `quality` has a measured baseline, whatever the RAM. The schema default stays
+ * `quality`; this only decides what `digest init` suggests and writes with --yes.
+ */
+export function recommendProfile(): ProfileName {
+  return 'light';
+}
+
+/** Whether `quality` fits in this much RAM: 32 GiB, less a 5% tolerance. */
+export function hasQualityMemory(totalMemoryBytes: number): boolean {
+  return totalMemoryBytes >= QUALITY_MIN_RAM_BYTES * (1 - RAM_TOLERANCE);
 }
 
 /**
@@ -151,19 +179,23 @@ interface Answers {
 
 async function runInit(options: InitCommandOptions, io: InitIo): Promise<number> {
   const configPath = options.config ?? DEFAULT_CONFIG_PATH;
-  await confirmOverwrite([configPath, io.envPath], options.yes === true, io);
+  // Only the config is replaced; .env is merged into, so it needs no confirmation.
+  await confirmOverwrite([configPath], options.yes === true, io);
 
   const inDocker = await io.exists(DOCKERENV_PATH);
   const hostOs = namedHostOs(io, inDocker);
-  const answers = options.yes === true ? defaultAnswers(io) : await askAnswers(io, inDocker);
+  const host: Host = { inDocker, hostOs };
+  const answers = options.yes === true ? defaultAnswers(io) : await askAnswers(io, host);
   const config = validatedConfig(buildConfigInput(answers));
   const ollamaUrl = resolveOllamaUrl({ inDocker, hostOs });
-  const envFile = renderEnvFile(ollamaUrl, secretsOf(answers));
+  const envFile = await buildEnvFile(io, ollamaUrl, secretsOf(answers));
 
   await writeOrFail(configPath, () => io.writeFile(configPath, toJson(buildConfigInput(answers))));
-  await writeOrFail(io.envPath, () => io.writeSecretFile(io.envPath, envFile));
+  await writeOrFail(io.envPath, () => io.writeSecretFile(io.envPath, envFile.text));
 
-  io.stdout(summary({ configPath, envPath: io.envPath, answers, ollamaUrl }));
+  io.stdout(
+    summary({ configPath, envPath: io.envPath, answers, ollamaUrl, envMerged: envFile.merged }),
+  );
   io.stdout(
     inDocker
       ? dockerNextSteps(answers.timeZone)
@@ -200,17 +232,23 @@ async function hasContent(path: string, io: InitIo): Promise<boolean> {
 
 function defaultAnswers(io: InitIo): Answers {
   return {
-    profile: recommendProfile(io.totalMemoryBytes),
+    profile: recommendProfile(),
     timeZone: io.timeZone,
     focusAreas: [...DEFAULT_FOCUS_AREAS],
   };
 }
 
-async function askAnswers(io: InitIo, inDocker: boolean): Promise<Answers> {
+/** Where init runs and, in a container, the OS of the machine that runs Ollama. */
+interface Host {
+  inDocker: boolean;
+  hostOs: string | undefined;
+}
+
+async function askAnswers(io: InitIo, host: Host): Promise<Answers> {
   const { prompts } = io;
   const focusAreas = await askFocusAreas(prompts);
-  const profile = await askProfile(io);
-  const timeZone = await askTimeZone(io, inDocker);
+  const profile = await askProfile(io, host);
+  const timeZone = await askTimeZone(io, host.inDocker);
   const channels = await prompts.checkbox({
     message: 'Also deliver the digest by (Markdown files are always written)',
     choices: [
@@ -258,17 +296,43 @@ function focusAreasProblem(areas: string[]): string | undefined {
   return result.success ? undefined : `Focus areas: ${describeIssues(result.error)}`;
 }
 
-async function askProfile(io: InitIo): Promise<ProfileName> {
-  const recommended = recommendProfile(io.totalMemoryBytes);
+async function askProfile(io: InitIo, host: Host): Promise<ProfileName> {
+  const recommended = recommendProfile();
+  const notes: Partial<Record<ProfileName, string>> = {
+    ...((host.hostOs ?? io.platform) === 'darwin' ? {} : { light: LIGHT_OFF_MAC }),
+    ...qualityNote(io, host.inDocker),
+  };
   return io.prompts.select({
     message: 'Model profile',
     default: recommended,
     choices: ProfileNameSchema.options.map((profile) => ({
       name: profile === recommended ? `${profile} (recommended)` : profile,
       value: profile,
-      description: PROFILE_DESCRIPTIONS[profile],
+      description: [PROFILE_DESCRIPTIONS[profile], notes[profile]].filter(Boolean).join(' '),
     })),
   });
+}
+
+function qualityNote(io: InitIo, inDocker: boolean): { quality?: string } {
+  const warning = qualityMemoryWarning(io, inDocker);
+  return warning === undefined ? {} : { quality: warning };
+}
+
+/**
+ * Says so when the RAM this process can see is short of what `quality` needs. Inside Docker the
+ * figure is the container's, not necessarily the machine's that runs Ollama, and the text names
+ * the limit when there is one.
+ */
+function qualityMemoryWarning(io: InitIo, inDocker: boolean): string | undefined {
+  const limit = io.memoryLimitBytes ?? 0;
+  const limited = limit > 0 && limit <= io.totalMemoryBytes;
+  const seen = limited ? limit : io.totalMemoryBytes;
+  if (hasQualityMemory(seen)) return undefined;
+  const amount = `${(seen / GIB).toFixed(1)} GiB`;
+  const needs = 'quality needs about 32 GB.';
+  if (!inDocker) return `This machine has ${amount} of RAM; ${needs}`;
+  if (limited) return `Docker limits this container to ${amount} (the container limit); ${needs}`;
+  return `Docker shows this container ${amount} of RAM; ${needs} Ollama may run elsewhere with more.`;
 }
 
 /**
@@ -425,20 +489,49 @@ function renderEnvFile(ollamaUrl: string, secrets: Record<string, string>): stri
   return `${lines.join('\n')}\n`;
 }
 
-const BARE_ENV_VALUE = /^[A-Za-z0-9_./:@%+,-]+$/;
+interface EnvFile {
+  text: string;
+  /** True when init's settings were merged into a file that already had some. */
+  merged: boolean;
+}
 
-/** Quotes `value` so that `node:util` parseEnv (the loader's parser) reads it back unchanged. */
-function formatEnvValue(key: string, value: string): string {
-  if (BARE_ENV_VALUE.test(value)) return value;
-  const unstorable = new DigestError(
-    `${key} cannot be stored in .env (a line break, or every kind of quote character). Choose a different value; nothing was written.`,
-  );
-  if (/[\r\n]/.test(value)) throw unstorable;
-  if (!value.includes("'")) return `'${value}'`;
-  // Double quotes expand a literal backslash-n, so they are only safe without one.
-  if (!value.includes('"') && !value.includes('\\n')) return `"${value}"`;
-  if (!value.includes('`')) return `\`${value}\``;
-  throw unstorable;
+/** A fresh file, or the existing one with init's settings merged into it. */
+async function buildEnvFile(
+  io: InitIo,
+  ollamaUrl: string,
+  secrets: Record<string, string>,
+): Promise<EnvFile> {
+  const current = await readEnvFile(io);
+  if (current === undefined || current.trim() === '') {
+    return { text: renderEnvFile(ollamaUrl, secrets), merged: false };
+  }
+  const updates = envUpdates(current, ollamaUrl, secrets);
+  return { text: mergeEnvText(current, updates, io.envPath), merged: true };
+}
+
+async function readEnvFile(io: InitIo): Promise<string | undefined> {
+  try {
+    return await io.readFile(io.envPath);
+  } catch (error) {
+    throw new DigestError(`Could not read ${io.envPath}: ${errorMessage(error)}`, { cause: error });
+  }
+}
+
+/**
+ * What init sets in an existing file: every secret it was given, and OLLAMA_URL only when the
+ * file has none (a hand-set URL is a choice, such as a remote Ollama). A secret it was not given
+ * is left alone.
+ */
+function envUpdates(
+  current: string,
+  ollamaUrl: string,
+  secrets: Record<string, string>,
+): EnvUpdate[] {
+  const hasUrl = (parseEnv(current)['OLLAMA_URL'] ?? '') !== '';
+  return [
+    ...(hasUrl ? [] : [{ key: 'OLLAMA_URL', value: ollamaUrl }]),
+    ...Object.entries(secrets).map(([key, value]) => ({ key, value })),
+  ];
 }
 
 function toJson(input: ConfigInput): string {
@@ -478,6 +571,7 @@ function summary(info: {
   envPath: string;
   answers: Answers;
   ollamaUrl: string;
+  envMerged: boolean;
 }): string {
   const { answers } = info;
   const channels = [
@@ -485,9 +579,17 @@ function summary(info: {
     ...(answers.email ? ['email'] : []),
     ...(answers.slackWebhook ? ['slack'] : []),
   ];
+  const written = info.envMerged
+    ? `Wrote ${info.configPath} and updated ${info.envPath} (kept its other settings; readable by you only).`
+    : `Wrote ${info.configPath} and ${info.envPath} (readable by you only).`;
   return [
-    `Wrote ${info.configPath} and ${info.envPath} (readable by you only).`,
+    written,
     `  profile:  ${answers.profile}`,
+    ...(answers.profile === 'quality'
+      ? [
+          `  note:     ${QUALITY_UNMEASURED}; set "profile" to "light" in ${info.configPath} for a shorter week.`,
+        ]
+      : []),
     `  focus:    ${answers.focusAreas.join(', ')}`,
     `  delivery: ${channels.join(', ')}`,
     `  schedule: ${info.answers.timeZone}`,
@@ -531,6 +633,7 @@ function createDefaultIo(): InitIo {
     env: process.env,
     platform: process.platform,
     totalMemoryBytes: totalmem(),
+    memoryLimitBytes: process.constrainedMemory(),
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     cwd: process.cwd(),
     envPath: DEFAULT_ENV_PATH,
@@ -538,6 +641,7 @@ function createDefaultIo(): InitIo {
     renderSchedule: renderOsSchedule,
     exists: pathExists,
     isEmptyFile,
+    readFile: readTextIfPresent,
     writeFile: writeTextFile,
     writeSecretFile,
     stdout: (text) => {
@@ -582,6 +686,15 @@ async function pathExists(path: string): Promise<boolean> {
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
     return code !== 'ENOENT' && code !== 'ENOTDIR';
+  }
+}
+
+async function readTextIfPresent(path: string): Promise<string | undefined> {
+  try {
+    return await readFile(path, 'utf8');
+  } catch (error) {
+    if (errorCode(error) === 'ENOENT') return undefined;
+    throw error;
   }
 }
 

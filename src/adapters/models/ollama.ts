@@ -24,10 +24,12 @@ import {
 } from './ollamaHttp.js';
 import {
   parseSystemOneResponse,
+  questionSize,
   stateBudgetFor,
   toSystemOneQuestions,
   trimState,
   validateQuestions,
+  type SystemOneQuestion,
 } from './systemone.js';
 
 /** Ollama's `think` request field: on or off, or an effort level for models that have levels. */
@@ -171,8 +173,16 @@ async function callOllama<T extends { usage: Usage }>(
   }
 }
 
-function thinkFor({ options }: Context, role: Role): ThinkSetting | undefined {
-  return options.think?.[role] ?? DEFAULT_THINK[role];
+/**
+ * The `think` value generate sends for `role`: the configured one, else the adapter default, else
+ * undefined (the field is left out and the model decides). The one place that rule lives, so
+ * `digest doctor` shows what a run sends.
+ */
+export function effectiveThink(
+  configured: ThinkByRole | undefined,
+  role: Role,
+): ThinkSetting | undefined {
+  return configured?.[role] ?? DEFAULT_THINK[role];
 }
 
 function chatBody(
@@ -210,7 +220,7 @@ function joinChat(raw: unknown): { text: string; usage: Usage; doneReason: strin
 
 async function generate(context: Context, request: GenerateRequest): Promise<GenerateResult> {
   const model = resolveModel(context.options.profile, request.role, request.model);
-  const think = thinkFor(context, request.role);
+  const think = effectiveThink(context.options.think, request.role);
   const body = chatBody(model, request, think);
   const spec: CallSpec = {
     op: 'generate',
@@ -221,29 +231,44 @@ async function generate(context: Context, request: GenerateRequest): Promise<Gen
     send: (signal) => context.http.postStream(CHAT_PATH, body, signal),
   };
   const result = await callOllama(context, spec, joinChat);
+  // A cut reply is returned as it is. With a schema it is an unfinished JSON document, which can
+  // never validate, so generateStructured sends it to its one repair attempt; the line says why.
   if (result.doneReason === LENGTH_DONE_REASON)
     context.options.logger
       .child({ role: request.role, model, ...spec.logFields })
-      .warn('ollama reply hit the token limit', { outputTokens: result.usage.outputTokens });
+      .warn('ollama reply hit the token limit', {
+        outputTokens: result.usage.outputTokens,
+        structured: request.jsonSchema !== undefined,
+      });
   return { model, text: result.text, usage: result.usage, latencyMs: result.latencyMs };
 }
 
-function fitState(context: Context, role: Role, model: string, state: string): string {
-  const trimmed = trimState(state, stateBudgetFor(model));
+/** Trims `state` to what is left of the model's context after the questions. */
+function fitState(
+  context: Context,
+  spec: { role: Role; model: string },
+  state: string,
+  questions: Readonly<Record<string, SystemOneQuestion>>,
+): string {
+  const questionChars = questionSize(questions);
+  const trimmed = trimState(state, stateBudgetFor(spec.model, questionChars));
   if (trimmed !== state)
-    context.options.logger
-      .child({ role, model })
-      .warn('decide state trimmed', { fromChars: state.length, toChars: trimmed.length });
+    context.options.logger.child(spec).warn('decide state trimmed', {
+      fromChars: state.length,
+      toChars: trimmed.length,
+      questionChars,
+    });
   return trimmed;
 }
 
 async function decide(context: Context, request: DecideRequest): Promise<DecideResult> {
   validateQuestions(request.questions);
   const model = resolveModel(context.options.profile, request.role);
+  const questions = toSystemOneQuestions(request.questions);
   const body = {
     model,
-    state: fitState(context, request.role, model, request.state),
-    questions: toSystemOneQuestions(request.questions),
+    state: fitState(context, { role: request.role, model }, request.state, questions),
+    questions,
   };
   const spec: CallSpec = {
     op: 'decide',

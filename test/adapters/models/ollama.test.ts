@@ -1,12 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 import {
   createOllamaProvider,
   DEFAULT_THINK,
   DEFAULT_TIMEOUTS_MS,
+  effectiveThink,
   type OllamaProviderOptions,
 } from '../../../src/adapters/models/ollama.js';
+import { MIN_STATE_CHARS } from '../../../src/adapters/models/systemone.js';
 import { MODEL_TAGS, PROFILES } from '../../../src/config/profiles.js';
+import { generateStructured } from '../../../src/core/structured.js';
 import type { DecideRequest, DecisionQuestion } from '../../../src/ports/ModelProvider.js';
 import { DigestError } from '../../../src/shared/errors.js';
 import type { LogFields, Logger } from '../../../src/shared/telemetry.js';
@@ -279,7 +283,90 @@ describe('generate', () => {
     const result = await provider.generate(WRITE);
     expect(result.text).toBe('cut');
     expect(lines).toContainEqual(
-      expect.objectContaining({ level: 'warn', message: 'ollama reply hit the token limit' }),
+      expect.objectContaining({
+        level: 'warn',
+        message: 'ollama reply hit the token limit',
+        fields: expect.objectContaining({ structured: false }) as unknown,
+      }),
+    );
+  });
+});
+
+describe('a reply cut at the token limit', () => {
+  const SCHEMA = z.object({ headline: z.string(), items: z.array(z.string()) });
+  const COMPLETE = '{"headline":"Week 42","items":["a","b"]}';
+  const cutReply = (): Response =>
+    ndjson({ message: { content: COMPLETE.slice(0, 25) }, done: true, done_reason: 'length' });
+  const goodReply = (): Response =>
+    ndjson({ message: { content: COMPLETE }, done: true, done_reason: 'stop' });
+
+  it('is not valid JSON, so structured generation sends it to its one repair attempt', async () => {
+    const { provider, calls } = setup(sequence(cutReply, goodReply));
+
+    const result = await generateStructured(provider, WRITE, SCHEMA, 'write');
+
+    expect(result.repaired).toBe(true);
+    expect(result.value).toEqual({ headline: 'Week 42', items: ['a', 'b'] });
+    expect(calls).toHaveLength(2);
+    const repairPrompt = (calls[1]!.body as { messages: { content: string }[] }).messages[1]!
+      .content;
+    expect(repairPrompt).toContain('invalid JSON');
+    expect(repairPrompt).toContain(COMPLETE.slice(0, 25));
+  });
+
+  it('fails the step, with the usual message, when the repair is cut as well', async () => {
+    const { provider, calls } = setup(sequence(cutReply));
+
+    await expect(generateStructured(provider, WRITE, SCHEMA, 'write')).rejects.toThrow(
+      'Model output for write failed validation after one repair attempt',
+    );
+    expect(calls).toHaveLength(2);
+  });
+
+  it('is logged as an incomplete structured reply when a schema was requested', async () => {
+    const { provider, lines } = setup(sequence(cutReply));
+
+    await provider.generate({ ...WRITE, jsonSchema: z.toJSONSchema(SCHEMA) });
+
+    expect(lines).toContainEqual(
+      expect.objectContaining({
+        level: 'warn',
+        message: 'ollama reply hit the token limit',
+        fields: expect.objectContaining({ structured: true }) as unknown,
+      }),
+    );
+  });
+});
+
+describe('effectiveThink', () => {
+  it('returns the configured setting over the adapter default', () => {
+    expect(effectiveThink({ guardRisk: true }, 'guardRisk')).toBe(true);
+    expect(effectiveThink({ write: 'high' }, 'write')).toBe('high');
+  });
+
+  it('keeps an explicit false instead of falling back to the default', () => {
+    expect(effectiveThink({ guardRisk: false, classify: false }, 'classify')).toBe(false);
+  });
+
+  it('returns the adapter default for a role without a setting', () => {
+    expect(effectiveThink(undefined, 'guardRisk')).toBe(false);
+    expect(effectiveThink({ write: 'low' }, 'guardRisk')).toBe(false);
+  });
+
+  it('returns undefined when neither the config nor the adapter says anything', () => {
+    expect(effectiveThink(undefined, 'classify')).toBeUndefined();
+    expect(effectiveThink({}, 'write')).toBeUndefined();
+  });
+
+  it('is what generate sends', async () => {
+    const think = { classify: 'medium', guardRisk: true } as const;
+    const { provider, calls } = setup(sequence(chatOk), { think });
+
+    await provider.generate({ role: 'classify', system: 's', prompt: 'p' });
+    await provider.generate({ role: 'guardRisk', system: 's', prompt: 'p' });
+
+    expect(calls.map((call) => (call.body as { think?: unknown }).think)).toEqual(
+      (['classify', 'guardRisk'] as const).map((role) => effectiveThink(think, role)),
     );
   });
 });
@@ -437,27 +524,73 @@ describe('decide', () => {
     expect(calls).toHaveLength(0);
   });
 
-  it('trims the state to the strands-decider budget and logs it', async () => {
+  /** The one question of these tests, as /v1/systemone gets it. */
+  const MINOR = { minor: { type: 'yesno', instructions: 'Is this a minor release?' } } as const;
+  const MINOR_CHARS = '{"minor":{"type":"noul","instructions":"Is this a minor release?"}}'.length;
+
+  it('trims the state to the strands-decider budget minus the questions, and logs it', async () => {
     const { provider, calls, lines } = setup(
       sequence(() => json(200, fixture('systemone-yesno-no-criteria.json'))),
     );
     const state = `<<<DATA item>>>\n${'a'.repeat(12_000)}\n<<<END DATA>>>`;
 
-    await provider.decide({
-      role: 'classify',
-      state,
-      questions: { minor: { type: 'yesno', instructions: 'Is this a minor release?' } },
-    });
+    await provider.decide({ role: 'classify', state, questions: MINOR });
 
     const sent = (calls[0]!.body as { state: string }).state;
-    expect(sent).toHaveLength(10_000);
+    expect(sent).toHaveLength(10_000 - MINOR_CHARS);
     expect(sent.endsWith('<<<END DATA>>>')).toBe(true);
     expect(lines).toContainEqual(
       expect.objectContaining({
         level: 'warn',
-        fields: expect.objectContaining({ fromChars: state.length, toChars: 10_000 }) as unknown,
+        fields: expect.objectContaining({
+          fromChars: state.length,
+          toChars: 10_000 - MINOR_CHARS,
+          questionChars: MINOR_CHARS,
+        }) as unknown,
       }),
     );
+  });
+
+  it('trims a state that would fit alone when the questions use up the room', async () => {
+    const answer = { type: 'choice', choice: 'area0', probabilities: { area0: 1 }, confidence: 1 };
+    const { provider, calls } = setup(sequence(() => json(200, { answers: { area: answer } })));
+    const options = Object.fromEntries(
+      Array.from({ length: 20 }, (_, i) => [`area${i}`, 'x'.repeat(100)]),
+    );
+    const questions = { area: { type: 'choice', instructions: 'Which?', options } } as const;
+    const state = 'c'.repeat(9_000);
+
+    await provider.decide({ role: 'classify', state, questions });
+
+    const sent = (calls[0]!.body as { state: string }).state;
+    const sentQuestions = (calls[0]!.body as { questions: unknown }).questions;
+    expect(sent.length).toBeLessThan(state.length);
+    expect(sent.length + JSON.stringify(sentQuestions).length).toBeLessThanOrEqual(10_000);
+  });
+
+  it('sends the whole state when the state and the questions fit together', async () => {
+    const { provider, calls, lines } = setup(
+      sequence(() => json(200, fixture('systemone-yesno-no-criteria.json'))),
+    );
+    const state = 'd'.repeat(10_000 - MINOR_CHARS);
+
+    await provider.decide({ role: 'classify', state, questions: MINOR });
+
+    expect((calls[0]!.body as { state: string }).state).toBe(state);
+    expect(lines.filter((line) => line.level === 'warn')).toEqual([]);
+  });
+
+  it('keeps a minimum of the state when the questions alone fill the context', async () => {
+    const { provider, calls } = setup(
+      sequence(() => json(200, fixture('systemone-yesno-no-criteria.json'))),
+    );
+    const questions = {
+      minor: { type: 'yesno', instructions: 'y'.repeat(12_000) },
+    } as const;
+
+    await provider.decide({ role: 'classify', state: 'e'.repeat(5_000), questions });
+
+    expect((calls[0]!.body as { state: string }).state).toHaveLength(MIN_STATE_CHARS);
   });
 
   it('keeps a long state for clef within its larger budget', async () => {

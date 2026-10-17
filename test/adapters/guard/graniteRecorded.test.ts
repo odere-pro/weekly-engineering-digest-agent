@@ -32,16 +32,29 @@ function fixture<T extends z.ZodType>(name: string, schema: T): z.infer<T> {
   return schema.parse(JSON.parse(raw));
 }
 
-/** Replies with the recorded texts in order and keeps the calls the guard makes. */
+/** The call that judges a draft's headline and intro. It came after these fixtures were recorded. */
+const HEADLINE_BLOCK = '<<<DATA text:headline>>>';
+const HEADLINE_NO = '<score> no </score>';
+
+/**
+ * Replies with the recorded texts in order and keeps the calls the guard makes. The headline and
+ * intro call has no recording: it answers "no", so the verdict stays the recorded one.
+ */
 function replayModel(calls: readonly z.infer<typeof CallSchema>[]): FakeModelProvider {
   let next = 0;
   return new FakeModelProvider({
-    generate: () => calls[next++]?.text ?? 'replay ran out of calls',
+    generate: (request) =>
+      request.prompt.includes(HEADLINE_BLOCK)
+        ? HEADLINE_NO
+        : (calls[next++]?.text ?? 'replay ran out of calls'),
   });
 }
 
+/** The recorded kinds of call the guard made, in order; the headline and intro call is left out. */
 function sentPrompts(model: FakeModelProvider): { system: string; prompt: string }[] {
-  return model.generateCalls.map(({ system, prompt }) => ({ system, prompt }));
+  return model.generateCalls
+    .filter(({ prompt }) => !prompt.includes(HEADLINE_BLOCK))
+    .map(({ system, prompt }) => ({ system, prompt }));
 }
 
 describe('graniteRisk replayed from recorded replies', () => {

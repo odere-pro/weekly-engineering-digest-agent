@@ -1,14 +1,19 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { parseEnv } from 'node:util';
 import { describe, expect, it, vi } from 'vitest';
 import {
+  formatEnvValue,
   loadConfig,
+  mergeEnvText,
+  platformOf,
   redactSecrets,
   resolveHostPlatform,
   type LoadOptions,
 } from '../../src/config/load.js';
 import { NON_MAC_FALLBACK, PROFILES } from '../../src/config/profiles.js';
+import { createRedactor } from '../../src/observability/redact.js';
 import { SecretsSchema } from '../../src/config/schema.js';
 import { DigestError } from '../../src/shared/errors.js';
 
@@ -451,5 +456,146 @@ describe('redactSecrets', () => {
   it('redacts a secret that contains another secret first', () => {
     const nested = { SMTP_PASSWORD: 'tok', GITHUB_TOKEN: 'tok-longer' };
     expect(redactSecrets('x tok-longer y tok', nested)).toBe('x [redacted] y [redacted]');
+  });
+});
+
+describe('LoadedConfig.platform', () => {
+  it('is the platform the profile was resolved for', async () => {
+    const loaded = await loadConfig(base({ platform: linux }));
+
+    expect(loaded.platform).toEqual(linux);
+    expect(loaded.profile).toEqual({ ...NON_MAC_FALLBACK, name: 'quality' });
+  });
+
+  it('comes from DIGEST_HOST_OS/DIGEST_HOST_ARCH when no platform is passed', async () => {
+    const { platform: _omitted, ...withoutPlatform } = base();
+
+    const loaded = await loadConfig({
+      ...withoutPlatform,
+      processEnv: { DIGEST_HOST_OS: 'Darwin', DIGEST_HOST_ARCH: 'aarch64' },
+    });
+
+    expect(loaded.platform).toEqual(mac);
+  });
+
+  it('falls back to the running process when nothing is named', async () => {
+    const { platform: _omitted, ...withoutPlatform } = base();
+
+    const loaded = await loadConfig(withoutPlatform);
+
+    expect(loaded.platform).toEqual({ os: process.platform, arch: process.arch });
+  });
+});
+
+describe('platformOf', () => {
+  const env = { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' } as const;
+
+  it('returns the platform the loader resolved', () => {
+    expect(platformOf({ env: { ...env, DIGEST_HOST_OS: 'linux' }, platform: mac })).toEqual(mac);
+  });
+
+  it('resolves it from the environment for a config built by hand', () => {
+    const resolved = platformOf({
+      env: { ...env, DIGEST_HOST_OS: 'linux', DIGEST_HOST_ARCH: 'x86_64' },
+    });
+
+    expect(resolved).toEqual(linux);
+  });
+});
+
+describe('redactSecrets and the observability redactor', () => {
+  const secrets = SecretsSchema.parse({
+    SMTP_PASSWORD: 'p@ss word&more',
+    SLACK_WEBHOOK_URL: 'https://hooks.example.com/services/T000/B000/XXXX',
+  });
+  const values = Object.values(secrets);
+  const encoded = encodeURIComponent('p@ss word&more');
+
+  it('gives the same text as createRedactor for the same secret values', () => {
+    const text = `a ${values[0]!} b ${encoded} c ${values[1]!} d "p@ss word&more" e`;
+
+    expect(redactSecrets(text, secrets)).toBe(createRedactor(values).text(text));
+  });
+
+  it('also hides the percent-encoded form of a secret, as the logger does', () => {
+    expect(redactSecrets(`GET /login?pw=${encoded}`, secrets)).toBe('GET /login?pw=[redacted]');
+  });
+});
+
+describe('formatEnvValue', () => {
+  it('leaves a plain value bare', () => {
+    expect(formatEnvValue('K', 'http://localhost:11434')).toBe('http://localhost:11434');
+  });
+
+  it.each(['has space', 'a#b', 'a"b', "it's", 'back\\slash', '$HOME'])(
+    'quotes %j so that the loader reads it back unchanged',
+    (value) => {
+      expect(parseEnv(`K=${formatEnvValue('K', value)}`)['K']).toBe(value);
+    },
+  );
+
+  it.each(['a\nb', 'a\rb', `all ' " \` quotes`])(
+    'refuses %j, which no quoting can hold',
+    (value) => {
+      expect(() => formatEnvValue('SECRET', value)).toThrow(/SECRET cannot be stored in \.env/);
+    },
+  );
+});
+
+describe('mergeEnvText', () => {
+  const merge = (current: string, updates: { key: string; value: string }[]): string =>
+    mergeEnvText(current, updates, '/work/.env');
+
+  it('replaces a value in place and keeps comments, blank lines and other keys', () => {
+    const current = '# note\n\nA=1\nB=old\nC=3\n';
+
+    expect(merge(current, [{ key: 'B', value: 'new value' }])).toBe(
+      "# note\n\nA=1\nB='new value'\nC=3\n",
+    );
+  });
+
+  it('adds a missing key at the end, after a final newline that was missing', () => {
+    expect(merge('A=1', [{ key: 'B', value: '2' }])).toBe('A=1\nB=2\n');
+  });
+
+  it('does not touch a commented-out key', () => {
+    expect(merge('# B=old\nA=1\n', [{ key: 'B', value: '2' }])).toBe('# B=old\nA=1\nB=2\n');
+  });
+
+  it('does not match a longer key that merely starts with the same letters', () => {
+    expect(merge('B_EXTRA=1\n', [{ key: 'B', value: '2' }])).toBe('B_EXTRA=1\nB=2\n');
+  });
+
+  it('keeps export and the spacing before the key', () => {
+    expect(merge('  export  B =old\n', [{ key: 'B', value: '2' }])).toBe('  export  B=2\n');
+  });
+
+  it('returns the text unchanged, with a final newline, when there is nothing to set', () => {
+    expect(merge('A=1', [])).toBe('A=1\n');
+  });
+
+  it('refuses a key that is not a variable name, so it never reaches a pattern', () => {
+    expect(() => merge('A=1\n', [{ key: 'A.*', value: '2' }])).toThrow(/not a variable name/);
+  });
+
+  it('ends every line with CRLF, also the last one when the file had no final newline', () => {
+    expect(merge('A=1\r\nB=2', [{ key: 'C', value: '3' }])).toBe('A=1\r\nB=2\r\nC=3\r\n');
+    expect(merge('A=1\r\nB=2', [{ key: 'B', value: '9' }])).toBe('A=1\r\nB=9\r\n');
+  });
+
+  it('refuses to replace a value that spans several lines, which would leave its tail behind', () => {
+    const current = 'B="line one\nline two"\nA=1\n';
+
+    expect(() => merge(current, [{ key: 'B', value: '2' }])).toThrow(
+      /Could not merge into \/work\/\.env safely: a setting init would change spans several lines/,
+    );
+  });
+
+  it('refuses, naming the file, when a replaced line belongs to a multi-line value', () => {
+    const current = 'NOTE="one\nB=inside"\n';
+
+    expect(() => merge(current, [{ key: 'B', value: '2' }])).toThrow(
+      /Could not merge into \/work\/\.env safely/,
+    );
   });
 });

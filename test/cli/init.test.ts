@@ -15,6 +15,7 @@ import type * as Fs from 'node:fs/promises';
 import { parseEnv } from 'node:util';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  hasQualityMemory,
   initCommand,
   recommendProfile,
   resolveOllamaUrl,
@@ -57,7 +58,7 @@ interface PromptCall {
   options: {
     default?: unknown;
     validate?: Validate;
-    choices?: readonly { name: string; value: string; checked?: boolean }[];
+    choices?: readonly { name: string; value: string; checked?: boolean; description?: string }[];
   };
 }
 type Rule = readonly [RegExp, unknown];
@@ -129,14 +130,24 @@ interface HarnessOptions {
   inDocker?: boolean;
   env?: Record<string, string>;
   ramGiB?: number;
+  /** Bytes the container is limited to; 0 or unset when it has no limit. */
+  memoryLimitGiB?: number;
   platform?: NodeJS.Platform;
   prompts?: InitPrompts;
+  /** The text of an .env that already exists. */
+  envText?: string;
+  /** Makes reading the existing .env fail. */
+  envReadError?: Error;
 }
 
 function harness(options: HarnessOptions = {}): Harness {
   const files = new Map<string, { content: string; secret: boolean }>();
   const emptyFiles = new Set(options.empty ?? []);
-  const preexisting = new Set([...(options.existing ?? []), ...emptyFiles]);
+  const preexisting = new Set([
+    ...(options.existing ?? []),
+    ...(options.envText === undefined ? [] : [ENV_PATH]),
+    ...emptyFiles,
+  ]);
   const scripted = scriptedPrompts(options.rules);
   const out: string[] = [];
   const err: string[] = [];
@@ -146,6 +157,7 @@ function harness(options: HarnessOptions = {}): Harness {
     env: options.env ?? {},
     platform: options.platform ?? 'linux',
     totalMemoryBytes: (options.ramGiB ?? 32) * GIB,
+    memoryLimitBytes: (options.memoryLimitGiB ?? 0) * GIB,
     timeZone: options.timeZone ?? 'Europe/Berlin',
     cwd: '/work',
     envPath: ENV_PATH,
@@ -156,6 +168,14 @@ function harness(options: HarnessOptions = {}): Harness {
         preexisting.has(path) || files.has(path) || (path === '/.dockerenv' && !!options.inDocker),
       ),
     isEmptyFile: (path) => Promise.resolve(emptyFiles.has(path) && !files.has(path)),
+    readFile: (path) => {
+      if (path === ENV_PATH && options.envReadError) return Promise.reject(options.envReadError);
+      const written = files.get(path);
+      if (written) return Promise.resolve(written.content);
+      if (path === ENV_PATH && options.envText !== undefined)
+        return Promise.resolve(options.envText);
+      return Promise.resolve(preexisting.has(path) ? '' : undefined);
+    },
     writeFile: (path, content) => {
       files.set(path, { content, secret: false });
       return Promise.resolve();
@@ -176,10 +196,14 @@ function writtenConfig(h: Harness): Record<string, unknown> {
   return JSON.parse(file.content) as Record<string, unknown>;
 }
 
-function writtenEnv(h: Harness): Record<string, string | undefined> {
+function writtenEnvText(h: Harness): string {
   const file = h.files.get(ENV_PATH);
   if (!file) throw new Error('.env was not written');
-  return parseEnv(file.content);
+  return file.content;
+}
+
+function writtenEnv(h: Harness): Record<string, string | undefined> {
+  return parseEnv(writtenEnvText(h));
 }
 
 const EMAIL_RULES: readonly Rule[] = [
@@ -195,18 +219,27 @@ const SLACK_RULES: readonly Rule[] = [
 ];
 
 describe('recommendProfile', () => {
+  it('recommends light, since quality has no measured baseline yet', () => {
+    expect(recommendProfile()).toBe('light');
+  });
+});
+
+describe('hasQualityMemory', () => {
   it.each([
-    [64, 'quality'],
-    [32, 'quality'],
-    [24, 'light'],
-    [16, 'light'],
-    [8, 'light'],
-  ])('recommends for %i GiB of RAM: %s', (gib, expected) => {
-    expect(recommendProfile(gib * GIB)).toBe(expected);
+    [64, true],
+    [32, true],
+    [31.3, true],
+    [30.4, true],
+    [30.3, false],
+    [24, false],
+    [16, false],
+  ])('%d GiB: %s', (gib, expected) => {
+    expect(hasQualityMemory(gib * GIB)).toBe(expected);
   });
 
-  it('keeps the light profile just under 32 GiB', () => {
-    expect(recommendProfile(32 * GIB - 1)).toBe('light');
+  it('allows 5% under 32 GiB, for the memory a kernel keeps for itself', () => {
+    expect(hasQualityMemory(32 * GIB * 0.95)).toBe(true);
+    expect(hasQualityMemory(32 * GIB * 0.95 - 1)).toBe(false);
   });
 });
 
@@ -240,16 +273,16 @@ describe('initCommand --yes', () => {
     expect(writtenEnv(h)['OLLAMA_URL']).toBe('http://localhost:11434');
   });
 
-  it.each([
-    [32, 'quality'],
-    [16, 'light'],
-  ])('picks the profile recommended for %i GiB: %s', async (ramGiB, profile) => {
-    const h = harness({ ramGiB });
+  it.each([64, 32, 16, 8])(
+    'picks light whatever the RAM (%i GiB): quality is not measured yet',
+    async (ramGiB) => {
+      const h = harness({ ramGiB });
 
-    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+      await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
 
-    expect(writtenConfig(h)['profile']).toBe(profile);
-  });
+      expect(writtenConfig(h)['profile']).toBe('light');
+    },
+  );
 
   it('refuses to overwrite an existing config', async () => {
     const h = harness({ existing: [CONFIG_PATH] });
@@ -261,14 +294,18 @@ describe('initCommand --yes', () => {
     expect(h.err.join('')).toContain(CONFIG_PATH);
   });
 
-  it('refuses to overwrite an existing .env', async () => {
-    const h = harness({ existing: [ENV_PATH] });
+  it('merges into an existing .env instead of refusing, and keeps what it does not manage', async () => {
+    const h = harness({ envText: 'GITHUB_TOKEN=ghp_keep\nLOG_LEVEL=debug\n' });
 
     const code = await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
 
-    expect(code).toBe(1);
-    expect(h.files.size).toBe(0);
-    expect(h.err.join('')).toContain(ENV_PATH);
+    expect(code).toBe(0);
+    expect(h.err).toEqual([]);
+    expect(writtenEnv(h)).toMatchObject({
+      GITHUB_TOKEN: 'ghp_keep',
+      LOG_LEVEL: 'debug',
+      OLLAMA_URL: 'http://localhost:11434',
+    });
   });
 
   it('uses digest.config.json in the working directory by default', async () => {
@@ -281,7 +318,7 @@ describe('initCommand --yes', () => {
 });
 
 describe('overwrite confirmation', () => {
-  it('asks first, naming the existing files, and stops on no', async () => {
+  it('asks first, naming the existing config, and stops on no', async () => {
     const h = harness({ existing: [CONFIG_PATH, ENV_PATH], rules: [[/Overwrite/, false]] });
 
     const code = await initCommand({ config: CONFIG_PATH }, h.io);
@@ -291,7 +328,16 @@ describe('overwrite confirmation', () => {
     expect(h.calls).toHaveLength(1);
     expect(h.calls[0]?.options.default).toBe(false);
     expect(h.calls[0]?.message).toContain(CONFIG_PATH);
-    expect(h.calls[0]?.message).toContain(ENV_PATH);
+  });
+
+  it('does not ask about .env: it is merged, not replaced', async () => {
+    const h = harness({ existing: [CONFIG_PATH, ENV_PATH], rules: [[/Overwrite/, true]] });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    const questions = h.calls.filter((c) => /Overwrite/.test(c.message));
+    expect(questions).toHaveLength(1);
+    expect(questions[0]?.message).not.toContain(ENV_PATH);
   });
 
   it('defaults to keeping the files', async () => {
@@ -301,7 +347,7 @@ describe('overwrite confirmation', () => {
     expect(h.files.size).toBe(0);
   });
 
-  it('overwrites after a yes', async () => {
+  it('overwrites the config after a yes and updates .env', async () => {
     const h = harness({ existing: [CONFIG_PATH, ENV_PATH], rules: [[/Overwrite/, true]] });
 
     const code = await initCommand({ config: CONFIG_PATH }, h.io);
@@ -309,6 +355,15 @@ describe('overwrite confirmation', () => {
     expect(code).toBe(0);
     expect(h.files.has(CONFIG_PATH)).toBe(true);
     expect(h.files.has(ENV_PATH)).toBe(true);
+  });
+
+  it('does not ask when only .env exists', async () => {
+    const h = harness({ envText: 'LOG_LEVEL=debug\n' });
+
+    const code = await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(0);
+    expect(h.calls.some((c) => c.kind === 'confirm')).toBe(false);
   });
 
   it('does not ask when nothing exists', async () => {
@@ -528,20 +583,21 @@ describe('interactive answers', () => {
     expect(onePicked('ONE')).toBe(true);
   });
 
-  it.each([
-    [32, 'quality'],
-    [16, 'light'],
-  ])('offers the recommended profile for %i GiB as the default: %s', async (ramGiB, profile) => {
-    const h = harness({ ramGiB });
+  it.each([64, 32, 16])(
+    'offers light as the recommended default, whatever the RAM (%i GiB)',
+    async (ramGiB) => {
+      const h = harness({ ramGiB });
 
-    await initCommand({ config: CONFIG_PATH }, h.io);
+      await initCommand({ config: CONFIG_PATH }, h.io);
 
-    const call = h.calls.find((c) => c.kind === 'select');
-    expect(call?.options.default).toBe(profile);
-    expect(call?.options.choices?.map((c) => c.value)).toEqual(['quality', 'fast', 'light']);
-    expect(call?.options.choices?.find((c) => c.value === profile)?.name).toContain('recommended');
-    expect(writtenConfig(h)['profile']).toBe(profile);
-  });
+      const call = h.calls.find((c) => c.kind === 'select');
+      expect(call?.options.default).toBe('light');
+      expect(call?.options.choices?.map((c) => c.value)).toEqual(['quality', 'fast', 'light']);
+      const recommended = call?.options.choices?.filter((c) => c.name.includes('recommended'));
+      expect(recommended?.map((c) => c.value)).toEqual(['light']);
+      expect(writtenConfig(h)['profile']).toBe('light');
+    },
+  );
 
   it('writes the profile that was chosen', async () => {
     const h = harness({ rules: [[/Model profile/, 'fast']] });
@@ -549,6 +605,134 @@ describe('interactive answers', () => {
     await initCommand({ config: CONFIG_PATH }, h.io);
 
     expect(writtenConfig(h)['profile']).toBe('fast');
+  });
+
+  describe('what the profile question says about quality', () => {
+    const descriptionOf = async (
+      options: Parameters<typeof harness>[0],
+      profile = 'quality',
+    ): Promise<string> => {
+      const h = harness(options);
+      await initCommand({ config: CONFIG_PATH }, h.io);
+      const call = h.calls.find((c) => c.kind === 'select');
+      return call?.options.choices?.find((c) => c.value === profile)?.description ?? '';
+    };
+
+    it('says it is not measured yet and took about 1 h per run on the reference laptop', async () => {
+      const text = await descriptionOf({ ramGiB: 64 });
+
+      expect(text).toMatch(/not measured yet/);
+      expect(text).toMatch(/about 1 h/);
+      expect(text).toMatch(/reference laptop/);
+      expect(text).toMatch(/32 GB/);
+    });
+
+    it('does not mention memory when the machine has enough', async () => {
+      expect(await descriptionOf({ ramGiB: 32 })).not.toMatch(/GiB/);
+      expect(await descriptionOf({ ramGiB: 31 })).not.toMatch(/GiB/);
+    });
+
+    it('allows 5% under 32 GiB, so a "32 GB" Linux box that reports 31 GiB is not warned', async () => {
+      expect(await descriptionOf({ ramGiB: 30.5 })).not.toMatch(/GiB/);
+      expect(await descriptionOf({ ramGiB: 30 })).toMatch(/This machine has 30\.0 GiB of RAM/);
+    });
+
+    it('warns with the amount the machine has', async () => {
+      const text = await descriptionOf({ ramGiB: 24 });
+
+      expect(text).toMatch(/This machine has 24\.0 GiB of RAM; quality needs about 32 GB\./);
+    });
+
+    it('names the container limit inside Docker', async () => {
+      const text = await descriptionOf({ inDocker: true, ramGiB: 64, memoryLimitGiB: 8 });
+
+      expect(text).toMatch(/Docker limits this container to 8\.0 GiB \(the container limit\)/);
+    });
+
+    it('takes the smaller of the container limit and the memory it sees', async () => {
+      const text = await descriptionOf({ inDocker: true, ramGiB: 16, memoryLimitGiB: 64 });
+
+      expect(text).toMatch(/Docker shows this container 16\.0 GiB of RAM/);
+      expect(text).not.toMatch(/container limit/);
+    });
+
+    it('says what Docker shows when the container has no limit', async () => {
+      const text = await descriptionOf({ inDocker: true, ramGiB: 12 });
+
+      expect(text).toMatch(
+        /Docker shows this container 12\.0 GiB of RAM; quality needs about 32 GB/,
+      );
+      expect(text).toMatch(/Ollama may run elsewhere/);
+    });
+
+    it('does not warn inside Docker when the limit is enough', async () => {
+      const text = await descriptionOf({ inDocker: true, ramGiB: 64, memoryLimitGiB: 48 });
+
+      expect(text).not.toMatch(/GiB/);
+    });
+
+    it('keeps the memory warning off the other profiles', async () => {
+      expect(await descriptionOf({ ramGiB: 8 }, 'light')).not.toMatch(/GiB/);
+      expect(await descriptionOf({ ramGiB: 8 }, 'fast')).not.toMatch(/GiB/);
+    });
+  });
+
+  describe('what the profile question says about light', () => {
+    const lightOn = async (options: Parameters<typeof harness>[0]): Promise<string> => {
+      const h = harness(options);
+      await initCommand({ config: CONFIG_PATH }, h.io);
+      const call = h.calls.find((c) => c.kind === 'select');
+      return call?.options.choices?.find((c) => c.value === 'light')?.description ?? '';
+    };
+
+    it('promises 16 GB on a Mac', async () => {
+      const text = await lightOn({ platform: 'darwin' });
+
+      expect(text).toMatch(/Fits in 16 GB/);
+      expect(text).not.toMatch(/fallback/);
+    });
+
+    it.each(['linux', 'win32'] as const)(
+      'says on %s that it falls back to larger models that need far more than 16 GB',
+      async (platform) => {
+        const text = await lightOn({ platform });
+
+        expect(text).toMatch(/larger fallback models.*much more than 16 GB/);
+        expect(text).toMatch(/digest doctor/);
+      },
+    );
+
+    it('judges the Mac that runs Ollama, not the Linux container, when Docker names its host', async () => {
+      const named = await lightOn({
+        inDocker: true,
+        platform: 'linux',
+        env: { DIGEST_HOST_OS: 'Darwin' },
+      });
+      const unnamed = await lightOn({ inDocker: true, platform: 'linux' });
+
+      expect(named).not.toMatch(/fallback/);
+      expect(unnamed).toMatch(/larger fallback models/);
+    });
+  });
+
+  describe('the summary', () => {
+    it('notes that quality is unmeasured when it was chosen', async () => {
+      const h = harness({ rules: [[/Model profile/, 'quality']] });
+
+      await initCommand({ config: CONFIG_PATH }, h.io);
+
+      expect(h.out.join('')).toMatch(/note:.*quality is not measured yet.*about 1 h/);
+    });
+
+    it('has no such note for the other profiles', async () => {
+      for (const profile of ['light', 'fast']) {
+        const h = harness({ rules: [[/Model profile/, profile]] });
+
+        await initCommand({ config: CONFIG_PATH }, h.io);
+
+        expect(h.out.join(''), profile).not.toMatch(/not measured yet/);
+      }
+    });
   });
 
   it('validates the email and webhook answers as they are typed', async () => {
@@ -780,14 +964,213 @@ describe('files that make docker-init created empty', () => {
     expect(h.err.join('')).not.toContain(ENV_PATH);
   });
 
-  it('asks about the file with content only', async () => {
-    const h = harness({ existing: [ENV_PATH], empty: [CONFIG_PATH], rules: [[/Overwrite/, true]] });
+  it('asks about the config with content only', async () => {
+    const h = harness({ existing: [CONFIG_PATH], empty: [ENV_PATH], rules: [[/Overwrite/, true]] });
 
     await initCommand({ config: CONFIG_PATH }, h.io);
 
     const question = h.calls.find((c) => /Overwrite/.test(c.message));
-    expect(question?.message).toContain(ENV_PATH);
-    expect(question?.message).not.toContain(CONFIG_PATH);
+    expect(question?.message).toContain(CONFIG_PATH);
+    expect(question?.message).not.toContain(ENV_PATH);
+  });
+
+  it('writes a fresh .env into an empty one, with no merge', async () => {
+    const h = harness({ empty: [CONFIG_PATH, ENV_PATH] });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toContain('# Written by "digest init"');
+    expect(writtenEnvText(h)).toContain('# GITHUB_TOKEN=');
+  });
+});
+
+describe('merging into an existing .env', () => {
+  const HAND_WRITTEN = [
+    '# my settings, written by hand',
+    'LOG_LEVEL=debug',
+    '',
+    'GITHUB_TOKEN="ghp_a token # with a hash"',
+    'OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces',
+    '',
+  ].join('\n');
+
+  it('keeps every other line as it was, in its place, and adds OLLAMA_URL at the end', async () => {
+    const h = harness({ envText: HAND_WRITTEN });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe(`${HAND_WRITTEN}OLLAMA_URL=http://localhost:11434\n`);
+  });
+
+  it('keeps an OLLAMA_URL that was set by hand', async () => {
+    const h = harness({ envText: 'OLLAMA_URL=http://gpu-box:11434\nLOG_LEVEL=debug\n' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe('OLLAMA_URL=http://gpu-box:11434\nLOG_LEVEL=debug\n');
+  });
+
+  it('fills an OLLAMA_URL that is empty', async () => {
+    const h = harness({ envText: 'LOG_LEVEL=debug\nOLLAMA_URL=\n' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe('LOG_LEVEL=debug\nOLLAMA_URL=http://localhost:11434\n');
+  });
+
+  it('replaces the secrets it was given, wherever they stand, and keeps the rest', async () => {
+    const envText = [
+      'SLACK_WEBHOOK_URL=https://hooks.slack.com/services/OLD/OLD/old',
+      'GITHUB_TOKEN=ghp_keep',
+      'export SMTP_PASSWORD=old-password',
+      'OLLAMA_URL=http://localhost:11434',
+      '',
+    ].join('\n');
+    const h = harness({
+      envText,
+      rules: [[/Also deliver/, ['email', 'slack']], ...EMAIL_RULES, ...SLACK_RULES.slice(1)],
+    });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe(
+      [
+        'SLACK_WEBHOOK_URL=https://hooks.slack.com/services/T000/B000/hook-secret',
+        'GITHUB_TOKEN=ghp_keep',
+        'export SMTP_PASSWORD=smtp-secret',
+        'OLLAMA_URL=http://localhost:11434',
+        '',
+      ].join('\n'),
+    );
+  });
+
+  it('adds a secret that is not in the file yet, and quotes it like a fresh file does', async () => {
+    const rules: Rule[] = [
+      [/SMTP password/, 'pa ss#word'],
+      ...EMAIL_RULES.filter(([p]) => !/SMTP password/.test(p.source)),
+    ];
+    const h = harness({ envText: HAND_WRITTEN, rules });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnv(h)).toMatchObject({ SMTP_PASSWORD: 'pa ss#word', LOG_LEVEL: 'debug' });
+    expect(writtenEnvText(h).startsWith(HAND_WRITTEN)).toBe(true);
+  });
+
+  it('keeps a secret it was not given this time', async () => {
+    const h = harness({ envText: 'SMTP_PASSWORD=still-needed\nSLACK_WEBHOOK_URL=https://h/s/x\n' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnv(h)).toMatchObject({
+      SMTP_PASSWORD: 'still-needed',
+      SLACK_WEBHOOK_URL: 'https://h/s/x',
+    });
+  });
+
+  it('replaces every copy of a key, so no stale duplicate wins', async () => {
+    const h = harness({
+      envText: 'SMTP_PASSWORD=one\nLOG_LEVEL=debug\nSMTP_PASSWORD=two\n',
+      rules: [[/Also deliver/, ['email']], ...EMAIL_RULES],
+    });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe(
+      'SMTP_PASSWORD=smtp-secret\nLOG_LEVEL=debug\nSMTP_PASSWORD=smtp-secret\nOLLAMA_URL=http://localhost:11434\n',
+    );
+  });
+
+  it('keeps Windows line endings', async () => {
+    const h = harness({
+      envText: 'LOG_LEVEL=debug\r\nSMTP_PASSWORD=old\r\n',
+      rules: [[/Also deliver/, ['email']], ...EMAIL_RULES],
+    });
+
+    await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe(
+      'LOG_LEVEL=debug\r\nSMTP_PASSWORD=smtp-secret\r\nOLLAMA_URL=http://localhost:11434\r\n',
+    );
+  });
+
+  it('starts a new line when the file does not end with one', async () => {
+    const h = harness({ envText: 'LOG_LEVEL=debug' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toBe('LOG_LEVEL=debug\nOLLAMA_URL=http://localhost:11434\n');
+  });
+
+  it('treats a file with only blank lines as empty and writes a fresh one', async () => {
+    const h = harness({ envText: '\n  \n' });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnvText(h)).toContain('# Written by "digest init"');
+  });
+
+  it('writes the merged file through the owner-only writer', async () => {
+    const h = harness({ envText: HAND_WRITTEN });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(h.files.get(ENV_PATH)?.secret).toBe(true);
+  });
+
+  it('leaves the loader reading every other value as before', async () => {
+    const h = harness({ envText: HAND_WRITTEN });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(writtenEnv(h)).toEqual({
+      ...parseEnv(HAND_WRITTEN),
+      OLLAMA_URL: 'http://localhost:11434',
+    });
+  });
+
+  it('refuses, and writes nothing, when a line it would replace is part of another value', async () => {
+    const trap = 'NOTE="first line\nSMTP_PASSWORD=inside the note"\nLOG_LEVEL=debug\n';
+    const h = harness({ envText: trap, rules: [[/Also deliver/, ['email']], ...EMAIL_RULES] });
+
+    const code = await initCommand({ config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(1);
+    expect(h.files.size).toBe(0);
+    expect(h.err.join('')).toMatch(/Could not merge into .*\.env safely.*by hand/s);
+  });
+
+  it('refuses, and writes nothing, when .env cannot be read', async () => {
+    const h = harness({
+      envText: 'x=1\n',
+      envReadError: Object.assign(new Error('EACCES: denied'), { code: 'EACCES' }),
+    });
+
+    const code = await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(code).toBe(1);
+    expect(h.files.size).toBe(0);
+    expect(h.err.join('')).toContain(`Could not read ${ENV_PATH}: EACCES: denied`);
+  });
+
+  it('says in the summary that it updated .env and kept the rest', async () => {
+    const h = harness({ envText: HAND_WRITTEN });
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    const text = h.out.join('');
+    expect(text).toContain(`Wrote ${CONFIG_PATH}`);
+    expect(text).toMatch(/updated .*\.env.*kept its other settings/);
+  });
+
+  it('keeps the plain wording for a fresh file', async () => {
+    const h = harness();
+
+    await initCommand({ yes: true, config: CONFIG_PATH }, h.io);
+
+    expect(h.out.join('')).toContain(
+      `Wrote ${CONFIG_PATH} and ${ENV_PATH} (readable by you only).`,
+    );
   });
 });
 
@@ -982,7 +1365,10 @@ describe('in Docker, where the files are single-file bind mounts', () => {
 
     expect(code).toBe(0);
     expect(await modeOf(envPath)).toBe(0o600);
-    expect(await readFile(envPath, 'utf8')).not.toContain('old');
+    // The merge keeps the line it was not asked to change, in the file that is written in place.
+    expect(await readFile(envPath, 'utf8')).toBe(
+      'SMTP_PASSWORD=old\nOLLAMA_URL=http://localhost:11434\n',
+    );
   });
 
   it('accepts a chmod that is refused when the file is already owner-only', async () => {
@@ -1145,18 +1531,33 @@ describe('with the real file system', () => {
     expect(loaded.config.delivery.email?.to).toEqual(['ana@example.com', 'bo@example.com']);
   });
 
-  it('tightens an existing world-readable .env when overwriting it', async () => {
+  it('merges into an existing world-readable .env, keeps its other settings and tightens its mode', async () => {
     const configPath = join(dir, 'digest.config.json');
-    await writeFile(join(dir, '.env'), 'SMTP_PASSWORD=old\n', { mode: 0o644 });
+    await writeFile(join(dir, '.env'), 'GITHUB_TOKEN=ghp_keep\nLOG_LEVEL=debug\n', { mode: 0o644 });
 
-    const code = await initCommand(
-      { config: configPath },
-      realIo({ prompts: scriptedPrompts([[/Overwrite/, true]]).prompts }),
-    );
+    const code = await initCommand({ yes: true, config: configPath }, realIo());
 
     expect(code).toBe(0);
     expect((await stat(join(dir, '.env'))).mode & 0o777).toBe(0o600);
-    expect(await readFile(join(dir, '.env'), 'utf8')).not.toContain('old');
+    expect(await readFile(join(dir, '.env'), 'utf8')).toBe(
+      'GITHUB_TOKEN=ghp_keep\nLOG_LEVEL=debug\nOLLAMA_URL=http://localhost:11434\n',
+    );
+    const loaded = await loadConfig({ configPath, envPath: join(dir, '.env'), processEnv: {} });
+    expect(loaded.secrets.GITHUB_TOKEN).toBe('ghp_keep');
+    expect(loaded.env.LOG_LEVEL).toBe('debug');
+  });
+
+  it('replaces the secret it was given in a real .env and the loader reads the new one', async () => {
+    const configPath = join(dir, 'digest.config.json');
+    await writeFile(join(dir, '.env'), 'SMTP_PASSWORD=old\nGITHUB_TOKEN=ghp_keep\n', {
+      mode: 0o600,
+    });
+    const rules: Rule[] = [[/Also deliver/, ['email']], ...EMAIL_RULES];
+
+    await initCommand({ config: configPath }, realIo({ prompts: scriptedPrompts(rules).prompts }));
+
+    const loaded = await loadConfig({ configPath, envPath: join(dir, '.env'), processEnv: {} });
+    expect(loaded.secrets).toEqual({ SMTP_PASSWORD: 'smtp-secret', GITHUB_TOKEN: 'ghp_keep' });
   });
 
   it('refuses to overwrite files on disk with --yes', async () => {

@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  MIN_STATE_CHARS,
   parseSystemOneResponse,
+  questionSize,
   stateBudgetFor,
   toSystemOneQuestions,
   trimState,
@@ -247,6 +249,17 @@ describe('state budget', () => {
     expect(stateBudgetFor('clef:latest')).toBe(48_000);
   });
 
+  it('takes the size of the questions out of the budget, which is a context shared with the state', () => {
+    expect(stateBudgetFor('strands-decider:2b-mlx-bf16', 1_500)).toBe(8_500);
+    expect(stateBudgetFor('clef:latest', 1_500)).toBe(46_500);
+  });
+
+  it('never leaves less than the minimum for the state, however large the questions are', () => {
+    expect(stateBudgetFor('strands-decider:2b-mlx-bf16', 9_500)).toBe(MIN_STATE_CHARS);
+    expect(stateBudgetFor('strands-decider:2b-mlx-bf16', 50_000)).toBe(MIN_STATE_CHARS);
+    expect(stateBudgetFor('clef:latest', 100_000)).toBe(MIN_STATE_CHARS);
+  });
+
   it('leaves a state within budget unchanged', () => {
     expect(trimState('short', 10)).toBe('short');
   });
@@ -265,5 +278,28 @@ describe('state budget', () => {
     expect(trimmed.length).toBeLessThanOrEqual(1_000);
     // encodeURIComponent throws on a lone surrogate.
     expect(() => encodeURIComponent(trimmed)).not.toThrow();
+  });
+});
+
+describe('questionSize', () => {
+  it('counts the characters of the questions as they are sent', () => {
+    const sent = toSystemOneQuestions({ a: { type: 'yesno', instructions: 'abc' } });
+
+    expect(questionSize(sent)).toBe('{"a":{"type":"noul","instructions":"abc"}}'.length);
+  });
+
+  it('grows with the options of a choice question', () => {
+    const few = toSystemOneQuestions({
+      q: { type: 'choice', instructions: 'Which?', options: { a: 'one', b: 'two' } },
+    });
+    const many = toSystemOneQuestions({
+      q: {
+        type: 'choice',
+        instructions: 'Which?',
+        options: { a: 'one', b: 'two', c: 'a long description of the third option' },
+      },
+    });
+
+    expect(questionSize(many)).toBeGreaterThan(questionSize(few));
   });
 });

@@ -1,24 +1,24 @@
-import { constants } from 'node:fs';
-import { access, stat } from 'node:fs/promises';
+import { constants, type Stats } from 'node:fs';
+import { access, lstat, readFile, stat } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import {
   createOllamaProvider,
-  DEFAULT_THINK,
+  effectiveThink,
   type ThinkSetting,
 } from '../adapters/models/ollama.js';
 import { createGithubReleasesFetcher } from '../adapters/sources/githubReleases.js';
 import { createRssFetcher } from '../adapters/sources/rss.js';
 import {
   loadConfig,
+  platformOf,
   redactSecrets,
-  resolveHostPlatform,
   type LoadedConfig,
   type LoadOptions,
 } from '../config/load.js';
 import {
   isAppleSilicon,
+  modelsInUse,
   PROFILES,
-  requiredModels,
   type ModelProfile,
   type Platform,
 } from '../config/profiles.js';
@@ -36,17 +36,30 @@ export interface DoctorCommandOptions {
   config?: string;
 }
 
+/** What doctor asks the disk about a path. */
+export interface PathInfo {
+  mode: number;
+  isDirectory: boolean;
+  isSymbolicLink: boolean;
+}
+
 /** Everything the command touches outside itself; tests replace it, `digest doctor` uses the defaults. */
 export interface DoctorIo {
   loadConfig: (options: LoadOptions) => Promise<LoadedConfig>;
+  /** The one place doctor builds a model provider; only `health()` is called on it. */
   createProvider: (loaded: LoadedConfig, fetchImpl: typeof fetch) => ModelProvider;
   fetch: typeof fetch;
   clock: Clock;
-  /** Default: the host named in DIGEST_HOST_OS/DIGEST_HOST_ARCH, else the running process. */
+  /** Passed to the loader. Default: the host named in DIGEST_HOST_OS/DIGEST_HOST_ARCH, else the running process. */
   platform?: Platform;
   /** The .env file to inspect; also where the loader reads secrets from. */
   envPath: string;
-  stat: (path: string) => Promise<{ mode: number }>;
+  /** Follows symbolic links; rejects with ENOENT when the path (or a link's target) is missing. */
+  stat: (path: string) => Promise<PathInfo>;
+  /** Does not follow a symbolic link, so a link can be told from what it points at. */
+  lstat: (path: string) => Promise<PathInfo>;
+  /** The text of a file; rejects with ENOENT when it does not exist. */
+  readFile: (path: string) => Promise<string>;
   /** Resolves when `path` is writable, rejects otherwise (ENOENT when it does not exist). */
   access: (path: string) => Promise<void>;
   /** Per-source timeout for the reachability read. */
@@ -73,7 +86,12 @@ const PERMISSION_MASK = 0o777;
 const OCTAL = 8;
 const SYMBOLS: Readonly<Record<Severity, string>> = { ok: '✓', warn: '!', error: '✗' };
 const URL_CREDENTIALS = /(\bhttps?:\/\/)[^\s/@]+@/g;
-const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)/;
+const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)(.*)$/;
+/** Ollama builds from source (and some test builds) report this. */
+const DEVELOPMENT_VERSION = [0, 0, 0] as const;
+/** node:util parseEnv reads an unquoted value up to its first "#". */
+const ENV_ASSIGNMENT = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_.-]*)\s*=(.*)$/;
+const ENV_QUOTES: ReadonlySet<string> = new Set(['"', "'", '`']);
 const INPUT_CHECKS = ['clefPolicy', 'graniteRisk'] as const satisfies readonly GuardCheckId[];
 const OUTPUT_CHECKS = [
   'graniteGroundedness',
@@ -92,16 +110,23 @@ const defaultIo: DoctorIo = {
   fetch: (input, init) => globalThis.fetch(input, init),
   clock: systemClock,
   envPath: '.env',
-  stat: async (path) => {
-    const { mode } = await stat(path);
-    return { mode };
-  },
+  stat: async (path) => toPathInfo(await stat(path)),
+  lstat: async (path) => toPathInfo(await lstat(path)),
+  readFile: (path) => readFile(path, 'utf8'),
   access: (path) => access(path, constants.W_OK),
   sourceTimeoutMs: SOURCE_TIMEOUT_MS,
   stdout: (text) => {
     process.stdout.write(text);
   },
 };
+
+function toPathInfo(stats: Stats): PathInfo {
+  return {
+    mode: stats.mode,
+    isDirectory: stats.isDirectory(),
+    isSymbolicLink: stats.isSymbolicLink(),
+  };
+}
 
 const ok = (label: string, message: string): CheckResult => ({
   severity: 'ok',
@@ -135,19 +160,21 @@ export async function doctorCommand(
   const results: CheckResult[] = [
     ok('config', `loaded ${loaded.value.configPath} (profile ${config.profile})`),
     ...checkOllama(health, loaded.value),
+    // The platform the loader resolved the profile for, so the checks judge the same host.
     checkAppleSilicon(loaded.value, loaded.platform),
-    ...checkModels(health, profile),
+    ...checkModels(health, profile, config.guards),
     checkThink(loaded.value),
     ...(await checkSources(loaded.value, io)),
-    ...checkDelivery(loaded.value),
+    ...(await checkDelivery(loaded.value, io)),
     await checkEnvFile(io),
+    ...(await checkEnvValues(io)),
     checkGuards(config.guards),
-    await checkDataDir(resolve(config.dataDir), io),
+    await checkWritableDir(dataDirCheck(config.dataDir), io),
   ];
   return report(results, io, loaded.value.secrets);
 }
 
-/** `platform` is the one the loader resolved the profile for, so the checks judge the same host. */
+/** `platform` is the host the loader resolved the profile for (a bad DIGEST_HOST_* is reported here). */
 async function tryLoadConfig(
   options: DoctorCommandOptions,
   io: DoctorIo,
@@ -158,7 +185,7 @@ async function tryLoadConfig(
       envPath: io.envPath,
       platform: io.platform,
     });
-    return { value, platform: io.platform ?? resolveHostPlatform(value.env) };
+    return { value, platform: platformOf(value) };
   } catch (error) {
     return {
       result: fail(
@@ -198,26 +225,43 @@ function checkVersion(version: string | undefined, profile: ModelProfile): Check
   const actual = parseVersion(version);
   const required = parseVersion(minimum);
   if (!actual || !required) return warn(label, `cannot read the version "${version}"`, fix);
-  if (compareVersions(actual, required) < 0) {
+  if (compareCore(actual.core, DEVELOPMENT_VERSION) === 0) {
+    const message = `Ollama reports ${version}, which is how a development build reports itself; the minimum (${minimum}) cannot be checked`;
+    return warn(label, message, fix);
+  }
+  const order = compareCore(actual.core, required.core);
+  if (order < 0) {
     return fail(
       label,
       `Ollama ${version} is older than ${minimum}, the minimum for this profile`,
       fix,
     );
   }
+  if (order === 0 && actual.prerelease) {
+    const message = `Ollama ${version} is a pre-release of ${minimum}, the minimum for this profile; it may lack what the final release added`;
+    return warn(label, message, fix);
+  }
   return ok(label, `${version} (minimum ${minimum})`);
 }
 
-type Version = readonly [number, number, number];
-
-function parseVersion(text: string): Version | undefined {
-  const match = VERSION_PATTERN.exec(text);
-  if (!match) return undefined;
-  const [, major = '0', minor = '0', patch = '0'] = match;
-  return [Number(major), Number(minor), Number(patch)];
+type Core = readonly [number, number, number];
+interface Version {
+  core: Core;
+  /** "-rc1", "-dev": semver puts it below the release of the same number. */
+  prerelease: boolean;
 }
 
-function compareVersions(a: Version, b: Version): number {
+function parseVersion(text: string): Version | undefined {
+  const match = VERSION_PATTERN.exec(text.trim());
+  if (!match) return undefined;
+  const [, major = '0', minor = '0', patch = '0', rest = ''] = match;
+  return {
+    core: [Number(major), Number(minor), Number(patch)],
+    prerelease: rest.startsWith('-') || /^[a-z]/i.test(rest),
+  };
+}
+
+function compareCore(a: Core, b: Core): number {
   const index = a.findIndex((part, i) => part !== b[i]);
   return index < 0 ? 0 : (a[index] ?? 0) - (b[index] ?? 0);
 }
@@ -237,14 +281,25 @@ function checkAppleSilicon({ config, profile }: LoadedConfig, platform: Platform
       'run on an Apple silicon Mac, or set "profile" in digest.config.json to one this machine supports',
     );
   }
+  const fallsBack = `profile ${config.profile} needs Apple silicon; ${where} falls back to the untuned profile`;
+  if (config.profile !== 'light') {
+    return warn(label, fallsBack, 'run on an Apple silicon Mac for the tuned models');
+  }
+  // light is the 16 GB profile only on a Mac; elsewhere it is the heavy fallback.
+  const heavy = [...new Set([profile.classify, ...profile.writers])].join(' and ');
   return warn(
     label,
-    `profile ${config.profile} needs Apple silicon; ${where} falls back to the untuned profile`,
-    'run on an Apple silicon Mac for the tuned models',
+    `${fallsBack} (${heavy}), which needs much more than the 16 GB that light is meant for`,
+    'run on an Apple silicon Mac for the small models, or check that this machine has the memory for the larger ones',
   );
 }
 
-function checkModels(health: ModelHealth, profile: ModelProfile): CheckResult[] {
+/** The models a run would load with these guard settings; a switched-off guard needs no model. */
+function checkModels(
+  health: ModelHealth,
+  profile: ModelProfile,
+  guards: GuardsConfig,
+): CheckResult[] {
   if (!health.reachable || health.error) return [];
   const installed = new Map(health.models.map((m) => [normalizeTag(m.name), m.capabilities]));
   const decisionTags = new Set(
@@ -252,7 +307,7 @@ function checkModels(health: ModelHealth, profile: ModelProfile): CheckResult[] 
       normalizeTag,
     ),
   );
-  return requiredModels(profile).map((tag) =>
+  return modelsInUse(profile, guards).map((tag) =>
     checkModel(tag, installed.get(normalizeTag(tag)), decisionTags.has(normalizeTag(tag))),
   );
 }
@@ -286,7 +341,7 @@ const DECISION_ONLY_ROLES = ['guardPolicy', 'judge'] as const satisfies readonly
 function checkThink({ config }: LoadedConfig): CheckResult {
   const label = 'think';
   const settings = THINK_ROLES.map(
-    (role) => `${role}=${describeThink(config.models.think?.[role] ?? DEFAULT_THINK[role])}`,
+    (role) => `${role}=${describeThink(effectiveThink(config.models.think, role))}`,
   ).join(', ');
   const ignored = DECISION_ONLY_ROLES.filter((role) => config.models.think?.[role] !== undefined);
   if (ignored.length === 0) return ok(label, settings);
@@ -343,10 +398,13 @@ async function checkSource(
   }
 }
 
-function checkDelivery({ config, secrets }: LoadedConfig): CheckResult[] {
+async function checkDelivery(
+  { config, secrets }: LoadedConfig,
+  io: DoctorIo,
+): Promise<CheckResult[]> {
   const { email, slack, markdown } = config.delivery;
   return [
-    ok('markdown', `digests are written to ${markdown.dir}`),
+    await checkWritableDir(markdownDirCheck(markdown.dir), io),
     ...(email
       ? [
           secrets.SMTP_PASSWORD
@@ -408,32 +466,200 @@ function checkGuards(guards: GuardsConfig): CheckResult {
   );
 }
 
-/** A missing data directory is fine when the nearest existing parent is writable: a run creates it. */
-async function checkDataDir(dataDir: string, io: DoctorIo): Promise<CheckResult> {
-  const label = 'data dir';
-  const fix = `make ${dataDir} writable ("chmod u+w"), or set "dataDir" in digest.config.json`;
-  for (let current = dataDir; ; current = dirname(current)) {
-    try {
-      await io.access(current);
-      return ok(
+/**
+ * `.env` values that node's parser cut at a "#": it reads an unquoted value only up to its first
+ * "#" (a password `pa#ss` becomes `pa`) and never says so. A warning names the keys and the lines,
+ * never a value.
+ */
+async function checkEnvValues(io: DoctorIo): Promise<CheckResult[]> {
+  const label = '.env values';
+  let text: string;
+  try {
+    text = await io.readFile(io.envPath);
+  } catch (error) {
+    if (isNotFound(error)) return []; // the .env check already says there is none
+    return [
+      warn(
         label,
-        current === dataDir
-          ? `${dataDir} is writable`
-          : `${dataDir} does not exist yet; ${current} is writable, so a run creates it`,
-      );
+        `cannot read ${io.envPath}: ${errorMessage(error)}`,
+        'check that you can read .env',
+      ),
+    ];
+  }
+  const cut = keysCutAtHash(text);
+  if (cut.length === 0) return [ok(label, 'no unquoted value contains a "#"')];
+  const where = cut.map(({ key, line }) => `${key} (line ${line})`).join(', ');
+  return [
+    warn(
+      label,
+      `${where}: the unquoted value has a "#", and everything from it on is read as a comment; if the "#" belongs to the value, it is cut short`,
+      'put the value in quotes if the "#" is part of it, for example KEY="pass#word"',
+    ),
+  ];
+}
+
+/**
+ * Each key (first line only) whose unquoted value contains a "#". The parser ends a quoted value
+ * at the next same quote character, on a later line if need be, and keeps a quote that nothing
+ * closes as plain text; the scan does the same, so it never skips lines the parser reads.
+ */
+function keysCutAtHash(text: string): { key: string; line: number }[] {
+  const found = new Map<string, number>();
+  const lines = text.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const [, key, rest] = ENV_ASSIGNMENT.exec(lines[index] ?? '') ?? [];
+    if (key === undefined || rest === undefined) continue;
+    const value = rest.trimStart();
+    const quote = value.charAt(0);
+    if (!ENV_QUOTES.has(quote)) {
+      if (value.includes('#') && !found.has(key)) found.set(key, index + 1);
+      continue;
+    }
+    const afterQuote = [value.slice(1), ...lines.slice(index + 1)].join('\n');
+    const closeAt = afterQuote.indexOf(quote);
+    if (closeAt !== -1) index += afterQuote.slice(0, closeAt).split('\n').length - 1;
+  }
+  return [...found].map(([key, line]) => ({ key, line }));
+}
+
+interface DirCheck {
+  label: string;
+  /** Absolute. */
+  dir: string;
+  /** The config key that moves it, named in the fix. */
+  setting: string;
+  /** The message when the folder exists and is writable. */
+  writable: string;
+  /** The message when it is missing but `parent` is writable, so a run creates it. */
+  creatable: (parent: string) => string;
+}
+
+function dataDirCheck(dataDir: string): DirCheck {
+  const dir = resolve(dataDir);
+  return {
+    label: 'data dir',
+    dir,
+    setting: 'dataDir',
+    writable: `${dir} is writable`,
+    creatable: (parent) => `${dir} does not exist yet; ${parent} is writable, so a run creates it`,
+  };
+}
+
+function markdownDirCheck(markdownDir: string): DirCheck {
+  const dir = resolve(markdownDir);
+  return {
+    label: 'markdown',
+    dir,
+    setting: 'delivery.markdown.dir',
+    writable: `digests are written to ${dir}`,
+    creatable: (parent) =>
+      `digests are written to ${dir}, which does not exist yet; ${parent} is writable, so a run creates it`,
+  };
+}
+
+type DirStatus =
+  | { kind: 'writable' }
+  | { kind: 'creatable'; parent: string }
+  | { kind: 'blocked'; problem: string; fix: string };
+
+/**
+ * A folder a run writes into. A missing one is fine when the nearest existing parent is
+ * writable: the run creates it. A file or a dangling symbolic link in its place is not (mkdir
+ * fails), and neither is a file further up the path.
+ */
+async function checkWritableDir(spec: DirCheck, io: DoctorIo): Promise<CheckResult> {
+  const status = await inspectDir(spec, io);
+  switch (status.kind) {
+    case 'writable':
+      return ok(spec.label, spec.writable);
+    case 'creatable':
+      return ok(spec.label, spec.creatable(status.parent));
+    case 'blocked':
+      return fail(spec.label, status.problem, status.fix);
+  }
+}
+
+async function inspectDir({ dir, setting }: DirCheck, io: DoctorIo): Promise<DirStatus> {
+  const permissionFix = `make ${dir} writable ("chmod u+w"), or set "${setting}" in digest.config.json`;
+  const blocked = (problem: string, culprit?: string): DirStatus => ({
+    kind: 'blocked',
+    problem,
+    fix:
+      culprit === undefined
+        ? permissionFix
+        : `remove or replace ${culprit}, or set "${setting}" in digest.config.json`,
+  });
+  for (let current = dir; ; current = dirname(current)) {
+    let kind: PathKind;
+    try {
+      kind = await pathKind(current, io);
     } catch (error) {
-      if (!isNotFound(error)) {
-        return fail(label, `cannot write to ${current}: ${errorMessage(error)}`, fix);
-      }
-      if (dirname(current) === current) {
-        return fail(label, `${dataDir} does not exist and has no existing parent`, fix);
-      }
+      return blocked(`cannot inspect ${current}: ${errorMessage(error)}`);
+    }
+    switch (kind) {
+      case 'folder':
+        return writableStatus(current, dir, io, blocked);
+      case 'file':
+        return blocked(
+          current === dir
+            ? `${dir} is a file, not a folder`
+            : `${current} is a file, so ${dir} cannot be created below it`,
+          current,
+        );
+      case 'dangling':
+        return blocked(`${current} is a symbolic link to a path that does not exist`, current);
+      case 'missing':
+        if (dirname(current) === current) {
+          return blocked(`${dir} does not exist and has no existing parent`);
+        }
     }
   }
 }
 
+/** `folder` is the existing folder found: `dir` itself, or its nearest existing parent. */
+async function writableStatus(
+  folder: string,
+  dir: string,
+  io: DoctorIo,
+  blocked: (problem: string) => DirStatus,
+): Promise<DirStatus> {
+  try {
+    await io.access(folder);
+  } catch (error) {
+    return blocked(`cannot write to ${folder}: ${errorMessage(error)}`);
+  }
+  return folder === dir ? { kind: 'writable' } : { kind: 'creatable', parent: folder };
+}
+
+/** What is at a path, following a symbolic link to what it points at. */
+type PathKind = 'folder' | 'file' | 'dangling' | 'missing';
+
+async function pathKind(path: string, io: DoctorIo): Promise<PathKind> {
+  let info: PathInfo;
+  try {
+    info = await io.lstat(path);
+  } catch (error) {
+    // ENOTDIR: a parent is a file. Climbing on finds it, so the message can name it.
+    if (isNotFound(error) || errorCode(error) === 'ENOTDIR') return 'missing';
+    throw error;
+  }
+  if (!info.isSymbolicLink) return info.isDirectory ? 'folder' : 'file';
+  try {
+    return (await io.stat(path)).isDirectory ? 'folder' : 'file';
+  } catch (error) {
+    if (isNotFound(error)) return 'dangling';
+    throw error;
+  }
+}
+
+function errorCode(error: unknown): string | undefined {
+  return error instanceof Error && 'code' in error && typeof error.code === 'string'
+    ? error.code
+    : undefined;
+}
+
 function isNotFound(error: unknown): boolean {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
+  return errorCode(error) === 'ENOENT';
 }
 
 // ---------------------------------------------------------------------------------------------
