@@ -23,6 +23,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
-      - run: pnpm check
+      - run: pnpm typecheck
+      - run: pnpm lint
+      # Runs every test and fails under 80% lines, functions, branches or statements
+      # (thresholds in vitest.config.ts).
+      - run: pnpm coverage
       - run: pnpm build
       - run: pnpm audit --prod --audit-level high
