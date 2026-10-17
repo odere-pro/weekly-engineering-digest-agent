@@ -3,6 +3,9 @@ import { FetchError } from '../../shared/errors.js';
 /** A feed or API body larger than this fails the source: no real feed comes close. */
 export const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
+/** How much of a failed answer's body the debug tap gets to see: enough for an error page. */
+export const ERROR_PREVIEW_BYTES = 64 * 1024;
+
 const BYTES_PER_MIB = 1024 * 1024;
 const MAX_REDIRECTS = 5;
 const REDIRECT_STATUSES: ReadonlySet<number> = new Set([301, 302, 303, 307, 308]);
@@ -20,6 +23,24 @@ export interface Reply {
   body: string;
 }
 
+/**
+ * The final answer to a request, as `getText` read it. Only a debug tap sees it (`digest
+ * fetch`); a run passes none. It carries nothing of the request, so no header can leak.
+ */
+export interface Answer {
+  /** The URL that answered, after any redirects. */
+  url: string;
+  status: number;
+  /** The `content-type` header as sent; undefined when the server sent none. */
+  contentType: string | undefined;
+  /**
+   * What `Reply.body` holds (never over the cap) for a 2xx. For any other status, the first
+   * `ERROR_PREVIEW_BYTES` of the body, which the reply itself never carries; empty when
+   * it cannot be read.
+   */
+  body: string;
+}
+
 export interface GetOptions {
   fetch: typeof fetch;
   /** The source id, named in every error. */
@@ -30,6 +51,8 @@ export interface GetOptions {
   signal?: AbortSignal | undefined;
   /** Defaults to `MAX_BODY_BYTES`. */
   maxBytes?: number;
+  /** Debug tap, off by default: told the final answer once it is read. Redirect hops are not. */
+  onAnswer?: ((answer: Answer) => void) | undefined;
 }
 
 /** Timeouts, rate limits and server errors can clear up on their own; other 4xx cannot. */
@@ -91,7 +114,7 @@ export async function getText(url: string, options: GetOptions): Promise<Reply> 
       signal: options.signal,
       redirect: 'manual',
     });
-    if (!REDIRECT_STATUSES.has(response.status)) return readReply(response, options);
+    if (!REDIRECT_STATUSES.has(response.status)) return answered(response, current, options);
 
     await discardBody(response);
     if (redirects >= MAX_REDIRECTS) {
@@ -99,6 +122,42 @@ export async function getText(url: string, options: GetOptions): Promise<Reply> 
     }
     current = redirectTarget(response, current, start, options);
   }
+}
+
+/** Reads the final answer and, if a tap listens, tells it. A run has no tap and reads no more. */
+async function answered(response: Response, url: string, options: GetOptions): Promise<Reply> {
+  const { onAnswer } = options;
+  const preview = !response.ok && onAnswer ? await readPreview(response) : undefined;
+  const reply = await readReply(response, options);
+  onAnswer?.({
+    url,
+    status: reply.status,
+    contentType: reply.headers.get('content-type') ?? undefined,
+    body: preview ?? reply.body,
+  });
+  return reply;
+}
+
+/** The start of a body, cut at `ERROR_PREVIEW_BYTES`. A read that fails gives what came before. */
+async function readPreview(response: Response): Promise<string> {
+  const reader: ReadableStreamDefaultReader<Uint8Array> | undefined = response.body?.getReader();
+  if (!reader) return '';
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  try {
+    while (received < ERROR_PREVIEW_BYTES) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.byteLength;
+    }
+  } catch {
+    // A debug aid must not change how a failed request ends; the status is already known.
+  } finally {
+    await reader.cancel().catch(() => undefined);
+    reader.releaseLock();
+  }
+  return new TextDecoder().decode(Buffer.concat(chunks).subarray(0, ERROR_PREVIEW_BYTES));
 }
 
 function parseHttpUrl(raw: string, label: string): URL {
