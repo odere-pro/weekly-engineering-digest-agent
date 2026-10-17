@@ -14,67 +14,67 @@
     "ties": "best mean score within 2 grid steps on every axis, then closest to the baseline"
   },
   "baseline": { "minRelevance": 1.5, "maxHype": 0.5, "maxMinorRelease": 0.5, "guardFlag": 0.5 },
-  "proposed": { "minRelevance": 1.5, "maxHype": 0.6, "maxMinorRelease": 0.75, "guardFlag": 0.35 },
+  "proposed": { "minRelevance": 1.5, "maxHype": 0.35, "maxMinorRelease": 0.65, "guardFlag": 0.35 },
   "classifier": {
-    "cases": 60,
+    "cases": 40,
     "failed": 0,
-    "scorecard": { "value": 0.26666666666666666, "area": 0.7, "relevance": 0.43333333333333335 },
+    "scorecard": { "value": 0.3, "area": 0.8, "relevance": 0.425 },
     "filter": {
       "baseline": {
-        "accuracy": 0.7666666666666667,
-        "kept": 19,
-        "dropped": 41,
+        "accuracy": 0.75,
+        "kept": 14,
+        "dropped": 26,
         "wronglyKept": 3,
-        "wronglyDropped": 11
+        "wronglyDropped": 7
       },
       "proposed": {
-        "accuracy": 0.8666666666666667,
-        "kept": 25,
-        "dropped": 35,
-        "wronglyKept": 3,
+        "accuracy": 0.825,
+        "kept": 15,
+        "dropped": 25,
+        "wronglyKept": 2,
         "wronglyDropped": 5
       }
     },
     "curves": {
       "minRelevance": [
-        { "value": 0, "accuracy": 0.6166666666666667 },
-        { "value": 0.05, "accuracy": 0.6166666666666667 },
-        { "value": 0.1, "accuracy": 0.6166666666666667 },
-        { "value": 0.15, "accuracy": 0.6166666666666667 },
-        { "value": 0.2, "accuracy": 0.6166666666666667 },
-        { "value": 0.25, "accuracy": 0.6166666666666667 },
-        { "value": 0.3, "accuracy": 0.6166666666666667 },
-        { "value": 0.35, "accuracy": 0.6166666666666667 },
-        { "value": 0.4, "accuracy": 0.6166666666666667 },
-        { "value": 0.45, "accuracy": 0.6166666666666667 },
-        { "value": 0.5, "accuracy": 0.6166666666666667 },
-        { "value": 0.55, "accuracy": 0.6166666666666667 },
-        { "value": 0.6, "accuracy": 0.6166666666666667 },
-        { "value": 0.65, "accuracy": 0.6166666666666667 },
-        { "value": 0.7, "accuracy": 0.6166666666666667 },
-        { "value": 0.75, "accuracy": 0.6166666666666667 },
-        { "value": 0.8, "accuracy": 0.6166666666666667 },
-        { "value": 0.85, "accuracy": 0.6166666666666667 },
-        { "value": 0.9, "accuracy": 0.6166666666666667 },
-        { "value": 0.95, "accuracy": 0.6166666666666667 },
-        { "value": 1, "accuracy": 0.6333333333333333 },
-        { "value": 1.05, "accuracy": 0.65 },
-        { "value": 1.1, "accuracy": 0.6666666666666666 },
-        { "value": 1.15, "accuracy": 0.6666666666666666 },
-        { "value": 1.2, "accuracy": 0.6666666666666666 },
-        { "value": 1.25, "accuracy": 0.7166666666666667 },
-        { "value": 1.3, "accuracy": 0.7333333333333333 },
-        { "value": 1.35, "accuracy": 0.7666666666666667 },
-        { "value": 1.4, "accuracy": 0.7833333333333333 },
-        { "value": 1.45, "accuracy": 0.8666666666666667 },
-        { "value": 1.5, "accuracy": 0.8666666666666667 },
-        { "value": 1.55, "accuracy": 0.8166666666666667 },
-        { "value": 1.6, "accuracy": 0.8166666666666667 },
-        { "value": 1.65, "accuracy": 0.7333333333333333 },
-        { "value": 1.7, "accuracy": 0.7 },
-        { "value": 1.75, "accuracy": 0.65 },
-        { "value": 1.8, "accuracy": 0.5833333333333334 },
-        { "value": 1.85, "accuracy": 0.5666666666666667 },
+        { "value": 0, "accuracy": 0.7 },
+        { "value": 0.05, "accuracy": 0.7 },
+        { "value": 0.1, "accuracy": 0.7 },
+        { "value": 0.15, "accuracy": 0.7 },
+        { "value": 0.2, "accuracy": 0.7 },
+        { "value": 0.25, "accuracy": 0.7 },
+        { "value": 0.3, "accuracy": 0.7 },
+        { "value": 0.35, "accuracy": 0.7 },
+        { "value": 0.4, "accuracy": 0.7 },
+        { "value": 0.45, "accuracy": 0.7 },
+        { "value": 0.5, "accuracy": 0.7 },
+        { "value": 0.55, "accuracy": 0.7 },
+        { "value": 0.6, "accuracy": 0.7 },
+        { "value": 0.65, "accuracy": 0.7 },
+        { "value": 0.7, "accuracy": 0.7 },
+        { "value": 0.75, "accuracy": 0.7 },
+        { "value": 0.8, "accuracy": 0.7 },
+        { "value": 0.85, "accuracy": 0.7 },
+        { "value": 0.9, "accuracy": 0.7 },
+        { "value": 0.95, "accuracy": 0.7 },
+        { "value": 1, "accuracy": 0.7 },
+        { "value": 1.05, "accuracy": 0.725 },
+        { "value": 1.1, "accuracy": 0.725 },
+        { "value": 1.15, "accuracy": 0.725 },
+        { "value": 1.2, "accuracy": 0.725 },
+        { "value": 1.25, "accuracy": 0.75 },
+        { "value": 1.3, "accuracy": 0.775 },
+        { "value": 1.35, "accuracy": 0.775 },
+        { "value": 1.4, "accuracy": 0.8 },
+        { "value": 1.45, "accuracy": 0.825 },
+        { "value": 1.5, "accuracy": 0.825 },
+        { "value": 1.55, "accuracy": 0.8 },
+        { "value": 1.6, "accuracy": 0.8 },
+        { "value": 1.65, "accuracy": 0.75 },
+        { "value": 1.7, "accuracy": 0.725 },
+        { "value": 1.75, "accuracy": 0.675 },
+        { "value": 1.8, "accuracy": 0.575 },
+        { "value": 1.85, "accuracy": 0.575 },
         { "value": 1.9, "accuracy": 0.55 },
         { "value": 1.95, "accuracy": 0.55 },
         { "value": 2, "accuracy": 0.55 },
@@ -103,77 +103,86 @@
         { "value": 0, "accuracy": 0.55 },
         { "value": 0.05, "accuracy": 0.55 },
         { "value": 0.1, "accuracy": 0.65 },
-        { "value": 0.15, "accuracy": 0.6833333333333333 },
-        { "value": 0.2, "accuracy": 0.75 },
-        { "value": 0.25, "accuracy": 0.85 },
-        { "value": 0.3, "accuracy": 0.85 },
-        { "value": 0.35, "accuracy": 0.85 },
-        { "value": 0.4, "accuracy": 0.8333333333333334 },
-        { "value": 0.45, "accuracy": 0.8333333333333334 },
-        { "value": 0.5, "accuracy": 0.8333333333333334 },
-        { "value": 0.55, "accuracy": 0.85 },
-        { "value": 0.6, "accuracy": 0.8666666666666667 },
-        { "value": 0.65, "accuracy": 0.85 },
-        { "value": 0.7, "accuracy": 0.8333333333333334 },
-        { "value": 0.75, "accuracy": 0.8166666666666667 },
-        { "value": 0.8, "accuracy": 0.8333333333333334 },
-        { "value": 0.85, "accuracy": 0.8166666666666667 },
-        { "value": 0.9, "accuracy": 0.8166666666666667 },
-        { "value": 0.95, "accuracy": 0.8166666666666667 },
-        { "value": 1, "accuracy": 0.8166666666666667 }
+        { "value": 0.15, "accuracy": 0.65 },
+        { "value": 0.2, "accuracy": 0.725 },
+        { "value": 0.25, "accuracy": 0.825 },
+        { "value": 0.3, "accuracy": 0.825 },
+        { "value": 0.35, "accuracy": 0.825 },
+        { "value": 0.4, "accuracy": 0.8 },
+        { "value": 0.45, "accuracy": 0.8 },
+        { "value": 0.5, "accuracy": 0.8 },
+        { "value": 0.55, "accuracy": 0.8 },
+        { "value": 0.6, "accuracy": 0.825 },
+        { "value": 0.65, "accuracy": 0.825 },
+        { "value": 0.7, "accuracy": 0.8 },
+        { "value": 0.75, "accuracy": 0.775 },
+        { "value": 0.8, "accuracy": 0.8 },
+        { "value": 0.85, "accuracy": 0.775 },
+        { "value": 0.9, "accuracy": 0.775 },
+        { "value": 0.95, "accuracy": 0.775 },
+        { "value": 1, "accuracy": 0.775 }
       ],
       "maxMinorRelease": [
         { "value": 0, "accuracy": 0.55 },
         { "value": 0.05, "accuracy": 0.55 },
-        { "value": 0.1, "accuracy": 0.5833333333333334 },
-        { "value": 0.15, "accuracy": 0.6333333333333333 },
-        { "value": 0.2, "accuracy": 0.6333333333333333 },
-        { "value": 0.25, "accuracy": 0.65 },
-        { "value": 0.3, "accuracy": 0.65 },
-        { "value": 0.35, "accuracy": 0.65 },
-        { "value": 0.4, "accuracy": 0.6833333333333333 },
-        { "value": 0.45, "accuracy": 0.75 },
-        { "value": 0.5, "accuracy": 0.8 },
-        { "value": 0.55, "accuracy": 0.8333333333333334 },
-        { "value": 0.6, "accuracy": 0.85 },
-        { "value": 0.65, "accuracy": 0.8666666666666667 },
-        { "value": 0.7, "accuracy": 0.8666666666666667 },
-        { "value": 0.75, "accuracy": 0.8666666666666667 },
-        { "value": 0.8, "accuracy": 0.8666666666666667 },
-        { "value": 0.85, "accuracy": 0.8666666666666667 },
-        { "value": 0.9, "accuracy": 0.8666666666666667 },
-        { "value": 0.95, "accuracy": 0.8666666666666667 },
-        { "value": 1, "accuracy": 0.8666666666666667 }
+        { "value": 0.1, "accuracy": 0.575 },
+        { "value": 0.15, "accuracy": 0.6 },
+        { "value": 0.2, "accuracy": 0.575 },
+        { "value": 0.25, "accuracy": 0.6 },
+        { "value": 0.3, "accuracy": 0.6 },
+        { "value": 0.35, "accuracy": 0.6 },
+        { "value": 0.4, "accuracy": 0.65 },
+        { "value": 0.45, "accuracy": 0.7 },
+        { "value": 0.5, "accuracy": 0.775 },
+        { "value": 0.55, "accuracy": 0.825 },
+        { "value": 0.6, "accuracy": 0.825 },
+        { "value": 0.65, "accuracy": 0.825 },
+        { "value": 0.7, "accuracy": 0.825 },
+        { "value": 0.75, "accuracy": 0.825 },
+        { "value": 0.8, "accuracy": 0.825 },
+        { "value": 0.85, "accuracy": 0.825 },
+        { "value": 0.9, "accuracy": 0.825 },
+        { "value": 0.95, "accuracy": 0.825 },
+        { "value": 1, "accuracy": 0.825 }
       ]
     }
   },
   "weeks": {
     "failed": 0,
     "baseline": {
-      "items": 369,
-      "kept": 94,
-      "mustInclude": 30,
-      "mustIncludeKept": 12,
-      "mustExclude": 81,
-      "mustExcludeDropped": 62
+      "items": 177,
+      "kept": 40,
+      "mustInclude": 20,
+      "mustIncludeKept": 7,
+      "mustExclude": 47,
+      "mustExcludeDropped": 40
     },
     "proposed": {
-      "items": 369,
-      "kept": 126,
-      "mustInclude": 30,
-      "mustIncludeKept": 19,
-      "mustExclude": 81,
-      "mustExcludeDropped": 48
+      "items": 177,
+      "kept": 30,
+      "mustInclude": 20,
+      "mustIncludeKept": 9,
+      "mustExclude": 47,
+      "mustExcludeDropped": 42
     }
   },
   "guards": {
-    "clean": 369,
-    "attacks": 10,
-    "controls": 10,
-    "planted": 10,
+    "clean": 177,
+    "attacks": 7,
+    "controls": 7,
+    "planted": 7,
     "failed": { "clefPolicy": 0, "graniteRisk": 0, "clefRubric": 0 },
     "baseline": {
       "value": 0.5,
+      "policyFalseBlockRate": 0,
+      "attacksCaught": 3,
+      "rubricFalseBlockRate": 0,
+      "plantedFlagged": 0,
+      "anyFalseBlockRate": 0,
+      "anyAttacksCaught": 3
+    },
+    "proposed": {
+      "value": 0.35,
       "policyFalseBlockRate": 0,
       "attacksCaught": 5,
       "rubricFalseBlockRate": 0,
@@ -181,131 +190,122 @@
       "anyFalseBlockRate": 0,
       "anyAttacksCaught": 5
     },
-    "proposed": {
-      "value": 0.35,
-      "policyFalseBlockRate": 0,
-      "attacksCaught": 7,
-      "rubricFalseBlockRate": 0,
-      "plantedFlagged": 0,
-      "anyFalseBlockRate": 0,
-      "anyAttacksCaught": 7
-    },
     "clefPolicyFalseBlocks": [],
     "graniteRisk": {
-      "clean": 369,
-      "attacks": 10,
+      "clean": 177,
+      "attacks": 7,
       "falseBlockRate": 0,
-      "attacksCaught": 2,
+      "attacksCaught": 1,
       "falseBlocks": []
     },
     "curve": [
       {
         "value": 0,
         "policyFalseBlockRate": 1,
-        "attacksCaught": 10,
+        "attacksCaught": 7,
         "rubricFalseBlockRate": 1,
-        "plantedFlagged": 10,
+        "plantedFlagged": 7,
         "anyFalseBlockRate": 1,
-        "anyAttacksCaught": 10
+        "anyAttacksCaught": 7
       },
       {
         "value": 0.05,
         "policyFalseBlockRate": 1,
-        "attacksCaught": 10,
+        "attacksCaught": 7,
         "rubricFalseBlockRate": 1,
-        "plantedFlagged": 10,
+        "plantedFlagged": 7,
         "anyFalseBlockRate": 1,
-        "anyAttacksCaught": 10
+        "anyAttacksCaught": 7
       },
       {
         "value": 0.1,
-        "policyFalseBlockRate": 0.962059620596206,
-        "attacksCaught": 10,
+        "policyFalseBlockRate": 0.9774011299435028,
+        "attacksCaught": 7,
         "rubricFalseBlockRate": 1,
-        "plantedFlagged": 10,
-        "anyFalseBlockRate": 0.962059620596206,
-        "anyAttacksCaught": 10
+        "plantedFlagged": 7,
+        "anyFalseBlockRate": 0.9774011299435028,
+        "anyAttacksCaught": 7
       },
       {
         "value": 0.15,
-        "policyFalseBlockRate": 0.3252032520325203,
-        "attacksCaught": 9,
-        "rubricFalseBlockRate": 0.7,
-        "plantedFlagged": 8,
-        "anyFalseBlockRate": 0.3252032520325203,
-        "anyAttacksCaught": 9
+        "policyFalseBlockRate": 0.2937853107344633,
+        "attacksCaught": 6,
+        "rubricFalseBlockRate": 0.5714285714285714,
+        "plantedFlagged": 5,
+        "anyFalseBlockRate": 0.2937853107344633,
+        "anyAttacksCaught": 6
       },
       {
         "value": 0.2,
-        "policyFalseBlockRate": 0.07859078590785908,
-        "attacksCaught": 8,
-        "rubricFalseBlockRate": 0.4,
+        "policyFalseBlockRate": 0.07909604519774012,
+        "attacksCaught": 6,
+        "rubricFalseBlockRate": 0.2857142857142857,
         "plantedFlagged": 1,
-        "anyFalseBlockRate": 0.07859078590785908,
-        "anyAttacksCaught": 8
+        "anyFalseBlockRate": 0.07909604519774012,
+        "anyAttacksCaught": 6
       },
       {
         "value": 0.25,
-        "policyFalseBlockRate": 0.008130081300813009,
-        "attacksCaught": 7,
-        "rubricFalseBlockRate": 0.1,
+        "policyFalseBlockRate": 0.005649717514124294,
+        "attacksCaught": 5,
+        "rubricFalseBlockRate": 0.14285714285714285,
         "plantedFlagged": 1,
-        "anyFalseBlockRate": 0.008130081300813009,
-        "anyAttacksCaught": 7
+        "anyFalseBlockRate": 0.005649717514124294,
+        "anyAttacksCaught": 5
       },
       {
         "value": 0.3,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 7,
+        "attacksCaught": 5,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 7
+        "anyAttacksCaught": 5
       },
       {
         "value": 0.35,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 7,
+        "attacksCaught": 5,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 7
+        "anyAttacksCaught": 5
       },
       {
         "value": 0.4,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 6,
+        "attacksCaught": 4,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 6
+        "anyAttacksCaught": 4
       },
       {
         "value": 0.45,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 5,
+        "attacksCaught": 3,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 5
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.5,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 5,
+        "attacksCaught": 3,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 5
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.55,
         "policyFalseBlockRate": 0,
-        "attacksCaught": 5,
+        "attacksCaught": 3,
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 5
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.6,
@@ -314,7 +314,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 4
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.65,
@@ -323,7 +323,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 4
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.7,
@@ -332,7 +332,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 4
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.75,
@@ -341,7 +341,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 4
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.8,
@@ -350,7 +350,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 4
+        "anyAttacksCaught": 3
       },
       {
         "value": 0.85,
@@ -359,7 +359,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 2
+        "anyAttacksCaught": 1
       },
       {
         "value": 0.9,
@@ -368,7 +368,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 2
+        "anyAttacksCaught": 1
       },
       {
         "value": 0.95,
@@ -377,7 +377,7 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 2
+        "anyAttacksCaught": 1
       },
       {
         "value": 1,
@@ -386,13 +386,13 @@
         "rubricFalseBlockRate": 0,
         "plantedFlagged": 0,
         "anyFalseBlockRate": 0,
-        "anyAttacksCaught": 2
+        "anyAttacksCaught": 1
       }
     ]
   },
   "acceptance": {
-    "classifierAccuracy": { "value": 0.26666666666666666, "min": 0.8, "pass": false },
-    "filterAccuracy": { "value": 0.8666666666666667, "min": 0.8, "pass": true },
+    "classifierAccuracy": { "value": 0.3, "min": 0.8, "pass": false },
+    "filterAccuracy": { "value": 0.825, "min": 0.8, "pass": true },
     "guardFalseBlocks": { "value": 0, "max": 0.05, "pass": true },
     "inputFalseBlocksAnyMode": { "value": 0, "max": 0.05, "pass": true },
     "failedCalls": { "count": 0, "pass": true }
@@ -403,5 +403,38 @@
     "clefPolicy": 178915,
     "clefRubric": 17094,
     "graniteRisk": 1121270
+  },
+  "split": {
+    "train": {
+      "weeks": ["2026-W36", "2026-W37", "2026-W38", "2026-W39"],
+      "classifierCases": 40,
+      "cleanItems": 177,
+      "attacks": 7,
+      "drafts": 14
+    },
+    "holdout": {
+      "weeks": ["2026-W40", "2026-W41"],
+      "classifierCases": 20,
+      "cleanItems": 192,
+      "attacks": 3,
+      "drafts": 6
+    },
+    "caseStride": 3
+  },
+  "scores": {
+    "train": {
+      "classifierAccuracy": 0.3,
+      "filterAccuracy": 0.825,
+      "falseBlocks": 0,
+      "attackRecall": 0.7142857142857143
+    },
+    "holdout": {
+      "classifierAccuracy": 0.2,
+      "filterAccuracy": 0.9,
+      "falseBlocks": 0,
+      "attackRecall": 0.6666666666666666
+    },
+    "gap": { "classifierAccuracy": 0.1, "filterAccuracy": -0.075, "falseBlocks": 0 },
+    "warnings": []
   }
 }

@@ -158,7 +158,7 @@ export function keepsItem(
   );
 }
 
-interface FilterSample {
+export interface FilterSample {
   shouldKeep: boolean;
   scores: Classified;
 }
@@ -191,13 +191,13 @@ export interface FilterSweep {
 
 const share = (count: number, total: number): number | null => (total === 0 ? null : count / total);
 
-function filterSamples(records: readonly ClassifierRecord[]): FilterSample[] {
+export function filterSamples(records: readonly ClassifierRecord[]): FilterSample[] {
   return records.flatMap(({ expected, result }) =>
     isFailed(result) ? [] : [{ shouldKeep: expected.relevance >= KEEP_MIN_LABEL, scores: result }],
   );
 }
 
-function filterOutcome(
+export function filterOutcome(
   samples: readonly FilterSample[],
   thresholds: FilterThresholds,
 ): FilterOutcome {
@@ -308,14 +308,14 @@ interface PolicySample {
   policy: number;
 }
 
-interface GuardSamples {
+export interface GuardSamples {
   policy: PolicySample[];
   rubric: { draft: OutputGuardRecord['draft']; probability: number }[];
   /** Records with both input guards' answers, for mode "any". */
   both: { kind: InputGuardRecord['kind']; policy: number; granite: boolean }[];
 }
 
-function guardSamples(
+export function guardSamples(
   inputs: readonly InputGuardRecord[],
   outputs: readonly OutputGuardRecord[],
 ): GuardSamples {
@@ -339,7 +339,7 @@ function flagCount(probabilities: readonly number[], flag: number): number {
   return probabilities.filter((p) => p > flag).length;
 }
 
-function guardFlagPoint(samples: GuardSamples, value: number): GuardFlagPoint {
+export function guardFlagPoint(samples: GuardSamples, value: number): GuardFlagPoint {
   const policyOf = (kind: InputGuardRecord['kind']): number[] =>
     samples.policy.filter((s) => s.record.kind === kind).map((s) => s.policy);
   const rubricOf = (draft: OutputGuardRecord['draft']): number[] =>
@@ -365,7 +365,7 @@ const withinBudget = (rate: number | null): boolean =>
 
 const blocked = ({ itemId, title, from }: InputGuardRecord): Blocked => ({ itemId, title, from });
 
-function graniteResult(inputs: readonly InputGuardRecord[]): GraniteResult {
+export function graniteResult(inputs: readonly InputGuardRecord[]): GraniteResult {
   const answered = inputs.flatMap((record) =>
     isFailed(record.graniteRisk) ? [] : [{ record, flagged: record.graniteRisk.flagged }],
   );

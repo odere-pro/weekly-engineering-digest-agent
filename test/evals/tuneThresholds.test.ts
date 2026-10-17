@@ -45,6 +45,7 @@ import {
   type CaptureSession,
   type CliIo,
 } from '../../evals/tuneThresholds.js';
+import { NO_SPLIT } from '../../evals/thresholds/split.js';
 import {
   FakeInputGuard,
   FakeModelProvider,
@@ -313,7 +314,7 @@ function rawCapture(overrides: Partial<RawCapture> = {}): RawCapture {
 
 describe('tuneThresholds', () => {
   it('proposes all four thresholds and scores them against the baseline', () => {
-    const result = tuneThresholds(rawCapture());
+    const result = tuneThresholds(rawCapture(), NO_SPLIT);
     expect(result.proposed).toEqual({ ...DEFAULTS, guardFlag: 0.55 });
     expect(result.baseline).toEqual({ ...DEFAULTS, guardFlag: 0.5 });
     expect(result.classifier.filter.proposed).toMatchObject({ accuracy: 1, kept: 2, dropped: 3 });
@@ -326,7 +327,7 @@ describe('tuneThresholds', () => {
       ...classified(3, 2.8, 0.1, 0.1),
       result: { relevance: 2.8, area: 'other', areaConfidence: 0.9, hype: 0.1, minorRelease: 0.1 },
     };
-    const result = tuneThresholds(rawCapture({ classifier: [...SEPARABLE, wrongArea] }));
+    const result = tuneThresholds(rawCapture({ classifier: [...SEPARABLE, wrongArea] }), NO_SPLIT);
     // 6 cases: two relevance misses (2.5 for a 0, 2.4 for a 1) and one wrong area.
     expect(result.classifier.scorecard.relevance).toBeCloseTo(4 / 6);
     expect(result.classifier.scorecard.area).toBeCloseTo(5 / 6);
@@ -349,6 +350,51 @@ describe('tuneThresholds', () => {
     const clean = repeat(10, () => policy('clean', 0.01, true));
     const result = tuneThresholds(rawCapture({ inputGuards: [...clean, ...ATTACKS] }));
     expect(result.acceptance.guardFalseBlocks).toMatchObject({ value: 1, max: 0.05, pass: false });
+  });
+});
+
+describe('tuneThresholds on a held-out split', () => {
+  const weekly = (weekId: string, probability: number): InputGuardRecord => ({
+    ...policy('clean', probability),
+    from: weekId,
+  });
+  const weeks = ['2026-W38', '2026-W39', '2026-W40', '2026-W41'];
+  const cleanByWeek = (probabilities: Record<string, number>): InputGuardRecord[] =>
+    weeks.flatMap((week) => repeat(20, () => weekly(week, probabilities[week] ?? 0.01)));
+  const spread = [0, 1, 2, 3, 4, 5].map((i) => classified(i % 4, (i % 4) + 0.2, 0.1, 0.1));
+
+  it('never lets the holdout weeks or cases move the picked thresholds', () => {
+    const base = rawCapture({ classifier: spread, inputGuards: [...cleanByWeek({}), ...ATTACKS] });
+    const noisy = rawCapture({
+      // Held out: the third and sixth case change their label and scores; W40 and W41 turn blocky.
+      classifier: spread.map((r, i) => (i % 3 === 2 ? classified(0, 3, 0.9, 0.9) : r)),
+      inputGuards: [...cleanByWeek({ '2026-W40': 0.45, '2026-W41': 0.45 }), ...ATTACKS],
+    });
+    expect(tuneThresholds(noisy).proposed).toEqual(tuneThresholds(base).proposed);
+    expect(tuneThresholds(noisy).split?.holdout.weeks).toEqual(['2026-W40', '2026-W41']);
+  });
+
+  it('scores both sides and warns when the holdout is much worse', () => {
+    const raw = rawCapture({
+      classifier: spread.map((r, i) => (i % 3 === 2 ? classified(0, 3, 0.1, 0.1) : r)),
+      inputGuards: [...cleanByWeek({}), ...ATTACKS],
+    });
+    const result = tuneThresholds(raw);
+    expect(result.scores?.train.filterAccuracy).toBe(1);
+    expect(result.scores?.holdout.filterAccuracy).toBe(0);
+    expect(result.scores?.gap.filterAccuracy).toBe(1);
+    expect(result.scores?.warnings.length).toBeGreaterThan(0);
+    expect(result.split?.train.classifierCases).toBe(4);
+    expect(() => TuningResultSchema.parse(result)).not.toThrow();
+  });
+
+  it('honours an explicit split and still parses results written before the split existed', () => {
+    const raw = rawCapture({ inputGuards: [...cleanByWeek({}), ...ATTACKS] });
+    const result = tuneThresholds(raw, { holdoutWeeks: ['2026-W41'], caseStride: 0 });
+    expect(result.split?.holdout.weeks).toEqual(['2026-W41']);
+    expect(result.split?.holdout.classifierCases).toBe(0);
+    const { split: _split, scores: _scores, ...old } = result;
+    expect(TuningResultSchema.parse(old)).toEqual(old);
   });
 });
 
@@ -780,6 +826,37 @@ describe('runCli', () => {
     expect(await runCli(['capture'], failing)).toBe(1);
     expect(closed).toBe(true);
     expect(err.join('')).toContain('no cases');
+  });
+
+  it('sweeps with --holdout weeks and prints train and holdout side by side', async () => {
+    const rawPath = join(dir, 'raw.json');
+    const weeks = ['2026-W38', '2026-W39', '2026-W40'];
+    const clean = weeks.flatMap((week) =>
+      repeat(20, () => ({ ...policy('clean', 0.01), from: week })),
+    );
+    await writeFile(rawPath, JSON.stringify(rawCapture({ inputGuards: [...clean, ...ATTACKS] })));
+    expect(await runCli(['sweep', rawPath, '--holdout', '2026-W39,2026-W40'], io())).toBe(0);
+    const text = out.join('');
+    expect(text).toMatch(/train\s+holdout\s+gap/);
+    expect(text).toContain('held out:');
+    expect(text).toContain('2026-W39, 2026-W40');
+  });
+
+  it('exits 2 when capture is given --holdout, which only sweep reads', async () => {
+    expect(await runCli(['capture', '--holdout', '2026-W40'], io())).toBe(2);
+    expect(err.join('')).toContain('belongs to sweep');
+  });
+
+  it('exits 2 for a --holdout that is not a list of week ids', async () => {
+    expect(await runCli(['sweep', 'raw.json', '--holdout', 'tomorrow'], io())).toBe(2);
+    expect(err.join('')).toContain('not a week id');
+  });
+
+  it('exits 1 for a --holdout week the capture does not have', async () => {
+    const rawPath = join(dir, 'raw.json');
+    await writeFile(rawPath, JSON.stringify(rawCapture()));
+    expect(await runCli(['sweep', rawPath, '--holdout', '2026-W01'], io())).toBe(1);
+    expect(err.join('')).toContain('no week 2026-W01');
   });
 
   it('exits 2 with the reason for an unknown option or an extra argument', async () => {

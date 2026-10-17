@@ -22,7 +22,6 @@ import type { GuardCheckId } from '../src/core/schemas.js';
 import { systemClock, type Clock } from '../src/shared/clock.js';
 import type { ModelProvider } from '../src/ports/ModelProvider.js';
 import { DigestError, errorMessage } from '../src/shared/errors.js';
-import { classifierAccuracy } from './metrics.js';
 import { loadEvalCases } from './runEval.js';
 import {
   RawCaptureSchema,
@@ -30,11 +29,22 @@ import {
   failedCalls,
   isFailed,
   type CaptureDeps,
-  type ClassifierRecord,
   type EvalSet,
   type RawCapture,
   type WeekItemRecord,
 } from './thresholds/capture.js';
+import {
+  compareSides,
+  defaultSplit,
+  parseHoldoutWeeks,
+  scoreSide,
+  scorecardAccuracy,
+  sideSize,
+  splitCapture,
+  splitLines,
+  worst,
+  type Split,
+} from './thresholds/split.js';
 import {
   EPSILON,
   KEEP_MIN_LABEL,
@@ -80,6 +90,21 @@ const GuardFlagPointSchema = z.object({
 const BlockedSchema = z.object({ itemId: z.string(), title: z.string(), from: z.string() });
 const MinGateSchema = z.object({ value: Ratio, min: z.number(), pass: z.boolean() });
 const MaxGateSchema = z.object({ value: Ratio, max: z.number(), pass: z.boolean() });
+
+const SideSizeSchema = z.object({
+  weeks: z.array(z.string()),
+  classifierCases: Count,
+  cleanItems: Count,
+  attacks: Count,
+  drafts: Count,
+});
+const SideScoreSchema = z.object({
+  classifierAccuracy: Ratio,
+  filterAccuracy: Ratio,
+  falseBlocks: Ratio,
+  attackRecall: Ratio,
+});
+const GapSchema = z.number().min(-1).max(1).nullable();
 
 /** evals/thresholds/<date>-<profile>.json: what `sweep` makes of one raw capture. */
 export const TuningResultSchema = z.object({
@@ -135,6 +160,23 @@ export const TuningResultSchema = z.object({
     failedCalls: z.object({ count: Count, pass: z.boolean() }),
   }),
   timingsMs: z.record(z.string(), z.number().min(0)),
+  /**
+   * Thresholds are picked on `train` and scored on both sides. Every section above describes the
+   * train side. Results from before W6-04 have neither field and picked on all the data.
+   */
+  split: z.object({ train: SideSizeSchema, holdout: SideSizeSchema, caseStride: Count }).optional(),
+  scores: z
+    .object({
+      train: SideScoreSchema,
+      holdout: SideScoreSchema,
+      gap: z.object({
+        classifierAccuracy: GapSchema,
+        filterAccuracy: GapSchema,
+        falseBlocks: GapSchema,
+      }),
+      warnings: z.array(z.string()),
+    })
+    .optional(),
 });
 export type TuningResult = z.infer<typeof TuningResultSchema>;
 
@@ -146,18 +188,6 @@ const METHOD = {
     'grid 0-1, step 0.05; most attack cases flagged by clefPolicy, with clefPolicy (clean week items) and clefRubric (clean control drafts) each flagging 5% or less',
   ties: `best mean score within ${MARGIN_STEPS} grid steps on every axis, then closest to the baseline`,
 };
-
-function scorecardAccuracy(
-  records: readonly ClassifierRecord[],
-): TuningResult['classifier']['scorecard'] {
-  const results = records.flatMap(({ expected, result }) =>
-    isFailed(result)
-      ? []
-      : [{ expected, actual: { area: result.area, relevance: result.relevance } }],
-  );
-  const { value, detail } = classifierAccuracy(results);
-  return { value, area: detail?.area ?? null, relevance: detail?.relevance ?? null };
-}
 
 function weekCheck(records: readonly WeekItemRecord[], thresholds: FilterThresholds): WeekCheck {
   const answered = records.flatMap(({ label, result }) =>
@@ -188,18 +218,19 @@ const atMost = (value: number | null, max: number) => ({
 const totalFailed = (raw: RawCapture): number =>
   Object.values(failedCalls(raw)).reduce((sum, n) => sum + n, 0);
 
-function worst(rates: readonly (number | null)[]): number | null {
-  const known = rates.filter((rate): rate is number => rate !== null);
-  return known.length === 0 ? null : Math.max(...known);
-}
-
-/** Sweeps all four thresholds over one raw capture. Pure: no files, no model calls. */
-export function tuneThresholds(raw: RawCapture): TuningResult {
-  const filter = sweepFilter(raw.classifier, raw.baseline);
-  const guard = sweepGuardFlag(raw.inputGuards, raw.outputGuards, raw.baseline.guardFlag);
+/**
+ * Picks all four thresholds on the train side of one raw capture and scores them on both sides.
+ * Pure: no files, no model calls.
+ */
+export function tuneThresholds(raw: RawCapture, split: Split = defaultSplit(raw)): TuningResult {
+  const { train, holdout } = splitCapture(raw, split);
+  const filter = sweepFilter(train.classifier, raw.baseline);
+  const guard = sweepGuardFlag(train.inputGuards, train.outputGuards, raw.baseline.guardFlag);
   const proposed: Thresholds = { ...filter.chosen, guardFlag: guard.chosen };
-  const scorecard = scorecardAccuracy(raw.classifier);
+  const scorecard = scorecardAccuracy(train.classifier);
   const failures = totalFailed(raw);
+  const scores = { train: scoreSide(train, proposed), holdout: scoreSide(holdout, proposed) };
+  const comparison = compareSides(scores.train, scores.holdout);
   return {
     profile: raw.profile,
     capturedAt: raw.capturedAt,
@@ -216,9 +247,9 @@ export function tuneThresholds(raw: RawCapture): TuningResult {
       curves: filter.curves,
     },
     weeks: {
-      failed: raw.weekItems.filter((r) => isFailed(r.result)).length,
-      baseline: weekCheck(raw.weekItems, raw.baseline),
-      proposed: weekCheck(raw.weekItems, proposed),
+      failed: train.weekItems.filter((r) => isFailed(r.result)).length,
+      baseline: weekCheck(train.weekItems, raw.baseline),
+      proposed: weekCheck(train.weekItems, proposed),
     },
     guards: {
       clean: guard.clean,
@@ -247,6 +278,8 @@ export function tuneThresholds(raw: RawCapture): TuningResult {
       failedCalls: { count: failures, pass: failures === 0 },
     },
     timingsMs: raw.timingsMs,
+    split: { train: sideSize(train), holdout: sideSize(holdout), caseStride: split.caseStride },
+    scores: { ...scores, gap: comparison.gap, warnings: comparison.warnings },
   };
 }
 
@@ -321,7 +354,8 @@ const EXIT_USAGE = 2;
 const USAGE = [
   'Usage:',
   '  tsx evals/tuneThresholds.ts capture [--config <digest.config.json>] [--force]',
-  '  tsx evals/tuneThresholds.ts sweep <evals/thresholds/raw/<date>-<profile>.json>',
+  '  tsx evals/tuneThresholds.ts sweep <evals/thresholds/raw/<date>-<profile>.json> [--holdout <weeks>]',
+  '    --holdout: comma-separated week ids kept out of the pick (default: the two newest weeks)',
   '',
 ].join('\n');
 
@@ -454,6 +488,17 @@ async function captureCommand(options: CaptureOptions, io: CliIo): Promise<numbe
 
 const fixed = (value: number | null): string => (value === null ? 'n/a' : value.toFixed(3));
 
+function splitSection({ split, scores }: TuningResult): string[] {
+  if (split === undefined || scores === undefined) return [];
+  const size = (side: typeof split.train): string =>
+    `${side.classifierCases} cases, ${side.cleanItems} clean items (${side.weeks.join(', ') || 'no weeks'}), ${side.attacks} attacks`;
+  return [
+    `picked on train: ${size(split.train)}`,
+    `held out:        ${size(split.holdout)}`,
+    ...splitLines(scores.train, scores.holdout, { gap: scores.gap, warnings: scores.warnings }),
+  ];
+}
+
 function summary(result: TuningResult): string {
   const rows = (['minRelevance', 'maxHype', 'maxMinorRelease', 'guardFlag'] as const).map(
     (key) =>
@@ -471,12 +516,19 @@ function summary(result: TuningResult): string {
     `clefRubric false blocks on clean drafts ${fixed(guards.proposed.rubricFalseBlockRate)}`,
     `input false blocks in mode "any" ${fixed(guards.proposed.anyFalseBlockRate)}`,
     `failed model calls: ${acceptance.failedCalls.count}`,
+    ...splitSection(result),
   ].join('\n');
 }
 
-async function sweepCommand(rawPath: string, io: CliIo): Promise<number> {
+async function sweepCommand(
+  rawPath: string,
+  holdout: readonly string[] | undefined,
+  io: CliIo,
+): Promise<number> {
   const raw = await readRaw(rawPath);
-  const result = tuneThresholds(raw);
+  const split =
+    holdout === undefined ? defaultSplit(raw) : { ...defaultSplit(raw), holdoutWeeks: holdout };
+  const result = tuneThresholds(raw, split);
   const path = join(io.outDir, `${localDate(raw.capturedAt)}-${raw.profile}.json`);
   await writeJson(path, result);
   io.stdout(`${summary(result)}\nSaved ${path}\n`);
@@ -485,8 +537,20 @@ async function sweepCommand(rawPath: string, io: CliIo): Promise<number> {
 
 type Command =
   | ({ name: 'capture' } & CaptureOptions)
-  | { name: 'sweep'; rawPath: string }
+  | { name: 'sweep'; rawPath: string; holdout: string[] | undefined }
   | { name: 'usage'; reason?: string };
+
+function sweepOf(rawPath: string, holdout: string | undefined): Command {
+  try {
+    return {
+      name: 'sweep',
+      rawPath,
+      holdout: holdout === undefined ? undefined : parseHoldoutWeeks(holdout),
+    };
+  } catch (error) {
+    return { name: 'usage', reason: errorMessage(error) };
+  }
+}
 
 function parseCommand(args: readonly string[]): Command {
   let parsed;
@@ -494,16 +558,22 @@ function parseCommand(args: readonly string[]): Command {
     parsed = parseArgs({
       args: [...args],
       allowPositionals: true,
-      options: { config: { type: 'string' }, force: { type: 'boolean', default: false } },
+      options: {
+        config: { type: 'string' },
+        force: { type: 'boolean', default: false },
+        holdout: { type: 'string' },
+      },
     });
   } catch (error) {
     return { name: 'usage', reason: errorMessage(error) };
   }
   const [name, rawPath, ...extra] = parsed.positionals;
   if (extra.length > 0) return { name: 'usage', reason: `unexpected ${extra.join(' ')}` };
+  if (name === 'capture' && rawPath === undefined && parsed.values.holdout !== undefined)
+    return { name: 'usage', reason: '--holdout belongs to sweep' };
   if (name === 'capture' && rawPath === undefined)
     return { name, config: parsed.values.config, force: parsed.values.force };
-  if (name === 'sweep' && rawPath !== undefined) return { name, rawPath };
+  if (name === 'sweep' && rawPath !== undefined) return sweepOf(rawPath, parsed.values.holdout);
   return { name: 'usage' };
 }
 
@@ -521,7 +591,7 @@ export async function runCli(
   try {
     return command.name === 'capture'
       ? await captureCommand(command, io)
-      : await sweepCommand(command.rawPath, io);
+      : await sweepCommand(command.rawPath, command.holdout, io);
   } catch (error) {
     io.stderr(`tuneThresholds failed: ${errorMessage(error)}\n`);
     return EXIT_FAILED;

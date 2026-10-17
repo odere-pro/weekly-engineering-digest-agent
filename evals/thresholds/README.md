@@ -5,7 +5,7 @@
 
 ```bash
 LOG_LEVEL=warn pnpm tsx evals/tuneThresholds.ts capture --config data/thresholds/light.json
-pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json
+pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json [--holdout 2026-W40,2026-W41]
 ```
 
 | File                        | What                                                                                                                                                                                              |
@@ -65,3 +65,37 @@ It is deferred to the `quality` profile on better hardware.
 `maxMinorRelease` is flat from 0.65 to 1.0 (0.867), so labels barely pin it down. `maxHype`
 peaks at 0.6 but is within 0.02 of that from 0.25 to 0.65. Relevance-only labels do not
 separate the two well; treat both as weak.
+
+## Train and holdout split (W6-04)
+
+Before W6-04 the thresholds were chosen and scored on the same labels (F56). `sweep` now picks on
+a train split and reports on a holdout split of the same raw capture, with no model calls.
+
+- **Weeks:** the holdout is the two newest recorded weeks (`--holdout <weeks>` takes a comma-separated
+  list of week ids instead). Their week items and clean input-guard items never reach the pick. At
+  least one week stays in train.
+- **Cases:** the holdout is every third classifier case (the 3rd, 6th, ...), every third attack and
+  every third grounding case (both of its drafts), in the order they are stored in the raw capture.
+  The split is deterministic and disjoint.
+- **Output:** train and holdout classifier accuracy, filter accuracy, false blocks (the worst of
+  clefPolicy, clefRubric and granite) and attacks caught, side by side with the gap. A gap above
+  0.1 prints a `WARNING` line. The result JSON carries `split` and `scores`; files written before
+  W6-04 have neither and still parse.
+- **Reading the older sections:** every section of the result file now describes the train side. The
+  numbers under "Result: light, 2026-10-17" above were picked and scored on all the data and are kept
+  as they were.
+
+### Result on the current capture (light, 2026-10-17)
+
+Holdout: 2026-W40 and 2026-W41. Train has 40 cases, 177 clean items, 7 attacks; holdout has 20
+cases, 192 clean items, 3 attacks. With 20 holdout cases one case moves filter accuracy by 0.05.
+
+| Thresholds                                                                                     | Filter accuracy, train | Filter accuracy, holdout | False blocks | Attacks caught, train / holdout |
+| ---------------------------------------------------------------------------------------------- | ---------------------- | ------------------------ | ------------ | ------------------------------- |
+| In use (`1.5 / 0.6 / 0.75 / 0.35`)                                                             | 0.825                  | 0.950                    | 0.000        | 5 of 7 / 2 of 3                 |
+| Picked on train (`minRelevance 1.5`, `maxHype 0.35`, `maxMinorRelease 0.65`, `guardFlag 0.35`) | 0.825                  | 0.900                    | 0.000        | 5 of 7 / 2 of 3                 |
+
+The gap is -0.075 (holdout better than train), so there is no overfitting warning. The sweep on
+train alone picks `maxHype` 0.35 and `maxMinorRelease` 0.65; the thresholds in use do as well on
+train and better on the holdout, so they stay. Classifier accuracy (area and relevance) is 0.300 on
+train and 0.200 on the holdout (gap 0.100, not above the limit).
