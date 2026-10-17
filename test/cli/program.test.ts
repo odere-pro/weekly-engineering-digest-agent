@@ -19,13 +19,15 @@ describe('CLI program', () => {
     stderr.mockRestore();
   });
 
-  it('passes the week argument of feedback to its handler', async () => {
+  it('passes the global --config and the week argument to feedback', async () => {
     const codes: number[] = [];
     const program = buildProgram((code) => codes.push(code)).exitOverride();
     const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-    await program.parseAsync(['node', 'digest', 'feedback', '2026-W43'], { from: 'node' });
-    expect(codes).toEqual([1]); // the stub handler exits 1 until W7-07 lands
-    expect(stderr).toHaveBeenCalledWith(expect.stringContaining('2026-W43'));
+    await program.parseAsync(['node', 'digest', '--config', 'x.json', 'feedback', '2026-W43'], {
+      from: 'node',
+    });
+    expect(codes).toEqual([1]); // config missing -> exit code 1
+    expect(stderr).toHaveBeenCalledWith(expect.stringContaining('x.json'));
     stderr.mockRestore();
   });
 
