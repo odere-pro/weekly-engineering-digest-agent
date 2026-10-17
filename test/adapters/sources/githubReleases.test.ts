@@ -296,7 +296,7 @@ describe('createGithubReleasesFetcher', () => {
       const items = await createGithubReleasesFetcher({ fetch }).fetch(source, window);
 
       expect(items.map((item) => [item.title, item.summary])).toEqual([
-        ['widgets v1.0.0', ''],
+        ['widgets v1.0.0', '&#x110000; and &#99999999;'],
         ['widgets v1.0.1', 'notes for v1.0.1'],
       ]);
     });
@@ -582,7 +582,7 @@ describe('createGithubReleasesFetcher', () => {
       );
 
       expect(items.map((item) => [item.title, item.summary])).toEqual([
-        ['widgets v1.0.0', ''],
+        ['widgets v1.0.0', 'boom &#x110000; &#99999999;'],
         ['widgets v1.0.1', 'notes for v1.0.1'],
       ]);
     });

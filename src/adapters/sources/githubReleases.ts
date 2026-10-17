@@ -243,7 +243,7 @@ function atomRelease(entry: FeedEntry): Release | undefined {
     tag: tagFromReleaseUrl(url) ?? title,
     name: title,
     url,
-    text: safePlainText(html),
+    text: toPlainText(html),
     publishedAt,
   };
 }
@@ -271,22 +271,9 @@ function tagFromReleaseUrl(url: string): string | undefined {
 function markdownToPlainText(markdown: string): string {
   const escapeAngles = (code: string): string =>
     code.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-  return safePlainText(
+  return toPlainText(
     markdown.replace(MARKDOWN_FENCE, escapeAngles).replace(MARKDOWN_CODE_SPAN, escapeAngles),
   );
-}
-
-/**
- * `toPlainText` throws on out-of-range numeric entities such as `&#x110000;`. Release notes
- * are written by third parties, so one hostile body must not fail the whole source: its
- * release is kept (title and link are still real) with an empty summary.
- */
-function safePlainText(text: string): string {
-  try {
-    return toPlainText(text);
-  } catch {
-    return '';
-  }
 }
 
 /** Release links must stay on github.com: they become the digest's allowed links. */
