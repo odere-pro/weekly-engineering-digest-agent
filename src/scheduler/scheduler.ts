@@ -1,5 +1,6 @@
 import { Cron } from 'croner';
 import type { RunResult } from '../core/runDigest.js';
+import type { RunStatus } from '../core/schemas.js';
 import type { Clock } from '../shared/clock.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import { compareWeekIds, isoWeekId, weekStartUtc } from '../shared/isoWeek.js';
@@ -30,8 +31,8 @@ export interface SchedulerOptions {
   cron: string;
   timeZone: string;
   run: (weekId: string) => Promise<RunResult>;
-  /** Used for missed-week catch-up on start. */
-  hasSentDigest: (weekId: string) => Promise<boolean>;
+  /** How the week's saved run ended, if it has one. Used for missed-week catch-up on start. */
+  runStatus: (weekId: string) => Promise<RunStatus | undefined>;
   clock: Clock;
   logger: Logger;
   /** Default: croner. */
@@ -56,6 +57,8 @@ interface Executor {
   whenIdle(): Promise<void>;
 }
 
+/** Catch-up leaves a week that ended this way alone; a failed or dry-run week runs again. */
+const SETTLED: ReadonlySet<RunStatus> = new Set<RunStatus>(['sent', 'quiet', 'blocked']);
 const HOUR_MS = 3_600_000;
 /** The furthest a time zone's local Monday 00:00 can lie before Monday 00:00 UTC (UTC+14). */
 const MAX_UTC_OFFSET_MS = 14 * HOUR_MS;
@@ -77,7 +80,7 @@ export async function startScheduler(options: SchedulerOptions): Promise<Schedul
   }
   logger.debug('Scheduler is waiting for the next tick', { cron, timeZone });
   return {
-    nextRun: () => job.nextRun(),
+    nextRun: () => job.nextRun(clock.now()),
     stop: () => {
       job.stop();
       if (executor.isRunning()) logger.info('Scheduler stopped; the running digest finishes first');
@@ -144,26 +147,37 @@ function createExecutor({ run, logger }: SchedulerOptions): Executor {
   };
 }
 
-/** Runs the current week now if its slot has passed and no digest was sent for it. */
+/** Runs the current week now if its slot has passed and the week has not settled. */
 async function catchUp(job: CronJob, options: SchedulerOptions, execute: Execute): Promise<void> {
-  const { timeZone, clock, logger, hasSentDigest } = options;
+  const { timeZone, clock, logger } = options;
   const now = clock.now();
   const weekId = isoWeekId(now, timeZone);
   const slot = firstSlotOfWeek(job, weekId, timeZone);
   if (slot === null || slot.getTime() > now.getTime()) return;
+  if (!(await isUnsettled(options, weekId))) return;
 
+  logger.info('Catching up on a missed run', { weekId, slot: slot.toISOString() });
+  // Not awaited: a run takes minutes, and the caller needs the handle to be able to stop.
+  void execute(weekId, 'catch-up');
+}
+
+/** True when the week has no run, or one that failed or was dry; false when the store fails. */
+async function isUnsettled(
+  { runStatus, logger }: SchedulerOptions,
+  weekId: string,
+): Promise<boolean> {
   try {
-    if (await hasSentDigest(weekId)) return;
+    const status = await runStatus(weekId);
+    if (status === undefined || !SETTLED.has(status)) return true;
+    logger.debug('No catch-up: the week has settled', { weekId, status });
+    return false;
   } catch (error) {
     logger.error('Missed-week catch-up skipped: could not read the run store', {
       weekId,
       error: errorMessage(error),
     });
-    return;
+    return false;
   }
-  logger.info('Catching up on a missed run', { weekId, slot: slot.toISOString() });
-  // Not awaited: a run takes minutes, and the caller needs the handle to be able to stop.
-  void execute(weekId, 'catch-up');
 }
 
 /** The first fire inside the local ISO week `weekId`, or null when the cron never fires again. */

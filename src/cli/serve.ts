@@ -69,7 +69,7 @@ async function serveUntilSignal(
     cron,
     timeZone,
     run: (weekId) => io.runDigest(deps, { weekId }),
-    hasSentDigest: (weekId) => deps.store.hasSentDigest(weekId),
+    runStatus: async (weekId) => (await deps.store.getRunRecord(weekId))?.status,
     clock: deps.clock,
     logger: deps.logger,
   });

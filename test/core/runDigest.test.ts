@@ -320,7 +320,8 @@ describe('runDigest: sent', () => {
     expect(result.exitCode).toBe(ExitCode.Failed);
     expect(result.record).toMatchObject({
       status: 'failed',
-      sentUrls: [],
+      sentUrls: h.items.map((item) => item.url),
+      deliveredTo: ['markdown'],
       winner: WRITER_A,
       error: { step: 'deliver', message: expect.stringContaining('email') as string },
     });
@@ -351,13 +352,18 @@ describe('runDigest: skipped and locked', () => {
 
   it('skips a week that was sent while this run waited for the lock', async () => {
     const h = setup();
-    vi.spyOn(h.store, 'hasSentDigest').mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const sent = makeRunRecord({ runId: WEEK, status: 'sent' });
+    const acquire = h.store.acquireLock.bind(h.store);
+    vi.spyOn(h.store, 'acquireLock').mockImplementation(async (runId) => {
+      h.store.records.set(WEEK, sent);
+      return acquire(runId);
+    });
 
     const result = await h.run();
 
     expect(result.record.status).toBe('skipped');
     expect(h.fetcher.calls).toEqual([]);
-    expect(h.store.records.size).toBe(0);
+    expect(h.store.records.get(WEEK)).toBe(sent);
     expect(h.store.isLocked).toBe(false);
   });
 

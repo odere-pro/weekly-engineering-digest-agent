@@ -83,18 +83,32 @@ interface FeedItems {
   github: Item[];
 }
 
-/** Four items inside the window, one patch release (dropped as minor) and one that is too old. */
+/**
+ * Four items inside the window, one patch release (dropped as minor) and one that is too old.
+ * URLs are fixed, as a real feed's are, so every world (process) sees the same items.
+ */
 function feedItems(now: Date): FeedItems {
   const ago = (hours: number): string => new Date(now.getTime() - hours * HOUR_MS).toISOString();
   return {
     rss: [
       makeItem({
         sourceId: 'model-blog',
+        url: 'https://example.com/posts/gemma-4',
         title: 'Gemma 4 adds tool calling',
         publishedAt: ago(72),
       }),
-      makeItem({ sourceId: 'model-blog', title: 'Model router 2.0', publishedAt: ago(48) }),
-      makeItem({ sourceId: 'model-blog', title: 'Old news', publishedAt: ago(24 * 40) }),
+      makeItem({
+        sourceId: 'model-blog',
+        url: 'https://example.com/posts/model-router-2',
+        title: 'Model router 2.0',
+        publishedAt: ago(48),
+      }),
+      makeItem({
+        sourceId: 'model-blog',
+        url: 'https://example.com/posts/old-news',
+        title: 'Old news',
+        publishedAt: ago(24 * 40),
+      }),
     ],
     github: [
       makeItem({

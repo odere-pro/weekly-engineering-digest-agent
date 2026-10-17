@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
 import type { RunResult } from '../../src/core/runDigest.js';
-import { ExitCode } from '../../src/core/schemas.js';
+import { ExitCode, type RunStatus } from '../../src/core/schemas.js';
 import {
   startScheduler,
   type CronFactory,
@@ -41,28 +41,29 @@ const runResult: RunResult = { record: makeRunRecord(), exitCode: ExitCode.Sent 
 interface Harness {
   options: SchedulerOptions;
   run: Mock<SchedulerOptions['run']>;
-  hasSentDigest: Mock<SchedulerOptions['hasSentDigest']>;
+  runStatus: Mock<SchedulerOptions['runStatus']>;
   logger: MockLogger;
 }
 
+/** `status`: how the week's saved run ended; none by default. */
 function harness(
   now: string,
-  overrides: Partial<SchedulerOptions> & { sent?: boolean } = {},
+  overrides: Partial<SchedulerOptions> & { status?: RunStatus } = {},
 ): Harness {
-  const { sent = false, ...rest } = overrides;
+  const { status, ...rest } = overrides;
   const run = vi.fn<SchedulerOptions['run']>(() => Promise.resolve(runResult));
-  const hasSentDigest = vi.fn<SchedulerOptions['hasSentDigest']>(() => Promise.resolve(sent));
+  const runStatus = vi.fn<SchedulerOptions['runStatus']>(() => Promise.resolve(status));
   const logger = mockLogger();
   const options: SchedulerOptions = {
     cron: DEFAULT_CRON,
     timeZone: BERLIN,
     run,
-    hasSentDigest,
+    runStatus,
     clock: fixedClock(now),
     logger,
     ...rest,
   };
-  return { options, run, hasSentDigest, logger };
+  return { options, run, runStatus, logger };
 }
 
 interface FakeCronCall {
@@ -70,6 +71,7 @@ interface FakeCronCall {
   options: CronJobOptions;
   handler: () => Promise<void>;
   stop: Mock<() => void>;
+  nextRun: Mock<(from?: Date) => Date | null>;
 }
 
 /** A factory whose next run is far in the future, so it never triggers a catch-up. */
@@ -80,8 +82,9 @@ function fakeCron(nextRun: Date | null = new Date('2027-01-01T00:00:00Z')): {
   const calls: FakeCronCall[] = [];
   const factory: CronFactory = (pattern, options, handler) => {
     const stop = vi.fn<() => void>();
-    calls.push({ pattern, options, handler, stop });
-    return { nextRun: () => nextRun, stop };
+    const next = vi.fn<(from?: Date) => Date | null>(() => nextRun);
+    calls.push({ pattern, options, handler, stop, nextRun: next });
+    return { nextRun: next, stop };
   };
   return { factory, calls };
 }
@@ -102,7 +105,7 @@ afterEach(() => {
 describe('startScheduler tick', () => {
   it('creates the job with the cron, time zone and overrun protection', async () => {
     const { factory, calls } = fakeCron();
-    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, sent: true });
+    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, status: 'sent' });
 
     await start(options);
 
@@ -114,7 +117,7 @@ describe('startScheduler tick', () => {
 
   it('runs the current ISO week on every tick', async () => {
     const { factory, calls } = fakeCron();
-    const { options, run } = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const { options, run } = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     await start(options);
 
     await calls[0]?.handler();
@@ -127,7 +130,7 @@ describe('startScheduler tick', () => {
     // Sunday 23:30 UTC is already Monday 01:30 in Berlin: week 43 there, week 42 in UTC.
     const { options, run } = harness('2026-10-18T23:30:00Z', {
       cronFactory: factory,
-      sent: true,
+      status: 'sent',
     });
     await start(options);
 
@@ -138,7 +141,7 @@ describe('startScheduler tick', () => {
 
   it('logs a failed run and does not throw', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     h.run.mockRejectedValue(new Error('ollama is down'));
     await start(h.options);
 
@@ -152,7 +155,7 @@ describe('startScheduler tick', () => {
 
   it('logs the outcome of a finished run', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     await start(h.options);
 
     await calls[0]?.handler();
@@ -165,7 +168,7 @@ describe('startScheduler tick', () => {
 
   it('keeps ticking after a failure', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     h.run.mockRejectedValueOnce(new Error('boom'));
     await start(h.options);
 
@@ -177,7 +180,7 @@ describe('startScheduler tick', () => {
 
   it('skips a tick while a run is still in flight', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     let finish: (value: RunResult) => void = () => undefined;
     h.run.mockReturnValueOnce(new Promise<RunResult>((resolve) => (finish = resolve)));
     await start(h.options);
@@ -197,7 +200,7 @@ describe('startScheduler tick', () => {
 describe('startScheduler safety net', () => {
   it('logs anything the job reports through its catch option', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     await start(h.options);
 
     calls[0]?.options.catch(new Error('tick exploded'));
@@ -225,16 +228,37 @@ describe('startScheduler handle', () => {
   it('reports the next run of the job', async () => {
     const next = new Date('2026-10-19T05:45:00Z');
     const { factory } = fakeCron(next);
-    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, sent: true });
+    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, status: 'sent' });
 
     const handle = await start(options);
 
     expect(handle.nextRun()).toEqual(next);
   });
 
+  it('asks the job for the next run after the injected clock', async () => {
+    const { factory, calls } = fakeCron();
+    const now = '2026-10-14T10:00:00Z';
+    const { options } = harness(now, { cronFactory: factory, status: 'sent' });
+    const handle = await start(options);
+
+    handle.nextRun();
+
+    expect(calls[0]?.nextRun).toHaveBeenLastCalledWith(new Date(now));
+  });
+
+  it('reports the next slot after the injected clock with the real cron', async () => {
+    // Months from the real date: a nextRun that read the real time would land elsewhere.
+    const { options } = harness('2026-03-04T10:00:00Z', { status: 'sent' });
+
+    const handle = await start(options);
+
+    // Monday 2026-03-09 07:45 in Berlin is 06:45 UTC (CET, UTC+1).
+    expect(handle.nextRun()).toEqual(new Date('2026-03-09T06:45:00Z'));
+  });
+
   it('stops the job', async () => {
     const { factory, calls } = fakeCron();
-    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, sent: true });
+    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, status: 'sent' });
     const handle = await start(options);
 
     handle.stop();
@@ -244,7 +268,7 @@ describe('startScheduler handle', () => {
 
   it('is idle when no run is in flight', async () => {
     const { factory } = fakeCron();
-    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, sent: true });
+    const { options } = harness('2026-10-14T10:00:00Z', { cronFactory: factory, status: 'sent' });
     const handle = await start(options);
 
     await expect(handle.whenIdle()).resolves.toBeUndefined();
@@ -252,7 +276,7 @@ describe('startScheduler handle', () => {
 
   it('is not idle until the run in flight has finished', async () => {
     const { factory, calls } = fakeCron();
-    const h = harness(BERLIN_SLOT, { cronFactory: factory, sent: true });
+    const h = harness(BERLIN_SLOT, { cronFactory: factory, status: 'sent' });
     let finish: (value: RunResult) => void = () => undefined;
     h.run.mockReturnValueOnce(new Promise<RunResult>((resolve) => (finish = resolve)));
     const handle = await start(h.options);
@@ -302,7 +326,7 @@ describe('startScheduler catch-up', () => {
     await vi.waitFor(() => {
       expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42');
     });
-    expect(h.hasSentDigest).toHaveBeenCalledWith('2026-W42');
+    expect(h.runStatus).toHaveBeenCalledWith('2026-W42');
   });
 
   it('runs at the slot itself', async () => {
@@ -324,14 +348,34 @@ describe('startScheduler catch-up', () => {
     expect(h.run).not.toHaveBeenCalled();
   });
 
-  it('does not run when the week was already sent', async () => {
-    const h = harness('2026-10-14T10:00:00Z', { sent: true });
+  it.each<RunStatus>(['sent', 'quiet', 'blocked'])(
+    'does not run a week that already ended %s',
+    async (status) => {
+      const h = harness('2026-10-14T10:00:00Z', { status });
 
-    await start(h.options);
+      await start(h.options);
 
-    expect(h.hasSentDigest).toHaveBeenCalledWith('2026-W42');
-    expect(h.run).not.toHaveBeenCalled();
-  });
+      expect(h.runStatus).toHaveBeenCalledWith('2026-W42');
+      expect(h.run).not.toHaveBeenCalled();
+      expect(h.logger.debug).toHaveBeenCalledWith(
+        expect.stringContaining('settled'),
+        expect.objectContaining({ weekId: '2026-W42', status }),
+      );
+    },
+  );
+
+  it.each<RunStatus | undefined>(['failed', 'dry-run', undefined])(
+    'runs a week whose saved run is %s',
+    async (status) => {
+      const h = harness('2026-10-14T10:00:00Z', { status });
+
+      await start(h.options);
+
+      await vi.waitFor(() => {
+        expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42');
+      });
+    },
+  );
 
   it('uses the week as seen in the time zone, not in UTC', async () => {
     // Sunday 22:30 UTC is Monday 00:30 in Berlin: week 42 has begun, its slot has not.
@@ -395,7 +439,7 @@ describe('startScheduler catch-up', () => {
 
     await start(h.options);
 
-    expect(h.hasSentDigest).not.toHaveBeenCalled();
+    expect(h.runStatus).not.toHaveBeenCalled();
     expect(h.run).not.toHaveBeenCalled();
   });
 
@@ -416,7 +460,7 @@ describe('startScheduler catch-up', () => {
 
   it('logs an unreadable store and skips the catch-up', async () => {
     const h = harness('2026-10-14T10:00:00Z');
-    h.hasSentDigest.mockRejectedValue(new Error('disk gone'));
+    h.runStatus.mockRejectedValue(new Error('disk gone'));
 
     const handle = await start(h.options);
 
@@ -448,7 +492,7 @@ describe('startScheduler catch-up', () => {
 describe('startScheduler with the real cron', () => {
   it('stops ticking after stop()', async () => {
     vi.useFakeTimers({ now: new Date('2026-10-12T05:00:00Z'), toFake: ['setTimeout', 'Date'] });
-    const h = harness('2026-10-12T05:00:00Z', { sent: true });
+    const h = harness('2026-10-12T05:00:00Z', { status: 'sent' });
     const handle = await start(h.options);
 
     handle.stop();
@@ -459,7 +503,7 @@ describe('startScheduler with the real cron', () => {
 
   it('fires on the schedule in the configured time zone', async () => {
     vi.useFakeTimers({ now: new Date('2026-10-12T05:00:00Z'), toFake: ['setTimeout', 'Date'] });
-    const h = harness('2026-10-12T05:00:00Z', { sent: true });
+    const h = harness('2026-10-12T05:00:00Z', { status: 'sent' });
     const handle = await start(h.options);
     expect(handle.nextRun()).toEqual(new Date(BERLIN_SLOT));
 

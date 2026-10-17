@@ -1,6 +1,6 @@
 import type { Config } from '../config/schema.js';
 import { modelsByRole, requiredModels, type ModelProfile } from '../config/profiles.js';
-import type { Delivery, FailureNote } from '../ports/Delivery.js';
+import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
 import type { InputGuard, OutputGuard } from '../ports/Guard.js';
 import type { ModelHealth, ModelProvider } from '../ports/ModelProvider.js';
 import type { RunLock, RunStore } from '../ports/RunStore.js';
@@ -15,8 +15,18 @@ import { linkCheck } from './checks/linkCheck.js';
 import { DIGEST_MIN_ITEMS } from './prompts/write.js';
 import { renderDigest } from './render.js';
 import {
+  endRun,
+  failureNote,
+  forEachDelivery,
+  recordError,
+  toJson,
+  type DeliveryFailure,
+  type Failure,
+} from './runEnding.js';
+import {
   WEEK_ID_PATTERN,
   exitCodeFor,
+  type DeliveryId,
   type DigestItem,
   type Draft,
   type DraftOutcome,
@@ -82,6 +92,10 @@ const SUBJECT_MAX_CHARS = 120;
 const EM_DASH_RUN = /[\s,]*\u2014[\s,\u2014]*/g;
 const EM_DASH_REPLACEMENT = ', ';
 const WRITE_FAILED = 'write';
+/** render.ts writes the headline as the digest's first `# ` line... */
+const HEADLINE_LINE = /^# (.+)$/m;
+/** ...and each item's link as a `[Source](url)` line of its own. */
+const SOURCE_LINE = /^\[Source\]\((.+)\)$/gm;
 
 /** One run's fixed inputs, resolved before anything runs. */
 interface RunContext {
@@ -105,7 +119,8 @@ interface CheckedDraft {
 /** Ends the run early with this status; the remaining steps are skipped. */
 interface Settled {
   readonly status: 'quiet' | 'blocked';
-  readonly step: StepName;
+  /** The step that settled the run. `timed` stamps it, so a note always names the right one. */
+  readonly step?: StepName;
   /** Sent as a failure note; none for an ordinary quiet week. */
   readonly note?: string;
 }
@@ -122,18 +137,22 @@ interface ChainState {
   readonly passed: readonly CheckedDraft[];
   readonly winner?: CheckedDraft;
   readonly sentUrls: readonly string[];
+  /** Channels that took the digest, in the order they took it. */
+  readonly deliveredTo: readonly DeliveryId[];
   readonly timings: RunRecord['timings'];
   readonly settled?: Settled;
 }
 
-interface DeliveryFailure {
-  readonly id: Delivery['id'];
-  readonly error: string;
-}
-
 interface ChainOutcome {
   readonly state: ChainState;
-  readonly failure?: { readonly error: unknown; readonly step?: StepName };
+  readonly failure?: Failure;
+}
+
+/** A failed run that reached some channels, and the digest.md saved for the week, if any. */
+interface PartDelivered {
+  readonly previous: RunRecord;
+  readonly deliveredTo: readonly DeliveryId[];
+  readonly markdown: string | undefined;
 }
 
 const EMPTY_STATE: ChainState = {
@@ -146,6 +165,7 @@ const EMPTY_STATE: ChainState = {
   drafts: [],
   passed: [],
   sentUrls: [],
+  deliveredTo: [],
   timings: [],
 };
 
@@ -161,17 +181,33 @@ class StepFailure extends Error {
   }
 }
 
-/** The whole chain: collect, guard-input, classify, process, write, guard-output, select, deliver (W2-01). */
+/** Thrown by a step that fails after part of its work, so the record keeps that part. */
+class PartialFailure extends Error {
+  constructor(
+    readonly state: ChainState,
+    cause: unknown,
+  ) {
+    super(errorMessage(cause), { cause });
+    this.name = 'PartialFailure';
+  }
+}
+
+/**
+ * The whole chain: collect, guard-input, classify, process, write, guard-output, select, deliver
+ * (W2-01). A rerun of a partly delivered week only finishes the delivery (W2-08).
+ */
 export async function runDigest(deps: DigestDeps, options: RunOptions = {}): Promise<RunResult> {
   const ctx = runContext(deps, options);
   return deps.tracer.span('runDigest', { runId: ctx.weekId, dryRun: ctx.dryRun }, async () => {
     if (!options.force && (await deps.store.hasSentDigest(ctx.weekId))) return skipped(ctx);
     const lock = await deps.store.acquireLock(ctx.weekId);
     try {
-      // Checked again under the lock: a run that held it may have just sent this week.
-      const sentBefore = await deps.store.hasSentDigest(ctx.weekId);
-      if (sentBefore && !options.force) return skipped(ctx);
-      return await finish(ctx, await runChain(ctx), sentBefore);
+      // Read again under the lock: a run that held it may have just sent this week.
+      const previous = await deps.store.getRunRecord(ctx.weekId);
+      if (previous?.status === 'sent' && !options.force) return skipped(ctx);
+      const partDelivered = options.force || ctx.dryRun ? undefined : await saved(ctx, previous);
+      if (partDelivered) return await resume(ctx, partDelivered);
+      return await finish(ctx, await runChain(ctx), previous);
     } finally {
       await releaseLock(ctx, lock);
     }
@@ -229,13 +265,89 @@ async function releaseLock(ctx: RunContext, lock: RunLock): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Resuming a partly delivered week
+
+/** The previous run, when it failed after reaching some channels; with its digest.md if saved. */
+async function saved(
+  ctx: RunContext,
+  previous: RunRecord | undefined,
+): Promise<PartDelivered | undefined> {
+  const deliveredTo = previous?.deliveredTo ?? [];
+  if (previous?.status !== 'failed' || deliveredTo.length === 0) return undefined;
+  const markdown = await ctx.deps.store.readArtifact(ctx.weekId, 'digest.md');
+  return { previous, deliveredTo, markdown };
+}
+
+/**
+ * Sends the saved digest to the channels the failed run missed: no health check, no model call.
+ * The record keeps the previous run's results, with the new outcome, channels and deliver timing.
+ */
+async function resume(ctx: RunContext, part: PartDelivered): Promise<RunResult> {
+  const { previous, deliveredTo, markdown } = part;
+  const missing = ctx.deps.deliveries.filter((delivery) => !deliveredTo.includes(delivery.id));
+  ctx.logger.info('Resuming the delivery of the saved digest', {
+    deliveredTo,
+    channels: missing.map((delivery) => delivery.id),
+  });
+  const start: ChainState = { ...EMPTY_STATE, deliveredTo };
+  const { state, failure } = await settle(ctx, () =>
+    timed(ctx, 'deliver', start, async (_ctx, from, logger) => {
+      const digest = sameDigest(part);
+      const message = digestMessage(ctx.weekId, HEADLINE_LINE.exec(digest)?.[1] ?? '', digest);
+      return deliverDigest({ channels: missing, message, urls: previous.sentUrls }, from, logger);
+    }),
+  );
+  const { error: _previousError, ...kept } = previous;
+  const record: RunRecord = {
+    ...kept,
+    status: failure ? 'failed' : 'sent',
+    startedAt: ctx.startedAt.toISOString(),
+    finishedAt: ctx.deps.clock.now().toISOString(),
+    timings: [...previous.timings, ...state.timings],
+    deliveredTo: [...state.deliveredTo],
+    ...(failure && { error: recordError(failure) }),
+  };
+  await endRun(
+    ctx,
+    { record, failure, note: failure && failureNote(ctx.weekId, failure) },
+    previous,
+  );
+  return { record, exitCode: exitCodeFor(record.status), markdown };
+}
+
+/**
+ * The saved digest, when its links are exactly the URLs the other channels got. A dry or forced
+ * run since then may have replaced it; sending that would split the week, so a person decides.
+ */
+function sameDigest({ previous, deliveredTo, markdown }: PartDelivered): string {
+  const redo = 'run with --force to send a new digest to every channel';
+  if (markdown === undefined) {
+    throw new DigestError(`The partly delivered digest.md is gone; ${redo}`, { step: 'deliver' });
+  }
+  const links = new Set(Array.from(markdown.matchAll(SOURCE_LINE), (match) => match[1]));
+  const sent = new Set(previous.sentUrls);
+  if (links.size !== sent.size || [...sent].some((url) => !links.has(url))) {
+    const channels = deliveredTo.join(', ');
+    const message = `digest.md no longer matches the digest ${channels} got; ${redo}`;
+    throw new DigestError(message, { step: 'deliver' });
+  }
+  return markdown;
+}
+
+// ---------------------------------------------------------------------------------------------
 // The chain
 
-/** Never rejects: a failure comes back with the state of the steps that finished before it. */
-async function runChain(ctx: RunContext): Promise<ChainOutcome> {
-  try {
+function runChain(ctx: RunContext): Promise<ChainOutcome> {
+  return settle(ctx, async () => {
     await assertModelsReady(ctx);
-    return { state: await runWorkflow(WORKFLOW_ID, chainSteps(ctx), EMPTY_STATE) };
+    return runWorkflow(WORKFLOW_ID, chainSteps(ctx), EMPTY_STATE);
+  });
+}
+
+/** Never rejects: a failure comes back with the state of the steps that finished before it. */
+async function settle(ctx: RunContext, run: () => Promise<ChainState>): Promise<ChainOutcome> {
+  try {
+    return { state: await run() };
   } catch (error) {
     if (error instanceof StepFailure) {
       return { state: error.state, failure: { error: error.cause, step: error.step } };
@@ -282,11 +394,15 @@ async function timed(
     const next = await tracer.span(step, { runId: ctx.weekId, step }, () => fn(ctx, state, logger));
     const done = timing();
     logger.info('Step finished', { ms: done.ms });
-    return { ...next, timings: [...next.timings, done] };
+    const settled = next.settled && { ...next.settled, step };
+    return { ...next, ...(settled && { settled }), timings: [...next.timings, done] };
   } catch (error) {
     const failed = timing();
-    logger.error('Step failed', { ms: failed.ms, error: errorMessage(error) });
-    throw new StepFailure(step, { ...state, timings: [...state.timings, failed] }, error);
+    const partial = error instanceof PartialFailure;
+    const cause = partial ? error.cause : error;
+    const kept = partial ? error.state : state;
+    logger.error('Step failed', { ms: failed.ms, error: errorMessage(cause) });
+    throw new StepFailure(step, { ...kept, timings: [...kept.timings, failed] }, cause);
   }
 }
 
@@ -338,10 +454,7 @@ async function collect(ctx: RunContext, state: ChainState, logger: Logger): Prom
   const detail = failed
     ? ` (${failedSources.length} of ${config.sources.length} sources failed)`
     : '';
-  return {
-    ...next,
-    settled: { status: 'quiet', step: 'collect', note: `no items collected${detail}` },
-  };
+  return { ...next, settled: { status: 'quiet', note: `no items collected${detail}` } };
 }
 
 async function guardInput(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
@@ -380,7 +493,7 @@ async function selectItems(
   const next = { ...state, selected };
   if (selected.length >= DIGEST_MIN_ITEMS) return next;
   logger.info('Quiet week: too few items for a digest', { needed: DIGEST_MIN_ITEMS });
-  return { ...next, settled: { status: 'quiet', step: 'process' } };
+  return { ...next, settled: { status: 'quiet' } };
 }
 
 async function write(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
@@ -395,7 +508,12 @@ async function write(ctx: RunContext, state: ChainState, logger: Logger): Promis
   const written = drafts.map((draft) => prepareDraft(draft, config.topN));
   await store.saveArtifact(ctx.weekId, 'drafts.json', toJson({ drafts: written, failures }));
   const failed = failures.map((failure) => rejected(failure.writer, [WRITE_FAILED]));
-  return { ...state, written, drafts: failed };
+  const next = { ...state, written, drafts: failed };
+  if (written.length > 0) return next;
+  // Names writers only: a writer's error can quote the model's reply. drafts.json has it.
+  const writers = failures.map((failure) => failure.writer).join(', ');
+  const error = `Every writer failed: ${writers}; drafts.json has the reasons`;
+  throw new PartialFailure(next, new DigestError(error, { step: 'write' }));
 }
 
 /** Deterministic fixes the writers keep needing: at most topN items (defense in depth), no em dashes. */
@@ -484,7 +602,7 @@ function inWriterOrder(ctx: RunContext, outcomes: readonly DraftOutcome[]): Draf
 function blocked(drafts: readonly DraftOutcome[]): Settled {
   const reasons = drafts.map((draft) => `${draft.writer} (${draft.rejectedBy.join(', ')})`);
   const detail = reasons.length > 0 ? `: ${reasons.join('; ')}` : '';
-  return { status: 'blocked', step: 'guardOutput', note: `every draft was rejected${detail}` };
+  return { status: 'blocked', note: `every draft was rejected${detail}` };
 }
 
 /** The judge runs only when the profile has one and two or more drafts passed. */
@@ -518,109 +636,68 @@ function withScores(
   });
 }
 
-/** Tries every channel, then fails the step if any of them failed. */
 async function deliver(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
   const { winner } = state;
   if (!winner) throw new DigestError('Nothing to deliver: no winning draft', { step: 'deliver' });
-  const message = {
-    weekId: ctx.weekId,
-    subject: subjectFor(ctx.weekId, winner.draft.digest.headline),
-    markdown: winner.markdown,
-  };
-  const failures = await forEachDelivery(ctx.deps.deliveries, (delivery) =>
-    delivery.sendDigest(message),
-  );
-  if (failures.length > 0) throw deliveryError(ctx.deps.deliveries, failures);
-  logger.info('Digest delivered', { channels: ctx.deps.deliveries.map((delivery) => delivery.id) });
-  return { ...state, sentUrls: winner.draft.digest.items.map((item) => item.url) };
+  const { headline, items } = winner.draft.digest;
+  const message = digestMessage(ctx.weekId, headline, winner.markdown);
+  const urls = items.map((item) => item.url);
+  return deliverDigest({ channels: ctx.deps.deliveries, message, urls }, state, logger);
 }
 
-/** Names the channels that did get the digest, so a retry's duplicates are expected. */
+interface Shipment {
+  readonly channels: readonly Delivery[];
+  readonly message: DigestMessage;
+  /** The digest's URLs; they count as sent once any channel has them, for cross-week dedupe. */
+  readonly urls: readonly string[];
+}
+
+/** Tries every channel and records the ones that took it; any failed channel fails the step. */
+async function deliverDigest(
+  { channels, message, urls }: Shipment,
+  state: ChainState,
+  logger: Logger,
+): Promise<ChainState> {
+  const failures = await forEachDelivery(channels, (delivery) => delivery.sendDigest(message));
+  const failed = new Set(failures.map((failure) => failure.id));
+  const reached = channels.map((delivery) => delivery.id).filter((id) => !failed.has(id));
+  const deliveredTo = [...state.deliveredTo, ...reached];
+  const next = { ...state, deliveredTo, sentUrls: deliveredTo.length > 0 ? [...urls] : [] };
+  if (failures.length > 0) throw new PartialFailure(next, deliveryError(deliveredTo, failures));
+  logger.info('Digest delivered', { channels: reached });
+  return next;
+}
+
+/** Names the channels that did get the digest; a rerun sends only to the others. */
 function deliveryError(
-  deliveries: readonly Delivery[],
+  deliveredTo: readonly DeliveryId[],
   failures: readonly DeliveryFailure[],
 ): DigestError {
-  const failed = new Set(failures.map((failure) => failure.id));
-  const delivered = deliveries.map((d) => d.id).filter((id) => !failed.has(id));
   const detail = failures.map((failure) => `${failure.id} (${failure.error})`).join(', ');
-  const done = delivered.length > 0 ? `; delivered on ${delivered.join(', ')}` : '';
+  const done = deliveredTo.length > 0 ? `; delivered on ${deliveredTo.join(', ')}` : '';
   return new DigestError(`Delivery failed on ${detail}${done}`, { step: 'deliver' });
 }
 
-function subjectFor(weekId: string, headline: string): string {
+function digestMessage(weekId: string, headline: string, markdown: string): DigestMessage {
   const oneLine = headline.replace(/\s+/g, ' ').trim();
-  return truncate(`Engineering digest ${weekId}: ${oneLine}`, SUBJECT_MAX_CHARS);
-}
-
-/** Sends to each channel in turn; returns the ones that failed instead of throwing. */
-async function forEachDelivery(
-  deliveries: readonly Delivery[],
-  send: (delivery: Delivery) => Promise<void>,
-): Promise<DeliveryFailure[]> {
-  const failures: DeliveryFailure[] = [];
-  for (const delivery of deliveries) {
-    try {
-      await send(delivery);
-    } catch (error) {
-      failures.push({ id: delivery.id, error: errorMessage(error) });
-    }
-  }
-  return failures;
+  const subject = oneLine
+    ? `Engineering digest ${weekId}: ${oneLine}`
+    : `Engineering digest ${weekId}`;
+  return { weekId, subject: truncate(subject, SUBJECT_MAX_CHARS), markdown };
 }
 
 // ---------------------------------------------------------------------------------------------
-// After the chain: run record, error file, failure note, pruning
+// After the chain: the record and the result. runEnding saves and reports the record.
 
-/** `sentBefore`: the week already had a sent digest and this is a forced run. */
+/** `previous`: the week's record before this run, if any. */
 async function finish(
   ctx: RunContext,
   outcome: ChainOutcome,
-  sentBefore: boolean,
+  previous: RunRecord | undefined,
 ): Promise<RunResult> {
-  const status = statusOf(ctx, outcome);
-  const finishedAt = ctx.deps.clock.now();
-  const record = buildRecord(ctx, outcome, status, finishedAt);
-  await saveRecord(ctx, record, sentBefore);
-  if (outcome.failure) await saveErrorFile(ctx, outcome.failure, finishedAt);
-  await sendFailureNote(ctx, noteFor(ctx, outcome));
-  await pruneOldRuns(ctx);
-  ctx.logger.info('Run finished', { status, winner: record.winner, counts: record.counts });
-  return { record, exitCode: exitCodeFor(status), markdown: outcome.state.winner?.markdown };
-}
-
-/**
- * A forced run that does not send never replaces a sent record: the week would look unsent,
- * and the scheduler would send it again. A record that cannot be saved is alerted, then thrown.
- */
-async function saveRecord(ctx: RunContext, record: RunRecord, sentBefore: boolean): Promise<void> {
-  if (sentBefore && record.status !== 'sent') {
-    ctx.logger.warn('Kept the sent run record; this forced run did not send', {
-      status: record.status,
-    });
-    return;
-  }
-  try {
-    await ctx.deps.store.saveRunRecord(record);
-  } catch (error) {
-    const outcome = record.error ? `failed: ${record.error.message}` : `ended ${record.status}`;
-    const message = `Could not save the run record (${errorMessage(error)}); the run ${outcome}`;
-    ctx.logger.error('Could not save the run record', { error: errorMessage(error) });
-    await sendFailureNote(ctx, { weekId: ctx.weekId, message });
-    throw new DigestError(message, { cause: error });
-  }
-}
-
-/** Best effort: run.json already holds the error; this file only adds the stack. */
-async function saveErrorFile(
-  ctx: RunContext,
-  failure: NonNullable<ChainOutcome['failure']>,
-  at: Date,
-): Promise<void> {
-  try {
-    await ctx.deps.store.saveArtifact(ctx.weekId, 'error.json', errorFile(ctx, failure, at));
-  } catch (error) {
-    ctx.logger.error('Could not write error.json', { error: errorMessage(error) });
-  }
+  const record = buildRecord(ctx, outcome, statusOf(ctx, outcome), ctx.deps.clock.now());
+  await endRun(ctx, { record, failure: outcome.failure, note: noteFor(ctx, outcome) }, previous);
+  return { record, exitCode: exitCodeFor(record.status), markdown: outcome.state.winner?.markdown };
 }
 
 function statusOf(ctx: RunContext, outcome: ChainOutcome): RunStatus {
@@ -658,56 +735,16 @@ function buildRecord(
     drafts: [...state.drafts],
     winner: state.winner?.draft.writer ?? null,
     sentUrls: [...state.sentUrls],
-    ...(failure && { error: { message: errorMessage(failure.error), step: failure.step } }),
+    ...(state.deliveredTo.length > 0 && { deliveredTo: [...state.deliveredTo] }),
+    ...(failure && { error: recordError(failure) }),
   };
-}
-
-function errorFile(ctx: RunContext, failure: NonNullable<ChainOutcome['failure']>, at: Date) {
-  const { error, step } = failure;
-  return toJson({
-    runId: ctx.weekId,
-    step,
-    name: error instanceof Error ? error.name : 'Error',
-    message: errorMessage(error),
-    at: at.toISOString(),
-    stack: error instanceof Error ? error.stack : undefined,
-  });
 }
 
 function noteFor(ctx: RunContext, outcome: ChainOutcome): FailureNote | undefined {
   const { failure, state } = outcome;
-  if (failure) {
-    return { weekId: ctx.weekId, step: failure.step, message: errorMessage(failure.error) };
-  }
+  if (failure) return failureNote(ctx.weekId, failure);
   const note = state.settled?.note;
   return note === undefined
     ? undefined
     : { weekId: ctx.weekId, step: state.settled?.step, message: note };
-}
-
-/** Best effort: a channel that cannot take the note is logged, the run outcome stands. */
-async function sendFailureNote(ctx: RunContext, note: FailureNote | undefined): Promise<void> {
-  if (!note || ctx.dryRun) return;
-  const failures = await forEachDelivery(ctx.deps.deliveries, (delivery) =>
-    delivery.sendFailure(note),
-  );
-  for (const failure of failures) {
-    ctx.logger.error('Could not send the failure note', {
-      delivery: failure.id,
-      error: failure.error,
-    });
-  }
-}
-
-async function pruneOldRuns(ctx: RunContext): Promise<void> {
-  try {
-    const pruned = await ctx.deps.store.prune(ctx.weekId, ctx.deps.config.keepWeeks);
-    if (pruned.length > 0) ctx.logger.info('Pruned old runs', { pruned });
-  } catch (error) {
-    ctx.logger.error('Could not prune old runs', { error: errorMessage(error) });
-  }
-}
-
-function toJson(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
 }

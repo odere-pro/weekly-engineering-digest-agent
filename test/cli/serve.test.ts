@@ -171,14 +171,14 @@ describe('serveCommand wiring', () => {
     expect(result.exitCode).toBe(ExitCode.Sent);
   });
 
-  it('asks the run store whether a week was sent', async () => {
+  it('asks the run store how a week ended', async () => {
     const h = harness();
-    h.store.records.set('2026-W42', makeRunRecord({ runId: '2026-W42', status: 'sent' }));
+    h.store.records.set('2026-W42', makeRunRecord({ runId: '2026-W42', status: 'quiet' }));
     await serveUntilSignal(h);
     const options = h.startScheduler.mock.calls[0]?.[0] as SchedulerOptions;
 
-    await expect(options.hasSentDigest('2026-W42')).resolves.toBe(true);
-    await expect(options.hasSentDigest('2026-W41')).resolves.toBe(false);
+    await expect(options.runStatus('2026-W42')).resolves.toBe('quiet');
+    await expect(options.runStatus('2026-W41')).resolves.toBeUndefined();
   });
 
   it('logs when the scheduler is up and when it stops', async () => {

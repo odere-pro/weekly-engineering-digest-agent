@@ -4,6 +4,7 @@
 import { hostname } from 'node:os';
 import { Cron } from 'croner';
 import { describe, expect, it } from 'vitest';
+import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
 import { runDigest } from '../../src/core/runDigest.js';
 import { ExitCode } from '../../src/core/schemas.js';
 import type { Clock } from '../../src/shared/clock.js';
@@ -12,9 +13,11 @@ import {
   type CronFactory,
   type SchedulerHandle,
 } from '../../src/scheduler/scheduler.js';
+import { FakeOutputGuard } from '../fakes/index.js';
 import {
   TEST_TIMEOUT_MS,
   FRIDAY,
+  IRRELEVANT_ANSWER,
   WEEK,
   createWorld,
   lockExists,
@@ -100,12 +103,37 @@ function start(world: World, cron: ManualCron): Promise<SchedulerHandle> {
     cron: schedule.cron,
     timeZone: schedule.timeZone,
     run: (weekId) => runDigest(world.deps, { weekId }),
-    hasSentDigest: (weekId) => world.store.hasSentDigest(weekId),
+    runStatus: async (weekId) => (await world.store.getRunRecord(weekId))?.status,
     clock: world.deps.clock,
     logger: world.deps.logger,
     cronFactory: cron.factory,
   });
 }
+
+/** Starts the service on Wednesday, lets its catch-up run, and stops it. */
+async function serveOnce(
+  options: Partial<WorldOptions> = {},
+  prepare: (world: World) => void = () => undefined,
+): Promise<World> {
+  const world = createWorld({ now: WEDNESDAY, dataDir: dataDir(), ...options });
+  prepare(world);
+  const scheduler = await start(world, manualCron());
+  await scheduler.whenIdle();
+  scheduler.stop();
+  return world;
+}
+
+/** The service restarted on Friday, after its catch-up finished. */
+async function restart(): Promise<World> {
+  const world = createWorld({ now: FRIDAY, dataDir: dataDir() });
+  const scheduler = await start(world, manualCron());
+  await scheduler.whenIdle();
+  scheduler.stop();
+  return world;
+}
+
+const modelCalls = (world: World): number =>
+  world.fake.decideCalls.length + world.fake.generateCalls.length;
 
 describe('integration: scheduler catch-up', () => {
   it(
@@ -148,6 +176,87 @@ describe('integration: scheduler catch-up', () => {
       expect(restarted.fake.decideCalls).toEqual([]);
       expect(messages(restarted)).not.toContain('Catching up on a missed run');
       expect((await readRunJson(dataDir(), WEEK)).startedAt).toBe('2026-10-14T10:00:00.000Z');
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it.each<[string, Partial<WorldOptions>]>([
+    [
+      'quiet',
+      {
+        decide: (request, valid) =>
+          request.role === 'classify'
+            ? { ...valid(), [QUESTION_IDS.relevance]: IRRELEVANT_ANSWER }
+            : valid(),
+      },
+    ],
+    [
+      'blocked',
+      {
+        outputGuards: [
+          new FakeOutputGuard('graniteGroundedness', () => true),
+          new FakeOutputGuard('clefRubric'),
+        ],
+      },
+    ],
+  ])(
+    'does not run a week that ended %s again when the service restarts',
+    async (status, options) => {
+      await serveOnce(options);
+      const settled = await readRunJson(dataDir(), WEEK);
+      expect(settled.status).toBe(status);
+
+      const restarted = await restart();
+
+      expect(restarted.rss.calls).toEqual([]);
+      expect(modelCalls(restarted)).toBe(0);
+      expect(digestsSent(restarted)).toEqual([0, 0, 0]);
+      expect(messages(restarted)).not.toContain('Catching up on a missed run');
+      expect(await readRunJson(dataDir(), WEEK)).toEqual(settled);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'runs a failed week again when the service restarts',
+    async () => {
+      await serveOnce({ health: { reachable: false, models: [], error: 'connection refused' } });
+      expect((await readRunJson(dataDir(), WEEK)).status).toBe('failed');
+
+      const restarted = await restart();
+
+      expect(messages(restarted)).toContain('Catching up on a missed run');
+      expect(digestsSent(restarted)).toEqual([1, 1, 1]);
+      expect(await readRunJson(dataDir(), WEEK)).toMatchObject({
+        status: 'sent',
+        startedAt: new Date(FRIDAY).toISOString(),
+      });
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'finishes a partly delivered week when the service restarts, without the models',
+    async () => {
+      await serveOnce({}, (world) => {
+        const slack = world.deliveries.find((delivery) => delivery.id === 'slack');
+        if (!slack) throw new Error('The world has no slack channel');
+        slack.failWith = new Error('webhook answered 500');
+      });
+      expect(await readRunJson(dataDir(), WEEK)).toMatchObject({
+        status: 'failed',
+        deliveredTo: ['markdown', 'email'],
+      });
+
+      const restarted = await restart();
+
+      expect(messages(restarted)).toContain('Catching up on a missed run');
+      expect(digestsSent(restarted)).toEqual([0, 0, 1]);
+      expect(modelCalls(restarted)).toBe(0);
+      expect(await readRunJson(dataDir(), WEEK)).toMatchObject({
+        status: 'sent',
+        deliveredTo: ['markdown', 'email', 'slack'],
+      });
     },
     TEST_TIMEOUT_MS,
   );

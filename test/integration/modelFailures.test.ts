@@ -29,6 +29,7 @@ const DraftsFileSchema = z.object({
 
 const REPAIR_MARKER = 'Your previous answer did not match the required JSON schema.';
 const INVALID_JSON = '{"headline": "cut off mid-sentence';
+const EVERY_WRITER_FAILED = `Every writer failed: ${FIRST_WRITER}, ${SECOND_WRITER}; drafts.json has the reasons`;
 
 const digestsSent = (world: World): number[] => world.deliveries.map((d) => d.digests.length);
 const callsFor = (world: World, writer: string) =>
@@ -105,10 +106,9 @@ describe('integration: a model call that times out', () => {
 });
 
 describe('integration: writers that keep timing out', () => {
-  // Same drift as D3 below: a writer is a per-writer failure, so a panel that times out on
-  // every retry blocks the week (exit 2) instead of failing the write step (exit 1).
+  // D3 (decided 2026-10-17): a write step that yields no draft at all fails the run.
   it(
-    'blocks the week with exit 2 when every writer times out on every retry (D3)',
+    'fails the run with exit 1 at write when every writer times out on every retry (D3)',
     async () => {
       const { world, ollama } = createOllamaWorld({
         now: FRIDAY,
@@ -120,7 +120,7 @@ describe('integration: writers that keep timing out', () => {
 
       const result = await runDigest(world.deps);
 
-      expect(result.exitCode).toBe(ExitCode.Blocked);
+      expect(result.exitCode).toBe(ExitCode.Failed);
       const chats = ollama.calls.filter((call) => call.path === '/api/chat');
       expect(chats.map((call) => [call.model, call.nth])).toEqual([
         [FIRST_WRITER, 1],
@@ -129,12 +129,14 @@ describe('integration: writers that keep timing out', () => {
         [SECOND_WRITER, 2],
       ]);
       const record = await readRunJson(dataDir(), WEEK);
-      expect(record.status).toBe('blocked');
+      expect(record.status).toBe('failed');
+      expect(record.error).toEqual({ step: 'write', message: EVERY_WRITER_FAILED });
       expect(record.drafts.map((draft) => draft.rejectedBy)).toEqual([['write'], ['write']]);
       expect(digestsSent(world)).toEqual([0, 0, 0]);
-      const message = `every draft was rejected: ${FIRST_WRITER} (write); ${SECOND_WRITER} (write)`;
       for (const delivery of world.deliveries) {
-        expect(delivery.failures).toEqual([{ weekId: WEEK, step: 'guardOutput', message }]);
+        expect(delivery.failures).toEqual([
+          { weekId: WEEK, step: 'write', message: EVERY_WRITER_FAILED },
+        ]);
       }
     },
     TEST_TIMEOUT_MS,
@@ -198,12 +200,10 @@ describe('integration: a writer that returns invalid JSON', () => {
     TEST_TIMEOUT_MS,
   );
 
-  // Spec drift D3 (docs/system-design.md section 9): the spec says invalid JSON after the one
-  // repair fails the step with exit 1. Today every writer failing ends the run `blocked` (exit 2)
-  // with a failure note that names each writer. This pins what the code does; change it together
-  // with the D3 decision.
+  // D3 (decided 2026-10-17): invalid JSON after the one repair, for every writer, fails the
+  // write step with exit 1. The failure note names the writers only; drafts.json has the reasons.
   it(
-    'blocks the week with exit 2 when every writer stays invalid after one repair (D3)',
+    'fails the run with exit 1 at write when every writer stays invalid after one repair (D3)',
     async () => {
       const world = createWorld({
         now: FRIDAY,
@@ -213,20 +213,21 @@ describe('integration: a writer that returns invalid JSON', () => {
 
       const result = await runDigest(world.deps);
 
-      expect(result.exitCode).toBe(ExitCode.Blocked);
+      expect(result.exitCode).toBe(ExitCode.Failed);
       // One call and exactly one repair per writer, never a second repair.
       expect(callsFor(world, FIRST_WRITER)).toHaveLength(2);
       expect(callsFor(world, SECOND_WRITER)).toHaveLength(2);
       const record = await readRunJson(dataDir(), WEEK);
-      expect(record.status).toBe('blocked');
-      expect(record.error).toBeUndefined();
+      expect(record.status).toBe('failed');
+      expect(record.error).toEqual({ step: 'write', message: EVERY_WRITER_FAILED });
       expect(record.drafts).toEqual([
         { writer: FIRST_WRITER, passed: false, rejectedBy: ['write'] },
         { writer: SECOND_WRITER, passed: false, rejectedBy: ['write'] },
       ]);
-      const message = `every draft was rejected: ${FIRST_WRITER} (write); ${SECOND_WRITER} (write)`;
       for (const delivery of world.deliveries) {
-        expect(delivery.failures).toEqual([{ weekId: WEEK, step: 'guardOutput', message }]);
+        expect(delivery.failures).toEqual([
+          { weekId: WEEK, step: 'write', message: EVERY_WRITER_FAILED },
+        ]);
       }
       expect(digestsSent(world)).toEqual([0, 0, 0]);
       const draftsFile = await readTextIfExists(runFile(dataDir(), WEEK, 'drafts.json'));
@@ -239,7 +240,8 @@ describe('integration: a writer that returns invalid JSON', () => {
       for (const failure of drafts.failures) {
         expect(failure.error).toContain('failed validation after one repair attempt');
       }
-      expect(await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'))).toBeUndefined();
+      const errorFile = await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'));
+      expect(JSON.parse(errorFile ?? '{}')).toMatchObject({ step: 'write' });
       expect(await world.store.hasSentDigest(WEEK)).toBe(false);
     },
     TEST_TIMEOUT_MS,
