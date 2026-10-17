@@ -180,6 +180,41 @@ describe('redactDelivery', () => {
     expect(redactDelivery(new CapturingDelivery('email'), redactor).id).toBe('email');
   });
 
+  it('redacts every text of the digest view before it is sent', async () => {
+    const inner = new CapturingDelivery('slack');
+    const withView: DigestMessage = {
+      ...message,
+      view: {
+        weekId: '2026-W42',
+        title: `Week 2026-W42 ${GITHUB_TOKEN}`,
+        headline: `Headline ${SMTP_PASSWORD}`,
+        groups: [
+          {
+            urgency: 'act-now',
+            label: 'Act now',
+            items: [
+              {
+                title: `Release ${GITHUB_TOKEN}`,
+                url: 'https://example.test/release',
+                whatChanged: `Changed ${SLACK_WEBHOOK_URL}`,
+                action: `Rotate ${SMTP_PASSWORD}`,
+              },
+            ],
+          },
+        ],
+        footer: `Footer ${WEBHOOK_PATH}`,
+      },
+    };
+
+    await redactDelivery(inner, redactor).sendDigest(withView);
+
+    const sent = JSON.stringify(inner.digests[0]?.view);
+    for (const secret of [SMTP_PASSWORD, GITHUB_TOKEN, SLACK_WEBHOOK_URL, WEBHOOK_PATH]) {
+      expect(sent).not.toContain(secret);
+    }
+    expect(inner.digests[0]?.view?.groups[0]?.items[0]?.url).toBe('https://example.test/release');
+  });
+
   it('redacts the subject and the text of a digest before it is sent', async () => {
     const inner = new CapturingDelivery('slack');
 

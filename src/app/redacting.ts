@@ -3,7 +3,7 @@
 // run store or a delivery channel, so a leak in one adapter ends up in none of them.
 import type { Secrets } from '../config/schema.js';
 import type { Redactor } from '../observability/redact.js';
-import type { Delivery } from '../ports/Delivery.js';
+import type { Delivery, DigestView } from '../ports/Delivery.js';
 import { RunRecordSchema, type RunRecord } from '../core/schemas.js';
 import type { RunStore } from '../ports/RunStore.js';
 import { DigestError } from '../shared/errors.js';
@@ -67,6 +67,27 @@ function redactedRecord(record: RunRecord, redactor: Redactor): RunRecord {
   return checked.data;
 }
 
+/** The laid-out digest with the secrets taken out of every text, the URLs included. */
+function redactedView(view: DigestView, redactor: Redactor): DigestView {
+  const text = (value: string): string => redactor.text(value);
+  return {
+    weekId: view.weekId,
+    title: text(view.title),
+    headline: text(view.headline),
+    groups: view.groups.map((group) => ({
+      urgency: group.urgency,
+      label: text(group.label),
+      items: group.items.map((item) => ({
+        title: text(item.title),
+        url: text(item.url),
+        whatChanged: text(item.whatChanged),
+        ...(item.action === undefined ? {} : { action: text(item.action) }),
+      })),
+    })),
+    ...(view.footer === undefined ? {} : { footer: text(view.footer) }),
+  };
+}
+
 /** A channel that gets the digest and the failure notes with the secrets taken out of the text. */
 export function redactDelivery(delivery: Delivery, redactor: Redactor): Delivery {
   return {
@@ -76,6 +97,7 @@ export function redactDelivery(delivery: Delivery, redactor: Redactor): Delivery
         ...message,
         subject: redactor.text(message.subject),
         markdown: redactor.text(message.markdown),
+        ...(message.view === undefined ? {} : { view: redactedView(message.view, redactor) }),
       }),
     sendFailure: (note) => delivery.sendFailure({ ...note, message: redactor.text(note.message) }),
   };
