@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { ExitCode } from '../../src/core/schemas.js';
 import { fixedClock, systemClock } from '../../src/shared/clock.js';
-import { DigestError, NotImplementedError, errorMessage } from '../../src/shared/errors.js';
+import {
+  DigestError,
+  FetchError,
+  NotImplementedError,
+  errorMessage,
+} from '../../src/shared/errors.js';
 import { noopLogger, noopTracer } from '../../src/shared/telemetry.js';
 
 describe('errors', () => {
@@ -12,6 +17,43 @@ describe('errors', () => {
     expect(error.step).toBe('write');
     expect(error.cause).toBe(cause);
     expect(new DigestError('blocked', { exitCode: ExitCode.Blocked }).exitCode).toBe(2);
+  });
+
+  describe('FetchError', () => {
+    it('is a DigestError that carries the HTTP status and whether a retry may help', () => {
+      const cause = new Error('socket hang up');
+      const error = new FetchError('feed answered HTTP 503', {
+        status: 503,
+        retryable: true,
+        cause,
+      });
+      expect(error).toBeInstanceOf(DigestError);
+      expect(error).toBeInstanceOf(Error);
+      expect(error.name).toBe('FetchError');
+      expect(error.message).toBe('feed answered HTTP 503');
+      expect(error.status).toBe(503);
+      expect(error.retryable).toBe(true);
+      expect(error.cause).toBe(cause);
+      expect(error.exitCode).toBe(ExitCode.Failed);
+    });
+
+    it('has no status for a failure without a response', () => {
+      const error = new FetchError('fetch failed', { retryable: true });
+      expect(error.status).toBeUndefined();
+      expect(error.retryable).toBe(true);
+    });
+
+    it('marks a permanent failure as not retryable and keeps the DigestError options', () => {
+      const error = new FetchError('HTTP 404', {
+        status: 404,
+        retryable: false,
+        step: 'collect',
+        exitCode: ExitCode.Blocked,
+      });
+      expect(error.retryable).toBe(false);
+      expect(error.step).toBe('collect');
+      expect(error.exitCode).toBe(ExitCode.Blocked);
+    });
   });
 
   it('NotImplementedError names the issue', () => {
