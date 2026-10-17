@@ -37,6 +37,57 @@ describe('config schema', () => {
     expect(ConfigSchema.safeParse({ ...base, keepWeeks: 4, dedupeWeeks: 4 }).success).toBe(true);
   });
 
+  describe('source URLs', () => {
+    const base = { focusAreas: ['a'] } as const;
+    const withUrl = (url: string): ReturnType<typeof ConfigSchema.safeParse> =>
+      ConfigSchema.safeParse({ ...base, sources: [{ id: 'x', kind: 'rss', url }] });
+
+    it.each([
+      'https://alice:hunter2@example.com/feed.xml?token=abc123',
+      'https://alice@example.com/feed.xml',
+      'https://:hunter2@example.com/feed.xml',
+      'http://alice:hunter2@example.com/',
+    ])('rejects %s, pointing at the field without echoing the URL', (url) => {
+      const result = withUrl(url);
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toHaveLength(1);
+      expect(result.error?.issues[0]?.path).toEqual(['sources', 0, 'url']);
+      expect(result.error?.issues[0]?.message).toMatch(/username or password/);
+      expect(JSON.stringify(result.error?.issues)).not.toMatch(
+        /alice|hunter2|abc123|example\.com|feed\.xml/,
+      );
+    });
+
+    it('names the source that has credentials when only one of several does', () => {
+      const result = ConfigSchema.safeParse({
+        ...base,
+        sources: [
+          { id: 'ok', kind: 'rss', url: 'https://example.com/feed.xml' },
+          { id: 'bad', kind: 'github', url: 'https://alice:hunter2@github.com/acme/tool' },
+        ],
+      });
+
+      expect(result.error?.issues.map((issue) => issue.path)).toEqual([['sources', 1, 'url']]);
+    });
+
+    it.each([
+      'https://example.com/feed?contact=alice@example.org',
+      'https://example.com/@alice/feed.xml',
+      'https://example.com/feed.xml#alice:hunter2@x',
+      'https://example.com:8443/feed.xml',
+    ])('accepts %s, whose "@" or ":" is not credentials', (url) => {
+      expect(withUrl(url).success).toBe(true);
+    });
+
+    it('still reports a URL that is not a URL as one error, not two', () => {
+      const result = withUrl('not a url');
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toHaveLength(1);
+    });
+  });
+
   it('rejects a writer listed twice', () => {
     expect(() => makeConfig({ models: { writers: ['gemma4:31b', 'gemma4:31b'] } })).toThrow(
       /writers must be unique/,

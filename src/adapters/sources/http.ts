@@ -111,6 +111,11 @@ function parseHttpUrl(raw: string, label: string): URL {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
     throw permanentFailure(`The URL of ${label} is not an http(s) URL`);
   }
+  // The config schema rejects these too. Real `fetch` would refuse the URL with an error that
+  // echoes it, password included, into failedSources and the logs.
+  if (url.username || url.password) {
+    throw permanentFailure(`The URL of ${label} contains a username or password`);
+  }
   return url;
 }
 

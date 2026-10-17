@@ -377,6 +377,36 @@ describe('getText', () => {
         expect(calls).toHaveLength(0);
       },
     );
+
+    it.each([
+      'https://alice:hunter2@example.com/feed.xml?token=abc123',
+      'https://alice@example.com/feed.xml',
+      'https://:hunter2@example.com/feed.xml',
+      'http://alice:hunter2@example.com/',
+    ])('refuses %s without calling fetch and without echoing it', async (url) => {
+      const { fetch, calls } = sequence(new Response('x'));
+
+      const error = await failureOf(getText(url, options(fetch)));
+
+      expect(error.retryable).toBe(false);
+      expect(error.message).toContain('example-feed');
+      expect(error.message).toMatch(/username or password/);
+      expect(error.message).not.toMatch(/alice|hunter2|abc123|example\.com|feed\.xml/);
+      expect(calls).toHaveLength(0);
+    });
+
+    it.each([
+      'https://example.com/feed?contact=alice@example.org',
+      'https://example.com/@alice/feed.xml',
+      'https://example.com/feed.xml#alice:hunter2@x',
+    ])('does not mistake the "@" of %s for credentials', async (url) => {
+      const { fetch, calls } = sequence(new Response('ok'));
+
+      const reply = await getText(url, options(fetch));
+
+      expect(reply.body).toBe('ok');
+      expect(calls).toHaveLength(1);
+    });
   });
 
   describe('body size cap', () => {

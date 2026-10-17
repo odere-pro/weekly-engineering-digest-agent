@@ -850,17 +850,65 @@ describe('doctorCommand', () => {
       expect(text.indexOf('source second')).toBeLessThan(text.indexOf('source third'));
     });
 
-    it('never prints the source URL or credentials embedded in a URL', async () => {
-      const privateUrl = 'https://user:s3cret@feeds.example.com/f.xml?token=abc123';
+    it('never prints the source URL, its query or credentials embedded in another URL', async () => {
+      const privateUrl = 'https://feeds.example.com/f.xml?token=abc123';
       const { text } = await runDoctor({
         config: { sources: [{ id: 'priv', kind: 'rss', url: privateUrl }] },
         fetch: async () => new Response('no', { status: 401 }),
         health: { error: `Ollama at http://u:pw@localhost:11434 failed`, models: [] },
       });
 
-      expect(text).not.toMatch(/s3cret|abc123|u:pw@/);
+      expect(text).not.toMatch(/abc123|feeds\.example\.com|u:pw@/);
       expect(resultFor(text, '!', 'source priv:')).toContain('401');
       expect(text).toContain('http://localhost:11434 failed');
+    });
+
+    describe('a source URL with credentials in it', () => {
+      const CREDENTIAL_URL = 'https://user:s3cret@feeds.example.com/f.xml?token=abc123';
+      let dir: string;
+
+      beforeEach(async () => {
+        dir = await mkdtemp(join(tmpdir(), 'digest-doctor-creds-'));
+      });
+
+      afterEach(async () => {
+        await rm(dir, { recursive: true, force: true });
+      });
+
+      async function doctorOnConfigWith(url: string): Promise<{ code: number; text: string }> {
+        const configPath = join(dir, 'digest.config.json');
+        await writeFile(
+          configPath,
+          JSON.stringify({
+            focusAreas: ['AI models and tooling'],
+            sources: [{ id: 'priv', kind: 'rss', url }],
+            schedule: { timeZone: 'Europe/Berlin' },
+          }),
+        );
+        const h = harness({
+          loadConfig: (options) => loadConfig({ ...options, envPath: MISSING_ENV, processEnv: {} }),
+        });
+        const code = await doctorCommand({ config: configPath }, h.io);
+        expect(h.fetch).not.toHaveBeenCalled();
+        return { code, text: h.text() };
+      }
+
+      it('fails the config check and names the field, never the URL or the secret', async () => {
+        const { code, text } = await doctorOnConfigWith(CREDENTIAL_URL);
+
+        expect(code).toBe(1);
+        expect(resultFor(text, '✗', 'config:')).toContain('Invalid config');
+        expect(text).toContain('at sources[0].url');
+        expect(text).toMatch(/username or password/);
+        expect(text).not.toMatch(/s3cret|abc123|feeds\.example\.com|user:/);
+      });
+
+      it('runs no other check, since the config is not usable', async () => {
+        const { text } = await doctorOnConfigWith(CREDENTIAL_URL);
+
+        expect(text).not.toContain('source priv');
+        expect(text).not.toContain('ollama');
+      });
     });
 
     it('never prints a secret that appears in a source error', async () => {

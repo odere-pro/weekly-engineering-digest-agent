@@ -97,6 +97,22 @@ export const ScheduleSchema = z.object({
     .default(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
 });
 
+/**
+ * A source URL with `user:pass@` would carry the secret into errors, logs and run records (real
+ * `fetch` echoes the whole URL when it refuses one). The message names no value.
+ */
+const CredentialFreeSourceSchema = SourceSchema.refine(
+  ({ url }) => {
+    if (!URL.canParse(url)) return true; // `z.url()` has already reported it
+    const { username, password } = new URL(url);
+    return username === '' && password === '';
+  },
+  {
+    message: 'the URL must not contain a username or password; keep secrets in .env',
+    path: ['url'],
+  },
+);
+
 export const ConfigSchema = z
   .object({
     profile: ProfileNameSchema.default('quality'),
@@ -110,7 +126,7 @@ export const ConfigSchema = z
         'focus areas must be unique',
       ),
     sources: z
-      .array(SourceSchema)
+      .array(CredentialFreeSourceSchema)
       .min(1)
       .refine((s) => new Set(s.map((x) => x.id)).size === s.length, 'source ids must be unique'),
     windowDays: z.number().int().min(1).max(31).default(7),
