@@ -184,7 +184,7 @@ Recipients, webhooks and endpoints come from these two files only, never from mo
 | `thresholds`        | see below                | Cut-offs applied after classification                                                                 |
 | `models`            | profile defaults         | `writers`, `timeoutsMs`, `retries` (default 2), `think`                                               |
 
-Thresholds: `minRelevance` 1.5 (0-3), `maxHype` 0.5, `maxMinorRelease` 0.5, `guardFlag` 0.5.
+Thresholds: `minRelevance` 1.5 (0-3), `maxHype` 0.6, `maxMinorRelease` 0.75, `guardFlag` 0.35. These are the light-profile defaults from the threshold sweep (`evals/thresholds/README.md`).
 
 `models.writers` replaces the writer panel. One entry turns the panel and the judge off.
 

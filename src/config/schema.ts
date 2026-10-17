@@ -38,11 +38,11 @@ export const ThresholdsSchema = z.object({
   /** Items below this expected relevance (0-3) are dropped. */
   minRelevance: z.number().min(0).max(3).default(1.5),
   /** Items with hype probability above this are dropped. */
-  maxHype: z.number().min(0).max(1).default(0.5),
+  maxHype: z.number().min(0).max(1).default(0.6),
   /** Items with minor-release probability above this are dropped. */
-  maxMinorRelease: z.number().min(0).max(1).default(0.5),
+  maxMinorRelease: z.number().min(0).max(1).default(0.75),
   /** A decision-model guard flags when P(yes) is above this. */
-  guardFlag: z.number().min(0).max(1).default(0.5),
+  guardFlag: z.number().min(0).max(1).default(0.35),
 });
 export type Thresholds = z.infer<typeof ThresholdsSchema>;
 

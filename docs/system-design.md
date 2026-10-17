@@ -55,7 +55,7 @@ checks, then output guards) → select → deliver, then a finish phase that sav
 - `any` (default): the first flag drops the item; later guards see only unflagged items. `all`:
   dropped only when every enabled guard flags it. Fewer false blocks, weaker protection.
 - **clefPolicy** (role `guardPolicy`, `decide`): two yes/no questions, "instructions aimed at an
-  AI system" and "harmful content". Flags when any P(yes) > `thresholds.guardFlag` (0.5). A
+  AI system" and "harmful content". Flags when any P(yes) > `thresholds.guardFlag` (0.35). A
   missing or malformed answer is an error, never a pass.
 - **graniteRisk** (role `guardRisk`, `generate`, temperature 0): one call per risk, `jailbreak`
   then `harm`, stopping at the first "yes". Unparsable output flags the item (fail closed).
@@ -86,8 +86,8 @@ batch for items the model left out, then "not relevant". `runDigest` never selec
 2. **Drop**, first matching reason wins: `sent-before` (normalized URL sent in the last
    `dedupeWeeks` weeks, default 4, read from earlier `run.json` files with status `sent`) →
    `duplicate` (same id, or same normalized title from another source; the best-ranked copy
-   stays) → `low-relevance` (< `minRelevance`, default 1.5) → `hype` (> `maxHype`, 0.5) →
-   `minor-release` (> `maxMinorRelease`, 0.5).
+   stays) → `low-relevance` (< `minRelevance`, default 1.5) → `hype` (> `maxHype`, 0.6) →
+   `minor-release` (> `maxMinorRelease`, 0.75).
 3. **Spread across focus areas**: greedy by rank, but no area takes a third slot while an area
    with fewer than 2 slots still has an item. After that, the least-filled area goes first.
 4. **topN**: 3-5 items (default 5). Fewer than 3 → `quiet`, without a note.
@@ -1197,8 +1197,10 @@ runs pages through SNS.
    token the REST API skips them. Adding a token changes the digest.
 5. **Doctor and delivery.** `doctor` checks that delivery secrets are set but does not test the
    SMTP or Slack connection. Enough?
-6. **Thresholds.** `minRelevance` 1.5, `maxHype` 0.5, `maxMinorRelease` 0.5 and `guardFlag` 0.5
-   are defaults until the 60 classifier cases are labelled and the evals run.
+6. **Thresholds.** Resolved for the light profile (W3-03): the sweep over the 60 labelled
+   classifier cases set `minRelevance` 1.5, `maxHype` 0.6, `maxMinorRelease` 0.75 and
+   `guardFlag` 0.35 (filter accuracy 0.767 to 0.867, no false blocks). See
+   `evals/thresholds/README.md`. The quality and fast profiles are not measured yet.
 7. **Window versus ISO week.** The window is the last `windowDays` before the run, so a catch-up
    on Thursday covers Thursday to Thursday, not the ISO week the run is named after. Intended?
 8. **AWS design doc.** The spec says the full AWS design (VPC, IAM, KMS, alarms) "is in @", but
