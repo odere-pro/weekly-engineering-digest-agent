@@ -25,6 +25,26 @@ describe('schemas', () => {
     expect(RunRecordSchema.parse(makeRunRecord()).runId).toBe('2026-W42');
   });
 
+  describe('RunRecord sampling', () => {
+    const sampling = { seed: 42, temperatureByRole: { write: 0.7, classify: 0 } };
+
+    it('accepts an old record without sampling', () => {
+      expect(RunRecordSchema.parse(makeRunRecord()).sampling).toBeUndefined();
+    });
+
+    it('keeps the seed and the temperature per role', () => {
+      expect(RunRecordSchema.parse({ ...makeRunRecord(), sampling }).sampling).toEqual(sampling);
+    });
+
+    it('rejects a negative or fractional seed', () => {
+      for (const seed of [-1, 1.5])
+        expect(
+          RunRecordSchema.safeParse({ ...makeRunRecord(), sampling: { ...sampling, seed } })
+            .success,
+        ).toBe(false);
+    });
+  });
+
   describe('RunRecord counts.afterProcess', () => {
     const counts = makeRunRecord().counts;
     const withCounts = (extra: Record<string, unknown>) =>

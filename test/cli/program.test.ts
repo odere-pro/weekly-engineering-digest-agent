@@ -31,6 +31,17 @@ describe('CLI program', () => {
     stderr.mockRestore();
   });
 
+  it('offers --seed on run and rejects a value that is not a whole number of 0 or more', async () => {
+    const run = buildProgram(() => undefined).commands.find((c) => c.name() === 'run')!;
+    expect(run.options.map((o) => o.long)).toContain('--seed');
+    for (const bad of ['x', '-1', '1.5']) {
+      const program = buildProgram(() => undefined).exitOverride();
+      for (const command of program.commands)
+        command.exitOverride().configureOutput({ writeErr: () => undefined });
+      await expect(program.parseAsync(['node', 'digest', 'run', '--seed', bad])).rejects.toThrow();
+    }
+  });
+
   it('rejects a non-numeric --limit', async () => {
     const program = buildProgram(() => undefined).exitOverride();
     for (const command of program.commands)

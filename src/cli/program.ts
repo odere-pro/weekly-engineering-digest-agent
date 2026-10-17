@@ -14,6 +14,13 @@ function positiveInt(value: string): number {
   return n;
 }
 
+function nonNegativeInt(value: string): number {
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 0)
+    throw new InvalidArgumentError('must be a whole number of 0 or more');
+  return n;
+}
+
 /** Builds the program. `setExitCode` receives each command's exit code. */
 export function buildProgram(setExitCode: (code: number) => void): Command {
   const program = new Command()
@@ -49,9 +56,12 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .option('--since <window>', 'collection window, e.g. 7d')
     .option('--dry-run', 'write the digest to disk and send nothing')
     .option('--force', 'run even if this week already has a sent digest')
-    .action(async (options: { since?: string; dryRun?: boolean; force?: boolean }) => {
-      setExitCode(await runCommand(withConfig(options)));
-    });
+    .option('--seed <n>', 'sampling seed for this run (overrides models.seed)', nonNegativeInt)
+    .action(
+      async (options: { since?: string; dryRun?: boolean; force?: boolean; seed?: number }) => {
+        setExitCode(await runCommand(withConfig(options)));
+      },
+    );
 
   program
     .command('eval')

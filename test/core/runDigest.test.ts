@@ -251,6 +251,18 @@ describe('runDigest: dry run', () => {
     expect(result.record.timings.map((timing) => timing.step)).toEqual(ALL_STEPS);
   });
 
+  it('records the sampling it was given, and none when it was given none', async () => {
+    const sampling = { seed: 7, temperatureByRole: { write: 0.7 } };
+    const withSampling = setup();
+    const plain = setup();
+
+    const recorded = await runDigest({ ...withSampling.deps, sampling }, { dryRun: true });
+    const unrecorded = await plain.run({ dryRun: true });
+
+    expect(recorded.record.sampling).toEqual(sampling);
+    expect(unrecorded.record).not.toHaveProperty('sampling');
+  });
+
   it('collects windowDays back from the clock, or sinceDays and weekId when given', async () => {
     const h = setup();
 

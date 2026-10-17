@@ -166,6 +166,13 @@ export const RunRecordSchema = z.object({
   finishedAt: z.iso.datetime({ offset: true }),
   profile: z.string().min(1),
   modelsByRole: z.record(z.string(), z.union([z.string(), z.array(z.string()), z.null()])),
+  /** Seed and temperature per role the run's model calls used. Absent in older records. */
+  sampling: z
+    .object({
+      seed: z.number().int().min(0),
+      temperatureByRole: z.record(z.string(), z.number()),
+    })
+    .optional(),
   timings: z.array(z.object({ step: StepNameSchema, ms: z.number().min(0) })),
   counts: z.object({
     collected: z.number().int().min(0),

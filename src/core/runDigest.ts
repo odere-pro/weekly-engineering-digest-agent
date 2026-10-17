@@ -61,6 +61,8 @@ export interface DigestDeps {
   logger: Logger;
   tracer: Tracer;
   clock: Clock;
+  /** Sampling the model calls use, copied into the run record. The container fills it. */
+  sampling?: { seed: number; temperatureByRole: Record<string, number> };
 }
 
 export interface RunOptions {
@@ -652,6 +654,7 @@ function buildRecord(
     finishedAt: finishedAt.toISOString(),
     profile: profile.name,
     modelsByRole: modelsByRole(profile),
+    ...(ctx.deps.sampling && { sampling: ctx.deps.sampling }),
     timings: [...state.timings],
     counts: {
       collected: state.collected.length,
