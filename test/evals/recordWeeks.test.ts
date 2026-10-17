@@ -12,13 +12,30 @@ import {
   resolveSources,
   type RecordWeeksDeps,
 } from '../../evals/recordWeeks.js';
+import { createGithubReleasesFetcher } from '../../src/adapters/sources/githubReleases.js';
+import { createRssFetcher } from '../../src/adapters/sources/rss.js';
 import { DEFAULT_SOURCES } from '../../src/config/defaultSources.js';
 import type { LoadOptions } from '../../src/config/load.js';
-import { ItemSchema, type Item, type Source } from '../../src/core/schemas.js';
+import { ItemSchema, type Item, type Source, type SourceKind } from '../../src/core/schemas.js';
+import type { SourceFetcher } from '../../src/ports/SourceFetcher.js';
 import { DigestError } from '../../src/shared/errors.js';
 import { fixedClock } from '../../src/shared/clock.js';
+import type { Logger } from '../../src/shared/telemetry.js';
 import { FakeSourceFetcher } from '../fakes/FakeSourceFetcher.js';
 import { makeItem } from '../builders.js';
+
+// The real factories, with a spy on each: a test can see the options the recorder gave them and
+// swap the fetcher for one that makes no request.
+vi.mock('../../src/adapters/sources/rss.js', async (importOriginal) => {
+  const actual = await importOriginal<{ createRssFetcher: typeof createRssFetcher }>();
+  return { ...actual, createRssFetcher: vi.fn(actual.createRssFetcher) };
+});
+vi.mock('../../src/adapters/sources/githubReleases.js', async (importOriginal) => {
+  const actual = await importOriginal<{
+    createGithubReleasesFetcher: typeof createGithubReleasesFetcher;
+  }>();
+  return { ...actual, createGithubReleasesFetcher: vi.fn(actual.createGithubReleasesFetcher) };
+});
 
 const DAY_MS = 86_400_000;
 /** A Wednesday in 2021-W03; the six complete weeks before it straddle the 2020/2021 boundary. */
@@ -488,5 +505,145 @@ describe('recordWeeks', () => {
       const options = await resolveConfig(path);
       expect(await check(await readFile(path, 'utf8'), { ...options, filepath: path })).toBe(true);
     }
+  });
+});
+
+describe('recordWeeks fetcher warnings', () => {
+  const SKIPPED = 'Skipped feed entries that could not be read';
+  const TOKEN = 'ghp_recorder-token-5d21';
+  const ANY_FUNCTION: unknown = expect.any(Function);
+  const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
+  const withToken = (): Partial<RecordWeeksDeps> => ({
+    fetchers: undefined,
+    sources: undefined,
+    config: {
+      configPath: join(fixtures, 'valid.config.json'),
+      envPath: join(fixtures, 'missing.env'),
+      processEnv: { GITHUB_TOKEN: TOKEN },
+      platform: { os: 'darwin', arch: 'arm64' },
+    },
+  });
+
+  /**
+   * Swaps both default fetchers for ones that make no request and call `act` with the logger
+   * they were built with, once per source they are asked for.
+   */
+  function defaultFetchersThat(act: (logger: Logger, source: Source) => void): void {
+    const fakeFetcher =
+      (kind: SourceKind) =>
+      (options: { logger?: Logger } | undefined): SourceFetcher => ({
+        kind,
+        fetch: (source) => {
+          if (options?.logger) act(options.logger, source);
+          return Promise.resolve([]);
+        },
+      });
+    vi.mocked(createRssFetcher).mockImplementationOnce(fakeFetcher('rss'));
+    vi.mocked(createGithubReleasesFetcher).mockImplementationOnce(fakeFetcher('github'));
+  }
+
+  const useDefaults = { fetchers: undefined };
+
+  it('prints what the default fetchers skip as WARNING lines, before the report', async () => {
+    defaultFetchersThat((logger, source) => {
+      logger.warn(SKIPPED, { sourceId: source.id, failed: 1, of: 2 });
+    });
+
+    const { lines } = await run({}, useDefaults);
+
+    const feedWarning = `WARNING: ${SKIPPED} (sourceId=feed-a failed=1 of=2)`;
+    const repoWarning = `WARNING: ${SKIPPED} (sourceId=repo-b failed=1 of=2)`;
+    expect(lines).toContain(feedWarning);
+    expect(lines).toContain(repoWarning);
+    const report = lines.findIndex((line) => line.startsWith('Recorded '));
+    expect(lines.indexOf(feedWarning)).toBeLessThan(report);
+    expect(lines.indexOf(repoWarning)).toBeLessThan(report);
+    expect(lines.filter((line) => line.includes(SKIPPED))).toHaveLength(2);
+  });
+
+  it('keeps info and debug lines out of the report', async () => {
+    defaultFetchersThat((logger, source) => {
+      logger.info('Entry page could not be read', { sourceId: source.id });
+      logger.debug('Retrying source', { sourceId: source.id });
+    });
+
+    const { lines } = await run({}, useDefaults);
+
+    expect(lines.join('\n')).not.toContain('Entry page could not be read');
+    expect(lines.join('\n')).not.toContain('Retrying source');
+  });
+
+  it('labels an error ERROR and adds the fields of a child logger, nested ones too', async () => {
+    defaultFetchersThat((logger, source) => {
+      if (source.kind === 'rss') {
+        logger.child({ step: 'collect' }).child({ attempt: 2 }).error('Could not read', {
+          sourceId: source.id,
+        });
+      }
+    });
+
+    const { lines } = await run({}, useDefaults);
+
+    expect(lines).toContain('ERROR: Could not read (step=collect attempt=2 sourceId=feed-a)');
+  });
+
+  it('leaves a message without fields as it is, and shows other field values as JSON', async () => {
+    defaultFetchersThat((logger, source) => {
+      if (source.kind !== 'rss') return;
+      logger.warn('Feed is odd');
+      logger.warn('Counted', { entries: 3, tags: ['a', 'b'], nothing: null, flag: false });
+    });
+
+    const { lines } = await run({}, useDefaults);
+
+    expect(lines).toContain('WARNING: Feed is odd');
+    expect(lines).toContain('WARNING: Counted (entries=3 tags=["a","b"] nothing=null flag=false)');
+  });
+
+  it('prints each warning as one line, whatever a feed put in the error text', async () => {
+    defaultFetchersThat((logger, source) => {
+      if (source.kind === 'rss') logger.warn(SKIPPED, { firstError: 'bad\n  entry\r\nhere' });
+    });
+
+    const { lines } = await run({}, useDefaults);
+
+    expect(lines).toContain(`WARNING: ${SKIPPED} (firstError=bad entry here)`);
+  });
+
+  it('takes the GitHub token out of a warning, in the message and in the fields', async () => {
+    defaultFetchersThat((logger, source) => {
+      logger.warn(`Cannot read ${TOKEN}`, {
+        sourceId: source.id,
+        firstError: `HTTP 401 for ${TOKEN}`,
+      });
+    });
+
+    const { lines } = await run({}, withToken());
+
+    const warnings = lines.filter((line) => line.startsWith('WARNING: '));
+    expect(warnings).toEqual([
+      'WARNING: Cannot read [redacted] (sourceId=example-feed firstError=HTTP 401 for [redacted])',
+    ]);
+    expect(lines.join('\n')).not.toContain(TOKEN);
+  });
+
+  it('gives the GitHub fetcher the token from the environment and the report logger', async () => {
+    defaultFetchersThat(() => undefined);
+
+    await run({}, withToken());
+
+    expect(createGithubReleasesFetcher).toHaveBeenCalledWith({
+      token: TOKEN,
+      logger: ANY_LOGGER,
+    });
+    expect(createRssFetcher).toHaveBeenCalledWith({ logger: ANY_LOGGER });
+  });
+
+  it('uses the fetchers it is given as they are', async () => {
+    const { rssFetcher } = await run({});
+
+    expect(rssFetcher.calls).toHaveLength(1);
+    expect(createRssFetcher).not.toHaveBeenCalled();
+    expect(createGithubReleasesFetcher).not.toHaveBeenCalled();
   });
 });

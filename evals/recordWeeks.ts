@@ -10,11 +10,12 @@ import { DEFAULT_SOURCES } from '../src/config/defaultSources.js';
 import { loadConfig, type LoadOptions } from '../src/config/load.js';
 import { ItemSchema, type Item, type Source, type SourceKind } from '../src/core/schemas.js';
 import { collectStep, type CollectOutput } from '../src/core/steps/collect.js';
+import { createRedactor } from '../src/observability/redact.js';
 import type { SourceFetcher } from '../src/ports/SourceFetcher.js';
 import { systemClock, type Clock } from '../src/shared/clock.js';
 import { DigestError, errorMessage } from '../src/shared/errors.js';
 import { isoWeekId, previousWeekIds } from '../src/shared/isoWeek.js';
-import { noopLogger } from '../src/shared/telemetry.js';
+import { noopLogger, type LogFields, type Logger } from '../src/shared/telemetry.js';
 import { truncate } from '../src/shared/text.js';
 
 const DAY_MS = 86_400_000;
@@ -140,7 +141,8 @@ export async function recordWeeks(
   const resolved = deps.sources
     ? { sources: deps.sources, origin: 'config' as const }
     : await resolveSources(deps.config);
-  const fetchers = deps.fetchers ?? createDefaultFetchers(resolved.githubToken);
+  const fetchers =
+    deps.fetchers ?? createDefaultFetchers(resolved.githubToken, reportLogger(log, resolved));
   const collected = await collectStep(
     {
       sources: resolved.sources.map((source) => ({
@@ -257,8 +259,49 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-function createDefaultFetchers(githubToken?: string): Record<SourceKind, SourceFetcher> {
-  return { rss: createRssFetcher(), github: createGithubReleasesFetcher({ token: githubToken }) };
+function createDefaultFetchers(
+  githubToken: string | undefined,
+  logger: Logger,
+): Record<SourceKind, SourceFetcher> {
+  return {
+    rss: createRssFetcher({ logger }),
+    github: createGithubReleasesFetcher({ token: githubToken, logger }),
+  };
+}
+
+/**
+ * The logger the default fetchers get. A feed entry they skip means a recording that lacks it, so
+ * a warning or an error becomes a line in the report; lower levels stay out of it. A line is one
+ * line and has the GitHub token taken out, like every other log line of the app.
+ */
+function reportLogger(log: (line: string) => void, { githubToken }: ResolvedSources): Logger {
+  const redactor = createRedactor(githubToken === undefined ? [] : [githubToken]);
+  const lineOf = (label: string, message: string, fields: LogFields): string =>
+    oneLine(redactor.text(`${label}: ${message}${detailsOf(redactor.fields(fields))}`));
+  const levelLogger = (bindings: LogFields): Logger => {
+    const report = (label: string) => (message: string, fields: LogFields) => {
+      log(lineOf(label, message, { ...bindings, ...fields }));
+    };
+    return {
+      debug: () => undefined,
+      info: () => undefined,
+      warn: report('WARNING'),
+      error: report('ERROR'),
+      child: (fields) => levelLogger({ ...bindings, ...fields }),
+    };
+  };
+  return levelLogger({});
+}
+
+/** ` (key=value key=value)`, or nothing without fields. */
+function detailsOf(fields: LogFields): string {
+  const pairs = Object.entries(fields).map(([key, value]) => `${key}=${displayed(value)}`);
+  return pairs.length === 0 ? '' : ` (${pairs.join(' ')})`;
+}
+
+function displayed(value: unknown): string {
+  if (typeof value === 'string') return value;
+  return typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value);
 }
 
 function oneLine(text: string): string {

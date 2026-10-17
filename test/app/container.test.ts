@@ -77,6 +77,10 @@ vi.mock('../../src/adapters/guard/granite.js', (load) =>
 vi.mock('../../src/observability/logger.js', (load) => wrapFactories(load, ['createLogger']));
 vi.mock('../../src/observability/tracing.js', (load) => wrapFactories(load, ['createTracer']));
 
+// Any logger: the one the model and the fetchers get is run-aware (container.runLogging.test.ts).
+const ANY_FUNCTION: unknown = expect.any(Function);
+const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
+
 const SMTP_PASSWORD = 'smtp-password-4f9a';
 const SLACK_WEBHOOK_PATH = '/services/T000/B000/slack-secret-7c1e';
 const SLACK_WEBHOOK_URL = `https://hooks.slack.test${SLACK_WEBHOOK_PATH}`;
@@ -232,14 +236,15 @@ describe('buildApp wiring', () => {
       env: { OLLAMA_URL: 'http://ollama.internal:11434' },
     });
 
-    const { deps } = await buildApp(loaded);
+    await buildApp(loaded);
 
+    // The logger is the run-aware one (container.runLogging.test.ts), not the app logger.
     expect(firstCallOptions(createOllamaProvider)).toEqual({
       baseUrl: 'http://ollama.internal:11434',
       profile: loaded.profile,
       timeoutsMs: { write: 900_000 },
       retries: 4,
-      logger: deps.logger,
+      logger: ANY_LOGGER,
     });
   });
 
@@ -268,11 +273,17 @@ describe('buildApp wiring', () => {
 
   it('gives the GitHub fetcher the token, and no token when none is set', async () => {
     await buildApp(loadedConfig({ secrets: { GITHUB_TOKEN } }));
-    expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({ token: GITHUB_TOKEN });
+    expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({
+      token: GITHUB_TOKEN,
+      logger: ANY_LOGGER,
+    });
 
     vi.mocked(createGithubReleasesFetcher).mockClear();
     await buildApp(loadedConfig());
-    expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({ token: undefined });
+    expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({
+      token: undefined,
+      logger: ANY_LOGGER,
+    });
   });
 
   it('orders the input guards policy then risk, and the output guards groundedness then rubric', async () => {
@@ -314,7 +325,7 @@ describe('buildApp wiring', () => {
   });
 
   it('builds the logger at the env level and the tracer at the env endpoint', async () => {
-    const { tracer } = fakeTracer();
+    const { tracer, spans } = recordingTracer();
     vi.mocked(createTracer).mockReturnValueOnce(tracer);
     const loaded = loadedConfig({
       env: {
@@ -324,12 +335,14 @@ describe('buildApp wiring', () => {
     });
 
     const { deps } = await buildApp(loaded);
+    await deps.tracer.span('probe', { step: 'probe' }, () => Promise.resolve());
 
     expect(firstCallOptions(createLogger)).toMatchObject({ level: 'debug' });
     expect(firstCallOptions(createTracer)).toMatchObject({
       endpoint: 'http://localhost:4318/v1/traces',
     });
-    expect(deps.tracer).toBe(tracer);
+    // The app's tracer hands every span to the one that was built (it only adds the run scope).
+    expect(spans).toEqual([{ name: 'probe', attributes: { step: 'probe' } }]);
   });
 
   it('creates no tracer when a later adapter fails to build', async () => {
@@ -716,10 +729,11 @@ describe('buildApp model', () => {
 });
 
 describe('buildApp fetchers', () => {
-  it('gives the RSS fetcher the app logger, so its per-feed warnings reach the log', async () => {
-    const { deps } = await buildApp(loadedConfig());
+  it('gives the RSS fetcher a logger, so its per-feed warnings reach the log', async () => {
+    await buildApp(loadedConfig());
 
-    expect(firstCallOptions(createRssFetcher)).toEqual({ logger: deps.logger });
+    // Run-aware, like the model's: container.runLogging.test.ts shows the run id on its lines.
+    expect(firstCallOptions(createRssFetcher)).toEqual({ logger: ANY_LOGGER });
   });
 });
 

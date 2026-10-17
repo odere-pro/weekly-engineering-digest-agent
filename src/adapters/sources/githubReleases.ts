@@ -1,4 +1,5 @@
 import type { SourceFetcher } from '../../ports/SourceFetcher.js';
+import type { Logger } from '../../shared/telemetry.js';
 import { githubAtomAdapter } from './githubAtomAdapter.js';
 import { createGithubRestAdapter } from './githubRestAdapter.js';
 import { createFetcher } from './pipeline.js';
@@ -8,6 +9,8 @@ export interface GithubReleasesOptions {
   /** Optional token: uses the REST API (5000 req/h) instead of the releases Atom feed. */
   token?: string;
   maxSummaryChars?: number;
+  /** Where a release that had to be skipped is reported, once per source (W5-01, F18). */
+  logger?: Logger;
 }
 
 /** GitHub releases for repositories on the allowlist (W1-02). */
@@ -17,5 +20,6 @@ export function createGithubReleasesFetcher(options: GithubReleasesOptions = {})
   return createFetcher(adapter, {
     ...(options.fetch ? { fetch: options.fetch } : {}),
     ...(options.maxSummaryChars === undefined ? {} : { maxSummaryChars: options.maxSummaryChars }),
+    ...(options.logger ? { logger: options.logger } : {}),
   });
 }

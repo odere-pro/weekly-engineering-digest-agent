@@ -1,4 +1,5 @@
 // Composition root: the only place that turns config into real adapters.
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { createMarkdownFileDelivery } from '../adapters/delivery/markdownFile.js';
 import { createSlackDelivery } from '../adapters/delivery/slack.js';
 import { createSmtpDelivery } from '../adapters/delivery/smtp.js';
@@ -21,7 +22,7 @@ import { createRedactor, type Redactor } from '../observability/redact.js';
 import { createTracer } from '../observability/tracing.js';
 import { systemClock } from '../shared/clock.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
-import type { Logger } from '../shared/telemetry.js';
+import type { LogFields, Logger, Tracer } from '../shared/telemetry.js';
 import { knownSecrets, redactDelivery, redactStore } from './redacting.js';
 import { withDeliveryRetry } from './retryingDelivery.js';
 import { deferTracer, traceModel } from './tracedModel.js';
@@ -68,8 +69,12 @@ function assemble(loaded: LoadedConfig): AppHandle {
   const redactValues = knownSecrets(secrets);
   const redactor = createRedactor(redactValues);
   const logger = createLogger({ level: env.LOG_LEVEL, redactValues });
+  // The model and the fetchers are built once, but a `serve` process runs many weeks: what they
+  // log belongs to the run in flight, so they get a logger that looks the run up on every line.
+  const runs = new AsyncLocalStorage<Logger>();
+  const runLogger = perRunLogger(logger, runs);
   const tracing = deferTracer();
-  const model = traceModel(createModelProvider(loaded, { logger }), tracing.tracer);
+  const model = traceModel(createModelProvider(loaded, { logger: runLogger }), tracing.tracer);
   const decision = {
     model,
     flagThreshold: config.thresholds.guardFlag,
@@ -80,8 +85,8 @@ function assemble(loaded: LoadedConfig): AppHandle {
     profile,
     model,
     fetchers: {
-      rss: createRssFetcher({ logger }),
-      github: createGithubReleasesFetcher({ token: secrets.GITHUB_TOKEN }),
+      rss: createRssFetcher({ logger: runLogger }),
+      github: createGithubReleasesFetcher({ token: secrets.GITHUB_TOKEN, logger: runLogger }),
     },
     inputGuards: [createClefPolicyGuard(decision), createGraniteRiskGuard({ model })],
     outputGuards: [createGraniteGroundednessGuard({ model }), createClefRubricGuard(decision)],
@@ -99,7 +104,7 @@ function assemble(loaded: LoadedConfig): AppHandle {
   tracing.bind(tracer);
 
   return {
-    deps: { ...parts, tracer },
+    deps: { ...parts, tracer: scopeRuns(tracer, logger, runs) },
     close: async () => {
       try {
         await tracer.shutdown();
@@ -155,4 +160,53 @@ function buildDeliveries(config: Config, secrets: Secrets): Delivery[] {
 function requireSecret(value: string | undefined, name: string, needer: string): string {
   if (value !== undefined && value !== '') return value;
   throw new DigestError(`${needer} is configured but ${name} is not set. Add ${name} to .env.`);
+}
+
+/**
+ * A logger for what is built once and used by every run (F45, D8). Each line goes to the logger
+ * of the run in flight on this async call chain, so it carries that run's `runId` and the `step`
+ * it is in, and to the root logger outside a run. Nothing is kept between runs: the run is looked up, never stored.
+ * A callback the event loop starts outside the run (an abort listener) sees no run.
+ */
+function perRunLogger(
+  root: Logger,
+  runs: AsyncLocalStorage<Logger>,
+  bindings: LogFields = {},
+): Logger {
+  const current = (): Logger => {
+    const target = runs.getStore() ?? root;
+    return Object.keys(bindings).length === 0 ? target : target.child(bindings);
+  };
+  return {
+    debug: (message, fields) => {
+      current().debug(message, fields);
+    },
+    info: (message, fields) => {
+      current().info(message, fields);
+    },
+    warn: (message, fields) => {
+      current().warn(message, fields);
+    },
+    error: (message, fields) => {
+      current().error(message, fields);
+    },
+    child: (fields) => perRunLogger(root, runs, { ...bindings, ...fields }),
+  };
+}
+
+/**
+ * Core opens its `runDigest` span with the run's id as the `runId` attribute, and the span of
+ * every step with the `runId` and the `step`. Whatever runs inside such a span is in that run, and
+ * in that step: the logger above finds the logger for both there, and two runs in one process
+ * never see each other's.
+ */
+function scopeRuns(tracer: Tracer, root: Logger, runs: AsyncLocalStorage<Logger>): Tracer {
+  return {
+    span: (name, attributes, fn) => {
+      const { runId, step } = attributes;
+      if (typeof runId !== 'string') return tracer.span(name, attributes, fn);
+      const scope = typeof step === 'string' ? { runId, step } : { runId };
+      return runs.run(root.child(scope), () => tracer.span(name, attributes, fn));
+    },
+  };
 }
