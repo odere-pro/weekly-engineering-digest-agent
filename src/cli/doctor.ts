@@ -27,10 +27,21 @@ import { systemClock, type Clock } from '../shared/clock.js';
 import { errorMessage } from '../shared/errors.js';
 import { withTimeout } from '../shared/retry.js';
 import { noopLogger } from '../shared/telemetry.js';
+import {
+  compareCore,
+  DEVELOPMENT_VERSION,
+  normalizeTag,
+  parseVersion,
+  readinessCommand,
+  withoutUrlCredentials,
+  type ReadinessIo,
+} from './readiness.js';
 
 export interface DoctorCommandOptions {
   /** Path to digest.config.json. */
   config?: string;
+  /** Print the machine summary and a verdict per profile instead of the checks. */
+  readiness?: boolean;
 }
 
 /** What doctor asks the disk about a path. */
@@ -62,6 +73,8 @@ export interface DoctorIo {
   /** Per-source timeout for the reachability read. */
   sourceTimeoutMs: number;
   stdout: (text: string) => void;
+  /** Replaces parts of the `--readiness` mode's I/O (platform, memory, disk, Ollama); tests only. */
+  readiness?: Partial<ReadinessIo>;
 }
 
 type Severity = 'ok' | 'warn' | 'error';
@@ -82,10 +95,6 @@ const OTHERS_PERMISSION_MASK = 0o077;
 const PERMISSION_MASK = 0o777;
 const OCTAL = 8;
 const SYMBOLS: Readonly<Record<Severity, string>> = { ok: '✓', warn: '!', error: '✗' };
-const URL_CREDENTIALS = /(\bhttps?:\/\/)[^\s/@]+@/g;
-const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)(.*)$/;
-/** Ollama builds from source (and some test builds) report this. */
-const DEVELOPMENT_VERSION = [0, 0, 0] as const;
 /** node:util parseEnv reads an unquoted value up to its first "#". */
 const ENV_ASSIGNMENT = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_.-]*)\s*=(.*)$/;
 const ENV_QUOTES: ReadonlySet<string> = new Set(['"', "'", '`']);
@@ -144,6 +153,7 @@ export async function doctorCommand(
   overrides: Partial<DoctorIo> = {},
 ): Promise<number> {
   const io: DoctorIo = { ...defaultIo, ...overrides };
+  if (options.readiness) return runReadiness(options, io);
   const loaded = await tryLoadConfig(options, io);
   if ('result' in loaded) return report([loaded.result], io, {});
 
@@ -164,6 +174,19 @@ export async function doctorCommand(
     await checkWritableDir(dataDirCheck(config.dataDir), io),
   ];
   return report(results, io, loaded.value.secrets);
+}
+
+function runReadiness(options: DoctorCommandOptions, io: DoctorIo): Promise<number> {
+  return readinessCommand(
+    { config: options.config },
+    {
+      loadConfig: io.loadConfig,
+      envPath: io.envPath,
+      stdout: io.stdout,
+      ...(io.platform ? { platform: io.platform } : {}),
+      ...io.readiness,
+    },
+  );
 }
 
 /** `platform` is the host the loader resolved the profile for (a bad DIGEST_HOST_* is reported here). */
@@ -234,28 +257,6 @@ function checkVersion(version: string | undefined, profile: ModelProfile): Check
     return warn(label, message, fix);
   }
   return ok(label, `${version} (minimum ${minimum})`);
-}
-
-type Core = readonly [number, number, number];
-interface Version {
-  core: Core;
-  /** "-rc1", "-dev": semver puts it below the release of the same number. */
-  prerelease: boolean;
-}
-
-function parseVersion(text: string): Version | undefined {
-  const match = VERSION_PATTERN.exec(text.trim());
-  if (!match) return undefined;
-  const [, major = '0', minor = '0', patch = '0', rest = ''] = match;
-  return {
-    core: [Number(major), Number(minor), Number(patch)],
-    prerelease: rest.startsWith('-') || /^[a-z]/i.test(rest),
-  };
-}
-
-function compareCore(a: Core, b: Core): number {
-  const index = a.findIndex((part, i) => part !== b[i]);
-  return index < 0 ? 0 : (a[index] ?? 0) - (b[index] ?? 0);
 }
 
 function checkAppleSilicon({ config, profile }: LoadedConfig, platform: Platform): CheckResult {
@@ -348,12 +349,6 @@ function describeThink(setting: ThinkSetting | undefined): string {
   if (setting === undefined) return 'default';
   if (typeof setting === 'boolean') return setting ? 'on' : 'off';
   return setting;
-}
-
-/** Ollama lists an untagged name as ":latest". */
-function normalizeTag(tag: string): string {
-  const name = tag.slice(tag.lastIndexOf('/') + 1); // a registry port ("host:5000/x") is not a version
-  return name.includes(':') ? tag : `${tag}:latest`;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -667,11 +662,6 @@ function report(
   const text = [...results.map(formatResult), '', summary(errors, warnings)].join('\n');
   io.stdout(`${withoutUrlCredentials(redactSecrets(text, secrets))}\n`);
   return errors > 0 ? EXIT_FAILED : EXIT_OK;
-}
-
-/** `https://user:pass@host` becomes `https://host`: credentials in a URL must not reach pasted output. */
-function withoutUrlCredentials(text: string): string {
-  return text.replace(URL_CREDENTIALS, '$1');
 }
 
 function formatResult(result: CheckResult): string {

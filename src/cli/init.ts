@@ -26,6 +26,7 @@ import {
   type OsSchedule,
   type OsScheduleOptions,
 } from '../scheduler/osSchedule.js';
+import { formatGiB, hasQualityMemory } from './readiness.js';
 import { DigestError, errorMessage, NotImplementedError } from '../shared/errors.js';
 
 export interface InitCommandOptions {
@@ -90,10 +91,6 @@ export interface InitIo {
 const DEFAULT_CONFIG_PATH = 'digest.config.json';
 const DEFAULT_ENV_PATH = '.env';
 const DOCKERENV_PATH = '/.dockerenv';
-const GIB = 1024 ** 3;
-const QUALITY_MIN_RAM_BYTES = 32 * GIB;
-/** A "32 GB" machine reports less (a Linux box about 31 GiB): the kernel keeps some for itself. */
-const RAM_TOLERANCE = 0.05;
 const SECRET_FILE_MODE = 0o600;
 const DEFAULT_SMTP_PORT = 587;
 const IMPLICIT_TLS_PORT = 465;
@@ -130,10 +127,8 @@ export function recommendProfile(): ProfileName {
   return 'light';
 }
 
-/** Whether `quality` fits in this much RAM: 32 GiB, less a 5% tolerance. */
-export function hasQualityMemory(totalMemoryBytes: number): boolean {
-  return totalMemoryBytes >= QUALITY_MIN_RAM_BYTES * (1 - RAM_TOLERANCE);
-}
+// The RAM figures live in readiness.ts so `digest doctor --readiness` and init cannot drift.
+export { hasQualityMemory };
 
 /**
  * Where Ollama is reachable from here. Inside Docker on a Mac the Apple GPU is only available to
@@ -328,7 +323,7 @@ function qualityMemoryWarning(io: InitIo, inDocker: boolean): string | undefined
   const limited = limit > 0 && limit <= io.totalMemoryBytes;
   const seen = limited ? limit : io.totalMemoryBytes;
   if (hasQualityMemory(seen)) return undefined;
-  const amount = `${(seen / GIB).toFixed(1)} GiB`;
+  const amount = formatGiB(seen);
   const needs = 'quality needs about 32 GB.';
   if (!inDocker) return `This machine has ${amount} of RAM; ${needs}`;
   if (limited) return `Docker limits this container to ${amount} (the container limit); ${needs}`;
