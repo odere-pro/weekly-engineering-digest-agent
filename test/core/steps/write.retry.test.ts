@@ -33,7 +33,12 @@ function body(items: readonly DigestItem[], extra: Record<string, unknown> = {})
 }
 
 function bodyFor(items: readonly ScoredItem[]): string {
-  return body(items.map((item) => makeDigestItem(item)));
+  // The writer schema requires urgency and action since W8-01.
+  return body(
+    items.map((item) =>
+      makeDigestItem(item, { urgency: 'worth-a-look', action: 'Relevant if you run it.' }),
+    ),
+  );
 }
 
 function makeDeps(model: FakeModelProvider, overrides: Partial<WriteDeps> = {}): WriteDeps {

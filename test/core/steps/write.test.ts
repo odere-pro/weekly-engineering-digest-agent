@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { buildWritePrompt } from '../../../src/core/prompts/write.js';
-import type { DigestItem, ScoredItem } from '../../../src/core/schemas.js';
+import type { DigestItem, Item, ScoredItem } from '../../../src/core/schemas.js';
 import { writeStep, type WriteDeps } from '../../../src/core/steps/write.js';
 import type { GenerateRequest } from '../../../src/ports/ModelProvider.js';
 import type { Logger } from '../../../src/shared/telemetry.js';
@@ -9,6 +9,15 @@ import { FakeModelProvider, noopLogger } from '../../fakes/index.js';
 
 const WEEK_ID = '2026-W42';
 const FOCUS_AREAS = ['AI models and tooling', 'Platform engineering'] as const;
+
+/** An item as a writer sends it: since W8-01 the writer schema requires urgency and action. */
+function writerItem(item: Item, overrides: Partial<DigestItem> = {}): DigestItem {
+  return makeDigestItem(item, {
+    urgency: 'worth-a-look',
+    action: 'Relevant if you run it.',
+    ...overrides,
+  });
+}
 
 function makeItems(count = 4): ScoredItem[] {
   return Array.from({ length: count }, (_, i) =>
@@ -26,7 +35,7 @@ function body(items: readonly DigestItem[], extra: Record<string, unknown> = {})
 }
 
 function bodyFor(items: readonly ScoredItem[]): string {
-  return body(items.map((item) => makeDigestItem(item)));
+  return body(items.map((item) => writerItem(item)));
 }
 
 function makeDeps(model: FakeModelProvider, overrides: Partial<WriteDeps> = {}): WriteDeps {
@@ -63,8 +72,8 @@ function makeSpyLogger(): { logger: Logger; warn: ReturnType<typeof vi.fn> } {
 describe('writeStep titles (F32)', () => {
   async function titleOf(drafted: string): Promise<string | undefined> {
     const items = makeItems(3);
-    const first = makeDigestItem(items[0]!, { title: drafted });
-    const rest = items.slice(1).map((item) => makeDigestItem(item));
+    const first = writerItem(items[0]!, { title: drafted });
+    const rest = items.slice(1).map((item) => writerItem(item));
     const model = scripted({ 'writer-a': [body([first, ...rest])] });
 
     const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -148,7 +157,7 @@ describe('writeStep', () => {
 
   it('overwrites each url with the source url', async () => {
     const items = makeItems(3);
-    const drafted = items.map((item) => makeDigestItem(item, { url: 'https://evil.example/x' }));
+    const drafted = items.map((item) => writerItem(item, { url: 'https://evil.example/x' }));
     const model = scripted({ 'writer-a': [body(drafted)] });
 
     const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -166,7 +175,7 @@ describe('writeStep', () => {
     'does not repair a draft whose model url %s, since the url is replaced anyway',
     async (_name, url) => {
       const items = makeItems(3);
-      const drafted = items.map((item) => makeDigestItem(item, { url }));
+      const drafted = items.map((item) => writerItem(item, { url }));
       const model = scripted({ 'writer-a': [body(drafted)] });
 
       const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -181,7 +190,7 @@ describe('writeStep', () => {
 
   it('accepts an item whose url the model sent as null', async () => {
     const items = makeItems(3);
-    const drafted = items.map((item) => ({ ...makeDigestItem(item), url: null }));
+    const drafted = items.map((item) => ({ ...writerItem(item), url: null }));
     const model = scripted({
       'writer-a': [JSON.stringify({ headline: 'H', intro: 'I', items: drafted })],
     });
@@ -207,7 +216,7 @@ describe('writeStep', () => {
   it('accepts an item the model sent without a url and sets the source url', async () => {
     const items = makeItems(3);
     const drafted = items.map((item) => {
-      const { url: _omitted, ...rest } = makeDigestItem(item);
+      const { url: _omitted, ...rest } = writerItem(item);
       return rest as DigestItem;
     });
     const model = scripted({ 'writer-a': [body(drafted)] });
@@ -233,7 +242,7 @@ describe('writeStep', () => {
 
   it('still repairs a draft when another field is invalid', async () => {
     const items = makeItems(3);
-    const broken = items.map((item) => makeDigestItem(item, { whyItMatters: '' }));
+    const broken = items.map((item) => writerItem(item, { whyItMatters: '' }));
     const model = scripted({ 'writer-a': [body(broken), bodyFor(items)] });
 
     const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -245,10 +254,10 @@ describe('writeStep', () => {
   it('removes items with an unknown itemId and keeps the rest in order', async () => {
     const items = makeItems(4);
     const drafted = [
-      makeDigestItem(items[2]!),
-      { ...makeDigestItem(items[0]!), itemId: 'made-up' },
-      makeDigestItem(items[1]!),
-      makeDigestItem(items[3]!),
+      writerItem(items[2]!),
+      { ...writerItem(items[0]!), itemId: 'made-up' },
+      writerItem(items[1]!),
+      writerItem(items[3]!),
     ];
     const { logger, warn } = makeSpyLogger();
     const model = scripted({ 'writer-a': [body(drafted)] });
@@ -269,10 +278,10 @@ describe('writeStep', () => {
   it('keeps only the first entry when a writer repeats an item', async () => {
     const items = makeItems(3);
     const drafted = [
-      makeDigestItem(items[0]!),
-      makeDigestItem(items[0]!, { summary: 'Again.' }),
-      makeDigestItem(items[1]!),
-      makeDigestItem(items[2]!),
+      writerItem(items[0]!),
+      writerItem(items[0]!, { summary: 'Again.' }),
+      writerItem(items[1]!),
+      writerItem(items[2]!),
     ];
     const model = scripted({ 'writer-a': [body(drafted)] });
 
@@ -285,7 +294,7 @@ describe('writeStep', () => {
 
   it('fails a writer whose repeats leave fewer than 3 distinct items', async () => {
     const items = makeItems(3);
-    const drafted = [items[0]!, items[0]!, items[0]!].map((item) => makeDigestItem(item));
+    const drafted = [items[0]!, items[0]!, items[0]!].map((item) => writerItem(item));
     const model = scripted({ 'writer-a': [body(drafted)] });
 
     const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -298,8 +307,8 @@ describe('writeStep', () => {
     const items = makeItems(3);
     const longId = 'x'.repeat(5_000);
     const drafted = [
-      ...items.map((item) => makeDigestItem(item)),
-      { ...makeDigestItem(items[0]!), itemId: longId },
+      ...items.map((item) => writerItem(item)),
+      { ...writerItem(items[0]!), itemId: longId },
     ];
     const { logger, warn } = makeSpyLogger();
     const model = scripted({ 'writer-a': [body(drafted)] });
@@ -315,10 +324,10 @@ describe('writeStep', () => {
   it('fails a writer left with fewer than 3 valid items and still runs the next one', async () => {
     const items = makeItems(4);
     const weak = [
-      makeDigestItem(items[0]!),
-      makeDigestItem(items[1]!),
-      { ...makeDigestItem(items[2]!), itemId: 'ghost-1' },
-      { ...makeDigestItem(items[3]!), itemId: 'ghost-2' },
+      writerItem(items[0]!),
+      writerItem(items[1]!),
+      { ...writerItem(items[2]!), itemId: 'ghost-1' },
+      { ...writerItem(items[3]!), itemId: 'ghost-2' },
     ];
     const { logger, warn } = makeSpyLogger();
     const model = scripted({
@@ -400,7 +409,7 @@ describe('writeStep', () => {
 
   it('sets weekId on every draft, ignoring any weekId the model sends', async () => {
     const items = makeItems();
-    const drafted = items.slice(0, 3).map((item) => makeDigestItem(item));
+    const drafted = items.slice(0, 3).map((item) => writerItem(item));
     const model = scripted({
       'writer-a': [body(drafted, { weekId: '1999-W01' })],
       'writer-b': [body(drafted)],
@@ -414,9 +423,7 @@ describe('writeStep', () => {
 
   it('keeps the drafted headline, intro and item text', async () => {
     const items = makeItems(3);
-    const drafted = items.map((item) =>
-      makeDigestItem(item, { whyItMatters: `Because ${item.id}.` }),
-    );
+    const drafted = items.map((item) => writerItem(item, { whyItMatters: `Because ${item.id}.` }));
     const model = scripted({ 'writer-a': [body(drafted)] });
 
     const result = await writeStep(items, makeDeps(model, { writers: ['writer-a'] }));
@@ -437,7 +444,7 @@ describe('writeStep', () => {
     const snapshot = structuredClone(items);
     const drafted = items
       .slice(0, 3)
-      .map((item) => makeDigestItem(item, { url: 'https://evil.example/' }));
+      .map((item) => writerItem(item, { url: 'https://evil.example/' }));
     const model = scripted({ 'writer-a': [body(drafted)] });
 
     await writeStep(Object.freeze(items), makeDeps(model, { writers: ['writer-a'] }));

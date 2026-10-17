@@ -166,6 +166,8 @@ function validDigest(items: readonly Item[], prompt: string): string {
       area: item.kind === 'github' ? PLATFORM_AREA : MODELS_AREA,
       summary: `${item.title} is out.`,
       whyItMatters: 'Teams can drop a workaround they maintain today.',
+      urgency: 'worth-a-look',
+      action: 'Relevant if you run it.',
     })),
   });
 }

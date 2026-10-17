@@ -120,6 +120,8 @@ function defaultBody(items: readonly Item[]): DigestBody {
       area: AREA,
       summary: `${item.title} with faster builds.`,
       whyItMatters: 'Teams can cut CI time without new hardware.',
+      urgency: 'worth-a-look',
+      action: 'Relevant if you run it.',
     })),
   };
 }

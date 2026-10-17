@@ -1,11 +1,19 @@
 // Writer prompt (W1-09). Every writer in the panel gets the same system and user prompt.
-import { DIGEST_MAX_ITEMS, DIGEST_MIN_ITEMS, DIGEST_WORD_LIMIT } from '../checks/formatCheck.js';
+import {
+  DIGEST_MAX_ACT_NOW,
+  DIGEST_MAX_ITEMS,
+  DIGEST_MIN_ITEMS,
+  DIGEST_WORD_LIMIT,
+} from '../checks/formatCheck.js';
 import type { ScoredItem } from '../schemas.js';
 import { truncate } from '../../shared/text.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../shared/untrusted.js';
 
 /** What the writer aims for, leaving room for the words the renderer adds around each item. */
 export const DIGEST_WORD_TARGET = 400;
+/** What the writer aims for per item; the format check allows a few words more (W8-01). */
+export const ACTION_WORD_TARGET = 15;
+export const SUMMARY_WORD_TARGET = 30;
 
 export interface WritePrompt {
   system: string;
@@ -25,9 +33,15 @@ const OUTPUT_RULES = [
   `- One entry per release. If two items describe the same release or product (for example a project's release notes and a cloud vendor's availability post), write one entry for it, using the itemId of the better source, and fold the other item's facts into its summary. If that would leave fewer than ${DIGEST_MIN_ITEMS} entries, keep them as separate entries.`,
   '- title: the item title, shortened if it is long. Replace any em dash in it with a colon. Name a version or release tag once: "tool v1.2.0", not "tool v1.2.0: Release v1.2.0".',
   "- area: the item's area as given in the data.",
-  '- summary: one or two plain sentences on what shipped or changed. Facts from the data only.',
+  `- summary: one plain sentence of at most ${SUMMARY_WORD_TARGET} words on what shipped or changed. Facts from the data only.`,
   '- whyItMatters: why it matters, in one concrete sentence: what a team can now do, stop doing or must change.',
   '  Avoid generic praise such as "a game changer" or "an exciting step forward".',
+  '- urgency: how soon a reader should act. Use exactly one of these three values:',
+  '  act-now: a security fix, a breaking change, a deprecation or end of life with a date, or anything a team must do to keep working.',
+  '  worth-a-look: a new capability that fits the focus areas.',
+  '  good-to-know: everything else.',
+  `- At most ${DIGEST_MAX_ACT_NOW} items are act-now. If more qualify, keep act-now for the ${DIGEST_MAX_ACT_NOW} a team must handle first and give the rest worth-a-look.`,
+  `- action: one short line, at most ${ACTION_WORD_TARGET} words, with no link. For act-now, an imperative step, for example "Upgrade OpenTofu in CI and on laptops". For worth-a-look, a line that starts with "Relevant if you". For good-to-know, an empty string.`,
   '- headline: one short factual line. intro: one or two sentences tying the items together.',
   '- Do not use em dashes (U+2014). Use commas, colons or periods instead.',
   `- Keep the whole digest under ${DIGEST_WORD_LIMIT} words in total; aim for about ${DIGEST_WORD_TARGET}.`,
@@ -50,6 +64,8 @@ const WORKED_EXAMPLE = [
     area: 'Platform engineering',
     summary: 'Runner 2.4 starts a fresh GPU runner for each job and removes it afterwards.',
     whyItMatters: 'Teams can run model evals in CI without keeping GPU machines idle between jobs.',
+    urgency: 'worth-a-look',
+    action: 'Relevant if you run model evals in CI on GPU machines.',
   }),
 ].join('\n');
 
@@ -99,6 +115,8 @@ const RETRY_NOTICE =
 const RETRY_INSTRUCTION =
   'Write the digest again and avoid every problem listed. Take each url only from the items ' +
   'above and write it in full, starting with https://. A summary does not need a link. ' +
+  'Keep an urgency on every item and an action on every act-now and worth-a-look item, within ' +
+  'the limits in the output rules. ' +
   'Never copy or reuse a url or any other text from the problem list.';
 
 /**

@@ -291,7 +291,13 @@ describe('writeCheckedStep with a scheme-less link (W5-11)', () => {
     JSON.stringify({
       headline: 'Releases worth a look',
       intro: 'Platform tooling moved this week.',
-      items: items.map((item, index) => makeDigestItem(item, index === 0 ? { summary } : {})),
+      items: items.map((item, index) =>
+        makeDigestItem(item, {
+          urgency: 'worth-a-look',
+          action: 'Relevant if you run it.',
+          ...(index === 0 ? { summary } : {}),
+        }),
+      ),
     });
 
   const depsFor = (model: FakeModelProvider): CheckedWriteDeps => ({

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   DigestItemSchema,
   DigestSchema,
+  UrgencySchema,
   type DigestItem,
   type Draft,
   type GuardCheckId,
@@ -51,9 +52,33 @@ export interface RetryRequest {
 /**
  * The step replaces every item url with the source url, so a missing or malformed url from the
  * model is not worth a repair call.
+ *
+ * The writer must say how urgent each item is and what to do about it (W8-01), so urgency and
+ * action are required here, while `DigestSchema` keeps them optional for drafts written before
+ * W8. The action is a string that is empty for good-to-know. Its length is the format check's
+ * business (a retry can fix it), so no maximum here; `prepare` bounds it before it is stored.
  */
-const WrittenItemSchema = DigestItemSchema.extend({ url: z.string().nullish() });
+const WrittenItemSchema = DigestItemSchema.extend({
+  url: z.string().nullish(),
+  urgency: UrgencySchema,
+  action: z.string(),
+});
 type WrittenItem = z.infer<typeof WrittenItemSchema>;
+
+/** What `DigestItemSchema` allows for an action. */
+const ACTION_MAX_CHARS = 200;
+
+/**
+ * The floor under urgency (W8-01): an item whose source names a CVE, a security advisory or a
+ * vulnerability, or calls itself a security fix, patch, update or release, is never good-to-know,
+ * whatever the model says. It reads the collected source and never the model's own text. A source
+ * that only mentions the word ("vulnerability scanner") raises the item too: the floor errs toward
+ * worth-a-look, and never goes above it.
+ */
+const SECURITY_SOURCE =
+  /\bCVEs?\b|\bGHSA-|\bsecurity (?:advisor(?:y|ies)|fix(?:es)?|patch(?:es)?|updates?|releases?)\b|\bvulnerabilit(?:y|ies)\b/i;
+/** The action of an item the floor raised when the writer gave it none. */
+const SECURITY_FLOOR_ACTION = 'Relevant if you use this project. Check its security notes.';
 
 /** The model writes everything but the week; the step sets it. */
 const DigestBodySchema = DigestSchema.omit({ weekId: true }).extend({
@@ -161,6 +186,10 @@ function prepare(draft: Draft, topN: number, collectedUrls: readonly string[]): 
     area: tidy(item.area),
     summary: tidy(item.summary),
     whyItMatters: tidy(item.whyItMatters),
+    // No link repair: an action may not hold a link at all, and the format check says so.
+    ...(item.action === undefined
+      ? {}
+      : { action: truncate(withoutEmDashes(item.action), ACTION_MAX_CHARS) }),
   }));
   const headline = tidy(digest.headline);
   const prepared = { ...draft, digest: { ...digest, headline, intro: tidy(digest.intro), items } };
@@ -359,7 +388,8 @@ async function draftWith(
       DigestBodySchema,
       'write',
     );
-    const kept = enforceProvenance(result.value.items, sources, logger).map(tidyTitle);
+    const owned = enforceProvenance(result.value.items, sources, logger);
+    const kept = raiseSecurityItems(owned, sources, logger).map(tidyTitle);
     if (kept.length < DIGEST_MIN_ITEMS) {
       throw new Error(
         `Only ${kept.length} valid items after the provenance check; need at least ${DIGEST_MIN_ITEMS}`,
@@ -395,8 +425,43 @@ function enforceProvenance(
       return [];
     }
     seen.add(item.itemId);
-    return [{ ...item, url: source.url }];
+    return [withSourceUrl(item, source)];
   });
+}
+
+/** The source url, and the action trimmed: good-to-know items carry none, not an empty string. */
+function withSourceUrl(item: WrittenItem, source: ScoredItem): DigestItem {
+  const { action, ...rest } = item;
+  const trimmed = action.trim();
+  return { ...rest, url: source.url, ...(trimmed === '' ? {} : { action: trimmed }) };
+}
+
+/**
+ * Applies the security floor (W8-01): a good-to-know item whose source names a security issue
+ * becomes worth-a-look, and says so in the log. It keeps the writer's action; with none, it gets
+ * a fixed line, so the floor cannot make the draft fail the format check's "needs an action".
+ */
+function raiseSecurityItems(
+  items: readonly DigestItem[],
+  sources: ReadonlyMap<string, ScoredItem>,
+  logger: Logger,
+): DigestItem[] {
+  return items.map((item) => {
+    const source = sources.get(item.itemId);
+    if (item.urgency !== 'good-to-know' || source === undefined || !namesSecurityIssue(source)) {
+      return item;
+    }
+    logger.info('Raised urgency: the source names a security issue', {
+      itemId: loggedId(item.itemId),
+      from: item.urgency,
+      to: 'worth-a-look',
+    });
+    return { ...item, urgency: 'worth-a-look', action: item.action ?? SECURITY_FLOOR_ACTION };
+  });
+}
+
+function namesSecurityIssue(source: ScoredItem): boolean {
+  return SECURITY_SOURCE.test(`${source.title}\n${source.summary}`);
 }
 
 function tidyTitle(item: DigestItem): DigestItem {

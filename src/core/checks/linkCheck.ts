@@ -71,7 +71,7 @@ function digestTexts(digest: Digest): string[] {
   return [
     digest.headline,
     digest.intro,
-    ...digest.items.flatMap((i) => [i.title, i.area, i.summary, i.whyItMatters]),
+    ...digest.items.flatMap((i) => [i.title, i.area, i.summary, i.whyItMatters, i.action ?? '']),
   ];
 }
 
