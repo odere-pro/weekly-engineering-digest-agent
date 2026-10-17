@@ -30,3 +30,17 @@ jobs:
       - run: pnpm coverage
       - run: pnpm build
       - run: pnpm audit --prod --audit-level high
+
+  image-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Builds the image the way docker/validate.sh does, then scans it. No third-party action:
+      # Trivy runs from its own pinned image, with the Docker socket mounted to read the local image.
+      # To bump: pick a release at least two weeks old on Docker Hub (aquasec/trivy) and copy the
+      # tag's manifest digest next to it.
+      - run: docker build --tag eng-digest:scan .
+      - run: >-
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          aquasec/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa
+          image --exit-code 1 --severity HIGH,CRITICAL eng-digest:scan

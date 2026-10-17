@@ -50,7 +50,9 @@ export class MemoryRunStore implements RunStore {
     const urls = new Set<string>();
     for (const week of previousWeekIds(runId, weeks)) {
       const record = this.records.get(week);
-      if (record?.status === 'sent') record.sentUrls.forEach((u) => urls.add(u));
+      // Same rule as fsRunStore: a sent week, or a failed one that some channels already got.
+      const reachedAChannel = record?.status === 'sent' || (record?.deliveredTo?.length ?? 0) > 0;
+      if (record && reachedAChannel) record.sentUrls.forEach((u) => urls.add(u));
     }
     return Promise.resolve(urls);
   }

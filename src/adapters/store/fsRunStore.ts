@@ -35,6 +35,11 @@ const ARTIFACT_NAMES: ReadonlySet<string> = new Set<ArtifactName>([
   'error.json',
 ]);
 
+/** A sent week, or a failed one that some channels already got: its URLs must not repeat. */
+function reachedAChannel(record: RunRecord): boolean {
+  return record.status === 'sent' || (record.deliveredTo?.length ?? 0) > 0;
+}
+
 /** Run history on disk (W1-13). */
 export function createFsRunStore(options: FsRunStoreOptions): RunStore {
   const clock = options.clock ?? systemClock;
@@ -80,7 +85,7 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
       const records = await Promise.all(previousWeekIds(runId, weeks).map(getRunRecord));
       const urls = new Set<string>();
       for (const record of records) {
-        if (record?.status === 'sent') record.sentUrls.forEach((url) => urls.add(url));
+        if (record && reachedAChannel(record)) record.sentUrls.forEach((url) => urls.add(url));
       }
       return urls;
     },

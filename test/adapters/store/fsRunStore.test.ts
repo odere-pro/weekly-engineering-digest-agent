@@ -282,6 +282,39 @@ describe('sentUrls', () => {
     expect((await store.sentUrls('2026-W42', 4)).size).toBe(0);
   });
 
+  it('counts the URLs of a partly delivered week, so they are deduped next week', async () => {
+    const store = makeStore();
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W41',
+        status: 'failed',
+        deliveredTo: ['markdown'],
+        sentUrls: ['https://example.com/partial'],
+      }),
+    );
+    expect([...(await store.sentUrls('2026-W42', 2))]).toEqual(['https://example.com/partial']);
+  });
+
+  it('ignores a failed run whose deliveredTo is empty or absent', async () => {
+    const store = makeStore();
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W41',
+        status: 'failed',
+        deliveredTo: [],
+        sentUrls: ['https://example.com/empty'],
+      }),
+    );
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W40',
+        status: 'failed',
+        sentUrls: ['https://example.com/none'],
+      }),
+    );
+    expect((await store.sentUrls('2026-W42', 4)).size).toBe(0);
+  });
+
   it('crosses the year boundary', async () => {
     const store = makeStore();
     await store.saveRunRecord(
@@ -714,7 +747,27 @@ describe('contract parity with MemoryRunStore', () => {
     }
   }
 
+  async function seedPartlyDelivered(store: RunStore): Promise<void> {
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W35',
+        status: 'failed',
+        deliveredTo: ['markdown'],
+        sentUrls: ['https://example.com/2026-W35'],
+      }),
+    );
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W36',
+        status: 'failed',
+        deliveredTo: [],
+        sentUrls: ['https://example.com/2026-W36'],
+      }),
+    );
+  }
+
   async function observe(store: RunStore): Promise<unknown> {
+    await seedPartlyDelivered(store);
     await seed(store);
     return {
       sent: await Promise.all(

@@ -36,6 +36,32 @@ describe('test fakes', () => {
     expect(store.artifacts.get('2026-W42/digest.md')).toBe('# hi');
   });
 
+  it('MemoryRunStore dedupes the URLs of a partly delivered week like fsRunStore', async () => {
+    const store = new MemoryRunStore();
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W41',
+        status: 'failed',
+        deliveredTo: ['markdown'],
+        sentUrls: ['https://a.example/partial'],
+      }),
+    );
+    await store.saveRunRecord(
+      makeRunRecord({
+        runId: '2026-W40',
+        status: 'failed',
+        deliveredTo: [],
+        sentUrls: ['https://a.example/empty'],
+      }),
+    );
+    await store.saveRunRecord(
+      makeRunRecord({ runId: '2026-W39', status: 'failed', sentUrls: ['https://a.example/none'] }),
+    );
+
+    expect([...(await store.sentUrls('2026-W42', 4))]).toEqual(['https://a.example/partial']);
+    expect(await store.hasSentDigest('2026-W41')).toBe(false);
+  });
+
   it('fakes record calls and return scripted results', async () => {
     const model = new FakeModelProvider({
       generate: () => 'text',
