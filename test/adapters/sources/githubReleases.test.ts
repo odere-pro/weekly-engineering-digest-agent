@@ -1,9 +1,22 @@
 import { readFileSync } from 'node:fs';
+import { extractFromXml } from '@extractus/feed-extractor';
+import type * as FeedExtractor from '@extractus/feed-extractor';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createGithubReleasesFetcher } from '../../../src/adapters/sources/githubReleases.js';
 import { ItemSchema, type Source } from '../../../src/core/schemas.js';
 import type { FetchWindow } from '../../../src/ports/SourceFetcher.js';
+import { FetchError } from '../../../src/shared/errors.js';
 import { itemIdFor } from '../../../src/shared/url.js';
+
+// Delegates to the real parser unless a test overrides it, to model a library that words its
+// failures differently.
+vi.mock('@extractus/feed-extractor', async (importOriginal) => {
+  const actual = await importOriginal<typeof FeedExtractor>();
+  return { ...actual, extractFromXml: vi.fn(actual.extractFromXml) };
+});
+const { extractFromXml: actualExtract } = await vi.importActual<typeof FeedExtractor>(
+  '@extractus/feed-extractor',
+);
 
 const fixture = (name: string): string =>
   readFileSync(new URL(`../../fixtures/github/${name}`, import.meta.url), 'utf8');
@@ -716,13 +729,12 @@ describe('createGithubReleasesFetcher', () => {
     });
 
     it('keeps the error name when reading the body is aborted', async () => {
-      const aborted = {
-        ok: true,
-        status: 200,
-        headers: new Headers(),
-        text: () => Promise.reject(new DOMException('This operation was aborted', 'AbortError')),
-      } as unknown as Response;
-      const { fetch } = fakeFetch(() => aborted);
+      const failing = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          controller.error(new DOMException('This operation was aborted', 'AbortError'));
+        },
+      });
+      const { fetch } = fakeFetch(() => new Response(failing));
 
       await expect(
         createGithubReleasesFetcher({ fetch, token: TOKEN }).fetch(source, window),
@@ -747,6 +759,270 @@ describe('createGithubReleasesFetcher', () => {
       await expect(
         createGithubReleasesFetcher({ fetch, token: TOKEN }).fetch(source, window),
       ).rejects.toThrow(/Unexpected GitHub API response.*acme-widgets/);
+    });
+  });
+
+  describe('an empty releases feed', () => {
+    const emptyFeed = readFileSync(
+      new URL('../../fixtures/sources/github-empty.atom', import.meta.url),
+      'utf8',
+    );
+
+    /** Parses with the real library, then fails the way a future version might word it. */
+    function rewordedFailure(message: string): void {
+      vi.mocked(extractFromXml).mockImplementationOnce((xml, parserOptions) => {
+        try {
+          actualExtract(xml, parserOptions);
+        } catch {
+          // the real library reports its own wording; the test replaces it
+        }
+        throw new Error(message);
+      });
+    }
+
+    it('returns no items for the feed GitHub serves for a repository without releases', async () => {
+      const { fetch } = fakeFetch(() => ok(emptyFeed));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).resolves.toEqual(
+        [],
+      );
+    });
+
+    it('recognizes it by its shape, whatever the library says about it', async () => {
+      rewordedFailure('This is not a feed we know');
+      const { fetch } = fakeFetch(() => ok(emptyFeed));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).resolves.toEqual(
+        [],
+      );
+    });
+
+    it('does not take a feed with entries for an empty one when the library fails on it', async () => {
+      rewordedFailure('Unrecognized feed format');
+      const { fetch } = fakeFetch(() => ok(ATOM));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).rejects.toThrow(
+        /Malformed releases feed for acme-widgets/,
+      );
+    });
+
+    it('does not take a document that is not well-formed for an empty feed', async () => {
+      rewordedFailure('Unrecognized feed format');
+      const { fetch } = fakeFetch(() => ok(emptyFeed.replace('</feed>', '')));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).rejects.toThrow(
+        /Malformed releases feed for acme-widgets/,
+      );
+    });
+
+    it('does not take a document the parser refuses part way for an empty feed', async () => {
+      const nested =
+        '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><title>t</title>' +
+        '<x>'.repeat(150) +
+        '</x>'.repeat(150) +
+        '</feed>';
+      const { fetch } = fakeFetch(() => ok(nested));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).rejects.toThrow(
+        /Malformed releases feed for acme-widgets/,
+      );
+    });
+
+    it('accepts the nesting a real empty feed has, such as author/name', async () => {
+      const feed = emptyFeed.replace('</feed>', '<author><name>acme</name></author></feed>');
+      const { fetch } = fakeFetch(() => ok(feed));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).resolves.toEqual(
+        [],
+      );
+    });
+
+    it.each([
+      ['an empty feed without the Atom namespace', '<feed><title>x</title></feed>'],
+      [
+        'an empty feed in another namespace',
+        '<feed xmlns="http://example.com/other"><title>x</title></feed>',
+      ],
+    ])('still reports %s as malformed', async (_label, body) => {
+      const { fetch } = fakeFetch(() => ok(body));
+
+      await expect(createGithubReleasesFetcher({ fetch }).fetch(source, window)).rejects.toThrow(
+        /Malformed releases feed for acme-widgets/,
+      );
+    });
+  });
+
+  describe('redirects', () => {
+    const moved = (location: string): Response =>
+      new Response(null, { status: 301, headers: { location } });
+    const RENAMED = 'https://github.com/acme/gadgets/releases.atom';
+
+    it('follows a renamed repository on github.com and handles redirects itself', async () => {
+      const { fetch, calls } = fakeFetch(({ url }) =>
+        url === ATOM_URL ? moved(RENAMED) : ok(ATOM),
+      );
+
+      const items = await createGithubReleasesFetcher({ fetch }).fetch(source, window);
+
+      expect(items).toHaveLength(3);
+      expect(calls.map((call) => call.url)).toEqual([ATOM_URL, RENAMED]);
+      expect(calls.every((call) => call.init?.redirect === 'manual')).toBe(true);
+    });
+
+    it.each([
+      'https://www.github.com/acme/widgets/releases.atom',
+      'https://api.github.com/acme/widgets/releases.atom',
+    ])('follows a redirect to %s', async (target) => {
+      const { fetch, calls } = fakeFetch(({ url }) =>
+        url === ATOM_URL ? moved(target) : ok(ATOM),
+      );
+
+      await createGithubReleasesFetcher({ fetch }).fetch(source, window);
+
+      expect(calls).toHaveLength(2);
+    });
+
+    it('fails the source on a redirect to another host, without requesting it', async () => {
+      const { fetch, calls } = fakeFetch(() => moved('https://evil.example.org/releases.atom'));
+
+      const error = await createGithubReleasesFetcher({ fetch })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ retryable: false });
+      expect((error as Error).message).toContain('acme-widgets');
+      expect((error as Error).message).toContain('evil.example.org');
+      expect(calls).toHaveLength(1);
+    });
+
+    it('keeps the token on api.github.com and drops it on any other origin', async () => {
+      const MOVED_API = 'https://api.github.com/repositories/42/releases?per_page=20';
+      const MOVED_WEB = 'https://github.com/acme/widgets/releases.json';
+      const { fetch, calls } = fakeFetch(({ url }) => {
+        if (url === REST_URL) return moved(MOVED_API);
+        return url === MOVED_API ? moved(MOVED_WEB) : ok(REST);
+      });
+
+      await createGithubReleasesFetcher({ fetch, token: TOKEN }).fetch(source, window);
+
+      expect(calls.map((call) => call.url)).toEqual([REST_URL, MOVED_API, MOVED_WEB]);
+      expect(calls[1]?.init?.headers).toMatchObject({ Authorization: `Bearer ${TOKEN}` });
+      expect(JSON.stringify(calls[2]?.init?.headers).toLowerCase()).not.toContain('authorization');
+    });
+
+    it('fails a token request redirected to another host, without echoing the token', async () => {
+      const { fetch, calls } = fakeFetch(() => moved('https://evil.example.org/steal'));
+
+      const error = await createGithubReleasesFetcher({ fetch, token: TOKEN })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(JSON.stringify(error, Object.getOwnPropertyNames(error))).not.toContain(TOKEN);
+      expect(calls).toHaveLength(1);
+    });
+  });
+
+  describe('body size', () => {
+    const huge = (): Response =>
+      new Response('<feed/>', { headers: { 'content-length': String(5 * 1024 * 1024 + 1) } });
+
+    it('refuses a releases feed over 5 MiB', async () => {
+      const { fetch } = fakeFetch(huge);
+
+      const error = await createGithubReleasesFetcher({ fetch })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ retryable: false });
+      expect((error as Error).message).toMatch(/acme-widgets.*5 MiB/);
+    });
+
+    it('refuses an API answer over 5 MiB, keeping the typed error and the token out of it', async () => {
+      const { fetch } = fakeFetch(huge);
+
+      const error = await createGithubReleasesFetcher({ fetch, token: TOKEN })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(JSON.stringify(error, Object.getOwnPropertyNames(error))).not.toContain(TOKEN);
+    });
+  });
+
+  describe('typed failures', () => {
+    it.each([
+      [401, false],
+      [403, false],
+      [404, false],
+      [408, true],
+      [429, true],
+      [500, true],
+      [503, true],
+    ])('HTTP %i is a FetchError with that status, retryable: %s', async (code, retryable) => {
+      const { fetch } = fakeFetch(() => status(code));
+
+      const error = await createGithubReleasesFetcher({ fetch })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ status: code, retryable });
+    });
+
+    it.each([
+      [403, { 'x-ratelimit-remaining': '0' }],
+      [429, { 'retry-after': '60' }],
+      [429, { 'x-ratelimit-remaining': '0' }],
+    ])('a rate limit (HTTP %i, %j) keeps its status and is not retried', async (code, headers) => {
+      const { fetch } = fakeFetch(() => status(code, headers));
+
+      const error = await createGithubReleasesFetcher({ fetch, token: TOKEN })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ status: code, retryable: false });
+    });
+
+    it('keeps the typed error when a token is set', async () => {
+      const { fetch } = fakeFetch(() => status(503));
+
+      const error = await createGithubReleasesFetcher({ fetch, token: TOKEN })
+        .fetch(source, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ status: 503, retryable: true });
+    });
+
+    it.each([
+      [
+        'a bad repository URL',
+        { ...source, url: 'https://example.com/acme/widgets' },
+        undefined,
+        () => ok(ATOM),
+      ],
+      ['an Atom document that is not a feed', source, undefined, () => ok('<html></html>')],
+      ['a REST body that is not JSON', source, TOKEN, () => ok('<html></html>')],
+      ['a REST payload that is not a list', source, TOKEN, () => json({ message: 'Not Found' })],
+      [
+        'a feed whose entries all lack a link or date',
+        source,
+        undefined,
+        () => ok(atomFeed([atomEntry('v1', null)])),
+      ],
+    ])('%s is a FetchError no retry can fix', async (_label, target, token, respond) => {
+      const { fetch } = fakeFetch(respond);
+
+      const error = await createGithubReleasesFetcher({ fetch, token })
+        .fetch(target, window)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error).toMatchObject({ retryable: false });
     });
   });
 });

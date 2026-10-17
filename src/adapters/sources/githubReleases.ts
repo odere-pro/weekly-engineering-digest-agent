@@ -2,9 +2,18 @@ import { extractFromXml, type FeedEntry } from '@extractus/feed-extractor';
 import { z } from 'zod';
 import type { Item, Source } from '../../core/schemas.js';
 import type { FetchWindow, SourceFetcher } from '../../ports/SourceFetcher.js';
-import { errorMessage } from '../../shared/errors.js';
+import { errorMessage, FetchError } from '../../shared/errors.js';
 import { toPlainText, truncate } from '../../shared/text.js';
 import { itemIdFor } from '../../shared/url.js';
+import { textOf } from './feedFields.js';
+import {
+  getText,
+  permanentFailure,
+  sameSiteAs,
+  statusFailure,
+  type GetOptions,
+  type Reply,
+} from './http.js';
 
 export interface GithubReleasesOptions {
   fetch?: typeof fetch;
@@ -15,14 +24,16 @@ export interface GithubReleasesOptions {
 
 const DEFAULT_MAX_SUMMARY_CHARS = 600;
 const GITHUB_HOST = 'github.com';
-const GITHUB_API = 'https://api.github.com';
+const GITHUB_API_HOST = 'api.github.com';
+const GITHUB_API = `https://${GITHUB_API_HOST}`;
 const API_VERSION = '2022-11-28';
 const API_PAGE_SIZE = 20;
 const REDACTED = '[redacted]';
 const OWNER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9-]*$/;
 const REPO_PATTERN = /^(?!\.{1,2}$)(?!.*\.git$)[A-Za-z0-9._-]+$/;
-const UNRECOGNIZED_FEED = 'Unrecognized feed format';
-const ATOM_FEED_ROOT = /<feed\b[^>]*\bxmlns\s*=\s*["']http:\/\/www\.w3\.org\/2005\/Atom["']/;
+const ATOM_NAMESPACE = 'http://www.w3.org/2005/Atom';
+/** An empty feed holds a few metadata tags; `author/name` below `feed` is the deepest. */
+const MAX_EMPTY_FEED_DEPTH = 3;
 const MARKDOWN_FENCE = /^```[^\n]*\n[\s\S]*?^```/gm;
 const MARKDOWN_CODE_SPAN = /`[^`\n]*`/g;
 
@@ -39,14 +50,6 @@ interface Release {
   /** Release notes as plain text, not yet truncated. */
   text: string;
   publishedAt: Date;
-}
-
-/** A fully read HTTP response. */
-interface Reply {
-  ok: boolean;
-  status: number;
-  headers: Headers;
-  body: string;
 }
 
 type Get = (url: string, headers?: Record<string, string>) => Promise<Reply>;
@@ -72,7 +75,13 @@ export function createGithubReleasesFetcher(options: GithubReleasesOptions = {})
     kind: 'github',
     async fetch(source, window, signal) {
       const repo = parseRepo(source);
-      const get: Get = (url, headers) => guardedGet(fetchImpl, url, { headers, signal }, token);
+      const allowsRedirectTo = sameSiteAs(source.url, GITHUB_API_HOST);
+      const get: Get = (url, headers) =>
+        guardedGet(
+          url,
+          { fetch: fetchImpl, label: source.id, allowsRedirectTo, headers, signal },
+          token,
+        );
       const releases = token
         ? await fetchRestReleases(get, repo, source, token)
         : await fetchAtomReleases(get, repo, source);
@@ -86,7 +95,7 @@ export function createGithubReleasesFetcher(options: GithubReleasesOptions = {})
 function parseRepo(source: Source): Repo {
   // The URL is not echoed: config values may carry credentials.
   const invalid = (): never => {
-    throw new Error(
+    throw permanentFailure(
       `Source ${source.id} is not a GitHub repository URL ` +
         '(expected https://github.com/<owner>/<repo>)',
     );
@@ -107,22 +116,21 @@ function parseRepo(source: Source): Repo {
 }
 
 /**
- * One GET with the body read in full. With a token, a failure is rebuilt from its message
- * alone (token redacted, no `cause`, no extra properties) so the secret cannot leak through a
- * thrown object; the error name survives so aborts and timeouts stay recognizable.
+ * One GET (see `getText`: same-host redirects, capped body). With a token, a failure from the
+ * network is rebuilt from its message alone (token redacted, no `cause`, no extra properties)
+ * so the secret cannot leak through a thrown object; the error name survives so aborts and
+ * timeouts stay recognizable. Our own `FetchError`s name only the source and a host, so they
+ * pass through with their type, which the collect step needs to decide on a retry.
  */
 async function guardedGet(
-  fetchImpl: typeof fetch,
   url: string,
-  init: RequestInit,
+  options: GetOptions,
   token: string | undefined,
 ): Promise<Reply> {
   try {
-    const response = await fetchImpl(url, init);
-    const body = await response.text();
-    return { ok: response.ok, status: response.status, headers: response.headers, body };
+    return await getText(url, options);
   } catch (error) {
-    throw token ? redactedError(error, token) : error;
+    throw token && !(error instanceof FetchError) ? redactedError(error, token) : error;
   }
 }
 
@@ -160,11 +168,13 @@ async function fetchRestReleases(
 
   const payload = parseJson(reply.body, source);
   if (!Array.isArray(payload)) {
-    throw new Error(`Unexpected GitHub API response fetching ${source.id}: expected a list`);
+    throw permanentFailure(`Unexpected GitHub API response fetching ${source.id}: expected a list`);
   }
   const parsed = payload.map((raw: unknown) => RestReleaseSchema.safeParse(raw));
   if (parsed.length > 0 && parsed.every((result) => !result.success)) {
-    throw new Error(`Unexpected GitHub API response fetching ${source.id}: no release matched`);
+    throw permanentFailure(
+      `Unexpected GitHub API response fetching ${source.id}: no release matched`,
+    );
   }
   return parsed.flatMap((result) => (result.success ? (restRelease(result.data) ?? []) : []));
 }
@@ -173,21 +183,28 @@ function parseJson(body: string, source: Source): unknown {
   try {
     return JSON.parse(body) as unknown;
   } catch {
-    throw new Error(`Malformed GitHub API response fetching ${source.id}`);
+    throw permanentFailure(`Malformed GitHub API response fetching ${source.id}`);
   }
 }
 
-function httpError(reply: Reply, source: Source): Error {
+/**
+ * A rate limit is not retried even on a 429: GitHub says to wait longer than the collect step's
+ * back-off, and asking again while limited can lengthen the penalty.
+ */
+function httpError(reply: Reply, source: Source): FetchError {
   const { status, headers } = reply;
   const limited =
     (status === 403 || status === 429) &&
     (headers.get('x-ratelimit-remaining') === '0' || headers.has('retry-after'));
-  if (!limited) return new Error(`HTTP ${status} fetching ${source.id}`);
+  if (!limited) return statusFailure(status, source.id);
 
   const resetAt = new Date(Number(headers.get('x-ratelimit-reset')) * 1000);
   const hasReset = !Number.isNaN(resetAt.getTime()) && resetAt.getTime() > 0;
   const resetsAt = hasReset ? `; resets at ${resetAt.toISOString()}` : '';
-  return new Error(`GitHub rate limit hit fetching ${source.id} (HTTP ${status})${resetsAt}`);
+  return new FetchError(`GitHub rate limit hit fetching ${source.id} (HTTP ${status})${resetsAt}`, {
+    status,
+    retryable: false,
+  });
 }
 
 function restRelease(raw: RestRelease): Release | undefined {
@@ -205,32 +222,61 @@ function restRelease(raw: RestRelease): Release | undefined {
 }
 
 function parseAtom(xml: string, source: Source): Release[] {
+  const probe = probeAtomShape();
   let entries: FeedEntry[];
   try {
     const feed = extractFromXml(xml, {
       descriptionMaxLen: 0,
+      xmlParserOptions: probe.xmlParserOptions,
       // The library strips tags without spacing blocks apart; keep the raw HTML instead.
       getExtraEntryFields: (entry) => ({ html: textOf(entry.content) || textOf(entry.summary) }),
     });
     entries = feed.entries ?? [];
   } catch (cause) {
-    if (isEmptyAtomFeed(cause, xml)) return [];
-    throw new Error(`Malformed releases feed for ${source.id}: ${errorMessage(cause)}`, { cause });
+    if (probe.isEmptyAtomFeed()) return [];
+    throw permanentFailure(
+      `Malformed releases feed for ${source.id}: ${errorMessage(cause)}`,
+      cause,
+    );
   }
   const releases = entries.flatMap((entry) => atomRelease(entry) ?? []);
   if (entries.length > 0 && releases.length === 0) {
-    throw new Error(`Unexpected releases feed for ${source.id}: no entry had a link and a date`);
+    throw permanentFailure(
+      `Unexpected releases feed for ${source.id}: no entry had a link and a date`,
+    );
   }
   return releases;
 }
 
 /**
  * A repository without releases serves a valid Atom feed with no `<entry>`, which the library
- * reports as an unrecognized format. Matching its exact message means a wording change fails
- * loudly (the source is listed as failed) instead of silently hiding a broken feed.
+ * refuses as an unrecognized format. Rather than match its message, watch the tags the XML
+ * parser reports: an Atom `<feed>` root and no `<entry>` below it means an empty feed. A
+ * document that is not well-formed is rejected before any tag is reported, so it never looks
+ * empty.
  */
-function isEmptyAtomFeed(error: unknown, xml: string): boolean {
-  return errorMessage(error) === UNRECOGNIZED_FEED && ATOM_FEED_ROOT.test(xml);
+function probeAtomShape(): {
+  xmlParserOptions: Record<string, unknown>;
+  isEmptyAtomFeed: () => boolean;
+} {
+  let hasAtomRoot = false;
+  let entryCount = 0;
+  let deepest = 0;
+  const updateTag = (
+    tagName: string,
+    path: unknown,
+    attributes: Record<string, string> | undefined,
+  ): string => {
+    if (typeof path === 'string') deepest = Math.max(deepest, path.split('.').length);
+    if (path === 'feed') hasAtomRoot = attributes?.['@_xmlns'] === ATOM_NAMESPACE;
+    else if (path === 'feed.entry') entryCount += 1;
+    return tagName;
+  };
+  return {
+    xmlParserOptions: { updateTag },
+    // A parser that gave up on a deeply nested document stopped before it found an entry.
+    isEmptyAtomFeed: () => hasAtomRoot && entryCount === 0 && deepest <= MAX_EMPTY_FEED_DEPTH,
+  };
 }
 
 function atomRelease(entry: FeedEntry): Release | undefined {
@@ -246,15 +292,6 @@ function atomRelease(entry: FeedEntry): Release | undefined {
     text: toPlainText(html),
     publishedAt,
   };
-}
-
-/** Feed text is either a string or `{ '#text': string }` when the node has attributes. */
-function textOf(node: unknown): string {
-  if (typeof node === 'string') return node;
-  if (typeof node === 'object' && node !== null && '#text' in node) {
-    return typeof node['#text'] === 'string' ? node['#text'] : '';
-  }
-  return '';
 }
 
 function tagFromReleaseUrl(url: string): string | undefined {

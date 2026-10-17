@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Example RSS</title>
+    <link>https://example.net/</link>
+    <item>
+      <title>Rust generics land</title>
+      <link>https://example.net/posts/generics</link>
+      <guid isPermaLink="false">post-generics</guid>
+      <pubDate>Sat, 10 Oct 2026 09:00:00</pubDate>
+      <description>&lt;p&gt;Use &lt;code&gt;Vec&amp;lt;T&amp;gt;&lt;/code&gt; and Option&amp;lt;U&amp;gt; for owned lists.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Post with an inline script</title>
+      <link>https://example.net/posts/script</link>
+      <guid isPermaLink="false">post-script</guid>
+      <pubDate>Fri, 09 Oct 2026 09:00:00 GMT</pubDate>
+      <description>&lt;p&gt;Visible text.&lt;/p&gt;&lt;script&gt;trackVisitor('secret-marker');&lt;/script&gt;&lt;p&gt;More text.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Post with only full content</title>
+      <link>https://example.net/posts/content</link>
+      <guid isPermaLink="false">post-content</guid>
+      <dc:date>2026-10-08T07:00:00</dc:date>
+      <content:encoded><![CDATA[<p>Full <b>body</b> text</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>

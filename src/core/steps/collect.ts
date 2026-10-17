@@ -1,9 +1,10 @@
 import { ItemSchema, type Item, type Source, type SourceKind } from '../schemas.js';
 import type { FetchWindow, SourceFetcher } from '../../ports/SourceFetcher.js';
 import type { Clock } from '../../shared/clock.js';
-import { errorMessage } from '../../shared/errors.js';
+import { errorMessage, FetchError } from '../../shared/errors.js';
 import { TimeoutError, withRetry, withTimeout } from '../../shared/retry.js';
 import type { Logger } from '../../shared/telemetry.js';
+import { truncate } from '../../shared/text.js';
 
 export interface CollectInput {
   sources: readonly Source[];
@@ -30,6 +31,8 @@ type FailedSource = CollectOutput['failedSources'][number];
 
 interface SourceOutcome {
   items: Item[];
+  /** How many items this source may add to the digest's pool. */
+  maxItems: number;
   failure?: FailedSource;
 }
 
@@ -38,13 +41,14 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 500;
 const MAX_CONCURRENT_SOURCES = 4;
-const FIRST_SERVER_ERROR = 500;
 const MAX_CAUSE_DEPTH = 5;
-/**
- * How both source fetchers word a non-2xx answer: "HTTP 503 fetching <id>", or a GitHub rate
- * limit, "... (HTTP 403)". Anchored so a status quoted inside a parse error is not mistaken for one.
- */
-const HTTP_STATUS = /(?:^|\()HTTP (\d{3})\b/;
+/** A fetcher's error text is untrusted and can be long: this much reaches logs and run records. */
+const MAX_ERROR_CHARS = 300;
+
+/** The text of an error as it may be logged or recorded. */
+function cappedMessage(error: unknown): string {
+  return truncate(errorMessage(error), MAX_ERROR_CHARS);
+}
 /**
  * Node's fetch reports every transport failure as a TypeError with one of these messages. Like
  * the Ollama adapter, any of them is retried, whatever the cause: a spent retry is cheaper than
@@ -75,7 +79,7 @@ export async function collectStep(input: CollectInput, deps: CollectDeps): Promi
   const outcomes = await mapWithConcurrency(input.sources, MAX_CONCURRENT_SOURCES, (source) =>
     collectSource(source, input, deps),
   );
-  const items = sortNewestFirst(dedupeById(outcomes.flatMap((outcome) => outcome.items)));
+  const items = sortNewestFirst(mergeOutcomes(outcomes));
   const failedSources = outcomes.flatMap((outcome) => (outcome.failure ? [outcome.failure] : []));
   return { items, failedSources };
 }
@@ -86,20 +90,26 @@ async function collectSource(
   input: CollectInput,
   deps: CollectDeps,
 ): Promise<SourceOutcome> {
+  const maxItems = source.maxItems ?? input.maxItemsPerSource;
   try {
     const fetcher = deps.fetchers[source.kind];
     if (!fetcher) throw new Error(`No fetcher registered for kind "${source.kind}"`);
-    const window: FetchWindow = {
-      since: input.since,
-      until: input.until,
-      maxItems: source.maxItems ?? input.maxItemsPerSource,
-    };
-    const fetched = await fetchWithRetry(fetcher, source, window, deps);
-    return { items: acceptItems(fetched, source, input, deps.logger) };
+    const window: FetchWindow = { since: input.since, until: input.until, maxItems };
+    const fetched = asList(await fetchWithRetry(fetcher, source, window, deps));
+    const items = acceptItems(fetched, source, input, deps.logger);
+    if (items.length === 0) {
+      // A quiet week and a silently broken feed look alike here, so say it. Log only: the run
+      // record has no field for it.
+      deps.logger.warn('Source returned no usable items', {
+        sourceId: source.id,
+        fetched: fetched.length,
+      });
+    }
+    return { items, maxItems };
   } catch (error) {
-    const message = errorMessage(error);
+    const message = cappedMessage(error);
     deps.logger.warn('Source failed', { sourceId: source.id, error: message });
-    return { items: [], failure: { sourceId: source.id, error: message } };
+    return { items: [], maxItems, failure: { sourceId: source.id, error: message } };
   }
 }
 
@@ -120,7 +130,7 @@ function fetchWithRetry(
         deps.logger.debug('Retrying source', {
           sourceId: source.id,
           retry: attempt + 1,
-          error: errorMessage(error),
+          error: cappedMessage(error),
         });
       },
     },
@@ -128,16 +138,15 @@ function fetchWithRetry(
 }
 
 /**
- * Timeouts, network failures and 5xx can clear up on their own. A 4xx (including a GitHub rate
- * limit), a bad URL or a feed that does not parse fails the same way again, so those fail fast.
- * Mirrors `isRetryable` in the Ollama adapter; the fetchers report an HTTP status in their
- * message, not as a field.
+ * The fetchers say it themselves: a `FetchError` carries `retryable` (timeouts, 5xx, 408 and
+ * 429 yes; other 4xx, a GitHub rate limit, a bad URL, a refused redirect or a feed that does
+ * not parse no), and that answer is final. Of the rest, a timeout or a bare transport failure
+ * from `fetch` can clear up on its own; anything else is a bug and fails fast. Mirrors
+ * `isRetryable` in the Ollama adapter.
  */
 function isRetryableFetchError(error: unknown): boolean {
-  if (error instanceof TimeoutError) return true;
-  const status = HTTP_STATUS.exec(errorMessage(error))?.[1];
-  if (status !== undefined) return Number(status) >= FIRST_SERVER_ERROR;
-  return isNetworkFailure(error);
+  if (error instanceof FetchError) return error.retryable;
+  return error instanceof TimeoutError || isNetworkFailure(error);
 }
 
 function isNetworkFailure(error: unknown): boolean {
@@ -162,14 +171,18 @@ function hasNetworkCode(error: Error): boolean {
   return 'code' in error && typeof error.code === 'string' && NETWORK_ERROR_CODES.has(error.code);
 }
 
+function asList(fetched: unknown): unknown[] {
+  if (!Array.isArray(fetched)) throw new Error('Fetcher did not return a list of items');
+  return fetched;
+}
+
 /** Keeps schema-valid items inside `[since, until]`; the window check is defense in depth. */
 function acceptItems(
-  fetched: unknown,
+  fetched: readonly unknown[],
   source: Source,
   input: CollectInput,
   logger: Logger,
 ): Item[] {
-  if (!Array.isArray(fetched)) throw new Error('Fetcher did not return a list of items');
   const sinceMs = input.since.getTime();
   const untilMs = input.until.getTime();
   return fetched.flatMap((candidate: unknown) => {
@@ -193,14 +206,29 @@ function acceptItems(
   });
 }
 
-/** First occurrence wins, so sources earlier in the config take precedence. */
-function dedupeById(items: readonly Item[]): Item[] {
+/**
+ * Sources are merged in config order, so the earliest source wins a duplicate. A source is cut
+ * to its own cap only after its duplicates are gone, newest first. The fetchers already apply
+ * the cap to what they return, so this is a second guard: a fetcher that returns more than it
+ * was asked for cannot flood the pool, and a duplicate or capped-off item cannot crowd out a
+ * real one.
+ */
+function mergeOutcomes(outcomes: readonly SourceOutcome[]): Item[] {
   const seen = new Set<string>();
-  return items.filter((item) => {
-    if (seen.has(item.id)) return false;
-    seen.add(item.id);
-    return true;
-  });
+  const merged: Item[] = [];
+  for (const { items, maxItems } of outcomes) {
+    const own = new Set<string>();
+    const fresh = items.filter((item) => {
+      if (seen.has(item.id) || own.has(item.id)) return false;
+      own.add(item.id);
+      return true;
+    });
+    for (const item of sortNewestFirst(fresh).slice(0, maxItems)) {
+      seen.add(item.id);
+      merged.push(item);
+    }
+  }
+  return merged;
 }
 
 /** Stable: items with equal timestamps keep their collection order. */

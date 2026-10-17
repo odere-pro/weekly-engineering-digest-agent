@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>tag:example.org,2026:blog</id>
+  <title>Example blog</title>
+  <link rel="self" href="https://example.org/blog/atom.xml"/>
+  <updated>2026-10-12T12:00:00Z</updated>
+  <entry>
+    <id>tag:example.org,2026:post-1</id>
+    <title>Post with several links</title>
+    <link rel="self" href="https://example.org/blog/atom/post-1.xml"/>
+    <link rel="replies" href="https://example.org/blog/post-1/comments.xml"/>
+    <link rel="alternate" type="text/html" href="https://example.org/blog/post-1"/>
+    <published>2026-10-08T10:00:00Z</published>
+    <updated>2026-10-12T12:00:00Z</updated>
+    <summary type="html">&lt;p&gt;Published on the 8th, edited on the 12th.&lt;/p&gt;</summary>
+  </entry>
+  <entry>
+    <id>tag:example.org,2026:post-2</id>
+    <title>Post with a zone-less date</title>
+    <link href="https://example.org/blog/post-2"/>
+    <updated>2026-10-09 08:30:00</updated>
+    <summary type="html">&lt;p&gt;No zone on the date.&lt;/p&gt;</summary>
+  </entry>
+  <entry>
+    <id>tag:example.org,2026:post-3</id>
+    <title>Post whose only link is not an alternate</title>
+    <link rel="self" href="https://example.org/blog/atom/post-3.xml"/>
+    <updated>2026-10-10T09:00:00Z</updated>
+    <summary type="html">&lt;p&gt;Falls back to the first link.&lt;/p&gt;</summary>
+  </entry>
+</feed>

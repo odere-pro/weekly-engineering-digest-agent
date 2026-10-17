@@ -124,6 +124,13 @@ describe('docs/sources.md', () => {
     expect(doc).toContain(`The ${String(DEFAULT_SOURCES.length)} feeds in`);
   });
 
+  it('documents the redirect rule, the size cap and the rule for entries that share a link', () => {
+    const flat = doc.replace(/\s+/g, ' ');
+    expect(flat).toContain('follows a redirect only to the same host as the source URL');
+    expect(flat).toContain('body over 5 MiB fails the source');
+    expect(flat).toContain("`?entry=<the entry's Atom id>`");
+  });
+
   it('lists exactly the hosts the default sources contact', () => {
     const hosts = new Set(DEFAULT_SOURCES.map((s) => new URL(s.url).hostname));
     expect(readDocHosts(doc).sort()).toEqual([...hosts].sort());

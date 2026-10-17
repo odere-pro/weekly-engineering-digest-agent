@@ -11,6 +11,12 @@ Only these hosts are contacted at collection time: `openai.com`, `deepmind.googl
 
 With `GITHUB_TOKEN` set, the GitHub fetcher also calls `api.github.com` (REST mode).
 
+A fetch follows a redirect only to the same host as the source URL: the apex and its `www.`
+count as one host, and a GitHub source may also be sent to `api.github.com`. Any other target
+fails that source, and the error names the host. A redirect from https to http is refused, and
+so is a chain of more than five. The `GITHUB_TOKEN` is never sent to another origin. A response
+body over 5 MiB fails the source too.
+
 ## How each feed was checked
 
 On **2026-10-16** every URL below was fetched live (GET, redirects followed, 20 s timeout) and
@@ -66,12 +72,42 @@ frameworks, agents, protocols), `platform` (runtimes, orchestration, IaC, CI), `
   This deliberate cut keeps the newest items: raise it to 100 for the whole week, or lower it
   if classification is slow on your machine.
 - **`gcp-release-notes` entries are one day of notes for every product.** They are long and the
-  fetcher truncates the summary, so the classifier sees only the start of each.
+  fetcher truncates the summary, so the classifier sees only the start of each. Every entry
+  links to the same page (`https://docs.cloud.google.com/release-notes`), and the item id and
+  the dedupe both come from the link, so the fetcher gives each of those entries its own URL by
+  adding `?entry=<the entry's Atom id>`. The URL still opens the release notes page. The rule
+  covers any feed whose entries share a link. It looks at the whole feed, not at the week's
+  window, so an entry keeps its URL from week to week for as long as the feed keeps repeating
+  that link. Days delivered before this rule existed went out under the bare link, so the
+  newest of them can be delivered once more.
 - **No official Anthropic or Meta AI feed was found** (every URL tried returned 404; see the
   rejected list). Anthropic is covered by `claude-code-releases` only.
 - **Some sources overlap** (`google-ai-blog` and `google-deepmind-blog`, `ollama-blog` and
   `ollama-releases`, `huggingface-blog` and `transformers-releases`). The same story can arrive
   under two URLs; URL dedupe does not merge them, so the select step may see both.
+
+## How the fetchers read a feed
+
+- **Link.** An Atom entry's `rel="alternate"` link (or a link with no `rel`) wins over the first
+  link, which is often the feed's own `rel="self"`. With no alternate, the first link stands.
+  Every link is shown without tracking parameters (`utm_*`, `fbclid` and the like) and without
+  a fragment.
+- **Date.** `published` wins over `updated`; RSS `pubDate` and `dc:date` count too. A date with a
+  time but no zone is read as UTC, so the digest does not change with the machine's time zone.
+- **Summary.** The entry's description, summary or content, with tags and `<script>` and
+  `<style>` text removed and entities decoded, so `Vec&lt;T&gt;` in a post reads `Vec<T>`. The
+  text is cut to 600 characters.
+- **One bad entry** is skipped; it does not fail the source. A feed with entries that could not
+  be read, or whose entries all lack a usable link or date, gets one warning in the log.
+- **Failures and retries.** A timeout, a network error, a 5xx, a 408 or a 429 is tried again
+  (twice, after 0.5 s and 1 s). Any other answer fails the source at once: a 4xx, a GitHub rate
+  limit, a refused redirect, an oversize body, or a feed that does not parse. A failed source's
+  error text is cut to 300 characters in the run record.
+- **A quiet or broken feed.** A source that yields no usable item in the window is logged as a
+  warning (`Source returned no usable items`), so a feed that broke silently shows up in the log.
+  A quiet week looks the same. The run record does not list it.
+- **Item cap.** The fetchers cut their result to `maxItems`, newest first. The collect step
+  checks it again as a second guard, after items another source already supplied are removed.
 
 ## Verified but not included
 
