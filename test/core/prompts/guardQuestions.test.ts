@@ -9,6 +9,7 @@ import {
   rubricQuestions,
   rubricState,
 } from '../../../src/core/prompts/guardQuestions.js';
+import { canonicalDigestText } from '../../../src/core/canonical.js';
 import { UNTRUSTED_DATA_RULE } from '../../../src/shared/untrusted.js';
 import { makeDraft, makeItem } from '../../builders.js';
 
@@ -145,6 +146,14 @@ describe('guard states', () => {
 
     expect(state.startsWith(UNTRUSTED_DATA_RULE)).toBe(true);
     expect(state).toContain('draft');
+  });
+
+  it('puts the canonical digest text in the rubric state, not Markdown', () => {
+    const draft = makeDraft([item]);
+    const state = rubricState(draft);
+
+    expect(state).toContain(canonicalDigestText(draft.digest));
+    expect(state).not.toContain('## 1.');
   });
 
   it('keeps the data rule and the wrapper for any label and text', () => {

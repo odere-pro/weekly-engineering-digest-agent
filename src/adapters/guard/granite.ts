@@ -1,4 +1,5 @@
 import type { Draft, DigestItem, GuardVerdict, Item } from '../../core/schemas.js';
+import { canonicalClaimText, canonicalHeadlineText } from '../../core/canonical.js';
 import { itemGuardText } from '../../core/prompts/guardQuestions.js';
 import type { GuardCallOptions, InputGuard, OutputGuard } from '../../ports/Guard.js';
 import type { ModelProvider } from '../../ports/ModelProvider.js';
@@ -177,7 +178,7 @@ async function checkDraftGrounding(
  */
 function groundednessPrompt(source: Item, entry: DigestItem): string {
   const document = wrapUntrusted(`document:${source.id}`, itemGuardText(source));
-  const text = wrapUntrusted(`text:${entry.itemId}`, `${entry.summary}\n${entry.whyItMatters}`);
+  const text = wrapUntrusted(`text:${entry.itemId}`, canonicalClaimText(entry));
   return `Document:\n${document}\n\nText to check:\n${text}`;
 }
 
@@ -186,8 +187,7 @@ function headlinePrompt(draft: Draft, cited: readonly Item[]): string {
   const documents = cited
     .map((source) => wrapUntrusted(`document:${source.id}`, itemGuardText(source)))
     .join('\n\n');
-  const { headline, intro } = draft.digest;
-  const text = wrapUntrusted('text:headline', `${headline}\n${intro}`);
+  const text = wrapUntrusted('text:headline', canonicalHeadlineText(draft.digest));
   return `Document:\n${documents}\n\nText to check:\n${text}`;
 }
 

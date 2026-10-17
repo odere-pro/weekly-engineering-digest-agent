@@ -1,6 +1,6 @@
 import type { DecisionQuestion } from '../../ports/ModelProvider.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../shared/untrusted.js';
-import { renderDigest } from '../render.js';
+import { canonicalDigestText } from '../canonical.js';
 import type { Draft, Item } from '../schemas.js';
 
 /** Rubric criteria, in the order they are asked. Keys of `JudgeScore.byCriterion`. */
@@ -78,7 +78,7 @@ export function buildJudgeState(draft: Draft, found: readonly Item[]): string {
   return [
     UNTRUSTED_DATA_RULE,
     'Rate the digest draft below against the source items it is based on.',
-    wrapUntrusted('draft', renderDigest(draft.digest, { disabledGuards: [] })),
+    wrapUntrusted('draft', canonicalDigestText(draft.digest)),
     ...found.map((item) => wrapUntrusted(`source:${item.id}`, renderSource(item))),
   ].join('\n\n');
 }

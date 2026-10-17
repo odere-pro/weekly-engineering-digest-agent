@@ -3,7 +3,7 @@
 // short: strands-decider has a 4K context.
 import type { Draft, Item } from '../schemas.js';
 import type { DecisionQuestion } from '../../ports/ModelProvider.js';
-import { renderDigest } from '../render.js';
+import { canonicalDigestText } from '../canonical.js';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../shared/untrusted.js';
 
 /** What the digest is about when the guard is not told the focus areas. */
@@ -132,7 +132,7 @@ export function policyState(item: Item): string {
   return guardState(item.id, itemGuardText(item));
 }
 
-/** The decide() state for one draft: its digest as Markdown, without the writer's name. */
+/** The decide() state for one draft: its digest as canonical text, without the writer's name. */
 export function rubricState(draft: Draft): string {
-  return guardState('draft', renderDigest(draft.digest, { disabledGuards: [] }));
+  return guardState('draft', canonicalDigestText(draft.digest));
 }
