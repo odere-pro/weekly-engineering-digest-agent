@@ -38,7 +38,8 @@ check_compose() {
 check_compose_settings() {
   config="$(DIGEST_HOST_OS=darwin DIGEST_HOST_ARCH=arm64 compose config)" ||
     fail "compose config failed with the host variables set"
-  for setting in 'DIGEST_HOST_OS: darwin' 'DIGEST_HOST_ARCH: arm64' 'stop_grace_period: 30m'; do
+  # Compose prints the 90m of docker-compose.yml as 1h30m0s. A quality run took about 59 minutes.
+  for setting in 'DIGEST_HOST_OS: darwin' 'DIGEST_HOST_ARCH: arm64' 'stop_grace_period: 1h30m0s'; do
     printf '%s\n' "$config" | grep -q "$setting" || fail "digest service lacks '$setting'"
   done
   compose --profile linux config | grep -q 'OLLAMA_MAX_LOADED_MODELS: "1"' ||

@@ -1,5 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { mkdir, mkdtemp, readdir, readFile, readlink, rm, stat, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  readlink,
+  rm,
+  stat,
+  utimes,
+  writeFile,
+} from 'node:fs/promises';
 import { hostname as osHostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
@@ -8,6 +19,7 @@ import {
   LOCK_HEARTBEAT_INTERVAL_MS,
   LOCK_HEARTBEAT_TIMEOUT_MS,
   LOCK_MAX_AGE_MS,
+  ORPHANED_TEMP_MAX_AGE_MS,
   TAKEOVER_GUARD_MAX_AGE_MS,
   type AcquireLockOptions,
 } from '../../../src/adapters/store/runLock.js';
@@ -17,8 +29,9 @@ import type { RunLock } from '../../../src/ports/RunStore.js';
 import { DigestError } from '../../../src/shared/errors.js';
 import { noopLogger, type Logger } from '../../../src/shared/telemetry.js';
 
-// Heartbeat writes go through writeFileAtomic; a test can make them fail.
-const atomic = vi.hoisted(() => ({ failWrites: false }));
+// Heartbeat writes go through writeFileAtomic and the temp file sweep through
+// removeStaleTempFiles; a test can make either fail.
+const atomic = vi.hoisted(() => ({ failWrites: false, failSweep: false, stuckFile: false }));
 vi.mock('../../../src/adapters/store/atomicFile.js', async (importOriginal) => {
   const actual = await importOriginal<typeof AtomicFile>();
   return {
@@ -27,6 +40,14 @@ vi.mock('../../../src/adapters/store/atomicFile.js', async (importOriginal) => {
       atomic.failWrites
         ? Promise.reject(new Error('disk full'))
         : actual.writeFileAtomic(path, content),
+    removeStaleTempFiles: (...args: Parameters<typeof actual.removeStaleTempFiles>) => {
+      if (atomic.failSweep) return Promise.reject(new Error('folder unreadable'));
+      if (atomic.stuckFile) {
+        const failed = [{ name: 'digest.lock.1.stuck.tmp', error: 'operation not permitted' }];
+        return Promise.resolve({ removed: [], failed });
+      }
+      return actual.removeStaleTempFiles(...args);
+    },
   };
 });
 
@@ -36,7 +57,9 @@ vi.mock('node:os', async (importOriginal) => {
   return { ...actual, hostname: vi.fn(actual.hostname) };
 });
 
-const NOW = '2026-10-19T08:00:00.000Z';
+// Long ago, so that the real modification time of a temp file made while a test runs (a heartbeat
+// in flight, a second acquire) always lies in the future of this clock, and the sweep keeps it.
+const NOW = '2026-01-05T08:00:00.000Z';
 const SECOND_MS = 1000;
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;
@@ -62,6 +85,8 @@ beforeEach(async () => {
   guardPath = `${lockPath}.takeover`;
   nowMs = Date.parse(NOW);
   atomic.failWrites = false;
+  atomic.failSweep = false;
+  atomic.stuckFile = false;
   warn = vi.fn<Logger['warn']>();
   logger = { ...noopLogger, warn, child: () => logger };
   held = [];
@@ -621,5 +646,110 @@ describe('the heartbeat', () => {
       },
       { timeout: 3000 },
     );
+  });
+});
+
+describe('orphaned temp files', () => {
+  const tempName = (base: string, pid = 4242): string =>
+    `${base}.${String(pid)}.${randomUUID()}.tmp`;
+
+  /** A file in the lock folder whose last change was `ageMs` before the lock clock's now. */
+  async function writeAged(name: string, ageMs: number): Promise<void> {
+    await writeFile(join(dir, name), 'x');
+    const modified = new Date(nowMs - ageMs);
+    await utimes(join(dir, name), modified, modified);
+  }
+
+  const names = async (): Promise<string[]> => (await readdir(dir)).sort();
+
+  it('are removed when the lock is taken, once they are 10 minutes old', async () => {
+    expect(ORPHANED_TEMP_MAX_AGE_MS).toBe(10 * MINUTE_MS);
+    const orphan = tempName('digest.lock');
+    await writeAged(orphan, ORPHANED_TEMP_MAX_AGE_MS);
+
+    await acquire();
+
+    expect(await names()).toEqual(['digest.lock']);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith('Removed orphaned run lock temp files', { files: [orphan] });
+  });
+
+  it('are kept while younger than 10 minutes, because their writer may be running', async () => {
+    const fresh = tempName('digest.lock');
+    await writeAged(fresh, ORPHANED_TEMP_MAX_AGE_MS - SECOND_MS);
+
+    await acquire();
+
+    expect(await names()).toEqual(['digest.lock', fresh].sort());
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('are removed for the takeover guard as well', async () => {
+    const orphan = tempName('digest.lock.takeover');
+    await writeAged(orphan, 3 * ORPHANED_TEMP_MAX_AGE_MS);
+
+    await acquire();
+
+    expect(await names()).toEqual(['digest.lock']);
+  });
+
+  it('leave foreign files alone, old as they are', async () => {
+    const foreign = [
+      'notes.tmp',
+      'digest.lock.bak',
+      tempName('digest.json'),
+      tempName('other.lock'),
+    ];
+    for (const name of foreign) await writeAged(name, 24 * HOUR_MS);
+
+    await acquire();
+
+    expect(await names()).toEqual(['digest.lock', ...foreign].sort());
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('are also removed when a live run holds the lock', async () => {
+    await acquire();
+    const orphan = tempName('digest.lock');
+    await writeAged(orphan, 2 * ORPHANED_TEMP_MAX_AGE_MS);
+
+    await expect(acquire({ runId: '2026-W43' })).rejects.toThrow(DigestError);
+
+    expect(await names()).toEqual(['digest.lock']);
+  });
+
+  it('are removed before a stale lock is taken over, next to the takeover warning', async () => {
+    await writeLock(remoteLock({ heartbeatAt: iso(-LOCK_HEARTBEAT_TIMEOUT_MS) }));
+    const orphan = tempName('digest.lock');
+    await writeAged(orphan, 2 * ORPHANED_TEMP_MAX_AGE_MS);
+
+    await acquire();
+
+    expect(await names()).toEqual(['digest.lock']);
+    expect(warn).toHaveBeenCalledWith('Removed orphaned run lock temp files', { files: [orphan] });
+    expect(warn).toHaveBeenCalledWith('Taking over stale run lock', expect.anything());
+  });
+
+  it('are never the reason a run cannot start: a failed sweep is logged and the lock is taken', async () => {
+    atomic.failSweep = true;
+
+    await acquire();
+
+    expect(warn).toHaveBeenCalledWith('Could not sweep orphaned run lock temp files', {
+      error: 'folder unreadable',
+    });
+    expect((await readLock()).runId).toBe('2026-W42');
+  });
+
+  it('are reported when one cannot be removed, and the lock is still taken', async () => {
+    atomic.stuckFile = true;
+
+    await acquire();
+
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith('Could not remove orphaned run lock temp files', {
+      failed: [{ name: 'digest.lock.1.stuck.tmp', error: 'operation not permitted' }],
+    });
+    expect((await readLock()).runId).toBe('2026-W42');
   });
 });

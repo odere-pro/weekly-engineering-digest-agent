@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, readlink, rm } from 'node:fs/promises';
 import { hostname as osHostname } from 'node:os';
-import { dirname } from 'node:path';
+import { basename, dirname } from 'node:path';
 import { z } from 'zod';
 import type { RunLock } from '../../ports/RunStore.js';
 import type { Clock } from '../../shared/clock.js';
@@ -11,6 +11,7 @@ import {
   createFileExclusive,
   isErrnoException,
   readTextIfExists,
+  removeStaleTempFiles,
   writeFileAtomic,
 } from './atomicFile.js';
 
@@ -22,6 +23,12 @@ export const TAKEOVER_GUARD_MAX_AGE_MS = 30_000;
 export const LOCK_HEARTBEAT_INTERVAL_MS = 60_000;
 /** A lock whose last heartbeat is this old is presumed abandoned, on any host. */
 export const LOCK_HEARTBEAT_TIMEOUT_MS = 5 * 60_000;
+/**
+ * A lock temp file this old was left by a run that died while writing it. A live writer needs
+ * milliseconds. A writer that stalls for longer than this, or a clock that is this far from the
+ * file system's, loses its temp file, and the run fails with a plain ENOENT from `link`.
+ */
+export const ORPHANED_TEMP_MAX_AGE_MS = 10 * 60_000;
 
 const MAX_ATTEMPTS = 3;
 const GUARD_SUFFIX = '.takeover';
@@ -233,6 +240,27 @@ function handleFor(lockPath: string, mine: OwnLock, options: AcquireLockOptions)
 }
 
 /**
+ * Removes the temp files that a killed run left next to the lock and its takeover guard
+ * (`digest.lock.<pid>.<uuid>.tmp`). Housekeeping only: a failure is logged, never raised, so it
+ * can not keep a run from starting.
+ */
+async function sweepOrphanedTempFiles(options: AcquireLockOptions): Promise<void> {
+  const { lockPath, clock, logger } = options;
+  const lockName = basename(lockPath);
+  try {
+    const { removed, failed } = await removeStaleTempFiles(
+      dirname(lockPath),
+      [lockName, `${lockName}${GUARD_SUFFIX}`],
+      { maxAgeMs: ORPHANED_TEMP_MAX_AGE_MS, now: clock.now() },
+    );
+    if (removed.length > 0) logger.warn('Removed orphaned run lock temp files', { files: removed });
+    if (failed.length > 0) logger.warn('Could not remove orphaned run lock temp files', { failed });
+  } catch (error) {
+    logger.warn('Could not sweep orphaned run lock temp files', { error: errorMessage(error) });
+  }
+}
+
+/**
  * Serialises takeovers: only one contender at a time may remove a stale lock, otherwise two of
  * them can both inspect it as stale and the second removes the first one's fresh lock.
  * Returns false when an abandoned guard was cleared and the caller should try again.
@@ -289,14 +317,26 @@ async function takeOverStaleLock(mine: OwnLock, options: AcquireLockOptions): Pr
  * lock from another host with a fresh heartbeat is live whatever its pid looks like from here.
  * A lock without a heartbeat (older versions) is also abandoned after LOCK_MAX_AGE_MS.
  *
- * Known limit: plain files give no OS-level lock, so the check-then-remove steps of a takeover
- * (and of release and of a heartbeat) leave a window of a few syscalls. It only matters when a
- * run crashed or was frozen (a suspended laptop, a paused VM) for longer than the guard/lock
- * expiry while another run starts at the same moment.
+ * Temp files that a killed run left next to the lock are removed once they are
+ * ORPHANED_TEMP_MAX_AGE_MS old, whether or not the lock can be taken.
+ *
+ * Known limits (docs/runbook.md has the operator's view):
+ * - Plain files give no OS-level lock, so the check-then-remove steps of a takeover (and of
+ *   release and of a heartbeat) leave a window of a few syscalls. It only matters when a run
+ *   crashed or was frozen (a suspended laptop, a paused VM) for longer than the guard/lock expiry
+ *   while another run starts at the same moment.
+ * - A holder that resumes after a stall longer than LOCK_HEARTBEAT_TIMEOUT_MS may find its lock
+ *   taken over. It notices at its next beat and stops beating, but its run carries on, so two
+ *   runs can overlap.
+ * - The heartbeat comes from the process's event loop, not from the run's progress: a run that
+ *   hangs while the process stays alive keeps its lock for as long as it hangs.
+ * - Creating the lock needs hard links (`link`); a file system without them fails with an
+ *   errno such as EPERM or ENOTSUP instead of a DigestError.
  */
 export async function acquireRunLock(options: AcquireLockOptions): Promise<RunLock> {
   const { lockPath, runId, clock } = options;
   await mkdir(dirname(lockPath), { recursive: true });
+  await sweepOrphanedTempFiles(options);
   const startedAt = clock.now().toISOString();
   const mine: OwnLock = {
     pid: process.pid,

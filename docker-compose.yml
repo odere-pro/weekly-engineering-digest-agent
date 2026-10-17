@@ -35,10 +35,13 @@ services:
     image: eng-digest:local
     init: true
     restart: unless-stopped
-    # Longer than a digest takes: the quality profile writes with two large models, and a single
-    # write call may wait up to 10 minutes. Idle containers stop at once; this only delays
-    # `docker compose stop` while a run is in flight.
-    stop_grace_period: 30m
+    # Longer than a digest takes. The quality profile ran for about 59 minutes (3554 s, 131 items)
+    # on the reference laptop (W2-05), and a single write call may wait up to 10 minutes, so this
+    # leaves about half again for a slower machine or a busier week. Idle containers stop at once;
+    # this only delays `docker compose stop` while a run is in flight. A run that outlasts it is
+    # killed. The next start catches up on the week: the lock it left is taken over within 5
+    # minutes (see the top), and the scheduler retries a refused run every 5 minutes for 2 hours.
+    stop_grace_period: 90m
     user: '${DIGEST_UID:-1000}:${DIGEST_GID:-1000}'
     environment:
       - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}

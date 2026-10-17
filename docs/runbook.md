@@ -150,6 +150,29 @@ Only one run can hold `data/digest.lock` at a time (one per `dataDir`).
 
 Do not share one `data/` folder between machines over a network file system.
 
+A run that is killed while it writes the lock can leave a temp file in `data/`, named
+`digest.lock.<pid>.<uuid>.tmp` (or `digest.lock.takeover.<pid>.<uuid>.tmp`). They are harmless.
+Every run that asks for the lock removes the ones older than 10 minutes, and logs
+`Removed orphaned run lock temp files`. Files with any other name are never touched.
+
+What the lock does not cover:
+
+- **A run that hangs but stays alive keeps its lock.** The heartbeat comes from the process, not
+  from the progress of the run. If a model call hangs and the process keeps running, the lock
+  stays fresh and every new run is refused. Stop that process or container
+  (`docker compose restart digest`). The next run then takes the lock over, at the latest 5
+  minutes after its last heartbeat (at once when it can see that the process is gone).
+- **A frozen run can overlap with the next one.** If the holder is suspended for more than 5
+  minutes (a laptop that sleeps, a paused VM or container), another run may take its lock. When
+  the first run wakes up it logs `Run lock is no longer ours` and stops refreshing the lock, but
+  its run carries on, so both can write `data/runs/<week>/`. If you see that warning, check
+  `digest history` for that week before you run it again.
+- **Hard links are required.** The lock file is created with a hard link, so it never appears
+  half written. `data/` must be on a file system that supports them (most local ones do: ext4,
+  XFS, APFS, NTFS). On FAT, exFAT, some SMB shares and some FUSE mounts the run fails with an
+  error such as `EPERM` or `ENOTSUP` from `link`, not with "Another run is in progress". Point
+  `dataDir` at a local disk.
+
 ### The scheduler did not run
 
 1. Docker: `docker compose ps` must show `digest` running. Start it with `docker compose up -d`
@@ -163,8 +186,14 @@ Do not share one `data/` folder between machines over a network file system.
 
 ### Stopping while a run is in progress
 
-`docker compose stop` waits up to 30 minutes for the running digest to finish. A container that
-is killed anyway leaves a lock; see above.
+`docker compose stop` waits up to 90 minutes for the running digest to finish
+(`stop_grace_period` in `docker-compose.yml`). The quality profile took about 59 minutes for a
+week of 131 items on the reference laptop, so 90 minutes leaves about half again. An idle
+container stops at once. A container that is killed anyway leaves a lock; see above. When
+`serve` starts again it runs the current week if that week has no finished run. The leftover lock
+can refuse it for up to 5 minutes; `serve` tries again every 5 minutes for up to 2 hours, so
+nothing needs doing. If your runs take longer than 90 minutes, raise `stop_grace_period` and the
+value that `docker/validate.sh` checks together.
 
 ### Ollama or a model is slow or out of memory
 
