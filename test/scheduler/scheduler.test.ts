@@ -122,7 +122,7 @@ describe('startScheduler tick', () => {
 
     await calls[0]?.handler();
 
-    expect(run).toHaveBeenCalledExactlyOnceWith('2026-W42');
+    expect(run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
   });
 
   it('reads the week in the configured time zone', async () => {
@@ -136,7 +136,7 @@ describe('startScheduler tick', () => {
 
     await calls[0]?.handler();
 
-    expect(run).toHaveBeenCalledWith('2026-W43');
+    expect(run).toHaveBeenCalledWith('2026-W43', expect.any(AbortSignal));
   });
 
   it('logs a failed run and does not throw', async () => {
@@ -324,7 +324,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42');
+      expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
     });
     expect(h.runStatus).toHaveBeenCalledWith('2026-W42');
   });
@@ -335,7 +335,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42');
+      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
     });
   });
 
@@ -372,7 +372,7 @@ describe('startScheduler catch-up', () => {
       await start(h.options);
 
       await vi.waitFor(() => {
-        expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42');
+        expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
       });
     },
   );
@@ -394,7 +394,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42');
+      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
     });
   });
 
@@ -405,7 +405,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W42');
+      expect(h.run).toHaveBeenCalledWith('2026-W42', expect.any(AbortSignal));
     });
   });
 
@@ -419,7 +419,7 @@ describe('startScheduler catch-up', () => {
     await start(h.options);
 
     await vi.waitFor(() => {
-      expect(h.run).toHaveBeenCalledWith('2026-W12');
+      expect(h.run).toHaveBeenCalledWith('2026-W12', expect.any(AbortSignal));
     });
   });
 
@@ -509,7 +509,7 @@ describe('startScheduler with the real cron', () => {
 
     await vi.advanceTimersByTimeAsync(46 * 60_000);
 
-    expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42');
+    expect(h.run).toHaveBeenCalledExactlyOnceWith('2026-W42', expect.any(AbortSignal));
   });
 });
 
@@ -544,7 +544,7 @@ describe('startScheduler lock retry', () => {
     await tick;
 
     expect(h.run).toHaveBeenCalledTimes(2);
-    expect(h.run).toHaveBeenLastCalledWith('2026-W42');
+    expect(h.run).toHaveBeenLastCalledWith('2026-W42', expect.any(AbortSignal));
     expect(h.logger.info).toHaveBeenCalledWith(
       expect.stringContaining('finished'),
       expect.objectContaining({ weekId: '2026-W42', trigger: 'schedule' }),

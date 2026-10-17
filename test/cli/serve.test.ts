@@ -5,7 +5,11 @@ import type { LoadedConfig } from '../../src/config/load.js';
 import { PROFILES } from '../../src/config/profiles.js';
 import type { DigestDeps, RunResult } from '../../src/core/runDigest.js';
 import { ExitCode } from '../../src/core/schemas.js';
-import type { SchedulerHandle, SchedulerOptions } from '../../src/scheduler/scheduler.js';
+import {
+  DEFAULT_FAILED_RETRY,
+  type SchedulerHandle,
+  type SchedulerOptions,
+} from '../../src/scheduler/scheduler.js';
 import { DigestError } from '../../src/shared/errors.js';
 import type { Logger } from '../../src/shared/telemetry.js';
 import { makeConfig, makeRunRecord } from '../builders.js';
@@ -46,12 +50,15 @@ interface Harness {
   loadConfig: Mock<ServeCommandIo['loadConfig']>;
   buildApp: Mock<ServeCommandIo['buildApp']>;
   close: Mock<AppHandle['close']>;
-  /** Delivers a shutdown signal to the waiting command. */
+  /** What each `waitForSignal` call was given to stop listening, in call order. */
+  cancels: (AbortSignal | undefined)[];
+  /** Delivers a shutdown signal to the command's latest wait for one. */
   signal: (name?: NodeJS.Signals) => void;
 }
 
 function harness(overrides: Partial<ServeCommandIo> = {}): Harness {
   const events: string[] = [];
+  const cancels: (AbortSignal | undefined)[] = [];
   const stderr: string[] = [];
   const logger = mockLogger();
   const store = new MemoryRunStore();
@@ -100,8 +107,9 @@ function harness(overrides: Partial<ServeCommandIo> = {}): Harness {
     buildApp,
     startScheduler,
     runDigest,
-    waitForSignal: () => {
+    waitForSignal: (cancel) => {
       events.push('listen');
+      cancels.push(cancel);
       return new Promise((resolve) => (deliver = resolve));
     },
     stderr: (text) => stderr.push(text),
@@ -122,6 +130,7 @@ function harness(overrides: Partial<ServeCommandIo> = {}): Harness {
     loadConfig,
     buildApp,
     close,
+    cancels,
     signal: (name = 'SIGTERM') => {
       deliver(name);
     },
@@ -160,14 +169,26 @@ describe('serveCommand wiring', () => {
     expect(options.logger).toBe(h.logger);
   });
 
+  it('asks the scheduler to retry a failed run, as the service does', async () => {
+    const h = harness();
+
+    await serveUntilSignal(h);
+
+    const options = h.startScheduler.mock.calls[0]?.[0] as SchedulerOptions;
+    expect(options.failedRetry).toBe(DEFAULT_FAILED_RETRY);
+  });
+
   it('runs the digest for the week the scheduler asks for', async () => {
     const h = harness();
     await serveUntilSignal(h);
     const options = h.startScheduler.mock.calls[0]?.[0] as SchedulerOptions;
 
-    const result = await options.run('2026-W42');
+    const result = await options.run('2026-W42', new AbortController().signal);
 
-    expect(h.runDigest).toHaveBeenCalledExactlyOnceWith(h.deps, { weekId: '2026-W42' });
+    expect(h.runDigest).toHaveBeenCalledExactlyOnceWith(h.deps, {
+      weekId: '2026-W42',
+      signal: expect.any(AbortSignal) as AbortSignal,
+    });
     expect(result.exitCode).toBe(ExitCode.Sent);
   });
 
@@ -208,7 +229,7 @@ describe('serveCommand shutdown', () => {
     const code = await serveUntilSignal(h);
 
     expect(code).toBe(0);
-    expect(h.events).toEqual(['listen', 'stop', 'idle', 'close']);
+    expect(h.events).toEqual(['listen', 'stop', 'idle', 'listen', 'close']);
   });
 
   it('keeps the service up until a signal arrives', async () => {
@@ -289,6 +310,97 @@ describe('serveCommand shutdown', () => {
   });
 });
 
+describe('serveCommand run signal', () => {
+  /** Starts a run the way the scheduler does; returns the signal the digest was given. */
+  function startRun(h: Harness, limit = new AbortController()): AbortSignal {
+    const options = h.startScheduler.mock.calls[0]?.[0] as SchedulerOptions;
+    void options.run('2026-W42', limit.signal);
+    const given = h.runDigest.mock.calls.at(-1)?.[1]?.signal;
+    if (!given) throw new Error('runDigest was not given a signal');
+    return given;
+  }
+
+  async function serving(h: Harness): Promise<{ pending: Promise<number> }> {
+    const pending = serveCommand({}, h.io);
+    await vi.waitFor(() => {
+      expect(h.startScheduler).toHaveBeenCalled();
+    });
+    return { pending };
+  }
+
+  it('hands the scheduler time limit on to the digest', async () => {
+    const h = harness();
+    const { pending } = await serving(h);
+    const limit = new AbortController();
+    const given = startRun(h, limit);
+    expect(given.aborted).toBe(false);
+
+    const reason = new Error('run timed out after 3 h');
+    limit.abort(reason);
+
+    expect(given.aborted).toBe(true);
+    expect(given.reason).toBe(reason);
+    h.signal();
+    await pending;
+  });
+
+  it('leaves the digest running after the first signal and stops it on the second', async () => {
+    const h = harness();
+    let finish: () => void = () => undefined;
+    h.whenIdle.mockReturnValue(new Promise<void>((resolve) => (finish = resolve)));
+    const { pending } = await serving(h);
+    const given = startRun(h);
+
+    h.signal('SIGTERM');
+    await vi.waitFor(() => {
+      expect(h.cancels).toHaveLength(2);
+    });
+    expect(given.aborted).toBe(false);
+
+    h.signal('SIGINT');
+    await vi.waitFor(() => {
+      expect(given.aborted).toBe(true);
+    });
+    expect(String(given.reason)).toContain('asked to stop again (SIGINT)');
+    expect(h.logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Second signal'),
+      expect.objectContaining({ signal: 'SIGINT' }),
+    );
+    expect(h.close).not.toHaveBeenCalled();
+
+    finish();
+    await expect(pending).resolves.toBe(0);
+    expect(h.close).toHaveBeenCalledOnce();
+  });
+
+  it('does not touch a digest that finishes before a second signal', async () => {
+    const h = harness();
+    let finish: () => void = () => undefined;
+    h.whenIdle.mockReturnValue(new Promise<void>((resolve) => (finish = resolve)));
+    const { pending } = await serving(h);
+    const given = startRun(h);
+    h.signal();
+    await vi.waitFor(() => {
+      expect(h.cancels).toHaveLength(2);
+    });
+    expect(h.cancels[1]?.aborted).toBe(false);
+
+    finish();
+    await expect(pending).resolves.toBe(0);
+
+    expect(given.aborted).toBe(false);
+    expect(h.cancels[1]?.aborted).toBe(true);
+  });
+
+  it('listens for the first signal without a way to cancel it', async () => {
+    const h = harness();
+
+    await serveUntilSignal(h);
+
+    expect(h.cancels[0]).toBeUndefined();
+  });
+});
+
 describe('serveCommand failures', () => {
   it('prints a config error and returns its exit code without building the app', async () => {
     const h = harness();
@@ -351,5 +463,41 @@ describe('waitForShutdownSignal', () => {
     process.emit('SIGINT');
 
     await expect(pending).resolves.toBe('SIGINT');
+  });
+
+  it('stops listening when the cancel signal fires, and never settles', async () => {
+    const cancel = new AbortController();
+    let settled = false;
+    void waitForShutdownSignal(cancel.signal).then(() => {
+      settled = true;
+    });
+    expect(process.listenerCount('SIGTERM')).toBe(before.sigterm + 1);
+
+    cancel.abort();
+
+    expect(process.listenerCount('SIGTERM')).toBe(before.sigterm);
+    expect(process.listenerCount('SIGINT')).toBe(before.sigint);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    expect(settled).toBe(false);
+  });
+
+  it('does not listen at all when the cancel signal has already fired', () => {
+    const cancel = new AbortController();
+    cancel.abort();
+
+    void waitForShutdownSignal(cancel.signal);
+
+    expect(process.listenerCount('SIGTERM')).toBe(before.sigterm);
+  });
+
+  it('forgets the cancel signal once a signal arrived', async () => {
+    const cancel = new AbortController();
+    const pending = waitForShutdownSignal(cancel.signal);
+
+    process.emit('SIGINT');
+    await expect(pending).resolves.toBe('SIGINT');
+    cancel.abort();
+
+    expect(process.listenerCount('SIGINT')).toBe(before.sigint);
   });
 });

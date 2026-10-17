@@ -1,13 +1,10 @@
 import { constants, type Stats } from 'node:fs';
 import { access, lstat, readFile, stat } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import {
-  createOllamaProvider,
-  effectiveThink,
-  type ThinkSetting,
-} from '../adapters/models/ollama.js';
+import { effectiveThink, type ThinkSetting } from '../adapters/models/ollama.js';
 import { createGithubReleasesFetcher } from '../adapters/sources/githubReleases.js';
 import { createRssFetcher } from '../adapters/sources/rss.js';
+import { createModelProvider } from '../app/container.js';
 import {
   loadConfig,
   platformOf,
@@ -101,12 +98,7 @@ const OUTPUT_CHECKS = [
 const defaultIo: DoctorIo = {
   loadConfig: (options) => loadConfig(options),
   createProvider: (loaded, fetchImpl) =>
-    createOllamaProvider({
-      baseUrl: loaded.env.OLLAMA_URL,
-      profile: loaded.profile,
-      fetch: fetchImpl,
-      logger: noopLogger,
-    }),
+    createModelProvider(loaded, { logger: noopLogger, fetch: fetchImpl }),
   fetch: (input, init) => globalThis.fetch(input, init),
   clock: systemClock,
   envPath: '.env',

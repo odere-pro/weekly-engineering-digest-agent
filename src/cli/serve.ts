@@ -1,8 +1,13 @@
 import { buildApp, type AppHandle } from '../app/container.js';
 import { loadConfig, type LoadedConfig } from '../config/load.js';
 import { runDigest } from '../core/runDigest.js';
-import { startScheduler } from '../scheduler/scheduler.js';
+import {
+  DEFAULT_FAILED_RETRY,
+  startScheduler,
+  type SchedulerHandle,
+} from '../scheduler/scheduler.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
+import type { Logger } from '../shared/telemetry.js';
 
 export interface ServeCommandOptions {
   /** Path to digest.config.json. */
@@ -15,8 +20,11 @@ export interface ServeCommandIo {
   buildApp: (loaded: LoadedConfig) => Promise<AppHandle>;
   startScheduler: typeof startScheduler;
   runDigest: typeof runDigest;
-  /** Resolves with the signal that asks the service to stop. */
-  waitForSignal: () => Promise<NodeJS.Signals>;
+  /**
+   * Resolves with the next signal that asks the service to stop. Firing `cancel` stops the
+   * listening; the promise then never settles.
+   */
+  waitForSignal: (cancel?: AbortSignal) => Promise<NodeJS.Signals>;
   stderr: (text: string) => void;
 }
 
@@ -65,13 +73,17 @@ async function serveUntilSignal(
 ): Promise<void> {
   const { cron, timeZone } = loaded.config.schedule;
   const { deps } = app;
+  // Fired by a second signal. The scheduler's own signal, its time limit, is the other way a run ends.
+  const quitNow = new AbortController();
   const scheduler = await io.startScheduler({
     cron,
     timeZone,
-    run: (weekId) => io.runDigest(deps, { weekId }),
+    run: (weekId, limit) =>
+      io.runDigest(deps, { weekId, signal: AbortSignal.any([limit, quitNow.signal]) }),
     runStatus: async (weekId) => (await deps.store.getRunRecord(weekId))?.status,
     clock: deps.clock,
     logger: deps.logger,
+    failedRetry: DEFAULT_FAILED_RETRY,
   });
   const nextRun = scheduler.nextRun();
   if (nextRun === null) {
@@ -86,8 +98,36 @@ async function serveUntilSignal(
   const signal = await signalled;
   deps.logger.info('Scheduler stopping', { signal });
   scheduler.stop();
-  // Closing the app under a running digest would cut its traces and store; a second signal quits now.
-  await scheduler.whenIdle();
+  // Closing the app under a running digest would cut its traces and store, so wait for it.
+  await untilIdle(io, scheduler, deps.logger, (reason) => {
+    quitNow.abort(reason);
+  });
+}
+
+/**
+ * Waits for the run in flight. A second signal asks it to stop after its current step (a run
+ * checks its signal between steps); a third ends the process the usual way, as nothing listens.
+ */
+async function untilIdle(
+  io: ServeCommandIo,
+  scheduler: SchedulerHandle,
+  logger: Logger,
+  abortRun: (reason: Error) => void,
+): Promise<void> {
+  const idle = scheduler.whenIdle();
+  const stopListening = new AbortController();
+  const again = io.waitForSignal(stopListening.signal);
+  try {
+    const second = await Promise.race([idle.then(() => undefined), again]);
+    if (second === undefined) return;
+    logger.warn('Second signal: the running digest stops after its current step', {
+      signal: second,
+    });
+    abortRun(new Error(`the service was asked to stop again (${second})`));
+    await idle;
+  } finally {
+    stopListening.abort();
+  }
 }
 
 /** A failing close is logged, not thrown: it must not hide how the service ended. */
@@ -99,12 +139,17 @@ async function closeApp(app: AppHandle): Promise<void> {
   }
 }
 
-/** Resolves on the first SIGINT or SIGTERM. A second one then ends the process the usual way. */
-export function waitForShutdownSignal(): Promise<NodeJS.Signals> {
+/**
+ * Resolves on the first SIGINT or SIGTERM, then stops listening, so a later signal ends the
+ * process the usual way unless something listens again. Firing `cancel` stops the listening too.
+ */
+export function waitForShutdownSignal(cancel?: AbortSignal): Promise<NodeJS.Signals> {
   return new Promise((resolve) => {
+    if (cancel?.aborted) return;
     const listeners = new Map<NodeJS.Signals, () => void>();
     const removeAll = (): void => {
       for (const [signal, listener] of listeners) process.off(signal, listener);
+      cancel?.removeEventListener('abort', removeAll);
     };
     for (const signal of SHUTDOWN_SIGNALS) {
       const listener = (): void => {
@@ -114,5 +159,6 @@ export function waitForShutdownSignal(): Promise<NodeJS.Signals> {
       listeners.set(signal, listener);
       process.on(signal, listener);
     }
+    cancel?.addEventListener('abort', removeAll, { once: true });
   });
 }
