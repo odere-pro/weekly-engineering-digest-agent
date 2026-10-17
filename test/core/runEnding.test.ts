@@ -1,10 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  abortedError,
+  digestMessage,
   endRun,
   failureNote,
   forEachDelivery,
   reachedAChannel,
   recordError,
+  shipDigest,
   type EndingContext,
   type HeldArtifact,
 } from '../../src/core/runEnding.js';
@@ -323,5 +326,114 @@ describe('runEnding helpers', () => {
 
     expect(failures).toEqual([{ id: 'email', error: 'SMTP 554' }]);
     expect(markdown.digests).toEqual([message]);
+  });
+});
+
+describe('digestMessage', () => {
+  it('names the week and the headline in the subject', () => {
+    expect(digestMessage(WEEK, 'Runners moved', '# Runners moved\n')).toEqual({
+      weekId: WEEK,
+      subject: `Engineering digest ${WEEK}: Runners moved`,
+      markdown: '# Runners moved\n',
+    });
+  });
+
+  it('puts a multi-line headline on one line', () => {
+    expect(digestMessage(WEEK, '  Runners\n  moved \t today ', '#').subject).toBe(
+      `Engineering digest ${WEEK}: Runners moved today`,
+    );
+  });
+
+  it('leaves the headline out when it is empty', () => {
+    expect(digestMessage(WEEK, ' \n ', '#').subject).toBe(`Engineering digest ${WEEK}`);
+  });
+
+  it('cuts a long subject, ending it with an ellipsis', () => {
+    const { subject } = digestMessage(WEEK, 'word '.repeat(100), '#');
+
+    expect(subject.length).toBeLessThanOrEqual(120);
+    expect(subject.endsWith('...')).toBe(true);
+  });
+});
+
+describe('shipDigest', () => {
+  const message = { weekId: WEEK, subject: 'Digest', markdown: '# Digest\n' };
+
+  it('sends to every channel and lists them after the ones that already had the digest', async () => {
+    const channels = [new CapturingDelivery('email'), new CapturingDelivery('slack')];
+
+    const shipped = await shipDigest(channels, message, ['markdown']);
+
+    expect(shipped).toEqual({ deliveredTo: ['markdown', 'email', 'slack'] });
+    expect(channels.map((channel) => channel.digests)).toEqual([[message], [message]]);
+  });
+
+  it('keeps going after a failed channel and names both outcomes in the error', async () => {
+    const [email, slack] = [new CapturingDelivery('email'), new CapturingDelivery('slack')];
+    email.failWith = new Error('SMTP 554');
+
+    const shipped = await shipDigest([email, slack], message, ['markdown']);
+
+    expect(shipped.deliveredTo).toEqual(['markdown', 'slack']);
+    expect(shipped.error).toBeInstanceOf(DigestError);
+    expect(shipped.error?.message).toBe(
+      'Delivery failed on email (SMTP 554); delivered on markdown, slack',
+    );
+    expect(shipped.error).toMatchObject({ step: 'deliver' });
+  });
+
+  it('omits the delivered part when no channel got the digest', async () => {
+    const channel = new CapturingDelivery('email');
+    channel.failWith = new Error('offline');
+
+    const shipped = await shipDigest([channel], message, []);
+
+    expect(shipped.deliveredTo).toEqual([]);
+    expect(shipped.error?.message).toBe('Delivery failed on email (offline)');
+  });
+
+  it('does not change the list it was given', async () => {
+    const already = Object.freeze(['markdown' as const]);
+
+    const shipped = await shipDigest([new CapturingDelivery('email')], message, already);
+
+    expect(already).toEqual(['markdown']);
+    expect(shipped.deliveredTo).toEqual(['markdown', 'email']);
+  });
+});
+
+describe('abortedError', () => {
+  it('is nothing for no signal or a signal that has not fired', () => {
+    expect(abortedError(undefined, 'write')).toBeUndefined();
+    expect(abortedError(new AbortController().signal, 'write')).toBeUndefined();
+  });
+
+  it('names the step the run was about to start and the reason', () => {
+    const controller = new AbortController();
+    controller.abort(new Error('scheduler timeout after 2h'));
+
+    const error = abortedError(controller.signal, 'write');
+
+    expect(error).toBeInstanceOf(DigestError);
+    expect(error?.message).toBe('Run aborted before the write step: scheduler timeout after 2h');
+    expect(error?.step).toBe('write');
+    expect(error?.cause).toBe(controller.signal.reason);
+  });
+
+  it('leaves the step out when the run had not started one', () => {
+    const controller = new AbortController();
+    controller.abort('shutting down');
+
+    const error = abortedError(controller.signal);
+
+    expect(error?.message).toBe('Run aborted: shutting down');
+    expect(error?.step).toBeUndefined();
+  });
+
+  it('exits like any failed run', () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    expect(abortedError(controller.signal)?.exitCode).toBe(1);
   });
 });

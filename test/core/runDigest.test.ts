@@ -246,7 +246,7 @@ describe('runDigest: dry run', () => {
     expect(sentDigests(h)).toEqual([]);
     expect(sentNotes(h)).toEqual([]);
     const counts = { collected: 5, afterGuardInput: 5, classified: 5, selected: 5 };
-    expect(result.record.counts).toEqual({ ...counts, digestItems: 5 });
+    expect(result.record.counts).toEqual({ ...counts, afterProcess: 5, digestItems: 5 });
     expect(result.record.modelsByRole).toEqual(modelsByRole(PROFILE));
     expect(result.record.timings.map((timing) => timing.step)).toEqual(ALL_STEPS);
   });

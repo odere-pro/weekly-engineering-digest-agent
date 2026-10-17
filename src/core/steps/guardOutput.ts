@@ -2,7 +2,7 @@ import type { Draft, GuardCheckId, GuardVerdict, Item } from '../schemas.js';
 import type { OutputGuard } from '../../ports/Guard.js';
 import type { GuardsConfig } from '../../config/schema.js';
 import type { Logger } from '../../shared/telemetry.js';
-import { applyGuards, flaggedBy, planGuards } from './guardInput.js';
+import { applyGuards, flaggedBy, planGuards } from './guardRun.js';
 
 export interface GuardOutputDeps {
   guards: readonly OutputGuard[];

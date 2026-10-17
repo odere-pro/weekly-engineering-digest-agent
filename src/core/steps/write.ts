@@ -4,9 +4,19 @@ import {
   DigestSchema,
   type DigestItem,
   type Draft,
+  type GuardCheckId,
+  type Item,
   type ScoredItem,
 } from '../schemas.js';
-import { buildWritePrompt, DIGEST_MIN_ITEMS, type WritePrompt } from '../prompts/write.js';
+import { DIGEST_MIN_ITEMS, formatCheck } from '../checks/formatCheck.js';
+import { linkCheck } from '../checks/linkCheck.js';
+import {
+  boundProblems,
+  buildRetryPrompt,
+  buildWritePrompt,
+  type WritePrompt,
+} from '../prompts/write.js';
+import { renderDigest } from '../render.js';
 import { generateStructured } from '../structured.js';
 import type { ModelProvider } from '../../ports/ModelProvider.js';
 import { errorMessage } from '../../shared/errors.js';
@@ -30,6 +40,13 @@ export interface WriteOutput {
 type WriterFailure = WriteOutput['failures'][number];
 type WriterOutcome = { draft: Draft } | { failure: WriterFailure };
 
+/** A writer whose draft the link or format check rejected, and why. */
+export interface RetryRequest {
+  writer: string;
+  /** The check's problems; they quote model text, so the prompt wraps them as untrusted data. */
+  problems: readonly string[];
+}
+
 /**
  * The step replaces every item url with the source url, so a missing or malformed url from the
  * model is not worth a repair call.
@@ -49,6 +66,13 @@ const RELEASE_FILLER: ReadonlySet<string> = new Set(['release', 'released', 'ver
 const LOGGED_ID_MAX_CHARS = 80;
 
 /**
+ * Feed titles carry em dashes the format check rejects. A run of them, with the spaces and
+ * commas around it, becomes one comma; at either end of a field it is dropped.
+ */
+const EM_DASH_RUN = /[\s,]*\u2014[\s,\u2014]*/g;
+const EM_DASH_REPLACEMENT = ', ';
+
+/**
  * Each writer drafts the digest from the same top items, one after another (W1-09).
  * A writer that fails is listed in `failures` and the next one still runs.
  */
@@ -64,9 +88,173 @@ export async function writeStep(
   for (const writer of deps.writers) {
     outcomes.push(await draftWith(writer, prompt, sources, deps));
   }
+  return summarize(outcomes);
+}
+
+/**
+ * One more try for the writers named in `requests` (W5-06, F1): the same items, plus the problems
+ * the link or format check found in their draft. The caller decides who retries and when; a
+ * failed retry is a failure for that writer, like a failed first attempt.
+ */
+export async function retryStep(
+  items: readonly ScoredItem[],
+  requests: readonly RetryRequest[],
+  deps: WriteDeps,
+): Promise<WriteOutput> {
+  const sources = new Map(items.map((item) => [item.id, item]));
+  const retryDeps = { ...deps, logger: deps.logger.child({ retry: true }) };
+  const outcomes: WriterOutcome[] = [];
+  for (const { writer, problems } of requests) {
+    const prompt = buildRetryPrompt(items, deps.focusAreas, problems);
+    outcomes.push(await draftWith(writer, prompt, sources, retryDeps));
+  }
+  return summarize(outcomes);
+}
+
+function summarize(outcomes: readonly WriterOutcome[]): WriteOutput {
   return {
     drafts: outcomes.flatMap((outcome) => ('draft' in outcome ? [outcome.draft] : [])),
     failures: outcomes.flatMap((outcome) => ('failure' in outcome ? [outcome.failure] : [])),
+  };
+}
+
+/** Deterministic fixes the writers keep needing: at most topN items (defense in depth), no em dashes. */
+export function prepareDraft(draft: Draft, topN: number): Draft {
+  const { digest } = draft;
+  const items = digest.items.slice(0, topN).map((item): DigestItem => ({
+    ...item,
+    title: withoutEmDashes(item.title),
+    area: withoutEmDashes(item.area),
+    summary: withoutEmDashes(item.summary),
+    whyItMatters: withoutEmDashes(item.whyItMatters),
+  }));
+  const headline = withoutEmDashes(digest.headline);
+  return { ...draft, digest: { ...digest, headline, intro: withoutEmDashes(digest.intro), items } };
+}
+
+function withoutEmDashes(text: string): string {
+  return text.replace(EM_DASH_RUN, (run: string, offset: number) =>
+    offset === 0 || offset + run.length === text.length ? '' : EM_DASH_REPLACEMENT,
+  );
+}
+
+// ---------------------------------------------------------------------------------------------
+// Writing with the link and format checks, and one retry (W5-06: F1, F6)
+
+/** A draft with the exact Markdown that was checked. */
+export interface CheckedDraft {
+  readonly draft: Draft;
+  readonly markdown: string;
+}
+
+/** A draft with what the link and format checks said; `rejectedBy` is empty when it passed. */
+export interface CodeChecked extends CheckedDraft {
+  readonly rejectedBy: readonly string[];
+  /**
+   * Format problems first, then link problems: the retry prompt, the log and drafts.json keep
+   * only the first few, and a draft with many bad links must not hide a word-count problem.
+   * Whole here; each consumer bounds them.
+   */
+  readonly problems: readonly string[];
+}
+
+/** One draft the link or format check rejected, as drafts.json keeps it. */
+export interface Rejection {
+  readonly writer: string;
+  /** 1 for the writer's first draft, 2 for its retry. */
+  readonly attempt: 1 | 2;
+  readonly rejectedBy: readonly string[];
+  /** Bounded: the first few, each cut short. They can quote model text. */
+  readonly problems: readonly string[];
+}
+
+export interface CheckedWriteDeps extends WriteDeps {
+  /** Every collected item: the link check accepts only their URLs. */
+  collected: readonly Item[];
+  /** The guards that are off this run; the rendered footer names them. */
+  disabledGuards: readonly GuardCheckId[];
+  /** A draft keeps at most this many items. */
+  topN: number;
+}
+
+export interface CheckedWriteOutput {
+  /** One entry per writer that has a draft: its retry when that exists, else its first draft. */
+  checked: CodeChecked[];
+  /** Writers that produced no draft. */
+  writeFailures: WriterFailure[];
+  /** Writers whose retry produced no draft; their first draft stays in `checked`. */
+  retryFailures: WriterFailure[];
+  /** Every draft the checks rejected, first attempts then retries; logged at warn too. */
+  rejections: Rejection[];
+}
+
+/**
+ * Every writer drafts, each draft gets the deterministic fixes, then the link and format check.
+ * When no draft passes, each writer that has a draft gets one retry with the problems its draft
+ * had (F1). The retry is not repeated, and a writer that produced no draft is not retried.
+ * Writers are unique (the config schema says so), so a retry replaces its writer's first draft.
+ */
+export async function writeCheckedStep(
+  items: readonly ScoredItem[],
+  deps: CheckedWriteDeps,
+): Promise<CheckedWriteOutput> {
+  const check = (draft: Draft): CodeChecked =>
+    codeCheck(prepareDraft(draft, deps.topN), deps.collected, deps.disabledGuards);
+  const first = await writeStep(items, deps);
+  const checked = first.drafts.map(check);
+  const rejections = noteRejections(deps.logger, checked, 1);
+  const output = { checked, writeFailures: first.failures, retryFailures: [], rejections };
+  if (checked.length === 0 || rejections.length < checked.length) return output;
+
+  const requests = checked.map(({ draft, problems }) => ({ writer: draft.writer, problems }));
+  deps.logger.info('Retrying writers after the checks', {
+    writers: requests.map((request) => request.writer),
+  });
+  // Last writer first: its model is still loaded, and only one model fits in memory at a time.
+  const retried = await retryStep(items, requests.toReversed(), deps);
+  const again = new Map(retried.drafts.map(check).map((entry) => [entry.draft.writer, entry]));
+  const final = checked.map((entry) => again.get(entry.draft.writer) ?? entry);
+  const second = final.filter((entry) => again.get(entry.draft.writer) === entry);
+  return {
+    ...output,
+    checked: final,
+    retryFailures: retried.failures,
+    rejections: [...rejections, ...noteRejections(deps.logger, second, 2)],
+  };
+}
+
+/** Logs, at warn, each draft the checks rejected, and returns them for drafts.json. */
+function noteRejections(
+  logger: Logger,
+  checked: readonly CodeChecked[],
+  attempt: Rejection['attempt'],
+): Rejection[] {
+  const rejections = checked
+    .filter((entry) => entry.rejectedBy.length > 0)
+    .map(({ draft, rejectedBy, problems }): Rejection => ({
+      writer: draft.writer,
+      attempt,
+      rejectedBy,
+      problems: boundProblems(problems),
+    }));
+  for (const rejection of rejections) logger.warn('Draft failed the checks', { ...rejection });
+  return rejections;
+}
+
+/** Renders the draft as the digest will read, and runs the link and format checks on that text. */
+function codeCheck(
+  draft: Draft,
+  collected: readonly Item[],
+  disabledGuards: readonly GuardCheckId[],
+): CodeChecked {
+  const markdown = renderDigest(draft.digest, { disabledGuards });
+  const link = linkCheck(draft.digest, markdown, collected);
+  const format = formatCheck(draft.digest, markdown);
+  return {
+    draft,
+    markdown,
+    rejectedBy: [...(link.ok ? [] : ['linkCheck']), ...(format.ok ? [] : ['formatCheck'])],
+    problems: [...format.problems, ...link.problems],
   };
 }
 

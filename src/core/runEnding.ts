@@ -1,9 +1,12 @@
 import type { Config } from '../config/schema.js';
-import type { Delivery, FailureNote } from '../ports/Delivery.js';
+import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
 import type { ArtifactName, RunStore } from '../ports/RunStore.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import type { Logger } from '../shared/telemetry.js';
-import type { RunRecord, StepName } from './schemas.js';
+import { truncate } from '../shared/text.js';
+import type { DeliveryId, RunRecord, StepName } from './schemas.js';
+
+const SUBJECT_MAX_CHARS = 120;
 
 /** What ending a run needs; the run context of runDigest has it. */
 export interface EndingContext {
@@ -91,6 +94,64 @@ export async function forEachDelivery(
     }
   }
   return failures;
+}
+
+/**
+ * The failure of a run whose signal fired (W5-06, F46): `next` is the step it was about to start.
+ * Runs check the signal between steps, never inside one. Nothing when the signal has not fired.
+ */
+export function abortedError(
+  signal: AbortSignal | undefined,
+  next?: StepName,
+): DigestError | undefined {
+  if (!signal?.aborted) return undefined;
+  const where = next === undefined ? '' : ` before the ${next} step`;
+  return new DigestError(`Run aborted${where}: ${errorMessage(signal.reason)}`, {
+    step: next,
+    cause: signal.reason,
+  });
+}
+
+/** What `shipDigest` reports: every channel that has the digest, and why the rest failed. */
+export interface Shipped {
+  /** The channels that already had it, then the ones that took it now. */
+  readonly deliveredTo: readonly DeliveryId[];
+  /** Set when any channel failed; it names the channels that did get the digest. */
+  readonly error?: DigestError;
+}
+
+/** Tries every channel; never throws. A rerun sends only to the channels the error leaves out. */
+export async function shipDigest(
+  channels: readonly Delivery[],
+  message: DigestMessage,
+  alreadyDelivered: readonly DeliveryId[],
+): Promise<Shipped> {
+  const failures = await forEachDelivery(channels, (channel) => channel.sendDigest(message));
+  const failed = new Set(failures.map((failure) => failure.id));
+  const reached = channels.map((channel) => channel.id).filter((id) => !failed.has(id));
+  const deliveredTo = [...alreadyDelivered, ...reached];
+  return failures.length > 0
+    ? { deliveredTo, error: deliveryError(deliveredTo, failures) }
+    : { deliveredTo };
+}
+
+/** Names the channels that did get the digest; a rerun sends only to the others. */
+function deliveryError(
+  deliveredTo: readonly DeliveryId[],
+  failures: readonly DeliveryFailure[],
+): DigestError {
+  const detail = failures.map((failure) => `${failure.id} (${failure.error})`).join(', ');
+  const done = deliveredTo.length > 0 ? `; delivered on ${deliveredTo.join(', ')}` : '';
+  return new DigestError(`Delivery failed on ${detail}${done}`, { step: 'deliver' });
+}
+
+/** The message every channel gets: a one-line subject over the digest's Markdown. */
+export function digestMessage(weekId: string, headline: string, markdown: string): DigestMessage {
+  const oneLine = headline.replace(/\s+/g, ' ').trim();
+  const subject = oneLine
+    ? `Engineering digest ${weekId}: ${oneLine}`
+    : `Engineering digest ${weekId}`;
+  return { weekId, subject: truncate(subject, SUBJECT_MAX_CHARS), markdown };
 }
 
 /** Every run file is pretty JSON with a trailing newline. */

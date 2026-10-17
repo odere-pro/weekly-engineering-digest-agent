@@ -1,0 +1,194 @@
+// Resuming a partly delivered week (W2-08). Moved out of runDigest.ts by W5-06 (F58).
+import type { Delivery } from '../ports/Delivery.js';
+import type { Clock } from '../shared/clock.js';
+import { DigestError, errorMessage } from '../shared/errors.js';
+import type { Tracer } from '../shared/telemetry.js';
+import {
+  abortedError,
+  digestMessage,
+  endRun,
+  failureNote,
+  recordError,
+  shipDigest,
+  type EndingContext,
+  type Failure,
+  type Shipped,
+} from './runEnding.js';
+import type { DeliveryId, RunRecord } from './schemas.js';
+
+/** What a resume needs from the run: the ending context, plus the clock and the tracer. */
+export interface ResumeContext extends EndingContext {
+  readonly startedAt: Date;
+  /** Checked before the delivery starts; see `RunOptions.signal`. */
+  readonly signal?: AbortSignal;
+  readonly deps: EndingContext['deps'] & { readonly clock: Clock; readonly tracer: Tracer };
+}
+
+/** A failed run that reached some channels, and the digest.md saved for the week, if any. */
+export interface PartDelivery {
+  readonly previous: RunRecord;
+  readonly deliveredTo: readonly DeliveryId[];
+  readonly markdown: string | undefined;
+}
+
+export interface ResumeResult {
+  readonly record: RunRecord;
+  /** The saved digest, when it was sent or tried to a channel; none otherwise. */
+  readonly markdown: string | undefined;
+}
+
+/** render.ts writes the headline as the digest's first `# ` line... */
+const HEADLINE_LINE = /^# (.+)$/m;
+/** ...and each item's link as a `[Source](url)` line of its own. */
+const SOURCE_LINE = /^\[Source\]\((.+)\)$/gm;
+
+/** The previous run, when it failed after reaching some channels; with its digest.md if saved. */
+export async function loadPartDelivery(
+  ctx: ResumeContext,
+  previous: RunRecord | undefined,
+): Promise<PartDelivery | undefined> {
+  const deliveredTo = previous?.deliveredTo ?? [];
+  if (previous?.status !== 'failed' || deliveredTo.length === 0) return undefined;
+  const markdown = await ctx.deps.store.readArtifact(ctx.weekId, 'digest.md');
+  return { previous, deliveredTo, markdown };
+}
+
+/**
+ * Sends the saved digest to the channels the failed run missed: no health check, no model call.
+ * The record keeps the previous run's results, with the new outcome, channels and deliver timing.
+ */
+export async function resumeDelivery(
+  ctx: ResumeContext,
+  part: PartDelivery,
+): Promise<ResumeResult> {
+  const { previous, deliveredTo } = part;
+  const missing = ctx.deps.deliveries.filter((delivery) => !deliveredTo.includes(delivery.id));
+  ctx.logger.info('Resuming the delivery of the saved digest', {
+    deliveredTo,
+    channels: missing.map((delivery) => delivery.id),
+  });
+  const verdict = missing.length > 0 ? sendable(ctx, part) : undefined;
+  const { shipped, timing } = await deliverStep(ctx, missing, verdict, part);
+  const failure: Failure | undefined = shipped.error && { error: shipped.error, step: 'deliver' };
+
+  const { error: _previousError, ...kept } = previous;
+  const record: RunRecord = {
+    ...kept,
+    status: failure ? 'failed' : 'sent',
+    startedAt: ctx.startedAt.toISOString(),
+    finishedAt: ctx.deps.clock.now().toISOString(),
+    timings: [...previous.timings, timing],
+    deliveredTo: [...shipped.deliveredTo],
+    ...(failure && { error: recordError(failure) }),
+  };
+  await endRun(
+    ctx,
+    { record, failure, note: failure && failureNote(ctx.weekId, failure) },
+    previous,
+  );
+  // The digest is only named when it was sent, or tried, to a channel.
+  return { record, markdown: verdict?.ok ? verdict.markdown : undefined };
+}
+
+/** The deliver step of a resume, traced, timed and logged like a step of the chain. */
+async function deliverStep(
+  ctx: ResumeContext,
+  missing: readonly Delivery[],
+  verdict: Verdict | undefined,
+  part: PartDelivery,
+): Promise<{ shipped: Shipped; timing: RunRecord['timings'][number] }> {
+  const { clock } = ctx.deps;
+  const logger = ctx.logger.child({ step: 'deliver' });
+  const startedMs = clock.now().getTime();
+  const shipped = await traced(ctx, part, () => send(ctx.weekId, missing, verdict, part));
+  const timing = { step: 'deliver' as const, ms: Math.max(0, clock.now().getTime() - startedMs) };
+  if (shipped.error) {
+    logger.error('Step failed', { ms: timing.ms, error: errorMessage(shipped.error) });
+    return { shipped, timing };
+  }
+  if (verdict?.ok) {
+    logger.info('Digest delivered', {
+      channels: shipped.deliveredTo.slice(part.deliveredTo.length),
+    });
+  }
+  logger.info('Step finished', { ms: timing.ms });
+  return { shipped, timing };
+}
+
+/** Carries what a failed delivery reached out of its span, so the trace shows an error. */
+class Shortfall extends Error {
+  constructor(readonly shipped: Shipped) {
+    super(shipped.error?.message);
+    this.name = 'Shortfall';
+  }
+}
+
+/**
+ * Runs the delivery inside the `deliver` span and throws inside it when it failed, like a step of
+ * the chain. Whatever fails, the week still gets its record: a broken tracer is a failed delivery.
+ */
+async function traced(
+  ctx: ResumeContext,
+  part: PartDelivery,
+  send: () => Promise<Shipped>,
+): Promise<Shipped> {
+  const attributes = { runId: ctx.weekId, step: 'deliver' };
+  try {
+    return await ctx.deps.tracer.span('deliver', attributes, async () => {
+      const shipped = await send();
+      if (shipped.error) throw new Shortfall(shipped);
+      return shipped;
+    });
+  } catch (error) {
+    if (error instanceof Shortfall) return error.shipped;
+    const wrapped = new DigestError(errorMessage(error), { step: 'deliver', cause: error });
+    return { deliveredTo: part.deliveredTo, error: wrapped };
+  }
+}
+
+type Verdict =
+  | { readonly ok: true; readonly markdown: string }
+  | { readonly ok: false; readonly error: DigestError };
+
+/**
+ * Whether the delivery may start. With every configured channel served there is nothing to send,
+ * so the caller skips this and digest.md does not matter. A run told to stop does not start it.
+ */
+function sendable(ctx: ResumeContext, part: PartDelivery): Verdict {
+  const stopped = abortedError(ctx.signal, 'deliver');
+  return stopped ? { ok: false, error: stopped } : verifyDigest(part);
+}
+
+/** Nothing to send, a refused digest, or the saved digest to the channels that lack it. */
+async function send(
+  weekId: string,
+  missing: readonly Delivery[],
+  verdict: Verdict | undefined,
+  { deliveredTo }: PartDelivery,
+): Promise<Shipped> {
+  if (verdict === undefined) return { deliveredTo };
+  if (!verdict.ok) return { deliveredTo, error: verdict.error };
+  const headline = HEADLINE_LINE.exec(verdict.markdown)?.[1] ?? '';
+  const message = digestMessage(weekId, headline, verdict.markdown);
+  return shipDigest(missing, message, deliveredTo);
+}
+
+/**
+ * The saved digest, when its links are exactly the URLs the other channels got. Held artifacts
+ * keep a dry or forced run from replacing digest.md once a channel has it, so this is a backstop:
+ * a person decides when it fails, because sending anything else would split the week.
+ */
+function verifyDigest({ previous, deliveredTo, markdown }: PartDelivery): Verdict {
+  const redo = 'run with --force to send a new digest to every channel';
+  const refuse = (message: string): Verdict => ({
+    ok: false,
+    error: new DigestError(`${message}; ${redo}`, { step: 'deliver' }),
+  });
+  if (markdown === undefined) return refuse('The partly delivered digest.md is gone');
+  const links = new Set(Array.from(markdown.matchAll(SOURCE_LINE), (match) => match[1]));
+  const sent = new Set(previous.sentUrls);
+  if (links.size !== sent.size || [...sent].some((url) => !links.has(url))) {
+    return refuse(`digest.md no longer matches the digest ${deliveredTo.join(', ')} got`);
+  }
+  return { ok: true, markdown };
+}

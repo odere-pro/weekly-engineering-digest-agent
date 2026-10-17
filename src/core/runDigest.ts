@@ -1,6 +1,6 @@
 import type { Config } from '../config/schema.js';
-import { modelsByRole, requiredModels, type ModelProfile } from '../config/profiles.js';
-import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
+import { modelsByRole, modelsInUse, type ModelProfile } from '../config/profiles.js';
+import type { Delivery, FailureNote } from '../ports/Delivery.js';
 import type { InputGuard, OutputGuard } from '../ports/Guard.js';
 import type { ModelHealth, ModelProvider } from '../ports/ModelProvider.js';
 import type { ArtifactName, RunLock, RunStore } from '../ports/RunStore.js';
@@ -9,28 +9,24 @@ import type { Clock } from '../shared/clock.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import { isoWeekId } from '../shared/isoWeek.js';
 import { noopLogger, type Logger, type Tracer } from '../shared/telemetry.js';
-import { truncate } from '../shared/text.js';
-import { formatCheck } from './checks/formatCheck.js';
-import { linkCheck } from './checks/linkCheck.js';
-import { DIGEST_MIN_ITEMS } from './prompts/write.js';
-import { renderDigest } from './render.js';
+import { DIGEST_MIN_ITEMS } from './checks/formatCheck.js';
 import {
+  abortedError,
+  digestMessage,
   endRun,
   failureNote,
-  forEachDelivery,
   reachedAChannel,
   recordError,
+  shipDigest,
   toJson,
-  type DeliveryFailure,
   type Failure,
   type HeldArtifact,
 } from './runEnding.js';
+import { loadPartDelivery, resumeDelivery, type PartDelivery } from './runResume.js';
 import {
   WEEK_ID_PATTERN,
   exitCodeFor,
   type DeliveryId,
-  type DigestItem,
-  type Draft,
   type DraftOutcome,
   type ExitCode,
   type GuardCheckId,
@@ -44,11 +40,12 @@ import {
 } from './schemas.js';
 import { classifyStep } from './steps/classify.js';
 import { collectStep } from './steps/collect.js';
-import { flaggedBy, guardInputStep, planGuards } from './steps/guardInput.js';
+import { guardInputStep } from './steps/guardInput.js';
 import { guardOutputStep } from './steps/guardOutput.js';
+import { flaggedBy, planGuards } from './steps/guardRun.js';
 import { processStep } from './steps/process.js';
-import { selectStep } from './steps/select.js';
-import { writeStep } from './steps/write.js';
+import { selectStep, type SelectOutput } from './steps/select.js';
+import { writeCheckedStep, type CheckedDraft, type CodeChecked } from './steps/write.js';
 import { runWorkflow, type WorkflowStep } from './workflow.js';
 
 /** Everything the core needs; every entry point wires real or fake implementations. */
@@ -75,6 +72,13 @@ export interface RunOptions {
   force?: boolean;
   /** Override the ISO week (evals, catch-up). */
   weekId?: string;
+  /**
+   * Ends the run `failed`, releasing the lock, once it has fired. Checked before each step and
+   * before a resume's delivery, never inside one: a step that is running finishes first. The
+   * reason goes into run.json and the failure note as given, so the caller must compose it
+   * (a timeout message), never copy model or feed text into it.
+   */
+  signal?: AbortSignal;
 }
 
 export interface RunResult {
@@ -87,18 +91,7 @@ export interface RunResult {
 
 const WORKFLOW_ID = 'digest';
 const DAY_MS = 86_400_000;
-const SUBJECT_MAX_CHARS = 120;
-/**
- * Feed titles carry em dashes the format check rejects. A run of them, with the spaces and
- * commas around it, becomes one comma; at either end of a field it is dropped.
- */
-const EM_DASH_RUN = /[\s,]*\u2014[\s,\u2014]*/g;
-const EM_DASH_REPLACEMENT = ', ';
 const WRITE_FAILED = 'write';
-/** render.ts writes the headline as the digest's first `# ` line... */
-const HEADLINE_LINE = /^# (.+)$/m;
-/** ...and each item's link as a `[Source](url)` line of its own. */
-const SOURCE_LINE = /^\[Source\]\((.+)\)$/gm;
 
 /** One run's fixed inputs, resolved before anything runs. */
 interface RunContext {
@@ -107,6 +100,7 @@ interface RunContext {
   readonly dryRun: boolean;
   readonly sinceDays: number;
   readonly startedAt: Date;
+  readonly signal?: AbortSignal;
   /** Bound to the run id. */
   readonly logger: Logger;
   /** Input then output checks that are off this run, in config order. */
@@ -116,12 +110,6 @@ interface RunContext {
    * This run then holds its files in the chain state; `endRun` writes them if its record is saved.
    */
   readonly holdArtifacts: boolean;
-}
-
-/** A draft that passed the code checks, with the exact Markdown that was checked. */
-interface CheckedDraft {
-  readonly draft: Draft;
-  readonly markdown: string;
 }
 
 /** Ends the run early with this status; the remaining steps are skipped. */
@@ -139,8 +127,11 @@ interface ChainState {
   readonly failedSources: RunRecord['failedSources'];
   readonly kept: readonly Item[];
   readonly scored: readonly ScoredItem[];
+  /** Items that passed the process filters, before the top N cut. Unset until that step ran. */
+  readonly afterProcess?: number;
   readonly selected: readonly ScoredItem[];
-  readonly written: readonly Draft[];
+  /** The drafts after the writers' retry, each with its link and format check. */
+  readonly checked: readonly CodeChecked[];
   readonly drafts: readonly DraftOutcome[];
   readonly passed: readonly CheckedDraft[];
   readonly winner?: CheckedDraft;
@@ -158,20 +149,13 @@ interface ChainOutcome {
   readonly failure?: Failure;
 }
 
-/** A failed run that reached some channels, and the digest.md saved for the week, if any. */
-interface PartDelivered {
-  readonly previous: RunRecord;
-  readonly deliveredTo: readonly DeliveryId[];
-  readonly markdown: string | undefined;
-}
-
 const EMPTY_STATE: ChainState = {
   collected: [],
   failedSources: [],
   kept: [],
   scored: [],
   selected: [],
-  written: [],
+  checked: [],
   drafts: [],
   passed: [],
   sentUrls: [],
@@ -216,8 +200,8 @@ export async function runDigest(deps: DigestDeps, options: RunOptions = {}): Pro
       // Read again under the lock: a run that held it may have just sent this week.
       const previous = await deps.store.getRunRecord(ctx.weekId);
       if (previous?.status === 'sent' && !options.force) return skipped(ctx);
-      const partDelivered = options.force || ctx.dryRun ? undefined : await saved(ctx, previous);
-      if (partDelivered) return await resume(ctx, partDelivered);
+      const part = options.force || ctx.dryRun ? undefined : await loadPartDelivery(ctx, previous);
+      if (part) return await resumed(ctx, part);
       const chainCtx = { ...ctx, holdArtifacts: reachedAChannel(previous) };
       return await finish(chainCtx, await runChain(chainCtx), previous);
     } finally {
@@ -251,6 +235,7 @@ function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     startedAt,
     sinceDays,
     dryRun: options.dryRun ?? false,
+    signal: options.signal,
     logger: deps.logger.child({ runId: weekId }),
     disabledGuards: plannedDisabledGuards(deps),
     holdArtifacts: false,
@@ -278,94 +263,12 @@ async function releaseLock(ctx: RunContext, lock: RunLock): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Resuming a partly delivered week
-
-/** The previous run, when it failed after reaching some channels; with its digest.md if saved. */
-async function saved(
-  ctx: RunContext,
-  previous: RunRecord | undefined,
-): Promise<PartDelivered | undefined> {
-  const deliveredTo = previous?.deliveredTo ?? [];
-  if (previous?.status !== 'failed' || deliveredTo.length === 0) return undefined;
-  const markdown = await ctx.deps.store.readArtifact(ctx.weekId, 'digest.md');
-  return { previous, deliveredTo, markdown };
-}
-
-/**
- * Sends the saved digest to the channels the failed run missed: no health check, no model call.
- * The record keeps the previous run's results, with the new outcome, channels and deliver timing.
- */
-async function resume(ctx: RunContext, part: PartDelivered): Promise<RunResult> {
-  const { previous, deliveredTo } = part;
-  const missing = ctx.deps.deliveries.filter((delivery) => !deliveredTo.includes(delivery.id));
-  ctx.logger.info('Resuming the delivery of the saved digest', {
-    deliveredTo,
-    channels: missing.map((delivery) => delivery.id),
-  });
-  // With every configured channel served there is nothing to send, so digest.md does not matter.
-  const verdict = missing.length > 0 ? verifyDigest(part) : undefined;
-  const start: ChainState = { ...EMPTY_STATE, deliveredTo };
-  const { state, failure } = await settle(ctx, () =>
-    timed(ctx, 'deliver', start, async (_ctx, from, logger) => {
-      if (verdict === undefined) return from;
-      if (!verdict.ok) throw verdict.error;
-      const { markdown } = verdict;
-      const message = digestMessage(ctx.weekId, HEADLINE_LINE.exec(markdown)?.[1] ?? '', markdown);
-      return deliverDigest({ channels: missing, message, urls: previous.sentUrls }, from, logger);
-    }),
-  );
-  const { error: _previousError, ...kept } = previous;
-  const record: RunRecord = {
-    ...kept,
-    status: failure ? 'failed' : 'sent',
-    startedAt: ctx.startedAt.toISOString(),
-    finishedAt: ctx.deps.clock.now().toISOString(),
-    timings: [...previous.timings, ...state.timings],
-    deliveredTo: [...state.deliveredTo],
-    ...(failure && { error: recordError(failure) }),
-  };
-  await endRun(
-    ctx,
-    { record, failure, note: failure && failureNote(ctx.weekId, failure) },
-    previous,
-  );
-  // The digest is only named when it was sent, or tried, to a channel.
-  return {
-    record,
-    exitCode: exitCodeFor(record.status),
-    markdown: verdict?.ok ? verdict.markdown : undefined,
-  };
-}
-
-type Verdict =
-  | { readonly ok: true; readonly markdown: string }
-  | { readonly ok: false; readonly error: DigestError };
-
-/**
- * The saved digest, when its links are exactly the URLs the other channels got. Held artifacts
- * keep a dry or forced run from replacing digest.md once a channel has it, so this is a backstop:
- * a person decides when it fails, because sending anything else would split the week.
- */
-function verifyDigest({ previous, deliveredTo, markdown }: PartDelivered): Verdict {
-  const redo = 'run with --force to send a new digest to every channel';
-  const refuse = (message: string): Verdict => ({
-    ok: false,
-    error: new DigestError(`${message}; ${redo}`, { step: 'deliver' }),
-  });
-  if (markdown === undefined) return refuse('The partly delivered digest.md is gone');
-  const links = new Set(Array.from(markdown.matchAll(SOURCE_LINE), (match) => match[1]));
-  const sent = new Set(previous.sentUrls);
-  if (links.size !== sent.size || [...sent].some((url) => !links.has(url))) {
-    return refuse(`digest.md no longer matches the digest ${deliveredTo.join(', ')} got`);
-  }
-  return { ok: true, markdown };
-}
-
-// ---------------------------------------------------------------------------------------------
 // The chain
 
 function runChain(ctx: RunContext): Promise<ChainOutcome> {
   return settle(ctx, async () => {
+    const stopped = abortedError(ctx.signal);
+    if (stopped) throw stopped;
     await assertModelsReady(ctx);
     return runWorkflow(WORKFLOW_ID, chainSteps(ctx), EMPTY_STATE);
   });
@@ -399,11 +302,20 @@ function chainSteps(ctx: RunContext): WorkflowStep<ChainState>[] {
 
 type StageFn = (ctx: RunContext, state: ChainState, logger: Logger) => Promise<ChainState>;
 
-/** Skips a settled run; otherwise times, traces and logs the step with the run id and step. */
+/**
+ * Skips a settled run; stops one whose signal fired, keeping the steps that finished; otherwise
+ * times, traces and logs the step with the run id and step.
+ */
 function stage(ctx: RunContext, step: StepName, fn: StageFn): WorkflowStep<ChainState> {
   return {
     id: step,
-    run: (state) => (state.settled ? Promise.resolve(state) : timed(ctx, step, state, fn)),
+    run: (state) => {
+      if (state.settled) return Promise.resolve(state);
+      const stopped = abortedError(ctx.signal, step);
+      if (!stopped) return timed(ctx, step, state, fn);
+      ctx.logger.warn('Run aborted', { step, reason: errorMessage(stopped.cause) });
+      return Promise.reject(new StepFailure(step, state, stopped));
+    },
   };
 }
 
@@ -433,23 +345,27 @@ async function timed(
   }
 }
 
-/** Ollama must be up and have every model of the profile before anything is collected. */
+/**
+ * Ollama must be up and have every model this run uses before anything is collected. The model
+ * of a guard role whose checks are all off is not needed (F30).
+ */
 async function assertModelsReady(ctx: RunContext): Promise<void> {
-  const { model, profile } = ctx.deps;
+  const { model, profile, config } = ctx.deps;
   const health = await readHealth(model);
   if (!health.reachable) {
     const reason = health.error ? `: ${health.error}` : '';
     throw new DigestError(`Ollama is not reachable${reason}. Start Ollama and run again.`);
   }
+  const required = modelsInUse(profile, config.guards);
   const available = new Set(health.models.map((entry) => withTag(entry.name)));
-  const missing = requiredModels(profile).filter((tag) => !available.has(withTag(tag)));
+  const missing = required.filter((tag) => !available.has(withTag(tag)));
   if (missing.length > 0) {
     throw new DigestError(
       `Ollama is missing models for profile "${profile.name}": ${missing.join(', ')}. ` +
         'Pull them with "ollama pull <model>".',
     );
   }
-  ctx.logger.info('Models ready', { profile: profile.name, models: requiredModels(profile) });
+  ctx.logger.info('Models ready', { profile: profile.name, models: required });
 }
 
 async function readHealth(model: ModelProvider): Promise<ModelHealth> {
@@ -531,7 +447,8 @@ async function selectItems(
     topN: config.topN,
   });
   logger.info('Selected items', { selected: selected.length, dropped: dropped.length });
-  const next = { ...state, selected };
+  const cut = dropped.filter((item) => item.reason === 'below-top-n').length;
+  const next = { ...state, selected, afterProcess: selected.length + cut };
   if (selected.length >= DIGEST_MIN_ITEMS) return next;
   logger.info('Quiet week: too few items for a digest', { needed: DIGEST_MIN_ITEMS });
   return { ...next, settled: { status: 'quiet' } };
@@ -539,47 +456,38 @@ async function selectItems(
 
 async function write(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
   const { model, profile, config } = ctx.deps;
-  const { drafts, failures } = await writeStep(state.selected, {
-    model,
-    writers: profile.writers,
-    focusAreas: config.focusAreas,
-    weekId: ctx.weekId,
-    logger,
-  });
-  const written = drafts.map((draft) => prepareDraft(draft, config.topN));
-  const held = await keepArtifact(ctx, state, 'drafts.json', toJson({ drafts: written, failures }));
-  const failed = failures.map((failure) => rejected(failure.writer, [WRITE_FAILED]));
-  const next = { ...held, written, drafts: failed };
+  const { checked, writeFailures, retryFailures, rejections } = await writeCheckedStep(
+    state.selected,
+    {
+      model,
+      writers: profile.writers,
+      focusAreas: config.focusAreas,
+      weekId: ctx.weekId,
+      logger,
+      collected: state.collected,
+      disabledGuards: ctx.disabledGuards,
+      topN: config.topN,
+    },
+  );
+  const written = checked.map((entry) => entry.draft);
+  const failures = [
+    ...writeFailures,
+    ...retryFailures.map((failure) => ({ ...failure, retry: true })),
+  ];
+  const file = toJson({ drafts: written, failures, rejections });
+  const held = await keepArtifact(ctx, state, 'drafts.json', file);
+  const failed = writeFailures.map((failure) => rejected(failure.writer, [WRITE_FAILED]));
+  const next = { ...held, checked, drafts: failed };
   if (written.length > 0) return next;
   // Names writers only: a writer's error can quote the model's reply. drafts.json has it.
-  const writers = failures.map((failure) => failure.writer).join(', ');
+  const writers = writeFailures.map((failure) => failure.writer).join(', ');
   const error = `Every writer failed: ${writers}; drafts.json has the reasons`;
   throw new PartialFailure(next, new DigestError(error, { step: 'write' }));
 }
 
-/** Deterministic fixes the writers keep needing: at most topN items (defense in depth), no em dashes. */
-function prepareDraft(draft: Draft, topN: number): Draft {
-  const { digest } = draft;
-  const items = digest.items.slice(0, topN).map((item): DigestItem => ({
-    ...item,
-    title: withoutEmDashes(item.title),
-    area: withoutEmDashes(item.area),
-    summary: withoutEmDashes(item.summary),
-    whyItMatters: withoutEmDashes(item.whyItMatters),
-  }));
-  const headline = withoutEmDashes(digest.headline);
-  return { ...draft, digest: { ...digest, headline, intro: withoutEmDashes(digest.intro), items } };
-}
-
-function withoutEmDashes(text: string): string {
-  return text.replace(EM_DASH_RUN, (run: string, offset: number) =>
-    offset === 0 || offset + run.length === text.length ? '' : EM_DASH_REPLACEMENT,
-  );
-}
-
 /**
- * Link and format checks per draft, then the output guards over the drafts that passed them.
- * The guards go through all drafts guard by guard, so one guard model is loaded at a time.
+ * The output guards over the drafts that passed the link and format checks (made in the write
+ * step). The guards go through all drafts guard by guard, so one guard model is loaded at a time.
  */
 async function checkDrafts(
   ctx: RunContext,
@@ -587,12 +495,8 @@ async function checkDrafts(
   logger: Logger,
 ): Promise<ChainState> {
   const { outputGuards, config } = ctx.deps;
-  const checked = state.written.map((draft) => codeCheck(draft, state.collected, ctx));
-  const failing = checked.filter((entry) => entry.rejectedBy.length > 0);
-  for (const { draft, rejectedBy } of failing) {
-    logger.warn('Draft failed the checks', { writer: draft.writer, rejectedBy });
-  }
-  const clean = checked.filter((entry) => entry.rejectedBy.length === 0);
+  const failing = state.checked.filter((entry) => entry.rejectedBy.length > 0);
+  const clean = state.checked.filter((entry) => entry.rejectedBy.length === 0);
   const guarded = await guardOutputStep(
     clean.map((entry) => entry.draft),
     state.selected,
@@ -612,19 +516,6 @@ async function checkDrafts(
   ]);
   const next = { ...state, drafts, passed };
   return passed.length > 0 ? next : { ...next, settled: blocked(drafts) };
-}
-
-function codeCheck(
-  draft: Draft,
-  collected: readonly Item[],
-  ctx: RunContext,
-): CheckedDraft & { rejectedBy: string[] } {
-  const markdown = renderDigest(draft.digest, { disabledGuards: ctx.disabledGuards });
-  const rejectedBy = [
-    ...(linkCheck(draft.digest, markdown, collected).ok ? [] : ['linkCheck']),
-    ...(formatCheck(draft.digest, markdown).ok ? [] : ['formatCheck']),
-  ];
-  return { draft, markdown, rejectedBy };
 }
 
 function rejected(writer: string, rejectedBy: readonly string[]): DraftOutcome {
@@ -651,20 +542,20 @@ async function pickWinner(ctx: RunContext, state: ChainState, logger: Logger): P
   const { model, profile, config } = ctx.deps;
   const [first, ...others] = state.passed;
   if (!first) throw new DigestError('select ran without a passing draft', { step: 'select' });
-  const judged =
+  const selection: SelectOutput =
     profile.judge !== null && others.length > 0
       ? await selectStep(
           state.passed.map((entry) => entry.draft),
           state.selected,
           { model, focusAreas: config.focusAreas, writerOrder: profile.writers, logger },
         )
-      : { winner: first.draft, scores: [] };
-  const winner = state.passed.find((entry) => entry.draft === judged.winner);
+      : { winner: first.draft, scores: [], judged: false };
+  const winner = state.passed.find((entry) => entry.draft === selection.winner);
   if (!winner)
     throw new DigestError('The judge picked a draft it was not given', { step: 'select' });
   const held = await keepArtifact(ctx, state, 'digest.md', winner.markdown);
-  logger.info('Winner chosen', { writer: winner.draft.writer, judged: judged.scores.length > 0 });
-  return { ...held, winner, drafts: withScores(state.drafts, judged.scores) };
+  logger.info('Winner chosen', { writer: winner.draft.writer, judged: selection.judged });
+  return { ...held, winner, drafts: withScores(state.drafts, selection.scores) };
 }
 
 function withScores(
@@ -682,49 +573,19 @@ async function deliver(ctx: RunContext, state: ChainState, logger: Logger): Prom
   if (!winner) throw new DigestError('Nothing to deliver: no winning draft', { step: 'deliver' });
   const { headline, items } = winner.draft.digest;
   const message = digestMessage(ctx.weekId, headline, winner.markdown);
-  const urls = items.map((item) => item.url);
-  return deliverDigest({ channels: ctx.deps.deliveries, message, urls }, state, logger);
-}
-
-interface Shipment {
-  readonly channels: readonly Delivery[];
-  readonly message: DigestMessage;
-  /** The digest's URLs; they count as sent once any channel has them, for cross-week dedupe. */
-  readonly urls: readonly string[];
-}
-
-/** Tries every channel and records the ones that took it; any failed channel fails the step. */
-async function deliverDigest(
-  { channels, message, urls }: Shipment,
-  state: ChainState,
-  logger: Logger,
-): Promise<ChainState> {
-  const failures = await forEachDelivery(channels, (delivery) => delivery.sendDigest(message));
-  const failed = new Set(failures.map((failure) => failure.id));
-  const reached = channels.map((delivery) => delivery.id).filter((id) => !failed.has(id));
-  const deliveredTo = [...state.deliveredTo, ...reached];
-  const next = { ...state, deliveredTo, sentUrls: deliveredTo.length > 0 ? [...urls] : [] };
-  if (failures.length > 0) throw new PartialFailure(next, deliveryError(deliveredTo, failures));
-  logger.info('Digest delivered', { channels: reached });
+  const { deliveredTo, error } = await shipDigest(ctx.deps.deliveries, message, state.deliveredTo);
+  // Any channel that took the digest counts its URLs as sent, for cross-week dedupe.
+  const sentUrls = deliveredTo.length > 0 ? items.map((item) => item.url) : [];
+  const next = { ...state, deliveredTo, sentUrls };
+  if (error) throw new PartialFailure(next, error);
+  logger.info('Digest delivered', { channels: deliveredTo });
   return next;
 }
 
-/** Names the channels that did get the digest; a rerun sends only to the others. */
-function deliveryError(
-  deliveredTo: readonly DeliveryId[],
-  failures: readonly DeliveryFailure[],
-): DigestError {
-  const detail = failures.map((failure) => `${failure.id} (${failure.error})`).join(', ');
-  const done = deliveredTo.length > 0 ? `; delivered on ${deliveredTo.join(', ')}` : '';
-  return new DigestError(`Delivery failed on ${detail}${done}`, { step: 'deliver' });
-}
-
-function digestMessage(weekId: string, headline: string, markdown: string): DigestMessage {
-  const oneLine = headline.replace(/\s+/g, ' ').trim();
-  const subject = oneLine
-    ? `Engineering digest ${weekId}: ${oneLine}`
-    : `Engineering digest ${weekId}`;
-  return { weekId, subject: truncate(subject, SUBJECT_MAX_CHARS), markdown };
+/** A resume sends the saved digest only; its record keeps the previous run's results. */
+async function resumed(ctx: RunContext, part: PartDelivery): Promise<RunResult> {
+  const { record, markdown } = await resumeDelivery(ctx, part);
+  return { record, exitCode: exitCodeFor(record.status), markdown };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -776,6 +637,7 @@ function buildRecord(
       collected: state.collected.length,
       afterGuardInput: state.kept.length,
       classified: state.scored.length,
+      ...(state.afterProcess !== undefined && { afterProcess: state.afterProcess }),
       selected: state.selected.length,
       digestItems: state.winner?.draft.digest.items.length ?? 0,
     },
