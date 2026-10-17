@@ -155,7 +155,9 @@ describe.skipIf(process.env.LIVE_OLLAMA !== '1')('digest smoke run on light (liv
     for (const link of links) {
       expect(run.collected.some((item) => sameUrl(item.url, link))).toBe(true);
     }
-    expect([...links].sort()).toEqual([...run.result.record.sentUrls].sort());
+    expect(new Set(links).size).toBe(links.length);
+    // A dry run delivers nothing, so since W2-08 it records no sent URLs (next week's dedupe).
+    expect(run.result.record.sentUrls).toEqual([]);
   });
 
   it('leaves a valid run record and the digest on disk, and delivers nothing', async () => {

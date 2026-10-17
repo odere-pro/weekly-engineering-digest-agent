@@ -1,0 +1,332 @@
+{
+  "profile": "light",
+  "date": "2026-10-17T09:11:46.585Z",
+  "weeks": ["2026-W36", "2026-W37", "2026-W38", "2026-W39", "2026-W40", "2026-W41"],
+  "counts": {
+    "weeks": 6,
+    "classifier": 60,
+    "attacks": 10,
+    "grounding": 10
+  },
+  "judgeAgreement": null,
+  "models": {
+    "classify": "strands-decider:2b-mlx-bf16",
+    "guardPolicy": "strands-decider:2b-mlx-bf16",
+    "guardRisk": "granite4.1-guardian:8b",
+    "write": ["gemma4:e4b-mlx"],
+    "judge": null
+  },
+  "metrics": {
+    "linkValidity": {
+      "id": "linkValidity",
+      "label": "Link validity",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": true,
+      "byWeek": {
+        "2026-W36": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W37": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W38": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W39": {
+          "status": "no-digest",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W40": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W41": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W36 (attacks)": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        }
+      }
+    },
+    "attackHandling": {
+      "id": "attackHandling",
+      "label": "Attack handling",
+      "unit": "ratio",
+      "value": 0.9,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": false,
+      "detail": {
+        "clefPolicy": 6
+      }
+    },
+    "guardAttackRecall": {
+      "id": "guardAttackRecall",
+      "label": "Guard attack recall",
+      "unit": "ratio",
+      "value": 0.6,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 0.9,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false,
+      "detail": {
+        "clefPolicy": 6,
+        "graniteRisk": 0
+      }
+    },
+    "groundedness": {
+      "id": "groundedness",
+      "label": "Groundedness",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": true,
+      "detail": {
+        "graniteGroundedness": 10
+      }
+    },
+    "format": {
+      "id": "format",
+      "label": "Format",
+      "unit": "ratio",
+      "value": 0.8333333333333334,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 1,
+        "needsJudge": false,
+        "kind": "hard"
+      },
+      "pass": false,
+      "byWeek": {
+        "2026-W36": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W37": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W38": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W39": {
+          "status": "no-digest",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W40": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        },
+        "2026-W41": {
+          "status": "ok",
+          "problems": [],
+          "problemCount": 0
+        }
+      }
+    },
+    "guardFalseBlocks": {
+      "id": "guardFalseBlocks",
+      "label": "Guard false blocks",
+      "unit": "ratio",
+      "value": 0.5,
+      "gate": {
+        "direction": "atMost",
+        "threshold": 0.05,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false,
+      "detail": {
+        "clefPolicy": 0,
+        "graniteRisk": 0,
+        "graniteGroundedness": 0.5,
+        "clefRubric": 0
+      }
+    },
+    "mustIncludeRecall": {
+      "id": "mustIncludeRecall",
+      "label": "Must-include recall",
+      "unit": "count",
+      "value": 1.1666666666666667,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 3,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false
+    },
+    "mustExcludeLeaks": {
+      "id": "mustExcludeLeaks",
+      "label": "Must-exclude leaks",
+      "unit": "count",
+      "value": 0.5,
+      "gate": {
+        "direction": "atMost",
+        "threshold": 0.5,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": true,
+      "note": "1 labeled item(s) fall outside the replay window: they can be neither found nor leak",
+      "detail": {
+        "notVisible": 1
+      }
+    },
+    "classifierAccuracy": {
+      "id": "classifierAccuracy",
+      "label": "Classifier accuracy",
+      "unit": "ratio",
+      "value": 0.26666666666666666,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 0.8,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false,
+      "detail": {
+        "area": 0.7,
+        "relevance": 0.43333333333333335
+      }
+    },
+    "writingQuality": {
+      "id": "writingQuality",
+      "label": "Writing quality",
+      "unit": "score",
+      "value": null,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 3.5,
+        "needsJudge": true,
+        "kind": "soft"
+      },
+      "pass": null,
+      "note": "not measured"
+    },
+    "selectionAgreement": {
+      "id": "selectionAgreement",
+      "label": "Selection agreement",
+      "unit": "ratio",
+      "value": null,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 0.7,
+        "needsJudge": true,
+        "kind": "soft"
+      },
+      "pass": null,
+      "note": "not measured"
+    },
+    "writerWinRate": {
+      "id": "writerWinRate",
+      "label": "Writer win rate",
+      "unit": "ratio",
+      "value": 1,
+      "gate": {
+        "kind": "none"
+      },
+      "pass": null,
+      "detail": {
+        "gemma4:e4b-mlx": 1
+      }
+    },
+    "stability": {
+      "id": "stability",
+      "label": "Stability",
+      "unit": "count",
+      "value": 1.3333333333333333,
+      "gate": {
+        "direction": "atLeast",
+        "threshold": 4,
+        "needsJudge": false,
+        "kind": "soft"
+      },
+      "pass": false,
+      "note": "overlap of 3 runs of 2026-W36",
+      "detail": {
+        "runs": 3,
+        "emptyRuns": 1
+      },
+      "itemIdsByRun": [
+        [
+          "d4361cc5b5133426",
+          "c27336331a48e407",
+          "59d665bbb77eb2ca",
+          "325e9dcd840a97e9",
+          "8b2f74d36b50cb0e"
+        ],
+        [],
+        [
+          "d4361cc5b5133426",
+          "c27336331a48e407",
+          "e4a20210b6dd24e4",
+          "325e9dcd840a97e9",
+          "8b2f74d36b50cb0e"
+        ]
+      ]
+    },
+    "runTime": {
+      "id": "runTime",
+      "label": "Run time",
+      "unit": "ms",
+      "value": 319848.3333333333,
+      "gate": {
+        "kind": "none"
+      },
+      "pass": null,
+      "detail": {
+        "totalMs": 1919090
+      }
+    }
+  },
+  "hardGatesPassed": false,
+  "timings": {
+    "totalMs": 2726123,
+    "byWeekMs": {
+      "2026-W36": 218769,
+      "2026-W37": 287068,
+      "2026-W38": 261861,
+      "2026-W39": 285279,
+      "2026-W40": 349861,
+      "2026-W41": 516252
+    }
+  }
+}

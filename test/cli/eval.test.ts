@@ -1,15 +1,21 @@
 import { join } from 'node:path';
 import { describe, expect, it, vi, type Mock } from 'vitest';
 import { assembleMetrics, failedHardGates, type Measurement } from '../../evals/metrics.js';
-import { METRIC_IDS, ScorecardSchema, type MetricId, type Scorecard } from '../../evals/schema.js';
+import {
+  METRIC_IDS,
+  ScorecardSchema,
+  type MetricId,
+  type Scorecard,
+  type WeekDetail,
+} from '../../evals/schema.js';
 import type { DigestDeps } from '../../src/core/runDigest.js';
 import { evalCommand, formatScorecard, type EvalCommandIo } from '../../src/cli/eval.js';
 import { loadConfig, type LoadedConfig } from '../../src/config/load.js';
 import { NON_MAC_FALLBACK, PROFILES, type Platform } from '../../src/config/profiles.js';
-import type { ProfileName } from '../../src/config/schema.js';
+import type { ConfigInput, ProfileName } from '../../src/config/schema.js';
 import { DigestError } from '../../src/shared/errors.js';
-import { makeConfig } from '../builders.js';
-import { fixedClock } from '../fakes/index.js';
+import { makeConfig, makeDraft, makeItem } from '../builders.js';
+import { FakeModelProvider, fixedClock } from '../fakes/index.js';
 
 function makeScorecard(
   profile: ProfileName,
@@ -43,6 +49,7 @@ interface Harness {
   runEval: Mock<EvalCommandIo['runEval']>;
   loadConfig: Mock<EvalCommandIo['loadConfig']>;
   buildApp: Mock<EvalCommandIo['buildApp']>;
+  createProvider: Mock<EvalCommandIo['createProvider']>;
 }
 
 const CONFIG_FIXTURES = join(import.meta.dirname, '..', 'fixtures', 'config');
@@ -59,6 +66,10 @@ interface HarnessOptions {
   hostEnv?: Pick<LoadedConfig['env'], 'DIGEST_HOST_OS' | 'DIGEST_HOST_ARCH'>;
   /** The platform the loader resolved the profile for; defaults to a Mac unless `hostEnv` is set. */
   platform?: Platform;
+  /** The environment the command sees (EVAL_JUDGE lives here); defaults to an empty one. */
+  env?: EvalCommandIo['env'];
+  /** Config fields to set besides the profile (model timeouts, retries, focus areas). */
+  config?: Partial<ConfigInput>;
 }
 
 /** Runs `run` while `process` claims to be `platform`; the real values come back afterwards. */
@@ -87,7 +98,7 @@ function harness(
   const files = new Map<string, string>();
   const dirs: string[] = [];
   const loaded: LoadedConfig = {
-    config: makeConfig({ profile: configProfile }),
+    config: makeConfig({ ...options.config, profile: configProfile }),
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...options.hostEnv },
     secrets: {},
     profile: PROFILES[configProfile],
@@ -101,8 +112,11 @@ function harness(
   const runEval = vi.fn<EvalCommandIo['runEval']>((options) =>
     Promise.resolve(scorecardFor(options.profile)),
   );
+  const createProvider = vi.fn<EvalCommandIo['createProvider']>(() => new FakeModelProvider());
   const io: EvalCommandIo = {
     casesDir: 'evals',
+    env: options.env ?? {},
+    createProvider,
     loadConfig,
     buildApp,
     runDigest: () => Promise.reject(new Error('runDigest is not called by the fake')),
@@ -119,7 +133,7 @@ function harness(
     stdout: (text) => out.push(text),
     stderr: (text) => err.push(text),
   };
-  return { io, out, err, files, dirs, runEval, loadConfig, buildApp };
+  return { io, out, err, files, dirs, runEval, loadConfig, buildApp, createProvider };
 }
 
 describe('formatScorecard', () => {
@@ -166,6 +180,230 @@ describe('formatScorecard', () => {
     expect(text).toContain('graniteRisk=0.1');
     expect(text).toMatch(/Writing quality: judge agrees 50% of the time.*reported, not gated/);
     expect(text).toMatch(/Writing quality\s+1\.00\s+soft ≥ 3\.5 \(judge\)\s+-/);
+  });
+
+  describe('per-week problems', () => {
+    const FORMAT_WEEKS: Record<string, WeekDetail> = {
+      '2026-W36': { status: 'ok', problems: [], problemCount: 0 },
+      '2026-W37': {
+        status: 'failed',
+        problems: [
+          'Item 2 has no "whyItMatters"',
+          'Headline is longer than 120 characters',
+          'Intro is empty',
+          'Item 4 repeats item 1',
+          'Item 5 has no url',
+        ],
+        problemCount: 7,
+      },
+      '2026-W38': { status: 'no-digest', problems: [], problemCount: 0 },
+    };
+
+    const failedWeek = (problems: string[]): WeekDetail => ({
+      status: 'failed',
+      problems,
+      problemCount: problems.length,
+    });
+
+    /** The problem lines printed for one failed format week. */
+    function printedProblems(problems: string[]): string[] {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          format: { value: 0, byWeek: { '2026-W41': failedWeek(problems) } },
+        }),
+      );
+      return text.split('\n').filter((line) => line.startsWith('    - '));
+    }
+
+    it('names every week that failed or produced no digest, with the first problems', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { format: { value: 0.33, byWeek: FORMAT_WEEKS } }),
+      );
+
+      expect(text).toContain('Week problems:');
+      expect(text).toContain('  Format 2026-W37: failed, 7 problems');
+      expect(text).toContain('    - Item 2 has no "whyItMatters"');
+      expect(text).toContain('    - Intro is empty');
+      expect(text).toContain('  Format 2026-W38: no digest');
+    });
+
+    it('leaves out the weeks that passed and the problems past the first three', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { format: { value: 0.33, byWeek: FORMAT_WEEKS } }),
+      );
+
+      expect(text).not.toContain('2026-W36');
+      expect(text).not.toContain('Item 4 repeats item 1');
+    });
+
+    it('counts the problems the file dropped as well as the ones it only holds', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { format: { value: 0.33, byWeek: FORMAT_WEEKS } }),
+      );
+      // 7 found, 5 kept in the file, 3 printed.
+      expect(text).toContain('    ... 4 more (the scorecard file lists the first 5 of 7)');
+    });
+
+    it('points to the file when it holds every problem that was not printed', () => {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          format: { value: 0, byWeek: { '2026-W41': failedWeek(['a', 'b', 'c', 'd', 'e']) } },
+        }),
+      );
+      expect(text).toContain('    ... 2 more in the scorecard file');
+    });
+
+    it('says "1 problem" for one, and shows no "more" line when all are listed', () => {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          linkValidity: {
+            value: 0.5,
+            byWeek: {
+              '2026-W40 (attacks)': {
+                status: 'failed',
+                problems: ['https://evil.example/x is not in the sources'],
+                problemCount: 1,
+              },
+            },
+          },
+        }),
+      );
+
+      expect(text).toContain('  Link validity 2026-W40 (attacks): failed, 1 problem');
+      expect(text).toContain('    - https://evil.example/x is not in the sources');
+      expect(text).not.toContain('more in the scorecard file');
+    });
+
+    it('prints a failed week even when its problem list is empty', () => {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          format: {
+            value: 0,
+            byWeek: { '2026-W41': { status: 'failed', problems: [], problemCount: 0 } },
+          },
+        }),
+      );
+
+      expect(text).toContain('  Format 2026-W41: failed');
+      expect(text).not.toContain('0 problems');
+    });
+
+    it.each([
+      [
+        'an escape sequence, newline and tab',
+        'bad\nline\u001b[31m red\ttab',
+        'bad line [31m red tab',
+      ],
+      ['a C1 control and DEL', 'a\u009b31mb\u007fc', 'a 31mb c'],
+      ['a bidirectional override', 'https://good.example/\u202Eevil', 'https://good.example/ evil'],
+      ['a line separator', 'one\u2028two', 'one two'],
+      ['zero-width and tag characters', 'a\u200Bb\u{E0041}c', 'a b c'],
+      ['a trailing newline', 'text\n', 'text'],
+    ])('prints a problem with %s on one clean line', (_name, problem, printed) => {
+      expect(printedProblems([problem])).toEqual([`    - ${printed}`]);
+    });
+
+    it('cuts a long problem to one short line', () => {
+      expect(printedProblems(['x'.repeat(200)])).toEqual([`    - ${'x'.repeat(117)}...`]);
+    });
+
+    it('does not split an emoji when it cuts', () => {
+      const line = printedProblems([`${'a'.repeat(116)}\u{1F600}tail`])[0] ?? '';
+      expect(line).toBe(`    - ${'a'.repeat(116)}...`);
+    });
+
+    it('prints no section when every week is fine or the scorecard has no per-week detail', () => {
+      const allOk = formatScorecard(
+        makeScorecard('light', {
+          format: {
+            value: 1,
+            byWeek: { '2026-W36': { status: 'ok', problems: [], problemCount: 0 } },
+          },
+        }),
+      );
+
+      expect(allOk).not.toContain('Week problems');
+      expect(formatScorecard(makeScorecard('light'))).not.toContain('Week problems');
+    });
+  });
+
+  describe('item ids by run', () => {
+    const RUNS = [
+      ['a1b2c3d4e5f60718', '1122334455667788'],
+      [],
+      ['a1b2c3d4e5f60718', '99aabbccddeeff00', '0123456789abcdef'],
+    ];
+
+    it('lists each run of the repeated week with its item count and short ids', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { stability: { value: 0, itemIdsByRun: RUNS } }),
+      );
+
+      expect(text).toContain(
+        'Item ids by run (first 8 characters; the scorecard file has them in full):',
+      );
+      expect(text).toContain('  Stability run 1: 2 items: a1b2c3d4 11223344');
+      expect(text).toContain('  Stability run 3: 3 items: a1b2c3d4 99aabbcc 01234567');
+    });
+
+    it('shows an empty run as "no items", so empty digests differ from different picks', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { stability: { value: 0, itemIdsByRun: RUNS } }),
+      );
+      expect(text).toContain('  Stability run 2: no items');
+    });
+
+    it('says "1 item" for a single item', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { stability: { value: 1, itemIdsByRun: [['a1b2c3d4e5f60718']] } }),
+      );
+      expect(text).toContain('  Stability run 1: 1 item: a1b2c3d4');
+    });
+
+    it('shows a link that matched no item as "unmatched", never the URL a model wrote', () => {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          stability: {
+            value: 0,
+            itemIdsByRun: [['unmatched:https://evil.example/\u202Ex', 'a1b2c3d4e5f60718']],
+          },
+        }),
+      );
+      expect(text).toContain('  Stability run 1: 2 items: unmatched a1b2c3d4');
+      expect(text).not.toContain('evil.example');
+    });
+
+    it('prints an id with a control character on one clean line', () => {
+      const text = formatScorecard(
+        makeScorecard('light', { stability: { value: 0, itemIdsByRun: [['ab\u001b[31mcdefgh']] } }),
+      );
+      expect(text).toContain('  Stability run 1: 1 item: ab [31mc');
+      expect(text).not.toContain('\u001b');
+    });
+
+    it('prints no section for a scorecard without item ids', () => {
+      const text = formatScorecard(makeScorecard('light', { stability: { value: 4 } }));
+      expect(text).not.toContain('Item ids by run');
+    });
+
+    it('keeps the order: details, week problems, item ids, notes, verdict', () => {
+      const text = formatScorecard(
+        makeScorecard('light', {
+          guardFalseBlocks: { value: 0.1, detail: { clefPolicy: 0.1 } },
+          format: {
+            value: 0,
+            byWeek: { '2026-W41': { status: 'no-digest', problems: [], problemCount: 0 } },
+          },
+          stability: { value: 0, itemIdsByRun: RUNS, note: 'overlap of 3 runs of 2026-W36' },
+        }),
+      );
+
+      const order = ['Details:', 'Week problems:', 'Item ids by run', 'Notes:', 'Hard gates'].map(
+        (heading) => text.indexOf(heading),
+      );
+      expect(order.every((at) => at >= 0)).toBe(true);
+      expect([...order].sort((a, b) => a - b)).toEqual(order);
+    });
   });
 
   it('shows the judge agreement, or that there is none', () => {
@@ -400,6 +638,147 @@ describe('evalCommand', () => {
       expect(h.err.join('')).toMatch(/DIGEST_HOST_ARCH "sparc"/);
       expect(h.runEval).not.toHaveBeenCalled();
       expect(h.files.size).toBe(0);
+    });
+  });
+
+  describe('eval judge (EVAL_JUDGE)', () => {
+    const JUDGE_TAG = 'clef:latest';
+
+    /** The deps the command handed to runEval on its first call. */
+    async function depsFor(h: Harness): Promise<Parameters<EvalCommandIo['runEval']>[1]> {
+      await evalCommand({ profile: 'light' }, h.io);
+      const deps = h.runEval.mock.calls[0]?.[1];
+      if (!deps) throw new Error('runEval was not called');
+      return deps;
+    }
+
+    it('gives runEval no judge when EVAL_JUDGE is not set', async () => {
+      const h = harness();
+
+      const deps = await depsFor(h);
+
+      expect(deps).not.toHaveProperty('judge');
+      expect(h.createProvider).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['empty', ''],
+      ['blank', '   '],
+    ])('gives runEval no judge when EVAL_JUDGE is %s', async (_name, value) => {
+      const h = harness(undefined, 'quality', { env: { EVAL_JUDGE: value } });
+
+      const deps = await depsFor(h);
+
+      expect(deps).not.toHaveProperty('judge');
+      expect(h.createProvider).not.toHaveBeenCalled();
+    });
+
+    it('wires a judge that uses the model named in EVAL_JUDGE', async () => {
+      const h = harness(undefined, 'quality', { env: { EVAL_JUDGE: ` ${JUDGE_TAG} ` } });
+
+      const deps = await depsFor(h);
+
+      expect(deps.judge?.model).toBe(JUDGE_TAG);
+    });
+
+    it('builds the judge provider from the loaded config, with the judge tag in the profile', async () => {
+      // light has no judge of its own: the tag must come from EVAL_JUDGE, or the judge role has no model.
+      const tag = 'judge-under-test:1b';
+      const h = harness(undefined, 'light', {
+        env: { EVAL_JUDGE: tag },
+        config: {
+          models: { retries: 4, timeoutsMs: { judge: 90_000 }, think: { judge: false } },
+        },
+      });
+
+      await depsFor(h);
+
+      expect(PROFILES.light.judge).toBeNull();
+      expect(h.createProvider).toHaveBeenCalledTimes(1);
+      const options = h.createProvider.mock.calls[0]?.[0];
+      expect(options).toMatchObject({
+        baseUrl: 'http://localhost:11434',
+        profile: { ...PROFILES.light, judge: tag },
+        timeoutsMs: { judge: 90_000 },
+        think: { judge: false },
+        retries: 4,
+      });
+      expect(options?.logger).toBeDefined();
+    });
+
+    it('asks the judge role of that provider and turns the levels into a 1-5 score', async () => {
+      const provider = new FakeModelProvider({
+        decide: (request) =>
+          Object.fromEntries(
+            Object.keys(request.questions).map((id) => [
+              id,
+              { type: 'score', level: 3, score: 0.75, probabilities: {}, confidence: 1 } as const,
+            ]),
+          ),
+      });
+      const h = harness(undefined, 'quality', {
+        env: { EVAL_JUDGE: JUDGE_TAG },
+        config: { focusAreas: ['Platform engineering'] },
+      });
+      h.createProvider.mockReturnValue(provider);
+      const items = [makeItem(), makeItem()];
+
+      const deps = await depsFor(h);
+      const score = await deps.judge?.score(makeDraft(items, 'gemma4:e4b-mlx'), items);
+
+      expect(provider.decideCalls).toHaveLength(1);
+      expect(provider.decideCalls[0]?.role).toBe('judge');
+      expect(provider.decideCalls[0]?.questions['focusFit']?.instructions).toContain(
+        'Platform engineering',
+      );
+      expect(score).toEqual({
+        writer: 'gemma4:e4b-mlx',
+        score: 4,
+        byCriterion: { accuracy: 4, clarity: 4, whyItMatters: 4, focusFit: 4 },
+      });
+    });
+
+    it('builds one judge and hands the same one to every profile of --profile all', async () => {
+      const h = harness(undefined, 'quality', { env: { EVAL_JUDGE: JUDGE_TAG } });
+
+      await evalCommand({ profile: 'all' }, h.io);
+
+      expect(h.createProvider).toHaveBeenCalledTimes(1);
+      const judges = h.runEval.mock.calls.map(([, deps]) => deps.judge);
+      expect(judges).toHaveLength(3);
+      expect(judges[0]).toBeDefined();
+      expect(new Set(judges).size).toBe(1);
+    });
+
+    it('does not build a judge for an unknown profile', async () => {
+      const h = harness(undefined, 'quality', { env: { EVAL_JUDGE: JUDGE_TAG } });
+
+      expect(await evalCommand({ profile: 'turbo' }, h.io)).toBe(1);
+
+      expect(h.createProvider).not.toHaveBeenCalled();
+    });
+
+    it('reads the process environment by default', async () => {
+      vi.stubEnv('EVAL_JUDGE', JUDGE_TAG);
+      try {
+        const { env: _env, createProvider: _factory, ...io } = harness().io;
+        const tags: (string | null | undefined)[] = [];
+
+        await evalCommand(
+          {},
+          {
+            ...io,
+            createProvider: (options) => {
+              tags.push(options.profile.judge);
+              return new FakeModelProvider();
+            },
+          },
+        );
+
+        expect(tags).toEqual([JUDGE_TAG]);
+      } finally {
+        vi.unstubAllEnvs();
+      }
     });
   });
 

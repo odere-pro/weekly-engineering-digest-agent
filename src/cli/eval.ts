@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { createEvalJudge, evalJudgeTag, type EvalJudge } from '../../evals/judge/evalJudge.js';
 import { failedHardGates } from '../../evals/metrics.js';
 import { runEval, type EvalDeps, type EvalOptions } from '../../evals/runEval.js';
 import {
@@ -7,14 +8,19 @@ import {
   ScorecardSchema,
   type MetricResult,
   type Scorecard,
+  type WeekDetail,
 } from '../../evals/schema.js';
+import { createOllamaProvider, type OllamaProviderOptions } from '../adapters/models/ollama.js';
 import { buildApp, type AppHandle } from '../app/container.js';
 import { loadConfig, platformOf, type LoadedConfig } from '../config/load.js';
 import { resolveProfile, type Platform } from '../config/profiles.js';
 import { ProfileNameSchema, type ProfileName } from '../config/schema.js';
 import { runDigest } from '../core/runDigest.js';
+import type { ModelProvider } from '../ports/ModelProvider.js';
 import { systemClock, type Clock } from '../shared/clock.js';
 import { DigestError } from '../shared/errors.js';
+import { noopLogger } from '../shared/telemetry.js';
+import { truncate } from '../shared/text.js';
 
 export interface EvalCommandOptions {
   /** Path to digest.config.json. */
@@ -27,6 +33,10 @@ export interface EvalCommandOptions {
 export interface EvalCommandIo {
   /** Folder with the recorded weeks and cases; scorecards go to <casesDir>/scorecards. */
   casesDir: string;
+  /** Environment variables the command reads: EVAL_JUDGE names the judge model (F10). */
+  env: Readonly<Record<string, string | undefined>>;
+  /** Builds the model provider behind the eval judge. */
+  createProvider: (options: OllamaProviderOptions) => ModelProvider;
   loadConfig: (options: { configPath?: string }) => Promise<LoadedConfig>;
   buildApp: (loaded: LoadedConfig) => Promise<AppHandle>;
   runDigest: EvalDeps['runDigest'];
@@ -42,9 +52,25 @@ const ALL_PROFILES = 'all';
 const EXIT_OK = 0;
 const EXIT_HARD_GATE_FAILED = 1;
 const DETAIL_DECIMALS = 3;
+/** Printing keeps a scorecard to a screen; the JSON file has every problem and every id in full. */
+const MAX_PROBLEMS_SHOWN = 3;
+const MAX_PRINTED_PROBLEM_CHARS = 120;
+const SHORT_ID_CHARS = 8;
+/** The id evals/metrics.ts gives a digest link that matches no collected item: `unmatched:<url>`. */
+const UNMATCHED_ID_PREFIX = 'unmatched:';
+const UNMATCHED_ID_TEXT = 'unmatched';
+/**
+ * Text a model wrote must not move the cursor, recolor the terminal or reorder what is read:
+ * control characters (incl. escapes, newlines, C1), line and paragraph separators, zero-width
+ * and bidirectional marks, and tag characters.
+ */
+const UNSAFE_TEXT =
+  /[\p{Cc}\u2028\u2029\u200B-\u200F\u202A-\u202E\u2066-\u2069\u{E0000}-\u{E007F}]+/gu;
 
 const defaultIo: EvalCommandIo = {
   casesDir: 'evals',
+  env: process.env,
+  createProvider: createOllamaProvider,
   loadConfig: (options) => loadConfig(options),
   buildApp,
   runDigest,
@@ -98,16 +124,38 @@ function withProfile(loaded: LoadedConfig, name: ProfileName, platform: Platform
   };
 }
 
+/**
+ * The judge that scores the winning digest on a profile without one of its own, when EVAL_JUDGE
+ * names a model; undefined otherwise, and the harness then leaves writing quality unmeasured.
+ */
+function buildEvalJudge(loaded: LoadedConfig, io: EvalCommandIo): EvalJudge | undefined {
+  const model = evalJudgeTag(io.env);
+  if (model === undefined) return undefined;
+  const { config, env, profile } = loaded;
+  const provider = io.createProvider({
+    baseUrl: env.OLLAMA_URL,
+    // The judge role resolves through the profile, and light and fast have no judge of their own.
+    profile: { ...profile, judge: model },
+    timeoutsMs: config.models.timeoutsMs,
+    think: config.models.think,
+    retries: config.models.retries,
+    logger: noopLogger,
+  });
+  return createEvalJudge({ provider, model, focusAreas: config.focusAreas });
+}
+
 async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Promise<number> {
   const requested = requestedProfiles(options.profile);
   const loaded = await io.loadConfig({ configPath: options.config });
   const profiles = requested ?? [loaded.config.profile];
   // The same host the loader used for the configured profile, so a container on a Mac matches it.
   const platform = platformOf(loaded);
+  const judge = buildEvalJudge(loaded, io);
   const deps: EvalDeps = {
     buildApp: (profile) => io.buildApp(withProfile(loaded, profile, platform)),
     runDigest: io.runDigest,
     clock: io.clock,
+    ...(judge ? { judge } : {}),
   };
   const scorecards: Scorecard[] = [];
   for (const profile of profiles) {
@@ -174,7 +222,83 @@ function detailText(detail: Readonly<Record<string, number>>): string {
     .join(', ');
 }
 
-/** The scorecard as plain text: header, metric table, details, notes and the hard-gate verdict. */
+/** Model-written text as one printable line: unsafe characters become a space; cut when long. */
+function safeText(text: string): string {
+  return text.replace(UNSAFE_TEXT, ' ').trim();
+}
+
+function oneLine(text: string): string {
+  return truncate(safeText(text), MAX_PRINTED_PROBLEM_CHARS);
+}
+
+function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`;
+}
+
+function weekStatus({ status, problemCount }: WeekDetail): string {
+  if (status === 'no-digest') return 'no digest';
+  return problemCount > 0 ? `${status}, ${plural(problemCount, 'problem')}` : status;
+}
+
+/** What the first problems leave out: the file keeps up to `stored` of `total`, no more. */
+function moreLines(detail: WeekDetail, shownCount: number): string[] {
+  const stored = detail.problems.length;
+  const total = Math.max(detail.problemCount, stored);
+  const more = total - shownCount;
+  if (more <= 0) return [];
+  return [
+    stored < total
+      ? `    ... ${more} more (the scorecard file lists the first ${stored} of ${total})`
+      : `    ... ${more} more in the scorecard file`,
+  ];
+}
+
+/** One week that did not pass: its status, then the first few problems. */
+function weekLines(metric: MetricResult, label: string, detail: WeekDetail): string[] {
+  const shown = detail.problems.slice(0, MAX_PROBLEMS_SHOWN);
+  return [
+    `  ${metric.label} ${label}: ${weekStatus(detail)}`,
+    ...shown.map((problem) => `    - ${oneLine(problem)}`),
+    ...moreLines(detail, shown.length),
+  ];
+}
+
+/** Format and link validity: the weeks that failed or produced nothing; weeks that passed are left out. */
+function weekProblemLines(metrics: readonly MetricResult[]): string[] {
+  return metrics.flatMap((metric) =>
+    Object.entries(metric.byWeek ?? {})
+      .filter(([, detail]) => detail.status !== 'ok')
+      .flatMap(([label, detail]) => weekLines(metric, label, detail)),
+  );
+}
+
+/** A link that matched no item carries the URL the model wrote; show that it was invented, not it. */
+function shortId(id: string): string {
+  if (id.startsWith(UNMATCHED_ID_PREFIX)) return UNMATCHED_ID_TEXT;
+  return Array.from(safeText(id)).slice(0, SHORT_ID_CHARS).join('');
+}
+
+function runText(ids: readonly string[]): string {
+  if (ids.length === 0) return 'no items';
+  const shortIds = ids.map(shortId).join(' ');
+  return `${plural(ids.length, 'item')}: ${shortIds}`;
+}
+
+/** Stability: what each run picked, so empty digests and different picks can be told apart. */
+function itemIdsByRunLines(metrics: readonly MetricResult[]): string[] {
+  return metrics.flatMap((metric) =>
+    (metric.itemIdsByRun ?? []).map(
+      (ids, run) => `  ${metric.label} run ${run + 1}: ${runText(ids)}`,
+    ),
+  );
+}
+
+/** A titled block after a blank line; nothing when there are no lines. */
+function section(title: string, lines: readonly string[]): string[] {
+  return lines.length > 0 ? ['', title, ...lines] : [];
+}
+
+/** The scorecard as plain text: header, metric table, details, problems, notes and the verdict. */
 export function formatScorecard(scorecard: Scorecard): string {
   const metrics = METRIC_IDS.map((id) => scorecard.metrics[id]);
   const { counts } = scorecard;
@@ -196,8 +320,13 @@ export function formatScorecard(scorecard: Scorecard): string {
       ['Metric', 'Value', 'Gate', 'Result'],
       ...metrics.map((m) => [m.label, valueCell(m), gateCell(m), resultCell(m)]),
     ]),
-    ...(details.length > 0 ? ['', 'Details:', ...details] : []),
-    ...(notes.length > 0 ? ['', 'Notes:', ...notes] : []),
+    ...section('Details:', details),
+    ...section('Week problems:', weekProblemLines(metrics)),
+    ...section(
+      `Item ids by run (first ${SHORT_ID_CHARS} characters; the scorecard file has them in full):`,
+      itemIdsByRunLines(metrics),
+    ),
+    ...section('Notes:', notes),
     '',
     failed.length === 0 ? 'Hard gates: PASS' : `Hard gates: FAIL (${failed.join(', ')})`,
   ].join('\n');
