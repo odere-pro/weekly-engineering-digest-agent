@@ -1,5 +1,6 @@
 import type { ScoredItem } from '../domain/schemas';
 import type { Thresholds } from '../config/schema';
+import { calibrateClassification, type Calibration } from './calibration';
 import { DigestError } from '../shared/errors';
 import { normalizeUrl } from '../shared/url';
 
@@ -9,6 +10,8 @@ export interface ProcessInput {
   sentUrls: ReadonlySet<string>;
   thresholds: Thresholds;
   topN: number;
+  /** When given, relevance is replaced by the calibrated score before filtering and ranking. */
+  calibration?: Calibration | undefined;
 }
 
 export interface ProcessOutput {
@@ -47,8 +50,14 @@ interface Partition {
 
 /** Pure ranking and filtering in code, no model calls (W1-08). */
 export function processStep(input: ProcessInput): ProcessOutput {
-  const { items, sentUrls, thresholds, topN } = input;
+  const { sentUrls, thresholds, topN, calibration } = input;
   assertTopN(topN);
+  const items = calibration
+    ? input.items.map((item) => ({
+        ...item,
+        classification: calibrateClassification(calibration, item.classification),
+      }))
+    : input.items;
 
   // Rank once up front: every later list (drops included) is in rank order, whatever the input order.
   const ranked = items.map((item): Entry => ({ item })).sort(byRank);

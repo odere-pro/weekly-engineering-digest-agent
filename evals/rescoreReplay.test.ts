@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { formatResult, replayRescore, runCli, type RescoreResult } from './rescoreReplay';
+import {
+  formatResult,
+  holdoutOf,
+  replayRescore,
+  runCli,
+  type RescoreResult,
+} from './rescoreReplay';
+import type { Calibration } from '../src/process/calibration';
 import type { EvalCases } from './runEval';
 import type { Clock } from '../src/shared/clock';
 import type { DecisionAnswer, GenerateRequest } from '../src/models/ModelProvider';
@@ -129,6 +136,54 @@ describe('replayRescore', () => {
   });
 });
 
+describe('replayRescore with a calibration', () => {
+  // The decider gives every item 2, so only the area bias can tell them apart.
+  const calibration: Calibration = {
+    version: 1,
+    profile: 'light',
+    points: [{ raw: 2, calibrated: 2 }],
+    areaBias: { [AREA.toLowerCase()]: -0.5 },
+  };
+
+  it('is the same as no calibration when none is given', async () => {
+    const plain = await replayRescore(cases(), deps(model()), false);
+    const undef = await replayRescore(cases(), { ...deps(model()), calibration: undefined }, false);
+    expect(JSON.stringify(undef)).toBe(JSON.stringify(plain));
+  });
+
+  it('ranks and scores the classifier cases on the calibrated relevance', async () => {
+    const result = await replayRescore(cases(), { ...deps(model()), calibration }, false);
+    // 2 - 0.5 = 1.5 still passes minRelevance 1.5; the case expecting 3 is now 1.5 away.
+    expect(result.mustIncludeRecall).toBe(2);
+    expect(result.classifierAccuracy).toBe(0);
+    expect(result.calibrated).toBe(true);
+  });
+
+  it('drops items that fall under the floor after calibration', async () => {
+    const lower = { ...calibration, areaBias: { [AREA.toLowerCase()]: -1 } };
+    const result = await replayRescore(cases(), { ...deps(model()), calibration: lower }, false);
+    expect(result.mustIncludeRecall).toBe(0);
+  });
+});
+
+describe('holdoutOf', () => {
+  it('keeps the named weeks and every third classifier case', () => {
+    const set = cases();
+    const second = { ...set.weeks[0]!, weekId: '2026-W40' };
+    const base = set.classifier.cases[0]!;
+    const many = Array.from({ length: 6 }, (_, i) => ({
+      ...base,
+      item: { ...base.item, id: `k${i}` },
+    }));
+    const out = holdoutOf(
+      { ...set, weeks: [second, set.weeks[0]!], classifier: { reviewed: true, cases: many } },
+      ['2026-W41'],
+    );
+    expect(out.weeks.map((w) => w.weekId)).toEqual(['2026-W41']);
+    expect(out.classifier.cases.map((c) => c.item.id)).toEqual(['k2', 'k5']);
+  });
+});
+
 describe('formatResult', () => {
   it('prints the three numbers and the time', () => {
     const result: RescoreResult = {
@@ -203,6 +258,32 @@ describe('runCli', () => {
       expect(kit.err.join('')).toContain('Usage');
     },
   );
+
+  it('loads --calibration and restricts to --holdout weeks', async () => {
+    const kit = io();
+    const seen: unknown[] = [];
+    const calibration: Calibration = {
+      version: 1,
+      profile: 'light',
+      points: [{ raw: 2, calibrated: 2 }],
+      areaBias: {},
+    };
+
+    const code = await runCli(
+      ['--profile', 'light', '--flag', 'off', '--calibration', 'c.json', '--holdout', '2026-W40'],
+      {
+        ...kit.overrides,
+        loadCalibration: () => Promise.resolve(calibration),
+        run: (o: unknown, c: EvalCases) => {
+          seen.push(o, c.weeks.length);
+          return Promise.resolve(result);
+        },
+      },
+    );
+
+    expect(code).toBe(0);
+    expect(seen).toEqual([{ profile: 'light', config: undefined, calibration }, 0]);
+  });
 
   it('exits 1 and says why when the run fails', async () => {
     const kit = io();

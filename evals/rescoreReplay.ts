@@ -1,8 +1,10 @@
 // Measures whether rescoring the filtered items with the writer model helps (W6-08):
 //   tsx evals/rescoreReplay.ts --profile light --flag on|off [--config <digest.config.json>]
+//     [--calibration <file>] [--holdout 2026-W40,2026-W41]
 // Replays classify and select over the recorded weeks (no write, no guards, the same per-source
 // cap `runEval` serves) and the classifier cases; prints must-include recall, must-exclude
 // leaks and classifier accuracy.
+import { readFile } from 'node:fs/promises';
 import { realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -12,6 +14,11 @@ import { resolveProfile } from '../src/config/profiles';
 import { ProfileNameSchema, type Config, type ProfileName } from '../src/config/schema';
 import type { Item } from '../src/domain/schemas';
 import { areaHintsOf, classifyStep, type ClassifyDeps } from '../src/classify/classify';
+import {
+  CalibrationSchema,
+  calibrateClassification,
+  type Calibration,
+} from '../src/process/calibration';
 import { processStep } from '../src/process/process';
 import { systemClock, type Clock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
@@ -19,6 +26,7 @@ import type { ModelProvider } from '../src/models/ModelProvider';
 import type { Logger } from '../src/shared/telemetry';
 import { classifierAccuracy, mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics';
 import { loadEvalCases, type EvalCases } from './runEval';
+import { CASE_STRIDE, parseHoldoutWeeks } from './thresholds/split';
 
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */
 const REPLAY_TOP_N = 5;
@@ -32,10 +40,13 @@ export interface RescoreReplayDeps {
   config: Config;
   logger: Logger;
   clock: Clock;
+  /** Applied by the process step and to the classifier cases (W11-06). Absent: as before. */
+  calibration?: Calibration | undefined;
 }
 
 export interface RescoreResult {
   rescoreWithWriter: boolean;
+  calibrated?: boolean;
   weeks: number;
   /** Mean must-include items found in the top 5 per week (gate: at least 3). */
   mustIncludeRecall: number | null;
@@ -83,6 +94,7 @@ async function replayWeek(
     sentUrls: new Set<string>(),
     thresholds: deps.config.thresholds,
     topN: REPLAY_TOP_N,
+    calibration: deps.calibration,
   });
   const seconds = Math.max(0, deps.clock.now().getTime() - startMs) / MS_PER_SECOND;
   const hits: WeekHits = {
@@ -106,14 +118,11 @@ async function replayClassifierCases(
   );
   const results = cases.flatMap((c, i) => {
     const classification = scored[i]?.classification;
-    return classification
-      ? [
-          {
-            expected: c.expected,
-            actual: { area: classification.area, relevance: classification.relevance },
-          },
-        ]
-      : [];
+    if (!classification) return [];
+    const { area, relevance } = deps.calibration
+      ? calibrateClassification(deps.calibration, classification)
+      : classification;
+    return [{ expected: c.expected, actual: { area, relevance } }];
   });
   return classifierAccuracy(results).value;
 }
@@ -132,6 +141,7 @@ export async function replayRescore(
   const hits = runs.map((run) => run.hits);
   return {
     rescoreWithWriter: rescore,
+    ...(deps.calibration ? { calibrated: true } : {}),
     weeks: cases.weeks.length,
     mustIncludeRecall: mustIncludeRecall(hits).value,
     mustExcludeLeaks: mustExcludeLeaks(hits).value,
@@ -146,7 +156,7 @@ export function formatResult(profile: string, result: RescoreResult): string {
   const accuracy =
     result.classifierAccuracy === null ? 'n/a' : `${(result.classifierAccuracy * 100).toFixed(1)}%`;
   return [
-    `profile: ${profile}  rescoreWithWriter: ${result.rescoreWithWriter ? 'on' : 'off'}  weeks: ${result.weeks}`,
+    `profile: ${profile}  rescoreWithWriter: ${result.rescoreWithWriter ? 'on' : 'off'}  calibration: ${result.calibrated ? 'on' : 'off'}  weeks: ${result.weeks}`,
     `must-include recall: ${num(result.mustIncludeRecall, 2)} of ${REPLAY_TOP_N}`,
     `must-exclude leaks: ${num(result.mustExcludeLeaks, 2)}`,
     `classifier accuracy: ${accuracy}`,
@@ -155,26 +165,41 @@ export function formatResult(profile: string, result: RescoreResult): string {
   ].join('\n');
 }
 
+/** The holdout split of W6-04: the named weeks and every third classifier case (the 3rd, 6th, ...). */
+export function holdoutOf(cases: EvalCases, weeks: readonly string[]): EvalCases {
+  return {
+    ...cases,
+    weeks: cases.weeks.filter((week) => weeks.includes(week.weekId)),
+    classifier: {
+      ...cases.classifier,
+      cases: cases.classifier.cases.filter((_, i) => i % CASE_STRIDE === CASE_STRIDE - 1),
+    },
+  };
+}
+
 // --- CLI ------------------------------------------------------------------------------------
 
 const EVALS_DIR = fileURLToPath(new URL('.', import.meta.url));
 const USAGE =
-  'Usage: tsx evals/rescoreReplay.ts --profile light|fast|... --flag on|off [--config <digest.config.json>]\n';
+  'Usage: tsx evals/rescoreReplay.ts --profile light|fast|... --flag on|off [--config <digest.config.json>] [--calibration <file>] [--holdout <weeks>]\n';
+
+interface RunOptions {
+  profile: ProfileName;
+  config: string | undefined;
+  calibration?: Calibration | undefined;
+}
 
 export interface RescoreCliIo {
   casesDir: string;
-  run: (
-    options: { profile: ProfileName; config: string | undefined },
-    cases: EvalCases,
-    rescore: boolean,
-  ) => Promise<RescoreResult>;
+  run: (options: RunOptions, cases: EvalCases, rescore: boolean) => Promise<RescoreResult>;
   loadCases: (dir: string) => Promise<EvalCases>;
+  loadCalibration: (path: string) => Promise<Calibration>;
   stdout: (text: string) => void;
   stderr: (text: string) => void;
 }
 
 async function runWithApp(
-  options: { profile: ProfileName; config: string | undefined },
+  options: RunOptions,
   cases: EvalCases,
   rescore: boolean,
 ): Promise<RescoreResult> {
@@ -193,6 +218,7 @@ async function runWithApp(
         config: switched.config,
         logger: app.deps.logger,
         clock: systemClock,
+        calibration: options.calibration,
       },
       rescore,
     );
@@ -205,6 +231,8 @@ const defaultIo: RescoreCliIo = {
   casesDir: EVALS_DIR,
   run: runWithApp,
   loadCases: loadEvalCases,
+  loadCalibration: async (path) =>
+    CalibrationSchema.parse(JSON.parse(await readFile(path, 'utf8'))),
   stdout: (text) => {
     process.stdout.write(text);
   },
@@ -214,7 +242,14 @@ const defaultIo: RescoreCliIo = {
 };
 
 type Parsed =
-  | { ok: true; profile: ProfileName; flag: boolean; config: string | undefined }
+  | {
+      ok: true;
+      profile: ProfileName;
+      flag: boolean;
+      config: string | undefined;
+      calibration: string | undefined;
+      holdout: string[] | undefined;
+    }
   | { ok: false; reason: string };
 
 function parseCli(args: readonly string[]): Parsed {
@@ -225,13 +260,22 @@ function parseCli(args: readonly string[]): Parsed {
         profile: { type: 'string' },
         flag: { type: 'string' },
         config: { type: 'string' },
+        calibration: { type: 'string' },
+        holdout: { type: 'string' },
       },
     });
     const profile = ProfileNameSchema.safeParse(values.profile);
     if (!profile.success) return { ok: false, reason: 'unknown or missing --profile' };
     if (values.flag !== 'on' && values.flag !== 'off')
       return { ok: false, reason: '--flag must be on or off' };
-    return { ok: true, profile: profile.data, flag: values.flag === 'on', config: values.config };
+    return {
+      ok: true,
+      profile: profile.data,
+      flag: values.flag === 'on',
+      config: values.config,
+      calibration: values.calibration,
+      holdout: values.holdout === undefined ? undefined : parseHoldoutWeeks(values.holdout),
+    };
   } catch (error) {
     return { ok: false, reason: errorMessage(error) };
   }
@@ -249,9 +293,12 @@ export async function runCli(
     return EXIT_USAGE;
   }
   try {
-    const cases = await io.loadCases(io.casesDir);
+    const all = await io.loadCases(io.casesDir);
+    const cases = parsed.holdout ? holdoutOf(all, parsed.holdout) : all;
+    const calibration =
+      parsed.calibration === undefined ? undefined : await io.loadCalibration(parsed.calibration);
     const result = await io.run(
-      { profile: parsed.profile, config: parsed.config },
+      { profile: parsed.profile, config: parsed.config, calibration },
       cases,
       parsed.flag,
     );

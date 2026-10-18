@@ -11,7 +11,9 @@ model call, so the same input always gives the same answer.
 
 1. `processStep({ items, sentUrls, thresholds, topN })` (`process.ts`) is a synchronous function.
    It throws `DigestError` (step `process`) unless `topN` is a whole number of 0 or more.
-2. It ranks all items once with `byRank`: relevance high first, then `areaConfidence`, then
+2. With `calibration` in the input, each item's relevance is first replaced by the calibrated score
+   (`calibration.ts`: a monotone map plus a per-area bias, fitted offline by `evals/calibrate.ts`).
+   Without it the items pass through untouched. Then it ranks all items once with `byRank`: relevance high first, then `areaConfidence`, then
    newest `publishedAt`, then id. Source, title and URL only settle ties between equal ids.
 3. `filterStages` drops items in a fixed order. An item gets the first reason that fits:
    `sent-before`, `duplicate`, `low-relevance` (below `minRelevance`), `hype` (above `maxHype`),
@@ -44,10 +46,12 @@ model call, so the same input always gives the same answer.
 
 ## Files
 
-| File              | Role                                                                                                          |
-| ----------------- | ------------------------------------------------------------------------------------------------------------- |
-| `process.ts`      | `processStep`, `ProcessInput`, `ProcessOutput`; ranking, filters, duplicate and release matching, area spread |
-| `process.test.ts` | Drop reasons, sent-before, duplicates, same release, ranking, top N, area spread, determinism                 |
+| File                  | Role                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `process.ts`          | `processStep`, `ProcessInput`, `ProcessOutput`; ranking, filters, duplicate and release matching, area spread |
+| `calibration.ts`      | `CalibrationSchema`, `calibrateClassification`: the calibrated relevance on the 0-3 scale                     |
+| `calibration.test.ts` | Schema, interpolation, bias, monotone, process with and without it                                            |
+| `process.test.ts`     | Drop reasons, sent-before, duplicates, same release, ranking, top N, area spread, determinism                 |
 
 There is no `__fixtures__/` here. Tests build items with `makeScoredItem` from `test/builders.ts`.
 
