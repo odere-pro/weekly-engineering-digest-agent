@@ -5,16 +5,15 @@ import { formatCheck } from '../src/checks/formatCheck';
 import { linkCheck } from '../src/checks/linkCheck';
 import type { CheckResult } from '../src/checks/types';
 import { readSavedView } from '../src/render/markdown';
+import { GuardCheckIdSchema, type GuardCheckId } from '../src/guards/guardVerdict';
 import {
-  GuardCheckIdSchema,
   type Digest,
   type DigestItem,
-  type DraftOutcome,
-  type GuardCheckId,
   type Item,
   type RunStatus,
   type Urgency,
 } from '../src/domain/schemas';
+import { type DraftOutcome } from '../src/store/runRecord';
 import type { DigestViewItem } from '../src/delivery/Delivery';
 import { truncate } from '../src/shared/text';
 import { normalizeUrl } from '../src/shared/url';

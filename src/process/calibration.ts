@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ProfileNameSchema } from '../config/schema';
-import type { Classification } from '../domain/schemas';
+import type { Classification } from '../classify/classification';
 
 const MIN_RELEVANCE = 0;
 const MAX_RELEVANCE = 3;

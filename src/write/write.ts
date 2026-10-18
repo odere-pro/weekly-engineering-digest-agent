@@ -5,10 +5,10 @@ import {
   UrgencySchema,
   type DigestItem,
   type Draft,
-  type GuardCheckId,
   type Item,
-  type ScoredItem,
 } from '../domain/schemas';
+import { type GuardCheckId } from '../guards/guardVerdict';
+import { type ScoredItem } from '../classify/classification';
 import { DIGEST_MIN_ITEMS, formatCheck } from '../checks/formatCheck';
 import { linkCheck } from '../checks/linkCheck';
 import { boundProblems, buildRetryPrompt, buildWritePrompt, type WritePrompt } from './writePrompt';

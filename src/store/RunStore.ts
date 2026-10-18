@@ -1,4 +1,4 @@
-import type { RunRecord } from '../domain/schemas';
+import type { RunRecord } from './runRecord';
 
 export type ArtifactName =
   'items.json' | 'scores.json' | 'drafts.json' | 'digest.md' | 'review.md' | 'error.json';

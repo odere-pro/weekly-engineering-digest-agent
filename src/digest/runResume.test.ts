@@ -6,7 +6,8 @@ import {
   type PartDelivery,
   type ResumeContext,
 } from './runResume';
-import { RunRecordSchema, type DeliveryId, type RunRecord } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
+import { type DeliveryId } from '../delivery/deliveryId';
 import type { Clock } from '../shared/clock';
 import type { LogFields, Logger, Tracer } from '../shared/telemetry';
 import { makeConfig, makeRunRecord } from '../../test/builders';

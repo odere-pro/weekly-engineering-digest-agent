@@ -3,15 +3,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
 import { KEPT_PARTLY_REASON, KEPT_SENT_REASON } from './runEnding';
-import {
-  ExitCode,
-  RunRecordSchema,
-  type Digest,
-  type Draft,
-  type Item,
-  type DeliveryId,
-  type RunRecord,
-} from '../domain/schemas';
+import { ExitCode, type Digest, type Draft, type Item } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
+import { type DeliveryId } from '../delivery/deliveryId';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { requiredModels, type ModelProfile } from '../config/profiles';
 import type { OutputGuard } from '../guards/Guard';

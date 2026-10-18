@@ -4,7 +4,7 @@
 import type { Secrets } from '../config/schema';
 import type { Redactor } from '../observability/redact';
 import type { Delivery, DigestView } from '../delivery/Delivery';
-import { RunRecordSchema, type RunRecord } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import type { RunStore } from '../store/RunStore';
 import { DigestError } from '../shared/errors';
 

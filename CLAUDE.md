@@ -24,7 +24,7 @@ works), and its tests sit next to the code. Pipeline order:
 | `src/delivery/`                                       | `Delivery` port, `adapters/` (Markdown file, SMTP and email HTML, Slack blocks)                    |
 | `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama, decision endpoint)              |
 | `src/store/`                                          | `RunStore` port, `adapters/` (run folders, lock, atomic files)                                     |
-| `src/domain/`                                         | `schemas.ts`: the shared types (zod)                                                               |
+| `src/domain/`                                         | `schemas.ts`: the types several features share (zod); feature-owned types live in their feature    |
 | `src/config/`                                         | `schema.ts` (zod), `profiles.ts` (role → model tag), `load.ts`                                     |
 | `src/app/`                                            | `container.ts`: the composition root (config → adapters → `DigestDeps`), plus decorators           |
 | `src/cli/`                                            | `program.ts` registers commands; one folder per command (`init/`, `doctor/`, `run/`, …)            |

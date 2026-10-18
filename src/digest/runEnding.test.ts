@@ -11,7 +11,7 @@ import {
   type EndingContext,
   type HeldArtifact,
 } from './runEnding';
-import type { RunRecord } from '../domain/schemas';
+import type { RunRecord } from '../store/runRecord';
 import { DigestError } from '../shared/errors';
 import type { LogFields, Logger } from '../shared/telemetry';
 import { makeClassification, makeDraft, makeItem, makeRunRecord } from '../../test/builders';

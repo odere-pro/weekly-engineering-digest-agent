@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createGraniteGroundednessGuard, createGraniteRiskGuard } from './granite';
-import { DraftSchema, GuardVerdictSchema, ItemSchema } from '../../domain/schemas';
+import { DraftSchema, ItemSchema } from '../../domain/schemas';
+import { GuardVerdictSchema } from '../guardVerdict';
 import { FakeModelProvider } from '../../../test/fakes/FakeModelProvider';
 
 const CallSchema = z.object({ system: z.string(), prompt: z.string(), text: z.string() });

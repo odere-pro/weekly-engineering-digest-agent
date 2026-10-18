@@ -8,7 +8,7 @@ import { realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { ThresholdsSchema, type ProfileName, type Thresholds } from '../src/config/schema';
-import type { ScoredItem } from '../src/domain/schemas';
+import type { ScoredItem } from '../src/classify/classification';
 import { areaKey, calibrateClassification, type Calibration } from '../src/process/calibration';
 import { processStep } from '../src/process/process';
 import { DigestError, errorMessage } from '../src/shared/errors';

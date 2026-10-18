@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { DigestItem, ScoredItem, Urgency } from '../domain/schemas';
+import type { DigestItem, Urgency } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import {
   prepareDraft,
   writeCheckedStep,

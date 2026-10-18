@@ -1,10 +1,6 @@
-// Domain schemas shared by every step, port and adapter. Frozen after Wave 0:
-// change them only on main, then rebase open branches.
+// Domain schemas shared by several features. Frozen: change them only on main, then rebase open
+// branches. A type that one feature owns lives in that feature (see CLAUDE.md for where).
 import { z } from 'zod';
-
-/** Model roles. The code asks for a role; a profile maps each role to an Ollama tag. */
-export const RoleSchema = z.enum(['classify', 'guardPolicy', 'guardRisk', 'write', 'judge']);
-export type Role = z.infer<typeof RoleSchema>;
 
 export const SourceKindSchema = z.enum(['rss', 'github']);
 export type SourceKind = z.infer<typeof SourceKindSchema>;
@@ -37,42 +33,6 @@ export const ItemSchema = z.object({
   publishedAt: z.iso.datetime({ offset: true }),
 });
 export type Item = z.infer<typeof ItemSchema>;
-
-/** Classifier output for one item. Probabilities are 0..1. */
-export const ClassificationSchema = z.object({
-  itemId: z.string().min(1),
-  /** Expected relevance on the 0-3 scale. */
-  relevance: z.number().min(0).max(3),
-  area: z.string().min(1),
-  areaConfidence: z.number().min(0).max(1),
-  /** Probability that the item is hype or marketing. */
-  hype: z.number().min(0).max(1),
-  /** Probability that the item is a minor version bump. */
-  minorRelease: z.number().min(0).max(1),
-});
-export type Classification = z.infer<typeof ClassificationSchema>;
-
-export const ScoredItemSchema = ItemSchema.extend({ classification: ClassificationSchema });
-export type ScoredItem = z.infer<typeof ScoredItemSchema>;
-
-export const GuardCheckIdSchema = z.enum([
-  /** Deterministic injection patterns, no model call; runs first (W11-04). */
-  'ruleInjection',
-  'clefPolicy',
-  'graniteRisk',
-  'graniteGroundedness',
-  'clefRubric',
-]);
-export type GuardCheckId = z.infer<typeof GuardCheckIdSchema>;
-
-export const GuardVerdictSchema = z.object({
-  check: GuardCheckIdSchema,
-  flagged: z.boolean(),
-  /** Probability of the flag when the model gives one. */
-  probability: z.number().min(0).max(1).optional(),
-  reason: z.string().optional(),
-});
-export type GuardVerdict = z.infer<typeof GuardVerdictSchema>;
 
 export const WEEK_ID_PATTERN = /^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/;
 export const WeekIdSchema = z.string().regex(WEEK_ID_PATTERN, 'ISO week id like 2026-W43');
@@ -110,23 +70,6 @@ export const DraftSchema = z.object({
 });
 export type Draft = z.infer<typeof DraftSchema>;
 
-export const JudgeScoreSchema = z.object({
-  writer: z.string().min(1),
-  /** Overall 1-5. */
-  score: z.number().min(1).max(5),
-  byCriterion: z.record(z.string(), z.number()),
-});
-export type JudgeScore = z.infer<typeof JudgeScoreSchema>;
-
-export const DraftOutcomeSchema = z.object({
-  writer: z.string().min(1),
-  passed: z.boolean(),
-  /** Check or guard ids that rejected the draft, e.g. "linkCheck", "graniteGroundedness". */
-  rejectedBy: z.array(z.string()),
-  score: JudgeScoreSchema.optional(),
-});
-export type DraftOutcome = z.infer<typeof DraftOutcomeSchema>;
-
 export const StepNameSchema = z.enum([
   'collect',
   'guardInput',
@@ -163,49 +106,3 @@ export function exitCodeFor(status: RunStatus): ExitCode {
       return ExitCode.Failed;
   }
 }
-
-/** Delivery channel ids; `Delivery.id` uses the same three. */
-export const DeliveryIdSchema = z.enum(['markdown', 'email', 'slack']);
-export type DeliveryId = z.infer<typeof DeliveryIdSchema>;
-
-export const RunRecordSchema = z.object({
-  runId: WeekIdSchema,
-  status: RunStatusSchema,
-  dryRun: z.boolean(),
-  startedAt: z.iso.datetime({ offset: true }),
-  finishedAt: z.iso.datetime({ offset: true }),
-  profile: z.string().min(1),
-  modelsByRole: z.record(z.string(), z.union([z.string(), z.array(z.string()), z.null()])),
-  /** Seed and temperature per role the run's model calls used. Absent in older records. */
-  sampling: z
-    .object({
-      seed: z.number().int().min(0),
-      temperatureByRole: z.record(z.string(), z.number()),
-    })
-    .optional(),
-  /** True when no writer draft survived and the digest was rendered from the items' own text (W11-02). */
-  fallback: z.boolean().optional(),
-  timings: z.array(z.object({ step: StepNameSchema, ms: z.number().min(0) })),
-  counts: z.object({
-    collected: z.number().int().min(0),
-    afterGuardInput: z.number().int().min(0),
-    classified: z.number().int().min(0),
-    /** Items left after the process step. Absent in older records. */
-    afterProcess: z.number().int().min(0).optional(),
-    selected: z.number().int().min(0),
-    digestItems: z.number().int().min(0),
-  }),
-  failedSources: z.array(z.object({ sourceId: z.string(), error: z.string() })),
-  disabledGuards: z.array(GuardCheckIdSchema),
-  drafts: z.array(DraftOutcomeSchema),
-  winner: z.string().nullable(),
-  /** URLs delivered in this run; feeds cross-week dedupe. */
-  sentUrls: z.array(z.url()),
-  /**
-   * Channels that got this week's digest. Set on a partly delivered (failed) run, so a rerun
-   * sends the saved digest.md to the other channels only. Absent in older records.
-   */
-  deliveredTo: z.array(DeliveryIdSchema).optional(),
-  error: z.object({ message: z.string(), step: StepNameSchema.optional() }).optional(),
-});
-export type RunRecord = z.infer<typeof RunRecordSchema>;

@@ -1,5 +1,6 @@
 import type { DigestView, DigestViewGroup, DigestViewItem } from '../delivery/Delivery';
-import type { Digest, DigestItem, GuardCheckId, Urgency } from '../domain/schemas';
+import type { Digest, DigestItem, Urgency } from '../domain/schemas';
+import type { GuardCheckId } from '../guards/guardVerdict';
 
 export interface LayoutOptions {
   /** Guards that were off this week; named in the footer. */

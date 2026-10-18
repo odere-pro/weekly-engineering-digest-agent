@@ -5,7 +5,9 @@ import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
 import { KEPT_SENT_REASON } from '../../src/digest/runEnding';
-import { ExitCode, type DeliveryId, type RunRecord } from '../../src/domain/schemas';
+import { ExitCode } from '../../src/domain/schemas';
+import { type DeliveryId } from '../../src/delivery/deliveryId';
+import { type RunRecord } from '../../src/store/runRecord';
 import type { CapturingDelivery } from '../fakes';
 import { connectionRefused } from './fakeOllama';
 import {

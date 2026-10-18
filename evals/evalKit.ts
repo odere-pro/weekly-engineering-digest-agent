@@ -9,7 +9,8 @@ import type { AppHandle } from '../src/app/container';
 import { PROFILES } from '../src/config/profiles';
 import { renderDigest } from '../src/render/markdown';
 import type { DigestDeps, RunOptions, RunResult } from '../src/digest/runDigest';
-import type { GuardCheckId, Item } from '../src/domain/schemas';
+import type { GuardCheckId } from '../src/guards/guardVerdict';
+import type { Item } from '../src/domain/schemas';
 import { collectStep } from '../src/sources/collect';
 import { makeConfig, makeDigest, makeItem, makeRunRecord } from '../test/builders';
 import {

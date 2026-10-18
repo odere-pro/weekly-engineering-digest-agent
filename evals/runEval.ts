@@ -13,12 +13,11 @@ import {
   SourceKindSchema,
   WEEK_ID_PATTERN,
   type Draft,
-  type GuardCheckId,
-  type GuardVerdict,
   type Item,
-  type RunRecord,
   type Source,
 } from '../src/domain/schemas';
+import { type GuardCheckId, type GuardVerdict } from '../src/guards/guardVerdict';
+import { type RunRecord } from '../src/store/runRecord';
 import { areaHintsOf, classifyStep } from '../src/classify/classify';
 import { guardOutputStep } from '../src/guards/guardOutput';
 import type { InputGuard, OutputGuard } from '../src/guards/Guard';

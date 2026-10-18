@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { linkCheck } from '../checks/linkCheck';
 import { renderDigest } from '../render/markdown';
-import type { Digest, DigestItem, Draft, Item, ScoredItem } from '../domain/schemas';
+import type { Digest, DigestItem, Draft, Item } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import {
   MAX_LINK_CHARS,
   MAX_TRAILING_CHARS,

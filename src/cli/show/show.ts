@@ -3,15 +3,9 @@ import { knownSecrets } from '../../app/redacting';
 import { createFsRunStore, type FsRunStoreOptions } from '../../store/adapters/fsRunStore';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { DraftsFileSchema, toJson } from '../../digest/runEnding';
-import {
-  ClassificationSchema,
-  ExitCode,
-  ItemSchema,
-  WEEK_ID_PATTERN,
-  type Classification,
-  type Item,
-  type RunRecord,
-} from '../../domain/schemas';
+import { ClassificationSchema, type Classification } from '../../classify/classification';
+import { ExitCode, ItemSchema, WEEK_ID_PATTERN, type Item } from '../../domain/schemas';
+import { type RunRecord } from '../../store/runRecord';
 import { createRedactor } from '../../observability/redact';
 import type { ArtifactName, RunStore } from '../../store/RunStore';
 import { DigestError, errorMessage } from '../../shared/errors';

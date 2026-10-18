@@ -1,4 +1,5 @@
-import type { Draft, GuardCheckId, GuardVerdict, Item } from '../domain/schemas';
+import type { Draft, Item } from '../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 import type { OutputGuard } from './Guard';
 import type { GuardsConfig } from '../config/schema';
 import type { Logger } from '../shared/telemetry';

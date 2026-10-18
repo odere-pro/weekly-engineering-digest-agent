@@ -9,7 +9,8 @@ import { buildApp, type AppHandle } from '../../src/app/container';
 import { loadConfig, type LoadedConfig } from '../../src/config/load';
 import { modelsByRole } from '../../src/config/profiles';
 import { runDigest, type DigestDeps, type RunResult } from '../../src/digest/runDigest';
-import { ExitCode, RunRecordSchema, type Item } from '../../src/domain/schemas';
+import { ExitCode, type Item } from '../../src/domain/schemas';
+import { RunRecordSchema } from '../../src/store/runRecord';
 import type { SourceFetcher } from '../../src/sources/SourceFetcher';
 import { sameUrl } from '../../src/shared/url';
 

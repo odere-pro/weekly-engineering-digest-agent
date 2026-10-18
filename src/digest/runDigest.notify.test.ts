@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { requiredModels, type ModelProfile } from '../config/profiles';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
-import { RunRecordSchema } from '../domain/schemas';
+import { RunRecordSchema } from '../store/runRecord';
 import type { ModelHealth } from '../models/ModelProvider';
 import type { LogFields, Logger } from '../shared/telemetry';
 import { makeConfig, makeRunRecord } from '../../test/builders';

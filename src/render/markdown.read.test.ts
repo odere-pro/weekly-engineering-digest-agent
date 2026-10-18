@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildDigestView } from './layout';
 import { readSavedView, renderDigest, renderView } from './markdown';
-import { DigestSchema, type GuardCheckId } from '../domain/schemas';
+import { DigestSchema } from '../domain/schemas';
+import { type GuardCheckId } from '../guards/guardVerdict';
 import type { DigestView } from '../delivery/Delivery';
 
 const read = (file: string): string =>

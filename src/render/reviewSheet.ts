@@ -1,6 +1,7 @@
 import { DigestError } from '../shared/errors';
 import { truncate } from '../shared/text';
-import { WEEK_ID_PATTERN, type Classification, type Item } from '../domain/schemas';
+import { WEEK_ID_PATTERN, type Item } from '../domain/schemas';
+import { type Classification } from '../classify/classification';
 
 /** Candidates the sheet lists after the picked items: the best the digest left out. */
 export const MAX_CANDIDATES = 20;

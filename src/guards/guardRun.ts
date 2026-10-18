@@ -2,7 +2,7 @@
 import type { GuardMode } from '../config/schema';
 import { DigestError } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';
-import type { GuardCheckId, GuardVerdict } from '../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 
 /**
  * Most calls one guard has in flight at once (W5-16, F38). A guard still runs from first subject

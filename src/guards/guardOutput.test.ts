@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { guardOutputStep, type GuardOutputDeps, type GuardOutputOutput } from './guardOutput';
-import type { Draft, GuardCheckId, GuardVerdict, Item } from '../domain/schemas';
+import type { Draft, Item } from '../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 import type { OutputGuard } from './Guard';
 import { DigestError } from '../shared/errors';
 import { makeConfig, makeDraft, makeItem } from '../../test/builders';

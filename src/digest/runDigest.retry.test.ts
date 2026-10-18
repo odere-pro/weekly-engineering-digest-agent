@@ -2,14 +2,8 @@
 // format check (F1).
 import { describe, expect, it } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
-import {
-  ExitCode,
-  RunRecordSchema,
-  type Digest,
-  type Draft,
-  type Item,
-  type RunRecord,
-} from '../domain/schemas';
+import { ExitCode, type Digest, type Draft, type Item } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../select/judgePrompt';
 import { MAX_PROBLEMS, PROBLEM_MAX_CHARS } from '../write/writePrompt';

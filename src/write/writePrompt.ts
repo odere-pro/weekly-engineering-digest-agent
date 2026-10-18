@@ -5,7 +5,7 @@ import {
   DIGEST_MIN_ITEMS,
   DIGEST_WORD_LIMIT,
 } from '../checks/formatCheck';
-import type { ScoredItem } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import { truncate } from '../shared/text';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted';
 

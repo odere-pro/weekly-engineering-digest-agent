@@ -1,6 +1,7 @@
 import { readdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
-import { RunRecordSchema, WEEK_ID_PATTERN, type RunRecord } from '../../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../runRecord';
+import { WEEK_ID_PATTERN } from '../../domain/schemas';
 import { DigestError, errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { isErrnoException, readTextIfExists } from './atomicFile';

@@ -3,13 +3,8 @@
 // abort signal (F46).
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
-import {
-  ExitCode,
-  RunRecordSchema,
-  type Digest,
-  type Item,
-  type RunRecord,
-} from '../domain/schemas';
+import { ExitCode, type Digest, type Item } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../select/judgePrompt';
 import { modelsInUse, requiredModels, type ModelProfile } from '../config/profiles';

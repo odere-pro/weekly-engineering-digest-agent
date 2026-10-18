@@ -18,7 +18,7 @@ import {
   type ProfileName,
   type Thresholds,
 } from '../src/config/schema';
-import type { GuardCheckId } from '../src/domain/schemas';
+import type { GuardCheckId } from '../src/guards/guardVerdict';
 import { systemClock, type Clock } from '../src/shared/clock';
 import type { ModelProvider } from '../src/models/ModelProvider';
 import { DigestError, errorMessage } from '../src/shared/errors';

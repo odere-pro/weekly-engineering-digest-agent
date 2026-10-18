@@ -7,7 +7,7 @@ import {
   planGuards,
   type GuardCheckFn,
 } from './guardRun';
-import type { GuardCheckId, GuardVerdict } from '../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 import { DigestError } from '../shared/errors';
 import { noopLogger } from '../../test/fakes';
 

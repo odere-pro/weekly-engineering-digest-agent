@@ -1,4 +1,5 @@
-import type { Draft, GuardCheckId, GuardVerdict, Item, StepName } from '../../domain/schemas';
+import type { Draft, Item, StepName } from '../../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from '../guardVerdict';
 import {
   policyQuestions,
   policyState,

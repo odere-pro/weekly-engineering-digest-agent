@@ -1,6 +1,7 @@
 // digest.config.json and .env schemas. Frozen after Wave 0; defaults and thresholds are tuned on main.
 import { z } from 'zod';
-import { RoleSchema, SourceSchema } from '../domain/schemas';
+import { RoleSchema } from '../models/roles';
+import { SourceSchema } from '../domain/schemas';
 
 export const ProfileNameSchema = z.enum(['quality', 'fast', 'light']);
 export type ProfileName = z.infer<typeof ProfileNameSchema>;

@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { buildDigestView } from '../render/layout';
 import { renderDigest } from '../render/markdown';
 import { loadPartDelivery, resumeDelivery, type ResumeContext } from './runResume';
-import type { Digest, DeliveryId, GuardCheckId, RunRecord } from '../domain/schemas';
+import type { Digest } from '../domain/schemas';
+import type { DeliveryId } from '../delivery/deliveryId';
+import type { GuardCheckId } from '../guards/guardVerdict';
+import type { RunRecord } from '../store/runRecord';
 import type { LogFields, Logger } from '../shared/telemetry';
 import {
   makeConfig,

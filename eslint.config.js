@@ -55,9 +55,13 @@ export default defineConfig(
   {
     files: [
       'src/{digest,domain,classify,process,write,select,checks,render}/**/*.ts',
-      'src/{sources,guards,models,delivery,store}/*.ts',
+      'src/{sources,guards,models,delivery,store}/**/*.ts',
     ],
-    ignores: ['**/*.test.ts', '**/__fixtures__/**'],
+    ignores: [
+      '**/*.test.ts',
+      '**/__fixtures__/**',
+      'src/{sources,guards,models,delivery,store}/adapters/**',
+    ],
     rules: { 'no-restricted-imports': ['error', coreBoundary] },
   },
   {

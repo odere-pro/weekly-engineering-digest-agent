@@ -1,4 +1,4 @@
-import type { RunRecord } from '../../src/domain/schemas';
+import type { RunRecord } from '../../src/store/runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../../src/store/RunStore';
 import { DigestError } from '../../src/shared/errors';
 import { compareWeekIds, previousWeekIds } from '../../src/shared/isoWeek';

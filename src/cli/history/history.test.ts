@@ -5,7 +5,7 @@ import { describe, expect, it, vi, type Mock } from 'vitest';
 import { formatDuration, historyCommand, type HistoryCommandDeps } from './history';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { PROFILES } from '../../config/profiles';
-import type { RunRecord } from '../../domain/schemas';
+import type { RunRecord } from '../../store/runRecord';
 import { DigestError } from '../../shared/errors';
 import { makeConfig, makeRunRecord } from '../../../test/builders';
 import { MemoryRunStore } from '../../../test/fakes';

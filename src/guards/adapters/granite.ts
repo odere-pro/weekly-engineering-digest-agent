@@ -1,4 +1,5 @@
-import type { Draft, DigestItem, GuardVerdict, Item } from '../../domain/schemas';
+import type { Draft, DigestItem, Item } from '../../domain/schemas';
+import type { GuardVerdict } from '../guardVerdict';
 import { canonicalClaimText, canonicalHeadlineText } from '../../render/canonical';
 import { itemGuardText } from '../guardQuestions';
 import type { GuardCallOptions, InputGuard, OutputGuard } from '../Guard';

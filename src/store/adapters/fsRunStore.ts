@@ -1,6 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { RunRecordSchema, type RunRecord } from '../../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../RunStore';
 import { systemClock, type Clock } from '../../shared/clock';
 import { DigestError } from '../../shared/errors';

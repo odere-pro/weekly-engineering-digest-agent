@@ -32,8 +32,19 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
   `render`) and the top level of `sources`, `guards`, `models`, `delivery`, `store` never import
   `**/adapters/**`, `cli`, `scheduler`, `observability`, `app`, `config/load`, `node:fs`, `ollama`
   or `nodemailer`. ESLint (`no-restricted-imports`) fails the build otherwise.
+  The rule covers every subfolder of those features too, except their own `adapters/`.
 - Adapters implement a port and may import `shared`, `domain` and `config`, never `cli`.
 - Only `src/app/container.ts` turns config into adapters. CLI, scheduler and evals call it.
+
+## Types and subfeatures
+
+- A type lives in the feature that owns it: `models/roles.ts` (`Role`), `classify/classification.ts`
+  (`Classification`, `ScoredItem`), `guards/guardVerdict.ts`, `select/judgeScore.ts`,
+  `delivery/deliveryId.ts`, `store/runRecord.ts` (`RunRecord`). `domain/schemas.ts` keeps only what
+  several features share (`Source`, `Item`, `Digest`, `Draft`, `WeekId`, `StepName`, `RunStatus`, `ExitCode`).
+- A feature grows by subfeature folders, not by long files: no source file over 300 lines. A
+  subfeature is one responsibility (`cli/init/envFile/`), with its code, tests and a `CLAUDE.md`.
+  The feature's entry file stays and calls the subfeatures. Method: `docs/plan/PHASE-B-STANDARD.md`.
 
 ## Step shape
 

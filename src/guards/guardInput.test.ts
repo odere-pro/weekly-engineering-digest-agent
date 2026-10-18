@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { guardInputStep, type GuardInputDeps, type GuardInputOutput } from './guardInput';
 import { GUARD_CONCURRENCY } from './guardRun';
-import type { GuardCheckId, GuardVerdict, Item } from '../domain/schemas';
+import type { GuardCheckId, GuardVerdict } from './guardVerdict';
+import type { Item } from '../domain/schemas';
 import type { InputGuard } from './Guard';
 import { DigestError } from '../shared/errors';
 import { makeConfig, makeItem } from '../../test/builders';

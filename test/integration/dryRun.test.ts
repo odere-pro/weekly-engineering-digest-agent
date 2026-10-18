@@ -2,7 +2,8 @@
 // the steps, checks, render and the Mastra workflow are the real ones.
 import { describe, expect, it } from 'vitest';
 import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
-import { ExitCode, RunRecordSchema, type Item } from '../../src/domain/schemas';
+import { ExitCode, type Item } from '../../src/domain/schemas';
+import { RunRecordSchema } from '../../src/store/runRecord';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../../src/select/judgePrompt';
 import { PROFILES, requiredModels } from '../../src/config/profiles';

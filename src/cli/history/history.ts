@@ -1,6 +1,7 @@
 import { createFsRunStore, type FsRunStoreOptions } from '../../store/adapters/fsRunStore';
 import { loadConfig, type LoadedConfig } from '../../config/load';
-import { ExitCode, type RunRecord } from '../../domain/schemas';
+import { ExitCode } from '../../domain/schemas';
+import { type RunRecord } from '../../store/runRecord';
 import type { RunStore } from '../../store/RunStore';
 import { DigestError, errorMessage } from '../../shared/errors';
 

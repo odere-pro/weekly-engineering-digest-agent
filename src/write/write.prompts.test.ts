@@ -14,7 +14,8 @@ import {
   PROBLEM_MAX_CHARS,
 } from './writePrompt';
 import { renderDigest } from '../render/markdown';
-import type { Digest, ScoredItem } from '../domain/schemas';
+import type { Digest } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import { DATA_CLOSE, DATA_OPEN, UNTRUSTED_DATA_RULE } from '../shared/untrusted';
 import { makeDigest, makeDigestItem, makeScoredItem } from '../../test/builders';
 

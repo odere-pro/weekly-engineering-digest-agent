@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { processStep, type ProcessInput } from './process';
 import { ThresholdsSchema } from '../config/schema';
-import type { Classification, Item, ScoredItem } from '../domain/schemas';
+import type { Classification, ScoredItem } from '../classify/classification';
+import type { Item } from '../domain/schemas';
 import { DigestError } from '../shared/errors';
 import { makeScoredItem } from '../../test/builders';
 

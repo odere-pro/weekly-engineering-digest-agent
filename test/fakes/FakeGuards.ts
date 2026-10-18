@@ -1,4 +1,5 @@
-import type { Draft, GuardCheckId, GuardVerdict, Item } from '../../src/domain/schemas';
+import type { Draft, Item } from '../../src/domain/schemas';
+import type { GuardCheckId, GuardVerdict } from '../../src/guards/guardVerdict';
 import type { InputGuard, OutputGuard } from '../../src/guards/Guard';
 
 /** Flags the items for which `flag` returns true. */

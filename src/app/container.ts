@@ -12,7 +12,7 @@ import { createFsRunStore } from '../store/adapters/fsRunStore';
 import type { LoadedConfig } from '../config/load';
 import type { Config, Secrets } from '../config/schema';
 import type { DigestDeps } from '../digest/runDigest';
-import { RoleSchema } from '../domain/schemas';
+import { RoleSchema } from '../models/roles';
 import type { Delivery } from '../delivery/Delivery';
 import type { ModelProvider } from '../models/ModelProvider';
 import { createLogger } from '../observability/logger';

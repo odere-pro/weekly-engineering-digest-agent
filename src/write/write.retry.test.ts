@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildRetryPrompt } from './writePrompt';
-import type { Digest, DigestItem, Draft, ScoredItem } from '../domain/schemas';
+import type { Digest, DigestItem, Draft } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import { prepareDraft, retryStep, writeStep, type WriteDeps } from './write';
 import type { GenerateRequest } from '../models/ModelProvider';
 import { UNTRUSTED_DATA_RULE } from '../shared/untrusted';

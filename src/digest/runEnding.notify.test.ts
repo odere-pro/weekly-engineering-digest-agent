@@ -12,7 +12,7 @@ import {
   type EndingContext,
   type Failure,
 } from './runEnding';
-import type { RunRecord } from '../domain/schemas';
+import type { RunRecord } from '../store/runRecord';
 import { DigestError } from '../shared/errors';
 import type { LogFields, Logger } from '../shared/telemetry';
 import { makeRunRecord } from '../../test/builders';

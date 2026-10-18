@@ -7,7 +7,8 @@ import {
   buildJudgeState,
   resolveDraftSources,
 } from '../../src/select/judgePrompt';
-import type { Draft, Item, JudgeScore } from '../../src/domain/schemas';
+import type { Draft, Item } from '../../src/domain/schemas';
+import type { JudgeScore } from '../../src/select/judgeScore';
 import { toJudgeScore } from '../../src/select/select';
 import type { ModelProvider } from '../../src/models/ModelProvider';
 import { DigestError } from '../../src/shared/errors';

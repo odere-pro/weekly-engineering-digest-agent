@@ -24,7 +24,8 @@ import {
   writeStandardWeeks,
   type Call,
 } from './evalKit';
-import type { Draft, GuardCheckId, GuardVerdict, Item } from '../src/domain/schemas';
+import type { Draft, Item } from '../src/domain/schemas';
+import type { GuardCheckId, GuardVerdict } from '../src/guards/guardVerdict';
 import type { OutputGuard } from '../src/guards/Guard';
 import { makeDraft, makeItem, makeRunRecord } from '../test/builders';
 import { FakeInputGuard } from '../test/fakes';

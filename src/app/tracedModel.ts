@@ -1,4 +1,4 @@
-import type { Role } from '../domain/schemas';
+import type { Role } from '../models/roles';
 import type { ModelProvider, Usage } from '../models/ModelProvider';
 import { noopTracer, type Tracer } from '../shared/telemetry';
 

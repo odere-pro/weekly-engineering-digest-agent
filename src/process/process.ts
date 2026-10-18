@@ -1,4 +1,4 @@
-import type { ScoredItem } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import type { Thresholds } from '../config/schema';
 import { calibrateClassification, type Calibration } from './calibration';
 import { DigestError } from '../shared/errors';

@@ -14,7 +14,9 @@ import { PROFILES, requiredModels } from '../../src/config/profiles';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../../src/select/judgePrompt';
 import type { DigestDeps } from '../../src/digest/runDigest';
-import { RunRecordSchema, type Item, type Role, type RunRecord } from '../../src/domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../../src/store/runRecord';
+import { type Item } from '../../src/domain/schemas';
+import { type Role } from '../../src/models/roles';
 import type {
   DecideRequest,
   DecisionAnswer,

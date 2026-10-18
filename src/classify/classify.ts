@@ -1,11 +1,6 @@
 import { z } from 'zod';
-import {
-  ClassificationSchema,
-  type Classification,
-  type Item,
-  type ScoredItem,
-  type Source,
-} from '../domain/schemas';
+import { ClassificationSchema, type Classification, type ScoredItem } from './classification';
+import { type Item, type Source } from '../domain/schemas';
 import type { DecisionAnswer, ModelProvider } from '../models/ModelProvider';
 import { generateStructured } from '../models/structured';
 import {

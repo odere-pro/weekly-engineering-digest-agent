@@ -20,7 +20,9 @@ import {
   type Platform,
 } from '../../config/profiles';
 import type { GuardsConfig } from '../../config/schema';
-import type { GuardCheckId, Role, Source, SourceKind } from '../../domain/schemas';
+import type { GuardCheckId } from '../../guards/guardVerdict';
+import type { Role } from '../../models/roles';
+import type { Source, SourceKind } from '../../domain/schemas';
 import type { ModelHealth, ModelProvider } from '../../models/ModelProvider';
 import type { SourceFetcher } from '../../sources/SourceFetcher';
 import { systemClock, type Clock } from '../../shared/clock';

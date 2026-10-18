@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { buildWritePrompt } from './writePrompt';
-import type { DigestItem, Item, ScoredItem } from '../domain/schemas';
+import type { DigestItem, Item } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
 import { writeStep, type WriteDeps } from './write';
 import type { GenerateRequest } from '../models/ModelProvider';
 import type { Logger } from '../shared/telemetry';

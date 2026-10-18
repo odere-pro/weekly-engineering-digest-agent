@@ -1,4 +1,5 @@
-import { ExitCode, type Draft, type Item, type JudgeScore } from '../domain/schemas';
+import { ExitCode, type Draft, type Item } from '../domain/schemas';
+import { type JudgeScore } from './judgeScore';
 import type { DecideRequest, DecisionAnswer, ModelProvider } from '../models/ModelProvider';
 import { DigestError, errorMessage } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';

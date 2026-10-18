@@ -1,14 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
-import {
-  ExitCode,
-  RunRecordSchema,
-  type Digest,
-  type Draft,
-  type GuardCheckId,
-  type Item,
-  type RunRecord,
-} from '../domain/schemas';
+import { ExitCode, type Digest, type Draft, type Item } from '../domain/schemas';
+import { RunRecordSchema, type RunRecord } from '../store/runRecord';
+import { type GuardCheckId } from '../guards/guardVerdict';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../select/judgePrompt';
 import { modelsByRole, requiredModels, type ModelProfile } from '../config/profiles';

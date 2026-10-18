@@ -6,14 +6,10 @@ import { DigestError, errorMessage } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';
 import { truncate } from '../shared/text';
 import { buildReviewSheet } from '../render/reviewSheet';
-import {
-  ClassificationSchema,
-  DraftSchema,
-  ItemSchema,
-  type DeliveryId,
-  type RunRecord,
-  type StepName,
-} from '../domain/schemas';
+import { ClassificationSchema } from '../classify/classification';
+import { DraftSchema, ItemSchema, type StepName } from '../domain/schemas';
+import { type DeliveryId } from '../delivery/deliveryId';
+import { type RunRecord } from '../store/runRecord';
 
 const SUBJECT_MAX_CHARS = 120;
 

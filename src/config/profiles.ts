@@ -1,5 +1,5 @@
 // Model profiles from the spec. A profile maps each role to an Ollama tag; code only asks for roles.
-import type { Role } from '../domain/schemas';
+import type { Role } from '../models/roles';
 import type { GuardsConfig, ProfileName } from './schema';
 
 export interface ModelProfile {

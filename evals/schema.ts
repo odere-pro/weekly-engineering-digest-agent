@@ -2,13 +2,8 @@
 // The case files under evals/ are written by W1-23, W2-03, W3-01, W3-02 and W3-04; they must parse here.
 import { z } from 'zod';
 import { ProfileNameSchema } from '../src/config/schema';
-import {
-  DraftSchema,
-  GuardCheckIdSchema,
-  ItemSchema,
-  WeekIdSchema,
-  type Draft,
-} from '../src/domain/schemas';
+import { DraftSchema, ItemSchema, WeekIdSchema, type Draft } from '../src/domain/schemas';
+import { GuardCheckIdSchema } from '../src/guards/guardVerdict';
 
 /** Spec: 5 must-include items per recorded week. */
 export const MUST_INCLUDE_COUNT = 5;

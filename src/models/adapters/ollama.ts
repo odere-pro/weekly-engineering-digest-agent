@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { modelsForRole, type ModelProfile } from '../../config/profiles';
-import type { Role } from '../../domain/schemas';
+import type { Role } from '../roles';
 import type {
   DecideRequest,
   DecideResult,

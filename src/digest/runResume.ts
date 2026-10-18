@@ -18,7 +18,8 @@ import {
   type Failure,
   type Shipped,
 } from './runEnding';
-import type { DeliveryId, RunRecord } from '../domain/schemas';
+import type { DeliveryId } from '../delivery/deliveryId';
+import type { RunRecord } from '../store/runRecord';
 
 /** What a resume needs from the run: the ending context, plus the clock and the tracer. */
 export interface ResumeContext extends EndingContext {

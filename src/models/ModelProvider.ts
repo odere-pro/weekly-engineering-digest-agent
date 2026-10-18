@@ -1,4 +1,4 @@
-import type { Role } from '../domain/schemas';
+import type { Role } from './roles';
 
 export interface Usage {
   inputTokens: number;
