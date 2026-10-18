@@ -2,7 +2,8 @@
 
 ## Intent
 
-Collected text and model drafts are untrusted. Guards are the model-based safety checks. Input
+Collected text and model drafts are untrusted. Guards are the safety checks: one rule layer in
+code and several model-based ones. Input
 guards look at each collected item before any other model sees it. Output guards look at each
 draft. They catch prompt injection, harmful content, claims not found in the sources, off-task
 text and hype. Config can switch a guard off. The link check and format check are not guards.
@@ -12,7 +13,7 @@ They live in `src/checks`, run in code, and cannot be switched off.
 
 1. The port (`Guard.ts`): `InputGuard.checkItem(item)` and `OutputGuard.checkDraft(draft, sources)`
    each return a `GuardVerdict` (`check`, `flagged`, optional `probability` and `reason`). The
-   ids are `clefPolicy` and `graniteRisk` (input), `graniteGroundedness` and `clefRubric` (output).
+   ids are `ruleInjection`, `clefPolicy` and `graniteRisk` (input), `graniteGroundedness` and `clefRubric` (output).
 2. `guardInputStep(items, deps)` and `guardOutputStep(drafts, sources, deps)` call
    `planGuards` (`guardRun.ts`). A check runs when its section and the check are on in config and
    a guard with that id was supplied. The order is the config order.
@@ -30,6 +31,19 @@ They live in `src/checks`, run in code, and cannot be switched off.
    stops at the first yes. `createGraniteGroundednessGuard` (output) checks each digest item
    against its own source item, then the headline and intro against all cited sources.
    Both use `generate` (role `guardRisk`, temperature 0).
+
+## Rule layer
+
+`ruleInjection` (`adapters/ruleInjection.ts`) is the first input guard. It makes no model call and
+keeps no state. `adapters/ruleInjectionRules.ts` holds one table, `RULES`: each entry has an `id`, a
+`catches` comment naming the attack, and `matches(context)`. The reason is `ruleInjection: id1, id2`
+(ids only, never item text). Rules cover instruction markers, role lines, chat tokens, encoded
+blobs, zero-width and bidi characters, `javascript:`/`data:` URLs, and off-host links. A link
+counts as off-host only if its sentence also gives an order ("add", "use that URL instead",
+"send"), or it points at a raw IP or punycode host: plain "see https://other.org" in real
+release notes must pass. To add a rule: append an entry, then add a bad and a clean example to
+`CASES` in `ruleInjection.test.ts`. The sweep test runs every recorded week and source
+recording and must flag none. The container passes the feed hosts as `allowedHosts`.
 
 ## Design
 
@@ -52,15 +66,16 @@ They live in `src/checks`, run in code, and cannot be switched off.
 
 ## Files
 
-| File                                          | Role                                                                    |
-| --------------------------------------------- | ----------------------------------------------------------------------- |
-| `Guard.ts`                                    | The port: `InputGuard`, `OutputGuard`, `GuardCallOptions`               |
-| `guardRun.ts`                                 | `planGuards`, `applyGuards`, `flaggedBy`, `GUARD_CONCURRENCY`           |
-| `guardInput.ts`, `guardOutput.ts`             | `guardInputStep`, `guardOutputStep`                                     |
-| `guardQuestions.ts`                           | Policy and rubric questions; `policyState`, `rubricState`, `guardState` |
-| `adapters/clefPolicy.ts`                      | The two decision-model guards                                           |
-| `adapters/granite.ts`                         | The two Granite guards, `GRANITE_CRITERIA`, `parseGraniteScore`         |
-| `*.test.ts`, `adapters/__fixtures__/granite/` | Tests; 7 fixtures of replies recorded from `granite4.1-guardian:8b`     |
+| File                                                 | Role                                                                    |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| `Guard.ts`                                           | The port: `InputGuard`, `OutputGuard`, `GuardCallOptions`               |
+| `guardRun.ts`                                        | `planGuards`, `applyGuards`, `flaggedBy`, `GUARD_CONCURRENCY`           |
+| `guardInput.ts`, `guardOutput.ts`                    | `guardInputStep`, `guardOutputStep`                                     |
+| `guardQuestions.ts`                                  | Policy and rubric questions; `policyState`, `rubricState`, `guardState` |
+| `adapters/ruleInjection.ts`, `ruleInjectionRules.ts` | The rule guard and its rule table                                       |
+| `adapters/clefPolicy.ts`                             | The two decision-model guards                                           |
+| `adapters/granite.ts`                                | The two Granite guards, `GRANITE_CRITERIA`, `parseGraniteScore`         |
+| `*.test.ts`, `adapters/__fixtures__/granite/`        | Tests; 7 fixtures of replies recorded from `granite4.1-guardian:8b`     |
 
 ## Depends on, used by
 

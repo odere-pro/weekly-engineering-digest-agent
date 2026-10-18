@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { createMarkdownFileDelivery } from '../delivery/adapters/markdownFile';
 import { createSlackDelivery } from '../delivery/adapters/slack';
 import { createSmtpDelivery } from '../delivery/adapters/smtp';
+import { createRuleInjectionGuard } from '../guards/adapters/ruleInjection';
 import { createClefPolicyGuard, createClefRubricGuard } from '../guards/adapters/clefPolicy';
 import { createGraniteGroundednessGuard, createGraniteRiskGuard } from '../guards/adapters/granite';
 import { createOllamaProvider, effectiveTemperature } from '../models/adapters/ollama';
@@ -98,7 +99,11 @@ function assemble(loaded: LoadedConfig): AppHandle {
       rss: createRssFetcher({ logger: runLogger }),
       github: createGithubReleasesFetcher({ token: secrets.GITHUB_TOKEN, logger: runLogger }),
     },
-    inputGuards: [createClefPolicyGuard(decision), createGraniteRiskGuard({ model })],
+    inputGuards: [
+      createRuleInjectionGuard({ allowedHosts: feedHosts(config.sources) }),
+      createClefPolicyGuard(decision),
+      createGraniteRiskGuard({ model }),
+    ],
     outputGuards: [createGraniteGroundednessGuard({ model }), createClefRubricGuard(decision)],
     deliveries: guardChannels(channels, logger, redactor),
     store: redactStore(
@@ -125,6 +130,13 @@ function assemble(loaded: LoadedConfig): AppHandle {
       }
     },
   };
+}
+
+/** Hosts of the configured feeds: a link to one of them is not "off-host" for the rule guard. */
+function feedHosts(sources: Config['sources']): string[] {
+  return sources.flatMap((source) =>
+    URL.canParse(source.url) ? [new URL(source.url).hostname] : [],
+  );
 }
 
 /** Each channel retries a transient failure, and sends only text with the secrets taken out. */
