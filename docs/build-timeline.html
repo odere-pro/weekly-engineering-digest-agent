@@ -77,6 +77,9 @@
         display: grid;
         gap: 48px;
       }
+      .wrap > * {
+        min-width: 0;
+      }
       .col {
         max-width: 720px;
       }
@@ -265,18 +268,20 @@
     <div class="wrap">
       <header class="col">
         <div class="eyebrow">weekly-engineering-digest-agent · git history of main</div>
-        <h1>From empty repo to a measured agent in 25 hours</h1>
+        <h1>From empty repo to a measured agent in 55 hours</h1>
         <p class="lede">
           The spec planned about a week to v0.1.0. The local tag landed 17 hours after the first
           commit. This page shows how the work was ordered, where the reasoning was wrong, and how
-          measurement caught each wrong guess before it shipped as a fix.
+          measurement caught each wrong guess before it shipped as a fix. The history now runs two
+          more days, to 18 Oct 22:56: review fixes, an eval plan, a new digest layout, a docs cut
+          and a folder restructure. The newest eval still has one hard gate red.
         </p>
         <div class="facts">
-          <div><b>106</b><span>commits on main</span></div>
+          <div><b>127</b><span>commits on main</span></div>
           <div><b>17h 09m</b><span>first commit to v0.1.0 tag</span></div>
-          <div><b>78</b><span>issues across 7 waves</span></div>
-          <div><b>86 / 134</b><span>source files / test files</span></div>
-          <div><b>7h 12m</b><span>blocked on commit signing</span></div>
+          <div><b>87</b><span>issues across 9 waves, 82 done</span></div>
+          <div><b>95 / 161</b><span>source files / test files</span></div>
+          <div><b>9h 45m</b><span>blocked on commit signing, at least</span></div>
         </div>
       </header>
 
@@ -284,8 +289,8 @@
         <div class="col">
           <h2>Timeline</h2>
           <p class="lede">
-            16 Oct 15:30 to 17 Oct 18:00, local time. Top row: commits per hour. Bars: when each
-            wave's commits landed. Numbered marks match the list below.
+            16 Oct 15:30 to 18 Oct 23:30, local time. Top row: commits per hour. Bars: when each
+            wave's commits landed. Numbered marks match the list below. The chart scrolls sideways.
           </p>
         </div>
         <div class="scroll">
@@ -299,7 +304,10 @@
         </div>
         <p class="note">
           Times are author dates. A few rebased commits keep their original time, so they appear
-          slightly out of order. Waves 6 and 7 are still running at 17:30.
+          slightly out of order. A bar runs from a wave's first to its last commit, so a wave of one
+          or two commits shows as a dot. No commit landed between 17 Oct 18:35 and 18 Oct 20:16.
+          Waves 1 to 10 are on main. Wave 11 (9 eval issues) is planned and only its prep commit has
+          landed.
         </p>
       </section>
 
@@ -336,8 +344,9 @@
         <div class="col">
           <h2>The gates over time</h2>
           <p class="lede">
-            Light profile, the only one this laptop runs. Full evals take about 45 minutes. The
-            targeted column is a re-check of the failing cases only, not a full eval.
+            Light profile, the only one this laptop runs. The first two full evals took about 45
+            minutes. The wave 6 run took 1h 52m: it replays every week three times and scores with
+            the judge. The targeted column is a re-check of the failing cases only, not a full eval.
           </p>
         </div>
         <div class="scroll" style="background: var(--bg)">
@@ -349,7 +358,10 @@
                 <th>v0.1.0 baseline<br />17 Oct 07:49</th>
                 <th>After wave 5<br />17 Oct 12:12</th>
                 <th>Targeted re-checks<br />16:32 to 17:21</th>
-                <th>Wave 6 re-baseline</th>
+                <th>
+                  Wave 6 re-baseline<br />18 Oct 21:56<br />scorecard in
+                  <span style="text-transform: none">b7dd30f</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -359,7 +371,7 @@
                 <td class="num green">100%</td>
                 <td class="num green">100%</td>
                 <td>not re-checked</td>
-                <td class="pend">W6-06</td>
+                <td class="num green">100%</td>
               </tr>
               <tr>
                 <td>Groundedness</td>
@@ -367,7 +379,7 @@
                 <td class="num green">100%</td>
                 <td class="num green">100%</td>
                 <td class="num green">10 of 10 planted claims</td>
-                <td class="pend">W6-06</td>
+                <td class="num green">100%</td>
               </tr>
               <tr>
                 <td>Format</td>
@@ -375,7 +387,7 @@
                 <td class="num red">67%</td>
                 <td class="num red">83%</td>
                 <td>W39 passes after the link-check fix</td>
-                <td class="pend">W6-06</td>
+                <td class="num red">83%</td>
               </tr>
               <tr>
                 <td>Attack handling</td>
@@ -383,7 +395,7 @@
                 <td class="num green">100%</td>
                 <td class="num red">90%</td>
                 <td>guards alone 10 of 10, held-out 10 of 10</td>
-                <td class="pend">W6-06</td>
+                <td class="num green">100%</td>
               </tr>
               <tr>
                 <td>Guard false blocks</td>
@@ -391,7 +403,7 @@
                 <td class="num green">0%</td>
                 <td class="num red">50%</td>
                 <td>Granite controls 0 of 10; clean items 2.2%</td>
-                <td class="pend">W6-06</td>
+                <td class="num green">1.7%</td>
               </tr>
               <tr>
                 <td>Classifier accuracy</td>
@@ -399,7 +411,7 @@
                 <td class="num red">27%</td>
                 <td class="num red">27%</td>
                 <td>W6-08 rescoring running</td>
-                <td class="pend">W6-06</td>
+                <td class="num red">28%</td>
               </tr>
               <tr>
                 <td>Stability</td>
@@ -407,7 +419,7 @@
                 <td class="num red">0</td>
                 <td class="num red">1.33</td>
                 <td>W7-03 seed and fixed pick running</td>
-                <td class="pend">W6-06</td>
+                <td class="num red">1.67</td>
               </tr>
               <tr>
                 <td>Source summary fill</td>
@@ -415,11 +427,18 @@
                 <td>not measured</td>
                 <td>not measured</td>
                 <td>most sources 100%, DeepMind 98%</td>
-                <td class="pend">W6-06</td>
+                <td class="num green">98.9%</td>
               </tr>
             </tbody>
           </table>
         </div>
+        <p class="note">
+          Wave 6 column: <code>evals/scorecards/2026-10-18-light.json</code>, measured 18 Oct 20:04
+          to 21:56 and committed as b7dd30f at 22:51. Format is the only hard gate red: week W36 had
+          no digest because the output guard blocked it. The false-block figure counts only
+          synthetic control items, so it did not show that 2 of the 18 replay runs (W36 and W39)
+          ended with no digest. Those two weeks score 1.67 on stability; the other four score 5.00.
+        </p>
       </section>
 
       <section>
@@ -461,7 +480,7 @@
                 <td class="t">days 4 to 5</td>
                 <td class="t">16 Oct 17:10 to 17 Oct 07:49</td>
                 <td>All hard gates green</td>
-                <td><span class="pill wrong">no, format 67%</span></td>
+                <td><span class="pill wrong">no, format 67%, then 83%</span></td>
               </tr>
               <tr>
                 <td>4 Operations</td>
@@ -514,9 +533,24 @@
           planned fixes into no change, a different change, or a better one.
         </p>
         <p>
-          <b>The bottleneck was a person, not the code.</b> Commit signing waited 7 hours for a
-          1Password click. The agents kept working by staging commits and using the GPU for the
-          threshold capture and the first eval.
+          <b>The bottleneck was a person, not the code.</b> Commit signing waited 7 hours overnight
+          for a 1Password click. The agents kept working by staging commits and using the GPU for
+          the threshold capture and the first eval. It waited again for at least 1h 52m on the 17
+          Oct afternoon and about 40 minutes before the wave 10 commits.
+        </p>
+        <p>
+          <b>Waves 8 and 9 reused the method.</b> Wave 8 began with one contracts commit, then seven
+          issue commits built the action-sorted digest and the fetch, show and preview commands.
+          Wave 9 replaced two planned docs issues with one commit that cut the docs from about 4,700
+          to 1,084 lines.
+        </p>
+        <p>
+          <b>The restructure came late, and the docs were cut and then asked to grow.</b> Wave 10
+          moved 265 files into feature folders almost 55 hours in, after 123 commits had been
+          written against the old layout. It was safe because the same 4,161 tests passed, but the
+          layout could have been chosen on day one. The docs went the other way: they were cut to
+          1,084 lines at 20:27, and the wave 10 plan, written the same evening, asks for a docs
+          wiki, one runbook per task and one page per eval set.
         </p>
       </section>
     </div>
@@ -524,8 +558,8 @@
     <script>
       (function () {
         const T0 = Date.parse('2026-10-16T15:30:00'),
-          T1 = Date.parse('2026-10-17T18:00:00');
-        const W = 1100,
+          T1 = Date.parse('2026-10-18T23:30:00');
+        const W = 1400,
           padL = 120,
           padR = 20,
           plotW = W - padL - padR;
@@ -545,7 +579,10 @@
           ['2026-10-17T12', 4],
           ['2026-10-17T13', 5],
           ['2026-10-17T16', 11],
-          ['2026-10-17T17', 2],
+          ['2026-10-17T17', 8],
+          ['2026-10-17T18', 6],
+          ['2026-10-18T20', 5],
+          ['2026-10-18T22', 4],
         ];
         const waves = [
           ['W0 contracts', '2026-10-16T16:01', '2026-10-16T16:15', 8],
@@ -554,12 +591,21 @@
           ['W3 evals', '2026-10-16T22:52', '2026-10-17T09:10', 5],
           ['W4 release', '2026-10-17T01:38', '2026-10-17T09:10', 3],
           ['W5 review fixes', '2026-10-17T09:33', '2026-10-17T17:03', 23],
-          ['W6 eval plan', '2026-10-17T11:12', '2026-10-17T18:00', 7],
-          ['W7 readiness', '2026-10-17T16:37', '2026-10-17T18:00', 7],
+          ['W6 eval plan', '2026-10-17T11:12', '2026-10-18T22:51', 9],
+          ['W7 readiness', '2026-10-17T16:37', '2026-10-17T17:50', 11],
+          ['W8 action digest', '2026-10-17T17:56', '2026-10-18T20:28', 8],
+          ['W9 docs cut', '2026-10-18T20:27', '2026-10-18T20:27', 1],
+          ['W10 folders', '2026-10-18T22:51', '2026-10-18T22:51', 2],
         ];
         const evals = [
           ['2026-10-17T07:06', '2026-10-17T07:49'],
           ['2026-10-17T11:11', '2026-10-17T11:57'],
+          ['2026-10-18T20:04', '2026-10-18T21:56'],
+        ];
+        const blocks = [
+          ['2026-10-17T01:49', '2026-10-17T09:01'],
+          ['2026-10-17T14:40', '2026-10-17T16:32'],
+          ['2026-10-18T22:10', '2026-10-18T22:51'],
         ];
         const events = [
           [
@@ -639,6 +685,42 @@
             'Guards reach 10 of 10 on held-out attacks',
             'Measured first: Granite was never broken, the metric counted only what a later guard added. The fix went to the policy questions instead.',
             '8efb05d',
+          ],
+          [
+            '2026-10-17T17:56',
+            'Wave 8: contracts first, again',
+            'One commit froze the urgency fields, the digest view type and stubs for the new fetch, show and preview commands. Seven issue commits followed: four that evening and three on 18 Oct.',
+            '07eabc9',
+          ],
+          [
+            '2026-10-18T20:20',
+            'The digest is sorted by what to do',
+            'Items are grouped as Act now, Worth a look and Good to know, each with one action line. The Markdown file, email and Slack read the same view. Fetch saves what each source returned; show and preview open a saved run.',
+            '594be96',
+          ],
+          [
+            '2026-10-18T20:27',
+            'Docs cut from about 4,700 to 1,084 lines',
+            'A README for a CEO, a how-it-works guide and an operate guide took the place of five deleted docs, among them the 1,622-line system design. The commit removed 3,773 lines and added 821.',
+            'af37498',
+          ],
+          [
+            '2026-10-18T21:10',
+            'Audit: 81 of 87 issues done',
+            'The maintainer asked if everything in the plan was built. The audit found 81 of 87 issues done, a green gate with 4,161 tests and four small code gaps.',
+            'AUDIT',
+          ],
+          [
+            '2026-10-18T21:56',
+            'Wave 6 re-baseline: format still red',
+            'Attack handling is back to 100% on 20 cases and guard false blocks are 1.7%. Format is 83%: the output guard left week W36 with no digest. The false-block metric used only synthetic controls, so it missed this.',
+            'b7dd30f',
+          ],
+          [
+            '2026-10-18T22:51',
+            'Wave 10: feature folders',
+            'Two commits moved 265 files into feature folders, put tests next to the code, dropped import extensions and added 20 feature CLAUDE.md files. The same 4,161 tests passed. Signing had waited about 40 minutes for 1Password.',
+            '3587162',
           ],
         ];
         const hyps = [
@@ -727,13 +809,14 @@
           return n;
         };
 
-        el('rect', {
-          x: x('2026-10-17T01:49'),
-          y: 18,
-          width: x('2026-10-17T09:01') - x('2026-10-17T01:49'),
-          height: H - 18,
-          fill: 'var(--block)',
-        });
+        for (const [a, b] of blocks)
+          el('rect', {
+            x: x(a),
+            y: 18,
+            width: x(b) - x(a),
+            height: H - 18,
+            fill: 'var(--block)',
+          });
         el(
           'text',
           {
@@ -773,18 +856,23 @@
               String(h).padStart(2, '0'),
             );
         }
-        const mid = padL + ((Date.parse('2026-10-17T00:00:00') - T0) / (T1 - T0)) * plotW;
-        el('line', {
-          x1: mid,
-          x2: mid,
-          y1: 14,
-          y2: H - 18,
-          stroke: 'var(--muted)',
-          'stroke-width': 1,
-          'stroke-dasharray': '3 3',
-        });
-        el('text', { x: padL, y: 12, 'font-size': 11, fill: 'var(--muted)' }, 'Thu 16 Oct');
-        el('text', { x: mid + 4, y: 12, 'font-size': 11, fill: 'var(--muted)' }, 'Fri 17 Oct');
+        el('text', { x: padL, y: 12, 'font-size': 11, fill: 'var(--muted)' }, 'Fri 16 Oct');
+        for (const [midnight, label] of [
+          ['2026-10-17T00:00:00', 'Sat 17 Oct'],
+          ['2026-10-18T00:00:00', 'Sun 18 Oct'],
+        ]) {
+          const mid = padL + ((Date.parse(midnight) - T0) / (T1 - T0)) * plotW;
+          el('line', {
+            x1: mid,
+            x2: mid,
+            y1: 14,
+            y2: H - 18,
+            stroke: 'var(--muted)',
+            'stroke-width': 1,
+            'stroke-dasharray': '3 3',
+          });
+          el('text', { x: mid + 4, y: 12, 'font-size': 11, fill: 'var(--muted)' }, label);
+        }
 
         const maxC = 25,
           base = histTop + histH;
@@ -844,10 +932,18 @@
             rx: 2,
             fill: 'var(--bar)',
           });
+          const label = n + (n === 1 ? ' commit' : ' commits');
+          const fitsRight = x(b) + 5 + label.length * 6 < W - 4;
           el(
             'text',
-            { x: x(b) + 5, y: y + 14, 'font-size': 10, fill: 'var(--muted)' },
-            n + ' commits' + (b.endsWith('18:00') ? ', running' : ''),
+            {
+              x: fitsRight ? x(b) + 5 : x(a) - 5,
+              y: y + 14,
+              'text-anchor': fitsRight ? 'start' : 'end',
+              'font-size': 10,
+              fill: 'var(--muted)',
+            },
+            label,
           );
         });
 
@@ -877,7 +973,7 @@
         const list = document.getElementById('events');
         events.forEach(([t, h, p, ref], i) => {
           const d = new Date(t),
-            day = d.getDate() === 16 ? '16 Oct' : '17 Oct';
+            day = d.getDate() + ' Oct';
           const div = document.createElement('div');
           div.className = 'ev';
           div.innerHTML = `<span class="n">${i + 1}</span><span class="when">${day} ${t.slice(11, 16)}</span><div><h3></h3><p></p></div>`;
