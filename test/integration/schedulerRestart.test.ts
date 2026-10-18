@@ -376,7 +376,8 @@ describe('integration: scheduler catch-up', () => {
         scheduler.stop();
       }
 
-      expect(digestsSent(manual)).toEqual([0, 0, 0]);
+      // A dry run now writes the local Markdown file (W8-05); email and Slack get nothing.
+      expect(digestsSent(manual)).toEqual([1, 0, 0]);
       expect(digestsSent(service)).toEqual([1, 1, 1]);
       expect(await readRunJson(dataDir(), WEEK)).toMatchObject({ status: 'sent' });
       expect(messages(service)).not.toContain('Scheduled run gave up: another run kept the lock');

@@ -1,14 +1,18 @@
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it, vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { createMarkdownFileDelivery } from '../../src/adapters/delivery/markdownFile.js';
 import type { AppHandle } from '../../src/app/container.js';
 import { runCommand, type RunCommandDeps } from '../../src/cli/run.js';
 import type { LoadedConfig } from '../../src/config/load.js';
 import { PROFILES } from '../../src/config/profiles.js';
 import type { DigestDeps, RunResult } from '../../src/core/runDigest.js';
 import { ExitCode, type RunRecord } from '../../src/core/schemas.js';
+import type { Delivery, DigestMessage, DigestView } from '../../src/ports/Delivery.js';
 import { DigestError } from '../../src/shared/errors.js';
 import { makeConfig, makeRunRecord } from '../builders.js';
+import { CapturingDelivery } from '../fakes/index.js';
 
 const DATA_DIR = '/work/data';
 
@@ -46,19 +50,30 @@ function sentResult(overrides: Partial<RunRecord> = {}, markdown?: string): RunR
   };
 }
 
-function harness(result: RunResult | Error = sentResult()): Harness {
+interface HarnessOptions {
+  /** The channels the app has; default: one capturing Markdown channel. */
+  deliveries?: readonly Delivery[];
+  /** delivery.markdown.dir in the loaded config; default: the schema default. */
+  markdownDir?: string;
+}
+
+function harness(result: RunResult | Error = sentResult(), options: HarnessOptions = {}): Harness {
   const out: string[] = [];
   const err: string[] = [];
+  const { markdownDir, deliveries = [new CapturingDelivery('markdown')] } = options;
   const loaded: LoadedConfig = {
-    config: makeConfig({ dataDir: DATA_DIR }),
+    config: makeConfig({
+      dataDir: DATA_DIR,
+      ...(markdownDir !== undefined && { delivery: { markdown: { dir: markdownDir } } }),
+    }),
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: {},
     profile: PROFILES.quality,
     platform: { os: 'darwin', arch: 'arm64' },
     configPath: '/work/digest.config.json',
   };
-  // The command only hands the deps to runDigest; a sentinel is enough to check it does.
-  const appDeps = { config: loaded.config } as unknown as DigestDeps;
+  // The command hands the deps to runDigest and, for a dry run, writes through their channels.
+  const appDeps = { config: loaded.config, deliveries } as unknown as DigestDeps;
   const close = vi.fn<AppHandle['close']>(() => Promise.resolve());
   const loadConfig = vi.fn<RunCommandDeps['loadConfig']>(() => Promise.resolve(loaded));
   const buildApp = vi.fn<RunCommandDeps['buildApp']>(() =>
@@ -476,6 +491,344 @@ describe('runCommand: secrets', () => {
     expect(text(h.out)).toContain('bad credentials [redacted]');
     expect(text(h.err)).toContain('delivery failed: [redacted]');
     expect(text(h.out) + text(h.err)).not.toMatch(/hunter2-smtp|ghp_token123/);
+  });
+});
+
+describe('runCommand: --out', () => {
+  it('overrides delivery.markdown.dir for the app it builds', async () => {
+    const h = harness();
+
+    await runCommand({ out: 'my/digests' }, h.deps);
+
+    const built = h.buildApp.mock.calls[0]![0];
+    expect(built.config.delivery.markdown.dir).toBe('my/digests');
+    expect(h.loaded.config.delivery.markdown.dir).toBe('dist/digests');
+  });
+
+  it('keeps every other setting of the loaded config', async () => {
+    const h = harness();
+
+    await runCommand({ out: 'my/digests', seed: 7 }, h.deps);
+
+    const built = h.buildApp.mock.calls[0]![0];
+    expect(built.config.models.seed).toBe(7);
+    expect(built.config.dataDir).toBe(DATA_DIR);
+    expect(built.secrets).toBe(h.loaded.secrets);
+  });
+
+  it('uses the configured folder, dist/digests by default, without --out', async () => {
+    const h = harness();
+
+    await runCommand({}, h.deps);
+
+    expect(h.buildApp.mock.calls[0]![0]).toBe(h.loaded);
+    expect(h.loaded.config.delivery.markdown.dir).toBe('dist/digests');
+  });
+
+  it('uses the folder as given, absolute or relative', async () => {
+    const h = harness();
+    const absolute = join(tmpdir(), 'digests-out');
+
+    await runCommand({ out: absolute }, h.deps);
+    await runCommand({ out: './here' }, h.deps);
+
+    expect(h.buildApp.mock.calls[0]![0].config.delivery.markdown.dir).toBe(absolute);
+    expect(h.buildApp.mock.calls[1]![0].config.delivery.markdown.dir).toBe('./here');
+  });
+
+  it.each(['', '   '])(
+    'rejects the blank --out "%s" before touching config or models',
+    async (out) => {
+      const h = harness();
+
+      const code = await runCommand({ out }, h.deps);
+
+      expect(code).toBe(1);
+      expect(text(h.err)).toContain('--out');
+      expect(h.loadConfig).not.toHaveBeenCalled();
+      expect(h.buildApp).not.toHaveBeenCalled();
+      expect(h.runDigest).not.toHaveBeenCalled();
+    },
+  );
+});
+
+describe('runCommand: local files', () => {
+  let root: string;
+  let digestsDir: string;
+
+  beforeEach(async () => {
+    root = await mkdtemp(join(tmpdir(), 'run-cmd-local-'));
+    digestsDir = join(root, 'digests');
+    await mkdir(digestsDir);
+    await writeFile(join(digestsDir, '2026-W43.md'), '# Digest\n');
+  });
+
+  afterEach(async () => {
+    await rm(root, { recursive: true, force: true });
+  });
+
+  const deliveredToMarkdown: Partial<RunRecord> = { deliveredTo: ['markdown', 'email'] };
+
+  it('prints the Markdown and HTML paths of a sent run that wrote both', async () => {
+    await writeFile(join(digestsDir, '2026-W43.html'), '<p>Digest</p>');
+    const h = harness(sentResult(deliveredToMarkdown), { markdownDir: digestsDir });
+
+    await runCommand({}, h.deps);
+
+    expect(text(h.out)).toContain(`Markdown  ${join(digestsDir, '2026-W43.md')}\n`);
+    expect(text(h.out)).toContain(`HTML      ${join(digestsDir, '2026-W43.html')}\n`);
+  });
+
+  it('prints only the Markdown path when no HTML copy was written', async () => {
+    const h = harness(sentResult(deliveredToMarkdown), { markdownDir: digestsDir });
+
+    await runCommand({}, h.deps);
+
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+    expect(text(h.out)).not.toMatch(/HTML/);
+  });
+
+  it('names the folder given with --out', async () => {
+    const h = harness(sentResult(deliveredToMarkdown));
+
+    await runCommand({ out: digestsDir }, h.deps);
+
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+  });
+
+  it('keeps the run folder digest line next to the local files', async () => {
+    const h = harness(sentResult(deliveredToMarkdown));
+
+    await runCommand({ out: digestsDir }, h.deps);
+
+    expect(text(h.out)).toContain(join(DATA_DIR, 'runs', '2026-W43', 'digest.md'));
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+  });
+
+  it('prints the paths of a failed run whose Markdown channel took the digest', async () => {
+    const h = harness({
+      ...sentResult({ status: 'failed', deliveredTo: ['markdown'] }),
+      exitCode: ExitCode.Failed,
+    });
+
+    await runCommand({ out: digestsDir }, h.deps);
+
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+  });
+
+  it.each([
+    ['a week with a digest sent earlier', 'skipped'],
+    ['a quiet week', 'quiet'],
+    ['a blocked week', 'blocked'],
+  ] as const)('prints no local path for %s', async (_name, status) => {
+    const h = harness({ record: makeRunRecord({ runId: '2026-W43', status }), exitCode: 0 });
+
+    await runCommand({ out: digestsDir }, h.deps);
+
+    expect(text(h.out)).not.toContain(digestsDir);
+  });
+
+  it('lists only the files that are there: a resumed week may have written them elsewhere', async () => {
+    await rm(join(digestsDir, '2026-W43.md'));
+    await writeFile(join(digestsDir, '2026-W43.html'), '<p>Digest</p>');
+    const h = harness(sentResult(deliveredToMarkdown), { markdownDir: digestsDir });
+
+    await runCommand({}, h.deps);
+
+    expect(text(h.out)).not.toContain(digestsDir);
+  });
+
+  it('prints no local path when the Markdown channel was not reached', async () => {
+    const h = harness({
+      ...sentResult({ status: 'failed', deliveredTo: ['email'] }),
+      exitCode: ExitCode.Failed,
+    });
+
+    await runCommand({ out: digestsDir }, h.deps);
+
+    expect(text(h.out)).not.toContain(digestsDir);
+  });
+});
+
+describe('runCommand: dry run', () => {
+  const VIEW: DigestView = {
+    weekId: '2026-W43',
+    title: 'Week 2026-W43: 1 release, 1 needs action',
+    headline: 'One thing to do.',
+    groups: [
+      {
+        urgency: 'act-now',
+        label: 'Act now',
+        items: [
+          {
+            title: 'Gateway 2.0',
+            url: 'https://example.com/gateway',
+            whatChanged: 'The v1 API is removed.',
+            action: 'Move off v1.',
+          },
+        ],
+      },
+    ],
+  };
+  const MARKDOWN = '# Week 2026-W43\n\n| Release |\n';
+
+  /** A dry run result; `message` is what a run hands over once its core attaches the view. */
+  function dryRun(message?: DigestMessage): RunResult & { message?: DigestMessage } {
+    return {
+      ...sentResult({ status: 'dry-run', dryRun: true }, MARKDOWN),
+      ...(message && { message }),
+    };
+  }
+
+  let root: string;
+  let digestsDir: string;
+
+  beforeEach(async () => {
+    root = await mkdtemp(join(tmpdir(), 'run-cmd-dry-'));
+    digestsDir = join(root, 'digests');
+  });
+
+  afterEach(async () => {
+    await rm(root, { recursive: true, force: true });
+  });
+
+  it('writes the digest to the local folder through the Markdown channel only', async () => {
+    const markdown = new CapturingDelivery('markdown');
+    const email = new CapturingDelivery('email');
+    const slack = new CapturingDelivery('slack');
+    const h = harness(dryRun(), { deliveries: [markdown, email, slack] });
+
+    const code = await runCommand({ dryRun: true }, h.deps);
+
+    expect(code).toBe(0);
+    expect(markdown.digests).toEqual([
+      { weekId: '2026-W43', subject: 'Engineering digest 2026-W43', markdown: MARKDOWN },
+    ]);
+    expect(email.digests).toEqual([]);
+    expect(slack.digests).toEqual([]);
+    expect(email.failures).toEqual([]);
+    expect(slack.failures).toEqual([]);
+  });
+
+  it('writes <week>.md into the --out folder, and no HTML while the run has no view', async () => {
+    const markdownChannel = createMarkdownFileDelivery({ dir: digestsDir });
+    const h = harness(dryRun(), { deliveries: [markdownChannel] });
+
+    await runCommand({ dryRun: true, out: digestsDir }, h.deps);
+
+    expect(await readdir(digestsDir)).toEqual(['2026-W43.md']);
+    expect(await readFile(join(digestsDir, '2026-W43.md'), 'utf8')).toBe(MARKDOWN);
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+    expect(text(h.out)).not.toMatch(/HTML/);
+  });
+
+  it('writes the HTML copy too when the run hands over the message with its view', async () => {
+    const message: DigestMessage = {
+      weekId: '2026-W43',
+      subject: 'Engineering digest 2026-W43: One thing to do.',
+      markdown: MARKDOWN,
+      view: VIEW,
+    };
+    const markdownChannel = createMarkdownFileDelivery({ dir: digestsDir });
+    const h = harness(dryRun(message), { deliveries: [markdownChannel] });
+
+    await runCommand({ dryRun: true, out: digestsDir }, h.deps);
+
+    expect((await readdir(digestsDir)).sort()).toEqual(['2026-W43.html', '2026-W43.md']);
+    expect(await readFile(join(digestsDir, '2026-W43.html'), 'utf8')).toContain('Gateway 2.0');
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
+    expect(text(h.out)).toContain(join(digestsDir, '2026-W43.html'));
+  });
+
+  it('still says that nothing was sent', async () => {
+    const h = harness(dryRun());
+
+    await runCommand({ dryRun: true }, h.deps);
+
+    expect(text(h.out)).toContain('Dry run: nothing was sent.');
+  });
+
+  it('writes nothing when the run kept the week earlier files', async () => {
+    const markdown = new CapturingDelivery('markdown');
+    const h = harness(
+      {
+        ...sentResult({ status: 'dry-run', dryRun: true }),
+        markdown: undefined,
+        kept: 'Kept the sent run record; this forced run did not end sent',
+      },
+      { deliveries: [markdown] },
+    );
+
+    await runCommand({ dryRun: true, force: true }, h.deps);
+
+    expect(markdown.digests).toEqual([]);
+    expect(text(h.out)).not.toContain('dist/digests');
+  });
+
+  it.each(['quiet', 'blocked', 'failed'] as const)(
+    'writes nothing for a dry run that ended %s',
+    async (status) => {
+      const markdown = new CapturingDelivery('markdown');
+      const h = harness(
+        {
+          record: makeRunRecord({ runId: '2026-W43', status, dryRun: true }),
+          exitCode: ExitCode.Quiet,
+          // A digest is there, so only the status stops the write.
+          markdown: MARKDOWN,
+        },
+        { deliveries: [markdown] },
+      );
+
+      await runCommand({ dryRun: true }, h.deps);
+
+      expect(markdown.digests).toEqual([]);
+    },
+  );
+
+  it('does not write a second copy for a real run: the run delivered it already', async () => {
+    const markdown = new CapturingDelivery('markdown');
+    const h = harness(sentResult({ deliveredTo: ['markdown'] }), { deliveries: [markdown] });
+
+    await runCommand({}, h.deps);
+
+    expect(markdown.digests).toEqual([]);
+  });
+
+  it('writes nothing, and does not fail, when the app has no Markdown channel', async () => {
+    const h = harness(dryRun(), { deliveries: [new CapturingDelivery('email')] });
+
+    const code = await runCommand({ dryRun: true }, h.deps);
+
+    expect(code).toBe(0);
+    expect(text(h.err)).toBe('');
+    expect(text(h.out)).not.toContain('dist/digests');
+  });
+
+  it('reports a failed local write on stderr, exits 1 and prints no local path', async () => {
+    const markdown = new CapturingDelivery('markdown');
+    markdown.failWith = new Error('EACCES: permission denied, mkdir');
+    const h = harness(dryRun(), { deliveries: [markdown] });
+
+    const code = await runCommand({ dryRun: true, out: '/nowhere' }, h.deps);
+
+    expect(code).toBe(1);
+    expect(text(h.err)).toContain('/nowhere');
+    expect(text(h.err)).toContain('EACCES: permission denied, mkdir');
+    expect(text(h.out)).toMatch(/Status\s+dry-run/);
+    expect(text(h.out)).not.toContain('2026-W43.md');
+    expect(h.close).toHaveBeenCalledOnce();
+  });
+
+  it('redacts secrets from a failed local write', async () => {
+    const markdown = new CapturingDelivery('markdown');
+    markdown.failWith = new Error('cannot write hunter2-smtp');
+    const h = harness(dryRun(), { deliveries: [markdown] });
+    h.loadConfig.mockResolvedValue({ ...h.loaded, secrets: { SMTP_PASSWORD: 'hunter2-smtp' } });
+
+    await runCommand({ dryRun: true }, h.deps);
+
+    expect(text(h.err)).toContain('cannot write [redacted]');
+    expect(text(h.err)).not.toContain('hunter2-smtp');
   });
 });
 

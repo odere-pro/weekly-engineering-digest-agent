@@ -18,8 +18,13 @@
 #   is no env_file, so secrets stay out of `docker inspect` and `docker compose config`.
 #   Init needs no Ollama: run it as `docker compose run --rm --no-deps digest init` (or
 #   `make docker-init`). Empty files count as absent, so `init --yes` works on the touched files.
-# Linux hosts: create ./data yourself and set DIGEST_UID/DIGEST_GID (in .env or the shell) to your
-#   `id -u`/`id -g`, so the container can write ./data and read a chmod 600 .env.
+# Digests: the digest files (<week>.md and <week>.html) end up in ./data/digests on the host. The
+#   config's delivery.markdown.dir defaults to dist/digests, which is /app/dist/digests in the
+#   container, and ./data/digests is mounted there. Setting it to data/digests works too (it is
+#   the same folder); any other folder lives inside the container and is lost with it.
+# Linux hosts: create ./data and ./data/digests yourself (`mkdir -p data/digests`) and set
+#   DIGEST_UID/DIGEST_GID (in .env or the shell) to your `id -u`/`id -g`, so the container can
+#   write them and read a chmod 600 .env. Docker would otherwise create ./data/digests as root.
 # Time zone: `digest init` writes schedule.timeZone to digest.config.json; that is what the weekly
 #   schedule and the ISO week use. Its prompt defaults to the container's zone, which is UTC unless
 #   TZ (for example Europe/Berlin) is set in .env or the shell.
@@ -52,6 +57,7 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT
     volumes:
       - ./data:/app/data
+      - ./data/digests:/app/dist/digests
       - type: bind
         source: ./digest.config.json
         target: /app/digest.config.json

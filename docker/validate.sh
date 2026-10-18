@@ -46,6 +46,12 @@ check_compose_settings() {
     fail "the ollama service must set OLLAMA_MAX_LOADED_MODELS=1"
   pass "digest gets the host OS and CPU and a long stop grace period; ollama keeps one model loaded"
 
+  # The digest files go to delivery.markdown.dir, which defaults to dist/digests (/app/dist/digests
+  # in the container). It must land in the mounted data folder, not in the image (W8-05).
+  printf '%s\n' "$config" | grep -B2 'target: /app/dist/digests$' | grep -q 'source: .*/data/digests$' ||
+    fail "digest must mount ./data/digests at /app/dist/digests"
+  pass "digest writes its digest files to ./data/digests on the host"
+
   # Compose reads .env for interpolation, so a copied example must not set the endpoint.
   if grep -q '^[[:space:]]*OLLAMA_URL=' .env.example; then
     fail ".env.example sets OLLAMA_URL: a copied .env would override the Compose default"
@@ -91,6 +97,10 @@ check_image() {
     'test -z "$(find / -xdev \( -name ".env" -o -name ".env.*" -o -name "digest.config.json" \) -not -path "/proc/*" 2>/dev/null)"' ||
     fail "the image contains a .env or digest.config.json"
   pass "the image contains no .env or digest.config.json"
+
+  docker run --rm --entrypoint sh "$IMAGE" -c 'test -d /app/dist/digests && test -w /app/dist/digests' ||
+    fail "the non-root user cannot write /app/dist/digests, the default digest folder"
+  pass "the default digest folder /app/dist/digests is writable for the non-root user"
 }
 
 # `make docker-init` creates empty files and mounts them one by one: renaming a temp file onto a

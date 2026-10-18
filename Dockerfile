@@ -31,9 +31,11 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 # `digest eval` reads the recorded weeks and labeled cases from here.
 COPY evals ./evals
-# /app/data is a mount point for the state. Compose bind-mounts ./data over it and ignores this
-# ownership, so Linux hosts set DIGEST_UID/DIGEST_GID instead (see docker-compose.yml).
-RUN mkdir -p /app/data && chown node:node /app/data
+# /app/data is a mount point for the state; /app/dist/digests is where the digest files go, because
+# delivery.markdown.dir defaults to dist/digests (relative to /app). Compose bind-mounts ./data and
+# ./data/digests over them and ignores this ownership, so Linux hosts set DIGEST_UID/DIGEST_GID
+# instead (see docker-compose.yml). Run without Compose, the digests stay inside the container.
+RUN mkdir -p /app/data /app/dist/digests && chown node:node /app/data /app/dist/digests
 USER node
 ENTRYPOINT ["node", "dist/cli.js"]
 CMD ["serve"]
