@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { DigestSchema, ExitCode, ItemSchema, RunRecordSchema, exitCodeFor } from './schemas';
+import {
+  DigestSchema,
+  ExitCode,
+  GuardCheckIdSchema,
+  ItemSchema,
+  RunRecordSchema,
+  exitCodeFor,
+} from './schemas';
 import { makeDigest, makeItem, makeRunRecord } from '../../test/builders';
 
 describe('schemas', () => {
@@ -17,6 +24,23 @@ describe('schemas', () => {
     expect(ItemSchema.parse(item)).toEqual(item);
     expect(DigestSchema.parse(makeDigest([item])).items).toHaveLength(1);
     expect(RunRecordSchema.parse(makeRunRecord()).runId).toBe('2026-W42');
+  });
+
+  describe('guard check ids', () => {
+    it('includes the rule-based injection check (W11-04)', () => {
+      expect(GuardCheckIdSchema.options).toContain('ruleInjection');
+      expect(GuardCheckIdSchema.options[0]).toBe('ruleInjection');
+    });
+  });
+
+  describe('RunRecord fallback', () => {
+    it('accepts an old record without the flag and keeps it when present', () => {
+      expect(RunRecordSchema.parse(makeRunRecord())).not.toHaveProperty('fallback');
+      expect(RunRecordSchema.parse({ ...makeRunRecord(), fallback: true }).fallback).toBe(true);
+      expect(RunRecordSchema.safeParse({ ...makeRunRecord(), fallback: 'yes' }).success).toBe(
+        false,
+      );
+    });
   });
 
   describe('RunRecord sampling', () => {

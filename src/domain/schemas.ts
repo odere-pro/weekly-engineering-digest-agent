@@ -56,6 +56,8 @@ export const ScoredItemSchema = ItemSchema.extend({ classification: Classificati
 export type ScoredItem = z.infer<typeof ScoredItemSchema>;
 
 export const GuardCheckIdSchema = z.enum([
+  /** Deterministic injection patterns, no model call; runs first (W11-04). */
+  'ruleInjection',
   'clefPolicy',
   'graniteRisk',
   'graniteGroundedness',
@@ -181,6 +183,8 @@ export const RunRecordSchema = z.object({
       temperatureByRole: z.record(z.string(), z.number()),
     })
     .optional(),
+  /** True when no writer draft survived and the digest was rendered from the items' own text (W11-02). */
+  fallback: z.boolean().optional(),
   timings: z.array(z.object({ step: StepNameSchema, ms: z.number().min(0) })),
   counts: z.object({
     collected: z.number().int().min(0),
