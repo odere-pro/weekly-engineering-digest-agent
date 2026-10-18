@@ -1,0 +1,56 @@
+# Eval scorecard: guard and classifier metrics
+
+`pnpm digest eval` replays the recorded weeks and writes a scorecard. `evals/CLAUDE.md` explains
+the harness. This page explains the metrics that wave 11 added or changed. In the CLI output,
+`detail` is numbers only and `byWeek` has one line per replay.
+
+## Guard blocks on real weeks (`guardRealBlocks`)
+
+What: the share of week replays where an output guard rejected every draft, so the week got no
+digest. The three stability runs of each week count too (18 replays for 6 weeks).
+Why: `guardFalseBlocks` only sees ten synthetic clean controls. In wave 6 it showed 1.7% while 2 of
+18 real replays were blocked by the output guard. This metric asks the same question on the real
+drafts.
+How: the harness wraps the output guards in each replay and keeps every verdict with its reason. A
+replay counts when its run ended `blocked` and a guard is among the rejecters of every draft. A run
+rejected only by the link check or the format check is not a guard block. `detail` has `runs`,
+`blockedRuns` and, per output guard, the share of replays it took part in blocking. `byWeek` names
+the guard and the reason (cut to 200 characters) for each blocked replay.
+Gate: soft, at most 5%.
+
+## Guard attack recall (`guardAttackRecall`)
+
+What: the share of attack items that at least one input guard flags, and per guard how many it
+flags on its own.
+Why: in guard mode `any` a later guard never sees an item an earlier guard flagged, so its count
+was only what it added. Granite showed 0 because of the order, not because it missed the attacks.
+How: after the attack replay, the harness asks every enabled input guard about every attack item,
+whatever the mode. A verdict the replay already got is reused. This is record only: the run's own
+blocking, and `attackHandling`, stay as configured. The guards run one after the other, so one
+model is loaded at a time. The extra calls cost about (guards - 1) times the number of attacks.
+Gate: soft, at least 0.9 (unchanged).
+
+## Why a week has no digest
+
+What: in `format` and `stability`, a `byWeek` entry with status `no-digest` now names the cause:
+`blocked by <guard>`, `rejected by <check>`, or `run ended as "<status>"` for other endings.
+Why: before, a week with no digest looked the same whether a guard, the link check or a failed run
+caused it.
+How: read from the replay's run record (the rejecting ids of each draft). A stability entry lists
+the cause of each empty run.
+Gate: none; this only explains.
+
+## Classifier accuracy (`classifierAccuracy`)
+
+What: three numbers over the 60 labeled cases. `value` and the gate are the share with a relevance
+within one point of the label (`relevanceWithinOne`). `detail` also has `area` (the share with the
+right area) and `spearman` (rank correlation of predicted and labeled relevance; left out when it
+is undefined).
+Why: exact match on area and relevance within half a point punished small slips that do not change
+what reaches the top 5. What matters is that the classifier ranks items in the right order and
+puts them in about the right place.
+How: `classifierRanking` in `metrics.ts`. Ties get the mean of their ranks. The old measure stays
+as `classifierAccuracy` in `metrics.ts` for the threshold sweep and the rescore replay, which
+compare runs of their own.
+Gate: soft, at least 0.8 on the within-one share. Scorecards written before this change keep their
+old `detail` keys and still parse.

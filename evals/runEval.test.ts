@@ -1103,9 +1103,9 @@ describe('runEval', () => {
       );
 
       expect(scorecard.metrics.classifierAccuracy).toMatchObject({
-        value: 0.5,
-        pass: false,
-        detail: { area: 0.5, relevance: 1 },
+        value: 1,
+        pass: true,
+        detail: { area: 0.5, relevanceWithinOne: 1, spearman: 1 },
       });
       expect(scorecard.metrics.classifierAccuracy.note).toBeUndefined();
       expect(app.model.decideCalls.every((c) => c.role === 'classify')).toBe(true);

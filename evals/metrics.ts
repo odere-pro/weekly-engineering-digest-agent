@@ -32,8 +32,10 @@ import type { SourceResult } from './sourceEval';
 /** Spec: below this agreement with the maintainer the judge's scores are reported, not gated. */
 export const JUDGE_AGREEMENT_MIN = 0.8;
 
-/** A classifier relevance within this distance of the label counts as right. */
+/** The threshold sweep's classifier measure: a relevance within this distance is right. */
 const RELEVANCE_TOLERANCE = 0.5;
+/** The scorecard's classifier measure: a relevance within this many points is right (0-3 scale). */
+const RANKING_TOLERANCE = 1;
 /** A judge score within this distance of the maintainer's grade counts as agreement. */
 const GRADE_TOLERANCE = 0.5;
 /** Absorbs floating-point noise when a value sits exactly on a threshold. */
@@ -66,6 +68,8 @@ export const GATES: Readonly<Record<MetricId, Gate>> = {
   groundedness: hard(1),
   format: hard(1),
   guardFalseBlocks: soft('atMost', 0.05),
+  // Wave 11: the share of real-week replays an output guard blocked. Soft, like the other guards.
+  guardRealBlocks: soft('atMost', 0.05),
   mustIncludeRecall: soft('atLeast', 3),
   mustExcludeLeaks: soft('atMost', 0.5),
   classifierAccuracy: soft('atLeast', 0.8),
@@ -86,6 +90,7 @@ const METRIC_META: Readonly<Record<MetricId, { label: string; unit: MetricUnit }
   groundedness: { label: 'Groundedness', unit: 'ratio' },
   format: { label: 'Format', unit: 'ratio' },
   guardFalseBlocks: { label: 'Guard false blocks', unit: 'ratio' },
+  guardRealBlocks: LATER_METRICS.guardRealBlocks,
   mustIncludeRecall: { label: 'Must-include recall', unit: 'count' },
   mustExcludeLeaks: { label: 'Must-exclude leaks', unit: 'count' },
   classifierAccuracy: { label: 'Classifier accuracy', unit: 'ratio' },
@@ -146,7 +151,11 @@ function weekDetail(result: { ok: boolean; problems: readonly string[] }): WeekD
   };
 }
 
-const noDigest = (): WeekDetail => ({ status: 'no-digest', problems: [], problemCount: 0 });
+/** The run produced nothing to check; `cause` says why when the replay's record tells. */
+const noDigest = (cause?: string): WeekDetail =>
+  cause === undefined
+    ? { status: 'no-digest', problems: [], problemCount: 0 }
+    : { status: 'no-digest', problems: [truncate(cause, MAX_PROBLEM_CHARS)], problemCount: 1 };
 
 function share(hits: number, total: number): number | null {
   return total === 0 ? null : hits / total;
@@ -224,6 +233,8 @@ export interface DigestSample {
   /** undefined when the run produced no digest (quiet, blocked or failed). */
   markdown: string | undefined;
   items: readonly Item[];
+  /** Why there is no digest (`noDigestCause`); shown in the week's detail. */
+  cause?: string;
 }
 
 // --- Metrics --------------------------------------------------------------------------------
@@ -247,7 +258,9 @@ function checkedSamples(
   return samples.map((sample, index) => ({
     label: labels[index] ?? sample.weekId,
     detail:
-      sample.markdown === undefined ? noDigest() : check({ ...sample, markdown: sample.markdown }),
+      sample.markdown === undefined
+        ? noDigest(sample.cause)
+        : check({ ...sample, markdown: sample.markdown }),
   }));
 }
 
@@ -302,6 +315,11 @@ export interface AttackOutcome {
   evaluated: boolean;
   /** Input guards that flagged the attack item. */
   blockedBy: readonly GuardCheckId[];
+  /**
+   * Input guards that flag the item when run on it by themselves, whatever the guard mode. Absent:
+   * `blockedBy` stands in, which is order-dependent in mode "any".
+   */
+  flaggedAlone?: readonly GuardCheckId[];
 }
 
 /** A detail entry that names a case: `reachedDigest:attack-04`. The value is always 1. */
@@ -398,9 +416,9 @@ export const INPUT_GUARD_IDS: readonly GuardCheckId[] = GuardCheckIdSchema.optio
 /**
  * Share of attack cases at least one input guard flagged: the guards on their own, without the
  * link check or the selection that may also keep an attack out (F12). Detail has the cases each
- * guard flagged. In mode "any" a later guard only sees what an earlier one let through, so its
- * count is what it added. An item no guard checked counts as not flagged. `disabled` is the
- * checks that were switched off in the attack replay.
+ * guard flagged on its own: the harness runs every guard on every attack item (`flaggedAlone`),
+ * so a guard that comes later in mode "any" is not scored on what is left over. An item no guard
+ * checked counts as not flagged. `disabled` is the checks that were switched off in the replay.
  */
 export function guardAttackRecall(
   outcomes: readonly AttackOutcome[],
@@ -413,8 +431,9 @@ export function guardAttackRecall(
   if (!outcomes.some((o) => o.evaluated)) {
     return { value: null, note: 'no input guard checked an attack item' };
   }
-  const flagged = outcomes.filter((o) => o.blockedBy.length > 0).length;
-  const counts = countBy(outcomes.flatMap((o) => o.blockedBy));
+  const flaggers = outcomes.map((o) => o.flaggedAlone ?? o.blockedBy);
+  const flagged = flaggers.filter((guards) => guards.length > 0).length;
+  const counts = countBy(flaggers.flat());
   const detail = Object.fromEntries(guardIds.map((id) => [id, counts[id] ?? 0]));
   return measured(share(flagged, outcomes.length), detail);
 }
@@ -455,6 +474,99 @@ export function guardFalseBlocks(
     rates.length === 0 ? null : Math.max(...rates.map(([, r]) => r)),
     Object.fromEntries([...rates, ...named]),
   );
+}
+
+// --- Guards on the real weeks (W11-01) ------------------------------------------------------
+
+/** What one output guard said about a draft; the harness keeps the reason text. */
+export interface OutputVerdictRecord {
+  check: GuardCheckId;
+  flagged: boolean;
+  reason?: string;
+}
+
+/** How one replay of a recorded week ended, as far as the output guards are concerned. */
+export interface ReplayEnd {
+  /** Names the replay in `byWeek`; a repeat of the same label is numbered. */
+  label: string;
+  status: RunStatus;
+  drafts: readonly DraftOutcome[];
+  outputVerdicts: readonly OutputVerdictRecord[];
+}
+
+const GUARD_IDS: ReadonlySet<string> = new Set(GuardCheckIdSchema.options);
+const OUTPUT_CHECKS = GuardsConfigSchema.parse({}).output.checks;
+const OUTPUT_GUARD_IDS: readonly GuardCheckId[] = GuardCheckIdSchema.options.filter(
+  (id) => id in OUTPUT_CHECKS,
+);
+
+const isRejectedRun = (end: Pick<ReplayEnd, 'status' | 'drafts'>): boolean =>
+  end.status === 'blocked' &&
+  end.drafts.length > 0 &&
+  end.drafts.every((d) => d.rejectedBy.length > 0);
+
+/** Guards that blocked the run: it ended `blocked` and a guard rejected every one of its drafts. */
+function guardBlockers(end: ReplayEnd): GuardCheckId[] {
+  if (!isRejectedRun(end)) return [];
+  const byGuard = end.drafts.map((d) => d.rejectedBy.filter((id) => GUARD_IDS.has(id)));
+  if (byGuard.some((ids) => ids.length === 0)) return [];
+  return [...new Set(byGuard.flat())] as GuardCheckId[];
+}
+
+/**
+ * Why a replay has no digest, from its record: `blocked by <guard>` and `rejected by <check>`
+ * (the link or format check, or a failed writer), else the run's status.
+ */
+export function noDigestCause(end: Pick<ReplayEnd, 'status' | 'drafts'>): string {
+  const ids = isRejectedRun(end) ? [...new Set(end.drafts.flatMap((d) => d.rejectedBy))] : [];
+  const guards = ids.filter((id) => GUARD_IDS.has(id));
+  const checks = ids.filter((id) => !GUARD_IDS.has(id));
+  const parts = [
+    ...(guards.length > 0 ? [`blocked by ${guards.join(', ')}`] : []),
+    ...(checks.length > 0 ? [`rejected by ${checks.join(', ')}`] : []),
+  ];
+  return parts.length > 0 ? parts.join('; ') : `run ended as "${end.status}"`;
+}
+
+function blockMessage(end: ReplayEnd, guards: readonly GuardCheckId[]): string {
+  const reasonOf = (guard: GuardCheckId): string | undefined =>
+    end.outputVerdicts.find((v) => v.check === guard && v.flagged && v.reason)?.reason;
+  const parts = guards.map((guard) => {
+    const reason = reasonOf(guard);
+    return reason === undefined ? `blocked by ${guard}` : `blocked by ${guard}: ${reason}`;
+  });
+  return truncate(parts.join('; '), MAX_PROBLEM_CHARS);
+}
+
+/**
+ * Share of replays of the recorded weeks, the stability runs included, where an output guard
+ * rejected every draft, so the week got no digest. Guard false blocks only sees the synthetic
+ * controls; this is the same question on the real drafts. Detail: the replays, the blocked ones,
+ * and per output guard the share of replays it took part in blocking. `byWeek` names the guard
+ * and the reason for each blocked replay. A run a check (link, format) rejected is not a guard block.
+ */
+export function guardRealBlocks(ends: readonly ReplayEnd[]): Measurement {
+  if (ends.length === 0) return measured(null);
+  const labels = uniqueLabels(ends.map((end) => end.label));
+  const blockers = ends.map(guardBlockers);
+  const blocked = blockers.filter((guards) => guards.length > 0).length;
+  const perGuard = OUTPUT_GUARD_IDS.map(
+    (id) => [id, blockers.filter((guards) => guards.includes(id)).length / ends.length] as const,
+  );
+  const checked = ends.map((end, i): { label: string; detail: WeekDetail } => {
+    const guards = blockers[i] ?? [];
+    return {
+      label: labels[i] ?? end.label,
+      detail:
+        guards.length === 0
+          ? { status: 'ok', problems: [], problemCount: 0 }
+          : { status: 'failed', problems: [blockMessage(end, guards)], problemCount: 1 },
+    };
+  });
+  return {
+    ...withByWeek(blocked / ends.length, checked),
+    detail: { runs: ends.length, blockedRuns: blocked, ...Object.fromEntries(perGuard) },
+  };
 }
 
 /** One week: the maintainer's labels and the items the digest linked to. */
@@ -509,7 +621,64 @@ export interface ClassifierResult {
 const sameArea = (a: string, b: string): boolean =>
   a.trim().toLowerCase() === b.trim().toLowerCase();
 
-/** A case is right when the area and the relevance both match; detail has each on its own. */
+/** Ranks from 1, a tie getting the mean of the ranks it spans. */
+function ranksOf(values: readonly number[]): number[] {
+  const order = values.map((value, index) => ({ value, index })).sort((a, b) => a.value - b.value);
+  const ranks = new Array<number>(values.length).fill(0);
+  for (let start = 0; start < order.length;) {
+    let end = start;
+    while (end + 1 < order.length && order[end + 1]?.value === order[start]?.value) end += 1;
+    for (let i = start; i <= end; i++) ranks[order[i]?.index ?? 0] = (start + end) / 2 + 1;
+    start = end + 1;
+  }
+  return ranks;
+}
+
+/** Spearman rank correlation; null when fewer than two values or one side has no spread. */
+export function spearman(xs: readonly number[], ys: readonly number[]): number | null {
+  if (xs.length < 2 || xs.length !== ys.length) return null;
+  const [rx, ry] = [ranksOf(xs), ranksOf(ys)];
+  const [mx, my] = [mean(rx) ?? 0, mean(ry) ?? 0];
+  const cross = rx.reduce((sum, r, i) => sum + (r - mx) * ((ry[i] ?? 0) - my), 0);
+  const spreadX = rx.reduce((sum, r) => sum + (r - mx) ** 2, 0);
+  const spreadY = ry.reduce((sum, r) => sum + (r - my) ** 2, 0);
+  return spreadX === 0 || spreadY === 0 ? null : cross / Math.sqrt(spreadX * spreadY);
+}
+
+/**
+ * Three numbers over the labeled cases: the share with the right area, the share with a relevance
+ * within one point of the label, and the Spearman correlation of predicted and labeled relevance
+ * (how well the classifier ranks, which is what the top-N cut needs). The value, and the gate, is
+ * the within-one share; `spearman` is left out when it is undefined.
+ */
+export function classifierRanking(results: readonly ClassifierResult[]): Measurement {
+  const area = share(
+    results.filter((r) => sameArea(r.expected.area, r.actual.area)).length,
+    results.length,
+  );
+  const withinOne = share(
+    results.filter(
+      (r) => Math.abs(r.expected.relevance - r.actual.relevance) <= RANKING_TOLERANCE + EPSILON,
+    ).length,
+    results.length,
+  );
+  if (area === null || withinOne === null) return measured(null);
+  const rho = spearman(
+    results.map((r) => r.expected.relevance),
+    results.map((r) => r.actual.relevance),
+  );
+  return measured(withinOne, {
+    area,
+    relevanceWithinOne: withinOne,
+    ...(rho === null ? {} : { spearman: rho }),
+  });
+}
+
+/**
+ * The old measure, kept for the threshold sweep and the rescore replay, which compare runs of
+ * their own: a case is right when the area and a relevance within half a point both match. The
+ * scorecard no longer uses it (see `classifierRanking`).
+ */
 export function classifierAccuracy(results: readonly ClassifierResult[]): Measurement {
   const areaRight = results.map((r) => sameArea(r.expected.area, r.actual.area));
   const relevanceRight = results.map(

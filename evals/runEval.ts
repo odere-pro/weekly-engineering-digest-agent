@@ -34,7 +34,7 @@ import {
   assembleMetrics,
   attackHandling,
   attackRunMeasurement,
-  classifierAccuracy,
+  classifierRanking,
   digestItemIds,
   failedHardGates,
   formatCompliance,
@@ -43,9 +43,11 @@ import {
   sourceParse,
   sourceSummaryFill,
   guardFalseBlocks,
+  guardRealBlocks,
   linkValidity,
   mustExcludeLeaks,
   mustIncludeRecall,
+  noDigestCause,
   runTime,
   stability,
   withCoverage,
@@ -57,6 +59,7 @@ import {
   type GroundingOutcome,
   type GuardTally,
   type Measurement,
+  type ReplayEnd,
   type WeekHits,
 } from './metrics';
 import {
@@ -341,6 +344,7 @@ export function createEvalStore(): RunStore {
 }
 
 interface InputVerdict {
+  guardId: GuardCheckId;
   itemId: string;
   verdict: GuardVerdict;
 }
@@ -356,7 +360,7 @@ function recordInputGuards(guards: readonly InputGuard[], log: InputVerdict[]): 
     id: guard.id,
     checkItem: async (item, options) => {
       const verdict = await guard.checkItem(item, options);
-      log.push({ itemId: item.id, verdict });
+      log.push({ guardId: guard.id, itemId: item.id, verdict });
       return verdict;
     },
   }));
@@ -423,6 +427,8 @@ interface Replay {
   record: RunRecord;
   durationMs: number;
   inputVerdicts: InputVerdict[];
+  /** What the output guards said about each draft, reasons included. */
+  outputVerdicts: OutputVerdict[];
   /** Ids of the items the replay served. */
   served: ReadonlySet<string>;
 }
@@ -435,6 +441,7 @@ async function replay(
   items: readonly Item[],
 ): Promise<Replay> {
   const inputVerdicts: InputVerdict[] = [];
+  const outputVerdicts: OutputVerdict[] = [];
   const sources = sourcesOf(items, app.config.sources);
   const served = servedIds(items, sources, app.config.maxItemsPerSource);
   const replayDeps: DigestDeps = {
@@ -447,6 +454,7 @@ async function replay(
     },
     fetchers: recordedFetchers(items),
     inputGuards: recordInputGuards(app.inputGuards, inputVerdicts),
+    outputGuards: recordOutputGuards(app.outputGuards, outputVerdicts),
     deliveries: [],
     store: createEvalStore(),
     clock: fixedClock(endOfWeek(weekId)),
@@ -463,6 +471,7 @@ async function replay(
     record: result.record,
     durationMs,
     inputVerdicts,
+    outputVerdicts,
   };
 }
 
@@ -473,6 +482,18 @@ const sampleOf = (run: Replay): DigestSample => ({
   weekId: run.weekId,
   markdown: run.markdown,
   items: run.items,
+  ...(run.markdown === undefined ? { cause: noDigestCause(run.record) } : {}),
+});
+
+const replayEndOf = (run: Replay): ReplayEnd => ({
+  label: run.weekId,
+  status: run.record.status,
+  drafts: run.record.drafts,
+  outputVerdicts: run.outputVerdicts.map(({ verdict }) => ({
+    check: verdict.check,
+    flagged: verdict.flagged,
+    ...(verdict.reason === undefined ? {} : { reason: verdict.reason }),
+  })),
 });
 
 // --- Attacks, classifier and grounding ------------------------------------------------------
@@ -506,6 +527,7 @@ async function replayAttacks(
   const publishedAt = new Date(endOfWeek(base.weekId).getTime() - ATTACK_LEAD_MS).toISOString();
   const injected = attacks.map((attack) => ({ ...attack.item, publishedAt }));
   const run = await replay(app, deps, base.weekId, [...base.items, ...injected]);
+  const alone = await flaggedAlone(app, run, injected);
   const outcomes = attacks.map((attack) => {
     const verdicts = run.inputVerdicts.filter((v) => v.itemId === attack.item.id);
     return {
@@ -513,9 +535,33 @@ async function replayAttacks(
       reachedDigest: reachesDigest(attack.item, run),
       evaluated: verdicts.length > 0,
       blockedBy: flaggedChecks(verdicts.map((v) => v.verdict)),
+      flaggedAlone: alone.get(attack.item.id) ?? [],
     };
   });
   return { run, outcomes };
+}
+
+/**
+ * What each enabled input guard flags on every attack item on its own, whatever the guard mode.
+ * In mode "any" the pipeline never shows a later guard an item an earlier one flagged, so the
+ * missing verdicts are asked here, one guard after the other so only one model is loaded at a
+ * time. A verdict the pipeline already got is reused. Record only: the run itself is unchanged.
+ */
+async function flaggedAlone(
+  app: DigestDeps,
+  run: Replay,
+  items: readonly Item[],
+): Promise<Map<string, GuardCheckId[]>> {
+  const flagged = new Map<string, GuardCheckId[]>();
+  const enabled = app.inputGuards.filter((g) => !run.record.disabledGuards.includes(g.id));
+  for (const guard of enabled) {
+    for (const item of items) {
+      const seen = run.inputVerdicts.find((v) => v.guardId === guard.id && v.itemId === item.id);
+      const verdict = seen?.verdict ?? (await guard.checkItem(item));
+      if (verdict.flagged) flagged.set(item.id, [...(flagged.get(item.id) ?? []), guard.id]);
+    }
+  }
+  return flagged;
 }
 
 async function classifyCases(
@@ -615,6 +661,8 @@ interface WeekRun {
 interface StabilityWeek {
   weekId: string;
   runs: string[][];
+  /** The replays behind `runs`, the first one included. */
+  replays: Replay[];
 }
 
 interface AttackReplay {
@@ -717,11 +765,14 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
     ),
     format: weeks(formatCompliance(weekSamples)),
     guardFalseBlocks: guardFalseBlocks({ ...inputTallies, ...run.grounding.tallies }),
+    guardRealBlocks: weeks(
+      guardRealBlocks(run.stabilityIds.flatMap((w) => w.replays).map(replayEndOf)),
+    ),
     mustIncludeRecall: weeks(mustIncludeRecall(hits)),
     mustExcludeLeaks: weeks(mustExcludeLeaks(hits)),
     classifierAccuracy: withCoverage(
       {
-        ...classifierAccuracy(run.classifier),
+        ...classifierRanking(run.classifier),
         ...(unreviewed ? { note: 'labels not reviewed by the maintainer yet' } : {}),
       },
       classifierCases,
@@ -783,8 +834,11 @@ function stabilityAcrossWeeks(weeks: readonly StabilityWeek[]): Measurement {
   const base = stability(first.runs, first.weekId);
   if (weeks.length === 1) return base;
   const byWeek = Object.fromEntries(
-    weeks.map(({ weekId, runs }): [string, WeekDetail] => {
+    weeks.map(({ weekId, runs, replays }): [string, WeekDetail] => {
       const empty = runs.filter((ids) => ids.length === 0).length;
+      const causes = replays.flatMap((r, i) =>
+        runs[i]?.length === 0 ? [`run ${i + 1}: ${noDigestCause(r.record)}`] : [],
+      );
       const overlap = stability(runs, weekId).value ?? 0;
       return [
         weekId,
@@ -792,6 +846,7 @@ function stabilityAcrossWeeks(weeks: readonly StabilityWeek[]): Measurement {
           status: empty === 0 ? 'ok' : 'no-digest',
           problems: [
             `overlap ${overlap.toFixed(2)} items over ${runs.length} runs, ${empty} empty`,
+            ...causes,
           ],
           problemCount: empty,
         },
@@ -815,11 +870,11 @@ async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Prom
   const first = weekRuns[0];
   const stabilityIds: StabilityWeek[] = [];
   for (const { week, run } of weekRuns) {
-    const runs = [idsOf(run)];
+    const replays = [run];
     for (let i = 1; i < STABILITY_RUNS; i++) {
-      runs.push(idsOf(await replay(app, deps, week.weekId, week.items)));
+      replays.push(await replay(app, deps, week.weekId, week.items));
     }
-    stabilityIds.push({ weekId: week.weekId, runs });
+    stabilityIds.push({ weekId: week.weekId, runs: replays.map(idsOf), replays });
   }
   const attack =
     first && cases.attacks.length > 0

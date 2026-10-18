@@ -137,6 +137,7 @@ export const METRIC_IDS = [
   'groundedness',
   'format',
   'guardFalseBlocks',
+  'guardRealBlocks',
   'mustIncludeRecall',
   'mustExcludeLeaks',
   'classifierAccuracy',
@@ -207,6 +208,7 @@ export type MetricResult = z.infer<typeof MetricResultSchema>;
  */
 export const LATER_METRICS = {
   guardAttackRecall: { label: 'Guard attack recall', unit: 'ratio' },
+  guardRealBlocks: { label: 'Guard blocks on real weeks', unit: 'ratio' },
   sourceParse: { label: 'Source parse yield', unit: 'ratio' },
   sourceSummaryFill: { label: 'Source summary fill', unit: 'ratio' },
 } as const satisfies Partial<Record<MetricId, { label: string; unit: MetricUnit }>>;
