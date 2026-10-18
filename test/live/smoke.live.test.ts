@@ -9,9 +9,10 @@ import { buildApp, type AppHandle } from '../../src/app/container';
 import { loadConfig, type LoadedConfig } from '../../src/config/load';
 import { modelsByRole } from '../../src/config/profiles';
 import { runDigest, type DigestDeps, type RunResult } from '../../src/digest/runDigest';
-import { ExitCode, type Item } from '../../src/domain/schemas';
+import { ExitCode, type Item, type Urgency } from '../../src/domain/schemas';
 import { RunRecordSchema } from '../../src/store/runRecord';
 import type { SourceFetcher } from '../../src/sources/SourceFetcher';
+import type { DigestViewItem } from '../../src/delivery/Delivery';
 import { sameUrl } from '../../src/shared/url';
 
 const EXAMPLE_CONFIG = fileURLToPath(new URL('../../digest.config.example.json', import.meta.url));
@@ -20,8 +21,7 @@ const RUN_TIMEOUT_MS = 1_800_000;
 const CLEANUP_TIMEOUT_MS = 60_000;
 const DIGEST_MIN_ITEMS = 3;
 const EM_DASH = '—';
-const ITEM_HEADING = /^## \d+\. /gm;
-const SOURCE_LINK = /\[Source\]\((\S+?)\)/g;
+const URGENCIES_WITH_ACTION: readonly Urgency[] = ['act-now', 'worth-a-look'];
 const PIPELINE_STEPS = ['collect', 'guardInput', 'classify', 'process', 'write', 'guardOutput'];
 
 interface SmokeRun {
@@ -145,14 +145,33 @@ describe.skipIf(process.env.LIVE_OLLAMA !== '1')('digest smoke run on light (liv
     expect(draft).toMatchObject({ passed: true, rejectedBy: [] });
   });
 
+  it('gives every digest item an urgency and an action where the reader must act', () => {
+    const view = run.result.message?.view;
+    const groups = view?.groups ?? [];
+    const itemCount = groups.reduce((sum, group) => sum + group.items.length, 0);
+
+    expect(itemCount).toBe(run.result.record.counts.digestItems);
+    for (const group of groups) {
+      expect(group.items.length).toBeGreaterThan(0);
+      if (!URGENCIES_WITH_ACTION.includes(group.urgency)) continue;
+      for (const item of group.items) {
+        expect(item.action?.trim(), `action of "${item.title}"`).toBeTruthy();
+      }
+    }
+    expect(view?.title).toMatch(
+      /^Week \S+: \d+ releases?, (\d+ needs? action|nothing needs action)$/,
+    );
+  });
+
   it('writes a digest that obeys the format rules and links only collected items', () => {
     const markdown = run.result.markdown ?? '';
-    const links = [...markdown.matchAll(SOURCE_LINK)].map((match) => match[1] ?? '');
-    const headings = markdown.match(ITEM_HEADING) ?? [];
+    const items: DigestViewItem[] = (run.result.message?.view?.groups ?? []).flatMap((group) => [
+      ...group.items,
+    ]);
+    const links = items.map((item) => item.url);
 
     expect(markdown).not.toContain(EM_DASH);
-    expect(headings).toHaveLength(run.result.record.counts.digestItems);
-    expect(links).toHaveLength(headings.length);
+    expect(links).toHaveLength(run.result.record.counts.digestItems);
     for (const link of links) {
       expect(run.collected.some((item) => sameUrl(item.url, link))).toBe(true);
     }
