@@ -1,4 +1,4 @@
-import { DigestError, errorMessage } from '../shared/errors.js';
+import { DigestError, errorMessage } from '../shared/errors';
 
 /** The only cron shape the OS schedulers can express here: "m h * * dow". */
 export interface SimpleCron {

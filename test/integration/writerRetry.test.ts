@@ -2,9 +2,9 @@
 // retry fixes it) ends sent, one that stays wrong ends blocked with the reasons on disk, and an
 // aborted run ends failed with its lock released.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps } from '../../src/core/runDigest.js';
-import { ExitCode } from '../../src/core/schemas.js';
-import { DATA_OPEN } from '../../src/shared/untrusted.js';
+import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
+import { ExitCode } from '../../src/domain/schemas';
+import { DATA_OPEN } from '../../src/shared/untrusted';
 import {
   FIRST_WRITER,
   FRIDAY,
@@ -18,7 +18,7 @@ import {
   runFile,
   useDataDir,
   type World,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

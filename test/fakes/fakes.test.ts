@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { makeItem, makeRunRecord } from '../builders.js';
+import { makeItem, makeRunRecord } from '../builders';
 import {
   CapturingDelivery,
   FakeInputGuard,
@@ -8,7 +8,7 @@ import {
   FakeSourceFetcher,
   MemoryRunStore,
   yesNoAnswers,
-} from './index.js';
+} from './index';
 
 describe('test fakes', () => {
   it('MemoryRunStore follows the RunStore contract', async () => {

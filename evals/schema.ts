@@ -1,14 +1,14 @@
 // Schemas for the eval set (labels and cases) and for the scorecard `digest eval` writes (W1-22).
 // The case files under evals/ are written by W1-23, W2-03, W3-01, W3-02 and W3-04; they must parse here.
 import { z } from 'zod';
-import { ProfileNameSchema } from '../src/config/schema.js';
+import { ProfileNameSchema } from '../src/config/schema';
 import {
   DraftSchema,
   GuardCheckIdSchema,
   ItemSchema,
   WeekIdSchema,
   type Draft,
-} from '../src/core/schemas.js';
+} from '../src/domain/schemas';
 
 /** Spec: 5 must-include items per recorded week. */
 export const MUST_INCLUDE_COUNT = 5;

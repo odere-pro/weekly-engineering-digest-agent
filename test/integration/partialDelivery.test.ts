@@ -3,11 +3,11 @@
 // real run store, with no model at all.
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
-import { KEPT_SENT_REASON } from '../../src/core/runEnding.js';
-import { ExitCode, type DeliveryId, type RunRecord } from '../../src/core/schemas.js';
-import type { CapturingDelivery } from '../fakes/index.js';
-import { connectionRefused } from './fakeOllama.js';
+import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
+import { KEPT_SENT_REASON } from '../../src/digest/runEnding';
+import { ExitCode, type DeliveryId, type RunRecord } from '../../src/domain/schemas';
+import type { CapturingDelivery } from '../fakes';
+import { connectionRefused } from './fakeOllama';
 import {
   TEST_TIMEOUT_MS,
   FRIDAY,
@@ -21,7 +21,7 @@ import {
   runFile,
   useDataDir,
   type World,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

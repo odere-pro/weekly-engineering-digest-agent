@@ -1,5 +1,5 @@
 // Test data builders. Each returns a valid object; pass overrides for what the test cares about.
-import { ConfigSchema, type Config, type ConfigInput } from '../src/config/schema.js';
+import { ConfigSchema, type Config, type ConfigInput } from '../src/config/schema';
 import type {
   Classification,
   Digest,
@@ -8,7 +8,7 @@ import type {
   Item,
   RunRecord,
   ScoredItem,
-} from '../src/core/schemas.js';
+} from '../src/domain/schemas';
 
 let seq = 0;
 const next = (): number => ++seq;

@@ -1,16 +1,16 @@
 // The judge `digest eval` uses on a profile that has none (system-design D16, F10). The select
 // step skips the judge when `profile.judge` is null, so on `fast` and `light` the harness asks the
 // judge model itself, with the same rubric, about the winning draft of each replayed week.
-import type { Env } from '../../src/config/schema.js';
+import type { Env } from '../../src/config/schema';
 import {
   buildJudgeQuestions,
   buildJudgeState,
   resolveDraftSources,
-} from '../../src/core/prompts/judge.js';
-import type { Draft, Item, JudgeScore } from '../../src/core/schemas.js';
-import { toJudgeScore } from '../../src/core/steps/select.js';
-import type { ModelProvider } from '../../src/ports/ModelProvider.js';
-import { DigestError } from '../../src/shared/errors.js';
+} from '../../src/select/judgePrompt';
+import type { Draft, Item, JudgeScore } from '../../src/domain/schemas';
+import { toJudgeScore } from '../../src/select/select';
+import type { ModelProvider } from '../../src/models/ModelProvider';
+import { DigestError } from '../../src/shared/errors';
 
 /** The `user:pass@` in a URL such as `https://user:pass@host`; `digest doctor` strips it the same way. */
 const URL_CREDENTIALS = /(\bhttps?:\/\/)[^\s/@]+@/g;

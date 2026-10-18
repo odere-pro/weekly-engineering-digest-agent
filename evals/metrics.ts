@@ -1,10 +1,10 @@
 // Pure metric functions, gates and scorecard assembly for `digest eval` (W1-22).
 // Nothing here reads files or calls models: runEval.ts gathers the data, this file scores it.
-import { GuardsConfigSchema } from '../src/config/schema.js';
-import { formatCheck } from '../src/core/checks/formatCheck.js';
-import { linkCheck } from '../src/core/checks/linkCheck.js';
-import type { CheckResult } from '../src/core/checks/types.js';
-import { readSavedView } from '../src/core/render.js';
+import { GuardsConfigSchema } from '../src/config/schema';
+import { formatCheck } from '../src/checks/formatCheck';
+import { linkCheck } from '../src/checks/linkCheck';
+import type { CheckResult } from '../src/checks/types';
+import { readSavedView } from '../src/render/markdown';
 import {
   GuardCheckIdSchema,
   type Digest,
@@ -14,10 +14,10 @@ import {
   type Item,
   type RunStatus,
   type Urgency,
-} from '../src/core/schemas.js';
-import type { DigestViewItem } from '../src/ports/Delivery.js';
-import { truncate } from '../src/shared/text.js';
-import { normalizeUrl } from '../src/shared/url.js';
+} from '../src/domain/schemas';
+import type { DigestViewItem } from '../src/delivery/Delivery';
+import { truncate } from '../src/shared/text';
+import { normalizeUrl } from '../src/shared/url';
 import {
   LATER_METRICS,
   METRIC_IDS,
@@ -26,8 +26,8 @@ import {
   type MetricResult,
   type MetricUnit,
   type WeekDetail,
-} from './schema.js';
-import type { SourceResult } from './sourceEval.js';
+} from './schema';
+import type { SourceResult } from './sourceEval';
 
 /** Spec: below this agreement with the maintainer the judge's scores are reported, not gated. */
 export const JUDGE_AGREEMENT_MIN = 0.8;

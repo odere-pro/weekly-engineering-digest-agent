@@ -2,9 +2,9 @@
 // Ollama adapter against a scripted fetch; repair is the real generateStructured in the write step.
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { runDigest } from '../../src/core/runDigest.js';
-import { ExitCode } from '../../src/core/schemas.js';
-import { chatReply, hangUntilAborted } from './fakeOllama.js';
+import { runDigest } from '../../src/digest/runDigest';
+import { ExitCode } from '../../src/domain/schemas';
+import { chatReply, hangUntilAborted } from './fakeOllama';
 import {
   TEST_TIMEOUT_MS,
   FIRST_WRITER,
@@ -19,7 +19,7 @@ import {
   runFile,
   useDataDir,
   type World,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

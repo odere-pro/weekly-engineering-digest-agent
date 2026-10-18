@@ -6,29 +6,29 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach } from 'vitest';
-import { createOllamaProvider } from '../../src/adapters/models/ollama.js';
-import { createFsRunStore } from '../../src/adapters/store/fsRunStore.js';
-import type { AppHandle } from '../../src/app/container.js';
-import { runCommand, type RunCommandOptions } from '../../src/cli/run.js';
-import { PROFILES, requiredModels } from '../../src/config/profiles.js';
-import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
-import { JUDGE_CRITERIA } from '../../src/core/prompts/judge.js';
-import type { DigestDeps } from '../../src/core/runDigest.js';
-import { RunRecordSchema, type Item, type Role, type RunRecord } from '../../src/core/schemas.js';
+import { createOllamaProvider } from '../../src/models/adapters/ollama';
+import { createFsRunStore } from '../../src/store/adapters/fsRunStore';
+import type { AppHandle } from '../../src/app/container';
+import { runCommand, type RunCommandOptions } from '../../src/cli/run/run';
+import { PROFILES, requiredModels } from '../../src/config/profiles';
+import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
+import { JUDGE_CRITERIA } from '../../src/select/judgePrompt';
+import type { DigestDeps } from '../../src/digest/runDigest';
+import { RunRecordSchema, type Item, type Role, type RunRecord } from '../../src/domain/schemas';
 import type {
   DecideRequest,
   DecisionAnswer,
   GenerateRequest,
   ModelHealth,
   ModelProvider,
-} from '../../src/ports/ModelProvider.js';
-import type { OutputGuard } from '../../src/ports/Guard.js';
-import type { RunStore } from '../../src/ports/RunStore.js';
-import type { Clock } from '../../src/shared/clock.js';
-import type { LogFields, Logger } from '../../src/shared/telemetry.js';
-import { DATA_OPEN } from '../../src/shared/untrusted.js';
-import { makeConfig, makeItem } from '../builders.js';
-import { fakeOllama, type FakeOllama, type OllamaCall, type OllamaRoute } from './fakeOllama.js';
+} from '../../src/models/ModelProvider';
+import type { OutputGuard } from '../../src/guards/Guard';
+import type { RunStore } from '../../src/store/RunStore';
+import type { Clock } from '../../src/shared/clock';
+import type { LogFields, Logger } from '../../src/shared/telemetry';
+import { DATA_OPEN } from '../../src/shared/untrusted';
+import { makeConfig, makeItem } from '../builders';
+import { fakeOllama, type FakeOllama, type OllamaCall, type OllamaRoute } from './fakeOllama';
 import {
   CapturingDelivery,
   FakeInputGuard,
@@ -37,7 +37,7 @@ import {
   FakeSourceFetcher,
   fixedClock,
   noopTracer,
-} from '../fakes/index.js';
+} from '../fakes';
 
 export const MODELS_AREA = 'AI models and tooling';
 export const PLATFORM_AREA = 'Platform engineering';

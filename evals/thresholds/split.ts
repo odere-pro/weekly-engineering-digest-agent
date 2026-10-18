@@ -1,10 +1,10 @@
 // Train and holdout split of a raw capture (W6-04, F56): thresholds are picked on the train
 // side only and scored on both, so the holdout number was not used to choose anything.
-import type { Thresholds } from '../../src/config/schema.js';
-import { WeekIdSchema } from '../../src/core/schemas.js';
-import { DigestError } from '../../src/shared/errors.js';
-import { classifierAccuracy } from '../metrics.js';
-import { isFailed, type ClassifierRecord, type RawCapture } from './capture.js';
+import type { Thresholds } from '../../src/config/schema';
+import { WeekIdSchema } from '../../src/domain/schemas';
+import { DigestError } from '../../src/shared/errors';
+import { classifierAccuracy } from '../metrics';
+import { isFailed, type ClassifierRecord, type RawCapture } from './capture';
 import {
   EPSILON,
   filterOutcome,
@@ -12,7 +12,7 @@ import {
   graniteResult,
   guardFlagPoint,
   guardSamples,
-} from './sweep.js';
+} from './sweep';
 
 /** The holdout keeps every CASE_STRIDE-th classifier case, attack and grounding case (the 3rd, 6th, ...). */
 export const CASE_STRIDE = 3;

@@ -1,5 +1,5 @@
 // Entry point for `digest` (bundled to dist/cli.js).
-import { buildProgram } from './program.js';
+import { buildProgram } from './program';
 
 const program = buildProgram((code) => {
   process.exitCode = code;

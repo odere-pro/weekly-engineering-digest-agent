@@ -1,0 +1,184 @@
+// The guard engine both guard steps share (W5-06, F36): which guards run, and how they run.
+import type { GuardMode } from '../config/schema';
+import { DigestError } from '../shared/errors';
+import type { Logger } from '../shared/telemetry';
+import type { GuardCheckId, GuardVerdict } from '../domain/schemas';
+
+/**
+ * Most calls one guard has in flight at once (W5-16, F38). A guard still runs from first subject
+ * to last before the next guard starts, so the extra calls all go to the same model and no second
+ * model is loaded. 1 is the old behaviour: one call at a time.
+ *
+ * It stays 1 on purpose. Measured on the light profile (2026-10-17, one recorded week plus the
+ * attack items, 116 guard calls): limits 1, 2 and 4 all took about 112 s with identical verdicts,
+ * and a call took about as many times longer as the limit, so this Ollama setup served the calls one
+ * at a time. Raise it only after timing a setup that runs requests in parallel (OLLAMA_NUM_PARALLEL,
+ * a remote server): a call the server has queued still spends its per-attempt timeout
+ * (models/ollama.ts) while it waits.
+ */
+export const GUARD_CONCURRENCY = 1;
+
+interface GuardSwitches<Check extends GuardCheckId> {
+  enabled: boolean;
+  checks: Readonly<Record<Check, boolean>>;
+}
+
+/** One guard, bound to the kind of subject it checks. */
+export type GuardCheckFn<Subject> = (subject: Subject) => Promise<GuardVerdict>;
+
+export interface GuardSplit<Subject> {
+  kept: Subject[];
+  dropped: { subject: Subject; verdicts: GuardVerdict[] }[];
+}
+
+/**
+ * Decides which guards run, in config order (which is also the order the spec numbers them).
+ * A check runs when the section and the check are on and a guard with its id was supplied. Every
+ * other check is reported as disabled; a missing guard also logs a warning.
+ */
+export function planGuards<Check extends GuardCheckId, Guard extends { readonly id: GuardCheckId }>(
+  config: GuardSwitches<Check>,
+  guards: readonly Guard[],
+  logger: Logger,
+): { active: Guard[]; disabledChecks: Check[] } {
+  const active: Guard[] = [];
+  const disabledChecks: Check[] = [];
+  for (const check of Object.keys(config.checks) as Check[]) {
+    const guard = config.enabled && config.checks[check] ? findGuard(guards, check) : undefined;
+    if (guard) {
+      active.push(guard);
+      continue;
+    }
+    if (config.enabled && config.checks[check]) {
+      logger.warn(`guard for check ${check} is not available; the check is skipped`, { check });
+    }
+    disabledChecks.push(check);
+  }
+  return { active, disabledChecks };
+}
+
+function findGuard<Guard extends { readonly id: GuardCheckId }>(
+  guards: readonly Guard[],
+  check: GuardCheckId,
+): Guard | undefined {
+  return guards.find((guard) => guard.id === check);
+}
+
+interface Tracked<Subject> {
+  index: number;
+  subject: Subject;
+  verdicts: readonly GuardVerdict[];
+}
+
+/**
+ * Runs the checks guard by guard, never subject by subject, so only one model is loaded at a time.
+ * - any: a flag drops the subject at once, so the next guard only sees unflagged subjects.
+ * - all: only flagged subjects go on to the next guard; a subject is dropped when the last
+ *   guard flags it too.
+ * Within a guard, at most `concurrency` subjects are checked at once. Both lists keep input
+ * order, whatever order the calls finish in. Guard errors propagate (see `mapBounded`). No
+ * checks keeps every subject.
+ */
+export async function applyGuards<Subject>(
+  subjects: readonly Subject[],
+  checks: readonly GuardCheckFn<Subject>[],
+  mode: GuardMode,
+  concurrency: number = GUARD_CONCURRENCY,
+): Promise<GuardSplit<Subject>> {
+  assertConcurrency(concurrency);
+  if (checks.length === 0) return { kept: [...subjects], dropped: [] };
+
+  const continues = (verdict: GuardVerdict): boolean =>
+    mode === 'any' ? !verdict.flagged : verdict.flagged;
+  let survivors: Tracked<Subject>[] = subjects.map((subject, index) => ({
+    index,
+    subject,
+    verdicts: [],
+  }));
+  let exited: Tracked<Subject>[] = [];
+  for (const check of checks) {
+    const examined = await examineAll(survivors, check, concurrency);
+    survivors = examined
+      .filter((result) => continues(result.verdict))
+      .map((result) => result.entry);
+    exited = [
+      ...exited,
+      ...examined.filter((result) => !continues(result.verdict)).map((result) => result.entry),
+    ];
+  }
+
+  const [keptEntries, droppedEntries] = mode === 'any' ? [survivors, exited] : [exited, survivors];
+  return {
+    kept: inInputOrder(keptEntries).map((entry) => entry.subject),
+    dropped: inInputOrder(droppedEntries).map((entry) => ({
+      subject: entry.subject,
+      verdicts: [...entry.verdicts],
+    })),
+  };
+}
+
+function assertConcurrency(concurrency: number): void {
+  if (Number.isInteger(concurrency) && concurrency >= 1) return;
+  throw new DigestError(
+    `guard concurrency must be a whole number of at least 1, got ${concurrency}`,
+  );
+}
+
+/** One guard over a pool of subjects, results in pool order. */
+async function examineAll<Subject>(
+  pool: readonly Tracked<Subject>[],
+  check: GuardCheckFn<Subject>,
+  concurrency: number,
+): Promise<{ entry: Tracked<Subject>; verdict: GuardVerdict }[]> {
+  return mapBounded(pool, concurrency, async (entry) => {
+    const verdict = await check(entry.subject);
+    return { entry: { ...entry, verdicts: [...entry.verdicts, verdict] }, verdict };
+  });
+}
+
+/**
+ * Maps `inputs` with at most `limit` calls of `fn` in flight, starting the next call as soon
+ * as one finishes. The results are in input order. When a call fails, no further call starts;
+ * the calls already in flight finish (a model call cannot be taken back, and the next step must
+ * not find the model still busy), then the failure of the earliest input is thrown; failures of
+ * later inputs are dropped on purpose, so the error does not depend on which call finished first.
+ * With a limit of 1 that is the failing call itself, and no later call was ever made.
+ *
+ * The workers pull from one shared array iterator. That is safe because an array iterator has no
+ * `return()`: a worker that leaves its loop early cannot close the queue for the others.
+ */
+async function mapBounded<In, Out>(
+  inputs: readonly In[],
+  limit: number,
+  fn: (input: In) => Promise<Out>,
+): Promise<Out[]> {
+  const done: { index: number; value: Out }[] = [];
+  const failed: { index: number; error: unknown }[] = [];
+  const queue = inputs.entries();
+
+  const worker = async (): Promise<void> => {
+    for (const [index, input] of queue) {
+      if (failed.length > 0) return;
+      try {
+        done.push({ index, value: await fn(input) });
+      } catch (error) {
+        failed.push({ index, error });
+      }
+    }
+  };
+
+  await Promise.all(Array.from({ length: Math.min(limit, inputs.length) }, () => worker()));
+
+  const [earliest] = [...failed].sort((a, b) => a.index - b.index);
+  if (earliest) throw earliest.error;
+  return [...done].sort((a, b) => a.index - b.index).map(({ value }) => value);
+}
+
+function inInputOrder<Subject>(entries: readonly Tracked<Subject>[]): Tracked<Subject>[] {
+  return [...entries].sort((a, b) => a.index - b.index);
+}
+
+/** Ids of the checks that flagged, for logs; never the flagged text. */
+export function flaggedBy(verdicts: readonly GuardVerdict[]): GuardCheckId[] {
+  return verdicts.filter((verdict) => verdict.flagged).map((verdict) => verdict.check);
+}

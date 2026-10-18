@@ -1,6 +1,6 @@
-import type { Role } from '../core/schemas.js';
-import type { ModelProvider, Usage } from '../ports/ModelProvider.js';
-import { noopTracer, type Tracer } from '../shared/telemetry.js';
+import type { Role } from '../domain/schemas';
+import type { ModelProvider, Usage } from '../models/ModelProvider';
+import { noopTracer, type Tracer } from '../shared/telemetry';
 
 interface Measured {
   model: string;

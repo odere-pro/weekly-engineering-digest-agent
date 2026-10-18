@@ -22,9 +22,9 @@ collect -> guardInput -> classify -> process -> write -> guardOutput -> select -
 | `select`      | passing drafts | the winner                   | `judge` (if any)           | First passing draft wins when there is no judge |
 | `deliver`     | winner         | files, email, Slack          | none                       | Redaction before every channel                  |
 
-Steps are plain functions `(input, deps) => output` in `src/core/steps/`. `core/workflow.ts`
-wraps them in a Mastra workflow. `core/runDigest.ts` owns the order, the timings and the
-run ending. Only one model is loaded at a time, so models run strictly one after another.
+Steps are plain functions `(input, deps) => output`, one per feature folder (`src/classify/`,
+`src/write/`, …). `src/digest/workflow.ts` wraps them in a Mastra workflow. `src/digest/runDigest.ts`
+owns the order, the timings and the run ending. Only one model is loaded at a time, so models run strictly one after another.
 
 ### What each step does
 
@@ -60,16 +60,18 @@ run ending. Only one model is loaded at a time, so models run strictly one after
 
 ## Ports and adapters
 
-`src/core` knows no vendor, file or cloud. It talks to five interfaces in `src/ports/`. ESLint
-enforces that core never imports an adapter, `node:fs`, `ollama` or `nodemailer`.
+The pipeline knows no vendor, file or cloud. It talks to five ports: interfaces it owns, each in
+its feature folder (`src/models/ModelProvider.ts`). An adapter plugs a real system into a port and
+lives in that feature's `adapters/` folder. ESLint enforces that the pipeline never imports an
+adapter, `node:fs`, `ollama` or `nodemailer`.
 
-| Port            | What it does                                  | Real adapter                                        |
-| --------------- | --------------------------------------------- | --------------------------------------------------- |
-| `ModelProvider` | `generate` (text) and `decide` (class odds)   | `adapters/models/ollama.ts`, `systemone.ts`         |
-| `Guard`         | Input and output checks, one verdict per call | `adapters/guard/clefPolicy.ts`, `granite.ts`        |
-| `SourceFetcher` | Items from one source kind                    | `adapters/sources/` (`rss`, `github` Atom and REST) |
-| `Delivery`      | Send a digest or a failure note               | `adapters/delivery/` (markdown, SMTP, Slack)        |
-| `RunStore`      | Run folders, lock, history                    | `adapters/store/fsRunStore.ts`                      |
+| Port            | What it does                                  | Real adapter                                            |
+| --------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `ModelProvider` | `generate` (text) and `decide` (class odds)   | `src/models/adapters/ollama.ts`, `systemone.ts`         |
+| `Guard`         | Input and output checks, one verdict per call | `src/guards/adapters/clefPolicy.ts`, `granite.ts`       |
+| `SourceFetcher` | Items from one source kind                    | `src/sources/adapters/` (`rss`, `github` Atom and REST) |
+| `Delivery`      | Send a digest or a failure note               | `src/delivery/adapters/` (markdown, SMTP, Slack)        |
+| `RunStore`      | Run folders, lock, history                    | `src/store/adapters/fsRunStore.ts`                      |
 
 `src/app/container.ts` is the composition root: config in, adapters out, `DigestDeps` for the
 core. `decide` returns probabilities from a decision model through Ollama's `/v1/systemone`
@@ -149,7 +151,7 @@ clarity, why it matters and focus fit from 1 to 5, one draft per call so positio
 
 Every prompt that embeds collected text wraps each item in an untrusted-data block and puts
 `UNTRUSTED_DATA_RULE` in the system prompt: item text is data, never instructions. No model has
-tools or network access. Prompts live in `src/core/prompts/`, one file per step. Sampling is
+tools or network access. Each prompt sits next to its step (`src/write/writePrompt.ts`). Sampling is
 fixed for repeatability: `models.seed` (42) on every call, temperature 0.2 for `write` and 0 for
 the other roles. The run record keeps both.
 
@@ -200,7 +202,7 @@ Run folders older than `keepWeeks` (12) keep only `digest.md`. `keepWeeks` must 
 
 ## The digest and its renderers
 
-The core builds one `DigestView` from the winning draft (`core/layout.ts`, pure, no I/O). It
+The core builds one `DigestView` from the winning draft (`src/render/layout.ts`, pure, no I/O). It
 holds a title line ("Week 2026-W42: 5 releases, 1 needs action"), the headline, and the items
 in groups: Act now, Worth a look, Good to know. A group appears only when it has items. Labels
 and the title line come from code, never from a model. An old draft without `urgency` is read
@@ -219,18 +221,18 @@ week without sending: `digest preview <week>`.
 
 ## Safety
 
-| Rule                                                              | Enforced in                                                                                                                                  |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Collected text is untrusted: wrapped and labelled in every prompt | `shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)                                                                               |
-| Only allowlisted hosts; same-host redirects; 5 MiB cap            | `adapters/sources/http.ts`                                                                                                                   |
-| A digest may only contain collected URLs                          | link check in `core/checks/linkCheck.ts`, plus URL replacement in `write`                                                                    |
-| Format limits hold                                                | `core/checks/formatCheck.ts`                                                                                                                 |
-| Link and format checks cannot be switched off                     | no config key exists                                                                                                                         |
-| Guards fail closed on unparsable output                           | `core/steps/guardRun.ts`                                                                                                                     |
-| Recipients, webhook and paths come from config and `.env` only    | config loader; models never supply them                                                                                                      |
-| Secrets never reach logs, run records, traces or messages         | `adapters/delivery/redact.ts` and the redacting logger and tracer; each record and message is redacted again just before it is saved or sent |
-| `SLACK_WEBHOOK_URL` must be `https:`                              | `config/schema.ts`                                                                                                                           |
-| A source URL may not carry a username or password                 | `config/schema.ts`                                                                                                                           |
+| Rule                                                              | Enforced in                                                                                                                                      |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Collected text is untrusted: wrapped and labelled in every prompt | `shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)                                                                                   |
+| Only allowlisted hosts; same-host redirects; 5 MiB cap            | `src/sources/adapters/http.ts`                                                                                                                   |
+| A digest may only contain collected URLs                          | link check in `src/checks/linkCheck.ts`, plus URL replacement in `write`                                                                         |
+| Format limits hold                                                | `src/checks/formatCheck.ts`                                                                                                                      |
+| Link and format checks cannot be switched off                     | no config key exists                                                                                                                             |
+| Guards fail closed on unparsable output                           | `src/guards/guardRun.ts`                                                                                                                         |
+| Recipients, webhook and paths come from config and `.env` only    | config loader; models never supply them                                                                                                          |
+| Secrets never reach logs, run records, traces or messages         | `src/delivery/adapters/redact.ts` and the redacting logger and tracer; each record and message is redacted again just before it is saved or sent |
+| `SLACK_WEBHOOK_URL` must be `https:`                              | `config/schema.ts`                                                                                                                               |
+| A source URL may not carry a username or password                 | `config/schema.ts`                                                                                                                               |
 
 A guard switched off in the config is listed in `run.json` and named in the digest footer, and
 `doctor` warns about it.

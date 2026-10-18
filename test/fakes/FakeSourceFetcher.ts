@@ -1,5 +1,5 @@
-import type { Item, Source, SourceKind } from '../../src/core/schemas.js';
-import type { FetchWindow, SourceFetcher } from '../../src/ports/SourceFetcher.js';
+import type { Item, Source, SourceKind } from '../../src/domain/schemas';
+import type { FetchWindow, SourceFetcher } from '../../src/sources/SourceFetcher';
 
 /** Returns canned items per source id; an Error value makes that source fail. */
 export class FakeSourceFetcher implements SourceFetcher {

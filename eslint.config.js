@@ -4,7 +4,8 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-// The core and the ports know no vendor, file or cloud: they reach the outside only through ports.
+// The pipeline features and the ports know no vendor, file or cloud: they reach the outside only
+// through ports. Adapters live in each feature's adapters/ folder; only app/container wires them.
 const coreBoundary = {
   paths: [
     { name: 'node:fs', message: 'core knows no files: use the RunStore port.' },
@@ -18,12 +19,12 @@ const coreBoundary = {
         '**/adapters/**',
         '**/cli/**',
         '**/scheduler/**',
-        '**/handlers/**',
         '**/observability/**',
         '**/app/**',
         '**/config/load*',
       ],
-      message: 'core and ports depend only on ports, core, shared and config/schema.',
+      message:
+        'pipeline features and ports depend only on ports, pipeline features, shared and config/schema.',
     },
   ],
 };
@@ -52,7 +53,11 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/core/**/*.ts', 'src/ports/**/*.ts'],
+    files: [
+      'src/{digest,domain,classify,process,write,select,checks,render}/**/*.ts',
+      'src/{sources,guards,models,delivery,store}/*.ts',
+    ],
+    ignores: ['**/*.test.ts', '**/__fixtures__/**'],
     rules: { 'no-restricted-imports': ['error', coreBoundary] },
   },
   {
@@ -60,7 +65,13 @@ export default defineConfig(
     rules: { 'no-console': 'off' },
   },
   {
-    files: ['test/**/*.ts'],
+    files: [
+      'test/**/*.ts',
+      '**/*.test.ts',
+      '**/__fixtures__/**/*.ts',
+      'evals/evalKit.ts',
+      'src/store/adapters/lockContender.ts',
+    ],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/require-await': 'off',

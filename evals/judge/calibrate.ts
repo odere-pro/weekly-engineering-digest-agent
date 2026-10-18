@@ -12,20 +12,20 @@ import { dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
-import { DigestError, errorMessage } from '../../src/shared/errors.js';
+import { DigestError, errorMessage } from '../../src/shared/errors';
 import {
   JUDGE_AGREEMENT_MIN,
   judgeAgreement,
   selectionAgreement,
   type Measurement,
-} from '../metrics.js';
-import { JudgeCalibrationSchema, type JudgeCalibration } from '../schema.js';
+} from '../metrics';
+import { JudgeCalibrationSchema, type JudgeCalibration } from '../schema';
 import {
   GRADED_DIGESTS,
   GradingSheetSchema,
   type GradedDigest,
   type GradingSheet,
-} from './gradingSheet.js';
+} from './gradingSheet';
 
 const DEFAULT_SHEET = fileURLToPath(new URL('./grades.json', import.meta.url));
 const DEFAULT_OUT = fileURLToPath(new URL('./calibration.json', import.meta.url));

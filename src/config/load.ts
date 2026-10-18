@@ -2,11 +2,11 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parseEnv } from 'node:util';
 import { z } from 'zod';
-import { resolveProfile, type ModelProfile, type Platform } from './profiles.js';
-import { ConfigSchema, EnvSchema, SecretsSchema } from './schema.js';
-import type { Config, Env, Secrets } from './schema.js';
-import { createRedactor } from '../observability/redact.js';
-import { DigestError, errorMessage } from '../shared/errors.js';
+import { resolveProfile, type ModelProfile, type Platform } from './profiles';
+import { ConfigSchema, EnvSchema, SecretsSchema } from './schema';
+import type { Config, Env, Secrets } from './schema';
+import { createRedactor } from '../observability/redact';
+import { DigestError, errorMessage } from '../shared/errors';
 
 const DEFAULT_CONFIG_PATH = 'digest.config.json';
 const DEFAULT_ENV_PATH = '.env';

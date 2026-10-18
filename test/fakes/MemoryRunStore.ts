@@ -1,7 +1,7 @@
-import type { RunRecord } from '../../src/core/schemas.js';
-import type { ArtifactName, RunLock, RunStore } from '../../src/ports/RunStore.js';
-import { DigestError } from '../../src/shared/errors.js';
-import { compareWeekIds, previousWeekIds } from '../../src/shared/isoWeek.js';
+import type { RunRecord } from '../../src/domain/schemas';
+import type { ArtifactName, RunLock, RunStore } from '../../src/store/RunStore';
+import { DigestError } from '../../src/shared/errors';
+import { compareWeekIds, previousWeekIds } from '../../src/shared/isoWeek';
 
 /** In-memory RunStore with the same contract as fsRunStore. */
 export class MemoryRunStore implements RunStore {

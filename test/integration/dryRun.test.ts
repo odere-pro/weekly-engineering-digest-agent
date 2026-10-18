@@ -1,18 +1,18 @@
 // Spec phase 1 exit gate: a dry run writes a digest from mock models. Every port is a fake;
 // the steps, checks, render and the Mastra workflow are the real ones.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps } from '../../src/core/runDigest.js';
-import { ExitCode, RunRecordSchema, type Item } from '../../src/core/schemas.js';
-import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
-import { JUDGE_CRITERIA } from '../../src/core/prompts/judge.js';
-import { PROFILES, requiredModels } from '../../src/config/profiles.js';
+import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
+import { ExitCode, RunRecordSchema, type Item } from '../../src/domain/schemas';
+import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
+import { JUDGE_CRITERIA } from '../../src/select/judgePrompt';
+import { PROFILES, requiredModels } from '../../src/config/profiles';
 import type {
   DecideRequest,
   DecisionAnswer,
   GenerateRequest,
-} from '../../src/ports/ModelProvider.js';
-import { DATA_OPEN } from '../../src/shared/untrusted.js';
-import { makeConfig, makeItem } from '../builders.js';
+} from '../../src/models/ModelProvider';
+import { DATA_OPEN } from '../../src/shared/untrusted';
+import { makeConfig, makeItem } from '../builders';
 import {
   CapturingDelivery,
   FakeInputGuard,
@@ -23,7 +23,7 @@ import {
   fixedClock,
   noopLogger,
   noopTracer,
-} from '../fakes/index.js';
+} from '../fakes';
 
 const MODELS_AREA = 'AI models and tooling';
 const PLATFORM_AREA = 'Platform engineering';

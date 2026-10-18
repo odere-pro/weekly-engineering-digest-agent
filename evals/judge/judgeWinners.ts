@@ -1,10 +1,10 @@
 // Scores the winning digest of each replayed week with the eval judge (F10), for a profile whose
 // select step has no judge to do it.
-import { parseDigestMarkdown, writingQuality, type Measurement } from '../metrics.js';
-import type { Draft, Item, RunRecord } from '../../src/core/schemas.js';
-import { DigestError, errorMessage } from '../../src/shared/errors.js';
-import type { Logger } from '../../src/shared/telemetry.js';
-import type { EvalJudge } from './evalJudge.js';
+import { parseDigestMarkdown, writingQuality, type Measurement } from '../metrics';
+import type { Draft, Item, RunRecord } from '../../src/domain/schemas';
+import { DigestError, errorMessage } from '../../src/shared/errors';
+import type { Logger } from '../../src/shared/telemetry';
+import type { EvalJudge } from './evalJudge';
 
 /** One replayed week as far as judging it is concerned. */
 export interface WinnerSample {

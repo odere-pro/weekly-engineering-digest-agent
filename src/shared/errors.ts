@@ -1,4 +1,4 @@
-import { ExitCode, type StepName } from '../core/schemas.js';
+import { ExitCode, type StepName } from '../domain/schemas';
 
 /** An expected failure with the exit code the CLI should return. */
 export class DigestError extends Error {

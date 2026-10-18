@@ -1,5 +1,5 @@
-import { DigestError } from '../shared/errors.js';
-import { parseSimpleCron, type SimpleCron } from './simpleCron.js';
+import { DigestError } from '../shared/errors';
+import { parseSimpleCron, type SimpleCron } from './simpleCron';
 
 export interface OsScheduleOptions {
   cron: string;

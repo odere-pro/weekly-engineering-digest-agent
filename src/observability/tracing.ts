@@ -12,9 +12,9 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { BatchSpanProcessor, type SpanExporter } from '@opentelemetry/sdk-trace-base';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
-import { errorMessage } from '../shared/errors.js';
-import type { LogFields, Tracer } from '../shared/telemetry.js';
-import { UNSERIALIZABLE, createRedactor, type Redactor } from './redact.js';
+import { errorMessage } from '../shared/errors';
+import type { LogFields, Tracer } from '../shared/telemetry';
+import { UNSERIALIZABLE, createRedactor, type Redactor } from './redact';
 
 export interface TracingHandle extends Tracer {
   /**

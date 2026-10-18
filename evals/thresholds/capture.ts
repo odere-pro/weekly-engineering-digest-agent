@@ -1,16 +1,16 @@
 // Raw model outputs for threshold tuning (W3-03): the schema of evals/thresholds/raw/*.json and
 // the capture that fills it, calling each model once per subject. evals/tuneThresholds.ts runs it.
 import { z } from 'zod';
-import { ProfileNameSchema, ThresholdsSchema } from '../../src/config/schema.js';
-import { WeekIdSchema, type Draft, type Item } from '../../src/core/schemas.js';
-import { classifyStep } from '../../src/core/steps/classify.js';
-import type { InputGuard, OutputGuard } from '../../src/ports/Guard.js';
-import type { ModelProvider } from '../../src/ports/ModelProvider.js';
-import type { Clock } from '../../src/shared/clock.js';
-import { DigestError, errorMessage } from '../../src/shared/errors.js';
-import type { Logger } from '../../src/shared/telemetry.js';
-import type { EvalCases } from '../runEval.js';
-import { withoutItem, type ClassifierCase, type WeekLabels } from '../schema.js';
+import { ProfileNameSchema, ThresholdsSchema } from '../../src/config/schema';
+import { WeekIdSchema, type Draft, type Item } from '../../src/domain/schemas';
+import { classifyStep } from '../../src/classify/classify';
+import type { InputGuard, OutputGuard } from '../../src/guards/Guard';
+import type { ModelProvider } from '../../src/models/ModelProvider';
+import type { Clock } from '../../src/shared/clock';
+import { DigestError, errorMessage } from '../../src/shared/errors';
+import type { Logger } from '../../src/shared/telemetry';
+import type { EvalCases } from '../runEval';
+import { withoutItem, type ClassifierCase, type WeekLabels } from '../schema';
 
 // --- Raw outputs ----------------------------------------------------------------------------
 

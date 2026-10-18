@@ -1,5 +1,5 @@
-import type { Draft, GuardCheckId, GuardVerdict, Item } from '../../src/core/schemas.js';
-import type { InputGuard, OutputGuard } from '../../src/ports/Guard.js';
+import type { Draft, GuardCheckId, GuardVerdict, Item } from '../../src/domain/schemas';
+import type { InputGuard, OutputGuard } from '../../src/guards/Guard';
 
 /** Flags the items for which `flag` returns true. */
 export class FakeInputGuard implements InputGuard {

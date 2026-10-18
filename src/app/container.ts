@@ -1,32 +1,29 @@
 // Composition root: the only place that turns config into real adapters.
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { createMarkdownFileDelivery } from '../adapters/delivery/markdownFile.js';
-import { createSlackDelivery } from '../adapters/delivery/slack.js';
-import { createSmtpDelivery } from '../adapters/delivery/smtp.js';
-import { createClefPolicyGuard, createClefRubricGuard } from '../adapters/guard/clefPolicy.js';
-import {
-  createGraniteGroundednessGuard,
-  createGraniteRiskGuard,
-} from '../adapters/guard/granite.js';
-import { createOllamaProvider, effectiveTemperature } from '../adapters/models/ollama.js';
-import { createGithubReleasesFetcher } from '../adapters/sources/githubReleases.js';
-import { createRssFetcher } from '../adapters/sources/rss.js';
-import { createFsRunStore } from '../adapters/store/fsRunStore.js';
-import type { LoadedConfig } from '../config/load.js';
-import type { Config, Secrets } from '../config/schema.js';
-import type { DigestDeps } from '../core/runDigest.js';
-import { RoleSchema } from '../core/schemas.js';
-import type { Delivery } from '../ports/Delivery.js';
-import type { ModelProvider } from '../ports/ModelProvider.js';
-import { createLogger } from '../observability/logger.js';
-import { createRedactor, type Redactor } from '../observability/redact.js';
-import { createTracer } from '../observability/tracing.js';
-import { systemClock } from '../shared/clock.js';
-import { DigestError, errorMessage } from '../shared/errors.js';
-import type { LogFields, Logger, Tracer } from '../shared/telemetry.js';
-import { knownSecrets, redactDelivery, redactStore } from './redacting.js';
-import { withDeliveryRetry } from './retryingDelivery.js';
-import { deferTracer, traceModel } from './tracedModel.js';
+import { createMarkdownFileDelivery } from '../delivery/adapters/markdownFile';
+import { createSlackDelivery } from '../delivery/adapters/slack';
+import { createSmtpDelivery } from '../delivery/adapters/smtp';
+import { createClefPolicyGuard, createClefRubricGuard } from '../guards/adapters/clefPolicy';
+import { createGraniteGroundednessGuard, createGraniteRiskGuard } from '../guards/adapters/granite';
+import { createOllamaProvider, effectiveTemperature } from '../models/adapters/ollama';
+import { createGithubReleasesFetcher } from '../sources/adapters/githubReleases';
+import { createRssFetcher } from '../sources/adapters/rss';
+import { createFsRunStore } from '../store/adapters/fsRunStore';
+import type { LoadedConfig } from '../config/load';
+import type { Config, Secrets } from '../config/schema';
+import type { DigestDeps } from '../digest/runDigest';
+import { RoleSchema } from '../domain/schemas';
+import type { Delivery } from '../delivery/Delivery';
+import type { ModelProvider } from '../models/ModelProvider';
+import { createLogger } from '../observability/logger';
+import { createRedactor, type Redactor } from '../observability/redact';
+import { createTracer } from '../observability/tracing';
+import { systemClock } from '../shared/clock';
+import { DigestError, errorMessage } from '../shared/errors';
+import type { LogFields, Logger, Tracer } from '../shared/telemetry';
+import { knownSecrets, redactDelivery, redactStore } from './redacting';
+import { withDeliveryRetry } from './retryingDelivery';
+import { deferTracer, traceModel } from './tracedModel';
 
 export interface AppHandle {
   deps: DigestDeps;

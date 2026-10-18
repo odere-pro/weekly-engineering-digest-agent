@@ -6,21 +6,16 @@ import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { format, resolveConfig } from 'prettier';
-import { MAX_PAGE_BYTES, withoutElements } from '../src/adapters/sources/enrich.js';
-import {
-  getText,
-  sameSiteAs,
-  statusFailure,
-  MAX_BODY_BYTES,
-} from '../src/adapters/sources/http.js';
-import { createFetcher, hostsOf } from '../src/adapters/sources/pipeline.js';
-import { rssAdapter } from '../src/adapters/sources/rssAdapter.js';
-import { DEFAULT_SOURCES } from '../src/config/defaultSources.js';
-import type { Source } from '../src/core/schemas.js';
-import { systemClock, type Clock } from '../src/shared/clock.js';
-import { errorMessage } from '../src/shared/errors.js';
-import type { SourceResponse } from './schema.js';
-import { EVERYTHING, loadSourceRecordings, serveRecording } from './sourceEval.js';
+import { MAX_PAGE_BYTES, withoutElements } from '../src/sources/adapters/enrich';
+import { getText, sameSiteAs, statusFailure, MAX_BODY_BYTES } from '../src/sources/adapters/http';
+import { createFetcher, hostsOf } from '../src/sources/adapters/pipeline';
+import { rssAdapter } from '../src/sources/adapters/rssAdapter';
+import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
+import type { Source } from '../src/domain/schemas';
+import { systemClock, type Clock } from '../src/shared/clock';
+import { errorMessage } from '../src/shared/errors';
+import type { SourceResponse } from './schema';
+import { EVERYTHING, loadSourceRecordings, serveRecording } from './sourceEval';
 
 export const RECORD_TIMEOUT_MS = 20_000;
 const DEFAULT_OUT_DIR = fileURLToPath(new URL('./sources', import.meta.url));

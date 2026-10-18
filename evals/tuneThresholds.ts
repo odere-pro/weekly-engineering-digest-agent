@@ -10,19 +10,19 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { format, resolveConfig } from 'prettier';
 import { z } from 'zod';
-import { buildApp, type AppHandle } from '../src/app/container.js';
-import { loadConfig } from '../src/config/load.js';
+import { buildApp, type AppHandle } from '../src/app/container';
+import { loadConfig } from '../src/config/load';
 import {
   ProfileNameSchema,
   ThresholdsSchema,
   type ProfileName,
   type Thresholds,
-} from '../src/config/schema.js';
-import type { GuardCheckId } from '../src/core/schemas.js';
-import { systemClock, type Clock } from '../src/shared/clock.js';
-import type { ModelProvider } from '../src/ports/ModelProvider.js';
-import { DigestError, errorMessage } from '../src/shared/errors.js';
-import { loadEvalCases } from './runEval.js';
+} from '../src/config/schema';
+import type { GuardCheckId } from '../src/domain/schemas';
+import { systemClock, type Clock } from '../src/shared/clock';
+import type { ModelProvider } from '../src/models/ModelProvider';
+import { DigestError, errorMessage } from '../src/shared/errors';
+import { loadEvalCases } from './runEval';
 import {
   RawCaptureSchema,
   captureRaw,
@@ -32,7 +32,7 @@ import {
   type EvalSet,
   type RawCapture,
   type WeekItemRecord,
-} from './thresholds/capture.js';
+} from './thresholds/capture';
 import {
   compareSides,
   defaultSplit,
@@ -44,7 +44,7 @@ import {
   splitLines,
   worst,
   type Split,
-} from './thresholds/split.js';
+} from './thresholds/split';
 import {
   EPSILON,
   KEEP_MIN_LABEL,
@@ -55,7 +55,7 @@ import {
   sweepFilter,
   sweepGuardFlag,
   type FilterThresholds,
-} from './thresholds/sweep.js';
+} from './thresholds/sweep';
 
 // --- Tuning result --------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-import type { Delivery, DigestMessage, FailureNote } from '../../src/ports/Delivery.js';
+import type { Delivery, DigestMessage, FailureNote } from '../../src/delivery/Delivery';
 
 /** Records what would have been sent. Set `failWith` to simulate a delivery error. */
 export class CapturingDelivery implements Delivery {

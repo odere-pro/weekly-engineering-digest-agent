@@ -1,16 +1,16 @@
 // The offline sweep for threshold tuning (W3-03): a grid search over the raw outputs in
 // evals/thresholds/raw, for the classifier thresholds and for guardFlag. No files, no model calls.
-import type { Thresholds } from '../../src/config/schema.js';
-import { DigestError } from '../../src/shared/errors.js';
-import { GATES } from '../metrics.js';
-import type { Gate } from '../schema.js';
+import type { Thresholds } from '../../src/config/schema';
+import { DigestError } from '../../src/shared/errors';
+import { GATES } from '../metrics';
+import type { Gate } from '../schema';
 import {
   isFailed,
   type Classified,
   type ClassifierRecord,
   type InputGuardRecord,
   type OutputGuardRecord,
-} from './capture.js';
+} from './capture';
 
 // --- Grid search ----------------------------------------------------------------------------
 
@@ -146,7 +146,7 @@ export const MIN_CLASSIFIER_ACCURACY = gateThreshold(GATES.classifierAccuracy);
 export type FilterThresholds = Pick<Thresholds, 'minRelevance' | 'maxHype' | 'maxMinorRelease'>;
 type FilterKey = keyof FilterThresholds;
 
-/** The process step's three threshold rules (src/core/steps/process.ts) as one keep test. */
+/** The process step's three threshold rules (src/process/process.ts) as one keep test. */
 export function keepsItem(
   scores: Pick<Classified, 'relevance' | 'hype' | 'minorRelease'>,
   thresholds: FilterThresholds,

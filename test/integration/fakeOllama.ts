@@ -2,7 +2,7 @@
 // and /api/tags itself and hands /api/chat and /v1/systemone to the test, so a test decides which
 // call hangs, fails or answers. Nothing here opens a socket.
 import { z } from 'zod';
-import { PROFILES, requiredModels } from '../../src/config/profiles.js';
+import { PROFILES, requiredModels } from '../../src/config/profiles';
 
 export interface OllamaCall {
   readonly path: string;

@@ -2,7 +2,7 @@
 
 One folder per default source (`DEFAULT_SOURCES`): the real response it served, and the items
 that response must yield. `pnpm check` runs every fetcher over every recording
-(`test/evals/sources.test.ts`), and `digest eval` reports parse yield and summary fill per source
+(`evals/dataset.sources.test.ts`), and `digest eval` reports parse yield and summary fill per source
 in the scorecard (`sourceParse`, `sourceSummaryFill`).
 
 | File                       | What                                                                                                   |

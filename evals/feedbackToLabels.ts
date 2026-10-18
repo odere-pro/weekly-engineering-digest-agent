@@ -6,9 +6,9 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
-import { WeekIdSchema } from '../src/core/schemas.js';
-import { DigestError, errorMessage } from '../src/shared/errors.js';
-import { MUST_INCLUDE_COUNT } from './schema.js';
+import { WeekIdSchema } from '../src/domain/schemas';
+import { DigestError, errorMessage } from '../src/shared/errors';
+import { MUST_INCLUDE_COUNT } from './schema';
 
 const DEFAULT_EVALS_DIR = fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_DATA_DIR = 'data';

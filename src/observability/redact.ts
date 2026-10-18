@@ -1,4 +1,4 @@
-import type { LogFields } from '../shared/telemetry.js';
+import type { LogFields } from '../shared/telemetry';
 
 export const REDACTED = '[redacted]';
 export const CIRCULAR = '[circular]';

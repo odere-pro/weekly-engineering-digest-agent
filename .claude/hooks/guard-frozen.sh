@@ -17,7 +17,9 @@ case "$rel" in
   package.json | pnpm-lock.yaml | pnpm-workspace.yaml | tsconfig.json | eslint.config.js | \
   vitest.config.ts | .prettierrc.json | .prettierignore | .editorconfig | .gitignore | Makefile | \
   CLAUDE.md | .githooks/* | .claude/* | .github/* | \
-  src/ports/* | src/core/schemas.ts | src/core/structured.ts | src/config/schema.ts | \
+  src/models/ModelProvider.ts | src/guards/Guard.ts | src/sources/SourceFetcher.ts | \
+  src/delivery/Delivery.ts | src/store/RunStore.ts | \
+  src/domain/schemas.ts | src/models/structured.ts | src/config/schema.ts | \
   src/config/profiles.ts | src/shared/* | src/cli/program.ts | src/cli/index.ts | \
   test/fakes/* | test/builders.ts)
     echo "Blocked: '$rel' is a frozen contract file (branch '$branch')." >&2

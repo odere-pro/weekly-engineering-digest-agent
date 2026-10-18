@@ -6,7 +6,7 @@ import type {
   GenerateResult,
   ModelHealth,
   ModelProvider,
-} from '../../src/ports/ModelProvider.js';
+} from '../../src/models/ModelProvider';
 
 type GenerateHandler = (request: GenerateRequest) => string | Promise<string>;
 type DecideHandler = (

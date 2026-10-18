@@ -1,11 +1,11 @@
 import { Cron } from 'croner';
-import type { RunResult } from '../core/runDigest.js';
-import { isUnretriable, needsForce, RecordNotSavedError } from '../core/runEnding.js';
-import type { RunStatus } from '../core/schemas.js';
-import type { Clock } from '../shared/clock.js';
-import { DigestError, errorMessage } from '../shared/errors.js';
-import { compareWeekIds, isoWeekId, weekStartUtc } from '../shared/isoWeek.js';
-import type { Logger } from '../shared/telemetry.js';
+import type { RunResult } from '../digest/runDigest';
+import { isUnretriable, needsForce, RecordNotSavedError } from '../digest/runEnding';
+import type { RunStatus } from '../domain/schemas';
+import type { Clock } from '../shared/clock';
+import { DigestError, errorMessage } from '../shared/errors';
+import { compareWeekIds, isoWeekId, weekStartUtc } from '../shared/isoWeek';
+import type { Logger } from '../shared/telemetry';
 
 /** The part of a cron job the scheduler uses; croner's `Cron` satisfies it. */
 export interface CronJob {

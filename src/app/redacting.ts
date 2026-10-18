@@ -1,12 +1,12 @@
 // Defence in depth (F34): the adapters keep secrets out of their error messages, and the logger and
 // tracer redact what they write. These decorators do the same for everything that reaches the
 // run store or a delivery channel, so a leak in one adapter ends up in none of them.
-import type { Secrets } from '../config/schema.js';
-import type { Redactor } from '../observability/redact.js';
-import type { Delivery, DigestView } from '../ports/Delivery.js';
-import { RunRecordSchema, type RunRecord } from '../core/schemas.js';
-import type { RunStore } from '../ports/RunStore.js';
-import { DigestError } from '../shared/errors.js';
+import type { Secrets } from '../config/schema';
+import type { Redactor } from '../observability/redact';
+import type { Delivery, DigestView } from '../delivery/Delivery';
+import { RunRecordSchema, type RunRecord } from '../domain/schemas';
+import type { RunStore } from '../store/RunStore';
+import { DigestError } from '../shared/errors';
 
 /**
  * Every secret value that is set, plus the path of the Slack webhook: the path is the secret part

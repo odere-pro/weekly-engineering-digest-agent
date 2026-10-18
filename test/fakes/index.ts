@@ -1,7 +1,7 @@
-export { CapturingDelivery } from './CapturingDelivery.js';
-export { FakeInputGuard, FakeOutputGuard } from './FakeGuards.js';
-export { FakeModelProvider, yesNoAnswers } from './FakeModelProvider.js';
-export { FakeSourceFetcher } from './FakeSourceFetcher.js';
-export { MemoryRunStore } from './MemoryRunStore.js';
-export { fixedClock } from '../../src/shared/clock.js';
-export { noopLogger, noopTracer } from '../../src/shared/telemetry.js';
+export { CapturingDelivery } from './CapturingDelivery';
+export { FakeInputGuard, FakeOutputGuard } from './FakeGuards';
+export { FakeModelProvider, yesNoAnswers } from './FakeModelProvider';
+export { FakeSourceFetcher } from './FakeSourceFetcher';
+export { MemoryRunStore } from './MemoryRunStore';
+export { fixedClock } from '../../src/shared/clock';
+export { noopLogger, noopTracer } from '../../src/shared/telemetry';

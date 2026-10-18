@@ -3,10 +3,10 @@
 import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import { runDigest } from '../../src/core/runDigest.js';
-import { KEPT_SENT_REASON } from '../../src/core/runEnding.js';
-import { ExitCode } from '../../src/core/schemas.js';
-import type { ModelProvider } from '../../src/ports/ModelProvider.js';
+import { runDigest } from '../../src/digest/runDigest';
+import { KEPT_SENT_REASON } from '../../src/digest/runEnding';
+import { ExitCode } from '../../src/domain/schemas';
+import type { ModelProvider } from '../../src/models/ModelProvider';
 import {
   TEST_TIMEOUT_MS,
   FRIDAY,
@@ -24,7 +24,7 @@ import {
   writeLock,
   type LockContents,
   type World,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

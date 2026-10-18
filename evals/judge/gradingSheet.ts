@@ -2,7 +2,7 @@
 // next to the judge's scores for the same digests. `calibrate.ts` reads it. Nothing here calls a
 // model; the sheet is plain JSON the maintainer fills in and the judge run completes.
 import { z } from 'zod';
-import { WeekIdSchema } from '../../src/core/schemas.js';
+import { WeekIdSchema } from '../../src/domain/schemas';
 
 /** Spec: the judge is calibrated on 10 hand-graded digests. */
 export const GRADED_DIGESTS = 10;

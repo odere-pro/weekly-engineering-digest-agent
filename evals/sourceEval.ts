@@ -1,28 +1,28 @@
 // Source conformance (W6-01): runs every fetcher over the response the recorder saved for its
 // source, and counts what comes out. No network: the fetcher is handed a `fetch` that serves the
-// recording. Used by `digest eval` (the two source metrics) and by test/evals/sources.test.ts.
+// recording. Used by `digest eval` (the two source metrics) and by evals/dataset.sources.test.ts.
 import { readFile, readdir } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { z } from 'zod';
-import { createGithubReleasesFetcher } from '../src/adapters/sources/githubReleases.js';
-import { createRssFetcher } from '../src/adapters/sources/rss.js';
-import { DEFAULT_SOURCES } from '../src/config/defaultSources.js';
-import { ItemSchema, type Item, type Source, type SourceKind } from '../src/core/schemas.js';
-import type { FetchWindow, SourceFetcher } from '../src/ports/SourceFetcher.js';
-import { DigestError, errorMessage } from '../src/shared/errors.js';
-import { itemIdFor } from '../src/shared/url.js';
+import { createGithubReleasesFetcher } from '../src/sources/adapters/githubReleases';
+import { createRssFetcher } from '../src/sources/adapters/rss';
+import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
+import { ItemSchema, type Item, type Source, type SourceKind } from '../src/domain/schemas';
+import type { FetchWindow, SourceFetcher } from '../src/sources/SourceFetcher';
+import { DigestError, errorMessage } from '../src/shared/errors';
+import { itemIdFor } from '../src/shared/url';
 import {
   SourceExpectedSchema,
   SourceResponseSchema,
   type SourceExpected,
   type SourceGap,
   type SourceResponse,
-} from './schema.js';
+} from './schema';
 
 /** A summary shorter than this is as good as none for the classifier and the writer. */
 export const MIN_SUMMARY_CHARS = 40;
 
-/** The hosts docs/sources.md says are contacted; test/evals/sourceEval.test.ts keeps them in sync. */
+/** The hosts docs/sources.md says are contacted; evals/sourceEval.test.ts keeps them in sync. */
 export const SOURCE_ALLOWED_HOSTS: readonly string[] = [
   'openai.com',
   'deepmind.google',

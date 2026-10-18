@@ -1,8 +1,8 @@
 import { createRequire } from 'node:module';
 import { pino, type Logger as PinoLogger } from 'pino';
 import type PinoPretty from 'pino-pretty';
-import type { LogFields, Logger } from '../shared/telemetry.js';
-import { createRedactor, type Redactor } from './redact.js';
+import type { LogFields, Logger } from '../shared/telemetry';
+import { createRedactor, type Redactor } from './redact';
 
 export interface LoggerOptions {
   level: 'debug' | 'info' | 'warn' | 'error';

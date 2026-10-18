@@ -1,8 +1,8 @@
-import { deliveryFacts } from '../adapters/delivery/deliveryError.js';
-import type { Delivery } from '../ports/Delivery.js';
-import { errorMessage } from '../shared/errors.js';
-import { withRetry } from '../shared/retry.js';
-import type { Logger } from '../shared/telemetry.js';
+import { deliveryFacts } from '../delivery/adapters/deliveryError';
+import type { Delivery } from '../delivery/Delivery';
+import { errorMessage } from '../shared/errors';
+import { withRetry } from '../shared/retry';
+import type { Logger } from '../shared/telemetry';
 
 /** Extra attempts after the first (F13). A longer outage is the scheduler's job: it retries the run. */
 const DEFAULT_RETRIES = 2;

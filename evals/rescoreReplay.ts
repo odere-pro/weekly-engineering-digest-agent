@@ -6,24 +6,19 @@
 import { realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { buildApp } from '../src/app/container.js';
-import { loadConfig, platformOf } from '../src/config/load.js';
-import { resolveProfile } from '../src/config/profiles.js';
-import { ProfileNameSchema, type Config, type ProfileName } from '../src/config/schema.js';
-import type { Item } from '../src/core/schemas.js';
-import { areaHintsOf, classifyStep, type ClassifyDeps } from '../src/core/steps/classify.js';
-import { processStep } from '../src/core/steps/process.js';
-import { systemClock, type Clock } from '../src/shared/clock.js';
-import { errorMessage } from '../src/shared/errors.js';
-import type { ModelProvider } from '../src/ports/ModelProvider.js';
-import type { Logger } from '../src/shared/telemetry.js';
-import {
-  classifierAccuracy,
-  mustExcludeLeaks,
-  mustIncludeRecall,
-  type WeekHits,
-} from './metrics.js';
-import { loadEvalCases, type EvalCases } from './runEval.js';
+import { buildApp } from '../src/app/container';
+import { loadConfig, platformOf } from '../src/config/load';
+import { resolveProfile } from '../src/config/profiles';
+import { ProfileNameSchema, type Config, type ProfileName } from '../src/config/schema';
+import type { Item } from '../src/domain/schemas';
+import { areaHintsOf, classifyStep, type ClassifyDeps } from '../src/classify/classify';
+import { processStep } from '../src/process/process';
+import { systemClock, type Clock } from '../src/shared/clock';
+import { errorMessage } from '../src/shared/errors';
+import type { ModelProvider } from '../src/models/ModelProvider';
+import type { Logger } from '../src/shared/telemetry';
+import { classifierAccuracy, mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics';
+import { loadEvalCases, type EvalCases } from './runEval';
 
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */
 const REPLAY_TOP_N = 5;

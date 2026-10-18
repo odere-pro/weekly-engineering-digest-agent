@@ -1,15 +1,15 @@
 // CLI wiring. Every command is registered here once (Wave 0); issues implement the handlers.
 import { Command, InvalidArgumentError } from 'commander';
-import { doctorCommand } from './doctor.js';
-import { evalCommand } from './eval.js';
-import { feedbackCommand } from './feedback.js';
-import { fetchCommand } from './fetch.js';
-import { historyCommand } from './history.js';
-import { initCommand } from './init.js';
-import { previewCommand } from './preview.js';
-import { runCommand } from './run.js';
-import { serveCommand } from './serve.js';
-import { showCommand } from './show.js';
+import { doctorCommand } from './doctor/doctor';
+import { evalCommand } from './eval/eval';
+import { feedbackCommand } from './feedback/feedback';
+import { fetchCommand } from './fetch/fetch';
+import { historyCommand } from './history/history';
+import { initCommand } from './init/init';
+import { previewCommand } from './preview/preview';
+import { runCommand } from './run/run';
+import { serveCommand } from './serve/serve';
+import { showCommand } from './show/show';
 
 function positiveInt(value: string): number {
   const n = Number(value);

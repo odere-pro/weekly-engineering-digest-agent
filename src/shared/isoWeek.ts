@@ -1,4 +1,4 @@
-import { WEEK_ID_PATTERN } from '../core/schemas.js';
+import { WEEK_ID_PATTERN } from '../domain/schemas';
 
 const DAY_MS = 86_400_000;
 

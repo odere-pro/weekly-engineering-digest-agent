@@ -1,12 +1,12 @@
 // Spec phase 4 exit gate, part 1: what a week ends as. A bad feed, a quiet week, a blocked week
 // and a dead Ollama each leave the right exit code, the right note and a full record on disk.
 import { describe, expect, it } from 'vitest';
-import { requiredModels } from '../../src/config/profiles.js';
-import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
-import { runDigest } from '../../src/core/runDigest.js';
-import { ExitCode } from '../../src/core/schemas.js';
-import { FakeOutputGuard } from '../fakes/index.js';
-import { connectionRefused } from './fakeOllama.js';
+import { requiredModels } from '../../src/config/profiles';
+import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
+import { runDigest } from '../../src/digest/runDigest';
+import { ExitCode } from '../../src/domain/schemas';
+import { FakeOutputGuard } from '../fakes';
+import { connectionRefused } from './fakeOllama';
 import {
   TEST_TIMEOUT_MS,
   FIRST_WRITER,
@@ -24,7 +24,7 @@ import {
   runFile,
   useDataDir,
   type World,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

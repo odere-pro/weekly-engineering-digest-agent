@@ -4,10 +4,10 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { z } from 'zod';
-import type { AppHandle } from '../src/app/container.js';
-import { modelsByRole } from '../src/config/profiles.js';
-import { GuardsConfigSchema, type ProfileName } from '../src/config/schema.js';
-import type { DigestDeps, RunOptions, RunResult } from '../src/core/runDigest.js';
+import type { AppHandle } from '../src/app/container';
+import { modelsByRole } from '../src/config/profiles';
+import { GuardsConfigSchema, type ProfileName } from '../src/config/schema';
+import type { DigestDeps, RunOptions, RunResult } from '../src/digest/runDigest';
 import {
   ItemSchema,
   SourceKindSchema,
@@ -18,18 +18,18 @@ import {
   type Item,
   type RunRecord,
   type Source,
-} from '../src/core/schemas.js';
-import { areaHintsOf, classifyStep } from '../src/core/steps/classify.js';
-import { guardOutputStep } from '../src/core/steps/guardOutput.js';
-import type { InputGuard, OutputGuard } from '../src/ports/Guard.js';
-import type { RunStore } from '../src/ports/RunStore.js';
-import type { FetchWindow } from '../src/ports/SourceFetcher.js';
-import { fixedClock, type Clock } from '../src/shared/clock.js';
-import { DigestError, errorMessage } from '../src/shared/errors.js';
-import { compareWeekIds, isoWeekId, weekStartUtc } from '../src/shared/isoWeek.js';
-import { normalizeUrl, sameUrl } from '../src/shared/url.js';
-import type { EvalJudge } from './judge/evalJudge.js';
-import { judgeWinners, judgedQuality, type JudgedWinners } from './judge/judgeWinners.js';
+} from '../src/domain/schemas';
+import { areaHintsOf, classifyStep } from '../src/classify/classify';
+import { guardOutputStep } from '../src/guards/guardOutput';
+import type { InputGuard, OutputGuard } from '../src/guards/Guard';
+import type { RunStore } from '../src/store/RunStore';
+import type { FetchWindow } from '../src/sources/SourceFetcher';
+import { fixedClock, type Clock } from '../src/shared/clock';
+import { DigestError, errorMessage } from '../src/shared/errors';
+import { compareWeekIds, isoWeekId, weekStartUtc } from '../src/shared/isoWeek';
+import { normalizeUrl, sameUrl } from '../src/shared/url';
+import type { EvalJudge } from './judge/evalJudge';
+import { judgeWinners, judgedQuality, type JudgedWinners } from './judge/judgeWinners';
 import {
   assembleMetrics,
   attackHandling,
@@ -58,7 +58,7 @@ import {
   type GuardTally,
   type Measurement,
   type WeekHits,
-} from './metrics.js';
+} from './metrics';
 import {
   defaultFetcherFactories,
   evaluateSources,
@@ -66,7 +66,7 @@ import {
   type SourceFetcherFactories,
   type SourceRecording,
   type SourceResult,
-} from './sourceEval.js';
+} from './sourceEval';
 import {
   AttackCaseSchema,
   ClassifierCasesFileSchema,
@@ -81,7 +81,7 @@ import {
   type MetricId,
   type Scorecard,
   type WeekLabels,
-} from './schema.js';
+} from './schema';
 
 const DAY_MS = 86_400_000;
 /** Recorded weeks are ISO weeks, so each replay collects exactly one week. */

@@ -1,6 +1,6 @@
 # Default sources
 
-The 24 feeds in `DEFAULT_SOURCES` ([`src/config/defaultSources.ts`](../src/config/defaultSources.ts)),
+The 24 feeds in `DEFAULT_SOURCES` ([`src/sources/defaultSources.ts`](../src/config/defaultSources.ts)),
 mirrored in [`digest.config.example.json`](../digest.config.example.json). A test keeps the two,
 and this file, in sync. Every feed was fetched and parsed on 2026-10-16.
 

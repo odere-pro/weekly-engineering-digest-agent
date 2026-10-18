@@ -4,17 +4,17 @@
 import { hostname } from 'node:os';
 import { Cron } from 'croner';
 import { describe, expect, it, vi } from 'vitest';
-import { QUESTION_IDS } from '../../src/core/prompts/classify.js';
-import { runDigest } from '../../src/core/runDigest.js';
-import { ExitCode } from '../../src/core/schemas.js';
-import type { Clock } from '../../src/shared/clock.js';
+import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
+import { runDigest } from '../../src/digest/runDigest';
+import { ExitCode } from '../../src/domain/schemas';
+import type { Clock } from '../../src/shared/clock';
 import {
   startScheduler,
   type CronFactory,
   type LockRetry,
   type SchedulerHandle,
-} from '../../src/scheduler/scheduler.js';
-import { FakeOutputGuard } from '../fakes/index.js';
+} from '../../src/scheduler/scheduler';
+import { FakeOutputGuard } from '../fakes';
 import {
   TEST_TIMEOUT_MS,
   FRIDAY,
@@ -27,7 +27,7 @@ import {
   useDataDir,
   type World,
   type WorldOptions,
-} from './harness.js';
+} from './harness';
 
 const dataDir = useDataDir();
 

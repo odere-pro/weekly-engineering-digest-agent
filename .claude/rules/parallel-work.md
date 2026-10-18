@@ -16,7 +16,9 @@ if no two of them touch the same file.
   fixtures, which are listed there too). `node "$PLAN/bin/check-owns.mjs" <ID>` verifies it.
 - **Frozen files** (blocked by the `guard-frozen` hook on any branch but `main`): `package.json`,
   `pnpm-lock.yaml`, tool configs, `CLAUDE.md`, `.claude/**`, `.githooks/**`, `.github/**`,
-  `src/ports/**`, `src/core/schemas.ts`, `src/core/structured.ts`, `src/config/schema.ts`,
+  the five ports (`src/models/ModelProvider.ts`, `src/guards/Guard.ts`,
+  `src/sources/SourceFetcher.ts`, `src/delivery/Delivery.ts`, `src/store/RunStore.ts`),
+  `src/domain/schemas.ts`, `src/models/structured.ts`, `src/config/schema.ts`,
   `src/config/profiles.ts`, `src/shared/**`, `src/cli/program.ts`, `src/cli/index.ts`,
   `test/fakes/**`, `test/builders.ts`.
 - Need a frozen file changed, or a new dependency? Do not work around it. Set your issue to

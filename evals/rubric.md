@@ -5,7 +5,7 @@ The judge scores one digest draft at a time on four criteria, each from 1 (poor)
 digests by hand (`evals/judge/`) with the same rubric, so judge and maintainer are measured
 against the same words.
 
-The judge's questions live in `src/core/prompts/judge.ts` (`buildJudgeQuestions`). This file
+The judge's questions live in `src/select/judgePrompt.ts` (`buildJudgeQuestions`). This file
 says what each score means; keep the two in step.
 
 ## Criteria

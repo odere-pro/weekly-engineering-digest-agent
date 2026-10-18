@@ -96,7 +96,7 @@ pnpm digest eval --profile light
 The scorecard lands in `evals/scorecards/<date>-<profile>.json`. Commit it with the release and
 update the table above. Run one profile at a time; the evals load one model after another. A second
 run on the same day overwrites that file, so copy the first one under another name before you start
-(`test/evals/harness/scorecardCompat.test.ts` reads `2026-10-17-light.json`). A run takes about 45
+(`evals/scorecardCompat.test.ts` reads `2026-10-17-light.json`). A run takes about 45
 minutes on the light profile.
 
 ## Calibrating the judge

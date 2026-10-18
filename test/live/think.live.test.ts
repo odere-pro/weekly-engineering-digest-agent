@@ -1,11 +1,11 @@
 // Live check that the default `think: false` for guardRisk keeps granite4.1-guardian short.
 // Lane gpu: run alone, with `LIVE_OLLAMA=1 pnpm vitest run test/live/think.live.test.ts`.
 import { describe, expect, it } from 'vitest';
-import { GRANITE_CRITERIA, parseGraniteScore } from '../../src/adapters/guard/granite.js';
-import { createOllamaProvider } from '../../src/adapters/models/ollama.js';
-import { MODEL_TAGS, PROFILES } from '../../src/config/profiles.js';
-import { noopLogger } from '../../src/shared/telemetry.js';
-import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../src/shared/untrusted.js';
+import { GRANITE_CRITERIA, parseGraniteScore } from '../../src/guards/adapters/granite';
+import { createOllamaProvider } from '../../src/models/adapters/ollama';
+import { MODEL_TAGS, PROFILES } from '../../src/config/profiles';
+import { noopLogger } from '../../src/shared/telemetry';
+import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../../src/shared/untrusted';
 
 const BASE_URL = process.env.OLLAMA_URL ?? 'http://127.0.0.1:11434';
 const LIVE_TIMEOUT_MS = 300_000;

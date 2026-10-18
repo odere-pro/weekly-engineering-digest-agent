@@ -1,8 +1,8 @@
 // Live checks against the local Ollama. Lane gpu: run alone, with `LIVE_OLLAMA=1 pnpm vitest run test/live`.
 import { describe, expect, it } from 'vitest';
-import { createOllamaProvider } from '../../src/adapters/models/ollama.js';
-import { PROFILES } from '../../src/config/profiles.js';
-import { noopLogger } from '../../src/shared/telemetry.js';
+import { createOllamaProvider } from '../../src/models/adapters/ollama';
+import { PROFILES } from '../../src/config/profiles';
+import { noopLogger } from '../../src/shared/telemetry';
 
 const BASE_URL = process.env.OLLAMA_URL ?? 'http://127.0.0.1:11434';
 const LIVE_TIMEOUT_MS = 300_000;
