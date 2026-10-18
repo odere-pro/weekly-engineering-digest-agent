@@ -12,7 +12,7 @@ import { type ScoredItem } from '../classify/classification';
 import { DIGEST_MIN_ITEMS, formatCheck } from '../checks/formatCheck';
 import { linkCheck } from '../checks/linkCheck';
 import { boundProblems, buildRetryPrompt, buildWritePrompt, type WritePrompt } from './writePrompt';
-import { renderDigest } from '../render/markdown';
+import { renderDigest, type RenderOptions } from '../render/markdown';
 import { generateStructured } from '../models/structured';
 import type { ModelProvider } from '../models/ModelProvider';
 import { errorMessage } from '../shared/errors';
@@ -301,7 +301,7 @@ export async function writeCheckedStep(
         links: repairedLinks,
       });
     }
-    return codeCheck(prepared, deps.collected, deps.disabledGuards);
+    return codeCheck(prepared, deps.collected, { disabledGuards: deps.disabledGuards });
   };
   const first = await writeStep(items, deps);
   const checked = first.drafts.map(check);
@@ -345,12 +345,12 @@ function noteRejections(
 }
 
 /** Renders the draft as the digest will read, and runs the link and format checks on that text. */
-function codeCheck(
+export function codeCheck(
   draft: Draft,
   collected: readonly Item[],
-  disabledGuards: readonly GuardCheckId[],
+  render: RenderOptions,
 ): CodeChecked {
-  const markdown = renderDigest(draft.digest, { disabledGuards });
+  const markdown = renderDigest(draft.digest, render);
   const link = linkCheck(draft.digest, markdown, collected);
   const format = formatCheck(draft.digest, markdown);
   return {

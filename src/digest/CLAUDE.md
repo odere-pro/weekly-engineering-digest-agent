@@ -19,7 +19,7 @@ sends failure notes, and finishes a week that was only partly delivered, with no
    in use pulled). `runWorkflow` (`workflow.ts`) then runs the stages in order: collect,
    guardInput, classify, process, write, guardOutput, select, deliver. A dry run has no deliver.
 5. A stage can settle the run early. `quiet`: no items collected, or fewer than
-   `DIGEST_MIN_ITEMS` (3) left after process. `blocked`: every draft was rejected.
+   `DIGEST_MIN_ITEMS` (3) left after process. `blocked`: every draft was rejected and the fallback is off (`noFallback`) or failed its checks.
 6. `finish` builds the `RunRecord` and calls `endRun` (`runEnding.ts`): save the record, write
    held files, `review.md`, `error.json`, send or hold the failure note, prune old runs.
 7. It returns `RunResult` (`record`, `exitCode`, `markdown`, `message`, `kept`) and releases the
@@ -49,6 +49,14 @@ sends failure notes, and finishes a week that was only partly delivered, with no
   blocked note names writers and check ids.
 - `shipDigest` tries every channel and never throws. Once any channel took the digest, its URLs
   count as sent for cross-week dedupe.
+- Fallback floor (W11-02): when no draft passes the checks and the output guards, `buildFallback`
+  (`fallback.ts`) makes a digest from the selected items' own text, no model call. It passes the
+  same link and format checks (a failure is logged as an error and the week stays `blocked`). The
+  output guards run on it once and only advise: a flag is logged and kept in `record.drafts` (writer
+  `fallback`), never blocking. The run ends `sent` or `dry-run` with `record.fallback: true`, and the
+  footer says "Written from the sources' own words." A real run always has it (no config switch);
+  `RunOptions.noFallback` turns it off for tests and for the eval replay to set (the replay is W11-01's file). A write step where every
+  writer produced no draft at all still ends `failed`: that is a model fault, not a rejected draft.
 - The judge runs only when the profile has one and 2 or more drafts passed. Otherwise the first
   passing draft in writer order wins.
 - Best effort, logged and never fatal: `review.md`, `error.json`, held-file writes, pruning.
@@ -61,6 +69,7 @@ sends failure notes, and finishes a week that was only partly delivered, with no
 | `runDigest.ts` | `runDigest`, `DigestDeps`, `RunOptions`, `RunResult`, the stages and the record            |
 | `runEnding.ts` | `endRun`, `shipDigest`, `digestMessage`, `toJson`, `abortedError`, failure notes           |
 | `runResume.ts` | `loadPartDelivery`, `resumeDelivery`: finish a partly delivered week                       |
+| `fallback.ts`  | `buildFallback`: the template-only digest, its checks and guard verdict                    |
 | `workflow.ts`  | `runWorkflow`: chains plain step functions as one Mastra workflow                          |
 | `*.test.ts`    | One file per area, see below. No `__fixtures__/` here: tests use `test/fakes` and builders |
 

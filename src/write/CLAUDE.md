@@ -51,11 +51,19 @@ gives each writer one retry when no draft passes.
 
 ## Files
 
-| File             | Role                                                                                                                        |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `write.ts`       | `writeStep`, `retryStep`, `writeCheckedStep`, `prepareDraft`, provenance, security floor, link repair, result types         |
-| `writePrompt.ts` | `buildWritePrompt`, `buildRetryPrompt`, `boundProblems`, prompt targets and problem limits                                  |
-| `*.test.ts`      | `write.test.ts`, `write.links`, `write.retry`, `write.urgency`, `write.prompts`, `writePrompt.retry`, `writePrompt.urgency` |
+| File                | Role                                                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `write.ts`          | `writeStep`, `retryStep`, `writeCheckedStep`, `prepareDraft`, provenance, security floor, link repair, result types                           |
+| `writePrompt.ts`    | `buildWritePrompt`, `buildRetryPrompt`, `boundProblems`, prompt targets and problem limits                                                    |
+| `fallbackDigest.ts` | `buildFallbackDigest`, `checkedFallback`, `cutSummary`: the digest made without a model (W11-02)                                              |
+| `*.test.ts`         | `fallbackDigest`, `write.test.ts`, `write.links`, `write.retry`, `write.urgency`, `write.prompts`, `writePrompt.retry`, `writePrompt.urgency` |
+
+## Fallback digest
+
+`fallbackDigest.ts` builds a digest from the selected items' own title, url and first whole
+sentences of the summary (at most `DIGEST_SUMMARY_WORD_LIMIT` words). Links, em dashes and pipes are
+dropped from that text, all items are good-to-know, and the headline names the areas. `digest/fallback.ts`
+uses it when no draft survives. It runs through `codeCheck` like a draft, with the footer line.
 
 ## Depends on, used by
 

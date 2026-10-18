@@ -517,7 +517,7 @@ describe('runDigest: draft checks and guards', () => {
   it('blocks the run and alerts when every draft is rejected', async () => {
     const h = setup({ flagOutput: () => true });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(result.exitCode).toBe(ExitCode.Blocked);
     expect(result.record).toMatchObject({ status: 'blocked', winner: null });
@@ -547,7 +547,7 @@ describe('runDigest: draft checks and guards', () => {
       },
     });
 
-    const result = await h.run({ dryRun: true });
+    const result = await h.run({ dryRun: true, noFallback: true });
 
     expect(result.record.status).toBe('blocked');
     expect(result.message).toBeUndefined();
@@ -614,7 +614,7 @@ describe('runDigest: draft checks and guards', () => {
     };
     const h = setup({ outputGuards: [flagging] });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(result.record.status).toBe('blocked');
     expect(JSON.stringify(h.logs)).not.toContain('IGNORE ALL');

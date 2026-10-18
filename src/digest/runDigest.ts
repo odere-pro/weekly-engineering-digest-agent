@@ -23,10 +23,12 @@ import {
   type Failure,
   type HeldArtifact,
 } from './runEnding';
+import { buildFallback } from './fallback';
 import { loadPartDelivery, resumeDelivery, type PartDelivery } from './runResume';
 import {
   WEEK_ID_PATTERN,
   exitCodeFor,
+  type Draft,
   type ExitCode,
   type Item,
   type RunStatus,
@@ -90,6 +92,12 @@ export interface RunOptions {
    * the retry it waited for does not happen.
    */
   notifyFailure?: boolean;
+  /**
+   * Default false. True turns the template-only fallback off (W11-02), so a week whose drafts
+   * all fail ends `blocked` as before. The eval replay (set it there) and tests use it to measure the writer on
+   * its own. A real run always has the fallback: the config schema has no switch for it.
+   */
+  noFallback?: boolean;
 }
 
 export interface RunResult {
@@ -123,6 +131,8 @@ interface RunContext {
   readonly signal?: AbortSignal;
   /** See `RunOptions.notifyFailure`. */
   readonly notifyFailure: boolean;
+  /** See `RunOptions.noFallback`. */
+  readonly useFallback: boolean;
   /** Bound to the run id. */
   readonly logger: Logger;
   /** Input then output checks that are off this run, in config order. */
@@ -157,6 +167,10 @@ interface ChainState {
   readonly drafts: readonly DraftOutcome[];
   readonly passed: readonly CheckedDraft[];
   readonly winner?: CheckedDraft;
+  /** What drafts.json holds, kept so the fallback can be added to it (W11-02). */
+  readonly draftsFile?: DraftsFile;
+  /** The winner is the template-only fallback, not a writer's draft (W11-02). */
+  readonly fallback?: boolean;
   readonly sentUrls: readonly string[];
   /** Channels that took the digest, in the order they took it. */
   readonly deliveredTo: readonly DeliveryId[];
@@ -164,6 +178,12 @@ interface ChainState {
   /** Files built but not written; see `RunContext.holdArtifacts`. */
   readonly held: readonly HeldArtifact[];
   readonly settled?: Settled;
+}
+
+interface DraftsFile {
+  readonly drafts: readonly Draft[];
+  readonly failures: readonly unknown[];
+  readonly rejections: readonly unknown[];
 }
 
 interface ChainOutcome {
@@ -259,6 +279,7 @@ function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     dryRun: options.dryRun ?? false,
     signal: options.signal,
     notifyFailure: options.notifyFailure ?? true,
+    useFallback: options.noFallback !== true,
     logger: deps.logger.child({ runId: weekId }),
     disabledGuards: plannedDisabledGuards(deps),
     holdArtifacts: false,
@@ -502,8 +523,11 @@ async function write(ctx: RunContext, state: ChainState, logger: Logger): Promis
     ...writeFailures,
     ...retryFailures.map((failure) => ({ ...failure, retry: true })),
   ];
-  const file = toJson({ drafts: written, failures, rejections });
-  const held = await keepArtifact(ctx, state, 'drafts.json', file);
+  const draftsFile: DraftsFile = { drafts: written, failures, rejections };
+  const held = {
+    ...(await keepArtifact(ctx, state, 'drafts.json', toJson(draftsFile))),
+    draftsFile,
+  };
   const failed = writeFailures.map((failure) => rejected(failure.writer, [WRITE_FAILED]));
   const next = { ...held, checked, drafts: failed };
   if (written.length > 0) return next;
@@ -543,7 +567,44 @@ async function checkDrafts(
     })),
   ]);
   const next = { ...state, drafts, passed };
-  return passed.length > 0 ? next : { ...next, settled: blocked(drafts) };
+  if (passed.length > 0) return next;
+  return (await withFallback(ctx, next, logger)) ?? { ...next, settled: blocked(drafts) };
+}
+
+/** The template-only digest as the only passing draft, or undefined when it is off or failed. */
+async function withFallback(
+  ctx: RunContext,
+  state: ChainState,
+  logger: Logger,
+): Promise<ChainState | undefined> {
+  if (!ctx.useFallback) return undefined;
+  const { config, outputGuards } = ctx.deps;
+  const fallback = await buildFallback({
+    selected: state.selected,
+    collected: state.collected,
+    weekId: ctx.weekId,
+    topN: config.topN,
+    disabledGuards: ctx.disabledGuards,
+    outputGuards,
+    guardConfig: config.guards.output,
+    drafts: state.drafts,
+    logger,
+  });
+  if (!fallback) return undefined;
+  // The record names the fallback as winner, so drafts.json must hold its draft (preview, show).
+  const file = { drafts: [], failures: [], rejections: [], ...state.draftsFile };
+  const saved = await keepArtifact(
+    ctx,
+    state,
+    'drafts.json',
+    toJson({ ...file, drafts: [...file.drafts, fallback.winner.draft] }),
+  );
+  return {
+    ...saved,
+    drafts: [...state.drafts, fallback.outcome],
+    passed: [fallback.winner],
+    fallback: true,
+  };
 }
 
 function rejected(writer: string, rejectedBy: readonly string[]): DraftOutcome {
@@ -597,9 +658,12 @@ function withScores(
 }
 
 /** The message every channel gets for the winning draft: its Markdown and its laid-out view. */
-function winnerMessage(ctx: RunContext, winner: CheckedDraft): DigestMessage {
+function winnerMessage(ctx: RunContext, state: ChainState, winner: CheckedDraft): DigestMessage {
   const { digest } = winner.draft;
-  const view = buildDigestView(digest, { disabledGuards: ctx.disabledGuards });
+  const view = buildDigestView(digest, {
+    disabledGuards: ctx.disabledGuards,
+    fallback: state.fallback === true,
+  });
   return digestMessage(ctx.weekId, digest.headline, winner.markdown, view);
 }
 
@@ -607,7 +671,7 @@ async function deliver(ctx: RunContext, state: ChainState, logger: Logger): Prom
   const { winner } = state;
   if (!winner) throw new DigestError('Nothing to deliver: no winning draft', { step: 'deliver' });
   const { items } = winner.draft.digest;
-  const message = winnerMessage(ctx, winner);
+  const message = winnerMessage(ctx, state, winner);
   const { deliveredTo, error } = await shipDigest(ctx.deps.deliveries, message, state.deliveredTo);
   // Any channel that took the digest counts its URLs as sent, for cross-week dedupe.
   const sentUrls = deliveredTo.length > 0 ? items.map((item) => item.url) : [];
@@ -642,7 +706,7 @@ async function finish(
   // `digest run` prints digest.md's path whenever markdown is set: only for a file this run wrote.
   const digestWritten = !ctx.holdArtifacts || written.has('digest.md');
   const markdown = digestWritten ? state.winner?.markdown : undefined;
-  const message = state.winner && winnerMessage(ctx, state.winner);
+  const message = state.winner && winnerMessage(ctx, state, state.winner);
   return {
     record,
     exitCode: exitCodeFor(record.status),
@@ -689,6 +753,7 @@ function buildRecord(
     drafts: [...state.drafts],
     winner: state.winner?.draft.writer ?? null,
     sentUrls: [...state.sentUrls],
+    ...(state.fallback === true && { fallback: true }),
     ...(state.deliveredTo.length > 0 && { deliveredTo: [...state.deliveredTo] }),
     ...(failure && { error: recordError(failure) }),
   };

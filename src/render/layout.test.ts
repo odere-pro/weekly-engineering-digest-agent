@@ -204,3 +204,29 @@ describe('buildDigestView purity', () => {
     expect(buildDigestView(digest, NONE)).toEqual(buildDigestView(digest, NONE));
   });
 });
+
+describe('buildDigestView fallback footer', () => {
+  it('names the template-only digest in the footer', () => {
+    const view = buildDigestView(digestOf({ urgency: 'good-to-know' }), {
+      disabledGuards: [],
+      fallback: true,
+    });
+
+    expect(view.footer).toBe("Written from the sources' own words.");
+  });
+
+  it('puts the guard note after it when guards were off', () => {
+    const view = buildDigestView(digestOf({ urgency: 'good-to-know' }), {
+      disabledGuards: ['clefRubric'],
+      fallback: true,
+    });
+
+    expect(view.footer).toBe(
+      "Written from the sources' own words. Guards off this week: clefRubric.",
+    );
+  });
+
+  it('adds nothing when the flag is off', () => {
+    expect(buildDigestView(digestOf({}), NONE).footer).toBeUndefined();
+  });
+});

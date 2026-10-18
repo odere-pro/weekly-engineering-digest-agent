@@ -104,7 +104,7 @@ function start(world: World, cron: ManualCron, lockRetry?: LockRetry): Promise<S
     ...(lockRetry && { lockRetry }),
     cron: schedule.cron,
     timeZone: schedule.timeZone,
-    run: (weekId) => runDigest(world.deps, { weekId }),
+    run: (weekId) => runDigest(world.deps, { weekId, noFallback: true }),
     runStatus: async (weekId) => (await world.store.getRunRecord(weekId))?.status,
     clock: world.deps.clock,
     logger: world.deps.logger,

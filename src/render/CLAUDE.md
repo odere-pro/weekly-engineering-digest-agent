@@ -12,7 +12,8 @@ back, so a week that was only partly delivered can be sent again.
 1. `buildDigestView(digest, { disabledGuards })` (`layout.ts`) makes a `DigestView`: a title
    computed in code ("Week 2026-W42: 5 releases, 1 needs action"), the model's headline, groups
    ordered act-now, worth-a-look, good-to-know (empty groups dropped), and a footer naming any
-   guards that were off. An item without urgency counts as worth-a-look.
+   guards that were off and, for the template-only fallback (W11-02), the line "Written from the
+   sources' own words.". An item without urgency counts as worth-a-look.
 2. `renderView(view)` (`markdown.ts`) writes `# title`, `_headline_`, then per group a
    `## <marker> <label>` heading and a table, then `---` and the footer if there is one.
    `renderDigest` does both steps. The intro is not shown.

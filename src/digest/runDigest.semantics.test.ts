@@ -243,7 +243,7 @@ describe('runDigest: a write step with no draft', () => {
       flagOutput: () => true,
     });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(result.exitCode).toBe(ExitCode.Blocked);
     expect(result.record.status).toBe('blocked');

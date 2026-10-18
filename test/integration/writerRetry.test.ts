@@ -125,7 +125,7 @@ describe('integration: the writer retry', () => {
         generate: (_request, valid) => withUnknownLink(valid()),
       });
 
-      const result = await runDigest(singleWriter(world));
+      const result = await runDigest(singleWriter(world), { noFallback: true });
 
       expect(world.fake.generateCalls).toHaveLength(2);
       expect(result.exitCode).toBe(ExitCode.Blocked);

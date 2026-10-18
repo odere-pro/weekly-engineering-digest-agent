@@ -5,7 +5,12 @@ import type { GuardCheckId } from '../guards/guardVerdict';
 export interface LayoutOptions {
   /** Guards that were off this week; named in the footer. */
   readonly disabledGuards: readonly GuardCheckId[];
+  /** The digest is the template-only fallback (W11-02); the footer says so. */
+  readonly fallback?: boolean;
 }
+
+/** The footer line of a digest built without a model. */
+export const FALLBACK_NOTE = "Written from the sources' own words.";
 
 /** The order groups are shown in: most urgent first. */
 const URGENCY_ORDER: readonly Urgency[] = ['act-now', 'worth-a-look', 'good-to-know'];
@@ -51,9 +56,13 @@ function titleOf(weekId: string, items: readonly DigestItem[]): string {
   return `Week ${weekId}: ${releases}, ${needsAction(actNow)}`;
 }
 
-function footerOf(disabledGuards: readonly GuardCheckId[]): string | undefined {
-  if (disabledGuards.length === 0) return undefined;
-  return `Guards off this week: ${disabledGuards.join(', ')}.`;
+function footerOf(options: LayoutOptions): string | undefined {
+  const { disabledGuards, fallback } = options;
+  const lines = [
+    ...(fallback === true ? [FALLBACK_NOTE] : []),
+    ...(disabledGuards.length > 0 ? [`Guards off this week: ${disabledGuards.join(', ')}.`] : []),
+  ];
+  return lines.length === 0 ? undefined : lines.join(' ');
 }
 
 /**
@@ -62,7 +71,7 @@ function footerOf(disabledGuards: readonly GuardCheckId[]): string | undefined {
  * renders this view. Pure: reads the digest, returns a new object.
  */
 export function buildDigestView(digest: Digest, options: LayoutOptions): DigestView {
-  const footer = footerOf(options.disabledGuards);
+  const footer = footerOf(options);
   return {
     weekId: digest.weekId,
     title: titleOf(digest.weekId, digest.items),

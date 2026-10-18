@@ -196,7 +196,10 @@ async function rebuildView(
   const winner = drafts.find((draft) => draft.writer === previous.winner);
   if (!winner)
     throw new Error(`drafts.json has no draft by the winner ${previous.winner ?? 'none'}`);
-  const view = buildDigestView(winner.digest, { disabledGuards: previous.disabledGuards });
+  const view = buildDigestView(winner.digest, {
+    disabledGuards: previous.disabledGuards,
+    fallback: previous.fallback === true,
+  });
   if (renderView(view) !== markdown) {
     throw new Error('digest.md is not the winning draft as it renders now');
   }

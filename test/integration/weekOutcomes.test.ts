@@ -141,7 +141,7 @@ describe('integration: every draft rejected', () => {
         ],
       });
 
-      const result = await runDigest(world.deps);
+      const result = await runDigest(world.deps, { noFallback: true });
 
       expect(result.exitCode).toBe(ExitCode.Blocked);
       const record = await readRunJson(dataDir(), WEEK);

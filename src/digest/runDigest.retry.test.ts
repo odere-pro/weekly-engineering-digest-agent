@@ -254,7 +254,7 @@ describe('runDigest: why a draft was rejected (F6)', () => {
       reply: ({ items }) => withBadLink(bodyFor(items)),
     });
 
-    await h.run({ dryRun: true });
+    await h.run({ dryRun: true, noFallback: true });
 
     const file = h.draftsFile();
     expect(file.rejections).toEqual([
@@ -298,7 +298,7 @@ describe('runDigest: why a draft was rejected (F6)', () => {
       reply: ({ items }) => withBadLink(bodyFor(items)),
     });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(result.record.status).toBe('blocked');
     expect(JSON.stringify(result.record)).not.toContain('evil.example');
@@ -421,7 +421,7 @@ describe('runDigest: one retry when no draft passes the checks (F1)', () => {
           : withTooManyWords(bodyFor(items)),
     });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(h.callsOf(WRITER_A)).toHaveLength(2);
     expect(h.callsOf(WRITER_B)).toHaveLength(2);
@@ -524,7 +524,7 @@ describe('runDigest: one retry when no draft passes the checks (F1)', () => {
       },
     });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(h.callsOf(WRITER_A)).toHaveLength(2);
     expect(result.record.status).toBe('blocked');
@@ -595,7 +595,7 @@ describe('runDigest: one retry when no draft passes the checks (F1)', () => {
       flagOutput: () => true,
     });
 
-    const result = await h.run();
+    const result = await h.run({ noFallback: true });
 
     expect(result.record.status).toBe('blocked');
     expect(result.record.drafts).toEqual([
