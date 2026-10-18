@@ -163,6 +163,9 @@ function harness(
     buildApp,
     runDigest: () => Promise.reject(new Error('runDigest is not called by the fake')),
     runEval,
+    gitSha: () => Promise.resolve('test-sha'),
+    checkpointDir: (root, today) => Promise.resolve(`${root}/${today}`),
+    readFile: () => Promise.reject(new Error('readFile is not called by the fake')),
     clock: fixedClock('2026-10-16T09:00:00Z'),
     mkdir: (path) => {
       dirs.push(path);
@@ -200,7 +203,7 @@ describe('evalCommand', () => {
 
     expect(code).toBe(0);
     expect(h.runEval).toHaveBeenCalledTimes(1);
-    expect(h.runEval.mock.calls[0]?.[0]).toEqual({ profile: 'quality', casesDir: 'evals' });
+    expect(h.runEval.mock.calls[0]?.[0]).toMatchObject({ profile: 'quality', casesDir: 'evals' });
     expect(h.loadConfig).toHaveBeenCalledWith({ configPath: 'digest.config.json' });
     expect(h.out.join('')).toContain('Link validity');
   });

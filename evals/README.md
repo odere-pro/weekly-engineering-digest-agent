@@ -4,6 +4,30 @@
 the harness. This page explains the metrics that wave 11 added or changed. In the CLI output,
 `detail` is numbers only and `byWeek` has one line per replay.
 
+## Faster evals
+
+A full run replays six weeks three times each and takes 45 to 110 minutes of GPU. Three options
+make the cheap questions cheap and keep a long run from being lost.
+
+```bash
+# One section only (guards, classify, sources or weeks). Guards and classify take under 5 minutes.
+pnpm digest eval --profile light --only guards
+
+# Finish a run that was lost (for example when Ollama dropped half way).
+pnpm digest eval --profile light --resume
+
+# Compare two saved scorecards: every metric, both values, the delta and the gate.
+pnpm digest eval --compare evals/scorecards/2026-10-16-light.json evals/scorecards/2026-10-19-light.json
+```
+
+- `--only` saves `<date>-<profile>-partial-<section>.json` with `partial: ["guards"]`. The other
+  metrics are `n/a`. The gates of the section are shown, but a partial run never fails the command.
+- Every week replay and stability run is saved under `<dataDir>/eval/checkpoints/<date>/`. `--resume`
+  uses the newest date folder and skips what is saved there. A change in the config, the profile
+  models or the git commit makes the saved files count as missing, so they run again.
+- `--compare` prints the metric table, then the `byWeek` rows whose status changed between the
+  two files. It runs nothing and needs no Ollama.
+
 ## Guard blocks on real weeks (`guardRealBlocks`)
 
 What: the share of week replays where an output guard rejected every draft, so the week got no

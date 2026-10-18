@@ -1,5 +1,16 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
+import { checkpointDir, fingerprintOf } from '../../../evals/checkpoint';
+import {
+  EVAL_SECTIONS,
+  SavedScorecardSchema,
+  parseSection,
+  type EvalSection,
+  type SavedScorecard,
+} from '../../../evals/checkpointSections';
+import { compareScorecards, parseScorecard } from '../../../evals/compare';
 import {
   assertJudgeInstalled,
   createEvalJudge,
@@ -8,13 +19,9 @@ import {
 } from '../../../evals/judge/evalJudge';
 import { failedHardGates } from '../../../evals/metrics';
 import { runEval, type EvalDeps, type EvalOptions } from '../../../evals/runEval';
-import {
-  METRIC_IDS,
-  ScorecardSchema,
-  type MetricResult,
-  type Scorecard,
-  type WeekDetail,
-} from '../../../evals/schema';
+import { METRIC_IDS, type MetricResult, type WeekDetail } from '../../../evals/schema';
+import { formatComparison } from './compareText';
+import { gateCell, resultCell, table, valueCell } from './cells';
 import { buildApp, createModelProvider, type AppHandle } from '../../app/container';
 import { knownSecrets } from '../../app/redacting';
 import { loadConfig, platformOf, type LoadedConfig } from '../../config/load';
@@ -24,7 +31,7 @@ import { runDigest } from '../../digest/runDigest';
 import { createLogger } from '../../observability/logger';
 import type { ModelProvider } from '../../models/ModelProvider';
 import { systemClock, type Clock } from '../../shared/clock';
-import { DigestError } from '../../shared/errors';
+import { DigestError, errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { truncate } from '../../shared/text';
 
@@ -33,6 +40,12 @@ export interface EvalCommandOptions {
   config?: string;
   /** Profile name, or "all". Defaults to the configured profile. */
   profile?: string;
+  /** Run one section only: guards, classify, sources or weeks. Saves a partial scorecard. */
+  only?: string;
+  /** Reuse the week replays a lost run already saved, when the config and git sha are the same. */
+  resume?: boolean;
+  /** Two saved scorecards to compare; nothing is run. */
+  compare?: string[];
 }
 
 /** Everything the command touches outside itself; tests replace it, `digest eval` uses the defaults. */
@@ -46,7 +59,12 @@ export interface EvalCommandIo {
   loadConfig: (options: { configPath?: string }) => Promise<LoadedConfig>;
   buildApp: (loaded: LoadedConfig) => Promise<AppHandle>;
   runDigest: EvalDeps['runDigest'];
-  runEval: (options: EvalOptions, deps: EvalDeps) => Promise<Scorecard>;
+  runEval: (options: EvalOptions, deps: EvalDeps) => Promise<SavedScorecard>;
+  /** The git commit the code is at; part of what a checkpoint is valid for. */
+  gitSha: () => Promise<string>;
+  /** The folder this run's checkpoints use; the newest date folder when resuming. */
+  checkpointDir: (root: string, today: string, resume: boolean) => Promise<string>;
+  readFile: (path: string) => Promise<string>;
   clock: Clock;
   mkdir: (path: string) => Promise<void>;
   writeFile: (path: string, content: string) => Promise<void>;
@@ -73,6 +91,28 @@ const UNMATCHED_ID_TEXT = 'unmatched';
 const UNSAFE_TEXT =
   /[\p{Cc}\u2028\u2029\u200B-\u200F\u202A-\u202E\u2066-\u2069\u{E0000}-\u{E007F}]+/gu;
 
+const GIT_SHA_UNKNOWN = 'unknown';
+const DIFF_MAX_BYTES = 64 * 1024 * 1024;
+
+/**
+ * The checkout's commit plus a hash of its uncommitted changes, so editing a prompt and resuming
+ * does not reuse old replays. Outside a git checkout the value is new every time: no resume.
+ */
+async function currentGitSha(): Promise<string> {
+  const git = promisify(execFile);
+  try {
+    const head = (await git('git', ['rev-parse', 'HEAD'])).stdout.trim();
+    const status = (await git('git', ['status', '--porcelain'])).stdout;
+    const diff =
+      status === ''
+        ? ''
+        : (await git('git', ['diff', 'HEAD'], { maxBuffer: DIFF_MAX_BYTES })).stdout;
+    return status === '' ? head : `${head}+${fingerprintOf({ status, diff })}`;
+  } catch {
+    return `${GIT_SHA_UNKNOWN}-${Date.now()}`;
+  }
+}
+
 const defaultIo: EvalCommandIo = {
   casesDir: 'evals',
   // The same logger the app builds for a run: JSON on stdout at LOG_LEVEL, secrets taken out.
@@ -83,6 +123,9 @@ const defaultIo: EvalCommandIo = {
   buildApp,
   runDigest,
   runEval,
+  gitSha: currentGitSha,
+  checkpointDir,
+  readFile: (path) => readFile(path, 'utf8'),
   clock: systemClock,
   mkdir: async (path) => {
     await mkdir(path, { recursive: true });
@@ -151,7 +194,46 @@ async function prepareEvalJudge(
   return createEvalJudge({ provider, model, focusAreas: loaded.config.focusAreas });
 }
 
+const COMPARE_FILE_COUNT = 2;
+const CHECKPOINT_ROOT = ['eval', 'checkpoints'] as const;
+const DATE_CHARS = 10;
+
+async function readScorecardFile(io: EvalCommandIo, path: string): Promise<string> {
+  try {
+    return await io.readFile(path);
+  } catch (error) {
+    throw new DigestError(`Cannot read ${path}: ${errorMessage(error)}`, { cause: error });
+  }
+}
+
+/** `--compare <a> <b>`: prints the table and runs nothing. */
+async function compareScorecardFiles(paths: readonly string[], io: EvalCommandIo): Promise<number> {
+  const [before, after] = paths;
+  if (paths.length !== COMPARE_FILE_COUNT || before === undefined || after === undefined) {
+    throw new DigestError('--compare needs two scorecard files: --compare <a.json> <b.json>');
+  }
+  const [textA, textB] = [await readScorecardFile(io, before), await readScorecardFile(io, after)];
+  io.stdout(
+    `${formatComparison(
+      compareScorecards(parseScorecard(before, textA), parseScorecard(after, textB)),
+      { before, after },
+    )}\n`,
+  );
+  return EXIT_OK;
+}
+
+function requestedSection(only: string | undefined): EvalSection | undefined {
+  if (only === undefined) return undefined;
+  const section = parseSection(only);
+  if (section === undefined) {
+    throw new DigestError(`Unknown section "${only}". Use ${EVAL_SECTIONS.join(', ')}.`);
+  }
+  return section;
+}
+
 async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Promise<number> {
+  if (options.compare !== undefined) return compareScorecardFiles(options.compare, io);
+  const only = requestedSection(options.only);
   const requested = requestedProfiles(options.profile);
   const loaded = await io.loadConfig({ configPath: options.config });
   const profiles = requested ?? [loaded.config.profile];
@@ -164,64 +246,44 @@ async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Prom
     clock: io.clock,
     ...(judge ? { judge } : {}),
   };
-  const scorecards: Scorecard[] = [];
+  const resume = options.resume === true;
+  const checkpoints = {
+    dir: await io.checkpointDir(
+      join(loaded.config.dataDir, ...CHECKPOINT_ROOT),
+      io.clock.now().toISOString().slice(0, DATE_CHARS),
+      resume,
+    ),
+    resume,
+    gitSha: await io.gitSha(),
+  };
+  const scorecards: SavedScorecard[] = [];
   for (const profile of profiles) {
-    const scorecard = await io.runEval({ profile, casesDir: io.casesDir }, deps);
+    const scorecard = await io.runEval(
+      { profile, casesDir: io.casesDir, checkpoints, ...(only ? { only } : {}) },
+      deps,
+    );
     // Print first: a failed save must not lose the result of a long run.
     io.stdout(`${formatScorecard(scorecard)}\n`);
     await saveScorecard(io, scorecard);
     scorecards.push(scorecard);
   }
-  const passed = scorecards.every((s) => failedHardGates(s.metrics).length === 0);
+  // A partial run reports its gates but never fails the command: the other sections were not run.
+  const passed = scorecards.every(
+    (s) => s.partial !== undefined || failedHardGates(s.metrics).length === 0,
+  );
   return passed ? EXIT_OK : EXIT_HARD_GATE_FAILED;
 }
 
-async function saveScorecard(io: EvalCommandIo, scorecard: Scorecard): Promise<void> {
+async function saveScorecard(io: EvalCommandIo, scorecard: SavedScorecard): Promise<void> {
   const dir = join(io.casesDir, 'scorecards');
   await io.mkdir(dir);
-  const path = join(dir, `${scorecard.date.slice(0, 10)}-${scorecard.profile}.json`);
-  await io.writeFile(path, `${JSON.stringify(ScorecardSchema.parse(scorecard), null, 2)}\n`);
+  // A partial scorecard gets its own name, so it never replaces the full one of the same day.
+  const suffix = scorecard.partial ? `-partial-${scorecard.partial.join('-')}` : '';
+  const path = join(dir, `${scorecard.date.slice(0, 10)}-${scorecard.profile}${suffix}.json`);
+  await io.writeFile(path, `${JSON.stringify(SavedScorecardSchema.parse(scorecard), null, 2)}\n`);
 }
 
 // --- Printing -------------------------------------------------------------------------------
-
-function valueCell(metric: MetricResult): string {
-  if (metric.value === null) return 'n/a';
-  switch (metric.unit) {
-    case 'ratio':
-      return `${(metric.value * 100).toFixed(1)}%`;
-    case 'ms':
-      return `${(metric.value / 1000).toFixed(1)} s`;
-    default:
-      return metric.value.toFixed(2);
-  }
-}
-
-function gateCell(metric: MetricResult): string {
-  const { gate } = metric;
-  if (gate.kind === 'none') return 'reported';
-  const threshold =
-    metric.unit === 'ratio' ? `${Math.round(gate.threshold * 100)}%` : String(gate.threshold);
-  const symbol = gate.direction === 'atLeast' ? '≥' : '≤';
-  return `${gate.kind} ${symbol} ${threshold}${gate.needsJudge ? ' (judge)' : ''}`;
-}
-
-function resultCell(metric: MetricResult): string {
-  if (metric.pass === null) return '-';
-  return metric.pass ? 'PASS' : 'FAIL';
-}
-
-function table(rows: readonly (readonly string[])[]): string[] {
-  const widths = (rows[0] ?? []).map((_, col) =>
-    Math.max(...rows.map((row) => row[col]?.length ?? 0)),
-  );
-  return rows.map((row) =>
-    row
-      .map((cell, col) => cell.padEnd(widths[col] ?? 0))
-      .join('  ')
-      .trimEnd(),
-  );
-}
 
 function detailText(detail: Readonly<Record<string, number>>): string {
   return Object.entries(detail)
@@ -306,7 +368,7 @@ function section(title: string, lines: readonly string[]): string[] {
 }
 
 /** The scorecard as plain text: header, metric table, details, problems, notes and the verdict. */
-export function formatScorecard(scorecard: Scorecard): string {
+export function formatScorecard(scorecard: SavedScorecard): string {
   const metrics = METRIC_IDS.map((id) => scorecard.metrics[id]);
   const { counts } = scorecard;
   const judge =
@@ -320,6 +382,11 @@ export function formatScorecard(scorecard: Scorecard): string {
   const notes = metrics.flatMap((m) => (m.note ? [`  ${m.label}: ${m.note}`] : []));
   return [
     `Eval scorecard: ${scorecard.profile} (${scorecard.date.slice(0, 10)})`,
+    ...(scorecard.partial
+      ? [
+          `Partial run: ${scorecard.partial.join(', ')}. Other metrics are not run; gates are reported, not enforced.`,
+        ]
+      : []),
     `Cases: ${counts.weeks} weeks, ${counts.classifier} classifier, ${counts.attacks} attacks, ${counts.grounding} grounding`,
     `Judge agreement: ${judge}`,
     '',

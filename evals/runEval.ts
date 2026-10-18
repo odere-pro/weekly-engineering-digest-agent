@@ -27,6 +27,14 @@ import { fixedClock, type Clock } from '../src/shared/clock';
 import { DigestError, errorMessage } from '../src/shared/errors';
 import { compareWeekIds, isoWeekId, weekStartUtc } from '../src/shared/isoWeek';
 import { normalizeUrl, sameUrl } from '../src/shared/url';
+import { createCheckpoints, fingerprintOf, type Checkpoints } from './checkpoint';
+import { replayCodec } from './checkpointReplay';
+import {
+  notRun,
+  SECTION_METRICS,
+  type EvalSection,
+  type SavedScorecard,
+} from './checkpointSections';
 import type { EvalJudge } from './judge/evalJudge';
 import { judgeWinners, judgedQuality, type JudgedWinners } from './judge/judgeWinners';
 import {
@@ -81,7 +89,7 @@ import {
   type GroundingCase,
   type JudgeCalibration,
   type MetricId,
-  type Scorecard,
+  type MetricResult,
   type WeekDetail,
   type WeekLabels,
 } from './schema';
@@ -115,6 +123,10 @@ export interface EvalOptions {
   casesDir: string;
   /** A hard gate fails on a smaller set. Default: the spec's set; lower it while cases are written. */
   minimums?: EvalSetSize;
+  /** Run one section and save a partial scorecard. Default: every section. */
+  only?: EvalSection;
+  /** Save each week replay under `dir`; with `resume`, reuse the ones already there. */
+  checkpoints?: { dir: string; resume: boolean; gitSha: string };
 }
 
 export interface EvalDeps {
@@ -418,7 +430,7 @@ function recordedFetchers(items: readonly Item[]): DigestDeps['fetchers'] {
   );
 }
 
-interface Replay {
+export interface Replay {
   weekId: string;
   /** Everything the fetchers served, attack items included: the items the pipeline could see. */
   items: readonly Item[];
@@ -460,7 +472,13 @@ async function replay(
   };
   app.logger.info('Eval replays a week', { weekId, items: items.length });
   const startMs = deps.clock.now().getTime();
-  const result = await deps.runDigest(replayDeps, { dryRun: true, weekId, sinceDays: WEEK_DAYS });
+  const result = await deps.runDigest(replayDeps, {
+    dryRun: true,
+    weekId,
+    sinceDays: WEEK_DAYS,
+    // The eval measures the writers on their own: no digest floor.
+    noFallback: true,
+  });
   const durationMs = Math.max(0, deps.clock.now().getTime() - startMs);
   return {
     weekId,
@@ -674,6 +692,8 @@ interface EvalRun {
   /** Digest item ids of each run of every week, the plain replay included. */
   stabilityIds: StabilityWeek[];
   attack: AttackReplay | undefined;
+  /** The plain replay of the first week, the attack replay's baseline; run for `guards` alone. */
+  attackBaseline: Replay | undefined;
   classifier: ClassifierResult[];
   grounding: GroundingResults;
   /** The eval judge's scores of the winners; undefined when it was never asked. */
@@ -708,6 +728,7 @@ function groundingMeasurement(grounding: GroundingResults): Measurement {
 
 interface Scoring {
   profile: ProfileName;
+  only: EvalSection | undefined;
   cases: EvalCases;
   run: EvalRun;
   app: DigestDeps;
@@ -750,7 +771,9 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
     withCoverage(m, cases.attacks.length, minimums.attacks, 'attack cases');
   return {
     linkValidity: weeks(linkValidity([...weekSamples, ...attackSamples])),
-    attackHandling: attacks(attackMeasurement(run.attack, run.weekRuns[0]?.run)),
+    attackHandling: attacks(
+      attackMeasurement(run.attack, run.attackBaseline ?? run.weekRuns[0]?.run),
+    ),
     sourceParse: sourceParse(run.sources),
     sourceSummaryFill: sourceSummaryFill(run.sources),
     guardAttackRecall: attacks(
@@ -791,10 +814,25 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
   };
 }
 
-function buildScorecard(scoring: Scoring): Scorecard {
-  const { profile, cases, run, app, startMs, endMs } = scoring;
+/** On a partial run, every metric outside the section is "not run": no value, no gate result. */
+function withSectionOnly(
+  metrics: Record<MetricId, MetricResult>,
+  only: EvalSection | undefined,
+): Record<MetricId, MetricResult> {
+  if (only === undefined) return metrics;
+  const measured = new Set<MetricId>(SECTION_METRICS[only]);
+  return Object.fromEntries(
+    Object.entries(metrics).map(([id, metric]) => [
+      id,
+      measured.has(metric.id) ? metric : notRun(metric, only),
+    ]),
+  ) as Record<MetricId, MetricResult>;
+}
+
+function buildScorecard(scoring: Scoring): SavedScorecard {
+  const { profile, only, cases, run, app, startMs, endMs } = scoring;
   const judgeAgreement = calibrationFor(scoring)?.judgeAgreement ?? null;
-  const metrics = assembleMetrics(measure(scoring), judgeAgreement);
+  const metrics = withSectionOnly(assembleMetrics(measure(scoring), judgeAgreement), only);
   return {
     profile,
     date: new Date(startMs).toISOString(),
@@ -813,6 +851,7 @@ function buildScorecard(scoring: Scoring): Scorecard {
     },
     metrics,
     hardGatesPassed: failedHardGates(metrics).length === 0,
+    ...(only === undefined ? {} : { partial: [only] }),
     timings: {
       totalMs: Math.max(0, endMs - startMs),
       byWeekMs: Object.fromEntries(
@@ -855,53 +894,93 @@ function stabilityAcrossWeeks(weeks: readonly StabilityWeek[]): Measurement {
   return { ...base, byWeek };
 }
 
-async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Promise<EvalRun> {
+/** Checkpoints for one profile's replays; the fingerprint changes with the config or the git sha. */
+function checkpointsFor(options: EvalOptions, app: DigestDeps): Checkpoints | undefined {
+  const saved = options.checkpoints;
+  if (!saved) return undefined;
+  const fingerprint = fingerprintOf({
+    gitSha: saved.gitSha,
+    profile: options.profile,
+    config: app.config,
+    models: modelsByRole(app.profile),
+  });
+  return createCheckpoints({
+    dir: saved.dir,
+    fingerprint,
+    resume: saved.resume,
+    warn: (message) => {
+      app.logger.warn(message);
+    },
+  });
+}
+
+async function evaluate(
+  cases: EvalCases,
+  app: DigestDeps,
+  deps: EvalDeps,
+  options: EvalOptions,
+): Promise<EvalRun> {
+  const wants = (section: EvalSection): boolean =>
+    options.only === undefined || options.only === section;
+  const checkpoints = checkpointsFor(options, app);
+  const replayWeek = (week: EvalWeek, run: number): Promise<Replay> => {
+    const compute = (): Promise<Replay> => replay(app, deps, week.weekId, week.items);
+    return checkpoints
+      ? checkpoints.resume(`${options.profile}.${week.weekId}.run${run}`, compute, replayCodec)
+      : compute();
+  };
   // First, and without a model: the recordings need none.
-  const sources = await evaluateSources(
-    cases.sources,
-    deps.sourceFetchers ?? defaultFetcherFactories,
-  );
+  const sources = wants('sources')
+    ? await evaluateSources(cases.sources, deps.sourceFetchers ?? defaultFetcherFactories)
+    : [];
   // One thing at a time: a single model is loaded at a time on the eval machine.
   const weekRuns: WeekRun[] = [];
-  for (const week of cases.weeks) {
-    weekRuns.push({ week, run: await replay(app, deps, week.weekId, week.items) });
+  for (const week of wants('weeks') ? cases.weeks : []) {
+    weekRuns.push({ week, run: await replayWeek(week, 1) });
   }
-  const first = weekRuns[0];
   const stabilityIds: StabilityWeek[] = [];
   for (const { week, run } of weekRuns) {
     const replays = [run];
-    for (let i = 1; i < STABILITY_RUNS; i++) {
-      replays.push(await replay(app, deps, week.weekId, week.items));
-    }
+    for (let i = 1; i < STABILITY_RUNS; i++) replays.push(await replayWeek(week, i + 1));
     stabilityIds.push({ weekId: week.weekId, runs: replays.map(idsOf), replays });
   }
-  const attack =
-    first && cases.attacks.length > 0
-      ? await replayAttacks(app, deps, first.week, cases.attacks)
+  // The attack replay mixes the attacks into the first recorded week.
+  const [firstWeek] = cases.weeks;
+  // With the weeks section off, the baseline is replayed here (checkpointed like any week).
+  const attackBaseline =
+    options.only === 'guards' && firstWeek && cases.attacks.length > 0
+      ? await replayWeek(firstWeek, 1)
       : undefined;
-  const classifier = await classifyCases(app, cases.classifier.cases);
-  const grounding = await checkGrounding(app, cases.grounding);
+  const attack =
+    wants('guards') && firstWeek && cases.attacks.length > 0
+      ? await replayAttacks(app, deps, firstWeek, cases.attacks)
+      : undefined;
+  const classifier = wants('classify') ? await classifyCases(app, cases.classifier.cases) : [];
+  const grounding = wants('guards')
+    ? await checkGrounding(app, cases.grounding)
+    : { outcomes: [], tallies: {}, disabledChecks: [] };
   // Last, so the judge model is loaded once, after every replay and every other model call.
   const judged =
-    deps.judge && app.profile.judge === null
+    wants('weeks') && deps.judge && app.profile.judge === null
       ? await judgeWinners(
           weekRuns.map(({ run }) => run),
           deps.judge,
           app.logger,
         )
       : undefined;
-  return { weekRuns, stabilityIds, attack, classifier, grounding, judged, sources };
+  return { weekRuns, stabilityIds, attack, attackBaseline, classifier, grounding, judged, sources };
 }
 
 /** Runs the whole eval set on one profile and returns its scorecard. Nothing is written. */
-export async function runEval(options: EvalOptions, deps: EvalDeps): Promise<Scorecard> {
+export async function runEval(options: EvalOptions, deps: EvalDeps): Promise<SavedScorecard> {
   const startMs = deps.clock.now().getTime();
   const cases = await loadEvalCases(options.casesDir);
   const handle = await deps.buildApp(options.profile);
   try {
-    const run = await evaluate(cases, handle.deps, deps);
+    const run = await evaluate(cases, handle.deps, deps, options);
     return buildScorecard({
       profile: options.profile,
+      only: options.only,
       cases,
       run,
       app: handle.deps,
