@@ -7,7 +7,6 @@ import { loadConfig, redactSecrets, type LoadedConfig } from '../config/load.js'
 import type { Secrets } from '../config/schema.js';
 import { runDigest, type DigestDeps, type RunOptions, type RunResult } from '../core/runDigest.js';
 import { ExitCode } from '../core/schemas.js';
-import type { DigestMessage } from '../ports/Delivery.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import { formatRunDuration } from './history.js';
 
@@ -43,13 +42,6 @@ interface Reporter {
   out: (text: string) => void;
   err: (text: string) => void;
 }
-
-/**
- * What `runDigest` returns, plus the message it built for its channels. Core does not set
- * `message` yet; once it does (it is the digest with its view), a dry run writes the HTML copy
- * from it. Without it a dry run writes the Markdown only.
- */
-type RunResultWithMessage = RunResult & { message?: DigestMessage };
 
 /** The digest files in the local folder, as the summary lists them. */
 interface LocalFiles {
@@ -96,7 +88,7 @@ export async function runCommand(
     secrets = loaded.secrets;
     const app = await io.buildApp(loaded);
     try {
-      const result: RunResultWithMessage = await io.runDigest(app.deps, {
+      const result = await io.runDigest(app.deps, {
         sinceDays,
         dryRun: options.dryRun,
         force: options.force,
@@ -181,7 +173,7 @@ interface DryRunCopy {
  * Only the Markdown channel is used, so email and Slack get nothing. A run that kept the week's
  * earlier files has no markdown and writes nothing here either. Never throws.
  */
-async function saveDryRunCopy(app: AppHandle, result: RunResultWithMessage): Promise<DryRunCopy> {
+async function saveDryRunCopy(app: AppHandle, result: RunResult): Promise<DryRunCopy> {
   const { record, markdown, message } = result;
   if (record.status !== 'dry-run' || markdown === undefined) return { written: false };
   const channel = app.deps.deliveries.find((delivery) => delivery.id === 'markdown');
