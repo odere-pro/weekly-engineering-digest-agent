@@ -1,0 +1,72 @@
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../ports/Delivery.js';
+import type { Digest, DigestItem, GuardCheckId, Urgency } from './schemas.js';
+
+export interface LayoutOptions {
+  /** Guards that were off this week; named in the footer. */
+  readonly disabledGuards: readonly GuardCheckId[];
+}
+
+/** The order groups are shown in: most urgent first. */
+const URGENCY_ORDER: readonly Urgency[] = ['act-now', 'worth-a-look', 'good-to-know'];
+
+/** An item without an urgency (a draft written before W8) is read as this. */
+const DEFAULT_URGENCY: Urgency = 'worth-a-look';
+
+/** Fixed labels from code, never from a model. */
+const URGENCY_LABEL: Readonly<Record<Urgency, string>> = {
+  'act-now': 'Act now',
+  'worth-a-look': 'Worth a look',
+  'good-to-know': 'Good to know',
+};
+
+const urgencyOf = (item: DigestItem): Urgency => item.urgency ?? DEFAULT_URGENCY;
+
+function hasText(text: string | undefined): text is string {
+  return text !== undefined && text.trim() !== '';
+}
+
+/** A good-to-know item shows no action. An old draft's item without one shows why it matters. */
+function viewItem(item: DigestItem): DigestViewItem {
+  const shown: DigestViewItem = { title: item.title, url: item.url, whatChanged: item.summary };
+  if (urgencyOf(item) === 'good-to-know') return shown;
+  return { ...shown, action: hasText(item.action) ? item.action : item.whyItMatters };
+}
+
+function groupOf(urgency: Urgency, items: readonly DigestItem[]): DigestViewGroup[] {
+  const inGroup = items.filter((item) => urgencyOf(item) === urgency);
+  if (inGroup.length === 0) return [];
+  return [{ urgency, label: URGENCY_LABEL[urgency], items: inGroup.map(viewItem) }];
+}
+
+function needsAction(count: number): string {
+  if (count === 0) return 'nothing needs action';
+  return count === 1 ? '1 needs action' : `${count} need action`;
+}
+
+/** For example "Week 2026-W42: 5 releases, 1 needs action". */
+function titleOf(weekId: string, items: readonly DigestItem[]): string {
+  const releases = items.length === 1 ? '1 release' : `${items.length} releases`;
+  const actNow = items.filter((item) => urgencyOf(item) === 'act-now').length;
+  return `Week ${weekId}: ${releases}, ${needsAction(actNow)}`;
+}
+
+function footerOf(disabledGuards: readonly GuardCheckId[]): string | undefined {
+  if (disabledGuards.length === 0) return undefined;
+  return `Guards off this week: ${disabledGuards.join(', ')}.`;
+}
+
+/**
+ * The digest laid out for reading (W8-02): a computed title, the model headline and the items
+ * grouped by urgency, most urgent first, in the writer's order within a group. Every channel
+ * renders this view. Pure: reads the digest, returns a new object.
+ */
+export function buildDigestView(digest: Digest, options: LayoutOptions): DigestView {
+  const footer = footerOf(options.disabledGuards);
+  return {
+    weekId: digest.weekId,
+    title: titleOf(digest.weekId, digest.items),
+    headline: digest.headline,
+    groups: URGENCY_ORDER.flatMap((urgency) => groupOf(urgency, digest.items)),
+    ...(footer === undefined ? {} : { footer }),
+  };
+}

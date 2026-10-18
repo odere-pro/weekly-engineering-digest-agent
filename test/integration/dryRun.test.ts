@@ -178,9 +178,10 @@ describe('integration: one week through the whole chain on fakes', () => {
 
     const digest = store.artifacts.get('2026-W42/digest.md');
     expect(digest).toBe(result.markdown);
-    expect(digest).toMatch(/^# This week: tool calling and faster runners\n/);
-    expect(digest).toContain('_Week 2026-W42_');
-    expect(digest?.match(/^## \d\. /gm)).toHaveLength(3);
+    expect(digest).toMatch(
+      /^# Week 2026-W42: 3 releases, nothing needs action\n\n_This week: tool calling and faster runners_\n/,
+    );
+    expect(digest?.match(/^\| \[/gm)).toHaveLength(3);
     expect(digest).toContain('(https://github.com/example/runner/releases/tag/v3.0.0)');
     expect(digest).not.toContain('v2.9.1');
     expect(digest).not.toContain('Old news');

@@ -1,6 +1,6 @@
 import type { Config } from '../config/schema.js';
 import { modelsByRole, modelsInUse, type ModelProfile } from '../config/profiles.js';
-import type { Delivery, FailureNote } from '../ports/Delivery.js';
+import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
 import type { InputGuard, OutputGuard } from '../ports/Guard.js';
 import type { ModelHealth, ModelProvider } from '../ports/ModelProvider.js';
 import type { ArtifactName, RunLock, RunStore } from '../ports/RunStore.js';
@@ -10,6 +10,7 @@ import { DigestError, errorMessage } from '../shared/errors.js';
 import { isoWeekId } from '../shared/isoWeek.js';
 import { noopLogger, type Logger, type Tracer } from '../shared/telemetry.js';
 import { DIGEST_MIN_ITEMS } from './checks/formatCheck.js';
+import { buildDigestView } from './layout.js';
 import {
   abortedError,
   digestMessage,
@@ -98,6 +99,12 @@ export interface RunResult {
   /** The digest.md this run wrote or, on a resume, sent. None when no digest was made, or when
    * the week's earlier files stayed (`RunContext.holdArtifacts`). */
   markdown?: string;
+  /**
+   * What `deliver` sends for the winning draft, with its view, for every run that chose one: a
+   * dry run too, though it sends nothing (W8-05 writes its local files from this). None when no
+   * draft won. Unlike `markdown`, it does not depend on the week's earlier files staying.
+   */
+  message?: DigestMessage;
   /** Why the week's earlier record and files stayed instead of this run's; none when this run's
    * record was saved. `digest run` prints it, as there is no digest path to show then. */
   kept?: string;
@@ -590,11 +597,18 @@ function withScores(
   });
 }
 
+/** The message every channel gets for the winning draft: its Markdown and its laid-out view. */
+function winnerMessage(ctx: RunContext, winner: CheckedDraft): DigestMessage {
+  const { digest } = winner.draft;
+  const view = buildDigestView(digest, { disabledGuards: ctx.disabledGuards });
+  return digestMessage(ctx.weekId, digest.headline, winner.markdown, view);
+}
+
 async function deliver(ctx: RunContext, state: ChainState, logger: Logger): Promise<ChainState> {
   const { winner } = state;
   if (!winner) throw new DigestError('Nothing to deliver: no winning draft', { step: 'deliver' });
-  const { headline, items } = winner.draft.digest;
-  const message = digestMessage(ctx.weekId, headline, winner.markdown);
+  const { items } = winner.draft.digest;
+  const message = winnerMessage(ctx, winner);
   const { deliveredTo, error } = await shipDigest(ctx.deps.deliveries, message, state.deliveredTo);
   // Any channel that took the digest counts its URLs as sent, for cross-week dedupe.
   const sentUrls = deliveredTo.length > 0 ? items.map((item) => item.url) : [];
@@ -629,7 +643,14 @@ async function finish(
   // `digest run` prints digest.md's path whenever markdown is set: only for a file this run wrote.
   const digestWritten = !ctx.holdArtifacts || written.has('digest.md');
   const markdown = digestWritten ? state.winner?.markdown : undefined;
-  return { record, exitCode: exitCodeFor(record.status), markdown, ...(kept && { kept }) };
+  const message = state.winner && winnerMessage(ctx, state.winner);
+  return {
+    record,
+    exitCode: exitCodeFor(record.status),
+    markdown,
+    ...(message && { message }),
+    ...(kept && { kept }),
+  };
 }
 
 function statusOf(ctx: RunContext, outcome: ChainOutcome): RunStatus {

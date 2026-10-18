@@ -243,7 +243,7 @@ describe('runDigest: dry run', () => {
     expect(JSON.parse(h.artifact('scores.json')!)).toHaveLength(5);
     expect(h.artifact('drafts.json')).toBeDefined();
     expect(h.artifact('digest.md')).toBe(result.markdown);
-    expect(result.markdown).toContain('# Runners and gateways moved this week');
+    expect(result.markdown).toContain('_Runners and gateways moved this week_');
     expect(result.record.sentUrls).toEqual([]);
     expect(sentDigests(h)).toEqual([]);
     expect(sentNotes(h)).toEqual([]);
@@ -251,6 +251,24 @@ describe('runDigest: dry run', () => {
     expect(result.record.counts).toEqual({ ...counts, afterProcess: 5, digestItems: 5 });
     expect(result.record.modelsByRole).toEqual(modelsByRole(PROFILE));
     expect(result.record.timings.map((timing) => timing.step)).toEqual(ALL_STEPS);
+  });
+
+  it('returns the message deliver would send, with its view, though it sends nothing (W8-05)', async () => {
+    const h = setup();
+
+    const result = await h.run({ dryRun: true });
+
+    expect(sentDigests(h)).toEqual([]);
+    expect(result.message).toEqual({
+      weekId: WEEK,
+      subject: `Engineering digest ${WEEK}: Runners and gateways moved this week`,
+      markdown: result.markdown,
+      view: expect.objectContaining({
+        weekId: WEEK,
+        title: `Week ${WEEK}: 5 releases, nothing needs action`,
+      }) as unknown,
+    });
+    expect(result.message?.view?.groups.map((group) => group.urgency)).toEqual(['worth-a-look']);
   });
 
   it('records the sampling it was given, and none when it was given none', async () => {
@@ -316,12 +334,22 @@ describe('runDigest: sent', () => {
           weekId: WEEK,
           subject: expect.stringContaining(WEEK) as string,
           markdown: h.artifact('digest.md'),
+          view: expect.objectContaining({
+            weekId: WEEK,
+            title: `Week ${WEEK}: ${h.items.length} releases, nothing needs action`,
+            headline: 'Runners and gateways moved this week',
+          }) as unknown,
         },
       ]);
+      const [group] = delivery.digests[0]?.view?.groups ?? [];
+      expect(group).toMatchObject({ urgency: 'worth-a-look', label: 'Worth a look' });
+      expect(group?.items.map((item) => item.url)).toEqual(h.items.map((item) => item.url));
     }
     expect(result.record.sentUrls).toEqual(h.items.map((item) => item.url));
     expect(result.record.timings.map((timing) => timing.step)).toEqual([...ALL_STEPS, 'deliver']);
     expect(sentNotes(h)).toEqual([]);
+    // The result carries the very message the channels got.
+    expect(result.message).toEqual(h.deliveries[0]?.digests[0]);
   });
 
   it('fails after trying every channel when one of them fails', async () => {
@@ -343,6 +371,7 @@ describe('runDigest: sent', () => {
     expect(result.record.error?.message).toContain('delivered on markdown');
     expect(markdown!.digests).toHaveLength(1);
     expect(result.markdown).toBe(h.artifact('digest.md'));
+    expect(result.message).toEqual(markdown!.digests[0]);
     expect(sentNotes(h)).toHaveLength(2);
   });
 });
@@ -478,6 +507,15 @@ describe('runDigest: quiet', () => {
     expect(h.model.generateCalls).toEqual([]);
     expect(sentDigests(h)).toEqual([]);
     expect(sentNotes(h)).toEqual([]);
+    expect(result.message).toBeUndefined();
+  });
+
+  it('carries no message when no items were collected', async () => {
+    const h = setup({ items: [] });
+
+    const result = await h.run({ dryRun: true });
+
+    expect(result.message).toBeUndefined();
   });
 });
 
@@ -509,10 +547,8 @@ describe('runDigest: draft checks and guards', () => {
       draft: (writer, items) => {
         const body = defaultBody(items);
         const [first, ...rest] = body.items;
-        const broken =
-          writer === WRITER_A
-            ? { ...first!, summary: 'Details at https://evil.example/payload today.' }
-            : { ...first!, whyItMatters: 'word '.repeat(600).trim() };
+        if (writer !== WRITER_A) return { ...body, headline: 'word '.repeat(600).trim() };
+        const broken = { ...first!, summary: 'Details at https://evil.example/payload today.' };
         return { ...body, items: [broken, ...rest] };
       },
     });
@@ -520,6 +556,7 @@ describe('runDigest: draft checks and guards', () => {
     const result = await h.run({ dryRun: true });
 
     expect(result.record.status).toBe('blocked');
+    expect(result.message).toBeUndefined();
     expect(result.record.drafts).toEqual([
       { writer: WRITER_A, passed: false, rejectedBy: ['linkCheck'] },
       { writer: WRITER_B, passed: false, rejectedBy: ['formatCheck'] },
@@ -539,7 +576,7 @@ describe('runDigest: draft checks and guards', () => {
     expect(result.record.status).toBe('dry-run');
     expect(result.markdown).not.toContain('—');
     expect(result.markdown).toContain('Runner 1.0 ships, faster builds');
-    expect(result.markdown).toMatch(/^# Runners, gateways\n/);
+    expect(result.markdown).toContain('\n_Runners, gateways_\n');
     const saved = JSON.parse(h.artifact('drafts.json')!) as { drafts: Draft[] };
     expect(saved.drafts[0]?.digest.items[0]?.title).toBe('Runner 1.0 ships, faster builds');
   });

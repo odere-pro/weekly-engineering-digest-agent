@@ -3,6 +3,8 @@
 import { GuardsConfigSchema } from '../src/config/schema.js';
 import { formatCheck } from '../src/core/checks/formatCheck.js';
 import { linkCheck } from '../src/core/checks/linkCheck.js';
+import type { CheckResult } from '../src/core/checks/types.js';
+import { readSavedView } from '../src/core/render.js';
 import {
   GuardCheckIdSchema,
   type Digest,
@@ -11,7 +13,9 @@ import {
   type GuardCheckId,
   type Item,
   type RunStatus,
+  type Urgency,
 } from '../src/core/schemas.js';
+import type { DigestViewItem } from '../src/ports/Delivery.js';
 import { truncate } from '../src/shared/text.js';
 import { normalizeUrl } from '../src/shared/url.js';
 import {
@@ -161,48 +165,34 @@ function countBy(ids: readonly string[]): Record<string, number> {
 
 // --- Reading a produced digest ------------------------------------------------------------
 
-const ITEM_HEADING = /^## \d+\. /m;
-const WHY_PREFIX = '**Why it matters:** ';
-const SOURCE_PREFIX = '[Source](';
-/** renderDigest ends the last item with this footer when a guard was off. */
-const GUARDS_FOOTER = /\n---\n\nGuards off this week:/;
-/** renderDigest does not print the area, so a parsed item cannot know it. */
+/** The layout does not print the area, so a parsed item cannot know it. */
 const UNKNOWN_AREA = 'unknown';
 
-function parseItem(block: string, idByUrl: ReadonlyMap<string, string>): DigestItem {
-  const [titleLine = '', ...rest] = block.split('\n');
-  // The guard footer ("---" and a line) follows the last item; it belongs to no item.
-  const body = rest.join('\n').split(GUARDS_FOOTER)[0] ?? '';
-  const paragraphs = body
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  const why = paragraphs.find((p) => p.startsWith(WHY_PREFIX));
-  const source = paragraphs.find((p) => p.startsWith(SOURCE_PREFIX) && p.endsWith(')'));
-  const url = source?.slice(SOURCE_PREFIX.length, -1).trim() ?? '';
-  const summary = paragraphs.find((p) => p !== why && p !== source) ?? '';
+function parsedItem(
+  item: DigestViewItem,
+  urgency: Urgency,
+  idByUrl: ReadonlyMap<string, string>,
+): DigestItem {
   return {
-    itemId: idByUrl.get(normalizeUrl(url)) ?? `unmatched:${url}`,
-    title: titleLine.trim(),
-    url,
+    itemId: idByUrl.get(normalizeUrl(item.url)) ?? `unmatched:${item.url}`,
+    title: item.title,
+    url: item.url,
     area: UNKNOWN_AREA,
-    summary,
-    whyItMatters: why?.slice(WHY_PREFIX.length).trim() ?? '',
+    summary: item.whatChanged,
+    // The layout prints the action in the place of why it matters, and no such line at all
+    // for a good-to-know item.
+    whyItMatters: '',
+    urgency,
+    ...(item.action === undefined ? {} : { action: item.action }),
   };
-}
-
-function introOf(head: string): string {
-  return head
-    .split('\n')
-    .filter((line) => !line.startsWith('# ') && !/^_Week .*_$/.test(line))
-    .join('\n')
-    .trim();
 }
 
 /**
  * Markdown from `renderDigest` back to a Digest, so the real link and format checks can judge
- * what was written to disk. Item ids are looked up by URL in the collected `items`; a link to
- * anything else gets the id `unmatched:<url>`. Missing parts come back empty, never throw.
+ * what was written to disk (W8-02 layout: title, headline in italics, one table per urgency).
+ * Item ids are looked up by URL in the collected `items`; a link to anything else gets the id
+ * `unmatched:<url>`. The layout prints no intro, so the intro comes back empty, and items come
+ * back grouped by urgency, as printed. Missing parts come back empty, never throw.
  */
 export function parseDigestMarkdown(
   markdown: string,
@@ -210,12 +200,14 @@ export function parseDigestMarkdown(
   items: readonly Item[],
 ): Digest {
   const idByUrl = new Map(items.map((item) => [normalizeUrl(item.url), item.id]));
-  const [head = '', ...blocks] = markdown.split(ITEM_HEADING);
+  const view = readSavedView(markdown);
   return {
     weekId,
-    headline: /^# (.+)$/m.exec(head)?.[1]?.trim() ?? '',
-    intro: introOf(head),
-    items: blocks.map((block) => parseItem(block, idByUrl)),
+    headline: view?.headline ?? '',
+    intro: '',
+    items: (view?.groups ?? []).flatMap((group) =>
+      group.items.map((item) => parsedItem(item, group.urgency, idByUrl)),
+    ),
   };
 }
 
@@ -281,10 +273,23 @@ export function linkValidity(samples: readonly DigestSample[]): Measurement {
   return withByWeek(share(valid.length, produced.length), checked);
 }
 
+/**
+ * The layout prints no intro, and no why-it-matters line, so a digest read back from it has none
+ * (see parseDigestMarkdown). The format check cannot ask for what the file does not show.
+ */
+const NOT_PRINTED_PROBLEM = /^Missing (?:intro|why-it-matters in item \d+)$/;
+
+function printedFormatCheck(digest: Digest, markdown: string): CheckResult {
+  const problems = formatCheck(digest, markdown).problems.filter(
+    (problem) => !NOT_PRINTED_PROBLEM.test(problem),
+  );
+  return { ok: problems.length === 0, problems };
+}
+
 /** The format check passes on the digest. A week without a digest fails it. */
 export function formatCompliance(samples: readonly DigestSample[]): Measurement {
   const checked = checkedSamples(samples, ({ weekId, markdown, items }) =>
-    weekDetail(formatCheck(parseDigestMarkdown(markdown, weekId, items), markdown)),
+    weekDetail(printedFormatCheck(parseDigestMarkdown(markdown, weekId, items), markdown)),
   );
   const valid = checked.filter(({ detail }) => detail.status === 'ok');
   return withByWeek(share(valid.length, checked.length), checked);

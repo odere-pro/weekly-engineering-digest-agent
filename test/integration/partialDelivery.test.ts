@@ -93,7 +93,12 @@ describe('integration: rerunning a partly delivered week', () => {
       expect(cli.stdout).toContain('Status    sent');
       expect(digestsSent(world)).toEqual([0, 1, 0]);
       expect(channel(world, 'email').digests).toEqual([
-        { weekId: WEEK, subject: SUBJECT, markdown: digest },
+        {
+          weekId: WEEK,
+          subject: SUBJECT,
+          markdown: digest,
+          view: expect.objectContaining({ weekId: WEEK }) as unknown,
+        },
       ]);
       expect(ollama.calls).toEqual([]);
       expect(modelCalls(world)).toBe(0);
@@ -191,7 +196,12 @@ describe('integration: rerunning a partly delivered week', () => {
 
       expect(cli.exitCode).toBe(ExitCode.Sent);
       expect(channel(rerun, 'email').digests).toEqual([
-        { weekId: WEEK, subject: SUBJECT, markdown: before[3] },
+        {
+          weekId: WEEK,
+          subject: SUBJECT,
+          markdown: before[3],
+          view: expect.objectContaining({ weekId: WEEK }) as unknown,
+        },
       ]);
       expect(modelCalls(rerun)).toBe(0);
     },

@@ -126,7 +126,7 @@ describe('prompt limits', () => {
       ),
     });
     expect(check(digest)).toEqual({ ok: true, problems: [] });
-    const tooLong = { ...digest, intro: words(DIGEST_WORD_LIMIT - DIGEST_WORD_TARGET + 20) };
+    const tooLong = { ...digest, headline: words(DIGEST_WORD_LIMIT - DIGEST_WORD_TARGET + 20) };
     expect(check(tooLong).problems).toContainEqual(
       expect.stringContaining(`under ${DIGEST_WORD_LIMIT} words`),
     );

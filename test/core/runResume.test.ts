@@ -17,6 +17,7 @@ const NOW = '2026-10-16T08:00:00Z';
 const HEADLINE = 'Runners and gateways moved this week';
 const URLS = ['https://example.com/runner-1', 'https://example.com/runner-2'];
 const SOURCES = URLS.map((url) => `[Source](${url})`).join('\n\n');
+// The layout a run saved before W8-02; runResume.view.test.ts covers the current one.
 const SAVED = `# ${HEADLINE}\n\n_Week ${WEEK}_\n\n## 1. Runner\n\n${SOURCES}\n`;
 const REFUSAL = 'run with --force to send a new digest to every channel';
 

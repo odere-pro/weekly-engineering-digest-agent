@@ -29,9 +29,10 @@ import {
   type Measurement,
 } from '../../../evals/metrics.js';
 import { METRIC_IDS, type Gate, type MetricId } from '../../../evals/schema.js';
+import { DIGEST_ACTION_WORD_LIMIT, formatCheck } from '../../../src/core/checks/formatCheck.js';
 import { renderDigest } from '../../../src/core/render.js';
-import type { Item } from '../../../src/core/schemas.js';
-import { makeDigest, makeItem } from '../../builders.js';
+import type { DigestItem, Item } from '../../../src/core/schemas.js';
+import { makeDigest, makeDigestItem, makeItem } from '../../builders.js';
 
 function makeItems(count: number): Item[] {
   return Array.from({ length: count }, () => makeItem());
@@ -43,63 +44,184 @@ function sampleFor(items: readonly Item[], digestItems: readonly Item[] = items)
 }
 
 describe('parseDigestMarkdown', () => {
-  it('reads back what renderDigest wrote', () => {
+  const urgent = (item: Item, urgency: DigestItem['urgency'], action?: string) =>
+    makeDigestItem(item, { urgency, ...(action === undefined ? {} : { action }) });
+
+  it('reads back what renderDigest wrote: headline, items, summaries and actions', () => {
     const items = makeItems(3);
     const digest = makeDigest(items);
     const markdown = renderDigest(digest, { disabledGuards: ['clefRubric'] });
 
     const parsed = parseDigestMarkdown(markdown, digest.weekId, items);
 
+    expect(parsed.weekId).toBe(digest.weekId);
     expect(parsed.headline).toBe(digest.headline);
-    expect(parsed.intro).toBe(digest.intro);
     expect(parsed.items.map((i) => i.itemId)).toEqual(items.map((i) => i.id));
     expect(parsed.items.map((i) => i.title)).toEqual(digest.items.map((i) => i.title));
     expect(parsed.items.map((i) => i.summary)).toEqual(digest.items.map((i) => i.summary));
-    expect(parsed.items.map((i) => i.whyItMatters)).toEqual(
-      digest.items.map((i) => i.whyItMatters),
-    );
     expect(parsed.items.map((i) => i.url)).toEqual(digest.items.map((i) => i.url));
+    // An old draft's why-it-matters is printed as its action, under worth-a-look.
+    expect(parsed.items.map((i) => i.action)).toEqual(digest.items.map((i) => i.whyItMatters));
+    expect(parsed.items.map((i) => i.urgency)).toEqual(items.map(() => 'worth-a-look'));
   });
 
-  it('does not mistake a rule line in a summary for the guards footer', () => {
-    const items = makeItems(1);
-    const markdown = [
-      '# H',
-      '_Week 2026-W42_',
-      'Intro.',
-      `## 1. T\n\nFirst paragraph.\n\n---\n\n**Why it matters:** Because.\n\n[Source](${items[0]?.url})`,
-    ].join('\n\n');
+  it('has an empty intro and an empty why-it-matters, because the layout prints neither', () => {
+    const items = makeItems(3);
+    const markdown = renderDigest(makeDigest(items), { disabledGuards: [] });
+
     const parsed = parseDigestMarkdown(markdown, '2026-W42', items);
-    expect(parsed.items[0]).toMatchObject({ whyItMatters: 'Because.', itemId: items[0]?.id });
+
+    expect(parsed.intro).toBe('');
+    expect(parsed.items.map((i) => i.whyItMatters)).toEqual(['', '', '']);
   });
 
-  it('keeps the last item clean when the guards footer follows it', () => {
+  it('reads the urgency from the group an item is printed under, and the order as printed', () => {
+    const [a, b, c] = makeItems(3) as [Item, Item, Item];
+    const digest = {
+      ...makeDigest([]),
+      items: [urgent(a, 'good-to-know'), urgent(b, 'act-now', 'Upgrade.'), urgent(c, undefined)],
+    };
+
+    const parsed = parseDigestMarkdown(renderDigest(digest, { disabledGuards: [] }), '', [a, b, c]);
+
+    expect(parsed.items.map((i) => [i.itemId, i.urgency])).toEqual([
+      [b.id, 'act-now'],
+      [c.id, 'worth-a-look'],
+      [a.id, 'good-to-know'],
+    ]);
+    expect(parsed.items[0]?.action).toBe('Upgrade.');
+  });
+
+  it('gives a good-to-know item no action', () => {
+    const [a] = makeItems(1) as [Item];
+    const digest = { ...makeDigest([]), items: [urgent(a, 'good-to-know', 'Dropped.')] };
+
+    const parsed = parseDigestMarkdown(renderDigest(digest, { disabledGuards: [] }), '', [a]);
+
+    expect(parsed.items[0]).not.toHaveProperty('action');
+  });
+
+  it('does not mistake the guards footer for part of the last item', () => {
     const items = makeItems(3);
     const markdown = renderDigest(makeDigest(items), { disabledGuards: ['clefRubric'] });
+
     const parsed = parseDigestMarkdown(markdown, '2026-W42', items);
+
+    expect(parsed.items).toHaveLength(3);
     expect(parsed.items.at(-1)?.url).toBe(items[2]?.url);
-    expect(parsed.items.at(-1)?.whyItMatters).toBe('It changes how teams build and run software.');
+    expect(parsed.items.at(-1)?.action).toBe('It changes how teams build and run software.');
+  });
+
+  it('reads text that a table cell had to escape as it was written', () => {
+    const [a] = makeItems(1) as [Item];
+    const digest = {
+      ...makeDigest([]),
+      items: [
+        makeDigestItem(a, {
+          title: 'Parser [beta] | 1.0',
+          summary: 'Adds the a|b operator.',
+          urgency: 'act-now',
+          action: 'Replace the pipe | in your configs.',
+        }),
+      ],
+    };
+
+    const parsed = parseDigestMarkdown(renderDigest(digest, { disabledGuards: [] }), '', [a]);
+
+    expect(parsed.items[0]).toMatchObject({
+      itemId: a.id,
+      title: 'Parser [beta] | 1.0',
+      summary: 'Adds the a|b operator.',
+      action: 'Replace the pipe | in your configs.',
+    });
   });
 
   it('marks a link to an uncollected URL as unmatched', () => {
     const items = makeItems(1);
-    const markdown =
-      '# H\n\n_Week 2026-W42_\n\nIntro.\n\n## 1. T\n\nS.\n\n**Why it matters:** W.\n\n[Source](https://evil.example/x)\n';
+    const markdown = [
+      '# Week 2026-W42: 1 release, nothing needs action',
+      '',
+      '_H_',
+      '',
+      '## 🟡 Worth a look',
+      '',
+      '| Release | What changed | Relevant if you |',
+      '|---|---|---|',
+      '| [T](https://evil.example/x) | S. | W. |',
+      '',
+    ].join('\n');
+
     const parsed = parseDigestMarkdown(markdown, '2026-W42', items);
+
     expect(parsed.items[0]?.itemId).toBe('unmatched:https://evil.example/x');
   });
 
   it('yields empty sections for text that is not a digest', () => {
     const parsed = parseDigestMarkdown('just some words', '2026-W42', []);
-    expect(parsed.headline).toBe('');
-    expect(parsed.items).toEqual([]);
+
+    expect(parsed).toEqual({ weekId: '2026-W42', headline: '', intro: '', items: [] });
   });
 
-  it('leaves the link empty when an item has no source link', () => {
-    const markdown = '# H\n\nIntro.\n\n## 1. T\n\nS.\n';
+  it('leaves the link empty when an item row has no link', () => {
+    const markdown = [
+      '# Week 2026-W42: 1 release, nothing needs action',
+      '',
+      '## ⚪ Good to know',
+      '',
+      '| Release | What changed |',
+      '|---|---|',
+      '| T | S. |',
+      '',
+    ].join('\n');
+
     const parsed = parseDigestMarkdown(markdown, '2026-W42', []);
-    expect(parsed.intro).toBe('Intro.');
-    expect(parsed.items[0]).toMatchObject({ summary: 'S.', whyItMatters: '', url: '' });
+
+    expect(parsed.headline).toBe('');
+    expect(parsed.items[0]).toMatchObject({ title: 'T', summary: 'S.', url: '' });
+  });
+});
+
+describe('the format check on a digest read back', () => {
+  it('names the problems that formatCompliance leaves out, so a rewording of them is noticed', () => {
+    const digest = makeDigest(makeItems(3));
+
+    const { problems } = formatCheck(
+      { ...digest, intro: '', items: digest.items.map((i) => ({ ...i, whyItMatters: '' })) },
+      '',
+    );
+
+    expect(problems).toEqual(
+      expect.arrayContaining([
+        'Missing intro',
+        'Missing why-it-matters in item 1',
+        'Missing why-it-matters in item 3',
+      ]),
+    );
+  });
+
+  it('does not fail a digest for the intro and why-it-matters lines the layout leaves out', () => {
+    const items = makeItems(3);
+    const markdown = renderDigest(makeDigest(items), { disabledGuards: [] });
+
+    const result = formatCompliance([{ weekId: '2026-W42', markdown, items }]);
+
+    expect(result.value).toBe(1);
+    expect(result.byWeek?.['2026-W42']).toEqual({ status: 'ok', problems: [], problemCount: 0 });
+  });
+
+  it('still fails a digest whose action line is over the limit', () => {
+    const items = makeItems(3);
+    const long = 'word '.repeat(DIGEST_ACTION_WORD_LIMIT + 1).trim();
+    const digest = {
+      ...makeDigest([]),
+      items: items.map((item) => makeDigestItem(item, { urgency: 'act-now', action: long })),
+    };
+    const markdown = renderDigest(digest, { disabledGuards: [] });
+
+    const result = formatCompliance([{ weekId: '2026-W42', markdown, items }]);
+
+    expect(result.value).toBe(0);
+    expect(result.byWeek?.['2026-W42']?.problems[0]).toContain('words in the action of item 1');
   });
 });
 

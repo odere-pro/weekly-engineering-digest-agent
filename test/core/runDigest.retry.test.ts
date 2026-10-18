@@ -122,10 +122,12 @@ function withBadLink(body: DigestBody, url = EVIL): DigestBody {
   return { ...body, items: [{ ...first!, summary: `Details at ${url} today.` }, ...rest] };
 }
 
-/** The body with a first item far over the word limit: the format check rejects it. */
+/**
+ * The body with a headline far over the word limit: the format check rejects it. The headline is
+ * rendered in every layout, and it has no limit of its own, so the word count is the only problem.
+ */
 function withTooManyWords(body: DigestBody): DigestBody {
-  const [first, ...rest] = body.items;
-  return { ...body, items: [{ ...first!, whyItMatters: 'word '.repeat(600).trim() }, ...rest] };
+  return { ...body, headline: 'word '.repeat(600).trim() };
 }
 
 function setup(scenario: Scenario = {}) {
@@ -620,7 +622,7 @@ describe('runDigest: one retry when no draft passes the checks (F1)', () => {
     const result = await h.run({ dryRun: true });
 
     expect(result.record.status).toBe('dry-run');
-    expect(result.markdown).toContain('# Runners, and gateways, moved');
+    expect(result.markdown).toContain('_Runners, and gateways, moved_');
     expect(result.markdown).not.toContain(EM_DASH);
   });
 });

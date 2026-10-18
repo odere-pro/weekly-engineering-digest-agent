@@ -150,7 +150,14 @@ describe('formatCompliance by week', () => {
       items: digest.items.map((entry) => ({ ...entry, summary: '', whyItMatters: '' })),
     };
     const markdown = renderDigest(emptyBodies, { disabledGuards: [] });
-    const all = formatCheck(parseDigestMarkdown(markdown, '2026-W40', items), markdown).problems;
+    // The file shows no intro and no why-it-matters line, so the check does not ask for them.
+    const all = [
+      'Missing headline',
+      ...[1, 2, 3, 4, 5].map((position) => `Missing summary in item ${position}`),
+      'Missing action in items 1, 2, 3, 4, 5',
+    ];
+    const asked = formatCheck(parseDigestMarkdown(markdown, '2026-W40', items), markdown).problems;
+    expect(asked).toEqual(expect.arrayContaining(all));
     expect(all.length).toBeGreaterThan(MAX_PROBLEMS_PER_WEEK);
 
     const result = formatCompliance([{ weekId: '2026-W40', markdown, items }]);

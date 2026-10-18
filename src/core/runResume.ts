@@ -1,9 +1,13 @@
 // Resuming a partly delivered week (W2-08). Moved out of runDigest.ts by W5-06 (F58).
-import type { Delivery } from '../ports/Delivery.js';
+import type { Delivery, DigestView } from '../ports/Delivery.js';
 import type { Clock } from '../shared/clock.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import type { Tracer } from '../shared/telemetry.js';
+import { truncate } from '../shared/text.js';
+import { buildDigestView } from './layout.js';
+import { readSavedDigest, renderView } from './render.js';
 import {
+  DraftsFileSchema,
   abortedError,
   digestMessage,
   endRun,
@@ -37,10 +41,8 @@ export interface ResumeResult {
   readonly markdown: string | undefined;
 }
 
-/** render.ts writes the headline as the digest's first `# ` line... */
-const HEADLINE_LINE = /^# (.+)$/m;
-/** ...and each item's link as a `[Source](url)` line of its own. */
-const SOURCE_LINE = /^\[Source\]\((.+)\)$/gm;
+/** A parse error can quote the file; a log line needs only the start of it. */
+const REASON_MAX_CHARS = 300;
 
 /** The previous run, when it failed after reaching some channels; with its digest.md if saved. */
 export async function loadPartDelivery(
@@ -101,7 +103,7 @@ async function deliverStep(
   const { clock } = ctx.deps;
   const logger = ctx.logger.child({ step: 'deliver' });
   const startedMs = clock.now().getTime();
-  const shipped = await traced(ctx, part, () => send(ctx.weekId, missing, verdict, part));
+  const shipped = await traced(ctx, part, () => send(ctx, missing, verdict, part));
   const timing = { step: 'deliver' as const, ms: Math.max(0, clock.now().getTime() - startedMs) };
   if (shipped.error) {
     logger.error('Step failed', { ms: timing.ms, error: errorMessage(shipped.error) });
@@ -160,17 +162,58 @@ function sendable(ctx: ResumeContext, part: PartDelivery): Verdict {
   return stopped ? { ok: false, error: stopped } : verifyDigest(part);
 }
 
+/**
+ * The view of the saved digest, rebuilt from the winning draft in drafts.json (W8-02); none when
+ * it cannot be, and then the channels show the Markdown. It never throws: the week is sent either way.
+ */
+async function savedView(
+  ctx: ResumeContext,
+  previous: RunRecord,
+  markdown: string,
+): Promise<DigestView | undefined> {
+  try {
+    return await rebuildView(ctx, previous, markdown);
+  } catch (error) {
+    const reason = truncate(errorMessage(error), REASON_MAX_CHARS);
+    ctx.logger.warn('Sending the saved digest without its view', { reason });
+    return undefined;
+  }
+}
+
+/**
+ * The draft must render to the very digest.md the other channels got. A file saved by an older
+ * layout, or a drafts.json from another run, would otherwise send this channel a different digest.
+ */
+async function rebuildView(
+  ctx: ResumeContext,
+  previous: RunRecord,
+  markdown: string,
+): Promise<DigestView> {
+  const file = await ctx.deps.store.readArtifact(ctx.weekId, 'drafts.json');
+  if (file === undefined) throw new Error('drafts.json is gone');
+  const { drafts } = DraftsFileSchema.parse(JSON.parse(file));
+  const winner = drafts.find((draft) => draft.writer === previous.winner);
+  if (!winner)
+    throw new Error(`drafts.json has no draft by the winner ${previous.winner ?? 'none'}`);
+  const view = buildDigestView(winner.digest, { disabledGuards: previous.disabledGuards });
+  if (renderView(view) !== markdown) {
+    throw new Error('digest.md is not the winning draft as it renders now');
+  }
+  return view;
+}
+
 /** Nothing to send, a refused digest, or the saved digest to the channels that lack it. */
 async function send(
-  weekId: string,
+  ctx: ResumeContext,
   missing: readonly Delivery[],
   verdict: Verdict | undefined,
-  { deliveredTo }: PartDelivery,
+  { previous, deliveredTo }: PartDelivery,
 ): Promise<Shipped> {
   if (verdict === undefined) return { deliveredTo };
   if (!verdict.ok) return { deliveredTo, error: verdict.error };
-  const headline = HEADLINE_LINE.exec(verdict.markdown)?.[1] ?? '';
-  const message = digestMessage(weekId, headline, verdict.markdown);
+  const { headline } = readSavedDigest(verdict.markdown);
+  const view = await savedView(ctx, previous, verdict.markdown);
+  const message = digestMessage(ctx.weekId, headline, verdict.markdown, view);
   return shipDigest(missing, message, deliveredTo);
 }
 
@@ -186,7 +229,7 @@ function verifyDigest({ previous, deliveredTo, markdown }: PartDelivery): Verdic
     error: new DigestError(`${message}; ${redo}`, { step: 'deliver' }),
   });
   if (markdown === undefined) return refuse('The partly delivered digest.md is gone');
-  const links = new Set(Array.from(markdown.matchAll(SOURCE_LINE), (match) => match[1]));
+  const links = new Set(readSavedDigest(markdown).urls);
   const sent = new Set(previous.sentUrls);
   if (links.size !== sent.size || [...sent].some((url) => !links.has(url))) {
     return refuse(`digest.md no longer matches the digest ${deliveredTo.join(', ')} got`);

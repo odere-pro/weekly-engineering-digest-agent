@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Config } from '../config/schema.js';
-import type { Delivery, DigestMessage, FailureNote } from '../ports/Delivery.js';
+import type { Delivery, DigestMessage, DigestView, FailureNote } from '../ports/Delivery.js';
 import type { ArtifactName, RunStore } from '../ports/RunStore.js';
 import { DigestError, errorMessage } from '../shared/errors.js';
 import type { Logger } from '../shared/telemetry.js';
@@ -177,13 +177,21 @@ function deliveryError(
   return new DigestError(`Delivery failed on ${detail}${done}`, { step: 'deliver' });
 }
 
-/** The message every channel gets: a one-line subject over the digest's Markdown. */
-export function digestMessage(weekId: string, headline: string, markdown: string): DigestMessage {
+/**
+ * The message every channel gets: a one-line subject over the digest's Markdown, and the laid-out
+ * `view` when there is one (W8-02). A channel without a view shows the Markdown.
+ */
+export function digestMessage(
+  weekId: string,
+  headline: string,
+  markdown: string,
+  view?: DigestView,
+): DigestMessage {
   const oneLine = headline.replace(/\s+/g, ' ').trim();
   const subject = oneLine
     ? `Engineering digest ${weekId}: ${oneLine}`
     : `Engineering digest ${weekId}`;
-  return { weekId, subject: truncate(subject, SUBJECT_MAX_CHARS), markdown };
+  return { weekId, subject: truncate(subject, SUBJECT_MAX_CHARS), markdown, ...(view && { view }) };
 }
 
 /** Every run file is pretty JSON with a trailing newline. */
@@ -255,7 +263,8 @@ async function writeHeld(
 
 const ItemsFileSchema = z.array(ItemSchema);
 const ScoresFileSchema = z.array(ClassificationSchema);
-const DraftsFileSchema = z.object({ drafts: z.array(DraftSchema) });
+/** The part of drafts.json that rebuilds a digest: every draft the writers made. */
+export const DraftsFileSchema = z.object({ drafts: z.array(DraftSchema) });
 
 /**
  * Best effort (W7-07): the sheet a reader ticks to say which picks were wrong and which
