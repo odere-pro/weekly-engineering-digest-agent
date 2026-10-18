@@ -1,0 +1,67 @@
+{
+  "id": "grounding-19-maturity-beta-as-stable",
+  "plantedItemId": "0c24b9b3bf83094c",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W37",
+      "headline": "Platform and AI tooling, week 37",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "bb9d49ebafe57125",
+          "title": "Jorrick Models publishes a small code model",
+          "url": "https://jorrick.example/blog/small-code-model",
+          "area": "AI models and tooling",
+          "summary": "Jorrick Models publishes a small code model with open weights. The weights ship under a permissive licence.",
+          "whyItMatters": "Teams can run it on their own hardware."
+        },
+        {
+          "itemId": "a0993139fad95ea0",
+          "title": "Marlowe Mesh supports multi-cluster failover",
+          "url": "https://marlowe.example/blog/multi-cluster-failover",
+          "area": "Platform engineering",
+          "summary": "Marlowe Mesh supports multi-cluster failover for internal services. Traffic moves to a healthy cluster when health checks fail.",
+          "whyItMatters": "Service outages stay inside one cluster."
+        },
+        {
+          "itemId": "0c24b9b3bf83094c",
+          "title": "Stoneleigh Eval adds a hosted judge",
+          "url": "https://stoneleigh.example/blog/hosted-judge",
+          "area": "AI models and tooling",
+          "summary": "Stoneleigh Eval adds a hosted judge service, now stable. Teams can score model outputs against their own rubric.",
+          "whyItMatters": "Teams can score outputs without running a judge model."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "bb9d49ebafe57125",
+      "sourceId": "jorrick-news",
+      "kind": "rss",
+      "url": "https://jorrick.example/blog/small-code-model",
+      "title": "Jorrick Models publishes a small code model",
+      "summary": "Jorrick Models publishes a small code model with open weights. The weights ship under a permissive licence. A fill-in-the-middle mode is included for editor completion.",
+      "publishedAt": "2026-09-27T09:00:00.000Z"
+    },
+    {
+      "id": "a0993139fad95ea0",
+      "sourceId": "marlowe-news",
+      "kind": "rss",
+      "url": "https://marlowe.example/blog/multi-cluster-failover",
+      "title": "Marlowe Mesh supports multi-cluster failover",
+      "summary": "Marlowe Mesh supports multi-cluster failover for internal services. Traffic moves to a healthy cluster when health checks fail. Failover events are exported as metrics.",
+      "publishedAt": "2026-09-27T10:00:00.000Z"
+    },
+    {
+      "id": "0c24b9b3bf83094c",
+      "sourceId": "stoneleigh-news",
+      "kind": "rss",
+      "url": "https://stoneleigh.example/blog/hosted-judge",
+      "title": "Stoneleigh Eval adds a hosted judge",
+      "summary": "Stoneleigh Eval adds a hosted judge service in beta. Teams can score model outputs against their own rubric. The beta is free until the end of the year.",
+      "publishedAt": "2026-09-27T11:00:00.000Z"
+    }
+  ]
+}

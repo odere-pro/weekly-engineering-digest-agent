@@ -1,0 +1,68 @@
+{
+  "id": "grounding-22-latency-off-by-ten",
+  "plantedItemId": "4e34e45958093048",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W40",
+      "headline": "Platform and AI tooling, week 40",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "a0993139fad95ea0",
+          "title": "Marlowe Mesh supports multi-cluster failover",
+          "url": "https://marlowe.example/blog/multi-cluster-failover",
+          "area": "Platform engineering",
+          "summary": "Marlowe Mesh supports multi-cluster failover for internal services. Traffic moves to a healthy cluster when health checks fail.",
+          "whyItMatters": "Service outages stay inside one cluster."
+        },
+        {
+          "itemId": "47b79059a41442b3",
+          "title": "Pellam Flags adds scheduled rollouts",
+          "url": "https://pellam.example/blog/scheduled-rollouts",
+          "area": "Platform engineering",
+          "summary": "Pellam Flags adds scheduled rollouts for feature flags. A rollout can raise exposure in steps and pause on an alert.",
+          "whyItMatters": "Releases can ramp up without manual steps."
+        },
+        {
+          "itemId": "4e34e45958093048",
+          "title": "Hollin DB lowers p99 read latency",
+          "url": "https://hollin.example/blog/read-latency",
+          "area": "Platform engineering",
+          "summary": "Hollin DB lowers p99 read latency from 80 ms to 60 ms on the reference workload. The gain comes from a new block cache.",
+          "whyItMatters": "Slow reads become less frequent."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "a0993139fad95ea0",
+      "sourceId": "marlowe-news",
+      "kind": "rss",
+      "url": "https://marlowe.example/blog/multi-cluster-failover",
+      "title": "Marlowe Mesh supports multi-cluster failover",
+      "summary": "Marlowe Mesh supports multi-cluster failover for internal services. Traffic moves to a healthy cluster when health checks fail. Failover events are exported as metrics.",
+      "publishedAt": "2026-09-10T09:00:00.000Z"
+    },
+    {
+      "id": "47b79059a41442b3",
+      "sourceId": "pellam-news",
+      "kind": "rss",
+      "url": "https://pellam.example/blog/scheduled-rollouts",
+      "title": "Pellam Flags adds scheduled rollouts",
+      "summary": "Pellam Flags adds scheduled rollouts for feature flags. A rollout can raise exposure in steps and pause on an alert. Every change is recorded with the author and the time.",
+      "publishedAt": "2026-09-10T10:00:00.000Z"
+    },
+    {
+      "id": "4e34e45958093048",
+      "sourceId": "hollin-news",
+      "kind": "rss",
+      "url": "https://hollin.example/blog/read-latency",
+      "title": "Hollin DB lowers p99 read latency",
+      "summary": "Hollin DB lowers p99 read latency from 80 ms to 70 ms on the reference workload. The gain comes from a new block cache. Write latency is unchanged.",
+      "publishedAt": "2026-09-10T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

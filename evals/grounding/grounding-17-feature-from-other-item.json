@@ -1,0 +1,67 @@
+{
+  "id": "grounding-17-feature-from-other-item",
+  "plantedItemId": "a28bfa5446f104e4",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W41",
+      "headline": "Platform and AI tooling, week 41",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "a28bfa5446f104e4",
+          "title": "Cobbett SSO adds device trust",
+          "url": "https://cobbett.example/news/device-trust",
+          "area": "Platform engineering",
+          "summary": "Cobbett SSO adds device trust checks to sign-in. Admins can require passkeys for chosen groups.",
+          "whyItMatters": "Unpatched devices lose access."
+        },
+        {
+          "itemId": "670942b480d0c3ba",
+          "title": "Harrowgate Auth adds passkey login",
+          "url": "https://harrowgate.example/news/passkey-login",
+          "area": "Platform engineering",
+          "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page.",
+          "whyItMatters": "Users can sign in without typing a password."
+        },
+        {
+          "itemId": "a4ac4a3c2a571fd3",
+          "title": "Ormsby Vector adds filtered hybrid search",
+          "url": "https://blog.ormsby.example/2026/09/filtered-hybrid-search",
+          "area": "AI models and tooling",
+          "summary": "Ormsby Vector adds filtered hybrid search that combines keyword and vector scores. Filters run before scoring, so results stay fast on large collections.",
+          "whyItMatters": "Search over large collections stays responsive."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "a28bfa5446f104e4",
+      "sourceId": "cobbett-news",
+      "kind": "rss",
+      "url": "https://cobbett.example/news/device-trust",
+      "title": "Cobbett SSO adds device trust",
+      "summary": "Cobbett SSO adds device trust checks to sign-in. A device must report a recent patch level before it gets a session. Reports are kept for audit.",
+      "publishedAt": "2026-09-25T09:00:00.000Z"
+    },
+    {
+      "id": "670942b480d0c3ba",
+      "sourceId": "harrowgate-news",
+      "kind": "rss",
+      "url": "https://harrowgate.example/news/passkey-login",
+      "title": "Harrowgate Auth adds passkey login",
+      "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page. Admins can require passkeys for chosen groups.",
+      "publishedAt": "2026-09-25T10:00:00.000Z"
+    },
+    {
+      "id": "a4ac4a3c2a571fd3",
+      "sourceId": "ormsby-news",
+      "kind": "rss",
+      "url": "https://blog.ormsby.example/2026/09/filtered-hybrid-search",
+      "title": "Ormsby Vector adds filtered hybrid search",
+      "summary": "Ormsby Vector adds filtered hybrid search that combines keyword and vector scores. Filters run before scoring, so results stay fast on large collections. Result pages can be fetched with a stable cursor.",
+      "publishedAt": "2026-09-25T11:00:00.000Z"
+    }
+  ]
+}

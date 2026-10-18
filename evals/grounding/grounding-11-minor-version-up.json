@@ -1,0 +1,67 @@
+{
+  "id": "grounding-11-minor-version-up",
+  "plantedItemId": "2d9b9747627ae084",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W41",
+      "headline": "Platform and AI tooling, week 41",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "2d9b9747627ae084",
+          "title": "Wexcombe Gateway 2.4 adds request mirroring",
+          "url": "https://wexcombe.example/blog/gateway-2-4-mirroring",
+          "area": "Platform engineering",
+          "summary": "Wexcombe Gateway 2.5 adds request mirroring, which copies live traffic to a test backend. Mirrored responses are dropped.",
+          "whyItMatters": "Teams can test changes against live traffic."
+        },
+        {
+          "itemId": "87a02bcf6ea148a5",
+          "title": "Brindle Cache 3.1 adds shard rebalancing",
+          "url": "https://brindle.example/blog/cache-3-1-rebalancing",
+          "area": "Platform engineering",
+          "summary": "Brindle Cache 3.1 adds online shard rebalancing, so nodes can join without a pause. Rebalancing moves data in the background and can be rate limited.",
+          "whyItMatters": "Scaling a cluster no longer needs a maintenance window."
+        },
+        {
+          "itemId": "c1841393c2f66d01",
+          "title": "Ivywell Lint speeds up monorepo checks",
+          "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+          "area": "Platform engineering",
+          "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory.",
+          "whyItMatters": "Repeat runs in CI cost less time."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "2d9b9747627ae084",
+      "sourceId": "wexcombe-news",
+      "kind": "rss",
+      "url": "https://wexcombe.example/blog/gateway-2-4-mirroring",
+      "title": "Wexcombe Gateway 2.4 adds request mirroring",
+      "summary": "Wexcombe Gateway 2.4 adds request mirroring, which copies live traffic to a test backend. Mirrored responses are dropped. Mirroring needs no change to client code.",
+      "publishedAt": "2026-09-19T09:00:00.000Z"
+    },
+    {
+      "id": "87a02bcf6ea148a5",
+      "sourceId": "brindle-news",
+      "kind": "rss",
+      "url": "https://brindle.example/blog/cache-3-1-rebalancing",
+      "title": "Brindle Cache 3.1 adds shard rebalancing",
+      "summary": "Brindle Cache 3.1 adds online shard rebalancing, so nodes can join without a pause. Rebalancing moves data in the background and can be rate limited. A new dashboard panel shows how far each move has progressed.",
+      "publishedAt": "2026-09-19T10:00:00.000Z"
+    },
+    {
+      "id": "c1841393c2f66d01",
+      "sourceId": "ivywell-news",
+      "kind": "rss",
+      "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+      "title": "Ivywell Lint speeds up monorepo checks",
+      "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory. A watch mode reruns only the rules touched by a changed file.",
+      "publishedAt": "2026-09-19T11:00:00.000Z"
+    }
+  ]
+}

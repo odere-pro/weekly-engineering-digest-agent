@@ -1,0 +1,67 @@
+{
+  "id": "grounding-15-requirement-one-minor-up",
+  "plantedItemId": "555794475c04b7c2",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W39",
+      "headline": "Platform and AI tooling, week 39",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "e5310b002e03165b",
+          "title": "Nettlefold Registry adds artifact signing",
+          "url": "https://nettlefold.example/news/artifact-signing",
+          "area": "Platform engineering",
+          "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
+          "whyItMatters": "Unsigned images can be kept out of production."
+        },
+        {
+          "itemId": "555794475c04b7c2",
+          "title": "Ellerby Operator needs a newer Kubernetes",
+          "url": "https://ellerby.example/blog/operator-1-6",
+          "area": "Platform engineering",
+          "summary": "Ellerby Operator 1.6 now requires Kubernetes 1.29 or newer. Older clusters can stay on release 1.5, which gets fixes until the end of the year.",
+          "whyItMatters": "Older clusters have a path that needs no upgrade."
+        },
+        {
+          "itemId": "1f0585e953252565",
+          "title": "Quillon Evals adds shared datasets",
+          "url": "https://blog.quillon.example/2026/09/eval-datasets",
+          "area": "AI models and tooling",
+          "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used.",
+          "whyItMatters": "Eval results can be compared across projects."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "e5310b002e03165b",
+      "sourceId": "nettlefold-news",
+      "kind": "rss",
+      "url": "https://nettlefold.example/news/artifact-signing",
+      "title": "Nettlefold Registry adds artifact signing",
+      "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy. Keys can be stored in an external key manager.",
+      "publishedAt": "2026-09-23T09:00:00.000Z"
+    },
+    {
+      "id": "555794475c04b7c2",
+      "sourceId": "ellerby-news",
+      "kind": "rss",
+      "url": "https://ellerby.example/blog/operator-1-6",
+      "title": "Ellerby Operator needs a newer Kubernetes",
+      "summary": "Ellerby Operator 1.6 now requires Kubernetes 1.28 or newer. Older clusters can stay on release 1.5, which gets fixes until the end of the year. The operator adds a status field to show reconcile errors.",
+      "publishedAt": "2026-09-23T10:00:00.000Z"
+    },
+    {
+      "id": "1f0585e953252565",
+      "sourceId": "quillon-news",
+      "kind": "rss",
+      "url": "https://blog.quillon.example/2026/09/eval-datasets",
+      "title": "Quillon Evals adds shared datasets",
+      "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used. Access is controlled per dataset.",
+      "publishedAt": "2026-09-23T11:00:00.000Z"
+    }
+  ]
+}

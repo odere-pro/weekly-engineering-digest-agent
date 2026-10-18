@@ -1,0 +1,68 @@
+{
+  "id": "grounding-24-date-one-week-late",
+  "plantedItemId": "de2cb3ecee6a2057",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W36",
+      "headline": "Platform and AI tooling, week 36",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "e3b2645b4c23cb48",
+          "title": "Kestrelbay DB adds point-in-time restore",
+          "url": "https://kestrelbay.example/news/point-in-time-restore",
+          "area": "Platform engineering",
+          "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running.",
+          "whyItMatters": "Recovery no longer touches the running cluster."
+        },
+        {
+          "itemId": "de2cb3ecee6a2057",
+          "title": "Bramley Pay changes its webhook signing",
+          "url": "https://bramley.example/blog/webhook-signing",
+          "area": "Platform engineering",
+          "summary": "Bramley Pay moves webhook signing to a new scheme on 13 October. Old signatures keep working for 30 days after that.",
+          "whyItMatters": "Receivers need to update their verification."
+        },
+        {
+          "itemId": "e5310b002e03165b",
+          "title": "Nettlefold Registry adds artifact signing",
+          "url": "https://nettlefold.example/news/artifact-signing",
+          "area": "Platform engineering",
+          "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
+          "whyItMatters": "Unsigned images can be kept out of production."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "e3b2645b4c23cb48",
+      "sourceId": "kestrelbay-news",
+      "kind": "rss",
+      "url": "https://kestrelbay.example/news/point-in-time-restore",
+      "title": "Kestrelbay DB adds point-in-time restore",
+      "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running. Restore history is listed in the console with the time range of each backup.",
+      "publishedAt": "2026-09-12T09:00:00.000Z"
+    },
+    {
+      "id": "de2cb3ecee6a2057",
+      "sourceId": "bramley-news",
+      "kind": "rss",
+      "url": "https://bramley.example/blog/webhook-signing",
+      "title": "Bramley Pay changes its webhook signing",
+      "summary": "Bramley Pay moves webhook signing to a new scheme on 6 October. Old signatures keep working for 30 days after that. The dashboard shows which endpoints still verify the old scheme.",
+      "publishedAt": "2026-09-12T10:00:00.000Z"
+    },
+    {
+      "id": "e5310b002e03165b",
+      "sourceId": "nettlefold-news",
+      "kind": "rss",
+      "url": "https://nettlefold.example/news/artifact-signing",
+      "title": "Nettlefold Registry adds artifact signing",
+      "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy. Keys can be stored in an external key manager.",
+      "publishedAt": "2026-09-12T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

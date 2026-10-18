@@ -1,0 +1,68 @@
+{
+  "id": "grounding-23-feature-from-other-item",
+  "plantedItemId": "3d23b7bc7d65dba8",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W41",
+      "headline": "Platform and AI tooling, week 41",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "3d23b7bc7d65dba8",
+          "title": "Ravensworth Proxy adds adaptive timeouts",
+          "url": "https://ravensworth.example/news/adaptive-timeouts",
+          "area": "Platform engineering",
+          "summary": "Ravensworth Proxy adds adaptive timeouts that follow the recent latency of each backend. Timeout decisions are written to an audit stream for later review.",
+          "whyItMatters": "Slow backends stop holding up requests."
+        },
+        {
+          "itemId": "68ab1a42be7d30f4",
+          "title": "Galewood Traces adds tail sampling",
+          "url": "https://blog.galewood.example/2026/09/tail-sampling",
+          "area": "Platform engineering",
+          "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file.",
+          "whyItMatters": "Trace storage grows more slowly."
+        },
+        {
+          "itemId": "c367be25d797410b",
+          "title": "Lornwick Agents add tool call budgets",
+          "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+          "area": "AI models and tooling",
+          "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
+          "whyItMatters": "Runaway tasks stop on their own."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "3d23b7bc7d65dba8",
+      "sourceId": "ravensworth-news",
+      "kind": "rss",
+      "url": "https://ravensworth.example/news/adaptive-timeouts",
+      "title": "Ravensworth Proxy adds adaptive timeouts",
+      "summary": "Ravensworth Proxy adds adaptive timeouts that follow the recent latency of each backend. Timeouts never go below a floor set in config. Operators can pin a timeout per route.",
+      "publishedAt": "2026-09-11T09:00:00.000Z"
+    },
+    {
+      "id": "68ab1a42be7d30f4",
+      "sourceId": "galewood-news",
+      "kind": "rss",
+      "url": "https://blog.galewood.example/2026/09/tail-sampling",
+      "title": "Galewood Traces adds tail sampling",
+      "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file. Sampling decisions are written to an audit stream for later review.",
+      "publishedAt": "2026-09-11T10:00:00.000Z"
+    },
+    {
+      "id": "c367be25d797410b",
+      "sourceId": "lornwick-news",
+      "kind": "rss",
+      "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+      "title": "Lornwick Agents add tool call budgets",
+      "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has. Budgets can be set per team in the admin console.",
+      "publishedAt": "2026-09-11T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

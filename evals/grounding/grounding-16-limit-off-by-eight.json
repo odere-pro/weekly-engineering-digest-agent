@@ -1,0 +1,67 @@
+{
+  "id": "grounding-16-limit-off-by-eight",
+  "plantedItemId": "8ae9461653d27858",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W40",
+      "headline": "Platform and AI tooling, week 40",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "68ab1a42be7d30f4",
+          "title": "Galewood Traces adds tail sampling",
+          "url": "https://blog.galewood.example/2026/09/tail-sampling",
+          "area": "Platform engineering",
+          "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file.",
+          "whyItMatters": "Trace storage grows more slowly."
+        },
+        {
+          "itemId": "bb9d49ebafe57125",
+          "title": "Jorrick Models publishes a small code model",
+          "url": "https://jorrick.example/blog/small-code-model",
+          "area": "AI models and tooling",
+          "summary": "Jorrick Models publishes a small code model with open weights. The weights ship under a permissive licence.",
+          "whyItMatters": "Teams can run it on their own hardware."
+        },
+        {
+          "itemId": "8ae9461653d27858",
+          "title": "Dunmore Streams raises the partition limit",
+          "url": "https://dunmore.example/blog/partition-limit",
+          "area": "Platform engineering",
+          "summary": "Dunmore Streams raises the limit to 128 partitions per topic. Existing topics can grow in place.",
+          "whyItMatters": "Topics can grow without a rebuild."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "68ab1a42be7d30f4",
+      "sourceId": "galewood-news",
+      "kind": "rss",
+      "url": "https://blog.galewood.example/2026/09/tail-sampling",
+      "title": "Galewood Traces adds tail sampling",
+      "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file. Sampling decisions are written to an audit stream for later review.",
+      "publishedAt": "2026-09-24T09:00:00.000Z"
+    },
+    {
+      "id": "bb9d49ebafe57125",
+      "sourceId": "jorrick-news",
+      "kind": "rss",
+      "url": "https://jorrick.example/blog/small-code-model",
+      "title": "Jorrick Models publishes a small code model",
+      "summary": "Jorrick Models publishes a small code model with open weights. The weights ship under a permissive licence. A fill-in-the-middle mode is included for editor completion.",
+      "publishedAt": "2026-09-24T10:00:00.000Z"
+    },
+    {
+      "id": "8ae9461653d27858",
+      "sourceId": "dunmore-news",
+      "kind": "rss",
+      "url": "https://dunmore.example/blog/partition-limit",
+      "title": "Dunmore Streams raises the partition limit",
+      "summary": "Dunmore Streams raises the limit to 120 partitions per topic. Existing topics can grow in place. Consumers need no change.",
+      "publishedAt": "2026-09-24T11:00:00.000Z"
+    }
+  ]
+}

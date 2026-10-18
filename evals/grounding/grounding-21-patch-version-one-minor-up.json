@@ -1,0 +1,68 @@
+{
+  "id": "grounding-21-patch-version-one-minor-up",
+  "plantedItemId": "fb8d517433729cdc",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W39",
+      "headline": "Platform and AI tooling, week 39",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "670942b480d0c3ba",
+          "title": "Harrowgate Auth adds passkey login",
+          "url": "https://harrowgate.example/news/passkey-login",
+          "area": "Platform engineering",
+          "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page.",
+          "whyItMatters": "Users can sign in without typing a password."
+        },
+        {
+          "itemId": "fb8d517433729cdc",
+          "title": "Larkin Router 3.8.2 speeds up route compilation",
+          "url": "https://larkin.example/blog/router-3-8-2",
+          "area": "Platform engineering",
+          "summary": "Larkin Router 3.9.2 speeds up route compilation for large applications. Compiled routes are cached between restarts.",
+          "whyItMatters": "Large applications start with less delay."
+        },
+        {
+          "itemId": "e3b2645b4c23cb48",
+          "title": "Kestrelbay DB adds point-in-time restore",
+          "url": "https://kestrelbay.example/news/point-in-time-restore",
+          "area": "Platform engineering",
+          "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running.",
+          "whyItMatters": "Recovery no longer touches the running cluster."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "670942b480d0c3ba",
+      "sourceId": "harrowgate-news",
+      "kind": "rss",
+      "url": "https://harrowgate.example/news/passkey-login",
+      "title": "Harrowgate Auth adds passkey login",
+      "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page. Admins can require passkeys for chosen groups.",
+      "publishedAt": "2026-09-09T09:00:00.000Z"
+    },
+    {
+      "id": "fb8d517433729cdc",
+      "sourceId": "larkin-news",
+      "kind": "rss",
+      "url": "https://larkin.example/blog/router-3-8-2",
+      "title": "Larkin Router 3.8.2 speeds up route compilation",
+      "summary": "Larkin Router 3.8.2 speeds up route compilation for large applications. Compiled routes are cached between restarts. The release also fixes a rare crash on empty paths.",
+      "publishedAt": "2026-09-09T10:00:00.000Z"
+    },
+    {
+      "id": "e3b2645b4c23cb48",
+      "sourceId": "kestrelbay-news",
+      "kind": "rss",
+      "url": "https://kestrelbay.example/news/point-in-time-restore",
+      "title": "Kestrelbay DB adds point-in-time restore",
+      "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running. Restore history is listed in the console with the time range of each backup.",
+      "publishedAt": "2026-09-09T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

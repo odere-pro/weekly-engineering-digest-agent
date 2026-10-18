@@ -1,0 +1,68 @@
+{
+  "id": "grounding-25-default-flipped",
+  "plantedItemId": "c0f742df070e65bb",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W37",
+      "headline": "Platform and AI tooling, week 37",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "47b79059a41442b3",
+          "title": "Pellam Flags adds scheduled rollouts",
+          "url": "https://pellam.example/blog/scheduled-rollouts",
+          "area": "Platform engineering",
+          "summary": "Pellam Flags adds scheduled rollouts for feature flags. A rollout can raise exposure in steps and pause on an alert.",
+          "whyItMatters": "Releases can ramp up without manual steps."
+        },
+        {
+          "itemId": "68ab1a42be7d30f4",
+          "title": "Galewood Traces adds tail sampling",
+          "url": "https://blog.galewood.example/2026/09/tail-sampling",
+          "area": "Platform engineering",
+          "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file.",
+          "whyItMatters": "Trace storage grows more slowly."
+        },
+        {
+          "itemId": "c0f742df070e65bb",
+          "title": "Ingleby Search adds query caching",
+          "url": "https://ingleby.example/blog/query-caching",
+          "area": "Platform engineering",
+          "summary": "Ingleby Search adds query caching, which is on by default. Teams switch it off per index.",
+          "whyItMatters": "Repeated queries can be served from the cache."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "47b79059a41442b3",
+      "sourceId": "pellam-news",
+      "kind": "rss",
+      "url": "https://pellam.example/blog/scheduled-rollouts",
+      "title": "Pellam Flags adds scheduled rollouts",
+      "summary": "Pellam Flags adds scheduled rollouts for feature flags. A rollout can raise exposure in steps and pause on an alert. Every change is recorded with the author and the time.",
+      "publishedAt": "2026-09-13T09:00:00.000Z"
+    },
+    {
+      "id": "68ab1a42be7d30f4",
+      "sourceId": "galewood-news",
+      "kind": "rss",
+      "url": "https://blog.galewood.example/2026/09/tail-sampling",
+      "title": "Galewood Traces adds tail sampling",
+      "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file. Sampling decisions are written to an audit stream for later review.",
+      "publishedAt": "2026-09-13T10:00:00.000Z"
+    },
+    {
+      "id": "c0f742df070e65bb",
+      "sourceId": "ingleby-news",
+      "kind": "rss",
+      "url": "https://ingleby.example/blog/query-caching",
+      "title": "Ingleby Search adds query caching",
+      "summary": "Ingleby Search adds query caching, which is off by default. Teams switch it on per index. Cached results expire when the index changes.",
+      "publishedAt": "2026-09-13T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

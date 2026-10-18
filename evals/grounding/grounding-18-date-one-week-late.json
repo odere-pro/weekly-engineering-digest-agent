@@ -1,0 +1,67 @@
+{
+  "id": "grounding-18-date-one-week-late",
+  "plantedItemId": "baab9da87620d6c1",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W36",
+      "headline": "Platform and AI tooling, week 36",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "1f0585e953252565",
+          "title": "Quillon Evals adds shared datasets",
+          "url": "https://blog.quillon.example/2026/09/eval-datasets",
+          "area": "AI models and tooling",
+          "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used.",
+          "whyItMatters": "Eval results can be compared across projects."
+        },
+        {
+          "itemId": "baab9da87620d6c1",
+          "title": "Redmarsh Runtime ends support for version 3",
+          "url": "https://redmarsh.example/blog/runtime-3-end-of-support",
+          "area": "Platform engineering",
+          "summary": "Redmarsh Runtime 3 reaches end of support on 30 November. Security fixes continue until then.",
+          "whyItMatters": "Projects on version 3 have a deadline."
+        },
+        {
+          "itemId": "670942b480d0c3ba",
+          "title": "Harrowgate Auth adds passkey login",
+          "url": "https://harrowgate.example/news/passkey-login",
+          "area": "Platform engineering",
+          "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page.",
+          "whyItMatters": "Users can sign in without typing a password."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "1f0585e953252565",
+      "sourceId": "quillon-news",
+      "kind": "rss",
+      "url": "https://blog.quillon.example/2026/09/eval-datasets",
+      "title": "Quillon Evals adds shared datasets",
+      "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used. Access is controlled per dataset.",
+      "publishedAt": "2026-09-26T09:00:00.000Z"
+    },
+    {
+      "id": "baab9da87620d6c1",
+      "sourceId": "redmarsh-news",
+      "kind": "rss",
+      "url": "https://redmarsh.example/blog/runtime-3-end-of-support",
+      "title": "Redmarsh Runtime ends support for version 3",
+      "summary": "Redmarsh Runtime 3 reaches end of support on 23 November. Security fixes continue until then. Version 4 is a drop-in upgrade for most projects.",
+      "publishedAt": "2026-09-26T10:00:00.000Z"
+    },
+    {
+      "id": "670942b480d0c3ba",
+      "sourceId": "harrowgate-news",
+      "kind": "rss",
+      "url": "https://harrowgate.example/news/passkey-login",
+      "title": "Harrowgate Auth adds passkey login",
+      "summary": "Harrowgate Auth adds passkey login for hosted sign-in pages. Existing password accounts can add a passkey from the profile page. Admins can require passkeys for chosen groups.",
+      "publishedAt": "2026-09-26T11:00:00.000Z"
+    }
+  ]
+}

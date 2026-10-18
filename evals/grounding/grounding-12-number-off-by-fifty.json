@@ -1,0 +1,67 @@
+{
+  "id": "grounding-12-number-off-by-fifty",
+  "plantedItemId": "358a3ae29d046a93",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W36",
+      "headline": "Platform and AI tooling, week 36",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "e3b2645b4c23cb48",
+          "title": "Kestrelbay DB adds point-in-time restore",
+          "url": "https://kestrelbay.example/news/point-in-time-restore",
+          "area": "Platform engineering",
+          "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running.",
+          "whyItMatters": "Recovery no longer touches the running cluster."
+        },
+        {
+          "itemId": "358a3ae29d046a93",
+          "title": "Tolland Compute cuts cold starts",
+          "url": "https://tolland.example/news/faster-cold-starts",
+          "area": "Platform engineering",
+          "summary": "Tolland Compute cuts cold start time from 800 ms to 450 ms for small functions. The change comes from keeping a pool of paused sandboxes.",
+          "whyItMatters": "Small functions respond sooner after idle periods."
+        },
+        {
+          "itemId": "e5310b002e03165b",
+          "title": "Nettlefold Registry adds artifact signing",
+          "url": "https://nettlefold.example/news/artifact-signing",
+          "area": "Platform engineering",
+          "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
+          "whyItMatters": "Unsigned images can be kept out of production."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "e3b2645b4c23cb48",
+      "sourceId": "kestrelbay-news",
+      "kind": "rss",
+      "url": "https://kestrelbay.example/news/point-in-time-restore",
+      "title": "Kestrelbay DB adds point-in-time restore",
+      "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running. Restore history is listed in the console with the time range of each backup.",
+      "publishedAt": "2026-09-20T09:00:00.000Z"
+    },
+    {
+      "id": "358a3ae29d046a93",
+      "sourceId": "tolland-news",
+      "kind": "rss",
+      "url": "https://tolland.example/news/faster-cold-starts",
+      "title": "Tolland Compute cuts cold starts",
+      "summary": "Tolland Compute cuts cold start time from 800 ms to 400 ms for small functions. The change comes from keeping a pool of paused sandboxes. Larger functions see a smaller gain.",
+      "publishedAt": "2026-09-20T10:00:00.000Z"
+    },
+    {
+      "id": "e5310b002e03165b",
+      "sourceId": "nettlefold-news",
+      "kind": "rss",
+      "url": "https://nettlefold.example/news/artifact-signing",
+      "title": "Nettlefold Registry adds artifact signing",
+      "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy. Keys can be stored in an external key manager.",
+      "publishedAt": "2026-09-20T11:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "grounding-13-feature-from-other-item",
+  "plantedItemId": "f9b4fe32a678d412",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W37",
+      "headline": "Platform and AI tooling, week 37",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "e3b2645b4c23cb48",
+          "title": "Kestrelbay DB adds point-in-time restore",
+          "url": "https://kestrelbay.example/news/point-in-time-restore",
+          "area": "Platform engineering",
+          "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running.",
+          "whyItMatters": "Recovery no longer touches the running cluster."
+        },
+        {
+          "itemId": "1f0585e953252565",
+          "title": "Quillon Evals adds shared datasets",
+          "url": "https://blog.quillon.example/2026/09/eval-datasets",
+          "area": "AI models and tooling",
+          "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used.",
+          "whyItMatters": "Eval results can be compared across projects."
+        },
+        {
+          "itemId": "f9b4fe32a678d412",
+          "title": "Fenwick Backup adds incremental snapshots",
+          "url": "https://fenwick.example/blog/incremental-snapshots",
+          "area": "Platform engineering",
+          "summary": "Fenwick Backup adds incremental snapshots that store only changed blocks. Restore history is listed in the console with the time range of each backup.",
+          "whyItMatters": "Snapshots take less space."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "e3b2645b4c23cb48",
+      "sourceId": "kestrelbay-news",
+      "kind": "rss",
+      "url": "https://kestrelbay.example/news/point-in-time-restore",
+      "title": "Kestrelbay DB adds point-in-time restore",
+      "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running. Restore history is listed in the console with the time range of each backup.",
+      "publishedAt": "2026-09-21T09:00:00.000Z"
+    },
+    {
+      "id": "1f0585e953252565",
+      "sourceId": "quillon-news",
+      "kind": "rss",
+      "url": "https://blog.quillon.example/2026/09/eval-datasets",
+      "title": "Quillon Evals adds shared datasets",
+      "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used. Access is controlled per dataset.",
+      "publishedAt": "2026-09-21T10:00:00.000Z"
+    },
+    {
+      "id": "f9b4fe32a678d412",
+      "sourceId": "fenwick-news",
+      "kind": "rss",
+      "url": "https://fenwick.example/blog/incremental-snapshots",
+      "title": "Fenwick Backup adds incremental snapshots",
+      "summary": "Fenwick Backup adds incremental snapshots that store only changed blocks. Snapshots can be restored to a different region. Retention rules are set per volume.",
+      "publishedAt": "2026-09-21T11:00:00.000Z"
+    }
+  ]
+}

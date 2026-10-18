@@ -1,0 +1,68 @@
+{
+  "id": "grounding-26-licence-swapped",
+  "plantedItemId": "c50871cc106d529c",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W38",
+      "headline": "Platform and AI tooling, week 38",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "c50871cc106d529c",
+          "title": "Thornby Queue changes its licence",
+          "url": "https://thornby.example/news/queue-5-licence",
+          "area": "Platform engineering",
+          "summary": "Thornby Queue moves to the Apache 2.0 licence starting with release 5.0. Earlier releases keep their old terms.",
+          "whyItMatters": "Users of release 5.0 get new licence terms."
+        },
+        {
+          "itemId": "c1841393c2f66d01",
+          "title": "Ivywell Lint speeds up monorepo checks",
+          "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+          "area": "Platform engineering",
+          "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory.",
+          "whyItMatters": "Repeat runs in CI cost less time."
+        },
+        {
+          "itemId": "c367be25d797410b",
+          "title": "Lornwick Agents add tool call budgets",
+          "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+          "area": "AI models and tooling",
+          "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
+          "whyItMatters": "Runaway tasks stop on their own."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "c50871cc106d529c",
+      "sourceId": "thornby-news",
+      "kind": "rss",
+      "url": "https://thornby.example/news/queue-5-licence",
+      "title": "Thornby Queue changes its licence",
+      "summary": "Thornby Queue moves to the MIT licence starting with release 5.0. Earlier releases keep their old terms. Contributors sign no extra agreement.",
+      "publishedAt": "2026-09-14T09:00:00.000Z"
+    },
+    {
+      "id": "c1841393c2f66d01",
+      "sourceId": "ivywell-news",
+      "kind": "rss",
+      "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+      "title": "Ivywell Lint speeds up monorepo checks",
+      "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory. A watch mode reruns only the rules touched by a changed file.",
+      "publishedAt": "2026-09-14T10:00:00.000Z"
+    },
+    {
+      "id": "c367be25d797410b",
+      "sourceId": "lornwick-news",
+      "kind": "rss",
+      "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+      "title": "Lornwick Agents add tool call budgets",
+      "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has. Budgets can be set per team in the admin console.",
+      "publishedAt": "2026-09-14T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

@@ -1,0 +1,68 @@
+{
+  "id": "grounding-27-component-swapped",
+  "plantedItemId": "df256b023e20faf7",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W39",
+      "headline": "Platform and AI tooling, week 39",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "e5310b002e03165b",
+          "title": "Nettlefold Registry adds artifact signing",
+          "url": "https://nettlefold.example/news/artifact-signing",
+          "area": "Platform engineering",
+          "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
+          "whyItMatters": "Unsigned images can be kept out of production."
+        },
+        {
+          "itemId": "df256b023e20faf7",
+          "title": "Mereton Scheduler fixes a memory leak",
+          "url": "https://mereton.example/blog/scheduler-2-2-leak",
+          "area": "Platform engineering",
+          "summary": "Mereton Scheduler 2.2 fixes a memory leak in the job queue that grew with every restart. Long-running nodes are the most affected.",
+          "whyItMatters": "Long-running nodes stay stable."
+        },
+        {
+          "itemId": "1f0585e953252565",
+          "title": "Quillon Evals adds shared datasets",
+          "url": "https://blog.quillon.example/2026/09/eval-datasets",
+          "area": "AI models and tooling",
+          "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used.",
+          "whyItMatters": "Eval results can be compared across projects."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "e5310b002e03165b",
+      "sourceId": "nettlefold-news",
+      "kind": "rss",
+      "url": "https://nettlefold.example/news/artifact-signing",
+      "title": "Nettlefold Registry adds artifact signing",
+      "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy. Keys can be stored in an external key manager.",
+      "publishedAt": "2026-09-15T09:00:00.000Z"
+    },
+    {
+      "id": "df256b023e20faf7",
+      "sourceId": "mereton-news",
+      "kind": "rss",
+      "url": "https://mereton.example/blog/scheduler-2-2-leak",
+      "title": "Mereton Scheduler fixes a memory leak",
+      "summary": "Mereton Scheduler 2.2 fixes a memory leak in the log shipper that grew with every restart. Long-running nodes are the most affected. No config change is needed.",
+      "publishedAt": "2026-09-15T10:00:00.000Z"
+    },
+    {
+      "id": "1f0585e953252565",
+      "sourceId": "quillon-news",
+      "kind": "rss",
+      "url": "https://blog.quillon.example/2026/09/eval-datasets",
+      "title": "Quillon Evals adds shared datasets",
+      "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used. Access is controlled per dataset.",
+      "publishedAt": "2026-09-15T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

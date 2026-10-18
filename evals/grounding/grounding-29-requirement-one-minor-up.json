@@ -1,0 +1,68 @@
+{
+  "id": "grounding-29-requirement-one-minor-up",
+  "plantedItemId": "c4b39a3b34c22c73",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W41",
+      "headline": "Platform and AI tooling, week 41",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "c4b39a3b34c22c73",
+          "title": "Pickering SDK drops an old Python",
+          "url": "https://pickering.example/news/sdk-7-python",
+          "area": "AI models and tooling",
+          "summary": "Pickering SDK 7.0 needs Python 3.11 or newer. Python 3.9 support ends with this release.",
+          "whyItMatters": "Projects on Python 3.9 must upgrade."
+        },
+        {
+          "itemId": "c367be25d797410b",
+          "title": "Lornwick Agents add tool call budgets",
+          "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+          "area": "AI models and tooling",
+          "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
+          "whyItMatters": "Runaway tasks stop on their own."
+        },
+        {
+          "itemId": "a4ac4a3c2a571fd3",
+          "title": "Ormsby Vector adds filtered hybrid search",
+          "url": "https://blog.ormsby.example/2026/09/filtered-hybrid-search",
+          "area": "AI models and tooling",
+          "summary": "Ormsby Vector adds filtered hybrid search that combines keyword and vector scores. Filters run before scoring, so results stay fast on large collections.",
+          "whyItMatters": "Search over large collections stays responsive."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "c4b39a3b34c22c73",
+      "sourceId": "pickering-news",
+      "kind": "rss",
+      "url": "https://pickering.example/news/sdk-7-python",
+      "title": "Pickering SDK drops an old Python",
+      "summary": "Pickering SDK 7.0 needs Python 3.10 or newer. Python 3.9 support ends with this release. Type hints are now complete.",
+      "publishedAt": "2026-09-17T09:00:00.000Z"
+    },
+    {
+      "id": "c367be25d797410b",
+      "sourceId": "lornwick-news",
+      "kind": "rss",
+      "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+      "title": "Lornwick Agents add tool call budgets",
+      "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has. Budgets can be set per team in the admin console.",
+      "publishedAt": "2026-09-17T10:00:00.000Z"
+    },
+    {
+      "id": "a4ac4a3c2a571fd3",
+      "sourceId": "ormsby-news",
+      "kind": "rss",
+      "url": "https://blog.ormsby.example/2026/09/filtered-hybrid-search",
+      "title": "Ormsby Vector adds filtered hybrid search",
+      "summary": "Ormsby Vector adds filtered hybrid search that combines keyword and vector scores. Filters run before scoring, so results stay fast on large collections. Result pages can be fetched with a stable cursor.",
+      "publishedAt": "2026-09-17T11:00:00.000Z"
+    }
+  ],
+  "heldOut": true
+}

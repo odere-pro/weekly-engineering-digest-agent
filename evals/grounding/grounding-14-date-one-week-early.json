@@ -1,0 +1,67 @@
+{
+  "id": "grounding-14-date-one-week-early",
+  "plantedItemId": "eeae4f56cd665ee3",
+  "draft": {
+    "writer": "gemma4:31b",
+    "digest": {
+      "weekId": "2026-W38",
+      "headline": "Platform and AI tooling, week 38",
+      "intro": "Three releases worth a look this week.",
+      "items": [
+        {
+          "itemId": "eeae4f56cd665ee3",
+          "title": "Ashdown CLI makes strict mode the default",
+          "url": "https://ashdown.example/news/cli-9-strict-mode",
+          "area": "Platform engineering",
+          "summary": "Ashdown CLI 9.0 makes strict mode the default from 15 September. Scripts that relied on loose parsing need the new --loose flag.",
+          "whyItMatters": "Scripts with loose parsing need a flag."
+        },
+        {
+          "itemId": "c1841393c2f66d01",
+          "title": "Ivywell Lint speeds up monorepo checks",
+          "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+          "area": "Platform engineering",
+          "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory.",
+          "whyItMatters": "Repeat runs in CI cost less time."
+        },
+        {
+          "itemId": "c367be25d797410b",
+          "title": "Lornwick Agents add tool call budgets",
+          "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+          "area": "AI models and tooling",
+          "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
+          "whyItMatters": "Runaway tasks stop on their own."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "eeae4f56cd665ee3",
+      "sourceId": "ashdown-news",
+      "kind": "rss",
+      "url": "https://ashdown.example/news/cli-9-strict-mode",
+      "title": "Ashdown CLI makes strict mode the default",
+      "summary": "Ashdown CLI 9.0 makes strict mode the default from 22 September. Scripts that relied on loose parsing need the new --loose flag. The old behaviour is removed in version 10.",
+      "publishedAt": "2026-09-22T09:00:00.000Z"
+    },
+    {
+      "id": "c1841393c2f66d01",
+      "sourceId": "ivywell-news",
+      "kind": "rss",
+      "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
+      "title": "Ivywell Lint speeds up monorepo checks",
+      "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory. A watch mode reruns only the rules touched by a changed file.",
+      "publishedAt": "2026-09-22T10:00:00.000Z"
+    },
+    {
+      "id": "c367be25d797410b",
+      "sourceId": "lornwick-news",
+      "kind": "rss",
+      "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
+      "title": "Lornwick Agents add tool call budgets",
+      "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has. Budgets can be set per team in the admin console.",
+      "publishedAt": "2026-09-22T11:00:00.000Z"
+    }
+  ]
+}
