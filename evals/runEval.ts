@@ -80,6 +80,7 @@ import {
   type JudgeCalibration,
   type MetricId,
   type Scorecard,
+  type WeekDetail,
   type WeekLabels,
 } from './schema';
 
@@ -611,6 +612,11 @@ interface WeekRun {
   run: Replay;
 }
 
+interface StabilityWeek {
+  weekId: string;
+  runs: string[][];
+}
+
 interface AttackReplay {
   run: Replay;
   outcomes: AttackOutcome[];
@@ -618,8 +624,8 @@ interface AttackReplay {
 
 interface EvalRun {
   weekRuns: WeekRun[];
-  /** Digest item ids of each repeated run of the first week, the first run included. */
-  stabilityIds: string[][];
+  /** Digest item ids of each run of every week, the plain replay included. */
+  stabilityIds: StabilityWeek[];
   attack: AttackReplay | undefined;
   classifier: ClassifierResult[];
   grounding: GroundingResults;
@@ -730,7 +736,7 @@ function measure(scoring: Scoring): Record<MetricId, Measurement> {
       ? { value: calibration.selectionAgreement, note: 'from judge/calibration.json' }
       : { value: null },
     writerWinRate: writerWinRate(records.flatMap((record) => record.winner ?? [])),
-    stability: stability(run.stabilityIds, run.weekRuns[0]?.week.weekId),
+    stability: stabilityAcrossWeeks(run.stabilityIds),
     runTime: runTime(run.weekRuns.map(({ run: r }) => r.durationMs)),
   };
 }
@@ -766,6 +772,35 @@ function buildScorecard(scoring: Scoring): Scorecard {
   };
 }
 
+/**
+ * The gate keeps its meaning: the value, the note, the detail and `itemIdsByRun` are the first
+ * week's, as in the earlier scorecards. When more weeks were replayed, `byWeek` adds each week's
+ * own overlap; a week with an empty run is `no-digest`, which the scorecard text lists.
+ */
+function stabilityAcrossWeeks(weeks: readonly StabilityWeek[]): Measurement {
+  const [first] = weeks;
+  if (!first) return stability([]);
+  const base = stability(first.runs, first.weekId);
+  if (weeks.length === 1) return base;
+  const byWeek = Object.fromEntries(
+    weeks.map(({ weekId, runs }): [string, WeekDetail] => {
+      const empty = runs.filter((ids) => ids.length === 0).length;
+      const overlap = stability(runs, weekId).value ?? 0;
+      return [
+        weekId,
+        {
+          status: empty === 0 ? 'ok' : 'no-digest',
+          problems: [
+            `overlap ${overlap.toFixed(2)} items over ${runs.length} runs, ${empty} empty`,
+          ],
+          problemCount: empty,
+        },
+      ];
+    }),
+  );
+  return { ...base, byWeek };
+}
+
 async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Promise<EvalRun> {
   // First, and without a model: the recordings need none.
   const sources = await evaluateSources(
@@ -778,9 +813,13 @@ async function evaluate(cases: EvalCases, app: DigestDeps, deps: EvalDeps): Prom
     weekRuns.push({ week, run: await replay(app, deps, week.weekId, week.items) });
   }
   const first = weekRuns[0];
-  const stabilityIds: string[][] = first ? [idsOf(first.run)] : [];
-  for (let i = 1; first && i < STABILITY_RUNS; i++) {
-    stabilityIds.push(idsOf(await replay(app, deps, first.week.weekId, first.week.items)));
+  const stabilityIds: StabilityWeek[] = [];
+  for (const { week, run } of weekRuns) {
+    const runs = [idsOf(run)];
+    for (let i = 1; i < STABILITY_RUNS; i++) {
+      runs.push(idsOf(await replay(app, deps, week.weekId, week.items)));
+    }
+    stabilityIds.push({ weekId: week.weekId, runs });
   }
   const attack =
     first && cases.attacks.length > 0

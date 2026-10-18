@@ -91,7 +91,7 @@ async function writeStandardWeeks(): Promise<[WeekFixture, WeekFixture]> {
 
 interface FakeRunOptions {
   /** Items the fake digest links to, from the kept items in collected order. */
-  take?: number;
+  take?: number | ((weekId: string, callNumber: number) => number);
   winner?: string | null;
   score?: number;
   mutate?: (deps: DigestDeps, options: RunOptions) => void;
@@ -127,7 +127,8 @@ function fakeRunDigest(calls: Call[], opts: FakeRunOptions = {}): EvalDeps['runD
       if (!verdicts.some((v) => v.flagged)) kept.push(item);
     }
     const weekId = options.weekId ?? WEEK_40;
-    const picked = kept.slice(0, opts.take ?? 4);
+    const take = typeof opts.take === 'function' ? opts.take(weekId, calls.length) : opts.take;
+    const picked = kept.slice(0, take ?? 4);
     const markdown = renderDigest(makeDigest(picked, { weekId }), { disabledGuards: [] });
     const writer = opts.winner === undefined ? 'gemma' : opts.winner;
     return {
@@ -456,7 +457,7 @@ describe('runEval', () => {
     expect(scorecard.date).toMatch(/^2026-10-16T/);
   });
 
-  it('runs the first week three times for stability', async () => {
+  it('runs every week three times for stability and reports each week', async () => {
     await writeStandardWeeks();
     const calls: Call[] = [];
 
@@ -465,8 +466,53 @@ describe('runEval', () => {
       makeDeps(makeApp(), calls),
     );
 
-    expect(calls.map((c) => c.options.weekId)).toEqual([WEEK_40, WEEK_41, WEEK_40, WEEK_40]);
-    expect(scorecard.metrics.stability).toMatchObject({ value: 4, pass: true });
+    expect(calls.map((c) => c.options.weekId)).toEqual([
+      WEEK_40,
+      WEEK_41,
+      WEEK_40,
+      WEEK_40,
+      WEEK_41,
+      WEEK_41,
+    ]);
+    const { stability } = scorecard.metrics;
+    expect(stability).toMatchObject({ value: 4, pass: true });
+    expect(stability.detail).toEqual({ runs: 3, emptyRuns: 0 });
+    expect(stability.byWeek?.[WEEK_40]).toMatchObject({ status: 'ok', problemCount: 0 });
+    expect(stability.byWeek?.[WEEK_41]?.problems[0]).toContain('overlap 4.00');
+    expect(stability.itemIdsByRun).toHaveLength(3);
+  });
+
+  it('lists a later week with an empty run as no-digest and keeps the first week as the gate', async () => {
+    await writeStandardWeeks();
+    // Calls run W40, W41, W40, W40, W41, W41: call 5 is week 41's first repeat.
+    const take = (weekId: string, callNumber: number): number =>
+      weekId === WEEK_41 && callNumber === 5 ? 0 : 4;
+
+    const { metrics } = await runEval(
+      { profile: 'quality', casesDir: root, minimums: NONE },
+      makeDeps(makeApp(), [], { take }),
+    );
+
+    expect(metrics.stability.value).toBe(4);
+    expect(metrics.stability.itemIdsByRun).toHaveLength(3);
+    expect(metrics.stability.byWeek?.[WEEK_40]).toMatchObject({ status: 'ok', problemCount: 0 });
+    expect(metrics.stability.byWeek?.[WEEK_41]).toMatchObject({
+      status: 'no-digest',
+      problemCount: 1,
+    });
+    expect(metrics.stability.byWeek?.[WEEK_41]?.problems[0]).toContain('1 empty');
+  });
+
+  it('reports no per-week stability when only one week was replayed', async () => {
+    await writeWeek(WEEK_40, '2026-09-30T09:00:00Z', { include: [1, 2, 3, 4, 5], exclude: [6] });
+
+    const { metrics } = await runEval(
+      { profile: 'quality', casesDir: root, minimums: NONE },
+      makeDeps(makeApp(), []),
+    );
+
+    expect(metrics.stability.value).toBe(4);
+    expect(metrics.stability.byWeek).toBeUndefined();
   });
 
   it('is not measured when there are no weeks, and the hard gates fail', async () => {
