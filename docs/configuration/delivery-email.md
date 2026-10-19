@@ -61,6 +61,9 @@ Quote a password that contains `#`: an unquoted value ends at the first `#`
   `failed` and `blocked` runs send one, and so does a `quiet` run when nothing was collected. A dry
   run sends none. The title says "failed" for all of them.
 - Recipients come only from `delivery.email.to`. A model can never add one.
+- Text from feeds and models is put on one line, and invisible characters (a bidi mark or
+  override, a zero-width space, a tag character) become a space, so a feed cannot reorder or hide
+  what you read. A joiner between emoji stays. Slack uses the same rule.
 - Timeouts: 15 s to connect, 15 s for the greeting, 30 s of socket silence.
 - A send is retried twice (after 5 s and 10 s), only when nothing could have been sent: a connect
   failure or connect timeout, or an SMTP 421, 450 or 451. A message can still arrive twice

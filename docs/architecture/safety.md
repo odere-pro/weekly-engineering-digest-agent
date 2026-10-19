@@ -18,10 +18,25 @@ link or harmful content. These rules hold in every part of the code.
 | Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
 | Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                  |
 | Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                               |
+| Email and Slack text has no invisible character that reorders it | `src/delivery/visibleLine.ts`: format characters out, emoji joiners stay  |
 | Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators            |
 | Secrets never reach the saved source data (`raw/`, `formatted/`) | the archive redacts every text it writes (`src/sources/adapters/archive`) |
 | `SLACK_WEBHOOK_URL` must be `https:`                             | `src/config/schema.ts`                                                    |
 | A source URL may not carry a username or password                | `src/config/schema.ts`                                                    |
+
+## Invisible characters in delivered text
+
+A title or a summary can carry characters that show nothing but change what a reader sees: a
+bidi override (U+202E) puts the end of a line first, a bidi mark or the Arabic letter mark
+(U+061C) pulls neighbouring punctuation, a zero-width space or a tag character hides text. The
+email and Slack channels turn every run of control and format characters into one space before
+they print model or collected text (`visibleLine`, built on `printableLine`), so one set of
+characters is removed in both. One format character stays: a zero-width joiner with an emoji on
+each side, which makes a joined emoji such as a technologist one glyph. A joiner anywhere else
+(inside a word, doubled, next to another invisible character) is removed. Two costs: a flag with
+a tag sequence (England, Scotland, Wales) shows as the plain black flag, and a zero-width
+non-joiner in Persian or Indic text becomes a space. The terminal printers use `printableLine`
+alone, so there a joined emoji prints as its parts.
 
 ## Guards are switchable, checks are not
 

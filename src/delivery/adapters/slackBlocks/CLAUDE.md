@@ -23,7 +23,12 @@ flowchart TD
 - Limits: 50 blocks, 3,000 characters a section, 150 in the header. Each field has its own budget,
   counted after escaping. The cut is made on the raw text, so `&amp;` is never split.
 - No header or context block is empty: Slack rejects the whole message for one.
-- Text is one line and a backtick becomes an apostrophe, so no code fence swallows later bullets.
+- Text is one line (`oneLine` over `visibleLine`): control and invisible format characters (bidi
+  overrides and marks, zero-width, tag) become a space, so a feed cannot reorder or hide what is
+  shown. A joiner between two emoji stays, so a joined emoji arrives whole; email follows the same
+  rule. A backtick becomes an apostrophe, so no code fence swallows later bullets.
+- `toSlackMrkdwn` (the no-view and failure paths) does not do this: it keeps the Markdown's own
+  line breaks and escapes only `& < >`.
 - Pure: the same view gives the same message, and each divider is a new object.
 
 ## Files

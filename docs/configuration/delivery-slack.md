@@ -41,6 +41,10 @@ environment, and names the variable. The path of the URL is the secret. It never
   per section, 150 for the header). When items do not fit, the last block says some are not shown.
 - Text from feeds and models is escaped, so `<!channel>` or a link trick in a feed cannot ping
   your channel.
+- Each title, summary line and action is put on one line, and invisible characters (a bidi
+  override, a zero-width space, a tag character) become a space, so a feed cannot reorder or hide
+  what you read. A joiner between emoji stays, so a joined emoji shows whole. The email uses the
+  same rule.
 - A failure note is one line: `Weekly digest <week> failed at <step>: <reason>`.
 - The post times out after 15 s, and a redirect counts as a failure, so only the configured
   address is ever contacted. Any answer other than success fails the channel with

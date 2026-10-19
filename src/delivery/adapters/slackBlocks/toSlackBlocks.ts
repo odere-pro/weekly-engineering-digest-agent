@@ -1,5 +1,6 @@
 import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
 import { truncate } from '../../../shared/text';
+import { visibleLine } from '../../visibleLine';
 import { escapeSlack } from './slackFormat';
 
 /** One Block Kit block, limited to the four kinds the digest uses. */
@@ -47,15 +48,14 @@ function divider(): SlackBlock {
 }
 
 /**
- * One line of text: line breaks and control characters become spaces, so collected or model
- * text cannot forge bullets or headings. A backtick becomes an apostrophe, so no code fence
- * can open and swallow the bullets that follow.
+ * One line of text: line breaks, control characters and invisible format characters (bidi
+ * overrides, zero-width and tag characters) become spaces, so collected or model text cannot
+ * forge bullets or headings, nor reorder or hide the text around it. A joiner between emoji
+ * stays (`visibleLine`). A backtick becomes an apostrophe, so no code fence can open and
+ * swallow the bullets that follow.
  */
 function oneLine(text: string): string {
-  return text
-    .replace(/[\s\p{Cc}]+/gu, ' ')
-    .replaceAll('`', "'")
-    .trim();
+  return visibleLine(text).replaceAll('`', "'");
 }
 
 /**

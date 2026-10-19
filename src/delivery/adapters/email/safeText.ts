@@ -1,16 +1,18 @@
 import type { DigestViewItem } from '../../../render/digestView';
+import { visibleLine } from '../../visibleLine';
 
 const UNTITLED = '(untitled)';
 
-// Whitespace, control characters and bidirectional overrides, so a model string stays on one
-// line and cannot reorder the text around it. Other format characters (ZWJ emoji) stay.
-const BLANK_RUN = /[\s\p{Cc}‪-‮⁦-⁩]+/gu;
 const HAS_UNSAFE_CHAR = /[\s\p{Cc}\p{Cf}]/u;
 const HTTP_SCHEME = /^https?:\/\//i;
 
-/** One line: line breaks, tabs, control and bidi characters become single spaces. */
+/**
+ * One line a reader sees as written: line breaks, tabs, control characters and invisible format
+ * characters (bidi, zero-width, tag) become single spaces, so a model string stays on one line
+ * and cannot reorder or hide the text around it. A joiner between emoji stays, as in Slack.
+ */
 export function oneLine(text: string): string {
-  return text.replaceAll(BLANK_RUN, ' ').trim();
+  return visibleLine(text);
 }
 
 /** A release title on one line, or a placeholder when nothing is left of it. */

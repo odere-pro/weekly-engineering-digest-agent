@@ -19,10 +19,28 @@ describe('oneLine', () => {
     },
   );
 
-  it('keeps other format characters, so a zero-width-joiner emoji stays whole', () => {
-    const family = String.fromCodePoint(0x1f469, 0x200d, 0x1f4bb);
+  // Marks and joiners that reorder or hide text, as the Slack message removes them: the bidi
+  // marks (U+061C, U+200E, U+200F), the word and operator characters, the deprecated format
+  // characters (U+206A to U+206F), the byte order mark, the soft hyphen and a tag letter.
+  const OTHER_FORMAT_CHARACTERS = [
+    0x00ad, 0x061c, 0x200b, 0x200c, 0x200e, 0x200f, 0x2060, 0x2064, 0x206a, 0x206f, 0xfeff, 0xe0041,
+  ] as const;
 
-    expect(oneLine(`by ${family}`)).toBe(`by ${family}`);
+  it.each(OTHER_FORMAT_CHARACTERS.map((codePoint) => [codePoint.toString(16), codePoint] as const))(
+    'replaces the invisible format character U+%s, so it cannot reorder or hide the text',
+    (_hex, codePoint) => {
+      expect(oneLine(`A${String.fromCodePoint(codePoint)}B`)).toBe('A B');
+    },
+  );
+
+  it('keeps a zero-width joiner between emoji, so a joined emoji stays whole', () => {
+    const technologist = String.fromCodePoint(0x1f469, 0x200d, 0x1f4bb);
+
+    expect(oneLine(`by ${technologist}`)).toBe(`by ${technologist}`);
+  });
+
+  it('removes a zero-width joiner that is not between emoji, since it can hide a word break', () => {
+    expect(oneLine(`ig${String.fromCodePoint(0x200d)}nore`)).toBe('ig nore');
   });
 
   it('returns an empty string when only blanks are left', () => {

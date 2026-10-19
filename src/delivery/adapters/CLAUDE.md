@@ -35,6 +35,11 @@ flowchart TD
 - Network and mail are injectable (`createTransport`, `fetch`): no test opens a socket.
 - `email/`, `slackBlocks/` and `errors/` never import an entry file or each other. `email/` and
   `slackBlocks/` are pure: a view in, text out.
+- Both renderers put model text on one line with `delivery/visibleLine`, so the two channels
+  strip the same invisible characters: control and format characters (bidi, zero-width, tag, the
+  byte order mark) become a space. One exception, chosen on purpose: a zero-width joiner with an
+  emoji on each side stays, so a joined emoji shows whole in both. Change the rule in that one
+  file, never in one channel.
 - A failed SMTP or Slack call throws the `DeliveryError` of `redactedError`; a non-2xx Slack answer
   is a `DeliveryError` with its `status`. A non-https webhook, an invalid week id and a file error
   throw as they are: none of their texts holds a secret.

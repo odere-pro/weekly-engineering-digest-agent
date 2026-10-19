@@ -17,8 +17,10 @@ flowchart TD
 
 ## Rules
 
-- Every model or collected string goes through `oneLine` (and `escapeHtml` in the HTML): breaks,
-  control and bidi characters cannot fake a bullet or a heading, or reorder the text.
+- Every model or collected string goes through `oneLine` (and `escapeHtml` in the HTML), which is
+  `visibleLine`: breaks, control and invisible format characters (bidi, zero-width, tag) cannot
+  fake a bullet or a heading, or reorder or hide the text. A joiner between emoji stays; Slack
+  follows the same rule.
 - Only `httpUrl` makes a link or a printed URL: absolute http(s), no credentials, no whitespace or
   control characters. Anything else shows the title as plain text.
 - The HTML has inline styles only (no script, style block, form, remote image or font). The page,

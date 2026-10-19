@@ -419,6 +419,65 @@ describe('toSlackBlocks', () => {
       expect(sections(message)[0]).toContain(': a b c d e');
     });
 
+    it('removes format characters from every piece of text, so none can reorder or hide what is shown', () => {
+      const bidiOverride = '\u{202E}';
+      const zeroWidthSpace = '\u{200B}';
+      const arabicLetterMark = '\u{061C}';
+      const deprecatedFormat = '\u{206A}';
+      const tagLetter = '\u{E0041}';
+      const byteOrderMark = '\u{FEFF}';
+      const message = toSlackBlocks(
+        view({
+          title: `Week${bidiOverride} 42`,
+          headline: `Head${arabicLetterMark}line`,
+          footer: `Foot${byteOrderMark}er`,
+          groups: [
+            group(
+              'act-now',
+              [
+                item({
+                  title: `Ti${bidiOverride}tle`,
+                  whatChanged: `What${zeroWidthSpace}changed ${deprecatedFormat}here`,
+                  action: `Do${tagLetter} it`,
+                }),
+              ],
+              `Act${bidiOverride} now`,
+            ),
+          ],
+        }),
+      );
+
+      expect(allText(message)).not.toMatch(/[\p{Cf}\p{Cc}]/u);
+      expect(blockAt(message, 0, 'header').text.text).toBe('Week 42');
+      expect(sections(message)[0]).toBe(
+        '*🔴 Act now*\n• *<https://example.com/ollama|Ti tle>*: What changed here\n→ Do it',
+      );
+      expect(message.text).toBe('Week 42\nHead line');
+    });
+
+    it('cannot reorder a title with an override, which would put the end first', () => {
+      const message = toSlackBlocks(
+        view({ groups: [group('act-now', [item({ title: 'Release \u{202E}1.0.0 gnirts' })])] }),
+      );
+
+      expect(sections(message)[0]).toContain('*<https://example.com/ollama|Release 1.0.0 gnirts>*');
+    });
+
+    it('keeps a zero-width joiner that makes one emoji and removes one inside a word', () => {
+      const technologist = '\u{1F469}\u{200D}\u{1F4BB}';
+      const message = toSlackBlocks(
+        view({
+          groups: [
+            group('act-now', [
+              item({ title: `${technologist} release`, whatChanged: 'ig\u{200D}nore it' }),
+            ]),
+          ],
+        }),
+      );
+
+      expect(sections(message)[0]).toContain(`|${technologist} release>*: ig nore it`);
+    });
+
     it('builds a new divider for each message, so one caller cannot change another', () => {
       const twoGroups = view({
         groups: [group('act-now', [item()]), group('worth-a-look', [item()], 'Worth a look')],
