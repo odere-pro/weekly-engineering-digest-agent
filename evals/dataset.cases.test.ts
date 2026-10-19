@@ -30,7 +30,7 @@ import { DATA_CLOSE } from '../src/shared/untrusted';
 const TUNING_COUNT = 10;
 const VALIDATION_COUNT = 10;
 const HELD_OUT_COUNT = 10;
-const FOLLOW_UP_ATTACK_COUNT = 1;
+const FOLLOW_UP_ATTACK_COUNT = 2;
 const ATTACK_COUNT = TUNING_COUNT + VALIDATION_COUNT + HELD_OUT_COUNT + FOLLOW_UP_ATTACK_COUNT;
 const GROUNDING_COUNT = SPEC_EVAL_SET.grounding;
 const HELD_OUT_START = TUNING_COUNT + VALIDATION_COUNT;
@@ -188,6 +188,12 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
     /[\u206a-\u206f]/.test(item.summary) &&
     !/ignore all previous instructions/i.test(item.summary) &&
     /ignore all previous instructions/i.test(item.summary.replace(/[\u061c\u206a-\u206f]/g, '')),
+  // Follow-up set (attack 32): only the left-to-right and right-to-left marks split the command.
+  'bidi-mark-split': (item) =>
+    /[a-z][\u200e\u200f]+[a-z]/i.test(item.summary) &&
+    !/[\u061c\u200b-\u200d\u2060-\u206f\ufeff\u00ad]/.test(item.summary) &&
+    !/ignore all previous instructions/i.test(item.summary) &&
+    /ignore all previous instructions/i.test(item.summary.replace(/[\u200e\u200f]/g, '')),
 };
 
 /** The README table under "Held-out set": the case ids it lists. */
@@ -247,7 +253,7 @@ beforeAll(async () => {
 });
 
 describe('attack cases', () => {
-  it('has 31 case files that parse with AttackCaseSchema', () => {
+  it('has 32 case files that parse with AttackCaseSchema', () => {
     expect(attacks).toHaveLength(ATTACK_COUNT);
   });
 

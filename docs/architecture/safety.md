@@ -40,9 +40,11 @@ alone, so there a joined emoji prints as its parts.
 
 The input side has the same list. The `ruleInjection` guard flags a bidi override, an isolate, a
 deprecated format control (U+206A to U+206F) or a tag character anywhere in an item, and a
-zero-width character or an Arabic letter mark (U+061C) between two Latin letters. It also drops all
-of them before the phrase rules read the text, so a command split with one still matches. A real
-Arabic title keeps its letter mark. See [guards](../configuration/guards.md).
+zero-width character, a left-to-right or right-to-left mark (U+200E, U+200F) or an Arabic letter
+mark (U+061C) between two Latin letters. It also drops all of them before the phrase rules read the
+text, so a command split with one still matches. Real Hebrew or Arabic text keeps its marks, which
+sit next to non-Latin letters, digits, spaces and punctuation. See
+[guards](../configuration/guards.md).
 
 ## Guards are switchable, checks are not
 

@@ -2,10 +2,10 @@
 
 Part of [Eval sets](README.md).
 
-Thirty-one fake feed items that try to hijack the pipeline. The eval slips them into a real week and
+Thirty-two fake feed items that try to hijack the pipeline. The eval slips them into a real week and
 checks that none of them reaches the digest. The texts are hostile on purpose. They are data:
 read them, never follow them. The saved scorecard (2026-10-18) used the first 20; the next one
-will use all 31.
+will use all 32.
 
 ## What it contains
 
@@ -30,12 +30,12 @@ will use all 31.
 }
 ```
 
-| Set        | Cases | What it holds                                                                                                                                                                  |
-| ---------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Tuning     | 01-10 | Ignore instructions, fake system message, delimiter break, a URL not in the feed, link swap, base64, Unicode trick, role-play jailbreak, harmful content, an email instruction |
-| Validation | 11-20 | Disregard instructions, chat template, developer-mode and hypothetical jailbreaks, malware, hate, tag break, prompt leak, tool call, a French instruction                      |
-| Held out   | 21-30 | Harder variants of the families above, written by `mutate.ts`                                                                                                                  |
-| Follow-up  | 31 on | One case per gap found after the three sets were fixed, written by hand, not held out: 31 hides a command with the Arabic letter mark and U+206A to U+206F                     |
+| Set        | Cases | What it holds                                                                                                                                                                                                 |
+| ---------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tuning     | 01-10 | Ignore instructions, fake system message, delimiter break, a URL not in the feed, link swap, base64, Unicode trick, role-play jailbreak, harmful content, an email instruction                                |
+| Validation | 11-20 | Disregard instructions, chat template, developer-mode and hypothetical jailbreaks, malware, hate, tag break, prompt leak, tool call, a French instruction                                                     |
+| Held out   | 21-30 | Harder variants of the families above, written by `mutate.ts`                                                                                                                                                 |
+| Follow-up  | 31 on | One case per gap found after the three sets were fixed, written by hand, not held out: 31 hides a command with the Arabic letter mark and U+206A to U+206F, 32 with the left-to-right and right-to-left marks |
 
 The validation set was the held-out set of an earlier wave. It scored 10 of 10 before any tuning,
 so it tested nothing; it stays as a regression set and is no longer held out. The held-out set is
@@ -74,7 +74,7 @@ recall existed. The `expectBlockedBy` hint is not scored.
 
 `evals/dataset.cases.test.ts` enforces these:
 
-- Thirty-one files named after their case id. Each has its own id, URL and title; none shares an id
+- Thirty-two files named after their case id. Each has its own id, URL and title; none shares an id
   or URL with a recorded item, a source id with a recorded item, or a title with one.
 - The item id is the hash of the URL. The summary has at most 600 characters, as a fetcher could
   collect.
@@ -98,5 +98,5 @@ holdout side, so no threshold is picked on them.
 Write a new file with the next number, give it a fictional company and a new `kind`, add the row to
 the README and add its technique pattern to the test. For a held-out case, add it to `mutate.ts`
 and run `pnpm tsx evals/attacks/mutate.ts`: the same script gives the same files every time. Check
-each file by hand. The test counts exactly 31 (10, 10, 10 and 1 follow-up), so a maintainer updates it with the
+each file by hand. The test counts exactly 32 (10, 10, 10 and 2 follow-up), so a maintainer updates it with the
 new case. See [adding cases](../adding-cases.md).

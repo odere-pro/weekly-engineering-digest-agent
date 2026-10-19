@@ -25,7 +25,7 @@ is not in the data flow of a normal run. See [feature folders](../architecture/f
 - Asks every input guard about every attack item on its own (independent recall), so the order of
   the guards no longer hides one of them.
 - Runs the classifier cases (60 labelled items) and the grounding drafts (30, each with one planted
-  false claim and a clean control). 31 attack items test the input guards. In each set the last
+  false claim and a clean control). 32 attack items test the input guards. In each set the last
   ten cases are held out: no one tunes on them.
 - Scores the winning digests with a judge model when the profile has none and `EVAL_JUDGE` names
   one. It runs last, so the judge model loads once.

@@ -118,7 +118,7 @@ export const RULES: readonly Rule[] = [
   {
     id: 'hiddenChars',
     catches:
-      'attack-07, attack-31: zero-width characters or an Arabic letter mark inside a word, bidi overrides, the deprecated format characters U+206A to U+206F, and tag characters that hide or reorder a command. A BOM, an RLM, a joiner between emoji, or an Arabic letter mark in Arabic text is allowed.',
+      'attack-07, attack-31, attack-32: zero-width characters, an Arabic letter mark or an LRM or RLM inside a word, bidi overrides, the deprecated format characters U+206A to U+206F, and tag characters that hide or reorder a command. A BOM, a joiner between emoji, or an LRM, RLM or Arabic letter mark anywhere but between two Latin letters is allowed.',
     matches: ({ raw }) => HIDDEN_CHARS.test(raw),
   },
   {
@@ -138,14 +138,17 @@ export const RULES: readonly Rule[] = [
 
 /**
  * Invisible characters that count only between two Latin letters, where they split a word:
- * zero-width characters, the word joiner and invisible operators, the BOM, the soft hyphen and the
- * Arabic letter mark (the Arabic twin of the RLM: real in Arabic text, never inside a Latin word).
- * Joined from strings so the "joined sequence" lint rule does not read the class: ZWJ is the point.
+ * zero-width characters, the word joiner and invisible operators, the BOM, the soft hyphen, the
+ * left-to-right and right-to-left marks and the Arabic letter mark. The three marks are real in
+ * bidi text (next to Hebrew or Arabic letters, digits, spaces and punctuation) and never sit inside
+ * a Latin word. Joined from strings so the "joined sequence" lint rule does not read the class: ZWJ
+ * is the point.
  */
 const INVISIBLE_IN_WORD = [
   '\\u200B',
   '\\u200C',
   '\\u200D',
+  '\\u200E-\\u200F',
   '\\u2060-\\u2064',
   '\\uFEFF',
   '\\u00AD',

@@ -22,7 +22,7 @@ A part of it can run alone, a lost run can be finished, and two scorecards can b
 - The models of the profile are pulled (`digest doctor`). One model loads at a time
   (`OLLAMA_MAX_LOADED_MODELS=1`).
 - Time and a quiet machine. `light` took about 110 minutes on the last full run, because every
-  recorded week runs three times for stability. The data has since grown to 31 attacks and 30
+  recorded week runs three times for stability. The data has since grown to 32 attacks and 30
   grounding drafts, so expect a longer guard part. No new time has been measured. `quality` and `fast` are not measured. Run **one profile at a time**
   and do not run anything else heavy on Ollama meanwhile.
 - Optional judge: `EVAL_JUDGE` is a model tag (`clef:latest`) that scores the winning digests of a

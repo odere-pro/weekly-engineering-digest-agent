@@ -46,7 +46,7 @@ files fail with a message that names the broken file.
 | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `evals/dataset.labels.test.ts`            | 5 unique must-include ids per week, ids exist in `items.json`, review note present       |
 | `evals/dataset.classifierCases.test.ts`   | 60 cases, whole relevance 0 to 3, area known, balance, real items unchanged              |
-| `evals/dataset.cases.test.ts`             | 31 attacks and 30 grounding drafts: technique, uniqueness, README rows, `heldOut`, hosts |
+| `evals/dataset.cases.test.ts`             | 32 attacks and 30 grounding drafts: technique, uniqueness, README rows, `heldOut`, hosts |
 | `evals/dataset.sources.test.ts`           | every default source has a recording, `reviewed: true`, fetcher output matches           |
 | `evals/schema.test.ts`, `runEval.test.ts` | the zod schemas and the loader (duplicate ids, items outside their week)                 |
 
@@ -55,11 +55,11 @@ an id that is not in `items.json`, or when an attack shares an id or URL with a 
 
 ## The set sizes are fixed in the tests
 
-The tests expect exactly 6 weeks, 31 attacks (30 plus one follow-up case), 30 grounding drafts and 60
+The tests expect exactly 6 weeks, 32 attacks (30 plus two follow-up cases), 30 grounding drafts and 60
 classifier cases. `SPEC_EVAL_SET` asks for 6, 30, 30 and 60 (see [gates](gates.md)), so a hard gate
-fails on a smaller set; the follow-up attack is extra. To grow a set, a maintainer changes the constant in the test next to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
+fails on a smaller set; the follow-up attacks are extra. To grow a set, a maintainer changes the constant in the test next to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
 attack and grounding case costs model calls. The saved scorecard (2026-10-18) used 20 attacks and
-10 grounding drafts; the next one will use 31 and 30.
+10 grounding drafts; the next one will use 32 and 30.
 
 ## After you add data
 

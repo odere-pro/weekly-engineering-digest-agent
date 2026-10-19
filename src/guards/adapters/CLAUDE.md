@@ -54,8 +54,9 @@ flowchart TD
   it first as `blocking`. Known hosts: `allowedHosts` (the feed hosts) and the item's own host.
 - `hiddenChars` has two lists in `ruleInjectionRules.ts`. Bidi embeddings, overrides and isolates,
   the deprecated controls U+206A-206F and the tag block flag anywhere. Zero-width characters, the
-  soft hyphen, the BOM and the Arabic letter mark U+061C flag only between two Latin letters (a BOM,
-  an RLM and a letter mark in Arabic text are real). `INVISIBLE` in `ruleInjection.ts` is a wider,
+  soft hyphen, the BOM, the LRM and RLM (U+200E, U+200F) and the Arabic letter mark U+061C flag only
+  between two Latin letters: next to Hebrew or Arabic letters, a digit, a space or punctuation they
+  are real bidi text, and a BOM starts a file. `INVISIBLE` in `ruleInjection.ts` is a wider,
   separate list that the phrase rules read through: keep the three in step.
 
 ## Files

@@ -16,7 +16,7 @@ their own, so a weak guard shows up red before it matters. It is not in the orig
 
 `guardAttackRecall` in `evals/metrics/attacks/guardAttackRecall.ts`.
 
-1. It uses the same attack replay as attack handling (31 attack items; the saved scorecard has 20).
+1. It uses the same attack replay as attack handling (32 attack items; the saved scorecard has 20).
 2. **Independent recall** (wave 11). After the replay, the harness asks every enabled input guard
    about every attack item, whatever the guard mode, one guard after the other so one model is
    loaded at a time. A verdict the replay already got is reused. This is record only: the run
@@ -45,7 +45,7 @@ The value is not measured, with a note, when an input guard was switched off in 
 
 ## Data it uses
 
-The [attack cases](../sets/attacks.md): 31 files, ten of them held out.
+The [attack cases](../sets/attacks.md): 32 files, ten of them held out.
 
 ## How to add a case
 
