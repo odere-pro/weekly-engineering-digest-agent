@@ -2,11 +2,15 @@
 //   tsx evals/calibrate.ts <raw.json> [--holdout 2026-W40,2026-W41] [--write [--out <file>]]
 // Fits on the train split of a raw capture only, measures the holdout split with the file off
 // and on, and writes the file only when holdout recall rises and leaks do not. No model calls.
+// Without --out the file goes to <dataDir>/eval/calibration/<profile>.json, with the data folder
+// (config dataDir) read from digest.config.json only at that moment: a run that writes nothing
+// needs no config.
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { loadConfig } from '../src/config/load';
 import { ThresholdsSchema } from '../src/config/schema';
 import { errorMessage } from '../src/shared/errors';
 import { fitCalibration } from './calibration/fit/fitCalibration';
@@ -30,11 +34,19 @@ const EXIT_FAILED = 1;
 const EXIT_USAGE = 2;
 
 const EVALS_DIR = fileURLToPath(new URL('.', import.meta.url));
-const USAGE =
-  'Usage: tsx evals/calibrate.ts <raw.json> [--holdout 2026-W40,2026-W41] [--write [--out <file>]]\n';
+/** Beside the eval checkpoints (`eval/checkpoints`), under the data folder. */
+const CALIBRATION_DIR = ['eval', 'calibration'] as const;
+const USAGE = [
+  'Usage: tsx evals/calibrate.ts <raw.json> [--holdout 2026-W40,2026-W41] [--write [--out <file>]]',
+  '  --write saves a kept fit to <dataDir>/eval/calibration/<profile>.json (dataDir from',
+  '  digest.config.json); --out <file> saves it there instead.',
+  '',
+].join('\n');
 
 export interface CalibrateIo {
   casesDir: string;
+  /** The data folder (config `dataDir`). Called only to write a kept fit when --out is not given. */
+  loadDataDir: () => Promise<string>;
   loadCases: (dir: string) => Promise<EvalCases>;
   stdout: (text: string) => void;
   stderr: (text: string) => void;
@@ -42,6 +54,7 @@ export interface CalibrateIo {
 
 const defaultIo: CalibrateIo = {
   casesDir: EVALS_DIR,
+  loadDataDir: async () => (await loadConfig()).config.dataDir,
   loadCases: loadEvalCases,
   stdout: (text) => {
     process.stdout.write(text);
@@ -50,6 +63,19 @@ const defaultIo: CalibrateIo = {
     process.stderr.write(text);
   },
 };
+
+/** `--out` as given, else `<dataDir>/eval/calibration/<profile>.json`. */
+async function outPathOf(out: unknown, profile: string, io: CalibrateIo): Promise<string> {
+  if (typeof out === 'string') return out;
+  try {
+    return join(await io.loadDataDir(), ...CALIBRATION_DIR, `${profile}.json`);
+  } catch (error) {
+    throw new Error(
+      `cannot get the data folder to write to: ${errorMessage(error)}\nPass --out <file> to choose the file.`,
+      { cause: error },
+    );
+  }
+}
 
 async function loadRaw(path: string): Promise<RawCapture> {
   return RawCaptureSchema.parse(JSON.parse(await readFile(path, 'utf8')));
@@ -93,10 +119,7 @@ export async function runCli(
     const keep = keepCalibration(off, on);
     io.stdout(holdoutReport(off, on, keep));
     if (parsed.values.write === true && keep) {
-      const out =
-        typeof parsed.values.out === 'string'
-          ? parsed.values.out
-          : join(io.casesDir, 'calibration', `${capture.profile}.json`);
+      const out = await outPathOf(parsed.values.out, capture.profile, io);
       await mkdir(dirname(out), { recursive: true });
       await writeFile(out, `${JSON.stringify(fit, null, 2)}\n`);
       io.stdout(`wrote ${out}\n`);

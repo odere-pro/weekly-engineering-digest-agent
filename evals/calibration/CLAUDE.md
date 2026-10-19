@@ -12,7 +12,7 @@ flowchart LR
   data[("weeks, classifier cases")] -->|"EvalCases"| calibrate
   calibrate -.->|"defaultSplit, splitCapture"| split["thresholds/split.ts"]
   calibrate -.->|"processStep, calibrateClassification"| process
-  calibrate -->|"Calibration, only if kept"| file[("calibration/profile.json")]
+  calibrate -->|"Calibration, only if kept"| file[("dataDir/eval/calibration/profile.json")]
   file -->|"--calibration"| rescore["evals/rescoreReplay.ts"]
   classDef focus stroke-width:3px
 ```
@@ -29,7 +29,7 @@ flowchart TD
   fit --> on
   off & on --> keep{"measure/ keepCalibration"}
   keep --> report["report/ holdoutReport: table and verdict"]
-  keep -->|"keep and --write"| write["JSON to --out or calibration/profile.json"]
+  keep -->|"keep and --write"| write["JSON to --out or dataDir/eval/calibration/profile.json"]
 ```
 
 - Targets: a classifier case uses its label; a labeled week item uses 3 (must include) or 0 (must
@@ -58,8 +58,11 @@ The entry file `evals/calibrate.ts` holds `runCli`, `CalibrateIo`, the arguments
 
 ## Gotchas
 
-- `--write` without `--out` writes `evals/calibration/<profile>.json`: data in the same folder as
-  this code. Never edit it by hand; a new fit replaces it.
+- `--write` without `--out` writes `<dataDir>/eval/calibration/<profile>.json` (`dist/eval/calibration/`
+  by default), beside the eval checkpoints and never in `evals/`. `dataDir` comes from
+  `digest.config.json` through `CalibrateIo.loadDataDir`, and only when a kept fit is about to be
+  written: a dry run needs no config, and a missing one fails with a hint to pass `--out`. Never
+  edit the file by hand; a new fit replaces it.
 - `src/process/calibration.ts`, the docs and `docs/evaluation` name `evals/calibrate.ts`: keep the path.
 - `fit/areaBias.ts` scores points through `calibrateClassification`, so a change to its
   interpolation moves the fit.
