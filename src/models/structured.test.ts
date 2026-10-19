@@ -46,4 +46,38 @@ describe('generateStructured', () => {
     expect((error as DigestError).step).toBe('classify');
     expect(model.generateCalls).toHaveLength(2);
   });
+
+  it('does not send the repair call when the signal fired during the first reply', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run aborted');
+    const model = new FakeModelProvider({
+      generate: () => {
+        controller.abort(reason);
+        return 'not json';
+      },
+    });
+    const error = await generateStructured(
+      model,
+      { ...request, signal: controller.signal },
+      Schema,
+      'write',
+    ).catch((e: unknown) => e);
+    expect(error).toBe(reason);
+    expect(model.generateCalls).toHaveLength(1);
+  });
+
+  it('still repairs when a signal is given and has not fired', async () => {
+    const controller = new AbortController();
+    const replies = ['{"answer": "x"}', '{"answer": 3}'];
+    const model = new FakeModelProvider({ generate: () => replies.shift() ?? '' });
+    const result = await generateStructured(
+      model,
+      { ...request, signal: controller.signal },
+      Schema,
+      'write',
+    );
+    expect(result).toMatchObject({ value: { answer: 3 }, repaired: true });
+    expect(model.generateCalls).toHaveLength(2);
+    expect(model.generateCalls[1]?.signal).toBe(controller.signal);
+  });
 });

@@ -50,7 +50,8 @@ sequenceDiagram
   120 s, judge 120 s, write 600 s (`models.timeoutsMs` overrides). Retries: 2 (config 0-5), backoff
   1 s doubling to 10 s, on timeout, network or stream error, HTTP 5xx; not on 4xx or a bad payload.
   A caller abort passes through as it is, and an already-aborted signal ends the call before a request
-  goes out. A timeout is retried, so a `write` call can run 3 x 600 s.
+  goes out; `generateStructured` does the same before its repair call. A timeout is retried, so a
+  `write` call can run 3 x 600 s.
 - Temperature: request, else config, else default (`write` 0.2, others 0); the config seed (42) goes
   with each `generate` that has none. `think` is off by default for `guardRisk` only: Granite spends
   about 65 s thinking. `effectiveTemperature` and `effectiveThink` own these rules.

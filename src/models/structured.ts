@@ -50,6 +50,8 @@ export async function generateStructured<T>(
   const firstCheck = validate(schema, first.text);
   if (firstCheck.ok) return { value: firstCheck.value, calls: [first], repaired: false };
 
+  // An abort that arrived with the first reply must not buy a second model call.
+  request.signal?.throwIfAborted();
   const repair = await model.generate({
     ...request,
     model: first.model,
