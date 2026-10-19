@@ -31,11 +31,11 @@ _A security fix to ship now, and two platform releases to read_
 
 ## Cost and hardware
 
-| Profile   | RAM                              | Disk for models | Run time per week              | Measured |
-| --------- | -------------------------------- | --------------- | ------------------------------ | -------- |
-| `light`   | 16 GB, Apple silicon only        | about 20 GB     | about 6 min (340 s on average) | yes      |
-| `fast`    | not measured, Apple silicon only | about 33 GB     | not measured                   | no       |
-| `quality` | 32 GB, Apple silicon only        | about 66 GB     | about 1 h                      | no       |
+| Profile   | RAM                                                       | Disk for models | Run time per week                                          | Measured |
+| --------- | --------------------------------------------------------- | --------------- | ---------------------------------------------------------- | -------- |
+| `light`   | 16 GB, Apple silicon only                                 | about 20 GB     | about 6 min (340 s on average)                             | yes      |
+| `fast`    | not measured, Apple silicon only                          | about 33 GB     | not measured                                               | no       |
+| `quality` | 32 GB is tight (it swapped), 48 GB or more is an estimate | about 66 GB     | not measured end to end; the input guard alone took 65 min | partly   |
 
 Other machines run an untuned fallback set (about 45 GB of models). Node 24 and Ollama 0.40 or
 newer are needed. More: [cost and hardware](docs/overview/cost-and-hardware.md).

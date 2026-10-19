@@ -5,6 +5,7 @@ import type { Host } from '../types';
 import {
   askProfile,
   PROFILE_DESCRIPTIONS,
+  QUALITY_TIGHT_RAM,
   QUALITY_UNMEASURED,
   qualityMemoryWarning,
 } from './profile';
@@ -66,24 +67,34 @@ describe('askProfile', () => {
 });
 
 describe('what the profile question says about quality', () => {
-  it('says it is not measured yet and took about 1 h per run on the reference laptop', async () => {
+  it('says it is not measured end to end and that the input guard alone took about 1 h', async () => {
     const text = await descriptionOf({ ramGiB: 64 });
 
     expect(text).toContain(QUALITY_UNMEASURED);
-    expect(text).toMatch(/not measured yet/);
-    expect(text).toMatch(/about 1 h/);
+    expect(text).toMatch(/not measured end to end yet/);
+    expect(text).toMatch(/input guard alone took about 1 h/);
     expect(text).toMatch(/reference laptop/);
     expect(text).toMatch(/32 GB/);
   });
 
-  it('does not mention memory when the machine has enough', async () => {
-    expect(await descriptionOf({ ramGiB: 32 })).not.toMatch(/GiB/);
-    expect(await descriptionOf({ ramGiB: 31 })).not.toMatch(/GiB/);
+  it('does not mention memory when the machine has room to spare', async () => {
+    expect(await descriptionOf({ ramGiB: 64 })).not.toMatch(/GiB/);
+    expect(await descriptionOf({ ramGiB: 48 })).not.toMatch(/GiB/);
   });
 
-  it('allows 5% under 32 GiB, so a "32 GB" Linux box that reports 31 GiB is not warned', async () => {
-    expect(await descriptionOf({ ramGiB: 30.5 })).not.toMatch(/GiB/);
-    expect(await descriptionOf({ ramGiB: 30 })).toMatch(/This machine has 30\.0 GiB of RAM/);
+  it('warns at 32 GiB, the size of the machine quality swapped on, and says why', async () => {
+    const text = await descriptionOf({ ramGiB: 32 });
+
+    expect(text).toMatch(/This machine has 32\.0 GiB of RAM, which is tight for quality/);
+    expect(text).toMatch(/8 of 9 GB of swap/);
+    expect(text).not.toMatch(/quality needs about 32 GB/);
+  });
+
+  it('allows 5% under 32 GiB: a "32 GB" Linux box that reports 31 GiB gets the tight warning, not the short one', async () => {
+    expect(await descriptionOf({ ramGiB: 30.5 })).toMatch(/tight for quality/);
+    expect(await descriptionOf({ ramGiB: 30 })).toMatch(
+      /This machine has 30\.0 GiB of RAM; quality needs about 32 GB\./,
+    );
   });
 
   it('warns with the amount the machine has', async () => {
@@ -112,10 +123,18 @@ describe('what the profile question says about quality', () => {
     expect(text).toMatch(/Ollama may run elsewhere/);
   });
 
-  it('does not warn inside Docker when the limit is enough', async () => {
+  it('does not warn inside Docker when the limit leaves room', async () => {
     const text = await descriptionOf({ inDocker: true, ramGiB: 64, memoryLimitGiB: 48 });
 
     expect(text).not.toMatch(/GiB/);
+  });
+
+  it('calls a 32 GiB container limit tight, with the swap it caused', async () => {
+    const text = await descriptionOf({ inDocker: true, ramGiB: 64, memoryLimitGiB: 32 });
+
+    expect(text).toMatch(
+      /Docker limits this container to 32\.0 GiB \(the container limit\), which is tight for quality/,
+    );
   });
 
   it('keeps the memory warning off the other profiles', async () => {
@@ -164,15 +183,37 @@ describe('qualityMemoryWarning', () => {
     qualityMemoryWarning(harness(options).io, inDocker);
 
   it.each([
-    [64, true],
-    [32, true],
-    [31.3, true],
-    [30.4, true],
-    [30.3, false],
-    [24, false],
-    [16, false],
-  ])('%d GiB of RAM: enough is %s', (ramGiB, enough) => {
-    expect(warn({ ramGiB }) === undefined).toBe(enough);
+    [64, undefined],
+    [48, undefined],
+    [45.7, undefined],
+    [45.5, 'tight'],
+    [32, 'tight'],
+    [30.4, 'tight'],
+    [30.3, 'short'],
+    [24, 'short'],
+    [16, 'short'],
+  ] as const)('%d GiB of RAM: the warning is %s', (ramGiB, kind) => {
+    const text = warn({ ramGiB });
+
+    if (kind === undefined) expect(text).toBeUndefined();
+    else if (kind === 'tight') expect(text).toMatch(/tight for quality/);
+    else expect(text).toMatch(/quality needs about 32 GB/);
+  });
+
+  it('names the measured swap and time at exactly 32 GiB, and keeps light as the way out', () => {
+    expect(warn({ ramGiB: 32 })).toBe(
+      `This machine has 32.0 GiB of RAM, which is tight for quality: ${QUALITY_TIGHT_RAM}.`,
+    );
+    expect(QUALITY_TIGHT_RAM).toMatch(/input guard alone took about 1 h/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/8 of 9 GB of swap/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/M1 Pro/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/light needs 16 GB and took about 6 min for a whole week/);
+  });
+
+  it('keeps the Docker wording and the Ollama-may-run-elsewhere hint on the tight warning', () => {
+    expect(warn({ inDocker: true, ramGiB: 32 })).toBe(
+      `Docker shows this container 32.0 GiB of RAM, which is tight for quality: ${QUALITY_TIGHT_RAM}. Ollama may run elsewhere with more.`,
+    );
   });
 
   it('allows 5% under 32 GiB, for the memory a kernel keeps for itself', () => {
@@ -182,8 +223,8 @@ describe('qualityMemoryWarning', () => {
       false,
     );
 
-    expect(at).toBeUndefined();
-    expect(below).toBeDefined();
+    expect(at).toMatch(/tight for quality/);
+    expect(below).toMatch(/quality needs about 32 GB/);
   });
 
   it('names the amount the machine has outside Docker', () => {

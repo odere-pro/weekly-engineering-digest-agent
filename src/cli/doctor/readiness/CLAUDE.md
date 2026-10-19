@@ -21,6 +21,8 @@ flowchart TD
 ## Rules
 
 - RAM: `quality` needs 32 GiB, `light` 16 GiB, less 5% (a "32 GB" Linux box reports about 31 GiB).
+  The verdict stays `yes` at 32 GiB although `quality` swapped there (2026-10-19): only `digest init`
+  warns, from `hasQualityHeadroom` (48 GiB, an estimate). Aligning this table is a follow-up.
   `fast` and `fallback` are not measured: they get the 16 GiB floor and print "yes (not measured)".
 - A bad `DIGEST_HOST_OS` or `DIGEST_HOST_ARCH` is reported in the note, not thrown. The models folder
   is measured only for a local Ollama (`localhost`, `127.0.0.1`, `[::1]`).
@@ -33,7 +35,7 @@ flowchart TD
 | `target.ts`    | `ReadinessIo`, `Target`, `resolveTarget`, `askOllama`, `localModelsDir`, `freeDiskBytes`, `ollamaHealth` |
 | `rows.ts`      | `ProfileRow`, `buildRow`, `verdictOf`, `versionStatus`                                                   |
 | `table.ts`     | `render`, `machineLines`, `tableLines`, `pullLines`                                                      |
-| `memory.ts`    | `GIB`, `hasRam`, `hasQualityMemory`, `fitsRam`, `formatGiB`, `RowName`                                   |
+| `memory.ts`    | `GIB`, `hasRam`, `hasQualityMemory`, `hasQualityHeadroom`, `fitsRam`, `formatGiB`, `RowName`             |
 | `version.ts`   | `parseVersion`, `compareCore`, `normalizeTag`, `DEVELOPMENT_VERSION`                                     |
 
 `readiness.test.ts` runs the whole command on fakes (RAM, disk, Ollama injected).

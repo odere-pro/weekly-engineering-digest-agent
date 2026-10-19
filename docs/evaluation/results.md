@@ -112,6 +112,8 @@ blocked. By week: 5.00 on W37, W38, W40 and W41; 1.67 on W36 and W39 (one blocke
 ## Profiles
 
 Only `light` is measured (2026-10-18, three of four hard gates pass). `fast` and `quality` are not.
+The cost of `quality` on the same Mac is in [cost and hardware](../overview/cost-and-hardware.md):
+its input guard alone took 65 minutes (2026-10-19).
 Hardware: Apple M1 Pro, 32 GB, macOS, Ollama on the host, `OLLAMA_MAX_LOADED_MODELS=1`, all guards
 on, seeded runs. Thresholds: `minRelevance` 1.5, `maxHype` 0.6, `maxMinorRelease` 0.75, `guardFlag`
 0.35. Older: `2026-10-17-light.json`, `-light-wave5.json` (both failed a hard gate, 10 attacks).

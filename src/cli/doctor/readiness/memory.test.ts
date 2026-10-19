@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fitsRam, formatGiB, GIB, hasQualityMemory, hasRam } from './memory';
+import { fitsRam, formatGiB, GIB, hasQualityHeadroom, hasQualityMemory, hasRam } from './memory';
 
 describe('RAM helpers', () => {
   it('hasRam allows a 5% tolerance below the figure', () => {
@@ -15,6 +15,17 @@ describe('RAM helpers', () => {
   it('hasQualityMemory accepts a "32 GB" Linux box that reports about 31 GiB', () => {
     expect(hasQualityMemory(31 * GIB)).toBe(true);
     expect(hasQualityMemory(30 * GIB)).toBe(false);
+  });
+
+  it('hasQualityHeadroom needs 48 GiB: quality swapped on a 32 GiB Mac (measured 2026-10-19)', () => {
+    expect(hasQualityHeadroom(48 * GIB)).toBe(true);
+    expect(hasQualityHeadroom(64 * GIB)).toBe(true);
+    expect(hasQualityHeadroom(32 * GIB)).toBe(false);
+  });
+
+  it('hasQualityHeadroom allows the same 5% tolerance as the other figures', () => {
+    expect(hasQualityHeadroom(48 * GIB * 0.95)).toBe(true);
+    expect(hasQualityHeadroom(48 * GIB * 0.95 - 1)).toBe(false);
   });
 
   it('formatGiB prints one decimal', () => {

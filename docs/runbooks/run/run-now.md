@@ -22,7 +22,8 @@ waiting for the schedule.
 - Nobody else is running the week. One run at a time per `dataDir` (the lock in
   `dist/digest.lock`).
 - Email and Slack recipients will get the digest. Use a dry run if you are only testing.
-- Time: about 6 minutes for `light`, about 1 hour for `quality`. In Docker the command is
+- Time: about 6 minutes for `light`; `quality` is not measured end to end (its input guard alone
+  took 65 minutes on the reference laptop). In Docker the command is
   `docker compose run --rm digest run` (a second container is fine: the lock stops overlap).
 
 ## Steps

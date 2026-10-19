@@ -53,8 +53,8 @@ flowchart TD
 - The channels question and the summary name this week's folder, below `dataDir` resolved against
   `io.cwd` where `digest run` starts, not the config's folder (`prompts/saveLocally.ts`). In Docker
   they say `./dist/...` on the host, the compose mount of `/app/dist`.
-- The default profile is `light` whatever the RAM: `quality` has no measured baseline yet. The
-  schema default stays `quality`.
+- The default profile is `light` whatever the RAM: `quality` has no measured baseline yet, and on a
+  32 GB Mac it swapped (input guard alone 65 min, 2026-10-19). The schema default stays `quality`.
 - `OLLAMA_URL` follows where init runs: `localhost`, `host.docker.internal` (Docker on a Mac, where
   only the host's Ollama has the GPU) or `ollama` (the compose service). One set by hand is kept.
 - No schedule snippet in Docker, since the compose service schedules the run.

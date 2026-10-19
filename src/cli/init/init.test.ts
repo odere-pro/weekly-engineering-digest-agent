@@ -590,8 +590,10 @@ describe('the output', () => {
     await initCommand({ config: CONFIG_PATH }, quality.io);
     await initCommand({ config: CONFIG_PATH }, fast.io);
 
-    expect(quality.out.join('')).toMatch(/note:.*quality is not measured yet.*about 1 h/);
-    expect(fast.out.join('')).not.toMatch(/not measured yet/);
+    expect(quality.out.join('')).toMatch(
+      /note:.*quality is not measured end to end yet.*input guard alone took about 1 h/,
+    );
+    expect(fast.out.join('')).not.toMatch(/not measured end to end yet/);
   });
 });
 

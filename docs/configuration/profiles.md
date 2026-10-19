@@ -23,7 +23,7 @@ a measured baseline. A config file with no `profile` key gets `quality`.
 | `judge`                   | `clef:latest`                                      | none                             | none                          | none                         |
 | Ollama minimum            | 0.40.0                                             | 0.40.0                           | 0.40.0                        | 0.35.1                       |
 | Models to pull, about     | 66 GB                                              | 33 GB                            | 20 GB                         | 45 GB                        |
-| RAM                       | 32 GB                                              | not measured                     | 16 GB                         | not measured                 |
+| RAM                       | 32 GB (tight), 48 GB or more (estimate)            | not measured                     | 16 GB                         | not measured                 |
 
 Disk sizes are approximate registry sizes, and the RAM figures are what `digest init` and
 `doctor --readiness` use. The tags come from `src/config/profiles.ts`.
@@ -61,7 +61,9 @@ pnpm digest doctor --readiness
 It prints the machine (OS, Apple silicon, RAM, free disk, Node, Ollama) and one verdict per
 profile: `ready`, `pull models` or `not for this machine`. It needs no config file and calls only
 Ollama. It exits 0 when at least one profile is ready or needs only a pull, and 1 when none fits.
-RAM counts as enough within a 5% tolerance of 32 GiB (`quality`) or 16 GiB (`light`). For `fast`
+RAM counts as enough within a 5% tolerance of 32 GiB (`quality`) or 16 GiB (`light`). `quality` ran
+on a 32 GB Mac but swapped (8 of 9 GB of swap in use, input guard alone 65 min), so `digest init`
+also warns at 32 GiB and stays quiet from 48 GiB, an estimate that has not been measured. For `fast`
 and the fallback the check only asks for the 16 GiB floor and shows `yes (not measured)`.
 
 `pnpm digest doctor` (without the flag) checks the profile in your config: Ollama version against

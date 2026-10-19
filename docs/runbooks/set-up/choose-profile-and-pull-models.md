@@ -31,14 +31,16 @@ Pick the model profile that fits this machine, then pull exactly the Ollama mode
 2. Choose the profile. Only Apple silicon runs the tuned models. Anything else (including a Linux
    container) uses the fallback set, whatever `profile` says.
 
-   | Profile   | Models to pull                                                                              | RAM                 | Disk   |
-   | --------- | ------------------------------------------------------------------------------------------- | ------------------- | ------ |
-   | `light`   | `strands-decider:2b-mlx-bf16`, `granite4.1-guardian:8b`, `gemma4:e4b-mlx`                   | 16 GB               | ~20 GB |
-   | `fast`    | `strands-decider:2b-mlx-bf16`, `granite4.1-guardian:8b`, `nemotron-3.5-lightning:30b-mlx`   | not measured        | ~33 GB |
-   | `quality` | `clef:latest`, `granite4.1-guardian:8b`, `gemma4:31b-mlx`, `nemotron-3.5-lightning:30b-mlx` | 32 GB               | ~66 GB |
-   | fallback  | `clef:latest`, `granite4.1-guardian:8b`, `gemma4:31b`                                       | far more than 16 GB | ~45 GB |
+   | Profile   | Models to pull                                                                              | RAM                   | Disk   |
+   | --------- | ------------------------------------------------------------------------------------------- | --------------------- | ------ |
+   | `light`   | `strands-decider:2b-mlx-bf16`, `granite4.1-guardian:8b`, `gemma4:e4b-mlx`                   | 16 GB                 | ~20 GB |
+   | `fast`    | `strands-decider:2b-mlx-bf16`, `granite4.1-guardian:8b`, `nemotron-3.5-lightning:30b-mlx`   | not measured          | ~33 GB |
+   | `quality` | `clef:latest`, `granite4.1-guardian:8b`, `gemma4:31b-mlx`, `nemotron-3.5-lightning:30b-mlx` | 32 GB (tight), 48 GB+ | ~66 GB |
+   | fallback  | `clef:latest`, `granite4.1-guardian:8b`, `gemma4:31b`                                       | far more than 16 GB   | ~45 GB |
 
-   `light` is the only profile with a measured baseline, and the one `digest init` recommends. The
+   `light` is the only profile with a measured baseline, and the one `digest init` recommends. On a
+   32 GB Mac `quality` swapped: its input guard alone took 65 minutes (see
+   [cost and hardware](../../overview/cost-and-hardware.md)). The
    schema default is `quality`. To change the profile, edit `profile` in `digest.config.json` (or
    run `digest init` again, which rewrites the whole file).
 

@@ -95,7 +95,9 @@ describe('summary', () => {
     expect(text).toContain(
       `  note:     ${QUALITY_UNMEASURED}; set "profile" to "light" in ${CONFIG_PATH} for a shorter week.\n`,
     );
-    expect(text).toMatch(/note:.*quality is not measured yet.*about 1 h/);
+    expect(text).toMatch(
+      /note:.*quality is not measured end to end yet.*input guard alone took about 1 h/,
+    );
   });
 
   it.each(['light', 'fast'] as const)('has no such note for %s', (profile) => {

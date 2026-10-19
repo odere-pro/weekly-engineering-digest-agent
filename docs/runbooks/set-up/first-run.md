@@ -18,8 +18,8 @@ runs the whole pipeline and sends nothing. Do it before you schedule weekly runs
 
 - `digest.config.json` and `.env` exist (`digest init` wrote them).
 - The models of your profile are pulled.
-- Time: about 6 minutes for `light` on the reference laptop (340 s on average), about 1 hour
-  for `quality`. Docker prefix: `docker compose run --rm digest <command>`.
+- Time: about 6 minutes for `light` on the reference laptop (340 s on average). `quality` is
+  not measured end to end: its input guard alone took 65 minutes there. Docker prefix: `docker compose run --rm digest <command>`.
 
 ## Steps
 
