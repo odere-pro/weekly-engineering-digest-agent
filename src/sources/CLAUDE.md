@@ -61,9 +61,11 @@ flowchart TD
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                                  |
 | `collect.ts`                            | `collectStep`: concurrency, timeout, retry, validation, merge, cap, order                                         |
-| `adapters/pipeline.ts`                  | `createFetcher`, `normalizeEntry`, `SourceAdapter`, `RawEntry`, `SourceTap`                                       |
+| `adapters/`                             | The adapters and the shared fetch pipeline: see `adapters/CLAUDE.md`                                              |
+| `adapters/pipeline.ts`                  | `createFetcher`, `hostsOf`, `SourceAdapter`, `Get`, `SourceTap`                                                   |
+| `adapters/entries/`                     | `normalizeEntry`, `RawEntry`, read, select and merge the entries: see `adapters/entries/CLAUDE.md`                |
 | `adapters/http.ts`, `enrich.ts`         | `getText`, `sameSiteAs`; `enrichEntries` (page text for empty summaries)                                          |
-| `adapters/feedFields.ts`                | Raw feed fields and `parseFeedDate`; its `RawEntry` is not the pipeline's                                         |
+| `adapters/feedFields.ts`                | Raw feed fields and `parseFeedDate`; `XmlEntry` is the feed library's entry, not an adapter's `RawEntry`          |
 | `adapters/rss.ts`, `rssAdapter.ts`      | `createRssFetcher`; the RSS 2.0 and Atom adapter                                                                  |
 | `adapters/github*.ts`                   | `githubReleases` picks REST with a token (20 per page, no drafts or prereleases), else `releases.atom` (about 10) |
 
@@ -77,4 +79,5 @@ Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and arti
   `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
 - Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`,
   so the hosts of configured sources are not used.
-- `pipeline.ts` is 338 lines, over the 300 cap. Split it before adding to it.
+- The run's abort signal does not reach the fetchers: `collect.ts` passes each attempt only its own
+  timeout signal. The fetchers already pass on the signal they get.

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Answer } from './http';
-import { createFetcher, type RawEntry, type SourceAdapter, type SourceTap } from './pipeline';
+import type { RawEntry } from './entries/types';
+import { createFetcher, type SourceAdapter, type SourceTap } from './pipeline';
 import type { Source } from '../../domain/schemas';
 import type { FetchWindow } from '../SourceFetcher';
 

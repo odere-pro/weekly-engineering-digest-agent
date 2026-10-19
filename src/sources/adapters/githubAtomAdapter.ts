@@ -13,7 +13,8 @@ import {
   type Repo,
 } from './githubShared';
 import { permanentFailure } from './http';
-import type { RawEntry, SourceAdapter } from './pipeline';
+import type { RawEntry } from './entries/types';
+import type { SourceAdapter } from './pipeline';
 
 // The releases.atom feed of a repository: no token, about the latest ten releases, and it does
 // not flag prereleases.

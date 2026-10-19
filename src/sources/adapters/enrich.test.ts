@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { articleText, enrichEntries } from './enrich';
-import type { Get, RawEntry } from './pipeline';
+import type { RawEntry } from './entries/types';
+import type { Get } from './pipeline';
 import type { Reply } from './http';
 import type { Source } from '../../domain/schemas';
 import { FetchError } from '../../shared/errors';

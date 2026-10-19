@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Reply } from './http';
-import { createFetcher, normalizeEntry, type RawEntry, type SourceAdapter } from './pipeline';
+import type { RawEntry } from './entries/types';
+import { createFetcher, type SourceAdapter } from './pipeline';
 import { ItemSchema, type Source } from '../../domain/schemas';
 import type { FetchWindow } from '../SourceFetcher';
 import { noopLogger } from '../../shared/telemetry';
-import { itemIdFor } from '../../shared/url';
 
 const source: Source = { id: 'blog', kind: 'rss', url: 'https://example.com/feed.xml' };
 const window = (overrides: Partial<FetchWindow> = {}): FetchWindow => ({
@@ -20,65 +20,6 @@ const raw = (overrides: Partial<RawEntry> = {}): RawEntry => ({
   publishedAt: '2026-10-10T08:00:00Z',
   ...overrides,
 });
-const options = { maxSummaryChars: 600 };
-
-describe('normalizeEntry', () => {
-  it('builds the item: id from the url, plain summary, trimmed title, ISO date', () => {
-    expect(normalizeEntry(raw(), source, options)).toEqual({
-      id: itemIdFor('https://example.com/a'),
-      sourceId: 'blog',
-      kind: 'rss',
-      url: 'https://example.com/a',
-      title: 'A title',
-      summary: 'Some text & more',
-      publishedAt: '2026-10-10T08:00:00.000Z',
-    });
-  });
-
-  it('truncates the summary to maxSummaryChars', () => {
-    const item = normalizeEntry(raw({ text: 'word '.repeat(100) }), source, {
-      maxSummaryChars: 50,
-    });
-    expect(item?.summary.length).toBeLessThanOrEqual(50);
-    expect(item?.summary.endsWith('...')).toBe(true);
-  });
-
-  it.each([
-    ['an empty url', { url: '' }],
-    ['a relative url', { url: '/posts/a' }],
-    ['a javascript url', { url: 'javascript:alert(1)' }],
-    ['an ftp url', { url: 'ftp://example.com/a' }],
-    ['an unparseable date', { publishedAt: 'sometime' }],
-    ['an invalid Date', { publishedAt: new Date('nope') }],
-  ])('drops an entry with %s', (_name, overrides) => {
-    expect(normalizeEntry(raw(overrides), source, options)).toBeUndefined();
-  });
-
-  it('reads a date without a zone as UTC and accepts a Date', () => {
-    expect(
-      normalizeEntry(raw({ publishedAt: '2026-10-10 08:00' }), source, options)?.publishedAt,
-    ).toBe('2026-10-10T08:00:00.000Z');
-    expect(
-      normalizeEntry(raw({ publishedAt: new Date('2026-10-10T09:00:00Z') }), source, options)
-        ?.publishedAt,
-    ).toBe('2026-10-10T09:00:00.000Z');
-  });
-
-  it('appends the entry id as ?entry= only when the link is shared', () => {
-    const entry = raw({ url: 'https://example.com/notes?x=1', entryId: 'id 1' });
-
-    expect(normalizeEntry(entry, source, options)?.url).toBe('https://example.com/notes?x=1');
-    const distinct = normalizeEntry(entry, source, { ...options, distinctLink: true });
-    expect(distinct?.url).toBe('https://example.com/notes?x=1&entry=id%201');
-    expect(distinct?.id).toBe(itemIdFor(distinct?.url ?? ''));
-  });
-
-  it('keeps the link when a shared-link entry has no entry id', () => {
-    const item = normalizeEntry(raw(), source, { ...options, distinctLink: true });
-    expect(item?.url).toBe('https://example.com/a');
-  });
-});
-
 const ok = (body = ''): Reply => ({ ok: true, status: 200, headers: new Headers(), body });
 
 function adapterOf(

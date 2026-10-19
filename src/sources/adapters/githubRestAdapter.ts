@@ -10,7 +10,8 @@ import {
   releaseEntry,
 } from './githubShared';
 import { permanentFailure, type Reply } from './http';
-import type { Get, RawEntry, SourceAdapter } from './pipeline';
+import type { RawEntry } from './entries/types';
+import type { Get, SourceAdapter } from './pipeline';
 
 // The REST API of a repository's releases, used when a token is configured (5000 requests an
 // hour instead of the feed's anonymous limit). Prereleases and drafts are left out.

@@ -6,7 +6,7 @@ import type { FeedEntry } from '@extractus/feed-extractor';
 // through the library's `getExtraEntryFields` hook, and are the only place that knows its shape.
 
 /** An entry as the XML parser produced it: attributes are keys that start with "@_". */
-export type RawEntry = Readonly<Record<string, unknown>>;
+export type XmlEntry = Readonly<Record<string, unknown>>;
 
 /** What `rawChoices` adds to an entry; `choicesOf` reads it back. */
 export interface RawChoices {
@@ -85,7 +85,7 @@ function isTrackingParam(name: string): boolean {
  * RFC 4287). Undefined when the links are plain text, as in RSS, or none is a usable alternate:
  * the library's own pick stands then.
  */
-export function alternateLink(raw: RawEntry): string | undefined {
+export function alternateLink(raw: XmlEntry): string | undefined {
   const links: unknown[] = Array.isArray(raw.link) ? raw.link : [raw.link];
   for (const link of links) {
     if (typeof link !== 'object' || link === null) continue;
@@ -98,7 +98,7 @@ export function alternateLink(raw: RawEntry): string | undefined {
 }
 
 /** The entry's date texts that are not blank, published before updated. */
-export function dateTexts(raw: RawEntry): string[] {
+export function dateTexts(raw: XmlEntry): string[] {
   return DATE_KEYS.map((key) => textOf(raw[key]).trim()).filter((text) => text !== '');
 }
 
@@ -133,7 +133,7 @@ function withTypographicEntities(html: string): string {
 }
 
 /** The entry's description or content, still as markup. */
-export function entryHtml(raw: RawEntry): string {
+export function entryHtml(raw: XmlEntry): string {
   for (const key of HTML_KEYS) {
     const text = textOf(raw[key]);
     if (text) return withTypographicEntities(text);
@@ -142,7 +142,7 @@ export function entryHtml(raw: RawEntry): string {
 }
 
 /** For the library's `getExtraEntryFields`. */
-export function rawChoices(raw: RawEntry): RawChoices {
+export function rawChoices(raw: XmlEntry): RawChoices {
   return { alternateUrl: alternateLink(raw), dateTexts: dateTexts(raw), html: entryHtml(raw) };
 }
 

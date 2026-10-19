@@ -2,7 +2,8 @@ import { extractFromXml, type FeedEntry } from '@extractus/feed-extractor';
 import { errorMessage } from '../../shared/errors';
 import { choicesOf, parseFeedDate, rawChoices } from './feedFields';
 import { permanentFailure, statusFailure } from './http';
-import type { RawEntry, SourceAdapter } from './pipeline';
+import type { RawEntry } from './entries/types';
+import type { SourceAdapter } from './pipeline';
 
 // RSS 2.0 and Atom (W1-01). Parses only; the pipeline normalizes.
 

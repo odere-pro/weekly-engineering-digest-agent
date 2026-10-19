@@ -1,7 +1,7 @@
 import type { Source } from '../../domain/schemas';
 import { FetchError } from '../../shared/errors';
 import { permanentFailure, statusFailure, type Reply } from './http';
-import type { RawEntry } from './pipeline';
+import type { RawEntry } from './entries/types';
 
 // What the two GitHub transports (releases.atom and the REST API) have in common.
 

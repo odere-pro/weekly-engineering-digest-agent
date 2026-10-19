@@ -3,7 +3,8 @@ import { errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { toPlainText, truncate } from '../../shared/text';
 import { sameSiteAs } from './http';
-import type { Get, RawEntry } from './pipeline';
+import type { RawEntry } from './entries/types';
+import type { Get } from './pipeline';
 
 // Some feeds carry no body text for some or all entries (Hugging Face, Node.js, parts of Google
 // DeepMind and Mistral). For those entries the entry's own page is fetched and its first
