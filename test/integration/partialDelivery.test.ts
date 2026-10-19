@@ -4,7 +4,7 @@
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
-import { KEPT_SENT_REASON } from '../../src/digest/runEnding';
+import { KEPT_SENT_REASON } from '../../src/digest/ending/keepReason';
 import { ExitCode } from '../../src/domain/schemas';
 import { type DeliveryId } from '../../src/delivery/deliveryId';
 import { type RunRecord } from '../../src/store/runRecord';

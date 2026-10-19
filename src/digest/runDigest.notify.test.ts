@@ -1,7 +1,8 @@
 // W5-12: RunOptions.notifyFailure reaches the ending of a run, whichever way the run fails.
 import { describe, expect, it } from 'vitest';
 import { requiredModels, type ModelProfile } from '../config/profiles';
-import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps, type RunOptions } from './types';
 import { RunRecordSchema } from '../store/runRecord';
 import type { ModelHealth } from '../models/ModelProvider';
 import type { LogFields, Logger } from '../shared/telemetry';

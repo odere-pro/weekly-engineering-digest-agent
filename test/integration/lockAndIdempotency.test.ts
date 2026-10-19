@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { runDigest } from '../../src/digest/runDigest';
-import { KEPT_SENT_REASON } from '../../src/digest/runEnding';
+import { KEPT_SENT_REASON } from '../../src/digest/ending/keepReason';
 import { ExitCode } from '../../src/domain/schemas';
 import type { ModelProvider } from '../../src/models/ModelProvider';
 import {

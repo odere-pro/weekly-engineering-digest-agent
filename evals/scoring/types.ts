@@ -1,5 +1,5 @@
 import type { ProfileName } from '../../src/config/schema';
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import type { EvalCases, EvalSetSize, EvalWeek } from '../cases/evalSet';
 import type { EvalSection } from '../checkpointSections';
 import type { GroundingResults } from '../classifierRun/checkGrounding';

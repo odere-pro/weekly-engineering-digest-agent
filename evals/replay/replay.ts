@@ -1,5 +1,5 @@
 import { GuardsConfigSchema } from '../../src/config/schema';
-import type { DigestDeps, RunOptions, RunResult } from '../../src/digest/runDigest';
+import type { DigestDeps, RunOptions, RunResult } from '../../src/digest/types';
 import type { Item } from '../../src/domain/schemas';
 import { fixedClock, type Clock } from '../../src/shared/clock';
 import type { RunRecord } from '../../src/store/runRecord';

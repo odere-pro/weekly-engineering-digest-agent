@@ -2,7 +2,8 @@
 // the log (W5-03 follow-up), and the abort signal (F46). The health check follows the guards in
 // use (F30): see health/assertModelsReady.test.ts.
 import { describe, expect, it, vi } from 'vitest';
-import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps, type RunOptions } from './types';
 import { ExitCode, type Digest, type Item } from '../domain/schemas';
 import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import { QUESTION_IDS } from '../classify/classifyPrompt';

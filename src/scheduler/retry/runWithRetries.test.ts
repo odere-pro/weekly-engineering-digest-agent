@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../../digest/runDigest';
-import { RecordNotSavedError } from '../../digest/runEnding';
+import type { RunResult } from '../../digest/types';
+import { RecordNotSavedError } from '../../digest/ending/saveRecord';
 import { ExitCode, type RunStatus } from '../../domain/schemas';
 import { DigestError } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';

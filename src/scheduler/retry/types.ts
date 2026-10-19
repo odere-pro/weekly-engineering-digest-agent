@@ -1,4 +1,4 @@
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import type { Logger } from '../../shared/telemetry';
 import type { Budget, Waiter } from './wait';
 

@@ -2,7 +2,7 @@
 // retry and the retry does not happen, the scheduler hands the last failed result to `onGiveUp`,
 // which sends the note, exactly once.
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,
@@ -11,7 +11,7 @@ import {
   type SchedulerHandle,
   type SchedulerOptions,
 } from '../scheduler';
-import { RecordNotSavedError } from '../../digest/runEnding';
+import { RecordNotSavedError } from '../../digest/ending/saveRecord';
 import { DigestError } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { makeRunRecord } from '../../../test/builders';

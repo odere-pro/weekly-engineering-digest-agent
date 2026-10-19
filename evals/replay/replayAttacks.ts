@@ -1,4 +1,4 @@
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import type { Item } from '../../src/domain/schemas';
 import type { GuardCheckId } from '../../src/guards/guardVerdict';
 import { sameUrl } from '../../src/shared/url';

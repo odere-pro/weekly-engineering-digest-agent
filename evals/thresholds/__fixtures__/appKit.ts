@@ -3,7 +3,7 @@ import type { AppHandle } from '../../../src/app/container';
 import type { LoadedConfig } from '../../../src/config/load';
 import { PROFILES, resolveProfile, type Platform } from '../../../src/config/profiles';
 import { EnvSchema, SecretsSchema } from '../../../src/config/schema';
-import type { DigestDeps } from '../../../src/digest/runDigest';
+import type { DigestDeps } from '../../../src/digest/types';
 import type { GuardCheckId } from '../../../src/guards/guardVerdict';
 import type { ModelHealth } from '../../../src/models/ModelProvider';
 import { fixedClock } from '../../../src/shared/clock';

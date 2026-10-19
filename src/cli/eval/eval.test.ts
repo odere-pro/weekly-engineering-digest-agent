@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { describe, expect, it, vi, type Mock } from 'vitest';
 import { ScorecardSchema, type Scorecard } from '../../../evals/schema';
-import type { DigestDeps } from '../../digest/runDigest';
+import type { DigestDeps } from '../../digest/types';
 import { evalCommand, type EvalCommandIo } from './eval';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { NON_MAC_FALLBACK, PROFILES, type Platform } from '../../config/profiles';

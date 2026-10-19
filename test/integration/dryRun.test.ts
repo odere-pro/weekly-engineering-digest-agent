@@ -1,7 +1,8 @@
 // Spec phase 1 exit gate: a dry run writes a digest from mock models. Every port is a fake;
 // the steps, checks, render and the step loop are the real ones.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
+import { runDigest } from '../../src/digest/runDigest';
+import { type DigestDeps } from '../../src/digest/types';
 import { ExitCode, type Item } from '../../src/domain/schemas';
 import { RunRecordSchema } from '../../src/store/runRecord';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';

@@ -1,7 +1,7 @@
 import { buildApp, type AppHandle } from '../../app/container';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { runDigest } from '../../digest/runDigest';
-import { sendHeldNote } from '../../digest/runEnding';
+import { sendHeldNote } from '../../digest/ending/notes/failureNotes';
 import {
   DEFAULT_FAILED_RETRY,
   startScheduler,

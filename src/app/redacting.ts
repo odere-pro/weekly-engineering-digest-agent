@@ -9,8 +9,6 @@ import type { RunStore } from '../store/RunStore';
 import { decorate, type MemberRules } from './decorate';
 import { redactMessage, redactNote } from './redaction/deliveryFields';
 
-export { knownSecrets } from './redaction/knownSecrets'; // compat (W10-B23): remove when callers move
-
 /**
  * Every member of the run store, and how it is wrapped: what is written goes through the redactor,
  * what is read or only asked about goes straight to the store.

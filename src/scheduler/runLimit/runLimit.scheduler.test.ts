@@ -1,7 +1,7 @@
 // W5-09 (F46): the scheduler's run time limit, seen through startScheduler. The limit itself
 // (signal, reason text, timer) is also tested on its own in runLimit.test.ts.
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,

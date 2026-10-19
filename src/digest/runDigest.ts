@@ -14,8 +14,6 @@ import { chainSteps } from './stages/chainSteps';
 import type { DigestDeps, RunOptions, RunResult } from './types';
 import { runWorkflow } from './workflow';
 
-export type { DigestDeps, RunOptions, RunResult } from './types'; // compat (W10-B23): remove when callers move
-
 const WORKFLOW_ID = 'digest';
 
 /**

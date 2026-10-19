@@ -1,4 +1,4 @@
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { attemptRun } from './attemptRun';
 import { handOver } from './handOver';
 import type { RetryContext, RetryKind, Trigger } from './types';

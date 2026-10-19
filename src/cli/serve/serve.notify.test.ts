@@ -4,7 +4,7 @@ import { describe, expect, it, vi, type Mock } from 'vitest';
 import type { AppHandle } from '../../app/container';
 import type { LoadedConfig } from '../../config/load';
 import { PROFILES } from '../../config/profiles';
-import type { DigestDeps, RunResult } from '../../digest/runDigest';
+import type { DigestDeps, RunResult } from '../../digest/types';
 import { ExitCode } from '../../domain/schemas';
 import { serveCommand, type ServeCommandIo } from './serve';
 import type { SchedulerHandle, SchedulerOptions } from '../../scheduler/scheduler';

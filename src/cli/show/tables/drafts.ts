@@ -2,7 +2,7 @@ import type { z } from 'zod';
 import { problemLines, OutcomeNotesSchema } from './problemLines';
 import { cell, formatScore, table } from './table';
 import { parseFile } from '../parseFile';
-import { DraftsFileSchema } from '../../../digest/runEnding';
+import { DraftsFileSchema } from '../../../digest/ending/runFiles/runFiles';
 import type { RunStore } from '../../../store/RunStore';
 
 const itemCount = (file: z.infer<typeof DraftsFileSchema>, writer: string): string =>

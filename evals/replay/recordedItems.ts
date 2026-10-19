@@ -1,5 +1,5 @@
 import { SourceKindSchema, type Item, type Source } from '../../src/domain/schemas';
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import type { FetchWindow } from '../../src/sources/SourceFetcher';
 import { weekStartUtc } from '../../src/shared/isoWeek';
 

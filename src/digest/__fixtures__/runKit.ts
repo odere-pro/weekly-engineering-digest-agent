@@ -1,7 +1,8 @@
 // The set-up the end-to-end runDigest tests share: a fake model that answers by role, fake
 // sources, guards and channels, and a recording logger and tracer.
 import { expect } from 'vitest';
-import { runDigest, type DigestDeps, type RunOptions } from '../runDigest';
+import { runDigest } from '../runDigest';
+import { type DigestDeps, type RunOptions } from '../types';
 import { type Digest, type Draft, type Item } from '../../domain/schemas';
 import { RunRecordSchema, type RunRecord } from '../../store/runRecord';
 import { type GuardCheckId } from '../../guards/guardVerdict';

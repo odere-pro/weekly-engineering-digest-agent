@@ -7,7 +7,7 @@ import type { AppHandle } from '../../app/container';
 import { runCommand, type RunCommandDeps } from './run';
 import type { LoadedConfig } from '../../config/load';
 import { PROFILES } from '../../config/profiles';
-import type { DigestDeps, RunResult } from '../../digest/runDigest';
+import type { DigestDeps, RunResult } from '../../digest/types';
 import { ExitCode } from '../../domain/schemas';
 import { type RunRecord } from '../../store/runRecord';
 import type { Delivery, DigestMessage, DigestView } from '../../delivery/Delivery';

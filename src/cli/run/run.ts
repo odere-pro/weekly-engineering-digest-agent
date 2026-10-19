@@ -10,12 +10,8 @@ import { weekDigestDir } from '../../store/layout';
 import { buildApp, type AppHandle } from '../../app/container';
 import { loadConfig, redactSecrets, type LoadedConfig } from '../../config/load';
 import type { Secrets } from '../../config/schema';
-import {
-  runDigest,
-  type DigestDeps,
-  type RunOptions,
-  type RunResult,
-} from '../../digest/runDigest';
+import { runDigest } from '../../digest/runDigest';
+import { type DigestDeps, type RunOptions, type RunResult } from '../../digest/types';
 import { ExitCode } from '../../domain/schemas';
 import { DigestError, errorMessage } from '../../shared/errors';
 import { formatRunDuration } from '../history/history';

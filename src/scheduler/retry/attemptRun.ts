@@ -1,5 +1,6 @@
-import type { RunResult } from '../../digest/runDigest';
-import { isUnretriable, needsForce, RecordNotSavedError } from '../../digest/runEnding';
+import type { RunResult } from '../../digest/types';
+import { isUnretriable, needsForce } from '../../digest/ending/notes/unretriable';
+import { RecordNotSavedError } from '../../digest/ending/saveRecord';
 import { errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { isLockHeldError } from '../../store/adapters/lockState/lockHeldError';

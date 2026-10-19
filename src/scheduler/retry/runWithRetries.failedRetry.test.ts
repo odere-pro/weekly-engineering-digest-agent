@@ -2,7 +2,7 @@
 // tested on its own in runWithRetries.test.ts; the lock-held retry in
 // runWithRetries.lockRetry.test.ts.
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,

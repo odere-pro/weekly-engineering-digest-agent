@@ -1,4 +1,4 @@
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { errorMessage } from '../../shared/errors';
 import type { AttemptSettings, RetryWhere } from './types';
 

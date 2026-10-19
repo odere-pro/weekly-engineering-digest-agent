@@ -13,7 +13,7 @@ import { runCommand, type RunCommandOptions } from '../../src/cli/run/run';
 import { PROFILES, requiredModels } from '../../src/config/profiles';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../../src/select/judgePrompt';
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import { RunRecordSchema, type RunRecord } from '../../src/store/runRecord';
 import { type Item } from '../../src/domain/schemas';
 import { type Role } from '../../src/models/roles';

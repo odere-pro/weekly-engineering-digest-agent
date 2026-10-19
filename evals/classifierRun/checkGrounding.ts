@@ -1,5 +1,5 @@
 import { GuardsConfigSchema } from '../../src/config/schema';
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import type { Draft } from '../../src/domain/schemas';
 import type { GuardCheckId } from '../../src/guards/guardVerdict';
 import { guardOutputStep } from '../../src/guards/guardOutput';

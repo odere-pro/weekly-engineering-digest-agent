@@ -4,7 +4,7 @@ import {
   createSourceArchive,
   type SavedSource,
 } from '../../../sources/adapters/archive/sourceArchive';
-import { toJson } from '../../../digest/runEnding';
+import { toJson } from '../../../digest/ending/runFiles/runFiles';
 import type { Plan } from '../plan/types';
 import { summaryOf } from '../report/summaryOf';
 import type { Recorder } from '../sourceRun/recorder';

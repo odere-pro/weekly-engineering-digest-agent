@@ -1,5 +1,5 @@
 import { areaHintsOf, classifyStep } from '../../src/classify/classify';
-import type { DigestDeps } from '../../src/digest/runDigest';
+import type { DigestDeps } from '../../src/digest/types';
 import { DigestError } from '../../src/shared/errors';
 import type { ClassifierResult } from '../metrics/ranking/classifier';
 import type { ClassifierCase } from '../schema';

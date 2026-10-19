@@ -1,7 +1,7 @@
 // W5-12: the scheduler tells each attempt whether its failure note may go out. One root cause
 // then sends one note, from the last attempt; a run nobody will retry sends its note at once.
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../../digest/runDigest';
+import type { RunResult } from '../../digest/types';
 import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,

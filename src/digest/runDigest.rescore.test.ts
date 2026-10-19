@@ -1,7 +1,8 @@
 // The classify stage passes models.rescoreWithWriter and thresholds.minRelevance on, so the key
 // does what the config says. Off by default: a run with the flag off is the plain run.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps } from './types';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { requiredModels, type ModelProfile } from '../config/profiles';
 import type { ConfigInput } from '../config/schema';

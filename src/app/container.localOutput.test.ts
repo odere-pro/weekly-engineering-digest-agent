@@ -8,7 +8,7 @@ import type { LoadedConfig } from '../config/load';
 import { resolveProfile, type Platform } from '../config/profiles';
 import { EnvSchema, SecretsSchema, type ConfigInput } from '../config/schema';
 import type { Delivery, DigestMessage, DigestView } from '../delivery/Delivery';
-import type { DigestDeps } from '../digest/runDigest';
+import type { DigestDeps } from '../digest/types';
 import type { Source } from '../domain/schemas';
 import type { FetchWindow, SourceFetcher } from '../sources/SourceFetcher';
 import { makeConfig } from '../../test/builders';

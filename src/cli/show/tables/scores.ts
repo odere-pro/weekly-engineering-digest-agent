@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { cell, formatScore, table } from './table';
 import { parseFile } from '../parseFile';
 import { ClassificationSchema } from '../../../classify/classification';
-import { DraftsFileSchema } from '../../../digest/runEnding';
+import { DraftsFileSchema } from '../../../digest/ending/runFiles/runFiles';
 import { ItemSchema } from '../../../domain/schemas';
 import type { RunStore } from '../../../store/RunStore';
 

@@ -11,7 +11,7 @@ import { runEval, type EvalDeps } from './runEval';
 import type { AppHandle } from '../src/app/container';
 import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
 import { PROFILES } from '../src/config/profiles';
-import type { DigestDeps } from '../src/digest/runDigest';
+import type { DigestDeps } from '../src/digest/types';
 import { ItemSchema, type Item, type Source } from '../src/domain/schemas';
 import { collectStep } from '../src/sources/collect';
 import { makeConfig, makeItem, makeRunRecord } from '../test/builders';

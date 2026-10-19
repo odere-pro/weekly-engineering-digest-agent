@@ -1,7 +1,8 @@
 // Run semantics (W2-08): a write step with no draft fails the run, delivery is recorded per
 // channel, and a rerun of a partly delivered week only finishes the delivery.
 import { describe, expect, it, vi } from 'vitest';
-import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps, type RunOptions } from './types';
 import { KEPT_PARTLY_REASON, KEPT_SENT_REASON } from './ending/keepReason';
 import { ExitCode, type Digest, type Draft, type Item } from '../domain/schemas';
 import { RunRecordSchema, type RunRecord } from '../store/runRecord';

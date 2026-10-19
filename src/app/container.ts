@@ -16,7 +16,7 @@ import { createFsRunStore } from '../store/adapters/fsRunStore';
 import { weekDay } from '../store/layout';
 import type { LoadedConfig } from '../config/load';
 import type { Config, Secrets } from '../config/schema';
-import type { DigestDeps } from '../digest/runDigest';
+import type { DigestDeps } from '../digest/types';
 import { RoleSchema } from '../models/roles';
 import type { Delivery } from '../delivery/Delivery';
 import type { ModelProvider } from '../models/ModelProvider';

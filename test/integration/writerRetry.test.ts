@@ -2,7 +2,8 @@
 // retry fixes it) ends sent, one that stays wrong ends blocked with the reasons on disk, and an
 // aborted run ends failed with its lock released.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
+import { runDigest } from '../../src/digest/runDigest';
+import { type DigestDeps } from '../../src/digest/types';
 import { ExitCode } from '../../src/domain/schemas';
 import { DATA_OPEN } from '../../src/shared/untrusted';
 import {

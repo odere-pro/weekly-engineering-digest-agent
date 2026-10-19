@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runDigest } from '../digest/runDigest';
-import { sendHeldNote } from '../digest/runEnding';
+import { sendHeldNote } from '../digest/ending/notes/failureNotes';
 import type { ModelHealth } from '../models/ModelProvider';
 import type { RunStore } from '../store/RunStore';
 import {

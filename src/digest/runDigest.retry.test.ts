@@ -3,7 +3,8 @@
 // keeps only what the run owns: the retry flag in drafts.json, the record, the guards seeing the
 // final draft, and no model text in the record or the failure note.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps, type RunOptions } from './types';
 import type { Digest, Draft, Item } from '../domain/schemas';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { requiredModels, type ModelProfile } from '../config/profiles';

@@ -5,7 +5,7 @@
 import type { AppHandle } from '../src/app/container';
 import { modelsByRole } from '../src/config/profiles';
 import type { ProfileName } from '../src/config/schema';
-import type { DigestDeps } from '../src/digest/runDigest';
+import type { DigestDeps } from '../src/digest/types';
 import { errorMessage } from '../src/shared/errors';
 import { SPEC_EVAL_SET, type EvalCases, type EvalSetSize, type EvalWeek } from './cases/evalSet';
 import { loadEvalCases } from './cases/loadEvalCases';

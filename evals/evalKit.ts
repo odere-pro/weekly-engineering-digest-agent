@@ -8,7 +8,7 @@ import type { EvalDeps } from './runEval';
 import type { AppHandle } from '../src/app/container';
 import { PROFILES } from '../src/config/profiles';
 import { renderDigest } from '../src/render/markdown';
-import type { DigestDeps, RunOptions, RunResult } from '../src/digest/runDigest';
+import type { DigestDeps, RunOptions, RunResult } from '../src/digest/types';
 import type { GuardCheckId } from '../src/guards/guardVerdict';
 import type { Item } from '../src/domain/schemas';
 import type { DecisionAnswer } from '../src/models/ModelProvider';

@@ -1,7 +1,8 @@
 // The template-only floor (W11-02): a week where no draft survives the checks or the guards is
 // still sent, from the selected items' own text, with no model call.
 import { describe, expect, it } from 'vitest';
-import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
+import { runDigest } from './runDigest';
+import { type DigestDeps, type RunOptions } from './types';
 import { RunRecordSchema } from '../store/runRecord';
 import { type Draft, type Item } from '../domain/schemas';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
