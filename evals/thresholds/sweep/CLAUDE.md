@@ -24,10 +24,9 @@ value of each threshold that does best against our labels. It reads no file and 
   `MARGIN_STEPS`), then to the point closest to the thresholds in use. A small shift in model
   probabilities should not change the outcome, and nothing moves further than the data asks.
 - A probability equal to `guardFlag` is not flagged, as in the clefPolicy guard.
-- `keepsItem.ts` is the keep test the sweep scores with. It repeats the three rules of
-  `src/process/process.ts` (`filterStages`) on purpose and sits in its own file so one shared
-  predicate can replace it. `keepsItem.test.ts` runs `processStep` on a table of items and fails
-  when the two disagree.
+- `keepsItem.ts` is the keep test the sweep scores with. It calls `passesThresholds` from
+  `src/process/filter/thresholds.ts`, the process step's own rule, so the two cannot drift.
+  `keepsItem.test.ts` still runs `processStep` on a table of items to pin that.
 - `measures.ts` reads the gate numbers (false blocks at most 5%, classifier accuracy at least
   80%) from `GATES` in `evals/metrics.ts`, so the sweep and the scorecard cannot drift apart.
 - `EPSILON` absorbs floating-point noise in every comparison of a score or a threshold.
