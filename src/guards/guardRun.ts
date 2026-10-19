@@ -1,8 +1,8 @@
 // The guard engine both guard steps share (W5-06, F36): which guards run, and how they run.
 import type { GuardMode } from '../config/schema';
-import { startProgress } from '../progress/progress';
 import type { Clock } from '../shared/clock';
 import { DigestError } from '../shared/errors';
+import { startProgress } from '../shared/progress';
 import type { Logger } from '../shared/telemetry';
 import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 

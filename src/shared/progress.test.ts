@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { LogFields, Logger } from '../shared/telemetry';
+import type { LogFields, Logger } from './telemetry';
 import { steppedClock } from './__fixtures__/steppedClock';
 import { formatDuration, PROGRESS_EVERY_ITEMS, PROGRESS_EVERY_MS, startProgress } from './progress';
 

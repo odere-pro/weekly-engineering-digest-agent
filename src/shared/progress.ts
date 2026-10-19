@@ -1,5 +1,5 @@
-import { systemClock, type Clock } from '../shared/clock';
-import type { Logger } from '../shared/telemetry';
+import { systemClock, type Clock } from './clock';
+import type { Logger } from './telemetry';
 
 /** One line after this many items, or after `PROGRESS_EVERY_MS`, whichever comes first. */
 export const PROGRESS_EVERY_ITEMS = 25;

@@ -6,8 +6,8 @@ import { areaOptions, classifyQuestions, classifyState } from './classifyPrompt'
 import { rescoreFiltered } from './rescore/rescoreFiltered';
 import type { ClassifierDeps } from './types';
 import { type Item, type Source } from '../domain/schemas';
-import { startProgress } from '../progress/progress';
 import type { Clock } from '../shared/clock';
+import { startProgress } from '../shared/progress';
 
 export interface ClassifyDeps extends ClassifierDeps {
   /**

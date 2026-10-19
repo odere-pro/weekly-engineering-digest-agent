@@ -1,6 +1,6 @@
 // A clock a test moves by hand: `fixedClock` that `advance` re-points. For code that measures the
 // time between two events (progress, ETA) without a real wait.
-import { fixedClock, type Clock } from '../../shared/clock';
+import { fixedClock, type Clock } from '../clock';
 
 export interface SteppedClock {
   readonly clock: Clock;

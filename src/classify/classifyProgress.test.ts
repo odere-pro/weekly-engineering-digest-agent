@@ -5,7 +5,7 @@ import { classifyStep } from './classify';
 import { answersFor, makeDeps, makeItems } from './__fixtures__/classifyKit';
 import type { LogFields } from '../shared/telemetry';
 import { FakeModelProvider, noopLogger } from '../../test/fakes';
-import { steppedClock } from '../progress/__fixtures__/steppedClock';
+import { steppedClock } from '../shared/__fixtures__/steppedClock';
 
 function setup(secondsPerItem: number) {
   const time = steppedClock();

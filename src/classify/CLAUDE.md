@@ -53,7 +53,7 @@ flowchart TD
   each call is preceded by `signal?.throwIfAborted()`. An abort rejects the step with the signal's
   reason: it is never a score, never an item the model "left out", and never a failed rescore
   batch (`rescoreBatch` rethrows when the signal fired, whatever the call threw).
-- Decide mode logs a `Progress` line (`src/progress/`, label `classify`) every 25 items or minute,
+- Decide mode logs a `Progress` line (`shared/progress`, label `classify`) every 25 items or minute,
   with the median call and the time left. `ClassifyDeps.clock` times it (the stage passes the run's).
 - The area hint comes from config and sits outside the untrusted block. `tagText` flattens it to
   one line so it cannot add instructions. A blank hint means no hint.

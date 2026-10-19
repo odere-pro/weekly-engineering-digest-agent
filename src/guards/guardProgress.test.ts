@@ -8,7 +8,7 @@ import { guardInputStep } from './guardInput';
 import { guardOutputStep } from './guardOutput';
 import { makeConfig, makeDraft, makeItem } from '../../test/builders';
 import { FakeInputGuard, FakeOutputGuard, noopLogger } from '../../test/fakes';
-import { steppedClock } from '../progress/__fixtures__/steppedClock';
+import { steppedClock } from '../shared/__fixtures__/steppedClock';
 
 interface Progress {
   label: unknown;

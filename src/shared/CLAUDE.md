@@ -1,8 +1,8 @@
 # Shared
 
 > Small helpers many features need and none should own: errors with exit codes, clock, retry and
-> timeout, ISO weeks, URL and text cleaning, the untrusted-data wrapper, the `Logger` and `Tracer`
-> interfaces, the atomic file writer. Any layer may import them. No entry point, no port.
+> timeout, ISO weeks, URL and text cleaning, the untrusted-data wrapper, `Logger` and `Tracer`, the
+> atomic file writer, the progress log. Any layer may import them. No entry point, no port.
 
 ## Context
 
@@ -26,6 +26,7 @@ flowchart TD
   isoWeek["isoWeek.ts"] --> weeks["run ids: digest, scheduler, fsRunStore, evals"]
   text["text.ts"] --> caps["toPlainText in sources/adapters, truncate in write, select, render, delivery, printableLine in eval scorecard and show tables"]
   atomic["atomicFile.ts"] --> files["run store, lock, markdown delivery, source archive, preview"]
+  progress["progress.ts"] -->|"startProgress"| steps["guards/guardRun, classify/classify"]
 ```
 
 ## Rules
@@ -48,6 +49,10 @@ flowchart TD
 - `printableLine` turns each run of Unicode control (`Cc`) and format (`Cf`) characters, U+2028 and U+2029
   into one space, then trims. It matches the classes, not a list of ranges, so a new invisible format
   character is covered. A zero-width joiner counts: a joined emoji prints as its parts.
+- `startProgress` logs a `Progress` line every 25 items or 60 s and on the last item. The estimate is
+  the median gap between two ticks times the items left: the median, because the first item often loads
+  the model; ticks, so it holds with any number of items in flight. Fields are counts, times and
+  `label`, never item text. A step calls it, not the model adapter: only the step knows the total.
 - `withRetry`: `retries` counts extra tries, delay `baseDelayMs * 2^attempt` up to `maxDelayMs`; a
   fired `signal` ends it at once. `withTimeout` rejects with `TimeoutError` even when `fn` ignores the signal.
 
@@ -59,13 +64,15 @@ flowchart TD
 | `clock.ts`      | `Clock`, `systemClock`, `fixedClock` (a fresh `Date` per call)                                           |
 | `errors.ts`     | `DigestError`, `FetchError`, `errorMessage`                                                              |
 | `isoWeek.ts`    | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`                          |
+| `progress.ts`   | `startProgress`, `formatDuration`, `PROGRESS_EVERY_ITEMS`, `PROGRESS_EVERY_MS`                           |
 | `retry.ts`      | `withRetry`, `withTimeout`, `TimeoutError`                                                               |
 | `telemetry.ts`  | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                                              |
 | `text.ts`       | `toPlainText`, `truncate`, `wordCount`, `printableLine`                                                  |
 | `untrusted.ts`  | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`                          |
 | `url.ts`        | `normalizeUrl`, `itemIdFor`, `sameUrl`                                                                   |
 
-Tests sit next to each file, except `clock.ts` and `telemetry.ts`. No fixtures.
+Tests sit next to each file, except `clock.ts` and `telemetry.ts`. One fixture, `__fixtures__/steppedClock.ts`:
+a `fixedClock` a test moves by hand (`advance`), for the progress tests here, in `guards` and in `classify`.
 
 ## Gotchas
 
@@ -77,6 +84,7 @@ Tests sit next to each file, except `clock.ts` and `telemetry.ts`. No fixtures.
 - Do not renumber `ExitCode` (`domain/schemas.ts`): schedulers and scripts read them (`docs/reference/exit-codes.md`).
 - `untrusted.test.ts` pins the block `<<<DATA label>>>\ntext\n<<<END DATA>>>`; write prompt tests find
   blocks by `DATA_OPEN` and `DATA_CLOSE`.
+- The progress tests in `guards` and `classify` read the `Progress` message and its field names.
 - A change to `Logger` or `Tracer` needs a matching change in `src/observability`, the `noop*` objects
   (re-exported by `test/fakes`) and hand-made loggers in tests (`write.retry.test.ts`).
 - `atomicFile.ts` is the one writer behind every saved file (temp file, fsync, rename). Keep its
