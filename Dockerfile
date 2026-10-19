@@ -25,6 +25,14 @@ RUN pnpm build
 
 FROM ${NODE_IMAGE} AS runtime
 ENV NODE_ENV=production
+# Debian security fixes the pinned base does not have yet (CI's image scan fails on a fixable HIGH
+# or CRITICAL). npm and corepack go: the image runs node only, and their bundled packages are
+# otherwise the scan's npm findings.
+RUN apt-get update \
+  && apt-get upgrade -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/* \
+    /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 # The program lives in /opt/eng-digest. /app is the working folder: digest.config.json, .env,
 # evals and dist/, the data folder (dataDir defaults to dist), where runs, fetched data and logs go.
 # Compose bind-mounts ./dist over /app/dist, which is why the CLI cannot sit in /app/dist/artifacts.

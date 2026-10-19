@@ -82,16 +82,16 @@ nobody has fetched it, delete the tag with `git push origin --delete vX.Y.Z` and
 
 ## Troubleshooting
 
-| Symptom                                           | Cause                                              | Fix                                                                        |
-| ------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------- |
-| `pnpm format:check` fails                         | A file is not formatted                            | `pnpm format`, review, commit.                                             |
-| `pnpm coverage` fails on a threshold              | Under 80% lines, functions, branches or statements | Add tests (`vitest.config.ts` holds the thresholds).                       |
-| `pnpm audit` reports a high advisory              | A production dependency is vulnerable              | Upgrade it on `main` and update the lockfile.                              |
-| `image-scan` fails (Trivy, HIGH or CRITICAL)      | The base image has a fix available                 | Bump the pinned `NODE_IMAGE` digest in the `Dockerfile` (see its comment). |
-| `docker/validate.sh` prints `FAIL: ...`           | Compose, image or model list drifted               | Read the message; `pull-models.sh` must match `src/config/profiles.ts`.    |
-| The commit or tag is not signed, or signing fails | The 1Password SSH agent is locked                  | Unlock it and retry. Do not pass `--no-gpg-sign`.                          |
-| `commit-msg: AI attribution ... is not allowed.`  | A trailer names a tool                             | Remove the line from the message.                                          |
-| `fatal: tag 'vX.Y.Z' already exists`              | The tag was made earlier                           | `git tag -d vX.Y.Z` if unpushed, otherwise pick the next version.          |
+| Symptom                                           | Cause                                              | Fix                                                                                                                                                                                                                                |
+| ------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check` fails                         | A file is not formatted                            | `pnpm format`, review, commit.                                                                                                                                                                                                     |
+| `pnpm coverage` fails on a threshold              | Under 80% lines, functions, branches or statements | Add tests (`vitest.config.ts` holds the thresholds).                                                                                                                                                                               |
+| `pnpm audit` reports a high advisory              | A production dependency is vulnerable              | Upgrade it on `main` and update the lockfile.                                                                                                                                                                                      |
+| `image-scan` fails (Trivy, HIGH or CRITICAL)      | A fixed CVE in Node or a production dependency     | Node: bump the pinned `NODE_IMAGE` digest in the `Dockerfile` (see its comment). A package under `opt/eng-digest`: upgrade it and the lockfile. Debian fixes come in at build (`apt-get upgrade`); CVEs with no fix are not gated. |
+| `docker/validate.sh` prints `FAIL: ...`           | Compose, image or model list drifted               | Read the message; `pull-models.sh` must match `src/config/profiles.ts`.                                                                                                                                                            |
+| The commit or tag is not signed, or signing fails | The 1Password SSH agent is locked                  | Unlock it and retry. Do not pass `--no-gpg-sign`.                                                                                                                                                                                  |
+| `commit-msg: AI attribution ... is not allowed.`  | A trailer names a tool                             | Remove the line from the message.                                                                                                                                                                                                  |
+| `fatal: tag 'vX.Y.Z' already exists`              | The tag was made earlier                           | `git tag -d vX.Y.Z` if unpushed, otherwise pick the next version.                                                                                                                                                                  |
 
 ## Related
 
