@@ -1,34 +1,34 @@
 # Takeover
 
-## Intent
+> Clears what a crashed run left. `takeOverStaleLock(mine, options)` replaces a stale lock with ours
+> under a guard file; `sweepOrphanedTempFiles(options)` removes temp files a killed run left.
 
-Clears what a crashed run left behind. When the lock is stale, `takeOverStaleLock` replaces it
-with ours. A guard file makes sure only one contender does that at a time. A sweep removes temp
-files that a killed run never renamed.
+## Flow
 
-## How it works
+```mermaid
+flowchart TD
+  guard["acquireTakeoverGuard: create digest.lock.takeover"] -->|"exists, live"| held["throw the lock-held error"]
+  guard -->|"exists, abandoned: warn, remove it"| retry["return false: the caller tries again"]
+  guard -->|created| look{"inspect the lock again"}
+  look -->|held| held
+  look -->|"stale, guard still ours"| rm["warn with reason and holder, remove the lock"] --> create
+  look -->|"stale, guard no longer ours"| retry
+  look -->|free| create["createLockFile: ours"]
+  create -->|true| done["return true: ours"]
+  create -->|false| retry
+```
 
-1. `takeOverStaleLock` (`takeover.ts`) first calls `acquireTakeoverGuard` (`takeoverGuard.ts`).
-   The guard is `<lock>.takeover`, created like the lock.
-2. If the guard exists, it is inspected as a `guard`. A live one throws the lock-held error. An
-   abandoned one (30 s old, or its process is dead) is removed and the call returns `false`, so
-   the caller tries again.
-3. Under the guard it looks at the lock once more. A live lock throws. A stale one is removed
-   (with a warning that names the reason and the previous holder), then ours is created.
-4. The guard is removed in `finally`, but only if it is still ours.
-5. `sweepOrphanedTempFiles` (`orphanSweep.ts`) runs before every acquire. It removes
-   `digest.lock.<pid>.<uuid>.tmp` and the same for the guard, once 10 minutes old.
+## Rules
 
-## Design
-
-- Plain files give no OS lock, so two contenders could both see a stale lock and the second would
-  delete the first one's fresh lock. The guard prevents that. Before each destructive step the
-  guard is re-checked with `isOurs`, because another run may have broken it as abandoned.
-- Returning `false` is not an error: `acquireRunLock` retries up to 3 times, then gives up with
-  a plain `DigestError` that `isLockHeldError` does not match.
-- The sweep never throws. A failed folder read, or a file that cannot be removed, is logged.
-  Younger files are kept: their writer may still be running.
-- Only files named exactly like the temp files of `atomicFile` are removed. Foreign files stay.
+- Plain files give no OS lock: two contenders could both see a stale lock, and the second would
+  delete the first one's fresh lock. The guard lets one through; `finally` removes it if still ours.
+- The guard is abandoned after 30 s or when its process is dead. Before each destructive step it is
+  re-checked with `isOurs`, because another run may have broken it as abandoned.
+- `false` is not an error. `acquireRunLock` tries 3 times in all, then throws a plain `DigestError`
+  that `isLockHeldError` does not match.
+- The sweep runs in `acquireRunLock` before the first try, lock or not. It removes
+  `digest.lock.<pid>.<uuid>.tmp` and the same for the guard once 10 min old, and never throws (a
+  failure is logged). It keeps younger files (a live writer) and anything not named exactly so.
 
 ## Files
 
@@ -37,16 +37,9 @@ files that a killed run never renamed.
 | `takeoverGuard.ts` | `GUARD_SUFFIX`, `guardPathOf`, `acquireTakeoverGuard` |
 | `takeover.ts`      | `takeOverStaleLock`, `TakeoverOptions`                |
 | `orphanSweep.ts`   | `sweepOrphanedTempFiles`, `OrphanSweepOptions`        |
-| `*.test.ts`        | One per code file                                     |
+| `*.test.ts`        | One per file                                          |
 
-## Depends on, used by
+## Gotchas
 
-Depends on: `../lockState` (`inspect`, `createLockFile`, `isOurs`, `lockHeldError`,
-`lockTimings`), `../atomicFile` (`removeStaleTempFiles`), `shared`. Used by: `../runLock.ts`.
-
-## Change it safely
-
-- `pnpm vitest run src/store/adapters/takeover src/store/adapters/runLock`. The real race is
-  `runLock.contention.test.ts`: run it after any change here.
-- Do not remove a re-check of the guard. Tests replace the guard at the exact clock reading
-  where the check happens.
+- Keep every guard re-check: `takeover.test.ts` swaps the guard at the exact clock reading where
+  the check happens. After any change run `../runLock.contention.test.ts`, the only real-race test.
