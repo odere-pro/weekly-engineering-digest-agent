@@ -53,28 +53,28 @@ sequenceDiagram
 - Temperature: request, else config, else default (`write` 0.2, others 0); the config seed (42) goes
   with each `generate` that has none. `think` is off by default for `guardRisk` only: Granite spends
   about 65 s thinking. `effectiveTemperature` and `effectiveThink` own these rules.
-- Chat is streamed (Node drops a response whose headers take over 300 s). A reply cut at the token
-  limit is returned as is with a warning; `generateStructured` repairs it.
+- A reply cut at the token limit is returned as is with a warning; `generateStructured` repairs it.
 - `decide` takes 1-64 questions, 2-26 choice options, 2-10 unique score levels; a missing or
-  mistyped answer throws. State is cut to 48,000 chars less the questions (10,000 for
-  `strands-decider`, a 4K model), never under 1,000; head and 10% tail stay.
-- Logs carry role, model, op, latency, attempts and tokens, never a prompt or an answer. `health()`
-  never throws (5 s per request): no version means unreachable, failing tags mean no models.
+  mistyped answer throws. The state is cut to the model's context less the questions (`decide/`).
+- `health()` never throws: no version means unreachable, failing tags mean no models.
 
 ## Files
 
-| File                           | Role                                                                         |
-| ------------------------------ | ---------------------------------------------------------------------------- |
-| `ModelProvider.ts`, `roles.ts` | The port and its request, answer and health types; `Role`                    |
-| `structured.ts`                | `generateStructured`: schema in, validated object out, one repair            |
-| `adapters/ollama.ts`           | `createOllamaProvider`, `callOllama`, per-role defaults, `health`            |
-| `adapters/ollamaHttp.ts`       | fetch transport (JSON, NDJSON), typed errors, `isRetryable`, `toDigestError` |
-| `adapters/systemone.ts`        | Port questions and answers to and from `/v1/systemone`, limits, state trim   |
+| File / folder                            | Role                                                                                |
+| ---------------------------------------- | ----------------------------------------------------------------------------------- |
+| `ModelProvider.ts`, `roles.ts`           | The port and its request, answer and health types; `Role`                           |
+| `structured.ts`                          | `generateStructured`: schema in, validated object out, one repair                   |
+| `adapters/ollama.ts`                     | `createOllamaProvider`: wires the three calls. The folder: `adapters/CLAUDE.md`     |
+| `adapters/call/`                         | `callOllama`: timeout, retries, log, errors; `resolveModel`. See `call/CLAUDE.md`   |
+| `adapters/chat/`                         | `generate` on `/api/chat`: body, stream, `think`, temperature. See `chat/CLAUDE.md` |
+| `adapters/decide/`                       | `decide` on `/v1/systemone`: the call, the state fit. See `decide/CLAUDE.md`        |
+| `adapters/health/`                       | `health`: version and installed models. See `health/CLAUDE.md`                      |
+| `adapters/ollamaHttp.ts`, `systemone.ts` | The fetch transport and its errors; the `/v1/systemone` mapping                     |
+
+Tests sit next to the code; `adapters/__fixtures__/` holds the replies and the test kit.
 
 ## Gotchas
 
-- Ollama changes a reply: record it again into `adapters/__fixtures__/ollama/` (taken from Ollama
-  0.40.4) and update the mapping and its test together. Live checks: `test/live/`, `LIVE_OLLAMA=1`.
 - `cli/doctor` reads `effectiveThink`; `app/container` reads `effectiveTemperature` for the run
-  record. `FakeModelProvider` and `test/integration/fakeOllama.ts` follow the port: change both.
-- `ollama.ts` is 358 lines, over the 300 cap. Split it before adding to it.
+  record. Both come through bridges in `adapters/ollama.ts`. `FakeModelProvider` and
+  `test/integration/fakeOllama.ts` follow the port: change both.
