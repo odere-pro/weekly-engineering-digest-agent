@@ -105,7 +105,8 @@ pnpm tsx evals/calibrate.ts evals/thresholds/raw/<date>-light.json [--holdout 20
 - It then measures the holdout split with the calibration off and on, and prints holdout recall (of
   5), leaks and the within-one share. The verdict is `keep` only when holdout recall rises and
   leaks do not.
-- With `--write` and a `keep` verdict it writes `evals/calibration/<profile>.json` (or `--out`).
+- With `--write` and a `keep` verdict it writes `<dataDir>/eval/calibration/<profile>.json`
+  (`dist/eval/calibration/` by default), or the file `--out` names.
 - `evals/rescoreReplay.ts --calibration <file>` replays classify and process with a file applied.
 
 On the light profile holdout recall did not rise (1.50 to 1.50), so **no calibration file is
