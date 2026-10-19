@@ -72,6 +72,8 @@ interface Tracked<Subject> {
 
 /**
  * Runs the checks guard by guard, never subject by subject, so only one model is loaded at a time.
+ * - blocking: checks that behave like mode `any` whatever the mode is (the deterministic rule
+ *   guard). They run first; a flag drops the subject for good.
  * - any: a flag drops the subject at once, so the next guard only sees unflagged subjects.
  * - all: only flagged subjects go on to the next guard; a subject is dropped when the last
  *   guard flags it too.
@@ -84,17 +86,43 @@ export async function applyGuards<Subject>(
   checks: readonly GuardCheckFn<Subject>[],
   mode: GuardMode,
   concurrency: number = GUARD_CONCURRENCY,
+  blocking: readonly GuardCheckFn<Subject>[] = [],
 ): Promise<GuardSplit<Subject>> {
   assertConcurrency(concurrency);
-  if (checks.length === 0) return { kept: [...subjects], dropped: [] };
 
-  const continues = (verdict: GuardVerdict): boolean =>
-    mode === 'any' ? !verdict.flagged : verdict.flagged;
-  let survivors: Tracked<Subject>[] = subjects.map((subject, index) => ({
+  const initial: Tracked<Subject>[] = subjects.map((subject, index) => ({
     index,
     subject,
     verdicts: [],
   }));
+  const pre = await runPass(initial, blocking, 'any', concurrency);
+  const main = await runPass(pre.survivors, checks, mode, concurrency);
+  const keptEntries = checks.length === 0 ? pre.survivors : main.kept;
+  const droppedEntries = checks.length === 0 ? pre.exited : [...pre.exited, ...main.dropped];
+  return {
+    kept: inInputOrder(keptEntries).map((entry) => entry.subject),
+    dropped: inInputOrder(droppedEntries).map((entry) => ({
+      subject: entry.subject,
+      verdicts: [...entry.verdicts],
+    })),
+  };
+}
+
+/** One pass over `checks` in `mode`. Survivors of an empty pass are all kept (mode `any` shape). */
+async function runPass<Subject>(
+  pool: readonly Tracked<Subject>[],
+  checks: readonly GuardCheckFn<Subject>[],
+  mode: GuardMode,
+  concurrency: number,
+): Promise<{
+  survivors: Tracked<Subject>[];
+  exited: Tracked<Subject>[];
+  kept: Tracked<Subject>[];
+  dropped: Tracked<Subject>[];
+}> {
+  const continues = (verdict: GuardVerdict): boolean =>
+    mode === 'any' ? !verdict.flagged : verdict.flagged;
+  let survivors = [...pool];
   let exited: Tracked<Subject>[] = [];
   for (const check of checks) {
     const examined = await examineAll(survivors, check, concurrency);
@@ -106,15 +134,8 @@ export async function applyGuards<Subject>(
       ...examined.filter((result) => !continues(result.verdict)).map((result) => result.entry),
     ];
   }
-
-  const [keptEntries, droppedEntries] = mode === 'any' ? [survivors, exited] : [exited, survivors];
-  return {
-    kept: inInputOrder(keptEntries).map((entry) => entry.subject),
-    dropped: inInputOrder(droppedEntries).map((entry) => ({
-      subject: entry.subject,
-      verdicts: [...entry.verdicts],
-    })),
-  };
+  const [kept, dropped] = mode === 'any' ? [survivors, exited] : [exited, survivors];
+  return { survivors, exited, kept, dropped };
 }
 
 function assertConcurrency(concurrency: number): void {

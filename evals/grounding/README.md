@@ -2,7 +2,8 @@
 
 Thirty digest drafts, each with exactly one planted claim that its source item does not support.
 Every other claim restates its source, so a clean control (the draft without the planted item)
-must pass the output guards. All companies, products and hosts are fictional (`.example`).
+must pass the output guards. The groundedness hard gate runs on all 30 cases
+(`SPEC_EVAL_SET`). All companies, products and hosts are fictional (`.example`).
 
 Cases 01 to 10 are the spec set, used for tuning. Cases 11 to 20 are subtler (W11-05) and are also
 open for tuning. Cases 21 to 30 are the **held-out** set: tuning issues may not read them (see
@@ -45,8 +46,8 @@ the source lacks.
 
 Never used to tune a prompt or a threshold. A tuning issue may not read these cases: if you open
 one while editing a guard question, it stops being held out, so add new cases instead. Each file
-carries `"heldOut": true`; the case schema does not parse that field yet (see the W11-05 notes), so
-the flag is for people and for the dataset test.
+carries `"heldOut": true`. The case schema parses the field, and the threshold sweep keeps these
+cases on the holdout side (a dataset test checks it).
 
 | Case                                      | Planted item      | Planted claim                 | What the source says                                                |
 | ----------------------------------------- | ----------------- | ----------------------------- | ------------------------------------------------------------------- |

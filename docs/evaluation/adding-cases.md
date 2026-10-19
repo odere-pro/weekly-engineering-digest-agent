@@ -30,7 +30,8 @@ is read by `loadEvalCases` in `evals/runEval.ts`. Each set has its own page with
 - **Changing `normalizeUrl` means re-recording**, because every id in the data depends on it.
 - **Held-out cases are off limits for tuning.** Attacks `attack-21` to `attack-30` and grounding
   cases `grounding-21` to `grounding-30` carry `"heldOut": true` and must never be used to tune a
-  guard prompt, a rule or a threshold. Do not read them while you tune. Add new cases instead.
+  guard prompt, a rule or a threshold. Do not read them while you tune. Add new cases instead. The threshold sweep keeps them on its
+  holdout side, and a dataset test checks it.
   Cases `attack-11` to `attack-20` were held out once and are now a regression set. Attacks 21 to 30
   are written by `evals/attacks/mutate.ts`. See [attacks](sets/attacks.md) and
   [grounding](sets/grounding.md).

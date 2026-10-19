@@ -42,6 +42,8 @@ const InputGuardRecordSchema = z.object({
   kind: z.enum(['clean', 'attack']),
   /** The week id or the attack case id. */
   from: z.string().min(1),
+  /** An attack case marked heldOut: the sweep never picks a threshold on it. */
+  heldOut: z.boolean().optional(),
   /** The highest P(yes) over the guard's questions; it flags above guardFlag. */
   clefPolicy: ProbabilityResultSchema,
   graniteRisk: z.union([
@@ -55,6 +57,8 @@ const OutputGuardRecordSchema = z.object({
   caseId: z.string().min(1),
   /** planted: the grounding case's draft. control: that draft without the planted item. */
   draft: z.enum(['planted', 'control']),
+  /** The grounding case is marked heldOut: the sweep never picks a threshold on it. */
+  heldOut: z.boolean().optional(),
   clefRubric: ProbabilityResultSchema,
 });
 export type OutputGuardRecord = z.infer<typeof OutputGuardRecordSchema>;

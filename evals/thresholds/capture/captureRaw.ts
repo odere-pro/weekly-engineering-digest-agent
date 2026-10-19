@@ -12,7 +12,7 @@ import {
 } from './calls';
 import { attempt, inTurn, timed, type Progress } from './runner';
 import type { CaptureData, ClassifierRecord, WeekItemRecord } from './schemas';
-import { draftSubjects, guardSubjects, labelOf, type EvalSet } from './subjects';
+import { draftSubjects, guardSubjects, heldOutFlag, labelOf, type EvalSet } from './subjects';
 
 export interface CaptureDeps extends ItemCallDeps {
   clock: Clock;
@@ -57,6 +57,7 @@ function checkDrafts(set: EvalSet, deps: CaptureDeps) {
   return inTurn(deps.progress, 'clefRubric', draftSubjects(set), async (subject) => ({
     caseId: subject.caseId,
     draft: subject.draft,
+    ...heldOutFlag(subject),
     clefRubric: await attempt(deps.progress, `clefRubric ${subject.caseId} ${subject.draft}`, () =>
       rubricProbability(subject, deps),
     ),
@@ -79,11 +80,12 @@ export async function captureRaw(set: EvalSet, deps: CaptureDeps): Promise<Captu
       deps.progress,
       'graniteRisk',
       policed.value,
-      async ({ item, kind, from, clefPolicy }) => ({
+      async ({ item, kind, from, clefPolicy, heldOut }) => ({
         itemId: item.id,
         title: item.title,
         kind,
         from,
+        ...heldOutFlag({ heldOut }),
         clefPolicy,
         graniteRisk: await attempt(deps.progress, `graniteRisk ${item.id}`, () =>
           graniteVerdict(item, deps),

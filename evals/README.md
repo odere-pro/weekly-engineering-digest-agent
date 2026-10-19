@@ -32,7 +32,7 @@ pnpm digest eval --compare evals/scorecards/2026-10-16-light.json evals/scorecar
 
 What: the share of week replays where an output guard rejected every draft, so the week got no
 digest. The three stability runs of each week count too (18 replays for 6 weeks).
-Why: `guardFalseBlocks` only sees ten synthetic clean controls. In wave 6 it showed 1.7% while 2 of
+Why: `guardFalseBlocks` only sees the synthetic clean controls (one per grounding case). In wave 6 it showed 1.7% while 2 of
 18 real replays were blocked by the output guard. This metric asks the same question on the real
 drafts.
 How: the harness wraps the output guards in each replay and keeps every verdict with its reason. A

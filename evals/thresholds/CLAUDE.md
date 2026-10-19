@@ -14,7 +14,9 @@ repeat and gives the same answer every time. `evals/tuneThresholds.ts` is the co
    clefPolicy and granite about every week item and attack, and asks clefRubric about every
    grounding draft and its clean control. It saves one raw file, `raw/<date>-<profile>.json`.
 2. `sweep` (`cli/sweepCommand.ts`) reads that file and splits it (`split.ts`): the two newest
-   weeks, and every third classifier case, attack and grounding case, are held out.
+   weeks, every third classifier case, and every third attack and grounding case are held out.
+   Cases marked `heldOut: true` (21-30) are always on the holdout side and are not counted for the
+   stride, so no threshold is picked on them.
 3. The sweeps (`sweep/`) pick the three classifier thresholds and `guardFlag` on the train side
    only, by grid search with step 0.05.
 4. `result/tune.ts` scores the picked thresholds on both sides, checks them against the spec

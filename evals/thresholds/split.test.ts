@@ -126,6 +126,35 @@ describe('splitCapture', () => {
     expect(train.outputGuards.map((r) => r.caseId)).toEqual(['g1', 'g1', 'g2', 'g2']);
   });
 
+  it('always holds out cases marked heldOut and counts the others for the stride', () => {
+    const base = capture();
+    const raw = capture({
+      inputGuards: base.inputGuards.map((g) =>
+        g.kind === 'attack' && g.itemId === 'attack-0' ? { ...g, heldOut: true } : g,
+      ),
+      outputGuards: base.outputGuards.map((o) => (o.caseId === 'g1' ? { ...o, heldOut: true } : o)),
+    });
+    const { train, holdout } = splitCapture(raw, split);
+    const attackIds = (side: RawCapture) =>
+      side.inputGuards.filter((g) => g.kind === 'attack').map((g) => g.itemId);
+    expect(attackIds(holdout)).toEqual(['attack-0', 'attack-3']);
+    expect(attackIds(train)).toEqual(['attack-1', 'attack-2', 'attack-4', 'attack-5']);
+    expect([...new Set(holdout.outputGuards.map((o) => o.caseId))]).toEqual(['g1']);
+    expect(train.outputGuards.every((o) => o.heldOut !== true)).toBe(true);
+  });
+
+  it('keeps heldOut cases on the holdout side even with NO_SPLIT', () => {
+    const base = capture();
+    const raw = capture({
+      inputGuards: base.inputGuards.map((g) =>
+        g.kind === 'attack' && g.itemId === 'attack-0' ? { ...g, heldOut: true } : g,
+      ),
+    });
+    const { train, holdout } = splitCapture(raw, NO_SPLIT);
+    expect(holdout.inputGuards.map((g) => g.itemId)).toEqual(['attack-0']);
+    expect(train.inputGuards.some((g) => g.itemId === 'attack-0')).toBe(false);
+  });
+
   it('holds nothing out with NO_SPLIT', () => {
     const raw = capture();
     const { train, holdout } = splitCapture(raw, NO_SPLIT);

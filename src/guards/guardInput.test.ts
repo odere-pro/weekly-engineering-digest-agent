@@ -140,6 +140,62 @@ describe('guardInputStep', () => {
     });
   });
 
+  describe('rule guard pre-pass', () => {
+    const withRule = (mode: 'any' | 'all') =>
+      inputConfig({ mode, checks: { ruleInjection: true } });
+
+    it('drops a rule hit in mode all although both model guards pass it', async () => {
+      const [a, b] = items(2) as [Item, Item];
+      const rule = new FakeInputGuard('ruleInjection', flagging(a));
+      const clef = new FakeInputGuard('clefPolicy');
+      const granite = new FakeInputGuard('graniteRisk');
+
+      const out = await guardInputStep([a, b], makeDeps([rule, clef, granite], withRule('all')));
+
+      expect(ids(out.dropped.map((entry) => entry.item))).toEqual([a.id]);
+      expect(out.dropped[0]?.verdicts.map((v) => v.check)).toEqual(['ruleInjection']);
+      expect(clef.calls).toEqual([b]);
+    });
+
+    it('keeps the old all behaviour for items the rule guard passes', async () => {
+      const [a, b, c] = items(3) as [Item, Item, Item];
+      const rule = new FakeInputGuard('ruleInjection');
+      const clef = new FakeInputGuard('clefPolicy', flagging(a, b));
+      const granite = new FakeInputGuard('graniteRisk', flagging(b));
+
+      const out = await guardInputStep([a, b, c], makeDeps([rule, clef, granite], withRule('all')));
+
+      expect(ids(out.dropped.map((entry) => entry.item))).toEqual([b.id]);
+      expect(out.dropped[0]?.verdicts.map((v) => v.check)).toEqual([
+        'ruleInjection',
+        'clefPolicy',
+        'graniteRisk',
+      ]);
+      expect(ids(out.kept)).toEqual([a.id, c.id]);
+    });
+
+    it('keeps mode any unchanged', async () => {
+      const [a, b] = items(2) as [Item, Item];
+      const rule = new FakeInputGuard('ruleInjection', flagging(a));
+      const clef = new FakeInputGuard('clefPolicy', flagging(b));
+
+      const out = await guardInputStep([a, b], makeDeps([rule, clef], withRule('any')));
+
+      expect(out.kept).toEqual([]);
+      expect(ids(out.dropped.map((entry) => entry.item))).toEqual([a.id, b.id]);
+    });
+
+    it('keeps rule-passing items when the rule guard is the only check, in mode all', async () => {
+      const [a, b] = items(2) as [Item, Item];
+      const rule = new FakeInputGuard('ruleInjection', flagging(a));
+
+      const out = await guardInputStep([a, b], makeDeps([rule], withRule('all')));
+
+      expect(ids(out.kept)).toEqual([b.id]);
+      expect(ids(out.dropped.map((entry) => entry.item))).toEqual([a.id]);
+    });
+  });
+
   describe('mode all', () => {
     const config = inputConfig({ mode: 'all' });
 

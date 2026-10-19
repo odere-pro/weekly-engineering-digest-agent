@@ -1,4 +1,4 @@
-// The synthetic eval cases (W1-23): 10 attacks and 10 grounding drafts, one JSON file per case.
+// The synthetic eval cases (W1-23, grown to 30 and 30): attacks and grounding drafts, one JSON file per case.
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { z } from 'zod';
@@ -11,6 +11,8 @@ import {
   type AttackCase,
   type GroundingCase,
 } from './schema';
+import { draftSubjects, guardSubjects, heldOutFlag } from './thresholds/capture/subjects';
+import { CASE_STRIDE, splitCapture } from './thresholds/split';
 import { formatCheck } from '../src/checks/formatCheck';
 import { linkCheck } from '../src/checks/linkCheck';
 import { renderDigest } from '../src/render/markdown';
@@ -22,11 +24,11 @@ import { DATA_CLOSE } from '../src/shared/untrusted';
  * Attacks and grounding drafts: 10 tuning cases (the spec set), 10 validation cases (the held-out
  * set of W6-05, which scored 10 of 10 untuned) and 10 held-out cases that no issue may tune on (W11-05).
  */
-const TUNING_COUNT = SPEC_EVAL_SET.attacks;
+const TUNING_COUNT = 10;
 const VALIDATION_COUNT = 10;
 const HELD_OUT_COUNT = 10;
 const ATTACK_COUNT = TUNING_COUNT + VALIDATION_COUNT + HELD_OUT_COUNT;
-const GROUNDING_COUNT = SPEC_EVAL_SET.grounding + 2 * HELD_OUT_COUNT;
+const GROUNDING_COUNT = SPEC_EVAL_SET.grounding;
 const HELD_OUT_START = TUNING_COUNT + VALIDATION_COUNT;
 /** The fetchers truncate summaries at 600 characters, so a longer one could never be collected. */
 const MAX_SUMMARY_CHARS = 600;
@@ -441,6 +443,59 @@ describe('grounding cases', () => {
       ).toEqual([value.plantedItemId]);
       expect(source && claim.test(textOf(source)), value.id).toBe(false);
     }
+  });
+});
+
+describe('held-out cases and threshold tuning', () => {
+  it('keeps heldOut on the loaded cases: exactly cases 21 to 30 of both sets', async () => {
+    const loaded = await loadEvalCases(evalsDir);
+    for (const set of [loaded.attacks, loaded.grounding]) {
+      set.forEach((c, index) => {
+        expect(c.heldOut === true, c.id).toBe(index >= HELD_OUT_START);
+      });
+    }
+  });
+
+  it('puts no held-out case on the train side of the threshold sweep', async () => {
+    const loaded = await loadEvalCases(evalsDir);
+    const heldOutIds = new Set(
+      [...loaded.attacks, ...loaded.grounding].filter((c) => c.heldOut === true).map((c) => c.id),
+    );
+    expect(heldOutIds.size).toBe(2 * HELD_OUT_COUNT);
+    const ok = { probability: 0.1 };
+    const raw = {
+      profile: 'light' as const,
+      capturedAt: '2026-10-17T10:00:00.000Z',
+      ollamaVersion: null,
+      models: { classify: 'c', guardPolicy: 'p', guardRisk: 'g' },
+      focusAreas: [],
+      baseline: { minRelevance: 1.5, maxHype: 0.6, maxMinorRelease: 0.75, guardFlag: 0.35 },
+      classifier: [],
+      weekItems: [],
+      inputGuards: guardSubjects(loaded).map((s) => ({
+        itemId: s.item.id,
+        title: s.item.title,
+        kind: s.kind,
+        from: s.from,
+        ...heldOutFlag(s),
+        clefPolicy: ok,
+        graniteRisk: { flagged: false },
+      })),
+      outputGuards: draftSubjects(loaded).map((s) => ({
+        caseId: s.caseId,
+        draft: s.draft,
+        ...heldOutFlag(s),
+        clefRubric: ok,
+      })),
+      timingsMs: {},
+    };
+    const { train } = splitCapture(raw, { holdoutWeeks: [], caseStride: CASE_STRIDE });
+    const trainCases = [
+      ...train.inputGuards.filter((g) => g.kind === 'attack').map((g) => g.from),
+      ...train.outputGuards.map((o) => o.caseId),
+    ];
+    expect(trainCases.length).toBeGreaterThan(0);
+    expect(trainCases.filter((id) => heldOutIds.has(id))).toEqual([]);
   });
 });
 

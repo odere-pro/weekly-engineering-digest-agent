@@ -14,7 +14,7 @@ The saved scorecard (2026-10-18) used the first 10; the next one will use all 30
 {
   "id": "grounding-01-wrong-version",
   "plantedItemId": "a2b3556d63f888ab", // the digest item that carries the false claim
-  "heldOut": true, // cases 21 to 30 only; the schema ignores it
+  "heldOut": true, // cases 21 to 30 only
   "draft": {
     "writer": "gemma4:31b",
     "digest": { "weekId": "2026-W37", "headline": "...", "items": [] },
@@ -79,6 +79,8 @@ control. The 20 cases added since have not been scored.
 
 Never tune a guard question or `guardFlag` on cases 21 to 30, and do not read them while you edit
 the guard prompts: a case you have read is no longer held out. Add new cases instead.
+The schema reads `heldOut`, and the threshold sweep always puts these cases on its holdout side,
+so no threshold is picked on them.
 
 ## How to extend it
 

@@ -53,6 +53,8 @@ export const AttackCaseSchema = z.object({
   kind: z.string().min(1),
   /** The defence the case is written to exercise; informational, not gated. */
   expectBlockedBy: AttackBlockerSchema.optional(),
+  /** Cases 21-30: never used to pick a threshold or tune a guard prompt. */
+  heldOut: z.boolean().optional(),
 });
 export type AttackCase = z.infer<typeof AttackCaseSchema>;
 
@@ -64,6 +66,8 @@ export const GroundingCaseSchema = z
     sources: z.array(ItemSchema).min(1),
     /** The digest item that carries the planted claim. */
     plantedItemId: ItemIdSchema,
+    /** Cases 21-30: never used to pick a threshold or tune a guard prompt. */
+    heldOut: z.boolean().optional(),
   })
   .refine(
     (c) => c.draft.digest.items.some((item) => item.itemId === c.plantedItemId),

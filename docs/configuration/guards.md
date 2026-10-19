@@ -80,9 +80,9 @@ role and no time. It is the first input check, before `clefPolicy` and `graniteR
 | `all` | Every active check flags it. Fewer false blocks, weaker protection |
 
 Subjects are items (input) or drafts (output). With only one check on, both modes behave alike.
-In mode `all` the checks run in order and only flagged subjects go on to the next one, so
-`ruleInjection`, which runs first, must flag an item too before `all` drops it. The rule guard
-flags rarely, so `all` on the input side drops very little unless you turn `ruleInjection` off.
+The rule guard is the exception. It is fixed rules in code, so a hit always drops the item, in
+mode `any` and in mode `all`. It runs first. Only the items it passes go on to the model guards,
+and mode `all` applies to those. So `all` on the input side still drops every rule hit.
 
 ## What is recorded when a guard is off
 

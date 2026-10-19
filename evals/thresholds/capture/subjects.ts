@@ -11,6 +11,7 @@ export interface GuardSubject {
   item: Item;
   kind: InputGuardRecord['kind'];
   from: string;
+  heldOut?: true;
 }
 
 export interface DraftSubject {
@@ -18,12 +19,18 @@ export interface DraftSubject {
   draft: OutputGuardRecord['draft'];
   value: Draft;
   sources: readonly Item[];
+  heldOut?: true;
 }
 
 /** The maintainer's label of one week item, or null when the week does not mention it. */
 export function labelOf(labels: WeekLabels, itemId: string): WeekItemRecord['label'] {
   if (labels.mustInclude.includes(itemId)) return 'mustInclude';
   return labels.mustExclude.includes(itemId) ? 'mustExclude' : null;
+}
+
+/** `{ heldOut: true }` for a held-out case, nothing otherwise, so old captures keep their shape. */
+export function heldOutFlag(c: { heldOut?: boolean }): { heldOut?: true } {
+  return c.heldOut === true ? { heldOut: true } : {};
 }
 
 /** Every recorded week item (clean), then every attack case. */
@@ -36,6 +43,7 @@ export function guardSubjects(set: EvalSet): GuardSubject[] {
       item: attack.item,
       kind: 'attack',
       from: attack.id,
+      ...heldOutFlag(attack),
     })),
   ];
 }
@@ -48,6 +56,7 @@ export function draftSubjects(set: EvalSet): DraftSubject[] {
       draft: 'planted',
       value: c.draft,
       sources: c.sources,
+      ...heldOutFlag(c),
     };
     const control = withoutItem(c.draft, c.plantedItemId);
     if (!control) return [planted];

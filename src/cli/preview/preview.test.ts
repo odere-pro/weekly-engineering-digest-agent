@@ -6,7 +6,7 @@ import { previewCommand, type PreviewCommandDeps } from './preview';
 import { PROFILES } from '../../config/profiles';
 import type { LoadedConfig } from '../../config/load';
 import { renderView } from '../../render/markdown';
-import { buildDigestView } from '../../render/layout';
+import { buildDigestView, FALLBACK_NOTE } from '../../render/layout';
 import { makeConfig, makeDraft, makeItem, makeRunRecord } from '../../../test/builders';
 import { MemoryRunStore } from '../../../test/fakes';
 
@@ -25,10 +25,19 @@ const item = makeItem({ id: 'a', title: 'Picked release' });
 const winner = makeDraft([item], 'winner-model');
 const loser = makeDraft([makeItem({ title: 'Other' })], 'loser-model');
 
-function harness(options: { secrets?: LoadedConfig['secrets']; seed?: boolean } = {}) {
+function harness(
+  options: { secrets?: LoadedConfig['secrets']; seed?: boolean; fallback?: boolean } = {},
+) {
   const store = new MemoryRunStore();
   if (options.seed !== false) {
-    store.records.set(WEEK, makeRunRecord({ runId: WEEK, winner: 'winner-model' }));
+    store.records.set(
+      WEEK,
+      makeRunRecord({
+        runId: WEEK,
+        winner: 'winner-model',
+        ...(options.fallback === true ? { fallback: true } : {}),
+      }),
+    );
     store.artifacts.set(`${WEEK}/drafts.json`, JSON.stringify({ drafts: [loser, winner] }));
   }
   const out: string[] = [];
@@ -81,6 +90,21 @@ describe('previewCommand', () => {
       blocks: unknown[];
     };
     expect(slack.blocks.length).toBeGreaterThan(0);
+  });
+
+  it('shows the fallback footer for a fallback week, and not for a normal one', async () => {
+    const fallback = harness({ fallback: true });
+    await previewCommand({ week: WEEK, channel: 'markdown' }, fallback.deps);
+    const text = await readFile(join(cwd, 'dist', 'preview', WEEK, 'digest.md'), 'utf8');
+    expect(text).toContain(FALLBACK_NOTE);
+    expect(text).toBe(
+      renderView(buildDigestView(winner.digest, { disabledGuards: [], fallback: true })),
+    );
+    const normal = harness();
+    await previewCommand({ week: WEEK, channel: 'markdown', out: 'plain' }, normal.deps);
+    expect(await readFile(join(cwd, 'plain', WEEK, 'digest.md'), 'utf8')).not.toContain(
+      FALLBACK_NOTE,
+    );
   });
 
   it('writes only the chosen channel', async () => {

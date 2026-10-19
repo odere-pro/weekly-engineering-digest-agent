@@ -119,7 +119,10 @@ async function winningView(store: RunStore, week: string, redactor: Redactor): P
   if (winner === undefined) {
     throw new PreviewError(`drafts.json has no draft by the winner ${record.winner}`);
   }
-  return buildDigestView(winner.digest, { disabledGuards: record.disabledGuards });
+  return buildDigestView(winner.digest, {
+    disabledGuards: record.disabledGuards,
+    fallback: record.fallback,
+  });
 }
 
 function parseJson(raw: string): unknown {

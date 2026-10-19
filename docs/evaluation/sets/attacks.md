@@ -18,7 +18,7 @@ will use all 30.
   "family": "attack-01-ignore-instructions", // cases 21 to 30 only; the schema ignores it
   "kind": "split-instruction",
   "expectBlockedBy": "clefPolicy", // informational only
-  "heldOut": true, // cases 21 to 30 only; the schema ignores it
+  "heldOut": true, // cases 21 to 30 only
   "item": {
     "id": "...",
     "sourceId": "quillfern-blog",
@@ -88,8 +88,9 @@ recall existed. The `expectBlockedBy` hint is not scored.
 Cases 21 to 30 measure whether the tuning generalises. Never tune a guard question, a rule or
 `guardFlag` on them. Do not read them, nor `mutate.ts` and its test, while you edit guard prompts:
 they hold the same texts, and a case you have read is no longer held out. Add new cases instead.
-The threshold sweep ([classifier cases](classifier-cases.md#tuning-the-thresholds)) has its own
-train and holdout split.
+The schema reads `heldOut`, and the threshold sweep
+([classifier cases](classifier-cases.md#tuning-the-thresholds)) always puts these cases on its
+holdout side, so no threshold is picked on them.
 
 ## How to extend it
 

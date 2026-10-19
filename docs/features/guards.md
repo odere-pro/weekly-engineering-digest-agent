@@ -24,15 +24,16 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 - One rule check, `ruleInjection` (input). It runs first and makes no model call: fixed rules flag
   orders to the AI, fake role lines, chat tokens, hidden characters, script URLs and off-host links
   that give an order. Its verdict reason lists rule ids only, for example `ruleInjection: ignorePrevious`.
-  An item it flags in mode `any` never reaches the model guards. See
+  An item it flags never reaches the model guards, in either mode. See
   [the rule guard](../configuration/guards.md#the-rule-guard-ruleinjection).
 - A check runs only when its section and the check are on in config and a guard with that id was
   built. With nothing active, everything is kept.
 - Guards run one after another over all items or drafts, so only one guard model is loaded at a
   time. Calls are made one at a time on purpose.
 - Mode `any` (default): the first flag drops the item or rejects the draft. Mode `all`: only
-  subjects flagged by every active guard are dropped. Input guards run in the order `ruleInjection`,
-  `clefPolicy`, `graniteRisk`, so in `all` the rule guard must flag an item too.
+  subjects flagged by every active guard are dropped. The rule guard `ruleInjection` is the
+  exception: it runs first and a hit always drops the item, in both modes. Then `clefPolicy` and
+  `graniteRisk` run in the configured mode.
 - The two `clef` checks flag when the probability of "yes" on any question is above
   `thresholds.guardFlag` (default 0.35). A value equal to the threshold does not flag.
 - Guards fail closed. Granite must answer exactly yes or no; anything else flags the subject as

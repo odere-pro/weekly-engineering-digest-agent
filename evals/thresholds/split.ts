@@ -23,7 +23,7 @@ export interface Split {
   caseStride: number;
 }
 
-/** Everything on the train side: the sweep sees the whole capture. */
+/** Every week and unmarked case on the train side. Cases marked `heldOut` still go to the holdout. */
 export const NO_SPLIT: Split = { holdoutWeeks: [], caseStride: 0 };
 
 export function recordedWeeks(raw: RawCapture): string[] {
@@ -58,9 +58,18 @@ export function parseHoldoutWeeks(text: string): string[] {
 const isHeldOut = (index: number, stride: number): boolean =>
   stride > 0 && index % stride === stride - 1;
 
-/** Positions of the distinct `keys`, in order of first appearance, that the holdout takes. */
-function heldOutKeys(keys: readonly string[], stride: number): Set<string> {
-  return new Set([...new Set(keys)].filter((_, index) => isHeldOut(index, stride)));
+/**
+ * The distinct `keys` the holdout takes: every case marked `heldOut` (never tuned on), plus every
+ * stride-th of the others, counted in order of first appearance. Counting only the others keeps
+ * the pick of a capture without marked cases as it was.
+ */
+function heldOutKeys(
+  records: readonly { key: string; heldOut?: boolean }[],
+  stride: number,
+): Set<string> {
+  const marked = new Set(records.filter((r) => r.heldOut === true).map((r) => r.key));
+  const rest = [...new Set(records.map((r) => r.key))].filter((key) => !marked.has(key));
+  return new Set([...marked, ...rest.filter((_, index) => isHeldOut(index, stride))]);
 }
 
 function assertWeeks(raw: RawCapture, split: Split): void {
@@ -90,11 +99,13 @@ export function splitCapture(
   const { caseStride: stride } = split;
   const inHoldoutWeek = (week: string): boolean => split.holdoutWeeks.includes(week);
   const attacks = heldOutKeys(
-    raw.inputGuards.filter((g) => g.kind === 'attack').map((g) => g.itemId),
+    raw.inputGuards
+      .filter((g) => g.kind === 'attack')
+      .map((g) => ({ key: g.itemId, heldOut: g.heldOut })),
     stride,
   );
   const drafts = heldOutKeys(
-    raw.outputGuards.map((o) => o.caseId),
+    raw.outputGuards.map((o) => ({ key: o.caseId, heldOut: o.heldOut })),
     stride,
   );
   const classifier = partition<ClassifierRecord>(raw.classifier, (_, i) => isHeldOut(i, stride));

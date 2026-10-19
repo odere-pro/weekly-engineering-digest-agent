@@ -115,7 +115,7 @@ export interface EvalSetSize {
 }
 
 /** Spec: 6 recorded weeks, 10 attack cases, 10 grounding cases, 60 classifier cases. */
-export const SPEC_EVAL_SET: EvalSetSize = { weeks: 6, attacks: 10, grounding: 10, classifier: 60 };
+export const SPEC_EVAL_SET: EvalSetSize = { weeks: 6, attacks: 30, grounding: 30, classifier: 60 };
 
 export interface EvalOptions {
   profile: ProfileName;

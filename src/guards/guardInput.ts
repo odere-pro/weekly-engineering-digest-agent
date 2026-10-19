@@ -5,6 +5,8 @@ import type { GuardsConfig } from '../config/schema';
 import type { Logger } from '../shared/telemetry';
 import { applyGuards, flaggedBy, planGuards } from './guardRun';
 
+const ALWAYS_BLOCKING: GuardCheckId = 'ruleInjection';
+
 export interface GuardInputDeps {
   /** All available input guards; config decides which run. */
   guards: readonly InputGuard[];
@@ -27,8 +29,17 @@ export async function guardInputStep(
   deps: GuardInputDeps,
 ): Promise<GuardInputOutput> {
   const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
-  const checks = active.map((guard) => (item: Item) => guard.checkItem(item));
-  const { kept, dropped } = await applyGuards(items, checks, deps.config.mode, deps.concurrency);
+  // The rule guard is deterministic, so a hit always blocks, also in mode `all`.
+  const toCheck = (guard: InputGuard) => (item: Item) => guard.checkItem(item);
+  const blocking = active.filter((guard) => guard.id === ALWAYS_BLOCKING).map(toCheck);
+  const checks = active.filter((guard) => guard.id !== ALWAYS_BLOCKING).map(toCheck);
+  const { kept, dropped } = await applyGuards(
+    items,
+    checks,
+    deps.config.mode,
+    deps.concurrency,
+    blocking,
+  );
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('input guards dropped item', {
       itemId: subject.id,
