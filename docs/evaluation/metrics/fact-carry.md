@@ -28,7 +28,12 @@ replay). The fact reader is `factTokensOf` in `src/write/provenance/factTokens.t
    are the same fact. `2.0.0-rc.1` and `2.0.0` are not. A name after the number is not part of it:
    `gpt-4.1-mini` holds the fact `4.1`.
 3. The facts of the title, the summary and the action line are looked up in the title and the summary
-   of the collected item. A fact that is not there is a miss.
+   of the collected item. A fact that is not there is a miss, with one exception: a shorter form of
+   a plain version in the source is present. `1.31` is not a miss for a source `v1.31.2`, and `1.31`
+   and `1.31.2` are not misses for `1.31.2.1`. A pre-release must match exactly: for a source
+   `1.17.0-beta1`, both `1.17` and `1.17.0` are misses, because they would announce the beta as the
+   release. The writer's title repair (`groundTitle`) calls the same function, so the pipeline and
+   the metric agree on what a wrong fact is.
 4. The value is shipped items with no miss divided by shipped items checked. An item counts once,
    however many facts it gets wrong.
 
@@ -54,8 +59,8 @@ that replay served.
 ## How to add a case
 
 The check runs on every digest, so coverage grows with the recorded weeks. A change to what counts
-as a fact is a code change in `src/write/provenance/factTokens.ts`; its test pins each shape and
-checks that a long hostile string is read in linear time.
+as a fact, or to the shorter-version rule, is a code change in `src/write/provenance/factTokens.ts`;
+its test pins each shape and checks that a long hostile string is read in linear time.
 
 ## Limits
 
@@ -64,7 +69,13 @@ checks that a long hostile string is read in linear time.
   duplicate into one entry; a fact it takes from the folded item is a miss.
 - A version written in words, a date such as "Oct 6" or a number without a dot is not a fact here.
   Any number with a dot is: `99.9` or `2.5x` count as a version.
-- A shorter version than the source's (`1.31` for `1.31.2`) is a miss.
+- The shorter-version rule holds for the summary and the action line too. A source that says
+  "fixed in 1.31.2" lets the action "Upgrade to 1.31" pass; that is by design.
+- A pre-release is known by its word (`alpha`, `beta`, `preview`, `pre`, `rc`, `dev`, `snapshot`,
+  `nightly`, `canary`) or a glued `a`/`b` and number. Any other suffix, such as `2.0.0-next.3`, reads
+  as the plain version `2.0.0`.
+- A longer version than the source's (`1.31.3` for `1.31.2`, `1.31.2` for `1.31`) is a miss, and so
+  is a version that is not a shorter form at a dot (`1.3` for `1.31.2`).
 - The headline is not checked.
 
 ## Current result

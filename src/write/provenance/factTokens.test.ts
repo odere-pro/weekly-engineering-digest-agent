@@ -222,7 +222,92 @@ describe('missingFacts', () => {
     expect(missingFacts('Adds a faster cache', source)).toEqual([]);
   });
 
-  it('does not accept a shorter version than the one the source has', () => {
-    expect(missingFacts('v1.2', { title: 'v1.2.0', summary: '' })).toEqual(['1.2']);
+  it('does not accept a longer version than the one the source has', () => {
+    expect(missingFacts('v1.2.0', { title: 'v1.2', summary: '' })).toEqual(['1.2.0']);
+  });
+});
+
+describe('missingFacts and a shorter form of a version', () => {
+  const missing = (written: string, title: string, summary = ''): string[] =>
+    missingFacts(written, { title, summary });
+
+  it.each([
+    ['Kubernetes 1.31', 'Kubernetes v1.31.2'],
+    ['Kubernetes v1.31', 'kubernetes 1.31.2'],
+    ['Build 10.4', 'Build 10.4.2.1'],
+    ['Build 10.4.2', 'Build 10.4.2.1'],
+  ])(
+    'accepts a plain version that is a shorter form of the source version: %j for %j',
+    (written, title) => {
+      expect(missing(written, title)).toEqual([]);
+    },
+  );
+
+  it('reads the plain source version from the summary too', () => {
+    expect(
+      missing('Kubernetes 1.31 gets a patch', 'Patch release', 'Kubernetes 1.31.2 is out.'),
+    ).toEqual([]);
+  });
+
+  it.each([
+    ['1.3', 'v1.31.2'],
+    ['1.31.3', 'v1.31.2'],
+    ['1.32', 'v1.31.2'],
+    ['31.2', 'v1.31.2'],
+    ['1.31.2.1', 'v1.31.2'],
+    ['1.31.2', 'v1.31'],
+  ])('does not accept %j for a source %j: not a shorter form at a dot', (written, title) => {
+    expect(missing(written, title)).toEqual([written]);
+  });
+
+  it.each([
+    ['terraform 1.17', 'terraform v1.17.0-beta1'],
+    ['terraform 1.17.0', 'terraform v1.17.0-beta1'],
+    ['Python 3.12', 'Python 3.12.0b1'],
+    ['tool 2.0', 'tool 2.0.1-rc.1'],
+    ['tool 1.2.3', 'tool 1.2.3.4-rc.1'],
+    ['tool 1.2', 'tool 1.2.3.4-rc.1'],
+  ])('does not take a pre-release source for its release: %j for %j', (written, title) => {
+    const [fact] = factTokensOf(written);
+
+    expect(missing(written, title)).toEqual([fact]);
+  });
+
+  it('accepts only the shorter forms of the plain versions, in a source with several versions', () => {
+    const title = 'tool v2.0.1';
+    const summary = 'Also 3.4.5.6 and 7.0.0-rc.1.';
+
+    expect(
+      missing('2.0 2.0.1 2.0.2 3.4 3.4.5 3.4.5.6 3.4.6 7.0 7.0.0-rc.1 7.0.0', title, summary),
+    ).toEqual(['2.0.2', '3.4.6', '7.0', '7.0.0']);
+  });
+
+  it('keeps a pre-release in the text a fact of its own, whatever plain version the source has', () => {
+    expect(missing('tool 1.31.2-rc.1', 'tool v1.31.2')).toEqual(['1.31.2-rc.1']);
+    expect(missing('tool 1.31-rc.1', 'tool v1.31.2')).toEqual(['1.31-rc.1']);
+  });
+
+  it('accepts the exact pre-release the source has', () => {
+    expect(missing('tool 1.17.0-beta1', 'tool v1.17.0-beta1')).toEqual([]);
+  });
+
+  it('does not let a pre-release source version give shorter forms to a plain one beside it', () => {
+    const title = 'tool 2.0.1-rc.1';
+
+    expect(missing('2.0 and 3.4', title, 'Also 3.4.5.')).toEqual(['2.0']);
+  });
+
+  it('reads a text and a source of 100,000 characters in linear time', () => {
+    const versions = (count: number, start: number): string =>
+      Array.from({ length: count }, (_, i) => `${start + i}.0.1`).join(' ');
+    const title = versions(12_000, 1);
+    const summary = versions(50, 20_000);
+    const written = versions(12_000, 30_000);
+    const started = performance.now();
+
+    const result = missingFacts(written, { title, summary });
+
+    expect(performance.now() - started).toBeLessThan(1_000);
+    expect(result).toHaveLength(12_000);
   });
 });

@@ -64,7 +64,7 @@ flowchart TD
 | `writePrompt.ts`    | `buildWritePrompt`, `buildRetryPrompt`, `boundProblems`, prompt targets, problem limits          |
 | `fallbackDigest.ts` | `buildFallbackDigest`, `checkedFallback`, `cutSummary`: the digest made without a model          |
 | `links/`            | `prepareDraft`, bare-link repair; see `links/CLAUDE.md`                                          |
-| `tidy/`             | Em dashes, restated release tags; see `tidy/CLAUDE.md`                                           |
+| `tidy/`             | Em dashes, restated release tags, `safeSourceText`; see `tidy/CLAUDE.md`                         |
 | `provenance/`       | Source urls, no repeats, the security floor, title facts; see `provenance/CLAUDE.md`             |
 | `checkedStep/`      | `codeCheck`, `checkDraft`, rejections, `mergeRetries`, result types; see `checkedStep/CLAUDE.md` |
 

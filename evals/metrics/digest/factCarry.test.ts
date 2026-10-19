@@ -165,6 +165,52 @@ describe('factCarry', () => {
     expect(result.value).toBe(1);
   });
 
+  it('accepts a shorter form of a plain source version in the title, the summary and the action', () => {
+    const source = makeItem({ title: 'Kubernetes v1.31.2', summary: 'A patch release.' });
+
+    const result = factCarry([
+      sampleFor([
+        entry(source, {
+          title: 'Kubernetes 1.31 patch release',
+          summary: 'Fixes a scheduler bug in 1.31.',
+          urgency: 'act-now',
+          action: 'Upgrade to 1.31 today.',
+        }),
+      ]),
+    ]);
+
+    expect(result.value).toBe(1);
+    expect(result.byWeek?.['2026-W42']?.problems).toEqual([]);
+  });
+
+  it('does not take a pre-release source version for the release: 1.17 is not 1.17.0-beta1', () => {
+    const source = makeItem({ title: 'terraform v1.17.0-beta1', summary: 'A beta.' });
+    const built = sampleFor([entry(source, { title: 'Terraform 1.17 arrives' })]);
+
+    const facts = factsOfWeek({ ...built, markdown: built.markdown ?? '' });
+    const result = factCarry([built]);
+
+    expect(facts.misses.map(({ field, token }) => [field, token])).toEqual([['title', '1.17']]);
+    expect(result.value).toBe(0);
+    expect(result.byWeek?.['2026-W42']?.problems[0]).toContain('1.17 is not in its source');
+  });
+
+  it('does not accept a version that is not a shorter form: 1.3 and 1.31.3 for 1.31.2', () => {
+    const source = makeItem({ title: 'Kubernetes v1.31.2', summary: '' });
+
+    const built = sampleFor([
+      entry(source, { title: 'Kubernetes 1.3', summary: 'Moves to 1.31.3.' }),
+    ]);
+
+    const facts = factsOfWeek({ ...built, markdown: built.markdown ?? '' });
+
+    expect(facts.misses.map(({ field, token }) => [field, token])).toEqual([
+      ['title', '1.3'],
+      ['summary', '1.31.3'],
+    ]);
+    expect(factCarry([built]).value).toBe(0);
+  });
+
   it('accepts a date that is in the source', () => {
     const result = factCarry([sampleFor([entry(release, { summary: 'Out on 2026-10-19.' })])]);
 

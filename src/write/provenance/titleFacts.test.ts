@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ScoredItem } from '../../classify/classification';
 import type { DigestItem } from '../../domain/schemas';
 import type { Logger } from '../../shared/telemetry';
-import { groundTitle, groundTitles, missingTitleFacts } from './titleFacts';
+import { groundTitle, groundTitles } from './titleFacts';
 import { makeDigestItem, makeScoredItem } from '../../../test/builders';
 import { noopLogger } from '../../../test/fakes';
 
@@ -275,42 +275,6 @@ describe('groundTitle', () => {
       expect(warn).toHaveBeenCalledTimes(1);
       expect(warn.mock.calls[0]?.[0]).toMatch(/no title/i);
     });
-  });
-});
-
-describe('missingTitleFacts', () => {
-  it('lists the facts the source lacks, in the order of the title', () => {
-    const source = sourceOf('tool v2.0.0', 'Fixes CVE-2026-1111.');
-
-    expect(missingTitleFacts('9.9.9, CVE-2026-1111, 2026-01-02 and 2.0.0', source)).toEqual([
-      '9.9.9',
-      '2026-01-02',
-    ]);
-  });
-
-  it('lists nothing for a title with no fact', () => {
-    expect(missingTitleFacts('A new runner', sourceOf('tool v2.0.0'))).toEqual([]);
-  });
-
-  it('accepts a plain version that is a shorter form of a plain source version, and nothing else', () => {
-    const source = sourceOf('tool v2.0.1', 'Also 3.4.5.6 and 7.0.0-rc.1.');
-
-    expect(
-      missingTitleFacts('2.0 2.0.1 2.0.2 3.4 3.4.5 3.4.5.6 3.4.6 7.0 7.0.0-rc.1 7.0.0', source),
-    ).toEqual(['2.0.2', '3.4.6', '7.0', '7.0.0']);
-  });
-
-  it('reads a title and a source of 100,000 characters in linear time', () => {
-    const versions = (count: number, start: number): string =>
-      Array.from({ length: count }, (_, i) => `${start + i}.0.1`).join(' ');
-    const source = sourceOf(versions(12_000, 1), versions(50, 20_000));
-    const title = versions(12_000, 30_000);
-    const started = performance.now();
-
-    const missing = missingTitleFacts(title, source);
-
-    expect(performance.now() - started).toBeLessThan(1_000);
-    expect(missing).toHaveLength(12_000);
   });
 });
 

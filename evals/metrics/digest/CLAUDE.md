@@ -30,6 +30,10 @@ flowchart TD
   summary of the collected item its link names (`missingFacts`, `src/write/provenance`). It skips a
   week without a digest and an item with an `unmatched:` link, and names both in the note. The
   value counts an item once however many facts it gets wrong.
+- What a wrong fact is comes from `missingFacts` alone, the same call the title repair makes: a
+  shorter form of a plain source version is present (`1.31` for `v1.31.2`), a pre-release must
+  match exactly (`1.17` and `1.17.0` are missing for `1.17.0-beta1`). The metric has no rule of its
+  own, so it cannot call a title wrong that the pipeline accepts.
 - A `factCarry` miss is a `byWeek` problem line: part, fact, and `passedBy`, the layers that let it
   through (`linkCheck`, `formatCheck` and each output guard not in the run's `disabledGuards`).
   The output guard ids come from the config schema, so a new output guard is picked up.
@@ -51,5 +55,6 @@ Tests render digests with `renderDigest` and the builders in `test/`. No fixture
 - `parseDigestMarkdown` follows the layout `readSavedView` reads (`src/render/markdown.ts`): a
   layout change moves the scores. `parseDigest.test.ts` round-trips `renderDigest` to catch it.
 - `formatCompliance.test.ts` pins the wording of the two dropped problems against `formatCheck`.
-- `factCarry` reads a fact only where `factTokensOf` finds one. A change to what counts as a fact
-  moves the scores, and every pattern there must stay linear: the digest is model output.
+- `factCarry` reads a fact only where `factTokensOf` finds one. A change to what counts as a fact,
+  or to the shorter-version rule in `missingFacts`, moves the scores, and every pattern there must
+  stay linear: the digest is model output.
