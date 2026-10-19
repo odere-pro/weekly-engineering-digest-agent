@@ -3,7 +3,7 @@ import { isUnretriable, needsForce } from '../../digest/ending/notes/unretriable
 import { RecordNotSavedError } from '../../digest/ending/saveRecord';
 import { errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
-import { isLockHeldError } from '../../store/adapters/lockState/lockHeldError';
+import { isLockHeldError } from '../../store/lockHeld';
 import { startRunLimit } from '../runLimit/runLimit';
 import type { Attempt, AttemptSettings, RunAttempt, Trigger } from './types';
 

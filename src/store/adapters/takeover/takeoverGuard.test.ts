@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { acquireTakeoverGuard, GUARD_SUFFIX, guardPathOf } from './takeoverGuard';
 import type { LockFile, OwnLock } from '../lockState/lockFile';
-import { isLockHeldError } from '../lockState/lockHeldError';
+import { isLockHeldError } from '../../lockHeld';
 import { TAKEOVER_GUARD_MAX_AGE_MS } from '../lockState/lockTimings';
 import { noopLogger, type Logger } from '../../../shared/telemetry';
 

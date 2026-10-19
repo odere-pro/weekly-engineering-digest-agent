@@ -15,7 +15,7 @@ import { hostname as osHostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { acquireRunLock, type AcquireLockOptions } from './runLock';
-import { isLockHeldError } from './lockState/lockHeldError';
+import { isLockHeldError } from '../lockHeld';
 import {
   LOCK_HEARTBEAT_INTERVAL_MS,
   LOCK_HEARTBEAT_TIMEOUT_MS,

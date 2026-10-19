@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 import { takeOverStaleLock } from './takeover';
 import { guardPathOf } from './takeoverGuard';
 import type { LockFile, OwnLock } from '../lockState/lockFile';
-import { isLockHeldError } from '../lockState/lockHeldError';
+import { isLockHeldError } from '../../lockHeld';
 import { LOCK_HEARTBEAT_TIMEOUT_MS } from '../lockState/lockTimings';
 import { noopLogger, type Logger } from '../../../shared/telemetry';
 
