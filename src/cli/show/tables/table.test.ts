@@ -54,6 +54,14 @@ describe('cell', () => {
     expect(cell('x\u202Ey')).toBe('x y');
   });
 
+  it('turns the line and paragraph separators into a space too', () => {
+    expect(cell('a\u{2028}b\u{2029}c')).toBe('a b c');
+  });
+
+  it('turns a run of unsafe characters into one space and trims the ends', () => {
+    expect(cell('\u{202E}a\n\u{1B}\u{200B}b\n')).toBe('a b');
+  });
+
   it('cuts a long text to the cell width and ends it with three dots', () => {
     expect(cell('x'.repeat(MAX_CELL_CHARS * 2))).toBe(`${'x'.repeat(MAX_CELL_CHARS - 3)}...`);
   });

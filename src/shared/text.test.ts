@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toPlainText, truncate, wordCount } from './text';
+import { printableLine, toPlainText, truncate, wordCount } from './text';
 
 describe('text helpers', () => {
   it('strips tags, scripts and decodes entities', () => {
@@ -154,6 +154,64 @@ describe('text helpers', () => {
         expect(result.length).toBeLessThanOrEqual(max);
         expect(LONE_SURROGATE.test(result)).toBe(false);
       }
+    });
+  });
+
+  describe('printableLine', () => {
+    const UNSAFE: ReadonlyArray<readonly [string, string]> = [
+      ['U+061C, the Arabic letter mark', '\u{061C}'],
+      ['U+2060, the word joiner', '\u{2060}'],
+      ['U+2064, an invisible plus', '\u{2064}'],
+      ['U+206A, an inhibit-swapping format', '\u{206A}'],
+      ['U+206F, a nominal digit shape', '\u{206F}'],
+      ['U+FEFF, the byte order mark', '\u{FEFF}'],
+      ['U+00AD, the soft hyphen', '\u{00AD}'],
+      ['U+202E, a right-to-left override', '\u{202E}'],
+      ['U+2028, the line separator', '\u{2028}'],
+      ['U+2029, the paragraph separator', '\u{2029}'],
+      ['U+E0041, a tag character', '\u{E0041}'],
+      ['U+001B, escape', '\u{001B}'],
+      ['a newline', '\n'],
+    ];
+
+    it.each(UNSAFE)('turns %s into one space', (_name, unsafe) => {
+      expect(printableLine(`a${unsafe}b`)).toBe('a b');
+    });
+
+    it('turns a run of mixed unsafe characters into one space', () => {
+      expect(printableLine('a\n\u{1B}\u{202E}\u{200B}\u{2028}\u{FEFF}\u{E0041}b')).toBe('a b');
+    });
+
+    it('turns separate runs into separate spaces', () => {
+      expect(printableLine('a\nb\u{202E}c')).toBe('a b c');
+    });
+
+    it('trims unsafe characters at both ends', () => {
+      expect(printableLine('\u{FEFF}\u{202E}text\n\u{2028}')).toBe('text');
+      expect(printableLine('\n\u{200B}')).toBe('');
+    });
+
+    it('returns plain text, accents, CJK and an emoji without a joiner unchanged', () => {
+      for (const text of [
+        'plain text',
+        'Z\u{FC}rich: \u{65E5}\u{672C}\u{8A9E}',
+        '\u{1F680} ok',
+        '',
+      ]) {
+        expect(printableLine(text)).toBe(text);
+      }
+    });
+
+    it('keeps the spaces and punctuation a person typed', () => {
+      expect(printableLine('a  b \u{A0}c \u{2014} d')).toBe('a  b \u{A0}c \u{2014} d');
+    });
+
+    it('splits a joined emoji into its parts, because the joiner is a format character', () => {
+      expect(printableLine('\u{1F468}\u{200D}\u{1F469}')).toBe('\u{1F468} \u{1F469}');
+    });
+
+    it('gives the same answer on every call, with no state kept between them', () => {
+      for (let call = 0; call < 3; call += 1) expect(printableLine('a\nb\nc')).toBe('a b c');
     });
   });
 

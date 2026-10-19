@@ -17,9 +17,9 @@ flowchart TD
 
 ## Rules
 
-- Text a model or a feed wrote goes through `safeText` or `oneLine` before it is printed: control,
-  C1, line and paragraph separator, zero-width, bidi and tag characters become one space. A hostile
-  feed must not move the cursor, recolor the terminal or reorder what is read.
+- Text a model or a feed wrote goes through `safeText` or `oneLine` before it is printed: control
+  and format characters (escapes, C1, zero-width, bidi, tag) and the line and paragraph separators
+  become one space. A hostile feed must not move the cursor, recolor the terminal or reorder what is read.
 - A link that matched no collected item prints as `unmatched`, never its URL: a model wrote it.
 - Only the first 3 problems of a week are printed, then "... N more": the scorecard file keeps the
   rest, up to what it stored. A week with status `ok` is left out.
@@ -39,7 +39,8 @@ Each file has its test beside it; scorecards come from `../__fixtures__/scorecar
 
 ## Gotchas
 
-- `UNSAFE_TEXT` lets some invisible characters pass: U+061C (a bidi control), U+2060 to U+2064,
-  U+206A to U+206F, U+FEFF, U+00AD. Widen the regex and `printable.test.ts` together.
+- `safeText` is `printableLine` (`src/shared/text.ts`, frozen on issue branches): it matches the
+  Unicode classes `Cc` and `Cf` plus the whole tag block, not a list. A zero-width joiner splits a
+  joined emoji into its parts.
 - Tests pin the exact lines, spacing and the "(judge)" and "reported" gate words. A new metric
   needs no code here: it prints from `METRIC_IDS` and the `MetricResult` fields.

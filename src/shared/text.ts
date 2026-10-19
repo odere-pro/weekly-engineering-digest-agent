@@ -83,6 +83,25 @@ export function toPlainText(html: string): string {
   return decodeEntities(withoutTags).replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Control characters, format characters, the line and paragraph separators, and the whole tag
+ * block. The classes, not a hand-listed set of ranges: Unicode keeps adding invisible format
+ * characters (bidi controls, joiners, the byte order mark, soft hyphen), and a list written today
+ * misses them. The tag block is listed too because its unassigned code points (U+E0000,
+ * U+E0002-E001F) are not `Cf`. Private to the module: a shared `/g` regex keeps `lastIndex` state.
+ */
+const UNPRINTABLE_RUN = /[\p{Cc}\p{Cf}\u2028\u2029\u{E0000}-\u{E007F}]+/gu;
+
+/**
+ * Text a model or a feed wrote, as one line safe to print in a terminal: every run of control
+ * (escapes, newlines, C1), format (zero-width, bidi, tag) and line or paragraph separator
+ * characters becomes one space, and the ends are trimmed. A zero-width joiner counts, so a joined
+ * emoji prints as its parts.
+ */
+export function printableLine(text: string): string {
+  return text.replace(UNPRINTABLE_RUN, ' ').trim();
+}
+
 /** Drops a final high surrogate, whose low half a cut has removed. */
 function withoutSplitSurrogate(text: string): string {
   const last = text.charCodeAt(text.length - 1);

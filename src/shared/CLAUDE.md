@@ -24,7 +24,7 @@ flowchart TD
   untrusted["untrusted.ts"] --> prompts["classify, write, select, guards, models/structured"]
   url["url.ts"] -->|"itemIdFor, normalizeUrl"| ids["item ids in sources, dedupe in process, link check, write, evals"]
   isoWeek["isoWeek.ts"] --> weeks["run ids: digest, scheduler, fsRunStore, evals"]
-  text["text.ts"] --> caps["toPlainText in sources/adapters, truncate in write, select, render, delivery"]
+  text["text.ts"] --> caps["toPlainText in sources/adapters, truncate in write, select, render, delivery, printableLine in eval scorecard and show tables"]
   atomic["atomicFile.ts"] --> files["run store, lock, markdown delivery, source archive, preview"]
 ```
 
@@ -45,6 +45,9 @@ flowchart TD
 - `isoWeekId` is ISO 8601 (the Thursday sets the year); `weekStartUtc` is Monday 00:00 UTC.
 - `toPlainText` stays linear on hostile input (a long run of unclosed `<script>` tags). `truncate` cuts at
   a word when that keeps over half of `maxChars`, adds `...`, never splits a surrogate pair.
+- `printableLine` turns each run of Unicode control (`Cc`) and format (`Cf`) characters, U+2028 and U+2029
+  into one space, then trims. It matches the classes, not a list of ranges, so a new invisible format
+  character is covered. A zero-width joiner counts: a joined emoji prints as its parts.
 - `withRetry`: `retries` counts extra tries, delay `baseDelayMs * 2^attempt` up to `maxDelayMs`.
   `withTimeout` rejects with `TimeoutError` even when `fn` ignores the signal.
 
@@ -58,7 +61,7 @@ flowchart TD
 | `isoWeek.ts`    | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`                          |
 | `retry.ts`      | `withRetry`, `withTimeout`, `TimeoutError`                                                               |
 | `telemetry.ts`  | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                                              |
-| `text.ts`       | `toPlainText`, `truncate`, `wordCount`                                                                   |
+| `text.ts`       | `toPlainText`, `truncate`, `wordCount`, `printableLine`                                                  |
 | `untrusted.ts`  | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`                          |
 | `url.ts`        | `normalizeUrl`, `itemIdFor`, `sameUrl`                                                                   |
 

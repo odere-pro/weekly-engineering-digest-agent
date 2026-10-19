@@ -1,16 +1,14 @@
-import { truncate } from '../../../shared/text';
+import { printableLine, truncate } from '../../../shared/text';
 
 const COLUMN_GAP = '  ';
 export const MAX_CELL_CHARS = 70;
 const SCORE_DECIMALS = 1;
-/** Control and format characters (escape codes, bidi overrides) have no place in a terminal. */
-const UNPRINTABLE = /[\p{Cc}\p{Cf}]/gu;
-/** The same, but a text keeps its line breaks and tabs. */
+/** Control and format characters have no place in a terminal; a text keeps its line breaks and tabs. */
 const UNPRINTABLE_IN_TEXT = /[^\P{Cc}\n\t\r]|\p{Cf}/gu;
 
-/** One table cell: control and format characters become spaces, a long text is cut. */
+/** One table cell: a printable line (see `printableLine`), cut when long. */
 export function cell(text: string): string {
-  return truncate(text.replace(UNPRINTABLE, ' '), MAX_CELL_CHARS);
+  return truncate(printableLine(text), MAX_CELL_CHARS);
 }
 
 /** The text with its control and format characters removed; line breaks and tabs stay. */

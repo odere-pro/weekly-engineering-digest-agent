@@ -15,13 +15,27 @@ describe('safeText', () => {
     ['bidirectional embeddings and overrides', 'a\u{202A}b\u{202E}c', 'a b c'],
     ['bidirectional isolates', 'a\u{2066}b\u{2069}c', 'a b c'],
     ['the first and last tag characters', 'a\u{E0000}b\u{E007F}c', 'a b c'],
+    ['an unassigned tag code point', 'a\u{E0002}b', 'a b'],
     ['a tag-character message hidden in a word', 'ok\u{E0041}\u{E0042}\u{E0043}ok', 'ok ok'],
+    ['the Arabic letter mark', 'a\u{061C}b', 'a b'],
+    ['the word joiner and the invisible operators', 'a\u{2060}b\u{2064}c', 'a b c'],
+    ['the deprecated format characters', 'a\u{206A}b\u{206F}c', 'a b c'],
+    ['the byte order mark', 'a\u{FEFF}b', 'a b'],
+    ['the soft hyphen', 'a\u{00AD}b', 'a b'],
   ])('replaces %s with a space', (_name, text, printed) => {
     expect(safeText(text)).toBe(printed);
   });
 
   it('replaces a run of unsafe characters with one space', () => {
     expect(safeText('a\n\n\u{1b}[0m\u{202E}\u{200B}b')).toBe('a [0m b');
+  });
+
+  it('replaces a run of the characters the old list missed with one space', () => {
+    expect(safeText('a\u{061C}\u{2060}\u{FEFF}\u{00AD}\u{206F}b')).toBe('a b');
+  });
+
+  it('keeps an emoji without a joiner', () => {
+    expect(safeText('\u{1F680} ok')).toBe('\u{1F680} ok');
   });
 
   it('trims the ends, so a trailing newline or a leading mark leaves no space', () => {
