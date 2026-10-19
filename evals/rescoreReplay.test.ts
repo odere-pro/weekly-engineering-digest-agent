@@ -1,243 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import {
-  formatResult,
-  holdoutOf,
-  replayRescore,
-  runCli,
-  type RescoreResult,
-} from './rescoreReplay';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { runCli } from './rescoreReplay';
 import type { Calibration } from '../src/process/calibration';
 import type { EvalCases } from './cases/evalSet';
-import type { Clock } from '../src/shared/clock';
-import type { DecisionAnswer, GenerateRequest } from '../src/models/ModelProvider';
-import { makeConfig, makeItem } from '../test/builders';
-import { FakeModelProvider, noopLogger } from '../test/fakes';
-
-const AREA = 'AI models and tooling';
-const TICK_MS = 2000;
-
-/** A clock that advances two seconds on every reading. */
-function tickingClock(): Clock {
-  let ms = Date.parse('2026-10-12T00:00:00Z');
-  return {
-    now: () => {
-      ms += TICK_MS;
-      return new Date(ms);
-    },
-  };
-}
-
-const items = ['a', 'b', 'c', 'd', 'e'].map((id) => makeItem({ id, title: `Item ${id}` }));
-
-function cases(): EvalCases {
-  return {
-    weeks: [
-      {
-        weekId: '2026-W41',
-        items,
-        labels: { mustInclude: ['a', 'b'], mustExclude: ['c'] },
-      },
-    ],
-    classifier: {
-      reviewed: true,
-      cases: [
-        { id: 'k1', item: items[0]!, expected: { area: AREA, relevance: 3 } },
-        { id: 'k2', item: items[2]!, expected: { area: 'other', relevance: 0 } },
-      ],
-    },
-    attacks: [],
-    grounding: [],
-    calibration: null,
-    sources: [],
-  } as unknown as EvalCases;
-}
-
-function answers(level: number): Record<string, DecisionAnswer> {
-  return {
-    relevance: { type: 'score', level, score: level / 3, probabilities: {}, confidence: 1 },
-    area: { type: 'choice', choice: AREA, probabilities: {}, confidence: 0.9 },
-    hype: { type: 'yesno', probability: 0.1 },
-    minorRelease: { type: 'yesno', probability: 0.1 },
-  };
-}
-
-/** The decider gives every item 2; the writer knows c is noise and a is a must read. */
-function model(): FakeModelProvider {
-  return new FakeModelProvider({
-    decide: () => answers(2),
-    generate: (request: GenerateRequest) =>
-      JSON.stringify({
-        items: [...request.prompt.matchAll(/<<<DATA (\w+)>>>/g)].map((m) => ({
-          itemId: m[1],
-          relevance: m[1] === 'c' ? 0 : m[1] === 'a' ? 3 : 2,
-          area: m[1] === 'c' ? 'other' : AREA,
-          confidence: 'high',
-        })),
-      }),
-  });
-}
-
-const deps = (fake: FakeModelProvider) => ({
-  model: fake,
-  config: makeConfig({ topN: 5 }),
-  logger: noopLogger,
-  clock: tickingClock(),
-});
-
-describe('replayRescore', () => {
-  it('with the flag off makes no writer call and keeps the decider ranking', async () => {
-    const fake = model();
-
-    const result = await replayRescore(cases(), deps(fake), false);
-
-    expect(fake.generateCalls).toHaveLength(0);
-    expect(result).toMatchObject({
-      rescoreWithWriter: false,
-      weeks: 1,
-      mustIncludeRecall: 2,
-      mustExcludeLeaks: 1,
-      classifierAccuracy: 0,
-    });
-    expect(result.secondsPerWeek).toBe(2);
-  });
-
-  it('with the flag on rescoring removes the leak and fixes the cases', async () => {
-    const fake = model();
-
-    const result = await replayRescore(cases(), deps(fake), true);
-
-    expect(fake.generateCalls.every((call) => call.role === 'write')).toBe(true);
-    expect(result).toMatchObject({
-      rescoreWithWriter: true,
-      mustIncludeRecall: 2,
-      mustExcludeLeaks: 0,
-      classifierAccuracy: 1,
-    });
-  });
-
-  it('with pairwise on re-ranks the survivors with the judge and counts the calls', async () => {
-    const fake = new FakeModelProvider({
-      // The classifier gives every item 2. The pairwise judge always prefers the item whose
-      // title is alphabetically later ("Item e" beats "Item a").
-      decide: (request) => {
-        if (!('prefer' in request.questions)) return answers(2);
-        const titles = [...request.state.matchAll(/Title: Item (\w)/g)].map((m) => m[1] ?? '');
-        return {
-          prefer: { type: 'yesno', probability: (titles[0] ?? '') > (titles[1] ?? '') ? 1 : 0 },
-        };
-      },
-    });
-    const set = cases();
-    set.weeks = [{ weekId: '2026-W41', items, labels: { mustInclude: ['e'], mustExclude: [] } }];
-    set.classifier = { reviewed: true, cases: [] };
-    const config = makeConfig({ topN: 5 });
-
-    const off = await replayRescore(set, { ...deps(fake), config }, false);
-    const on = await replayRescore(set, { ...deps(fake), config, pairwise: true }, false);
-
-    expect(off).not.toHaveProperty('pairwise');
-    expect(on.pairwise).toBe(true);
-    // All items score 2, so rank is a tie and "off" keeps the date/id order (e is last).
-    // The judge prefers later titles, so "on" moves e to the front.
-    expect(off.mustIncludeRecall).toBe(1);
-    expect(on.mustIncludeRecall).toBe(1);
-    const pairwiseCalls = fake.decideCalls.filter((call) => 'prefer' in call.questions);
-    expect(pairwiseCalls.length).toBeLessThanOrEqual(40);
-    expect(fake.decideCalls.some((call) => 'prefer' in call.questions)).toBe(true);
-  });
-
-  it('serves only each source newest items up to the cap', async () => {
-    const fake = model();
-    const config = makeConfig({ topN: 5, maxItemsPerSource: 2 });
-    const dated = ['a', 'b', 'c'].map((id, i) =>
-      makeItem({ id, publishedAt: `2026-10-0${i + 1}T09:00:00Z` }),
-    );
-    const set = cases();
-    set.weeks = [
-      { weekId: '2026-W41', items: dated, labels: { mustInclude: ['a'], mustExclude: [] } },
-    ];
-    set.classifier = { reviewed: true, cases: [] };
-
-    const result = await replayRescore(set, { ...deps(fake), config }, false);
-
-    // a is the oldest, so outside the cap: it is neither found nor counted.
-    expect(result.mustIncludeRecall).toBe(0);
-    expect(fake.decideCalls).toHaveLength(2);
-    expect(result.classifierAccuracy).toBeNull();
-  });
-});
-
-describe('replayRescore with a calibration', () => {
-  // The decider gives every item 2, so only the area bias can tell them apart.
-  const calibration: Calibration = {
-    version: 1,
-    profile: 'light',
-    points: [{ raw: 2, calibrated: 2 }],
-    areaBias: { [AREA.toLowerCase()]: -0.5 },
-  };
-
-  it('is the same as no calibration when none is given', async () => {
-    const plain = await replayRescore(cases(), deps(model()), false);
-    const undef = await replayRescore(cases(), { ...deps(model()), calibration: undefined }, false);
-    expect(JSON.stringify(undef)).toBe(JSON.stringify(plain));
-  });
-
-  it('ranks and scores the classifier cases on the calibrated relevance', async () => {
-    const result = await replayRescore(cases(), { ...deps(model()), calibration }, false);
-    // 2 - 0.5 = 1.5 still passes minRelevance 1.5; the case expecting 3 is now 1.5 away.
-    expect(result.mustIncludeRecall).toBe(2);
-    expect(result.classifierAccuracy).toBe(0);
-    expect(result.calibrated).toBe(true);
-  });
-
-  it('drops items that fall under the floor after calibration', async () => {
-    const lower = { ...calibration, areaBias: { [AREA.toLowerCase()]: -1 } };
-    const result = await replayRescore(cases(), { ...deps(model()), calibration: lower }, false);
-    expect(result.mustIncludeRecall).toBe(0);
-  });
-});
-
-describe('holdoutOf', () => {
-  it('keeps the named weeks and every third classifier case', () => {
-    const set = cases();
-    const second = { ...set.weeks[0]!, weekId: '2026-W40' };
-    const base = set.classifier.cases[0]!;
-    const many = Array.from({ length: 6 }, (_, i) => ({
-      ...base,
-      item: { ...base.item, id: `k${i}` },
-    }));
-    const out = holdoutOf(
-      { ...set, weeks: [second, set.weeks[0]!], classifier: { reviewed: true, cases: many } },
-      ['2026-W41'],
-    );
-    expect(out.weeks.map((w) => w.weekId)).toEqual(['2026-W41']);
-    expect(out.classifier.cases.map((c) => c.item.id)).toEqual(['k2', 'k5']);
-  });
-});
-
-describe('formatResult', () => {
-  it('prints the three numbers and the time', () => {
-    const result: RescoreResult = {
-      rescoreWithWriter: true,
-      weeks: 6,
-      mustIncludeRecall: 1.5,
-      mustExcludeLeaks: 0.25,
-      classifierAccuracy: 0.3,
-      secondsPerWeek: 12.34,
-    };
-
-    const text = formatResult('light', result);
-
-    expect(text).toContain('rescoreWithWriter: on');
-    expect(text).toContain('must-include recall: 1.50 of 5');
-    expect(text).toContain('must-exclude leaks: 0.25');
-    expect(text).toContain('classifier accuracy: 30.0%');
-    expect(text).toContain('seconds per week: 12.3');
-    expect(
-      formatResult('light', { ...result, classifierAccuracy: null, mustIncludeRecall: null }),
-    ).toContain('classifier accuracy: n/a');
-  });
-});
+import type { RescoreResult } from './rescore/replay/types';
+import { cases } from './rescore/__fixtures__/rescoreKit';
 
 describe('runCli', () => {
   const result: RescoreResult = {
@@ -248,6 +17,18 @@ describe('runCli', () => {
     classifierAccuracy: 0.5,
     secondsPerWeek: 1,
   };
+  const calibration: Calibration = {
+    version: 1,
+    profile: 'light',
+    points: [{ raw: 2, calibrated: 2 }],
+    areaBias: {},
+  };
+  const dirs: string[] = [];
+
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    await Promise.all(dirs.splice(0).map((d) => rm(d, { recursive: true, force: true })));
+  });
 
   function io() {
     const out: string[] = [];
@@ -290,15 +71,20 @@ describe('runCli', () => {
     },
   );
 
+  it('says why the arguments were refused, then the usage', async () => {
+    const kit = io();
+
+    await runCli(['--profile', 'light'], kit.overrides);
+
+    expect(kit.err.join('')).toMatch(
+      /^--flag must be on or off\nUsage: tsx evals\/rescoreReplay\.ts/,
+    );
+    expect(kit.seen).toEqual([]);
+  });
+
   it('loads --calibration and restricts to --holdout weeks', async () => {
     const kit = io();
     const seen: unknown[] = [];
-    const calibration: Calibration = {
-      version: 1,
-      profile: 'light',
-      points: [{ raw: 2, calibrated: 2 }],
-      areaBias: {},
-    };
 
     const code = await runCli(
       ['--profile', 'light', '--flag', 'off', '--calibration', 'c.json', '--holdout', '2026-W40'],
@@ -317,6 +103,21 @@ describe('runCli', () => {
       { profile: 'light', config: undefined, calibration, pairwise: false },
       0,
     ]);
+  });
+
+  it('runs on all the cases without --holdout', async () => {
+    const kit = io();
+    const seen: number[] = [];
+
+    await runCli(['--profile', 'light', '--flag', 'off'], {
+      ...kit.overrides,
+      run: (_o: unknown, c: EvalCases) => {
+        seen.push(c.weeks.length, c.classifier.cases.length);
+        return Promise.resolve(result);
+      },
+    });
+
+    expect(seen).toEqual([1, 2]);
   });
 
   it('passes --pairwise on through and rejects other values', async () => {
@@ -341,6 +142,23 @@ describe('runCli', () => {
     ).toBe(2);
   });
 
+  it('passes --config through', async () => {
+    const kit = io();
+    const seen: unknown[] = [];
+
+    await runCli(['--profile', 'fast', '--flag', 'off', '--config', 'my.json'], {
+      ...kit.overrides,
+      run: (o: unknown) => {
+        seen.push(o);
+        return Promise.resolve(result);
+      },
+    });
+
+    expect(seen).toEqual([
+      { profile: 'fast', config: 'my.json', calibration: undefined, pairwise: false },
+    ]);
+  });
+
   it('exits 1 and says why when the run fails', async () => {
     const kit = io();
 
@@ -351,5 +169,74 @@ describe('runCli', () => {
 
     expect(code).toBe(1);
     expect(kit.err.join('')).toContain('ollama down');
+    expect(kit.err.join('')).toContain('rescoreReplay failed:');
+  });
+
+  it('exits 1 when the cases do not load', async () => {
+    const kit = io();
+
+    const code = await runCli(['--profile', 'light', '--flag', 'off'], {
+      ...kit.overrides,
+      loadCases: () => Promise.reject(new Error('bad case file')),
+    });
+
+    expect(code).toBe(1);
+    expect(kit.err.join('')).toBe('rescoreReplay failed: bad case file\n');
+    expect(kit.out).toEqual([]);
+  });
+
+  describe('with the default input and output', () => {
+    async function calibrationFile(content: string): Promise<string> {
+      const dir = await mkdtemp(join(tmpdir(), 'rescore-'));
+      dirs.push(dir);
+      const path = join(dir, 'c.json');
+      await writeFile(path, content);
+      return path;
+    }
+
+    it('reads --calibration from the file and checks it', async () => {
+      const kit = io();
+      const seen: unknown[] = [];
+      const path = await calibrationFile(JSON.stringify(calibration));
+
+      const code = await runCli(['--profile', 'light', '--flag', 'off', '--calibration', path], {
+        ...kit.overrides,
+        run: (o: unknown) => {
+          seen.push(o);
+          return Promise.resolve(result);
+        },
+      });
+
+      expect(code).toBe(0);
+      expect(seen).toEqual([{ profile: 'light', config: undefined, calibration, pairwise: false }]);
+    });
+
+    it('exits 1 for a calibration file that does not match the schema', async () => {
+      const kit = io();
+      const path = await calibrationFile(JSON.stringify({ version: 2 }));
+
+      const code = await runCli(
+        ['--profile', 'light', '--flag', 'off', '--calibration', path],
+        kit.overrides,
+      );
+
+      expect(code).toBe(1);
+      expect(kit.err.join('')).toContain('rescoreReplay failed:');
+      expect(kit.seen).toEqual([]);
+    });
+
+    it('writes to the process streams', async () => {
+      const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+      const stderr = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
+      const { stdout: _out, stderr: _err, ...rest } = io().overrides;
+
+      const done = await runCli(['--profile', 'light', '--flag', 'off'], rest);
+      const usage = await runCli([], rest);
+
+      expect(done).toBe(0);
+      expect(usage).toBe(2);
+      expect(stdout.mock.calls.flat().join('')).toContain('profile: light');
+      expect(stderr.mock.calls.flat().join('')).toContain('Usage: tsx evals/rescoreReplay.ts');
+    });
   });
 });
