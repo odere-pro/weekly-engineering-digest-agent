@@ -4,101 +4,10 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { calibrate, main, meanAbsoluteDifference, runCalibration, spearman } from './calibrate';
-import { GradingSheetSchema, type GradingSheet } from './gradingSheet';
+import { calibrate, main, runCalibration } from './calibrate';
+import { fullSheet, row, sheetOf } from './__fixtures__/sheetKit';
 import { JudgeCalibrationSchema } from '../schema';
 import { DigestError } from '../../src/shared/errors';
-
-const pairs = (human: number[], judge: number[]) =>
-  human.map((h, i) => ({ human: h, judge: judge[i] ?? 0 }));
-
-describe('spearman', () => {
-  it('is 1 for the same order, whatever the distances', () => {
-    expect(spearman(pairs([1, 2, 3, 4], [2, 3, 4, 5]))).toBeCloseTo(1);
-    expect(spearman(pairs([1, 2, 3, 4], [1, 1.1, 4.9, 5]))).toBeCloseTo(1);
-  });
-
-  it('is -1 for the opposite order', () => {
-    expect(spearman(pairs([1, 2, 3, 4, 5], [5, 4, 3, 2, 1]))).toBeCloseTo(-1);
-  });
-
-  it('matches the textbook value for a swap of two neighbours', () => {
-    // d = [0, 0, 0, 1, -1]: 1 - 6 * 2 / (5 * 24) = 0.9
-    expect(spearman(pairs([1, 2, 3, 4, 5], [1, 2, 3, 5, 4]))).toBeCloseTo(0.9);
-  });
-
-  it('gives tied values the mean of their ranks', () => {
-    // ranks: human [1.5, 1.5, 3.5, 3.5], judge [1.5, 3.5, 1.5, 3.5]: no correlation.
-    expect(spearman(pairs([1, 1, 2, 2], [1, 2, 1, 2]))).toBeCloseTo(0);
-    // ranks: human [1.5, 1.5, 3, 4], judge [1, 2, 3, 4]
-    expect(spearman(pairs([1, 1, 2, 3], [1, 2, 3, 4]))).toBeCloseTo(0.9487, 3);
-  });
-
-  it('is null when one side never changes, since the correlation is undefined', () => {
-    expect(spearman(pairs([3, 3, 3], [1, 2, 3]))).toBeNull();
-    expect(spearman(pairs([1, 2, 3], [4, 4, 4]))).toBeNull();
-  });
-
-  it('is null for fewer than two pairs', () => {
-    expect(spearman(pairs([3], [3]))).toBeNull();
-    expect(spearman([])).toBeNull();
-  });
-});
-
-describe('meanAbsoluteDifference', () => {
-  it('is the mean distance between grade and score', () => {
-    expect(meanAbsoluteDifference(pairs([4, 3, 5], [3.5, 3, 3]))).toBeCloseTo((0.5 + 0 + 2) / 3);
-  });
-
-  it('is null without pairs', () => {
-    expect(meanAbsoluteDifference([])).toBeNull();
-  });
-});
-
-interface Row {
-  id: string;
-  week: string | null;
-  writer: string | null;
-  humanGrade: number | null;
-  judgeScore: number | null;
-}
-
-const row = (
-  id: string,
-  week: string,
-  writer: string,
-  humanGrade: number | null,
-  judgeScore: number | null,
-): Row => ({ id, week, writer, humanGrade, judgeScore });
-
-function sheetOf(
-  digests: Row[],
-  picks: GradingSheet['picks'] = [],
-  judge: string | null = null,
-): GradingSheet {
-  return GradingSheetSchema.parse({ judge, digests, picks });
-}
-
-/** Five weeks, two writers each: the human prefers `a`, and so does the judge, except in W05. */
-function fullSheet(): GradingSheet {
-  const digests = [
-    row('d01', '2026-W01', 'a', 5, 4.75),
-    row('d02', '2026-W01', 'b', 3, 3.5),
-    row('d03', '2026-W02', 'a', 4, 4),
-    row('d04', '2026-W02', 'b', 2, 2.25),
-    row('d05', '2026-W03', 'a', 4, 4.25),
-    row('d06', '2026-W03', 'b', 3, 3),
-    row('d07', '2026-W04', 'a', 5, 4.5),
-    row('d08', '2026-W04', 'b', 4, 3.25),
-    row('d09', '2026-W05', 'a', 4, 2.5),
-    row('d10', '2026-W05', 'b', 2, 3.75),
-  ];
-  const picks = ['W01', 'W02', 'W03', 'W04', 'W05'].map((w) => ({
-    week: `2026-${w}`,
-    better: 'a',
-  }));
-  return sheetOf(digests, picks, 'clef:latest');
-}
 
 /** The sheets built by hand in these tests have a few rows, not the spec's 10. */
 const FEW = { minDigests: 1 };
@@ -352,6 +261,45 @@ describe('runCalibration', () => {
     });
 
     expect(lines.join('\n')).toContain('at least 80%: the judge scores are gated');
+  });
+
+  it('says the rank correlation is undefined when the grades never change', async () => {
+    const sheet = sheetOf(
+      [row('d01', '2026-W01', 'a', 3, 4), row('d02', '2026-W01', 'b', 3, 2)],
+      [{ week: '2026-W01', better: 'a' }],
+    );
+    const lines: string[] = [];
+
+    await runCalibration({
+      sheetPath: await writeSheet(sheet),
+      outPath: join(dir, 'c.json'),
+      log: (l) => lines.push(l),
+      minDigests: 1,
+    });
+
+    expect(lines).toContain(
+      'Spearman rank correlation: undefined (the grades or the scores are all equal)',
+    );
+  });
+
+  it('prints the report lines in a fixed order, ending with the file it wrote', async () => {
+    const lines: string[] = [];
+    const outPath = join(dir, 'c.json');
+
+    await runCalibration({
+      sheetPath: await writeSheet(fullSheet()),
+      outPath,
+      log: (l) => lines.push(l),
+    });
+
+    expect(lines.map((line) => line.split(':')[0])).toEqual([
+      'Judge agreement',
+      'Selection agreement',
+      'Spearman rank correlation',
+      'Mean absolute difference',
+      'The judge agrees under 80%',
+      'Wrote ' + outPath,
+    ]);
   });
 
   it('does not write anything when the sheet is incomplete', async () => {

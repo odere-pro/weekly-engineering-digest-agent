@@ -1,6 +1,12 @@
 // The judge `digest eval` uses on a profile that has none (system-design D16, F10). The select
 // step skips the judge when `profile.judge` is null, so on `fast` and `light` the harness asks the
 // judge model itself, with the same rubric, about the winning draft of each replayed week.
+//
+// `EVAL_JUDGE` in this file always means the ENVIRONMENT VARIABLE (`EnvSchema.EVAL_JUDGE`, read by
+// `evalJudgeTag`), and the error texts name it so the user knows what to set. It is not the
+// `EVAL_JUDGE` constant of `src/config/profiles.ts`, a model tag (`MODEL_TAGS.clef`) that
+// `resolveProfile` gives a multi-writer run as its judge when the profile has none. This file
+// never imports that constant.
 import type { Env } from '../../src/config/schema';
 import {
   buildJudgeQuestions,
@@ -34,8 +40,9 @@ export interface EvalJudgeOptions {
 }
 
 /**
- * The judge model tag from the loaded environment (`EVAL_JUDGE=clef:latest`, from `.env` or the
- * shell as `loadConfig` merges them); undefined when unset or blank.
+ * The judge model tag from the loaded environment: the value of the `EVAL_JUDGE` environment
+ * variable (`EVAL_JUDGE=clef:latest`, from `.env` or the shell as `loadConfig` merges them),
+ * trimmed; undefined when unset or blank.
  */
 export function evalJudgeTag(env: Pick<Env, 'EVAL_JUDGE'>): string | undefined {
   const tag = env.EVAL_JUDGE?.trim();
@@ -60,7 +67,8 @@ export function createEvalJudge({ provider, model, focusAreas }: EvalJudgeOption
 
 /**
  * Fails before a long replay starts when Ollama cannot serve the judge: unreachable, the tag not
- * installed, or not a decision model. It only reads the model list; it never pulls a model.
+ * installed, or not a decision model. It only reads the model list; it never pulls a model. `tag`
+ * is the value of the `EVAL_JUDGE` environment variable, which the error texts name.
  */
 export async function assertJudgeInstalled(
   provider: Pick<ModelProvider, 'health'>,

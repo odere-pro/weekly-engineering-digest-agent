@@ -1,6 +1,8 @@
 // Scores the winning digest of each replayed week with the eval judge (F10), for a profile whose
 // select step has no judge to do it.
-import { parseDigestMarkdown, writingQuality, type Measurement } from '../metrics';
+import { parseDigestMarkdown } from '../metrics/digest/parseDigest';
+import { writingQuality } from '../metrics/judging/judgeMetrics';
+import type { Measurement } from '../metrics/measurement/measurement';
 import type { Draft, Item } from '../../src/domain/schemas';
 import type { RunRecord } from '../../src/store/runRecord';
 import { DigestError, errorMessage } from '../../src/shared/errors';

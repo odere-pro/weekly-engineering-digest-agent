@@ -1,15 +1,17 @@
 // Writing quality on a profile with no judge (F10): when the run is given an eval judge, the
-// harness scores the winning digest of each replayed week with it.
+// harness scores the winning digest of each replayed week with it. This runs `runEval`, so it is
+// the integration test of `judgeWinners.ts` and `judgedQuality`; `judgeWinners.test.ts` has the
+// unit cases.
 import { describe, expect, it, vi } from 'vitest';
-import type { EvalJudge } from './judge/evalJudge';
-import { runEval } from './runEval';
-import { ScorecardSchema } from './schema';
-import { PROFILES } from '../src/config/profiles';
-import type { Draft, Item } from '../src/domain/schemas';
-import type { JudgeScore } from '../src/select/judgeScore';
-import { DigestError } from '../src/shared/errors';
-import type { Logger } from '../src/shared/telemetry';
-import { noopLogger } from '../test/fakes';
+import type { EvalJudge } from './evalJudge';
+import { runEval } from '../runEval';
+import { ScorecardSchema } from '../schema';
+import { PROFILES } from '../../src/config/profiles';
+import type { Draft, Item } from '../../src/domain/schemas';
+import type { JudgeScore } from '../../src/select/judgeScore';
+import { DigestError } from '../../src/shared/errors';
+import type { Logger } from '../../src/shared/telemetry';
+import { noopLogger } from '../../test/fakes';
 import {
   NONE,
   WEEK_40,
@@ -19,7 +21,7 @@ import {
   useCasesDir,
   writeJson,
   writeStandardWeeks,
-} from './evalKit';
+} from '../evalKit';
 
 const casesDir = useCasesDir();
 
