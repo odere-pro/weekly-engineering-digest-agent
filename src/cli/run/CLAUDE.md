@@ -61,8 +61,10 @@ flowchart TD
 | -------- | -------------------------------------------------------------------------------------- |
 | `run.ts` | `runCommand`, `RunCommandOptions`, `RunCommandDeps`, flag checks, dry-run copy, report |
 
-`run.test.ts` covers wiring, exit codes, closing, the summary, secrets, `--out`, local files and the
-dry-run copy (temp folders, `CapturingDelivery`, the real markdown channel).
+Tests are split by case: `run.test.ts` (wiring, `--since`, exit codes, closing, default deps),
+`run.summary.test.ts` (summary, rejected drafts, secrets), `run.out.test.ts` (`--out`, local files),
+`run.dryRun.test.ts` (the dry-run copy: temp folders, `CapturingDelivery`, the real markdown
+channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured output.
 
 ## Gotchas
 
