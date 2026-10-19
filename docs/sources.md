@@ -1,6 +1,8 @@
 # Default sources
 
-The 24 feeds in `DEFAULT_SOURCES` ([`src/sources/defaultSources.ts`](../src/config/defaultSources.ts)),
+Part of the [documentation home](README.md). This page keeps its path because tests read it.
+
+The 24 feeds in `DEFAULT_SOURCES` ([`src/sources/defaultSources.ts`](../src/sources/defaultSources.ts)),
 mirrored in [`digest.config.example.json`](../digest.config.example.json). A test keeps the two,
 and this file, in sync. Every feed was fetched and parsed on 2026-10-16.
 
@@ -78,3 +80,8 @@ items`), not recorded in `run.json`.
 - Some sources overlap (`google-ai-blog` and `google-deepmind-blog`, `ollama-blog` and
   `ollama-releases`, `huggingface-blog` and `transformers-releases`). URL dedupe does not merge
   them. The process step drops the second item only when both name the same product and version.
+
+## Related
+
+- [Sources feature](features/sources.md), [source configuration](configuration/sources.md)
+- [Add a source](runbooks/configure/add-a-source.md), [failing feed](runbooks/debug/failing-feed.md)

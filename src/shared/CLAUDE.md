@@ -80,7 +80,7 @@ Used by: almost every folder. `errors` and `telemetry` are everywhere. `untruste
   `evals/classifier-cases.json` and `evals/sources/*/expected.json` is a hash of a normalized URL,
   and `evals/dataset.*.test.ts` will fail.
 - Do not renumber `ExitCode` values or reuse a code. Schedulers and scripts read them
-  (`docs/operate.md` lists them).
+  (`docs/reference/exit-codes.md` lists them).
 - Do not import a feature folder from here. Keep new helpers pure and take time as a `Clock`.
 - `NotImplementedError` is left over from the first build wave. `cli/init` still checks for it.
   Remove both together or leave both.

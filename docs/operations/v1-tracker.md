@@ -1,5 +1,7 @@
 # v1.0 tracker
 
+Part of [Operations](README.md).
+
 v1.0 is declared after four Mondays in a row delivered on time with every gate green and no
 manual fix. Any manual fix resets the count to zero.
 

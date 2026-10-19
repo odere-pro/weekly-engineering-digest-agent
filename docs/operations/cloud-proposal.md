@@ -1,5 +1,7 @@
 # Running in the cloud (proposal)
 
+Part of [Operations](README.md).
+
 **Nothing here is built.** This is a proposal for AWS, with prices read on 2026-10-17 for
 us-east-1. The full runbook and spec are archived outside the repo. A figure marked
 **estimate** was not read from a source.
@@ -11,7 +13,7 @@ One reader on one Mac needs nothing here: the digest is free. Consider the cloud
 - several people must get the mail, and a missed week affects them all;
 - the machine must always be on (a Mac sleeps, travels, reboots);
 - there is no Apple silicon Mac. Elsewhere every profile falls back to untuned models
-  ([`how-it-works.md`](how-it-works.md#profiles)).
+  ([profiles](../configuration/profiles.md)).
 
 If none applies, stay local.
 

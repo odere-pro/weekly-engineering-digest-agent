@@ -44,7 +44,7 @@ tool stays local-first with no database.
 - Temp files left by a killed run next to the lock are swept once they are 10 min old.
 - `release()` is safe to repeat and never removes a lock that another run took over.
 - Known limits (plain files, no OS lock) are written in the doc comment of `acquireRunLock`; the
-  operator view is in `docs/runbook.md`. The lock needs a filesystem with hard links.
+  operator view is in `docs/operations/lock.md`. The lock needs a filesystem with hard links.
 
 ## Files
 

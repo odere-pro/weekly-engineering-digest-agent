@@ -66,7 +66,7 @@ Used by: `app/container` (builds every adapter from it), `digest`, `cli` (most c
   (`valid.config.json`, `writers.config.json`, `bad-schema.config.json`, `secrets.env`, ...).
 - `schema.ts` and `profiles.ts` are frozen on issue branches. Change them on `main` only.
 - A new setting needs a default, so existing `digest.config.json` files still load. Update
-  `docs/profiles.md` or `docs/operate.md` when users should know.
+  `docs/configuration/` and `docs/reference/config-keys.md` when users should know.
 - Changing a tag in `MODEL_TAGS` changes what `digest doctor` asks users to pull.
 - `EVAL_JUDGE` in `profiles.ts` is a model tag (clef). The env variable `EVAL_JUDGE` in
   `EnvSchema` is a different thing: the tag `digest eval` uses to score digests.

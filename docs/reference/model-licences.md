@@ -1,10 +1,12 @@
 # Model licences
 
+Part of [Reference](README.md).
+
 Checked on **2026-10-16** against the publishers' own pages and the licence text each Ollama
 tag ships. This is a reading of public pages, **not legal advice**. If a licence matters for
 your use, read it or ask a lawyer.
 
-The repo (MIT, [`LICENSE`](../LICENSE)) ships model **tags only**, never weights. You accept each
+The repo (MIT, [`LICENSE`](../../LICENSE)) ships model **tags only**, never weights. You accept each
 model's licence when you run `ollama pull`. Every model a profile uses allows commercial use.
 
 | Model (tag used)                                | Licence                                                                             | Commercial use    | Source                                                                                                                                        |
@@ -37,4 +39,4 @@ which text governs the Ollama build. Recheck at each release with `ollama show -
 1. Ship tags only. Never add weights or fine-tunes to the repo, the image or a release.
 2. Do not add `nimble-v3` (non-commercial) or `tev1` (no published licence) to a profile.
 3. Not covered here: npm dependency licences, the terms of the feeds in
-   [`sources.md`](sources.md), and the feed content stored in the recorded eval weeks.
+   [`sources.md`](../sources.md), and the feed content stored in the recorded eval weeks.
