@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { GuardsConfigSchema, type GuardsConfig } from './schema';
+import { DigestError } from '../shared/errors';
 import {
-  EVAL_JUDGE,
   MODEL_TAGS,
+  NON_MAC_FALLBACK,
+  OVERRIDE_JUDGE,
   PROFILES,
+  modelFamily,
   modelsByRole,
   modelsForRole,
   modelsInUse,
@@ -37,7 +40,7 @@ describe('profiles', () => {
   });
 
   it('applies a writer override and adds a judge for a panel', () => {
-    expect(resolveProfile('fast', mac, ['a', 'b']).judge).toBe(EVAL_JUDGE);
+    expect(resolveProfile('fast', mac, ['a', 'b']).judge).toBe(OVERRIDE_JUDGE);
     expect(resolveProfile('quality', mac, ['a']).judge).toBeNull();
     expect(resolveProfile('quality', mac, ['a', 'b']).judge).toBe(MODEL_TAGS.clef);
   });
@@ -145,5 +148,54 @@ describe('modelsInUse', () => {
       MODEL_TAGS.graniteGuardian,
       MODEL_TAGS.nemotronLightningMlx,
     ]);
+  });
+});
+
+describe('modelFamily', () => {
+  it.each([
+    ['clef:latest', 'qwen'],
+    ['qwen3.8:27b-mlx', 'qwen'],
+    ['gemma4:31b-mlx', 'gemma'],
+    ['nemotron-3.5-lightning:30b-mlx', 'nemotron'],
+    ['hf.co/org/Qwen3-8B-GGUF:Q4_K_M', 'qwen'],
+    ['llama', 'llama'],
+  ])('puts %s in the %s family', (tag, family) => {
+    expect(modelFamily(tag)).toBe(family);
+  });
+});
+
+describe('the judge is never the same family as a writer', () => {
+  const clash = /"qwen3\.8:27b-mlx" is a qwen model, the same family as the judge "clef:latest"/;
+
+  it('rejects a writers override with a writer from the judge family', () => {
+    expect(() =>
+      resolveProfile('quality', mac, ['qwen3.8:27b-mlx', MODEL_TAGS.gemma31bMlx]),
+    ).toThrow(clash);
+    expect(() => resolveProfile('fast', mac, ['qwen3.8:27b-mlx', MODEL_TAGS.gemma31bMlx])).toThrow(
+      DigestError,
+    );
+  });
+
+  it('tells the user what to change', () => {
+    expect(() => resolveProfile('quality', mac, ['clef:latest', 'gemma4:31b-mlx'])).toThrow(
+      /drop that writer, use a single writer \(no judge\), or pick writers from another family/,
+    );
+  });
+
+  it('accepts a single Qwen writer: it has no judge', () => {
+    const profile = resolveProfile('quality', mac, ['qwen3.8:27b-mlx']);
+    expect(profile.judge).toBeNull();
+  });
+
+  it('holds for every built-in profile, on Apple silicon and elsewhere', () => {
+    for (const name of Object.keys(PROFILES) as (keyof typeof PROFILES)[]) {
+      for (const platform of [mac, linux]) {
+        const profile = resolveProfile(name, platform);
+        if (profile.judge === null) continue;
+        const judgeFamily = modelFamily(profile.judge);
+        expect(profile.writers.map(modelFamily)).not.toContain(judgeFamily);
+      }
+    }
+    expect(NON_MAC_FALLBACK.judge).toBeNull();
   });
 });

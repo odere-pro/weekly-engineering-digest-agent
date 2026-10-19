@@ -1,8 +1,8 @@
 // The judge that scores the winning digests on a profile without one of its own.
 //
-// Two things are called EVAL_JUDGE. This file reads the ENVIRONMENT VARIABLE (`EnvSchema.EVAL_JUDGE`
-// in config/schema, from `.env` or the shell, through `loaded.env`). It never imports the MODEL-TAG
-// CONSTANT `EVAL_JUDGE` of config/profiles, which is the judge a writers override gives a profile.
+// `EVAL_JUDGE` is the ENVIRONMENT VARIABLE (`EnvSchema.EVAL_JUDGE` in config/schema, from `.env` or
+// the shell, through `loaded.env`). It is not `OVERRIDE_JUDGE` of config/profiles, which is the judge
+// a writers override gives a profile (the model-tag constant that used to share the name).
 import {
   assertJudgeInstalled,
   createEvalJudge,

@@ -98,7 +98,8 @@ export const ModelOverridesSchema = z.object({
     .optional(),
   /**
    * Score the items that pass the decider's filter once more with the writer model (W6-08).
-   * Off by default; the light re-baseline decides whether it stays on.
+   * Off by default: W6-08 measured it worse on light (recall 1.50 to 0.83, +2 min a week). Wired
+   * in runs and in `digest eval`.
    */
   rescoreWithWriter: z.boolean().default(false),
   /** Sampling seed sent with every generate call, so a rerun of a week repeats itself (W7-03). */

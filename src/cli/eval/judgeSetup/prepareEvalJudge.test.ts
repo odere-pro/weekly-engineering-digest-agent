@@ -1,11 +1,11 @@
 // prepareEvalJudge: the judge for a profile without one, from the EVAL_JUDGE environment variable
-// (not the EVAL_JUDGE model-tag constant of config/profiles). No model is called: the provider is a fake.
+// (not `OVERRIDE_JUDGE` of config/profiles, the judge a writers override gives a profile). No model is called: the provider is a fake.
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadConfig, type LoadedConfig } from '../../../config/load';
-import { EVAL_JUDGE, PROFILES } from '../../../config/profiles';
+import { OVERRIDE_JUDGE, PROFILES } from '../../../config/profiles';
 import type { ConfigInput, ProfileName } from '../../../config/schema';
 import type { ModelHealth } from '../../../models/ModelProvider';
 import { DigestError } from '../../../shared/errors';
@@ -131,12 +131,12 @@ describe('prepareEvalJudge: which model judges', () => {
     }
   });
 
-  it('ignores the EVAL_JUDGE constant of config/profiles that a writers override puts in the profile', async () => {
+  it('ignores the OVERRIDE_JUDGE that a writers override puts in the profile', async () => {
     const t = setup();
     const loaded = loadedWith(undefined, 'light');
     const withOverrideJudge: LoadedConfig = {
       ...loaded,
-      profile: { ...loaded.profile, judge: EVAL_JUDGE },
+      profile: { ...loaded.profile, judge: OVERRIDE_JUDGE },
     };
 
     await expect(prepareEvalJudge(withOverrideJudge, t.io)).resolves.toBeUndefined();

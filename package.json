@@ -21,6 +21,7 @@
     "dev": "tsx src/cli/index.ts",
     "digest": "tsx src/cli/index.ts",
     "build": "node scripts/build.mjs",
+    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",

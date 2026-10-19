@@ -211,6 +211,12 @@ describe('loadConfig', () => {
       expect(loaded.profile.judge).toBeNull();
     });
 
+    it('rejects a writers panel that shares a family with the judge', async () => {
+      await expect(
+        loadConfig(base({ configPath: fixture('writers-same-family.config.json') })),
+      ).rejects.toThrow(/"qwen3\.8:27b-mlx" is a qwen model, the same family as the judge/);
+    });
+
     it('applies the writers override on top of the non-Mac fallback', async () => {
       const loaded = await loadConfig(
         base({ configPath: fixture('writers.config.json'), platform: linux }),

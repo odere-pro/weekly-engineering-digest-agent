@@ -1,5 +1,6 @@
 // Model profiles from the spec. A profile maps each role to an Ollama tag; code only asks for roles.
 import type { Role } from '../models/roles';
+import { DigestError } from '../shared/errors';
 import type { GuardsConfig, ProfileName } from './schema';
 
 export interface ModelProfile {
@@ -26,8 +27,34 @@ export const MODEL_TAGS = {
   nemotronLightningMlx: 'nemotron-3.5-lightning:30b-mlx',
 } as const;
 
-/** Judge used by evals for single-writer profiles, on a machine that fits it. */
-export const EVAL_JUDGE = MODEL_TAGS.clef;
+/**
+ * The judge a `models.writers` override of two or more writers gets when its profile has none.
+ * Not the `EVAL_JUDGE` environment variable (`EnvSchema`), which names the eval judge for
+ * single-writer profiles.
+ */
+export const OVERRIDE_JUDGE = MODEL_TAGS.clef;
+
+/** Families the tag does not show. clef is Qwen-based (spec, model table). */
+const FAMILY_ALIASES: Readonly<Record<string, string>> = { clef: 'qwen' };
+
+/** The model family of a tag: `gemma4:31b-mlx` is gemma, `clef:latest` is qwen. */
+export function modelFamily(tag: string): string {
+  const name = (tag.split('/').pop() ?? tag).split(':')[0]?.toLowerCase() ?? '';
+  return FAMILY_ALIASES[name] ?? /^[a-z]+/.exec(name)?.[0] ?? name;
+}
+
+/** The spec's rule: the judge is never the same model family as any writer. */
+function assertJudgeFamily(profile: ModelProfile): void {
+  if (profile.judge === null) return;
+  const family = modelFamily(profile.judge);
+  const clash = profile.writers.find((writer) => modelFamily(writer) === family);
+  if (clash === undefined) return;
+  throw new DigestError(
+    `models.writers: "${clash}" is a ${family} model, the same family as the judge ` +
+      `"${profile.judge}". The judge must never share a family with a writer: drop that writer, ` +
+      'use a single writer (no judge), or pick writers from another family.',
+  );
+}
 
 export const PROFILES: Readonly<Record<ProfileName, ModelProfile>> = {
   quality: {
@@ -91,12 +118,15 @@ export function resolveProfile(
   const base = PROFILES[name];
   const profile =
     base.requiresAppleSilicon && !isAppleSilicon(platform) ? { ...NON_MAC_FALLBACK, name } : base;
-  if (!writersOverride) return profile;
-  return {
-    ...profile,
-    writers: writersOverride,
-    judge: writersOverride.length > 1 ? (profile.judge ?? EVAL_JUDGE) : null,
-  };
+  const resolved = writersOverride
+    ? {
+        ...profile,
+        writers: writersOverride,
+        judge: writersOverride.length > 1 ? (profile.judge ?? OVERRIDE_JUDGE) : null,
+      }
+    : profile;
+  assertJudgeFamily(resolved);
+  return resolved;
 }
 
 /** Model tag(s) for a role. `write` returns the whole panel. */
