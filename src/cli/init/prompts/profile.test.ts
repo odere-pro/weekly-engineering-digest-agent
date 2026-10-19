@@ -77,6 +77,10 @@ describe('what the profile question says about quality', () => {
     expect(text).toMatch(/32 GB/);
   });
 
+  it('says the models need about 66 GB of disk, as the profiles table does', async () => {
+    expect(await descriptionOf({ ramGiB: 64 })).toMatch(/about 66 GB of disk/);
+  });
+
   it('does not mention memory when the machine has room to spare', async () => {
     expect(await descriptionOf({ ramGiB: 64 })).not.toMatch(/GiB/);
     expect(await descriptionOf({ ramGiB: 48 })).not.toMatch(/GiB/);

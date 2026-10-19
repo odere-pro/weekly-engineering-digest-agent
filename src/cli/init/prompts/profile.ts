@@ -14,7 +14,7 @@ export const QUALITY_TIGHT_RAM =
   'on a 32 GB M1 Pro its input guard alone took about 1 h with 8 of 9 GB of swap in use. light needs 16 GB and took about 6 min for a whole week';
 
 export const PROFILE_DESCRIPTIONS: Readonly<Record<ProfileName, string>> = {
-  quality: `Two writers and a judge. Best output expected, but ${QUALITY_UNMEASURED}. At least 32 GB RAM (48 GB or more is comfortable) and 40 GB of disk.`,
+  quality: `Two writers and a judge. Best output expected, but ${QUALITY_UNMEASURED}. At least 32 GB RAM (48 GB or more is comfortable) and about 66 GB of disk for the models.`,
   fast: 'One writer, no judge. Faster runs.',
   light: 'Smallest models. Fits in 16 GB of RAM.',
 };
