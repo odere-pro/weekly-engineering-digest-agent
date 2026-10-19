@@ -59,14 +59,15 @@ export const GradingSheetSchema = z
 export type GradingSheet = z.infer<typeof GradingSheetSchema>;
 
 const INSTRUCTIONS = [
-  'Copy this file to evals/judge/grades.json and fill it in.',
-  'For each digest you grade: set week (for example 2026-W36), writer (the model tag) and draft',
-  '(the saved file you read), then humanGrade from 1 (poor) to 5 (excellent), judging as the judge',
-  'rubric does: accuracy against the sources, clarity, why it matters, fit with the focus areas.',
-  'Delete the rows you do not use.',
+  'After a quality run, pnpm exec tsx evals/judge/runDrafts/addRun.ts dist/<monday>/digest',
+  'saves its drafts and fills week, writer and draft here (it starts evals/judge/grades.json',
+  'from this file).',
+  'Read the sources, then the draft, and set humanGrade from 1 (poor) to 5 (excellent), judging as',
+  'the judge rubric does: accuracy against the sources, clarity, why it matters, fit with the focus',
+  'areas. Delete the rows you do not use.',
   'Under picks, add one entry per week where you compared two drafts:',
   '{ "week": "2026-W36", "better": "<writer tag of the draft you prefer>" }.',
-  'Leave judge and judgeScore alone: the judge run (W3-04) fills them.',
+  'Leave judge and judgeScore alone: after you grade, addRun.ts --reveal fills judgeScore.',
   'When every row is complete, run: pnpm exec tsx evals/judge/calibrate.ts',
 ].join(' ');
 

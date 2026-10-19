@@ -1,0 +1,97 @@
+{
+  "instructions": "After a quality run, pnpm exec tsx evals/judge/runDrafts/addRun.ts dist/<monday>/digest saves its drafts and fills week, writer and draft here (it starts evals/judge/grades.json from this file). Read the sources, then the draft, and set humanGrade from 1 (poor) to 5 (excellent), judging as the judge rubric does: accuracy against the sources, clarity, why it matters, fit with the focus areas. Delete the rows you do not use. Under picks, add one entry per week where you compared two drafts: { \"week\": \"2026-W36\", \"better\": \"<writer tag of the draft you prefer>\" }. Leave judge and judgeScore alone: after you grade, addRun.ts --reveal fills judgeScore. When every row is complete, run: pnpm exec tsx evals/judge/calibrate.ts",
+  "judge": "clef:latest",
+  "digests": [
+    {
+      "id": "d01",
+      "week": "2026-W43",
+      "writer": "gemma4:31b-mlx",
+      "draft": "evals/judge/2026-W43/gemma4-31b-mlx.md",
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d02",
+      "week": "2026-W43",
+      "writer": "nemotron-3.5-lightning:30b-mlx",
+      "draft": "evals/judge/2026-W43/nemotron-3-5-lightning-30b-mlx.md",
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d03",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d04",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d05",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d06",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d07",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d08",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d09",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    },
+    {
+      "id": "d10",
+      "week": null,
+      "writer": null,
+      "draft": null,
+      "humanGrade": null,
+      "judgeScore": null,
+      "notes": ""
+    }
+  ],
+  "picks": []
+}

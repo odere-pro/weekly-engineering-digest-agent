@@ -51,18 +51,29 @@ a profile that has its own judge, so on `light` and `fast` the gates stay off. S
 
 ## Calibrating the judge
 
-1. Copy the sheet and fill it in. It has 10 rows, `d01` to `d10`. For each digest you grade set
-   `week`, `writer` (model tag) and `draft` (the file you read), and your `humanGrade` from 1 to 5.
-   Under `picks`, add `{ "week": "2026-W36", "better": "<writer tag>" }` for each week where you
-   compared two drafts. Delete rows you do not use.
+1. After each `quality` run (a dry run counts), add its drafts to the sheet:
 
    ```bash
-   cp evals/judge/grades.template.json evals/judge/grades.json
+   pnpm exec tsx evals/judge/runDrafts/addRun.ts dist/2026-10-19/digest
    ```
 
-2. Put the judge's overall score for the same digests into `judgeScore`, and its tag into `judge`.
-   No script in the repo does this. The run record keeps each draft's judge score.
-3. Run the calibration. It calls no model.
+   It saves every draft the judge scored as `evals/judge/<week>/<writer>.md`, exactly as the run
+   printed it, and fills `week`, `writer` and `draft` in the next free rows of
+   `evals/judge/grades.json` (started from `grades.template.json`). The judge's scores go to
+   `evals/judge/scores/<week>.json`, not into the sheet. A week is added once: adding the same run
+   again only fills in missing files, and another run of the same week is refused.
+
+2. Grade each draft: read the sources, then the draft, and set `humanGrade` from 1 to 5. Under
+   `picks`, add `{ "week": "2026-W43", "better": "<writer tag>" }` for each week where you
+   compared two drafts. Delete rows you do not use.
+3. Reveal the judge's scores. A week's scores appear only once every draft of that week has a
+   grade, so one score cannot sway the grade of its rival:
+
+   ```bash
+   pnpm exec tsx evals/judge/runDrafts/addRun.ts --reveal
+   ```
+
+4. Run the calibration. It calls no model.
 
    ```bash
    pnpm exec tsx evals/judge/calibrate.ts

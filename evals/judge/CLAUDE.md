@@ -24,6 +24,7 @@ flowchart LR
 flowchart TD
   tag["evalJudgeTag: the EVAL_JUDGE variable, trimmed"] --> installed["assertJudgeInstalled: reachable, installed, decision model"] --> create[createEvalJudge]
   create --> winners["judgeWinners: each week's winner, one at a time"] --> quality["judgedQuality: mean score, a note, mean accuracy"]
+  runs["runDrafts/: a quality run's drafts and rows, scores revealed once graded"] -->|"grades.json"| sheet
   sheet[readSheet] --> few{"fewer than minDigests?"}
   few -->|yes| refuse[DigestError]
   few -->|no| complete["selection/ completeDigests"] --> agree["judgeAgreement, selectionAgreement (metrics/judging)"]
@@ -31,8 +32,9 @@ flowchart TD
   agree & stats --> out["JudgeCalibrationSchema.parse, then calibration.json"]
 ```
 
-- The first chain runs in `digest eval`. The second runs by hand, calls no model, and takes the
-  sheet, the output and `--min-digests N`: `pnpm exec tsx evals/judge/calibrate.ts`.
+- The first chain runs in `digest eval`. The second runs by hand and calls no model: `runDrafts/`
+  fills the sheet from quality runs, then `pnpm exec tsx evals/judge/calibrate.ts` takes the
+  sheet, the output and `--min-digests N`.
 - `runCalibration` prints the report and whether the judge clears `JUDGE_AGREEMENT_MIN`; `main`
   turns any error into `calibrate failed: ...` and exit code 1.
 
@@ -59,15 +61,16 @@ flowchart TD
 
 ## Files
 
-| Path                   | Role                                                                                      |
-| ---------------------- | ----------------------------------------------------------------------------------------- |
-| `evalJudge.ts`         | `EvalJudge`, `createEvalJudge`, `evalJudgeTag`, `assertJudgeInstalled`                    |
-| `judgeWinners.ts`      | `judgeWinners`, `judgedQuality`, `WinnerSample`, `JudgedWinners`                          |
-| `gradingSheet.ts`      | `GradingSheetSchema`, `GRADED_DIGESTS`, `createGradingSheetTemplate`                      |
-| `calibrate.ts`         | `calibrate`, `runCalibration`, `main`: sheet in, `JudgeCalibration` out, report           |
-| `grades.template.json` | The blank sheet the maintainer copies to `grades.json`                                    |
-| `stats/`               | Rank correlation and mean absolute difference. See `stats/CLAUDE.md`                      |
-| `selection/`           | Complete rows, the judge's pick per week, the pairs to compare. See `selection/CLAUDE.md` |
+| Path                   | Role                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------- |
+| `evalJudge.ts`         | `EvalJudge`, `createEvalJudge`, `evalJudgeTag`, `assertJudgeInstalled`                      |
+| `judgeWinners.ts`      | `judgeWinners`, `judgedQuality`, `WinnerSample`, `JudgedWinners`                            |
+| `gradingSheet.ts`      | `GradingSheetSchema`, `GRADED_DIGESTS`, `createGradingSheetTemplate`                        |
+| `calibrate.ts`         | `calibrate`, `runCalibration`, `main`: sheet in, `JudgeCalibration` out, report             |
+| `grades.template.json` | The blank sheet `runDrafts/` starts `grades.json` from                                      |
+| `runDrafts/`           | A quality run into `<week>/` drafts and `grades.json` rows, scores apart. See its CLAUDE.md |
+| `stats/`               | Rank correlation and mean absolute difference. See `stats/CLAUDE.md`                        |
+| `selection/`           | Complete rows, the judge's pick per week, the pairs to compare. See `selection/CLAUDE.md`   |
 
 Tests sit next to each file; builders in `__fixtures__/sheetKit.ts`. Reader page: `docs/evaluation/sets/judge.md`.
 
@@ -76,8 +79,8 @@ Tests sit next to each file; builders in `__fixtures__/sheetKit.ts`. Reader page
 - `src/cli/eval/eval.ts` imports `assertJudgeInstalled`, `createEvalJudge`, `evalJudgeTag`,
   `EvalJudge`; `runEval.ts` and `scoring/` import `judgeWinners`, `judgedQuality`, `JudgedWinners`.
   Renaming any of them breaks those. `evalJudge.test.ts` and `src/cli/eval/eval.test.ts` pin the error texts.
-- `grades.json` and `calibration.json` are not committed yet. `evals/calibrate.ts`, one level up,
-  is the threshold calibration: a different tool with a similar name.
+- `calibration.json` is not committed yet. `evals/calibrate.ts`, one level up, is the threshold
+  calibration: a different tool with a similar name.
 - `stats/rankCorrelation.ts` is not `metrics/ranking/spearman.ts`. This one clamps to -1..1,
   because `JudgeCalibrationSchema` rejects more, and takes human and judge pairs.
 - `judgeInHarness.test.ts` runs `runEval` (with `../evalKit`): a harness change can break it.

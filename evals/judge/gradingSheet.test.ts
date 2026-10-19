@@ -147,6 +147,13 @@ describe('createGradingSheetTemplate', () => {
     expect(instructions).toContain('judgeScore');
   });
 
+  it('names the command that adds a run and the one that reveals the scores', () => {
+    const { instructions } = createGradingSheetTemplate();
+
+    expect(instructions).toContain('evals/judge/runDrafts/addRun.ts dist/');
+    expect(instructions).toContain('--reveal');
+  });
+
   it('can make a sheet of another size', () => {
     expect(createGradingSheetTemplate(3).digests.map((digest) => digest.id)).toEqual([
       'd01',
