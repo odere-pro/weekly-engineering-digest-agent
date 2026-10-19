@@ -1,5 +1,6 @@
 import { createTransport } from 'nodemailer';
 import type { Delivery, DigestMessage } from '../Delivery';
+import { visibleText } from '../../render/visibleText';
 import { renderEmailHtml } from './email/emailHtml';
 import { renderEmailText } from './email/emailText';
 import { failureTitle } from './errors/failureNote';
@@ -83,17 +84,19 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
     sendFailure: (note) => {
       const title = failureTitle(note);
       const reason = redactSecrets(note.message, [options.password]);
-      return send({ subject: title, text: `${title}.\n\n${reason}\n` });
+      return send({ subject: title, text: `${title}.\n\n${visibleText(reason)}\n` });
     },
   };
 }
 
 /**
  * With a view the mail carries a text part and an html part (multipart/alternative), both
- * rendered from the view. Without one it is today's text-only mail with the Markdown as body.
+ * rendered from the view. Without one it is a text-only mail with the Markdown as body. That
+ * Markdown is cleaned of invisible characters (`visibleText`) even though `render` already drops
+ * them: a digest.md saved before it did, and sent by a resume, reaches this path as it was saved.
  */
 function digestContent(message: DigestMessage): MailContent {
   const { view, subject } = message;
-  if (!view) return { subject, text: message.markdown };
+  if (!view) return { subject, text: visibleText(message.markdown) };
   return { subject, text: renderEmailText(view), html: renderEmailHtml(view) };
 }

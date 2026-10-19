@@ -23,8 +23,9 @@ canonical text, and delivery sends the view. See [data flow](../architecture/dat
   made without a model) the footer also says "Written from the sources' own words."
 - Writes the Markdown: the title, the headline, then per group a heading and a table, then the
   footer. The intro is not shown. Every channel renders the same view, so they agree.
-- Keeps model text from breaking the layout. Text is put on one line, table pipes are escaped, and
-  link text and destination are escaped so the link check reads back the same URL.
+- Keeps model text from breaking the layout. Text is put on one line, invisible characters (a bidi
+  override, a zero-width space) become a space, table pipes are escaped, and link text and
+  destination are escaped so the link check reads back the same URL.
 - Writes the canonical text: a plain, fixed form of the digest that the judge and the guards read.
   It has no options, so a layout change never moves scores or guard results.
 - Reads a saved `digest.md` back into a view (and the older layout from before the urgency

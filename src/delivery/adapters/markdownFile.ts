@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { WEEK_ID_PATTERN } from '../../domain/schemas';
 import type { Config } from '../../config/schema';
 import type { Delivery, DigestMessage, FailureNote } from '../Delivery';
+import { visibleText } from '../../render/visibleText';
 import { writeFileAtomic } from '../../shared/atomicFile';
 import { weekDigestDir } from '../../store/layout';
 import { renderEmailHtml } from './email/emailHtml';
@@ -48,7 +49,7 @@ export function digestFilePaths(dir: string, weekId: string): DigestFilePaths {
 
 function failureMarkdown(note: FailureNote): string {
   const step = note.step ? `- Step: ${note.step}\n` : '';
-  return `# ${failureTitle(note)}\n\n${step}- Error: ${note.message}\n`;
+  return `# ${failureTitle(note)}\n\n${step}- Error: ${visibleText(note.message)}\n`;
 }
 
 /**
@@ -72,7 +73,8 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
     // The old HTML goes first: if a later write fails, the folder never pairs the new Markdown
     // with a page of an earlier run.
     await rm(paths.html, { force: true });
-    await writeFileAtomic(paths.markdown, message.markdown);
+    // Already clean when this build rendered it; a digest.md saved by an older build is cleaned here.
+    await writeFileAtomic(paths.markdown, visibleText(message.markdown));
     if (html !== undefined) await writeFileAtomic(paths.html, html);
   }
 

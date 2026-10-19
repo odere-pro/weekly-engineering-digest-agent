@@ -1,5 +1,5 @@
 import type { DigestViewItem } from '../../../render/digestView';
-import { visibleLine } from '../../visibleLine';
+import { visibleLine } from '../../../render/visibleLine';
 
 const UNTITLED = '(untitled)';
 

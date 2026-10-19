@@ -43,13 +43,14 @@ flowchart TD
 ## Rules
 
 - Pure: no I/O, no model call, inputs unchanged. Titles, labels and the footer come from code.
-- Model text must not break a table or hide a link: `cell` makes it one line and escapes pipes; link
-  text and destination are escaped so `linkCheck` decodes the same URL. A blank title shows the URL.
+- Model text must not break a table, hide a link or reorder what is read: `cell` makes it one line
+  with `visibleLine` (invisible characters become a space) and escapes pipes; link text and
+  destination get the same and are escaped so `linkCheck` decodes the same URL. A hidden character
+  in a destination breaks its link, so the draft is rejected. A blank title shows the URL.
 - Reading back undoes exactly what rendering escapes and never throws. A group's urgency comes from
-  its marker, the label as written; an unknown heading is skipped. Lookbehinds keep backslash runs
-  linear. `withoutHeading` drops an action's repeat of its column heading; it is not restored.
-- Canonical text takes no options: scoring and guard input stay the same whatever the template. An
-  item without urgency or action reads as it did before they existed.
+  its marker, the label as written; an unknown heading is skipped. `withoutHeading` drops an
+  action's repeat of its column heading; it is not restored.
+- Canonical text takes no options: scoring and guard input stay the same whatever the template.
 - Review sheet: no model call. Titles are cut to 120 characters, Markdown specials escaped, unsafe
   URL characters percent-encoded. The parser rejects an edited line, a duplicate id or a missing
   section.
@@ -61,6 +62,7 @@ flowchart TD
 | `digestView.ts`  | `DigestView`, `DigestViewGroup`, `DigestViewItem`: the view every channel shows |
 | `layout.ts`      | `buildDigestView`: grouping, labels, title, footer                              |
 | `markdown.ts`    | `renderView`, `renderDigest`, `readSavedView`, `readSavedDigest`, escaping      |
+| `visible*.ts`    | `visibleLine`, `visibleText`: invisible characters out; delivery uses them too  |
 | `canonical.ts`   | `canonicalDigestText`, `canonicalClaimText`, `canonicalHeadlineText`            |
 | `reviewSheet.ts` | `buildReviewSheet`, `parseReviewSheet`, `MAX_CANDIDATES`                        |
 
@@ -71,10 +73,12 @@ Tests sit next to each file; `__fixtures__/render/` holds four digests with `.go
 
 - The marker, the title shape and the table layout are the saved-file format: `TITLE_LINE` (`markdown.ts`)
   must match `titleOf` (`layout.ts`), and resume must find the item URLs in `digest.md` (rows start
-  `| [`) or it refuses until `--force`. If the rebuilt view no longer renders to the file, channels get
-  the Markdown without the view. Change writer and reader as one.
+  `| [`) or it refuses until `--force`. If the rebuilt view no longer renders to the file (a `digest.md`
+  saved with hidden characters before `visibleLine`), channels get the Markdown without the view and
+  their adapters clean it. Change writer and reader as one.
 - `checks/` counts the Markdown (under 500 words) and reads its links, so template words, links or
   an em dash can fail every draft. `markdown.fixtures.test.ts` runs both checks on the goldens.
-- Changing canonical text changes judge and guard input; eval baselines stop comparing.
+- Changing canonical text changes judge and guard input; eval baselines stop comparing. It keeps the
+  writer's characters on purpose, so the guards see what was hidden: only the Markdown is cleaned.
 - Review `rank` is the position in `scores.json`, which `classify` writes in collect order (newest
   first), not by relevance. The 20 candidates are the first left-out items in that order.

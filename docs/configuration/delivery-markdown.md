@@ -27,6 +27,10 @@ week into one folder instead:
 | `<week>.html`      | The same digest as a page that opens in a browser                         |
 | `<week>.failed.md` | A failure note: the step and the error, after a `failed` or `blocked` run |
 
+Text from feeds and models is written without invisible characters (a bidi override, a zero-width
+space, a tag character): each becomes a space, so a feed cannot reorder or hide what you read. The
+same goes for the error in a `.failed.md`. A joiner between two emoji stays.
+
 These names are the same with or without `dir`. Files are written atomically, and the old `.html` is removed first, so the two never come from
 different runs. The folder is created when needed. A relative path is relative to the folder you
 run `digest` from.

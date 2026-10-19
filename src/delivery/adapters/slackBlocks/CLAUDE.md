@@ -29,7 +29,7 @@ flowchart TD
   shown. A joiner between two emoji stays, so a joined emoji arrives whole; email follows the same
   rule. A backtick becomes an apostrophe, so no code fence swallows later bullets.
 - `toSlackMrkdwn` (the no-view and failure paths) keeps the Markdown's own line breaks, so it uses
-  `visibleText` (`delivery/visibleText`), not `visibleLine`: the same characters and the same
+  `visibleText` (`render/visibleText`), not `visibleLine`: the same characters and the same
   emoji-joiner rule, but `\n` stays, indentation stays and each line loses its trailing blanks. It
   runs before the escaping, so the headings, bold and links are read from clean text.
 - Pure: the same view gives the same message, and each divider is a new object.

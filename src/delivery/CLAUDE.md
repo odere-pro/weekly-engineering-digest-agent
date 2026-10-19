@@ -42,7 +42,8 @@ flowchart TD
 
 - The view is built once (`render/layout`); channels only render it. No view: they show `markdown`.
 - Model and collected text is made safe per channel: one line without invisible characters
-  (`visibleLine`, both; the Slack Markdown fallback keeps its lines with `visibleText`), HTML-escaped
+  (`render/visibleLine`, both; text that keeps its lines, such as the Markdown file, the mail without
+  a view, the failure note and the Slack fallback, uses `render/visibleText`), HTML-escaped
   (email), `& < >` escaped (Slack, so `<!channel>` cannot appear). Only http(s) URLs without a user name or password become
   links: `https://github.com@evil.example` goes elsewhere than it reads. Details: `adapters/email/`,
   `adapters/slackBlocks/`.
@@ -61,8 +62,6 @@ flowchart TD
 | ----------------------- | -------------------------------------------------------------------------------------------- |
 | `Delivery.ts`           | The port, `DigestMessage`, `FailureNote`                                                     |
 | `deliveryId.ts`         | `DeliveryIdSchema`, `DeliveryId`: channel ids kept in `run.json`                             |
-| `visibleLine.ts`        | `visibleLine`: one line without invisible characters, for email and Slack text               |
-| `visibleText.ts`        | `visibleText`: the same for text that keeps its lines (the Slack Markdown fallback)          |
 | `adapters/`             | The channels: `markdownFile.ts` (always on), `smtp.ts`, `slack.ts`; see `adapters/CLAUDE.md` |
 | `adapters/email/`       | `renderEmailText`, `renderEmailHtml` from a view; see its `CLAUDE.md`                        |
 | `adapters/slackBlocks/` | `toSlackBlocks`; `escapeSlack`, `toSlackMrkdwn`; see its `CLAUDE.md`                         |

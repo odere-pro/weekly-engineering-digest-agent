@@ -1,6 +1,7 @@
 import type { DigestView, DigestViewGroup, DigestViewItem } from './digestView';
 import { buildDigestView, type LayoutOptions } from './layout';
 import { UrgencySchema, type Digest, type Urgency } from '../domain/schemas';
+import { visibleLine } from './visibleLine';
 
 export type RenderOptions = LayoutOptions;
 
@@ -17,16 +18,16 @@ const ACTION_HEADING: Readonly<Record<Urgency, string | undefined>> = {
   'good-to-know': undefined,
 };
 
-const oneLine = (text: string): string => text.replace(/\s+/g, ' ').trim();
-
 /**
- * Plain text in a table cell: one line, and a pipe that cannot end the cell. A table reads `\\` as
- * one escaped backslash, so a backslash run right before a pipe is doubled to keep the pipe's own
- * escape. Other backslashes stay as the writer wrote them.
+ * Plain text in a table cell: one line without invisible characters (`visibleLine`, so no bidi
+ * override or zero-width character in a model's text reaches the file or a plain-text mail), and a
+ * pipe that cannot end the cell. A table reads `\\` as one escaped backslash, so a backslash run
+ * right before a pipe is doubled to keep the pipe's own escape. Other backslashes stay as the
+ * writer wrote them.
  */
 function cell(text: string): string {
   // The lookbehind starts a match at the beginning of a backslash run, so a long run is scanned once.
-  return oneLine(text).replace(/(?<!\\)(\\*)\|/g, '$1$1\\|');
+  return visibleLine(text).replace(/(?<!\\)(\\*)\|/g, '$1$1\\|');
 }
 
 /** Text in `[...]` of a link: backslashes, brackets and pipes are escaped, as linkCheck decodes them. */
@@ -37,8 +38,8 @@ const escapeDestination = (url: string): string => url.replace(/[\\|]/g, '\\$&')
 
 /** The release cell: the title, linked to the item's page. A blank title shows the url. */
 function releaseCell({ title, url }: DigestViewItem): string {
-  const target = oneLine(url);
-  const label = oneLine(title) || target;
+  const target = visibleLine(url);
+  const label = visibleLine(title) || target;
   return `[${escapeLinkText(label)}](${escapeDestination(target)})`;
 }
 
@@ -87,7 +88,7 @@ function renderGroup(group: DigestViewGroup): string {
 
 /** A laid-out digest -> Markdown: a title, the headline, then one table per urgency. */
 export function renderView(view: DigestView): string {
-  const headline = oneLine(view.headline);
+  const headline = visibleLine(view.headline);
   const blocks = [
     `# ${view.title}`,
     ...(headline === '' ? [] : [`_${headline}_`]),

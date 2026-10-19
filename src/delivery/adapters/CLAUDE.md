@@ -35,13 +35,14 @@ flowchart TD
 - Network and mail are injectable (`createTransport`, `fetch`): no test opens a socket.
 - `email/`, `slackBlocks/` and `errors/` never import an entry file or each other. `email/` and
   `slackBlocks/` are pure: a view in, text out.
-- Both renderers put model text on one line with `delivery/visibleLine`, so the two channels
+- Both renderers put model text on one line with `render/visibleLine`, so the two channels
   strip the same invisible characters: control and format characters (bidi, zero-width, tag, the
   byte order mark) become a space. One exception, chosen on purpose: a zero-width joiner with an
-  emoji on each side stays, so a joined emoji shows whole in both. The Markdown that Slack gets
-  without a view, and the failure line, keep their line breaks and go through `visibleText`,
-  which reuses the joiner rule of `visibleLine`. Change the rule in `visibleLine.ts`, never in
-  one channel.
+  emoji on each side stays, so a joined emoji shows whole in both. Text that keeps its line breaks
+  goes through `render/visibleText`, which reuses the joiner rule: the Markdown Slack and the mail
+  get without a view, the one written to `<week>.md`, and every failure text (Slack line, mail
+  body, `.failed.md`). `render` already cleans the Markdown it writes; this is for one saved by an
+  older build and resumed. Change the rule in `render/visibleLine.ts`, never in one channel.
 - A failed SMTP or Slack call throws the `DeliveryError` of `redactedError`; a non-2xx Slack answer
   is a `DeliveryError` with its `status`. A non-https webhook, an invalid week id and a file error
   throw as they are: none of their texts holds a secret.

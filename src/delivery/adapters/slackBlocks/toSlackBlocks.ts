@@ -1,6 +1,6 @@
 import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
 import { truncate } from '../../../shared/text';
-import { visibleLine } from '../../visibleLine';
+import { visibleLine } from '../../../render/visibleLine';
 import { escapeSlack } from './slackFormat';
 
 /** One Block Kit block, limited to the four kinds the digest uses. */

@@ -147,6 +147,45 @@ describe('resume with a view', () => {
   });
 });
 
+describe('resume and invisible characters', () => {
+  const hostile: Digest = {
+    ...digest,
+    headline: 'Runners\u{202E} moved',
+    items: digest.items.map((item) => ({ ...item, summary: `Ships\u{200B}now ${item.summary}` })),
+  };
+
+  it('sends the view and a Markdown without them: the rebuilt view renders to the file', async () => {
+    const h = setup({
+      markdown: renderDigest(hostile, { disabledGuards: OFF }),
+      drafts: draftsFile({ writer: WINNER, digest: hostile }),
+    });
+
+    await resume(h);
+
+    for (const channel of [h.email, h.slack]) {
+      expect(channel.digests[0]?.view).toEqual(buildDigestView(hostile, { disabledGuards: OFF }));
+      expect(channel.digests[0]?.markdown).not.toMatch(/[\p{Cf}]/u);
+    }
+    expect(h.warnings.map((w) => w.message)).not.toContain(
+      'Sending the saved digest without its view',
+    );
+  });
+
+  it('passes a digest.md saved before they were dropped on as it is, for the channels to clean', async () => {
+    const saved = renderDigest(digest, { disabledGuards: OFF }).replace(
+      'Upgrade the runner.',
+      'Upgrade\u{202E} the runner.',
+    );
+    const h = setup({ markdown: saved });
+
+    await resume(h);
+
+    expect(h.email.digests[0]).not.toHaveProperty('view');
+    expect(h.email.digests[0]?.markdown).toBe(saved);
+    expect(h.warnings.map((w) => w.message)).toContain('Sending the saved digest without its view');
+  });
+});
+
 describe('resume without a view', () => {
   const sentPlain = (h: ReturnType<typeof setup>): void => {
     for (const channel of [h.email, h.slack]) {

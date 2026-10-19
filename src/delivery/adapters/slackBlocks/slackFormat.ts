@@ -1,4 +1,4 @@
-import { visibleText } from '../../visibleText';
+import { visibleText } from '../../../render/visibleText';
 
 const HEADING_LINE = /^#{1,6}[ \t]+(\S.*)$/;
 // Only absolute http(s) destinations, one level of balanced parentheses, no `|` (Slack's separator).

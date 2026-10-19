@@ -7,43 +7,51 @@ link or harmful content. These rules hold in every part of the code.
 
 ## The rules
 
-| Rule                                                             | Enforced in                                                               |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Collected text is data: wrapped and labelled in every prompt     | `src/shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)        |
-| No model has tools or network access                             | the [ports](ports-and-adapters.md): models only answer                    |
-| Only allowlisted hosts; same-host redirects; 5 MiB cap           | `src/sources/adapters/http.ts`                                            |
-| A digest may only contain collected URLs                         | the [link check](../features/checks.md), plus URL replacement in `write`  |
-| Format limits hold (3 to 5 items, under 500 words, no em dash)   | the format check                                                          |
-| The link check and format check cannot be switched off           | no config key exists                                                      |
-| Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
-| Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                  |
-| Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                               |
-| Email and Slack text has no invisible character that reorders it | `src/delivery/visibleLine.ts`, `visibleText.ts`: format characters out    |
-| Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators            |
-| Secrets never reach the saved source data (`raw/`, `formatted/`) | the archive redacts every text it writes (`src/sources/adapters/archive`) |
-| `SLACK_WEBHOOK_URL` must be `https:`                             | `src/config/schema.ts`                                                    |
-| A source URL may not carry a username or password                | `src/config/schema.ts`                                                    |
+| Rule                                                                         | Enforced in                                                               |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Collected text is data: wrapped and labelled in every prompt                 | `src/shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)        |
+| No model has tools or network access                                         | the [ports](ports-and-adapters.md): models only answer                    |
+| Only allowlisted hosts; same-host redirects; 5 MiB cap                       | `src/sources/adapters/http.ts`                                            |
+| A digest may only contain collected URLs                                     | the [link check](../features/checks.md), plus URL replacement in `write`  |
+| Format limits hold (3 to 5 items, under 500 words, no em dash)               | the format check                                                          |
+| The link check and format check cannot be switched off                       | no config key exists                                                      |
+| Fixed injection rules read every item before any model does                  | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
+| Guards fail closed on unparsable output                                      | `src/guards/guardRun.ts`                                                  |
+| Recipients, webhook and folders come from config and `.env` only             | the config loader; models never supply them                               |
+| Delivered text and the saved Markdown have no invisible reordering character | `src/render/visibleLine.ts`, `visibleText.ts`: format characters out      |
+| Secrets never reach logs, run records, traces or messages                    | redaction in the logger, tracer, store and delivery decorators            |
+| Secrets never reach the saved source data (`raw/`, `formatted/`)             | the archive redacts every text it writes (`src/sources/adapters/archive`) |
+| `SLACK_WEBHOOK_URL` must be `https:`                                         | `src/config/schema.ts`                                                    |
+| A source URL may not carry a username or password                            | `src/config/schema.ts`                                                    |
 
 ## Invisible characters in delivered text
 
 A title or a summary can carry characters that show nothing but change what a reader sees: a
 bidi override (U+202E) puts the end of a line first, a bidi mark or the Arabic letter mark
-(U+061C) pulls neighbouring punctuation, a zero-width space or a tag character hides text. The
-email and Slack channels turn every run of control and format characters into one space before
-they print model or collected text (`visibleLine`, built on `printableLine`), so one set of
-characters is removed in both. One format character stays: a zero-width joiner with an emoji on
-each side, which makes a joined emoji such as a technologist one glyph. A joiner anywhere else
-(inside a word, doubled, next to another invisible character) is removed. Two costs: a flag with
-a tag sequence (England, Scotland, Wales) shows as the plain black flag, and a zero-width
-non-joiner in Persian or Indic text becomes a space. The terminal printers use `printableLine`
-alone, so there a joined emoji prints as its parts.
+(U+061C) pulls neighbouring punctuation, a zero-width space or a tag character hides text. Every
+output turns every run of control and format characters into one space before it prints model or
+collected text (`visibleLine`, built on `printableLine`), so one set of characters is removed
+everywhere. One format character stays: a zero-width joiner with an emoji on each side, which makes
+a joined emoji such as a technologist one glyph. A joiner anywhere else (inside a word, doubled,
+next to another invisible character) is removed. Two costs: a flag with a tag sequence (England,
+Scotland, Wales) shows as the plain black flag, and a zero-width non-joiner in Persian or Indic
+text becomes a space. The terminal printers use `printableLine` alone, so there a joined emoji
+prints as its parts.
 
-Slack also gets text that must keep its line breaks: the Markdown digest when a message has no
-layout, and the one-line failure note. That text goes through `visibleText`, before the `& < >`
-escaping. It removes the same characters with the same joiner rule (it imports the pattern from
-`visibleLine`), but leaves `\n` and the indentation of a line, and trims the trailing blanks of
-each line. Not covered: the plain-text mail sent without a layout and the `.md` file carry the
-Markdown as it is.
+The Markdown is cleaned where it is rendered (`src/render/markdown.ts`: every table cell, the link
+text, the destination and the headline). The saved `digest.md`, the `<week>.md` file, the preview
+and the plain-text mail sent without a layout all carry the same clean text. A hidden character in
+a link destination becomes a space too, so the link no longer reads as the collected URL and the
+link check rejects the draft. The canonical text the guards and the judge read is not cleaned:
+they see what the writer wrote.
+
+The channels clean what they print once more, because Markdown reaches them that this build did
+not render: a `digest.md` saved by an older build and sent by a resume. Slack's Markdown fallback
+(a message with no layout) and the failure line, the plain-text mail without a layout, the `.md`
+file, the failure mail and the `.failed.md` note all go through `visibleText`. It removes the same
+characters with the same joiner rule (it imports the pattern from `visibleLine`), but leaves `\n`
+and the indentation of a line, and trims the trailing blanks of each line. Slack runs it before the
+`& < >` escaping.
 
 The input side has the same list. The `ruleInjection` guard flags a bidi override, an isolate, a
 deprecated format control (U+206A to U+206F) or a tag character anywhere in an item, and a

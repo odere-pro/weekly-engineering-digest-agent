@@ -88,3 +88,35 @@ describe('canonicalDigestText', () => {
     }
   });
 });
+
+describe('canonical text and invisible characters', () => {
+  it("keeps the writer's characters as written, so the guards and the judge see what was hidden", () => {
+    const item = makeDigestItem(makeItem({ url: 'https://example.com/a' }), {
+      title: 'Alpha\u{202E}1.0',
+      summary: 'Ships\u{200B}now.',
+      action: 'Upgrade\u{E0041}today.',
+    });
+    const hostile = {
+      ...makeDigest([]),
+      headline: 'Head\u{FEFF}line',
+      intro: 'In\u{061C}tro.',
+      items: [item],
+    };
+
+    const text = canonicalDigestText(hostile);
+
+    for (const hidden of ['\u{202E}', '\u{200B}', '\u{E0041}', '\u{FEFF}', '\u{061C}']) {
+      expect(text).toContain(hidden);
+    }
+    expect(canonicalClaimText(item)).toContain('\u{200B}');
+    expect(canonicalHeadlineText(hostile)).toContain('\u{FEFF}');
+  });
+
+  it('does not follow the Markdown, which shows the same item without them', () => {
+    const item = makeDigestItem(makeItem(), { summary: 'Ships\u{200B}now.', urgency: 'act-now' });
+    const hostile = { ...makeDigest([]), items: [item] };
+
+    expect(renderDigest(hostile, { disabledGuards: [] })).not.toContain('\u{200B}');
+    expect(canonicalDigestText(hostile)).toContain('\u{200B}');
+  });
+});

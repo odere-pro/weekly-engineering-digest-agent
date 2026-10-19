@@ -78,6 +78,23 @@ describe('createMarkdownFileDelivery', () => {
       expect(writeFileAtomic).toHaveBeenCalledWith(join(dir, '2026-W42.md'), message.markdown);
     });
 
+    it('drops invisible characters from the Markdown it writes and keeps its lines', async () => {
+      const markdown =
+        '# Digest\u{202E}\n\n- [Ollama\u{200B}0.9](https://example.com/a)\n  - nested\u{E0041}item \n';
+      await createMarkdownFileDelivery({ dir }).sendDigest({ ...message, markdown });
+
+      expect(await readFile(join(dir, '2026-W42.md'), 'utf8')).toBe(
+        '# Digest\n\n- [Ollama 0.9](https://example.com/a)\n  - nested item\n',
+      );
+    });
+
+    it('writes a Markdown that has none exactly as it is', async () => {
+      const markdown = '# Digest\n\n| a | b |\n|---|---|\n| [x](https://example.com/x) | y |\n';
+      await createMarkdownFileDelivery({ dir }).sendDigest({ ...message, markdown });
+
+      expect(await readFile(join(dir, '2026-W42.md'), 'utf8')).toBe(markdown);
+    });
+
     it('replaces an earlier digest for the same week and leaves no temp files behind', async () => {
       const delivery = createMarkdownFileDelivery({ dir });
       await delivery.sendDigest(message);
@@ -128,6 +145,19 @@ describe('createMarkdownFileDelivery', () => {
       expect(note).toContain('2026-W42');
       expect(note).toContain('write');
       expect(note).toContain('Writer panel returned no draft');
+    });
+
+    it('drops invisible characters from the error, as the digest file does', async () => {
+      await createMarkdownFileDelivery({ dir }).sendFailure({
+        weekId: '2026-W42',
+        step: 'write',
+        message: 'Draft said\u{202E}stop\u{200B}now\n  second line',
+      });
+
+      const note = await readFile(join(dir, '2026-W42.failed.md'), 'utf8');
+      expect(note).toBe(
+        '# Weekly digest 2026-W42 failed at write\n\n- Step: write\n- Error: Draft said stop now\n  second line\n',
+      );
     });
 
     it('omits the step line when no step is known', async () => {
