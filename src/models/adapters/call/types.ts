@@ -2,6 +2,7 @@ import type { ModelProfile } from '../../../config/profiles';
 import type { LogFields, Logger } from '../../../shared/telemetry';
 import type { Role } from '../../roles';
 import type { OllamaHttp } from '../ollamaHttp';
+import type { LoadTracker } from './loadTracker';
 
 /** The provider options every model call reads. */
 export interface CallOptions {
@@ -11,12 +12,20 @@ export interface CallOptions {
   timeoutsMs?: Partial<Record<Role, number>>;
   /** Extra attempts after the first; unset means the adapter default. */
   retries?: number;
+  /**
+   * Time added to every attempt's timeout while the call's model is not the one the server ran
+   * last: it may have to be loaded first, and a big model loads for longer than a role's timeout.
+   * Unset means `DEFAULT_COLD_START_MS`; 0 turns it off.
+   */
+  coldStartMs?: number;
 }
 
 /** The transport and options a call runs on. */
 export interface OllamaContext {
   http: OllamaHttp;
   options: CallOptions;
+  /** Which model the server ran last; one per provider, shared by all its calls. */
+  loads: LoadTracker;
 }
 
 export interface CallSpec {

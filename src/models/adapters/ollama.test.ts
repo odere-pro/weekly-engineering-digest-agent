@@ -146,6 +146,7 @@ describe('createOllamaProvider timeouts', () => {
   it('gives every call the configured per-role timeout', async () => {
     const { provider } = setup((call) => hang(call.signal), {
       retries: 0,
+      coldStartMs: 0,
       timeoutsMs: { write: 5_000, classify: 3_000 },
     });
 

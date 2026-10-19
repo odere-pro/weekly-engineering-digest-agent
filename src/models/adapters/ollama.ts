@@ -2,6 +2,7 @@ import type { ModelProvider } from '../ModelProvider';
 import { generate, type ChatOptions } from './chat/generate';
 import { decide } from './decide/decide';
 import { health } from './health/health';
+import { createLoadTracker } from './call/loadTracker';
 import { createOllamaHttp } from './ollamaHttp';
 
 /** What `createOllamaProvider` takes: the server, then the options the three calls read. */
@@ -15,6 +16,7 @@ export function createOllamaProvider(options: OllamaProviderOptions): ModelProvi
   const context = {
     http: createOllamaHttp(options.baseUrl, options.fetch ?? globalThis.fetch),
     options,
+    loads: createLoadTracker(),
   };
   return {
     generate: (request) => generate(context, request),

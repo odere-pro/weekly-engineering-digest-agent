@@ -15,6 +15,8 @@ export interface OllamaWorldOptions extends Omit<WorldOptions, 'model'> {
   /** Per-attempt timeouts of the real adapter, in ms. */
   timeoutsMs?: Partial<Record<Role, number>>;
   retries?: number;
+  /** Cold-start allowance of the real adapter, in ms. 0 by default, so a timeout test stays short. */
+  coldStartMs?: number;
   /**
    * The real adapter serves generate and health; decisions stay on the fake model (default).
    * Set false to send decisions to the scripted /v1/systemone as well.
@@ -34,6 +36,7 @@ export function createOllamaWorld(options: OllamaWorldOptions): {
     down,
     timeoutsMs,
     retries,
+    coldStartMs = 0,
     decideOnFake = true,
     ...worldOptions
   } = options;
@@ -53,6 +56,7 @@ export function createOllamaWorld(options: OllamaWorldOptions): {
         fetch: ollama.fetch,
         timeoutsMs,
         retries,
+        coldStartMs,
         logger,
       });
       if (!decideOnFake) return real;

@@ -25,6 +25,8 @@ It is a supporting layer used by classify, guards, write and select, as shown in
   (streamed); `decide` uses `/v1/systemone`.
 - Time limit per attempt: classify 60 s, guardPolicy 60 s, guardRisk 120 s, judge 120 s, write
   600 s.
+  A call to a model the server has not answered with last gets 5 minutes more per attempt (it may
+  have to load first); its log line has `coldStart: true`.
 - Retries: 2 by default (0 to 5 allowed), with backoff from 1 s up to 10 s. Retried: timeouts,
   network and stream errors and HTTP 5xx. Not retried: 4xx, a bad payload, or a call you aborted.
 - Thinking and sampling: `guardRisk` runs with thinking off by default (Granite otherwise spends

@@ -5,6 +5,7 @@ import { PROFILES } from '../../../config/profiles';
 import type { LogFields, Logger } from '../../../shared/telemetry';
 import type { DecideRequest, DecisionQuestion } from '../../ModelProvider';
 import type { ChatOptions } from '../chat/generate';
+import { createLoadTracker, type LoadTracker } from '../call/loadTracker';
 import { createOllamaHttp, type OllamaHttp } from '../ollamaHttp';
 
 export const BASE_URL = 'http://127.0.0.1:11434';
@@ -106,7 +107,7 @@ export type TestOptions = ChatOptions & { baseUrl: string; fetch?: typeof fetch 
 
 /** The `http` and `options` the call, chat and decide modules take, on top of a fake fetch. */
 export interface FakeContext {
-  context: { http: OllamaHttp; options: TestOptions };
+  context: { http: OllamaHttp; options: TestOptions; loads: LoadTracker };
   http: OllamaHttp;
   calls: Call[];
   lines: Line[];
@@ -120,10 +121,12 @@ export function fakeContext(handler: Handler, overrides: Partial<TestOptions> = 
     profile: PROFILES.light,
     fetch: fake.fetch,
     logger: recordingLogger(lines),
+    // No allowance by default, so the timeout tests mean what they say; the cold-start tests set it.
+    coldStartMs: 0,
     ...overrides,
   };
   const http = createOllamaHttp(options.baseUrl, fake.fetch);
-  return { context: { http, options }, http, calls: fake.calls, lines };
+  return { context: { http, options, loads: createLoadTracker() }, http, calls: fake.calls, lines };
 }
 
 /** The recorded streamed chat reply: 42 prompt tokens, 9 output tokens. */

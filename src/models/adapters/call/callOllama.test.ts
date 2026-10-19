@@ -13,7 +13,7 @@ import {
   UNREACHABLE,
   type FakeContext,
 } from '../__fixtures__/ollamaHarness';
-import { callOllama, DEFAULT_TIMEOUTS_MS } from './callOllama';
+import { callOllama, DEFAULT_COLD_START_MS, DEFAULT_TIMEOUTS_MS } from './callOllama';
 
 const CHAT_PATH = '/api/chat';
 const SYSTEMONE_PATH = '/v1/systemone';
@@ -384,5 +384,151 @@ describe('callOllama reliability', () => {
 
     await expect(pending).resolves.toMatchObject({ usage: { inputTokens: 42 } });
     expect(fake.calls).toHaveLength(2);
+  });
+});
+
+describe('callOllama cold start', () => {
+  const COLD_START_MS = 20_000;
+  const OTHER = 'nemotron-3.5-lightning:30b-mlx';
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** A streamed chat call of role write to `model`. */
+  const callModel = (fake: FakeContext, model: string) =>
+    callOllama(
+      fake.context,
+      {
+        op: 'generate',
+        role: 'write',
+        model,
+        signal: undefined,
+        send: (attemptSignal) => fake.http.postStream(CHAT_PATH, {}, attemptSignal),
+      },
+      parseCounts,
+    );
+
+  const coldContext = (handler: Parameters<typeof fakeContext>[0]): FakeContext =>
+    fakeContext(handler, {
+      retries: 0,
+      timeoutsMs: { write: 5_000 },
+      coldStartMs: COLD_START_MS,
+    });
+
+  it('has an allowance of 5 min by default, far above the slowest load measured (107 s)', () => {
+    expect(DEFAULT_COLD_START_MS).toBe(300_000);
+  });
+
+  it('adds the allowance to the timeout of the first call to a model', async () => {
+    const fake = coldContext((call) => hang(call.signal));
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow(
+      'Ollama generate call to gemma4:e4b-mlx (role write) timed out after 25000 ms',
+    );
+
+    await vi.advanceTimersByTimeAsync(24_999);
+    expect(fake.calls[0]!.signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+    expect(fake.calls[0]!.signal?.aborted).toBe(true);
+  });
+
+  it('lets a slow first call finish where the plain timeout would have fired and retried', async () => {
+    const fake = fakeContext(
+      (call) =>
+        new Promise<Response>((resolve, reject) => {
+          const timer = setTimeout(() => {
+            resolve(chatOk());
+          }, 12_000);
+          call.signal?.addEventListener('abort', () => {
+            clearTimeout(timer);
+            reject(call.signal?.reason as Error);
+          });
+        }),
+      { timeoutsMs: { write: 5_000 }, coldStartMs: COLD_START_MS },
+    );
+
+    const pending = callModel(fake, WRITER);
+    await vi.advanceTimersByTimeAsync(12_000);
+
+    await expect(pending).resolves.toMatchObject({ usage: { inputTokens: 42 } });
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.lines.find((line) => line.message === 'ollama call')?.fields).toMatchObject({
+      attempts: 1,
+      coldStart: true,
+    });
+  });
+
+  it('gives the plain timeout to the next call to the model that answered', async () => {
+    const fake = coldContext((call, index) => (index === 0 ? chatOk() : hang(call.signal)));
+    await callModel(fake, WRITER);
+
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow('timed out after 5000 ms');
+    await vi.advanceTimersByTimeAsync(5_000);
+    await pending;
+
+    const infos = fake.lines.filter((line) => line.message === 'ollama call');
+    expect(infos[0]?.fields).toMatchObject({ coldStart: true });
+    expect(infos).toHaveLength(1);
+  });
+
+  it('marks only the cold call in the log, and leaves coldStart off a warm one', async () => {
+    const fake = coldContext(() => chatOk());
+
+    await callModel(fake, WRITER);
+    await callModel(fake, WRITER);
+
+    const infos = fake.lines.filter((line) => line.message === 'ollama call');
+    expect(infos.map((line) => line.fields.coldStart)).toEqual([true, undefined]);
+  });
+
+  it('calls the first model cold again once another model has answered', async () => {
+    const fake = coldContext((call, index) => (index < 2 ? chatOk() : hang(call.signal)));
+    await callModel(fake, WRITER);
+    await callModel(fake, OTHER);
+
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow('timed out after 25000 ms');
+    await vi.advanceTimersByTimeAsync(25_000);
+    await pending;
+  });
+
+  it('keeps a model cold when its call failed: the load did not happen', async () => {
+    const fake = coldContext((call, index) =>
+      index === 0 ? json(404, { error: 'model not found' }) : hang(call.signal),
+    );
+    await expect(callModel(fake, WRITER)).rejects.toThrow('404');
+
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow('timed out after 25000 ms');
+    await vi.advanceTimersByTimeAsync(25_000);
+    await pending;
+  });
+
+  it('gives a retry of a cold call the allowance too', async () => {
+    const fake = fakeContext((call, index) => (index === 0 ? refused() : hang(call.signal)), {
+      retries: 1,
+      timeoutsMs: { write: 5_000 },
+      coldStartMs: COLD_START_MS,
+    });
+
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow('timed out after 25000 ms');
+    await vi.advanceTimersByTimeAsync(1_000 + 24_999);
+    expect(fake.calls[1]!.signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await pending;
+  });
+
+  it('turns the allowance off with 0', async () => {
+    const fake = fakeContext((call) => hang(call.signal), {
+      retries: 0,
+      timeoutsMs: { write: 5_000 },
+      coldStartMs: 0,
+    });
+
+    const pending = expect(callModel(fake, WRITER)).rejects.toThrow('timed out after 5000 ms');
+    await vi.advanceTimersByTimeAsync(5_000);
+    await pending;
   });
 });

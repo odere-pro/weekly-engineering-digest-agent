@@ -63,7 +63,13 @@ finishes in a normal time.
    ```
 
    A failed call is retried `models.retries` times (default 2, at most 5), so one stuck call
-   can use three times its limit. See
+   can use three times its limit.
+
+   A call to a model the server has not answered with last (the first call of the run, and the
+   first one after the run moves to another model) gets 5 minutes more on every attempt, because
+   the model may have to load first, and `clef:latest` took longer than 60 s to. The log line of
+   such a call has `coldStart: true`, and its `latencyMs` includes the load. This is not
+   configurable. See
    [Change timeouts and retries](../configure/change-timeouts-and-retries.md) and
    [Choose a profile](../set-up/choose-profile-and-pull-models.md).
 
@@ -89,7 +95,7 @@ Restore the earlier `models` and `profile` values in `digest.config.json` and re
 
 | Symptom                                    | Cause                                          | Fix                                                  |
 | ------------------------------------------ | ---------------------------------------------- | ---------------------------------------------------- |
-| The first call after a pause is slow       | Ollama loads the model again                   | Raise the timeout a little                           |
+| The first call after a pause is slow       | Ollama loads the model again                   | Nothing: a cold call gets 5 min more (below)         |
 | A run hangs with no timeout lines          | The process lives, so it keeps its lock        | [Stuck lock](stuck-lock.md)                          |
 | `Ollama is not reachable at ...` mid-run   | Ollama crashed, often out of memory            | Restart Ollama, read its log, pick a smaller profile |
 | `✗ model <tag>: not installed` in `doctor` | The tag was never pulled                       | `ollama pull <tag>`                                  |

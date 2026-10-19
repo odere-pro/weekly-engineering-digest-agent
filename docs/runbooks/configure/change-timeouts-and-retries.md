@@ -29,6 +29,10 @@ calls to Ollama are configurable.
    | `models.timeoutsMs.<role>` | whole number, 1000 or more | classify 60000, guardPolicy 60000, guardRisk 120000, judge 120000, write 600000 |
    | `models.retries`           | whole number, 0 to 5       | 2 extra attempts                                                                |
 
+   A call to a model that is not loaded yet (the first call of the run, or after the run moves to
+   another model) gets 5 minutes more on every attempt, on top of these. That time is not
+   configurable. Its log line has `coldStart: true`.
+
    Roles are `classify`, `guardPolicy`, `guardRisk`, `write` and `judge`. Retries wait 1 s, then
    2 s and so on, capped at 10 s. A timeout, a network error, a broken stream or an HTTP 5xx is
    tried again. An HTTP 4xx, a bad payload and a call you aborted are not.

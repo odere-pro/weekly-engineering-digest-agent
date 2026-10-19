@@ -51,7 +51,8 @@ How to read it:
   from swap. It is not proven by the log.
 - The slowest `guardPolicy` call (107 s) was the first one: the model was not loaded yet, the call
   hit the 60 s `guardPolicy` timeout, and its retry took another 47 s. Reloading clef for
-  `classify` after Granite took 35 s of its 60 s.
+  `classify` after Granite took 35 s of its 60 s. Since then the first call to a model gets 5 more
+  minutes, see [Slow model or out of memory](../runbooks/debug/slow-model-or-out-of-memory.md).
 - The older `quality` figure (131 items in about 59 minutes, one earlier run) is not comparable:
   it was not measured with per-call timings, and this run needed longer for the input guard alone.
 
