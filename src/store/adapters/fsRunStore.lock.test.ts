@@ -5,6 +5,7 @@ import { hostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { createFsRunStore } from './fsRunStore';
+import { readPidNamespace } from './lockState/ownLock';
 import { ExitCode } from '../../domain/schemas';
 import type { RunStore } from '../RunStore';
 import { DigestError } from '../../shared/errors';
@@ -74,6 +75,8 @@ describe('acquireLock', () => {
       startedAt: NOW,
       hostname: hostname(),
       token: expect.any(String) as string,
+      // Linux names the PID namespace; macOS has none, and toEqual skips an undefined field.
+      pidNamespace: await readPidNamespace(),
       heartbeatAt: NOW,
     });
 
