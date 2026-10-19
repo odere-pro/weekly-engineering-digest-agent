@@ -3,7 +3,7 @@ import { renderEmailHtml } from './email/emailHtml';
 import { renderEmailText } from './email/emailText';
 import { DeliveryError } from './errors/deliveryError';
 import { createSmtpDelivery, type SmtpOptions, type SmtpTransportConfig } from './smtp';
-import type { DigestView } from '../Delivery';
+import type { DigestView } from '../../render/digestView';
 
 const nodemailer = vi.hoisted(() => ({ createTransport: vi.fn() }));
 vi.mock('nodemailer', () => nodemailer);

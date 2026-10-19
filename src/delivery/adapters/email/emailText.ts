@@ -1,4 +1,4 @@
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
 import { groupsWithItems, LAYOUT, type Urgency } from './emailLayout';
 import { httpUrl, oneLine, titleOf } from './safeText';
 

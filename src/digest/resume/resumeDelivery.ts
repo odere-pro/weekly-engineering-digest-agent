@@ -1,5 +1,6 @@
 // Resuming a partly delivered week (W2-08). Moved out of runDigest.ts by W5-06 (F58).
-import type { Delivery, DigestView } from '../../delivery/Delivery';
+import type { Delivery } from '../../delivery/Delivery';
+import type { DigestView } from '../../render/digestView';
 import type { DeliveryId } from '../../delivery/deliveryId';
 import { buildDigestView } from '../../render/layout';
 import { readSavedDigest, renderView } from '../../render/markdown';

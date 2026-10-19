@@ -5,7 +5,7 @@ import { buildDigestView } from './layout';
 import { readSavedView, renderDigest, renderView } from './markdown';
 import { DigestSchema } from '../domain/schemas';
 import { type GuardCheckId } from '../guards/guardVerdict';
-import type { DigestView } from '../delivery/Delivery';
+import type { DigestView } from './digestView';
 
 const read = (file: string): string =>
   readFileSync(new URL(`./__fixtures__/render/${file}`, import.meta.url), 'utf8');

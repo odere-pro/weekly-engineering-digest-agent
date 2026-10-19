@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildDigestView } from './layout';
 import { readSavedDigest, readSavedView, renderDigest, renderView } from './markdown';
 import type { Digest, DigestItem } from '../domain/schemas';
-import type { DigestView } from '../delivery/Delivery';
+import type { DigestView } from './digestView';
 import { makeDigest, makeDigestItem, makeItem } from '../../test/builders';
 import { splitCells } from './__fixtures__/render/cells';
 

@@ -1,7 +1,8 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { redactMessage, redactNote, type FieldRules } from './deliveryFields';
 import { createRedactor, REDACTED } from '../../observability/redact';
-import type { DigestMessage, DigestView, FailureNote } from '../../delivery/Delivery';
+import type { DigestMessage, FailureNote } from '../../delivery/Delivery';
+import type { DigestView } from '../../render/digestView';
 
 const SECRET = 'smtp-password-4f9a';
 const redactor = createRedactor([SECRET]);

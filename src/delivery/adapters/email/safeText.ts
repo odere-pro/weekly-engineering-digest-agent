@@ -1,4 +1,4 @@
-import type { DigestViewItem } from '../../Delivery';
+import type { DigestViewItem } from '../../../render/digestView';
 
 const UNTITLED = '(untitled)';
 

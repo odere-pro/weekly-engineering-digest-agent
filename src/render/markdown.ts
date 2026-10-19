@@ -1,4 +1,4 @@
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../delivery/Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from './digestView';
 import { buildDigestView, type LayoutOptions } from './layout';
 import { UrgencySchema, type Digest, type Urgency } from '../domain/schemas';
 

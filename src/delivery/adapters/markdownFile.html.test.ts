@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderEmailHtml } from './email/emailHtml';
 import { createMarkdownFileDelivery, digestFilePaths } from './markdownFile';
 import { writeFileAtomic } from '../../store/adapters/atomicFile';
-import type { DigestMessage, DigestView } from '../Delivery';
+import type { DigestMessage } from '../Delivery';
+import type { DigestView } from '../../render/digestView';
 
 // Delegates to the real writer, so tests can assert both files go through the atomic path.
 vi.mock('../../store/adapters/atomicFile', async (importOriginal) => {

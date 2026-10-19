@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { toSlackBlocks, type SlackBlock, type SlackMessage } from './toSlackBlocks';
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
 
 const SECTION_LIMIT = 3000;
 const BLOCK_LIMIT = 50;

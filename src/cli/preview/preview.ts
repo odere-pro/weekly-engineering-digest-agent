@@ -13,7 +13,7 @@ import { renderView } from '../../render/markdown';
 import { DraftsFileSchema, toJson } from '../../digest/ending/runFiles/runFiles';
 import { ExitCode, WEEK_ID_PATTERN } from '../../domain/schemas';
 import { createRedactor, type Redactor } from '../../observability/redact';
-import type { DigestView } from '../../delivery/Delivery';
+import type { DigestView } from '../../render/digestView';
 import type { RunStore } from '../../store/RunStore';
 import { DigestError, errorMessage } from '../../shared/errors';
 

@@ -13,7 +13,7 @@ import { type DigestDeps, type RunResult } from '../../src/digest/types';
 import { ExitCode, type Item, type Urgency } from '../../src/domain/schemas';
 import { RunRecordSchema } from '../../src/store/runRecord';
 import type { SourceFetcher } from '../../src/sources/SourceFetcher';
-import type { DigestViewItem } from '../../src/delivery/Delivery';
+import type { DigestViewItem } from '../../src/render/digestView';
 import { sameUrl } from '../../src/shared/url';
 import { weekDigestDir } from '../../src/store/layout';
 

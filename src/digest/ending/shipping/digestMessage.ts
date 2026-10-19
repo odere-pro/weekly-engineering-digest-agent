@@ -1,4 +1,5 @@
-import type { DigestMessage, DigestView } from '../../../delivery/Delivery';
+import type { DigestMessage } from '../../../delivery/Delivery';
+import type { DigestView } from '../../../render/digestView';
 import type { GuardCheckId } from '../../../guards/guardVerdict';
 import { buildDigestView } from '../../../render/layout';
 import { truncate } from '../../../shared/text';

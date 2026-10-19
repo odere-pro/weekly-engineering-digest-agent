@@ -1,6 +1,6 @@
 import { readSavedView } from '../../../src/render/markdown';
 import type { Digest, DigestItem, Item, Urgency } from '../../../src/domain/schemas';
-import type { DigestViewItem } from '../../../src/delivery/Delivery';
+import type { DigestViewItem } from '../../../src/render/digestView';
 import { normalizeUrl } from '../../../src/shared/url';
 
 /** The layout does not print the area, so a parsed item cannot know it. */

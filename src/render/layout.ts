@@ -1,4 +1,4 @@
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../delivery/Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from './digestView';
 import type { Digest, DigestItem, Urgency } from '../domain/schemas';
 import type { GuardCheckId } from '../guards/guardVerdict';
 

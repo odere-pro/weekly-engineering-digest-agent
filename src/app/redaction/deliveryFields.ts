@@ -1,10 +1,5 @@
-import type {
-  DigestMessage,
-  DigestView,
-  DigestViewGroup,
-  DigestViewItem,
-  FailureNote,
-} from '../../delivery/Delivery';
+import type { DigestMessage, FailureNote } from '../../delivery/Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../../render/digestView';
 import type { Redactor } from '../../observability/redact';
 
 /**

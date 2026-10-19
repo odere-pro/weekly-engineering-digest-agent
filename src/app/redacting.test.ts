@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { redactDelivery, redactStore } from './redacting';
 import { createRedactor, REDACTED } from '../observability/redact';
-import type { Delivery, DigestMessage, DigestView, FailureNote } from '../delivery/Delivery';
+import type { Delivery, DigestMessage, FailureNote } from '../delivery/Delivery';
+import type { DigestView } from '../render/digestView';
 import type { RunStore } from '../store/RunStore';
 import { makeRunRecord } from '../../test/builders';
 import { CapturingDelivery, MemoryRunStore } from '../../test/fakes';

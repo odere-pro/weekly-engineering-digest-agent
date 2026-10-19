@@ -1,4 +1,4 @@
-import type { DigestView, DigestViewGroup } from '../../Delivery';
+import type { DigestView, DigestViewGroup } from '../../../render/digestView';
 
 export type Urgency = DigestViewGroup['urgency'];
 

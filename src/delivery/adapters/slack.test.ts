@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DeliveryError } from './errors/deliveryError';
 import { createSlackDelivery } from './slack';
 import { toSlackBlocks } from './slackBlocks/toSlackBlocks';
-import type { DigestView } from '../Delivery';
+import type { DigestView } from '../../render/digestView';
 
 const WEBHOOK = 'https://hooks.slack.test/services/T000/B000/s3cr3tT0ken';
 const SECRET_PATH = '/services/T000/B000/s3cr3tT0ken';

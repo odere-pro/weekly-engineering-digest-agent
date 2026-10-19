@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderEmailHtml } from './email/emailHtml';
 import { renderEmailText } from './email/emailText';
 import { createSmtpDelivery, type MailMessage } from './smtp';
-import type { DigestMessage, DigestView } from '../Delivery';
+import type { DigestMessage } from '../Delivery';
+import type { DigestView } from '../../render/digestView';
 
 // nodemailer's own stream transport builds the real MIME message in memory. No socket is opened.
 const mimeBuilder = createTransport({ streamTransport: true, buffer: true, newline: 'unix' });

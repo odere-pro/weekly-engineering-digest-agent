@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { expect } from 'vitest';
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../Delivery';
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../../render/digestView';
 
 // The view, builders and hostile strings the email tests share. The golden files sit beside it.
 const FIXTURES = new URL('./', import.meta.url);
