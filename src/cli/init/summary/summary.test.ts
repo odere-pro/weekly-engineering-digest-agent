@@ -6,29 +6,32 @@ import { dockerNextSteps, summary } from './summary';
 const CONFIG_PATH = '/work/digest.config.json';
 const ENV_PATH = '/work/.env';
 const OLLAMA_URL = 'http://localhost:11434';
+const FOLDER = '/work/dist/2026-10-19/digest/';
 const BASE: Answers = {
   profile: 'light',
   timeZone: 'Europe/Berlin',
   focusAreas: ['AI models and tooling', 'Platform engineering'],
 };
 
-const summaryOf = (answers: Answers, envMerged = false): string =>
+const summaryOf = (answers: Answers, envMerged = false, localFolder = FOLDER): string =>
   summary({
     configPath: CONFIG_PATH,
     envPath: ENV_PATH,
     answers,
     ollamaUrl: OLLAMA_URL,
     envMerged,
+    localFolder,
   });
 
 describe('summary', () => {
-  it('lists what was written, the profile, focus areas, delivery, zone and Ollama URL', () => {
+  it('lists what was written, the profile, focus areas, delivery, folder, zone and Ollama URL', () => {
     expect(summaryOf(BASE)).toBe(
       [
         'Wrote /work/digest.config.json and /work/.env (readable by you only).',
         '  profile:  light',
         '  focus:    AI models and tooling, Platform engineering',
         '  delivery: markdown',
+        '  saved to: /work/dist/2026-10-19/digest/ (one folder per week)',
         '  schedule: Europe/Berlin',
         '  ollama:   http://localhost:11434',
         '',
@@ -60,6 +63,19 @@ describe('summary', () => {
     expect(summaryOf({ ...BASE, email, slackWebhook: 'https://hooks.slack.com/x' })).toContain(
       '  delivery: markdown, email, slack\n',
     );
+  });
+
+  it('names the folder the Markdown files go to, as it was given', () => {
+    expect(summaryOf(BASE, false, './dist/2026-10-19/digest/ on the host')).toContain(
+      '  saved to: ./dist/2026-10-19/digest/ on the host (one folder per week)\n',
+    );
+  });
+
+  it('names the folder with the extra channels too, right after the delivery line', () => {
+    const lines = summaryOf({ ...BASE, slackWebhook: 'https://hooks.slack.com/x' }).split('\n');
+
+    const at = lines.indexOf('  delivery: markdown, slack');
+    expect(lines[at + 1]).toBe(`  saved to: ${FOLDER} (one folder per week)`);
   });
 
   it('never prints the password or the webhook', () => {

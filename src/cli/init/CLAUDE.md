@@ -14,6 +14,7 @@ flowchart LR
   init -->|"digest.config.json, .env (0600)"| disk[("files")]
   init -.->|"ConfigSchema, SecretsSchema, mergeEnvText"| config["config/"]
   init -.->|"renderOsSchedule"| scheduler["scheduler/osSchedule"]
+  init -.->|"weekDigestDir, isoWeekId"| layout["store/layout, shared/isoWeek"]
   init -.->|"hasQualityMemory, formatGiB"| memory["cli/doctor/readiness/memory"]
   classDef focus stroke-width:3px
 ```
@@ -49,6 +50,9 @@ flowchart TD
 - Secrets (SMTP password, Slack webhook) go to `.env` only, never to the config or the output.
 - `.env` is mode 0600, written through a temp file and a rename, or in place where a rename cannot
   work (bind mount, read-only folder). A file that stays readable by others is not written.
+- The channels question and the summary name this week's folder, below `dataDir` resolved against
+  `io.cwd` where `digest run` starts, not the config's folder (`prompts/saveLocally.ts`). In Docker
+  they say `./dist/...` on the host, the compose mount of `/app/dist`.
 - The default profile is `light` whatever the RAM: `quality` has no measured baseline yet. The
   schema default stays `quality`.
 - `OLLAMA_URL` follows where init runs: `localhost`, `host.docker.internal` (Docker on a Mac, where
@@ -60,7 +64,7 @@ flowchart TD
 | File / folder | Role                                                                           |
 | ------------- | ------------------------------------------------------------------------------ |
 | `init.ts`     | `initCommand`, `runInit`, `recommendProfile`, `resolveOllamaUrl`               |
-| `types.ts`    | `InitCommandOptions`, `InitIo`, `InitPrompts`, `Answers`, `Host`, `Validate`   |
+| `types.ts`    | `InitCommandOptions`, `InitIo`, `InitPrompts`, `Answers`, `Host`, validators   |
 | `paths.ts`    | `DEFAULT_CONFIG_PATH`, `DEFAULT_ENV_PATH`, `DOCKERENV_PATH`                    |
 | `prompts/`    | The questions and `Answers`. See `prompts/CLAUDE.md`                           |
 | `configFile/` | `ConfigInput` from the answers, validated, as JSON. See `configFile/CLAUDE.md` |

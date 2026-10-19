@@ -39,10 +39,12 @@ The package is not published to npm, so commands run as `pnpm digest <command>`.
    pnpm install --frozen-lockfile
    ```
 
-3. Create the config. `init` asks for focus areas, a model profile, the time zone and delivery
-   (email, Slack). It writes `digest.config.json` and `.env` (mode 600) in this folder. It
-   recommends `light`. At the end it prints an OS schedule snippet. Save it only if you will use
-   it: see [schedule weekly runs](schedule-weekly-runs.md).
+3. Create the config. `init` asks for focus areas, a model profile, the time zone and where to
+   deliver the digest. "Save locally" is ticked and always on: it shows the folder this week's
+   files go to, `dist/<monday>/digest/` below the folder you run from. Email and Slack are extras
+   you can tick. `init` writes `digest.config.json` and `.env` (mode 600) in this folder. It
+   recommends `light`. At the end it prints the folder again and an OS schedule snippet. Save the
+   snippet only if you will use it: see [schedule weekly runs](schedule-weekly-runs.md).
 
    ```bash
    pnpm digest init

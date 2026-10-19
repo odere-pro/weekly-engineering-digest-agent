@@ -27,6 +27,32 @@ describe('inquirerPrompts', () => {
     expect(inquirer.checkbox).toHaveBeenCalledWith(options);
   });
 
+  it('passes a checkbox validator on, and it reads the ticked choices as inquirer builds them', async () => {
+    vi.mocked(inquirer.checkbox).mockResolvedValue(['a']);
+    const validate = vi.fn((selected: readonly { value: string }[]) =>
+      selected.some((choice) => choice.value === 'a') ? (true as const) : 'keep a ticked',
+    );
+
+    await inquirerPrompts.checkbox({
+      message: 'Pick',
+      choices: [{ name: 'a', value: 'a' }],
+      validate,
+    });
+
+    const passed = vi.mocked(inquirer.checkbox).mock.calls.at(-1)?.[0].validate;
+    // The shape @inquirer/checkbox hands to validate: whole normalized choices, not bare values.
+    const ticked = {
+      value: 'a',
+      name: 'a',
+      short: 'a',
+      checkedName: 'a',
+      disabled: false,
+      checked: true,
+    };
+    expect(passed?.([ticked])).toBe(true);
+    expect(passed?.([])).toBe('keep a ticked');
+  });
+
   it('passes an input question on, validator included, and returns the answer', async () => {
     vi.mocked(inquirer.input).mockResolvedValue('typed');
     const options = { message: 'Name', default: 'x', validate: () => true as const };

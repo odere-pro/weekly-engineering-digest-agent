@@ -9,6 +9,7 @@ import { createDefaultIo } from './io/defaultIo';
 import { isPromptCancelled } from './io/inquirerPrompts';
 import { DEFAULT_CONFIG_PATH, DOCKERENV_PATH } from './paths';
 import { askAnswers, defaultAnswers } from './prompts/answers';
+import { localFolder } from './prompts/saveLocally';
 import { scheduleSection } from './schedule/schedule';
 import { dockerNextSteps, summary } from './summary/summary';
 import type { Host, InitCommandOptions, InitIo } from './types';
@@ -78,7 +79,18 @@ async function runInit(options: InitCommandOptions, io: InitIo): Promise<number>
   await writeOrFail(io.envPath, () => io.writeSecretFile(io.envPath, envFile.text));
 
   io.stdout(
-    summary({ configPath, envPath: io.envPath, answers, ollamaUrl, envMerged: envFile.merged }),
+    summary({
+      configPath,
+      envPath: io.envPath,
+      answers,
+      ollamaUrl,
+      envMerged: envFile.merged,
+      localFolder: localFolder(io, {
+        timeZone: answers.timeZone,
+        inDocker,
+        dataDir: config.dataDir,
+      }),
+    }),
   );
   io.stdout(
     inDocker

@@ -3,6 +3,7 @@ import { DEFAULT_FOCUS_AREAS } from '../../../sources/defaultSources';
 import {
   EMAIL_RULES,
   harness,
+  selectionValidatorFor,
   SLACK_RULES,
   type HarnessOptions,
 } from '../__fixtures__/initHarness';
@@ -26,7 +27,7 @@ describe('askAnswers', () => {
       'Other',
       'Model',
       'Time',
-      'Also',
+      'Deliver',
     ]);
   });
 
@@ -62,7 +63,7 @@ describe('askAnswers', () => {
   it('supports email and Slack together', async () => {
     const { answers } = await askWith({
       rules: [
-        [/Also deliver/, ['email', 'slack']],
+        [/Deliver the digest/, ['markdown', 'email', 'slack']],
         ...EMAIL_RULES.slice(1),
         ...SLACK_RULES.slice(1),
       ],
@@ -72,12 +73,87 @@ describe('askAnswers', () => {
     expect(answers.slackWebhook).toBeDefined();
   });
 
-  it('says that Markdown files are always written, so it is not a choice', async () => {
-    const { calls } = await askWith();
+  describe('the channels question', () => {
+    const channelsOf = (calls: Awaited<ReturnType<typeof askWith>>['calls']) => {
+      const call = calls.find((c) => /Deliver the digest/.test(c.message));
+      if (!call) throw new Error('the channels question was not asked');
+      return call;
+    };
 
-    const channels = calls.find((c) => /Also deliver/.test(c.message));
-    expect(channels?.message).toContain('Markdown files are always written');
-    expect(channels?.options.choices?.map((c) => c.value)).toEqual(['email', 'slack']);
+    it('lists saving locally first, ticked, with the folder it writes to', async () => {
+      const { calls } = await askWith();
+
+      expect(channelsOf(calls).options.choices).toEqual([
+        {
+          name: 'Save locally (Markdown and HTML): /work/dist/2026-10-19/digest/',
+          value: 'markdown',
+          checked: true,
+        },
+        { name: 'Email (SMTP)', value: 'email' },
+        { name: 'Slack (incoming webhook)', value: 'slack' },
+      ]);
+    });
+
+    it('leaves email and Slack unticked, so Enter alone adds no channel', async () => {
+      const { answers, calls } = await askWith();
+
+      const ticked = channelsOf(calls).options.choices?.filter((c) => c.checked);
+      expect(ticked?.map((c) => c.value)).toEqual(['markdown']);
+      expect(answers.email).toBeUndefined();
+      expect(answers.slackWebhook).toBeUndefined();
+    });
+
+    it('no longer says the Markdown files are an extra', async () => {
+      const { calls } = await askWith();
+
+      expect(channelsOf(calls).message).not.toMatch(/Also|always written/);
+    });
+
+    it('names the week folder of the clock, in the schedule time zone the user picked', async () => {
+      const { calls } = await askWith({
+        now: '2026-10-18T23:30:00Z',
+        rules: [[/Time zone/, 'UTC']],
+      });
+
+      expect(channelsOf(calls).options.choices?.[0]?.name).toBe(
+        'Save locally (Markdown and HTML): /work/dist/2026-10-12/digest/',
+      );
+    });
+
+    it('names the folder digest runs from', async () => {
+      const { calls } = await askWith({ cwd: '/home/ana/digest' });
+
+      expect(channelsOf(calls).options.choices?.[0]?.name).toContain(
+        ': /home/ana/digest/dist/2026-10-19/digest/',
+      );
+    });
+
+    it('says in Docker that the folder is ./dist on the host', async () => {
+      const { calls } = await askWith(
+        { inDocker: true, cwd: '/app' },
+        { inDocker: true, hostOs: 'darwin' },
+      );
+
+      expect(channelsOf(calls).options.choices?.[0]?.name).toBe(
+        'Save locally (Markdown and HTML): ./dist/2026-10-19/digest/ on the host',
+      );
+    });
+
+    it('refuses an unticked "save locally" with the reason, and accepts it ticked', async () => {
+      const { calls } = await askWith();
+      const validate = selectionValidatorFor(calls, /Deliver the digest/);
+
+      expect(validate([{ value: 'email' }])).toMatch(/always on/);
+      expect(validate([])).toMatch(/always on/);
+      expect(validate([{ value: 'markdown' }])).toBe(true);
+      expect(validate([{ value: 'markdown' }, { value: 'email' }, { value: 'slack' }])).toBe(true);
+    });
+
+    it('keeps the user from finishing without it', async () => {
+      await expect(askWith({ rules: [[/Deliver the digest/, ['email']]] })).rejects.toThrow(
+        /always on/,
+      );
+    });
   });
 
   it('writes the profile that was chosen', async () => {

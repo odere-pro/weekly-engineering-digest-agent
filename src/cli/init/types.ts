@@ -1,5 +1,6 @@
 import type { ConfigInput, ProfileName } from '../../config/schema';
 import type { OsSchedule, OsScheduleOptions } from '../../scheduler/osSchedule';
+import type { Clock } from '../../shared/clock';
 
 export interface InitCommandOptions {
   /** Path to digest.config.json. */
@@ -11,11 +12,15 @@ export interface InitCommandOptions {
 /** Returns true when the answer is acceptable, otherwise the message to show. */
 export type Validate = (value: string) => true | string;
 
+/** The ticked choices of a checkbox question: true when they are acceptable, else the message to show. */
+export type ValidateSelection = (selected: readonly { value: string }[]) => true | string;
+
 export interface InitPrompts {
   confirm(options: { message: string; default: boolean }): Promise<boolean>;
   checkbox(options: {
     message: string;
     choices: readonly { name: string; value: string; checked?: boolean }[];
+    validate?: ValidateSelection;
   }): Promise<string[]>;
   input(options: { message: string; default?: string; validate?: Validate }): Promise<string>;
   select<T extends string>(options: {
@@ -37,6 +42,9 @@ export interface InitIo {
   memoryLimitBytes?: number;
   /** The IANA zone this process runs in; the default for `schedule.timeZone`. */
   timeZone: string;
+  /** What "now" is: it names the week folder the questions and the summary show. */
+  clock: Clock;
+  /** The folder digest runs from: a relative `dataDir` is resolved against it. */
   cwd: string;
   /** Where the secrets file goes; digest loads ./.env. */
   envPath: string;

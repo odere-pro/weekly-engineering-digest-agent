@@ -25,7 +25,7 @@ Pick one:
 ## 4. First run
 
 ```bash
-pnpm digest init            # asks for focus areas, profile and delivery
+pnpm digest init            # asks for focus areas, profile and delivery; shows where files are saved
 pnpm digest doctor          # checks Ollama, models, feeds; prints a fix for each problem
 pnpm digest run --dry-run   # a full run that sends nothing
 ```

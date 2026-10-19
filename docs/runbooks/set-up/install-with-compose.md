@@ -30,7 +30,8 @@ In Docker every command is `docker compose run --rm digest <command>`. The globa
 ### Mac
 
 1. Create the config and `.env`. This makes both files (mode 600 for `.env`) and runs `digest init`
-   in a container. `init` needs no Ollama.
+   in a container. `init` needs no Ollama. Its delivery question shows the folder where the digest
+   is always saved: `./dist/<monday>/digest/` on the host.
 
    ```bash
    make docker-init

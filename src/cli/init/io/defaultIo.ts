@@ -1,5 +1,6 @@
 import { totalmem } from 'node:os';
 import { renderOsSchedule } from '../../../scheduler/osSchedule';
+import { systemClock } from '../../../shared/clock';
 import { writeSecretFile } from '../envFile/secretFile';
 import { DEFAULT_ENV_PATH } from '../paths';
 import { defaultScheduleProgram } from '../schedule/schedule';
@@ -16,6 +17,7 @@ export function createDefaultIo(): InitIo {
     totalMemoryBytes: totalmem(),
     memoryLimitBytes: process.constrainedMemory(),
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    clock: systemClock,
     cwd: process.cwd(),
     envPath: DEFAULT_ENV_PATH,
     scheduleProgram: defaultScheduleProgram(),

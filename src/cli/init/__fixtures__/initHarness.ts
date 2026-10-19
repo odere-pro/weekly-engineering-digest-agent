@@ -2,11 +2,14 @@
 // subfeatures run against. Not product code; coverage skips `__fixtures__/`.
 import { parseEnv } from 'node:util';
 import { vi } from 'vitest';
-import type { InitIo, InitPrompts, Validate } from '../types';
+import { fixedClock } from '../../../shared/clock';
+import type { InitIo, InitPrompts, Validate, ValidateSelection } from '../types';
 
 export const GIB = 1024 ** 3;
 export const CONFIG_PATH = '/work/digest.config.json';
 export const ENV_PATH = '/work/.env';
+/** A Wednesday in ISO week 2026-W43, whose Monday is 2026-10-19. */
+export const NOW = '2026-10-21T10:00:00Z';
 export const SCHEDULE = {
   path: '/etc/systemd/user/digest.timer',
   content: '[Timer]\nOnCalendar=Mon 07:45\n',
@@ -19,7 +22,8 @@ export interface PromptCall {
   message: string;
   options: {
     default?: unknown;
-    validate?: Validate;
+    /** A text prompt's `Validate` or a checkbox's `ValidateSelection`: the call is told which by its kind. */
+    validate?: Validate & ValidateSelection;
     choices?: readonly { name: string; value: string; checked?: boolean; description?: string }[];
   };
 }
@@ -29,6 +33,7 @@ export type Rule = readonly [RegExp, unknown];
 /**
  * A scripted user. A prompt without a matching rule behaves like pressing Enter (the default,
  * or the pre-checked choices); an answer that fails the prompt's own validate() fails the test.
+ * A checkbox answer is a list of values, checked as the ticked choices.
  */
 export function scriptedPrompts(rules: readonly Rule[] = []): {
   prompts: InitPrompts;
@@ -42,9 +47,9 @@ export function scriptedPrompts(rules: readonly Rule[] = []): {
     calls.push({ kind, message: options.message, options });
     const rule = rules.find(([pattern]) => pattern.test(options.message));
     const value = rule ? rule[1] : pressEnter(kind, options);
-    if (typeof value === 'string' && options.validate) {
-      const verdict = options.validate(value);
-      if (verdict !== true) throw new Error(`"${options.message}" rejected "${value}": ${verdict}`);
+    const verdict = verdictOn(options.validate, value);
+    if (verdict !== true) {
+      throw new Error(`"${options.message}" rejected ${JSON.stringify(value)}: ${verdict}`);
     }
     return value;
   };
@@ -56,6 +61,14 @@ export function scriptedPrompts(rules: readonly Rule[] = []): {
     password: (o: never) => Promise.resolve(answer('password', o)),
   } as unknown as InitPrompts;
   return { prompts, calls };
+}
+
+/** What the prompt's own validate() says about an answer; true when it has none or the answer is no text or list. */
+function verdictOn(validate: PromptCall['options']['validate'], value: unknown): true | string {
+  if (validate === undefined) return true;
+  if (typeof value === 'string') return validate(value);
+  if (Array.isArray(value)) return validate(value.map((picked: string) => ({ value: picked })));
+  return true;
 }
 
 function pressEnter(
@@ -90,6 +103,10 @@ export interface HarnessOptions {
   empty?: readonly string[];
   /** The zone this process runs in. */
   timeZone?: string;
+  /** What the clock says now; default `NOW`. */
+  now?: string;
+  /** The folder init runs from; default /work. */
+  cwd?: string;
   inDocker?: boolean;
   env?: Record<string, string>;
   ramGiB?: number;
@@ -123,7 +140,8 @@ export function harness(options: HarnessOptions = {}): Harness {
     totalMemoryBytes: (options.ramGiB ?? 32) * GIB,
     memoryLimitBytes: (options.memoryLimitGiB ?? 0) * GIB,
     timeZone: options.timeZone ?? 'Europe/Berlin',
-    cwd: '/work',
+    clock: fixedClock(options.now ?? NOW),
+    cwd: options.cwd ?? '/work',
     envPath: ENV_PATH,
     scheduleProgram: '/usr/local/bin/digest',
     renderSchedule,
@@ -172,7 +190,7 @@ export function writtenEnv(h: Harness): Record<string, string | undefined> {
 
 /** The answers that pick email delivery and fill its prompts. */
 export const EMAIL_RULES: readonly Rule[] = [
-  [/Also deliver/, ['email']],
+  [/Deliver the digest/, ['markdown', 'email']],
   [/SMTP host/, 'smtp.example.com'],
   [/SMTP user/, 'digest@example.com'],
   [/Recipients/, 'ana@example.com, bo@example.com'],
@@ -180,12 +198,24 @@ export const EMAIL_RULES: readonly Rule[] = [
 ];
 /** The answers that pick Slack delivery and fill its prompt. */
 export const SLACK_RULES: readonly Rule[] = [
-  [/Also deliver/, ['slack']],
+  [/Deliver the digest/, ['markdown', 'slack']],
   [/Slack webhook/, 'https://hooks.slack.com/services/T000/B000/hook-secret'],
 ];
 
-/** The validate() a prompt was given, for the first prompt whose message matches. */
+/** The validate() a text prompt was given, for the first prompt whose message matches. */
 export function validatorFor(calls: readonly PromptCall[], pattern: RegExp): Validate {
+  return validateOf(calls, pattern);
+}
+
+/** The validate() a checkbox question was given, for the first prompt whose message matches. */
+export function selectionValidatorFor(
+  calls: readonly PromptCall[],
+  pattern: RegExp,
+): ValidateSelection {
+  return validateOf(calls, pattern);
+}
+
+function validateOf(calls: readonly PromptCall[], pattern: RegExp): Validate & ValidateSelection {
   const validate = calls.find((c) => pattern.test(c.message))?.options.validate;
   if (!validate) throw new Error(`no validate for ${String(pattern)}`);
   return validate;

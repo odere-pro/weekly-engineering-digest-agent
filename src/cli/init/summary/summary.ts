@@ -18,6 +18,8 @@ export function summary(info: {
   answers: Answers;
   ollamaUrl: string;
   envMerged: boolean;
+  /** Where this week's Markdown and HTML files go (`prompts/saveLocally`). */
+  localFolder: string;
 }): string {
   const { answers } = info;
   const channels = [
@@ -38,6 +40,7 @@ export function summary(info: {
       : []),
     `  focus:    ${answers.focusAreas.join(', ')}`,
     `  delivery: ${channels.join(', ')}`,
+    `  saved to: ${info.localFolder} (one folder per week)`,
     `  schedule: ${info.answers.timeZone}`,
     `  ollama:   ${info.ollamaUrl}`,
     '',

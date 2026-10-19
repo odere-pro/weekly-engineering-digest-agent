@@ -7,11 +7,11 @@
 
 ```mermaid
 flowchart TD
-  info["configPath, envPath, answers, ollamaUrl, envMerged"] --> summary
+  info["configPath, envPath, answers, ollamaUrl, envMerged, localFolder"] --> summary
   summary --> wrote{"envMerged?"}
   wrote -->|yes| updated["Wrote config and updated .env, kept its other settings"]
   wrote -->|no| fresh["Wrote config and .env"]
-  updated & fresh --> lines["profile, quality note, focus, delivery, schedule, ollama"]
+  updated & fresh --> lines["profile, quality note, focus, delivery, saved to, schedule, ollama"]
   zone["timeZone"] --> docker["dockerNextSteps"] --> utc{"UTC or Etc/UTC?"}
   utc -->|yes| warn["The schedule runs on UTC: set schedule.timeZone"]
   utc -->|no| next["Next: docker compose up -d"]
@@ -21,6 +21,9 @@ flowchart TD
 
 - No secret in the output: the delivery line lists channel names only, never the password or the
   webhook. A test checks it.
+- `saved to:` prints `localFolder` as the caller built it (`prompts/saveLocally`), also with `--yes`,
+  so it is the folder the channels question showed (unless the run crossed a Monday). The summary does
+  no path or clock work.
 - `quality` gets a note that it is unmeasured and how to switch to `light`; the other profiles get
   none.
 - In Docker the schedule is the compose service's, so the notes talk about the time zone: a

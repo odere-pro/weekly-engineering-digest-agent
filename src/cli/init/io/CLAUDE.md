@@ -12,7 +12,7 @@ flowchart LR
   dio --> prompts["inquirerPrompts"] -.-> tty[("terminal")]
   dio --> files["pathExists, isEmptyFile, readTextIfPresent, writeTextFile"] -.-> disk[("files")]
   dio --> secret["writeSecretFile (envFile/)"] -.-> disk
-  dio --> machine["env, platform, RAM, zone, cwd, scheduleProgram"]
+  dio --> machine["env, platform, RAM, zone, clock, cwd, scheduleProgram"]
   initCommand --> confirm["confirmOverwrite: exists, isEmptyFile, prompts.confirm"]
 ```
 

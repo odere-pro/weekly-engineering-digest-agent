@@ -2,6 +2,7 @@ import { totalmem } from 'node:os';
 import * as inquirer from '@inquirer/prompts';
 import { describe, expect, it, vi } from 'vitest';
 import { renderOsSchedule } from '../../../scheduler/osSchedule';
+import { systemClock } from '../../../shared/clock';
 import { CONFIG_PATH, harness, writtenEnv } from '../__fixtures__/initHarness';
 import { initCommand } from '../init';
 import { writeSecretFile } from '../envFile/secretFile';
@@ -28,6 +29,10 @@ describe('createDefaultIo', () => {
     expect(io.memoryLimitBytes).toBe(process.constrainedMemory());
     expect(io.timeZone).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
     expect(io.cwd).toBe(process.cwd());
+  });
+
+  it('tells the time with the system clock, which names the week folder it shows', () => {
+    expect(createDefaultIo().clock).toBe(systemClock);
   });
 
   it('loads the secrets from ./.env, the file digest reads', () => {
@@ -83,7 +88,9 @@ describe('the default prompts', () => {
   it('use inquirer for passwords and confirmations', async () => {
     vi.mocked(inquirer.checkbox).mockImplementation((config) =>
       Promise.resolve(
-        config.message.startsWith('Also') ? ['email', 'slack'] : ['AI models and tooling'],
+        config.message.startsWith('Deliver')
+          ? ['markdown', 'email', 'slack']
+          : ['AI models and tooling'],
       ),
     );
     vi.mocked(inquirer.input).mockImplementation((config) => {

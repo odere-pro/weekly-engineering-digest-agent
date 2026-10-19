@@ -309,7 +309,7 @@ describe('interactive answers', () => {
   it('supports email and Slack together', async () => {
     const h = harness({
       rules: [
-        [/Also deliver/, ['email', 'slack']],
+        [/Deliver the digest/, ['markdown', 'email', 'slack']],
         ...EMAIL_RULES.slice(1),
         ...SLACK_RULES.slice(1),
       ],
@@ -554,7 +554,11 @@ describe('write failures', () => {
 describe('the output', () => {
   it('lists what was written and never prints a secret', async () => {
     const h = harness({
-      rules: [[/Also deliver/, ['email', 'slack']], ...EMAIL_RULES, ...SLACK_RULES.slice(1)],
+      rules: [
+        [/Deliver the digest/, ['markdown', 'email', 'slack']],
+        ...EMAIL_RULES,
+        ...SLACK_RULES.slice(1),
+      ],
     });
 
     await initCommand({ config: CONFIG_PATH }, h.io);

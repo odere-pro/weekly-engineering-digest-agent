@@ -283,7 +283,7 @@ describe('with the real file system', () => {
     const configPath = join(dir, 'digest.config.json');
     const rules: Rule[] = [
       [/SMTP password/, 'pa ss#word'],
-      [/Also deliver/, ['email', 'slack']],
+      [/Deliver the digest/, ['markdown', 'email', 'slack']],
       ...EMAIL_RULES,
       ...SLACK_RULES.slice(1),
     ];
@@ -320,7 +320,7 @@ describe('with the real file system', () => {
     await writeFile(join(dir, '.env'), 'SMTP_PASSWORD=old\nGITHUB_TOKEN=ghp_keep\n', {
       mode: 0o600,
     });
-    const rules: Rule[] = [[/Also deliver/, ['email']], ...EMAIL_RULES];
+    const rules: Rule[] = [[/Deliver the digest/, ['markdown', 'email']], ...EMAIL_RULES];
 
     await initCommand({ config: configPath }, realIo({ prompts: scriptedPrompts(rules).prompts }));
 
