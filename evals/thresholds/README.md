@@ -8,11 +8,11 @@ LOG_LEVEL=warn pnpm tsx evals/tuneThresholds.ts capture --config data/thresholds
 pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json [--holdout 2026-W40,2026-W41]
 ```
 
-| File                        | What                                                                                                                                                                                              |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `raw/<date>-<profile>.json` | Raw outputs: classify on the 60 classifier cases and every recorded week item, clefPolicy P(yes) and the granite verdict on every week item and attack, clefRubric P(yes) on the grounding drafts |
-| `<date>-<profile>.json`     | The sweep: proposed thresholds, accuracy curves, false blocks per guard, the check against the week labels                                                                                        |
-| `capture.ts`, `sweep.ts`    | The capture and the sweep; `../tuneThresholds.ts` is the command line                                                                                                                             |
+| File                                                | What                                                                                                                                                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raw/<date>-<profile>.json`                         | Raw outputs: classify on the 60 classifier cases and every recorded week item, clefPolicy P(yes) and the granite verdict on every week item and attack, clefRubric P(yes) on the grounding drafts |
+| `<date>-<profile>.json`                             | The sweep: proposed thresholds, accuracy curves, false blocks per guard, the check against the week labels                                                                                        |
+| `capture/`, `sweep/`, `result/`, `cli/`, `split.ts` | The capture, the sweeps, the result and its checks, the two commands, the train and holdout split; `../tuneThresholds.ts` is the command line. See `CLAUDE.md`                                    |
 
 ## Method
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { RawCapture } from './capture';
+import type { RawCapture } from './capture/schemas';
 import {
   GAP_WARNING,
   NO_SPLIT,

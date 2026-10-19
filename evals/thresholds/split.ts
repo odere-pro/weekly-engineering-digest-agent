@@ -4,15 +4,10 @@ import type { Thresholds } from '../../src/config/schema';
 import { WeekIdSchema } from '../../src/domain/schemas';
 import { DigestError } from '../../src/shared/errors';
 import { classifierAccuracy } from '../metrics';
-import { isFailed, type ClassifierRecord, type RawCapture } from './capture';
-import {
-  EPSILON,
-  filterOutcome,
-  filterSamples,
-  graniteResult,
-  guardFlagPoint,
-  guardSamples,
-} from './sweep';
+import { isFailed, type ClassifierRecord, type RawCapture } from './capture/schemas';
+import { filterOutcome, filterSamples } from './sweep/filter';
+import { graniteResult, guardFlagPoint, guardSamples } from './sweep/guardFlag';
+import { EPSILON } from './sweep/measures';
 
 /** The holdout keeps every CASE_STRIDE-th classifier case, attack and grounding case (the 3rd, 6th, ...). */
 export const CASE_STRIDE = 3;
@@ -189,7 +184,8 @@ export interface Comparison {
 const GAP_DECIMALS = 1e4;
 const difference = (a: number | null, b: number | null): number | null =>
   a === null || b === null ? null : Math.round((a - b) * GAP_DECIMALS) / GAP_DECIMALS;
-const fixed = (value: number | null): string => (value === null ? 'n/a' : value.toFixed(3));
+/** A rate to three decimals; "n/a" when it could not be measured. */
+export const fixed = (value: number | null): string => (value === null ? 'n/a' : value.toFixed(3));
 
 export function compareSides(train: SideScore, holdout: SideScore): Comparison {
   const gap = {
