@@ -22,7 +22,7 @@
           "url": "https://blog.galewood.example/2026/09/tail-sampling",
           "area": "Platform engineering",
           "summary": "Galewood Traces adds tail sampling, which keeps slow and failed requests and drops the rest. Rules are written in a small policy file.",
-          "whyItMatters": "Trace storage grows more slowly."
+          "whyItMatters": "Tail sampling keeps slow and failed requests and drops the rest."
         },
         {
           "itemId": "c367be25d797410b",
@@ -30,7 +30,7 @@
           "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
           "area": "AI models and tooling",
           "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
-          "whyItMatters": "Runaway tasks stop on their own."
+          "whyItMatters": "A task that hits its budget stops and returns what it has."
         }
       ]
     }

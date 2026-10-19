@@ -48,8 +48,9 @@ flowchart TD
   same verdicts. Raise it only after timing a server that runs requests in parallel.
 - A disabled or missing guard is never silent: it is in `disabledChecks`, `run.json`
   (`disabledGuards`) and the digest footer; a missing one also logs a warning.
-- Granite criteria, except `headline`, are copied from its chat template: do not reword them.
-  `headline` is our own wording, because the generic one flagged editorial framing.
+- Granite criteria, except `headline` and `item`, are copied from its chat template: do not reword
+  them. Those two are our own wording (`GRANITE_CRITERIA.item` for each digest item): the generic
+  headline one flagged editorial framing, the generic item one flagged a plain why-it-matters line.
 - Logs and reasons hold ids and check ids only, never item, draft or model text.
 
 ## Files

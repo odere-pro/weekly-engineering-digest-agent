@@ -22,7 +22,7 @@
           "url": "https://blog.ivywell.example/2026/09/monorepo-cache",
           "area": "Platform engineering",
           "summary": "Ivywell Lint now caches results per package, which makes repeat runs in monorepos much faster. The cache is shared between CI jobs through a plain directory.",
-          "whyItMatters": "Repeat runs in CI cost less time."
+          "whyItMatters": "Repeat runs in monorepos are much faster, and the cache is shared between CI jobs."
         },
         {
           "itemId": "c367be25d797410b",
@@ -30,7 +30,7 @@
           "url": "https://blog.lornwick.example/2026/09/tool-call-budgets",
           "area": "AI models and tooling",
           "summary": "Lornwick Agents add budgets that cap how many tool calls one task may make. A task that hits its budget stops and returns what it has.",
-          "whyItMatters": "Runaway tasks stop on their own."
+          "whyItMatters": "A task that hits its budget stops and returns what it has."
         }
       ]
     }

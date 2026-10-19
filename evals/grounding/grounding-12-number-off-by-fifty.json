@@ -14,7 +14,7 @@
           "url": "https://kestrelbay.example/news/point-in-time-restore",
           "area": "Platform engineering",
           "summary": "Kestrelbay DB adds point-in-time restore for managed clusters. Restores create a new cluster, so the original keeps running.",
-          "whyItMatters": "Recovery no longer touches the running cluster."
+          "whyItMatters": "Restores create a new cluster, so the original keeps running."
         },
         {
           "itemId": "358a3ae29d046a93",
@@ -30,7 +30,7 @@
           "url": "https://nettlefold.example/news/artifact-signing",
           "area": "Platform engineering",
           "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
-          "whyItMatters": "Unsigned images can be kept out of production."
+          "whyItMatters": "Signatures are checked on pull, and unsigned images can be blocked by policy."
         }
       ]
     }

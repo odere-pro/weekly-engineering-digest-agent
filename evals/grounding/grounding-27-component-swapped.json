@@ -14,7 +14,7 @@
           "url": "https://nettlefold.example/news/artifact-signing",
           "area": "Platform engineering",
           "summary": "Nettlefold Registry adds built-in artifact signing. Signatures are checked on pull, and unsigned images can be blocked by policy.",
-          "whyItMatters": "Unsigned images can be kept out of production."
+          "whyItMatters": "Signatures are checked on pull, and unsigned images can be blocked by policy."
         },
         {
           "itemId": "df256b023e20faf7",
@@ -30,7 +30,7 @@
           "url": "https://blog.quillon.example/2026/09/eval-datasets",
           "area": "AI models and tooling",
           "summary": "Quillon Evals adds shared datasets that several projects can read. Datasets are versioned, and a run records which version it used.",
-          "whyItMatters": "Eval results can be compared across projects."
+          "whyItMatters": "A run records which version of a dataset it used."
         }
       ]
     }
