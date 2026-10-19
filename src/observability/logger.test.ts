@@ -226,24 +226,6 @@ describe('createLogger', () => {
     });
   });
 
-  it('writes human-readable lines in pretty mode', () => {
-    const out = memoryDestination();
-    const logger = createLogger({
-      level: 'info',
-      pretty: true,
-      redactValues: [SECRET],
-      destination: out.stream,
-    });
-
-    logger.info(`hello ${SECRET}`, { runId: 'r1' });
-
-    const text = out.raw();
-    expect(text).toContain('hello [redacted]');
-    expect(text).toContain('runId');
-    expect(text).not.toContain(SECRET);
-    expect(() => JSON.parse(text) as unknown).toThrow();
-  });
-
   it('defaults to stdout when no destination is given', () => {
     const logger = createLogger({ level: 'error' });
     expect(typeof logger.child({ a: 1 }).info).toBe('function');

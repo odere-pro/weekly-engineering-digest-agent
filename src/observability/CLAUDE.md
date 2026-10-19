@@ -81,11 +81,10 @@ Tests sit next to each file; they inject a stream as `destination` and an in-mem
 
 ## Gotchas
 
-- `Redactor` is also used by `app/redacting.ts` (run store, deliveries), `config/load` (`redactSecrets`),
+- `Redactor` is also used by `app/redacting.ts` and `app/redaction/` (run store, deliveries), `config/load` (`redactSecrets`),
   `cli/show`, `cli/preview`, `evals/recordWeeks`: a change reaches stored records and messages.
 - The span attributes `runId` and `step` also pick the per-run logger (`scopeRuns` in `app/container.ts`).
 - `logger.test.ts` pins the line shape (ISO `time`, `level` label, `service`, no `pid`) and that `%s` in
   a message stays verbatim: call pino with the message as its only string.
 - Tracing tests must `await handle.shutdown()`; a second live tracer throws "A tracer is already active".
-- `pretty: true` needs `pino-pretty`, a dev dependency; nothing in `src` sets it.
 - Never pass prompts, answers or collected text as fields or attributes (`src/models/CLAUDE.md`).

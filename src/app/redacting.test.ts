@@ -1,7 +1,8 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
-import { knownSecrets, redactDelivery, redactStore, type FieldRules } from './redacting';
+import { describe, expect, it, vi } from 'vitest';
+import { redactDelivery, redactStore } from './redacting';
 import { createRedactor, REDACTED } from '../observability/redact';
-import type { DigestMessage, DigestView, FailureNote } from '../delivery/Delivery';
+import type { Delivery, DigestMessage, DigestView, FailureNote } from '../delivery/Delivery';
+import type { RunStore } from '../store/RunStore';
 import { makeRunRecord } from '../../test/builders';
 import { CapturingDelivery, MemoryRunStore } from '../../test/fakes';
 
@@ -10,32 +11,6 @@ const WEBHOOK_PATH = '/services/T000/B000/slack-secret-7c1e';
 const SLACK_WEBHOOK_URL = `https://hooks.slack.test${WEBHOOK_PATH}`;
 const GITHUB_TOKEN = 'ghp_github-token-82bd';
 const redactor = createRedactor([SMTP_PASSWORD, SLACK_WEBHOOK_URL, GITHUB_TOKEN, WEBHOOK_PATH]);
-
-describe('knownSecrets', () => {
-  it('lists every secret value that is set', () => {
-    const secrets = knownSecrets({ SMTP_PASSWORD, GITHUB_TOKEN });
-
-    expect(secrets).toEqual([SMTP_PASSWORD, GITHUB_TOKEN]);
-  });
-
-  it('leaves out secrets that are empty or missing', () => {
-    expect(knownSecrets({ SMTP_PASSWORD: '', GITHUB_TOKEN: undefined })).toEqual([]);
-    expect(knownSecrets({})).toEqual([]);
-  });
-
-  it('adds the path of the Slack webhook, which is the secret part of the URL', () => {
-    const secrets = knownSecrets({ SLACK_WEBHOOK_URL });
-
-    expect(secrets).toEqual([SLACK_WEBHOOK_URL, WEBHOOK_PATH]);
-  });
-
-  it('copes with a webhook that is not a URL, and with one that has no path', () => {
-    expect(knownSecrets({ SLACK_WEBHOOK_URL: 'not a url' })).toEqual(['not a url']);
-    expect(knownSecrets({ SLACK_WEBHOOK_URL: 'https://hooks.slack.test' })).toEqual([
-      'https://hooks.slack.test',
-    ]);
-  });
-});
 
 describe('redactStore', () => {
   function setup() {
@@ -157,6 +132,57 @@ describe('redactStore', () => {
     expect(inner.isLocked).toBe(true);
     await lock.release();
     expect(inner.isLocked).toBe(false);
+  });
+});
+
+describe('redactStore wraps every member of the run store', () => {
+  interface MemberCase {
+    call: (store: RunStore) => Promise<unknown>;
+    /** True when the member writes: the store must get no secret. The others go straight through. */
+    redacts: boolean;
+  }
+  // A member added to `RunStore` is a type error here until it has a case: say how it is wrapped.
+  const MEMBERS: Record<keyof RunStore, MemberCase> = {
+    acquireLock: { call: (store) => store.acquireLock('2026-W42'), redacts: false },
+    hasSentDigest: { call: (store) => store.hasSentDigest('2026-W42'), redacts: false },
+    saveArtifact: {
+      call: (store) => store.saveArtifact('2026-W42', 'error.json', `token ${GITHUB_TOKEN}`),
+      redacts: true,
+    },
+    readArtifact: { call: (store) => store.readArtifact('2026-W42', 'digest.md'), redacts: false },
+    saveRunRecord: {
+      call: (store) =>
+        store.saveRunRecord(makeRunRecord({ error: { message: `leak ${SMTP_PASSWORD}` } })),
+      redacts: true,
+    },
+    getRunRecord: { call: (store) => store.getRunRecord('2026-W42'), redacts: false },
+    sentUrls: { call: (store) => store.sentUrls('2026-W42', 2), redacts: false },
+    listRuns: { call: (store) => store.listRuns(5), redacts: false },
+    prune: { call: (store) => store.prune('2026-W42', 8), redacts: false },
+  };
+
+  it.each(Object.keys(MEMBERS) as (keyof RunStore)[])(
+    '%s reaches the store once, and a write reaches it without a secret',
+    async (member) => {
+      const inner = new MemoryRunStore();
+      const reached = vi.spyOn(inner, member);
+      const { call, redacts } = MEMBERS[member];
+
+      await call(redactStore(inner, redactor));
+
+      expect(reached).toHaveBeenCalledOnce();
+      const received = JSON.stringify(reached.mock.calls);
+      for (const secret of [SMTP_PASSWORD, GITHUB_TOKEN]) {
+        expect(received).not.toContain(secret);
+      }
+      expect(received.includes(REDACTED)).toBe(redacts);
+    },
+  );
+
+  it('wraps nothing else: the store has exactly the members of the port', () => {
+    const wrapped = redactStore(new MemoryRunStore(), redactor);
+
+    expect(Object.keys(wrapped).sort()).toEqual(Object.keys(MEMBERS).sort());
   });
 });
 
@@ -320,11 +346,46 @@ describe('redactDelivery', () => {
   });
 });
 
-describe('FieldRules', () => {
-  it('needs a rule for every field, optional ones too, so a new field does not compile without one', () => {
-    const keep = (value: string): string => value;
+describe('redactDelivery wraps every member of the channel', () => {
+  // A member added to `Delivery` is a type error here until it has a check: say how it is wrapped.
+  const MEMBERS: Record<
+    keyof Delivery,
+    (wrapped: Delivery, inner: CapturingDelivery) => Promise<void>
+  > = {
+    id: (wrapped) => {
+      expect(wrapped.id).toBe('slack');
+      return Promise.resolve();
+    },
+    sendDigest: async (wrapped, inner) => {
+      await wrapped.sendDigest({
+        weekId: '2026-W42',
+        subject: `Digest ${SMTP_PASSWORD}`,
+        markdown: `Token ${GITHUB_TOKEN}`,
+      });
 
-    expectTypeOf({ weekId: keep, step: keep, message: keep }).toExtend<FieldRules<FailureNote>>();
-    expectTypeOf({ weekId: keep, message: keep }).not.toExtend<FieldRules<FailureNote>>();
+      expect(inner.digests).toHaveLength(1);
+      expect(inner.digests[0]).toEqual({
+        weekId: '2026-W42',
+        subject: `Digest ${REDACTED}`,
+        markdown: `Token ${REDACTED}`,
+      });
+    },
+    sendFailure: async (wrapped, inner) => {
+      await wrapped.sendFailure({ weekId: '2026-W42', message: `Refused ${SMTP_PASSWORD}` });
+
+      expect(inner.failures).toEqual([{ weekId: '2026-W42', message: `Refused ${REDACTED}` }]);
+    },
+  };
+
+  it.each(Object.keys(MEMBERS) as (keyof Delivery)[])('%s is wrapped', async (member) => {
+    const inner = new CapturingDelivery('slack');
+
+    await MEMBERS[member](redactDelivery(inner, redactor), inner);
+  });
+
+  it('wraps nothing else: the channel has exactly the members of the port', () => {
+    const wrapped = redactDelivery(new CapturingDelivery(), redactor);
+
+    expect(Object.keys(wrapped).sort()).toEqual(Object.keys(MEMBERS).sort());
   });
 });

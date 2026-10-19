@@ -25,7 +25,8 @@ import { createTracer } from '../observability/tracing';
 import { systemClock } from '../shared/clock';
 import { DigestError, errorMessage } from '../shared/errors';
 import type { LogFields, Logger, Tracer } from '../shared/telemetry';
-import { knownSecrets, redactDelivery, redactStore } from './redacting';
+import { redactDelivery, redactStore } from './redacting';
+import { knownSecrets } from './redaction/knownSecrets';
 import { withDeliveryRetry } from './retryingDelivery';
 import { deferTracer, traceModel } from './tracedModel';
 

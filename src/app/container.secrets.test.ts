@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createClefPolicyGuard, createClefRubricGuard } from '../guards/adapters/clefPolicy';
 import { createGraniteGroundednessGuard, createGraniteRiskGuard } from '../guards/adapters/granite';
-import { DeliveryError } from '../delivery/adapters/deliveryError';
+import { DeliveryError } from '../delivery/adapters/errors/deliveryError';
 import { createMarkdownFileDelivery } from '../delivery/adapters/markdownFile';
 import { createSlackDelivery } from '../delivery/adapters/slack';
 import { createSmtpDelivery } from '../delivery/adapters/smtp';

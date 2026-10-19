@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { deferTracer, traceModel } from './tracedModel';
-import type { DecideRequest, GenerateRequest } from '../models/ModelProvider';
+import type { DecideRequest, GenerateRequest, ModelProvider } from '../models/ModelProvider';
 import type { LogFields, Tracer } from '../shared/telemetry';
 import { FakeModelProvider, yesNoAnswers } from '../../test/fakes';
 
@@ -187,6 +187,42 @@ describe('traceModel', () => {
     await model.generate(generateRequest);
 
     expect(inner.generateCalls).toHaveLength(1);
+  });
+});
+
+describe('traceModel wraps every member of the provider', () => {
+  interface MemberCase {
+    call: (model: ModelProvider) => Promise<unknown>;
+    /** The span the member opens; none for a member that is passed through. */
+    span: string | undefined;
+  }
+  // A member added to `ModelProvider` is a type error here until it has a case: traced or not.
+  const MEMBERS: Record<keyof ModelProvider, MemberCase> = {
+    generate: { call: (model) => model.generate(generateRequest), span: 'model.generate' },
+    decide: { call: (model) => model.decide(decideRequest), span: 'model.decide' },
+    health: { call: (model) => model.health(), span: undefined },
+  };
+
+  it.each(Object.keys(MEMBERS) as (keyof ModelProvider)[])(
+    '%s reaches the provider and is traced as it should be',
+    async (member) => {
+      const { model, inner, spans } = setup();
+      const { call, span } = MEMBERS[member];
+      const direct = await call(inner);
+
+      const traced = await call(model);
+
+      expect(traced).toEqual(direct);
+      expect(spans.map((each) => each.name)).toEqual(
+        span === undefined ? [] : [span, 'model.usage'],
+      );
+    },
+  );
+
+  it('wraps nothing else: the provider has exactly the members of the port', () => {
+    const { model } = setup();
+
+    expect(Object.keys(model).sort()).toEqual(Object.keys(MEMBERS).sort());
   });
 });
 
