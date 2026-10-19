@@ -11,9 +11,11 @@ import { renderDigest } from '../src/render/markdown';
 import type { DigestDeps, RunOptions, RunResult } from '../src/digest/runDigest';
 import type { GuardCheckId } from '../src/guards/guardVerdict';
 import type { Item } from '../src/domain/schemas';
+import type { DecisionAnswer } from '../src/models/ModelProvider';
 import { collectStep } from '../src/sources/collect';
 import { makeConfig, makeDigest, makeItem, makeRunRecord } from '../test/builders';
 import {
+  CapturingDelivery,
   FakeInputGuard,
   FakeModelProvider,
   FakeOutputGuard,
@@ -78,9 +80,22 @@ export async function writeStandardWeeks(root: string): Promise<[Item[], Item[]]
   return [w40, w41];
 }
 
+/** Like the standard weeks, but a 4-item digest hits 3 of 5 labels in week 41 and leaks item 2. */
+export async function writeRecallWeeks(root: string): Promise<[Item[], Item[]]> {
+  const w40 = await writeWeek(root, WEEK_40, '2026-09-30T09:00:00Z');
+  const w41 = await writeWeek(root, WEEK_41, '2026-10-07T09:00:00Z', {
+    include: [1, 3, 4, 5, 6],
+    exclude: [2],
+  });
+  return [w40, w41];
+}
+
 export interface FakeRunOptions {
-  /** How many of the kept items the fake digest links to, per week if given a function. Default 4. */
-  take?: number | ((weekId: string) => number);
+  /**
+   * How many of the kept items the fake digest links to, per week if given a function (it also
+   * gets the 1-based number of the call). Default 4.
+   */
+  take?: number | ((weekId: string, callNumber: number) => number);
   /** Guards the record reports as switched off. */
   disabledGuards?: GuardCheckId[];
   /** Items added to the digest that nobody collected: a link problem. */
@@ -120,7 +135,8 @@ export function fakeRunDigest(calls: Call[], opts: FakeRunOptions = {}): EvalDep
       const verdicts = await Promise.all(deps.inputGuards.map((g) => g.checkItem(item)));
       if (!verdicts.some((v) => v.flagged)) kept.push(item);
     }
-    const take = typeof opts.take === 'function' ? opts.take(weekId) : (opts.take ?? 4);
+    const take =
+      typeof opts.take === 'function' ? opts.take(weekId, calls.length) : (opts.take ?? 4);
     const picked = [...kept.slice(0, take), ...(opts.strangers ?? [])];
     const canned = renderDigest(makeDigest(picked, { weekId }), { disabledGuards: [] });
     const markdown = opts.markdownFor ? opts.markdownFor(weekId, calls.length) : canned;
@@ -156,32 +172,68 @@ export interface AppFixture {
   handle: AppHandle;
   close: ReturnType<typeof vi.fn>;
   deps: DigestDeps;
+  /** The default model; an app built with its own `model` override does not use it. */
+  model: FakeModelProvider;
+  store: MemoryRunStore;
+  delivery: CapturingDelivery;
 }
 
-/** A fake app. The input guard flags any item whose title starts with IGNORE. */
+/** What the fake classifier answers per item title: its area and relevance level (0 to 3). */
+export type ClassifyTable = Record<string, { area: string; level: number }>;
+
+/** Decide answers for the classify questions; a title not in the table is area A, level 0. */
+function classifyAnswers(table: ClassifyTable): (state: string) => Record<string, DecisionAnswer> {
+  return (state) => {
+    const title = /Title: (.+)/.exec(state)?.[1] ?? '';
+    const row = table[title] ?? { area: 'AI models and tooling', level: 0 };
+    return {
+      relevance: {
+        type: 'score',
+        level: row.level,
+        score: row.level / 3,
+        probabilities: {},
+        confidence: 1,
+      },
+      area: { type: 'choice', choice: row.area, probabilities: {}, confidence: 1 },
+      hype: { type: 'yesno', probability: 0 },
+      minorRelease: { type: 'yesno', probability: 0 },
+    };
+  };
+}
+
+/**
+ * A fake app. The input guard flags any item whose title starts with IGNORE. `classify` scripts
+ * the default model's classifier answers by item title.
+ */
 export function makeApp(
-  overrides: Partial<DigestDeps> = {},
+  overrides: Partial<DigestDeps> & { classify?: ClassifyTable } = {},
   profile: DigestDeps['profile'] = PROFILES.quality,
 ): AppFixture {
+  const { classify = {}, ...rest } = overrides;
+  const model = new FakeModelProvider({
+    decide: (request) => classifyAnswers(classify)(request.state),
+  });
+  const store = new MemoryRunStore();
+  const delivery = new CapturingDelivery();
   const deps: DigestDeps = {
     config: makeConfig({ guards: { input: { mode: 'all' }, output: { enabled: false } } }),
     profile,
-    model: new FakeModelProvider(),
+    model,
     fetchers: {},
     inputGuards: [
       new FakeInputGuard('clefPolicy', (item) => item.title.startsWith('IGNORE')),
       new FakeInputGuard('graniteRisk'),
     ],
     outputGuards: [new FakeOutputGuard('graniteGroundedness'), new FakeOutputGuard('clefRubric')],
-    deliveries: [],
-    store: new MemoryRunStore(),
+    deliveries: [delivery],
+    store,
     logger: noopLogger,
     tracer: noopTracer,
     clock: fixedClock('2030-01-01T00:00:00Z'),
-    ...overrides,
+    ...rest,
   };
   const close = vi.fn(() => Promise.resolve());
-  return { handle: { deps, close }, close, deps };
+  return { handle: { deps, close }, close, deps, model, store, delivery };
 }
 
 /** A clock that moves `stepMs` on every reading. */
