@@ -15,7 +15,9 @@ import type { Source } from '../src/domain/schemas';
 import { systemClock, type Clock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
 import type { SourceResponse } from './schema';
-import { EVERYTHING, loadSourceRecordings, serveRecording } from './sourceEval';
+import { loadSourceRecordings } from './sourceConformance/recordings/loadSourceRecordings';
+import { EVERYTHING } from './sourceConformance/replayFetch/fetchFromRecording';
+import { serveRecording } from './sourceConformance/replayFetch/serveRecording';
 
 export const RECORD_TIMEOUT_MS = 20_000;
 const DEFAULT_OUT_DIR = fileURLToPath(new URL('./sources', import.meta.url));

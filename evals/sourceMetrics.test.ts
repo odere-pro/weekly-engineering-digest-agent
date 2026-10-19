@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GATES, assembleMetrics, sourceParse, sourceSummaryFill } from './metrics';
 import { METRIC_IDS, ScorecardSchema } from './schema';
-import type { SourceResult } from './sourceEval';
+import type { SourceResult } from './sourceConformance/conformance/types';
 
 function result(sourceId: string, overrides: Partial<SourceResult> = {}): SourceResult {
   return {

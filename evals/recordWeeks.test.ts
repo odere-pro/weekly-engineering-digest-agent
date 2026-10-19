@@ -3,26 +3,18 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { check, resolveConfig } from 'prettier';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  RECORDED_ITEMS_PER_SOURCE,
-  THIN_WEEK_MIN_ITEMS,
-  bucketByWeek,
-  recordWeeks,
-  renderCandidates,
-  resolveSources,
-  type RecordWeeksDeps,
-} from './recordWeeks';
+import { RECORDED_ITEMS_PER_SOURCE, recordWeeks, type RecordWeeksDeps } from './recordWeeks';
+import { THIN_WEEK_MIN_ITEMS } from './record/report/weekLine';
+import { CONFIG_FIXTURES, feedA, itemAt, itemsOnDay, repoB } from './record/__fixtures__/recordKit';
 import { createGithubReleasesFetcher } from '../src/sources/adapters/githubReleases';
 import { createRssFetcher } from '../src/sources/adapters/rss';
 import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
-import type { LoadOptions } from '../src/config/load';
 import { ItemSchema, type Item, type Source, type SourceKind } from '../src/domain/schemas';
 import type { SourceFetcher } from '../src/sources/SourceFetcher';
 import { DigestError } from '../src/shared/errors';
 import { fixedClock } from '../src/shared/clock';
 import type { Logger } from '../src/shared/telemetry';
 import { FakeSourceFetcher } from '../test/fakes/FakeSourceFetcher';
-import { makeItem } from '../test/builders';
 
 // The real factories, with a spy on each: a test can see the options the recorder gave them and
 // swap the fetcher for one that makes no request.
@@ -42,15 +34,6 @@ const DAY_MS = 86_400_000;
 const NOW = '2021-01-20T12:00:00Z';
 const RECORDED_WEEKS = ['2020-W50', '2020-W51', '2020-W52', '2020-W53', '2021-W01', '2021-W02'];
 
-const fixtures = join(import.meta.dirname, '..', 'test', 'fixtures', 'config');
-const feedA: Source = { id: 'feed-a', kind: 'rss', url: 'https://a.example.com/feed.xml' };
-const repoB: Source = {
-  id: 'repo-b',
-  kind: 'github',
-  url: 'https://github.com/example/repo-b',
-  maxItems: 5,
-};
-
 let outDir: string;
 
 beforeEach(async () => {
@@ -60,17 +43,6 @@ beforeEach(async () => {
 afterEach(async () => {
   await rm(outDir, { recursive: true, force: true });
 });
-
-function itemAt(publishedAt: string, overrides: Partial<Item> = {}): Item {
-  return makeItem({ sourceId: feedA.id, publishedAt, ...overrides });
-}
-
-/** `count` distinct items spread over the day starting at `isoDay` (YYYY-MM-DD). */
-function itemsOnDay(isoDay: string, count: number, overrides: Partial<Item> = {}): Item[] {
-  return Array.from({ length: count }, (_, i) =>
-    itemAt(`${isoDay}T${String(i % 24).padStart(2, '0')}:30:00Z`, overrides),
-  );
-}
 
 interface Run {
   returned: string[];
@@ -103,148 +75,6 @@ async function run(
 
 const readItems = async (week: string): Promise<Item[]> =>
   ItemSchema.array().parse(JSON.parse(await readFile(join(outDir, week, 'items.json'), 'utf8')));
-
-describe('bucketByWeek', () => {
-  it('assigns items to ISO weeks across a year boundary', () => {
-    const sunday = itemAt('2020-12-27T23:59:59Z');
-    const mondayW53 = itemAt('2020-12-28T00:00:00Z');
-    const sundayW53 = itemAt('2021-01-03T23:59:59Z');
-    const mondayW01 = itemAt('2021-01-04T00:00:00Z');
-
-    const buckets = bucketByWeek(
-      [sunday, mondayW53, sundayW53, mondayW01],
-      ['2020-W52', '2020-W53', '2021-W01'],
-    );
-
-    expect(buckets.get('2020-W52')).toEqual([sunday]);
-    expect(buckets.get('2020-W53')).toEqual([mondayW53, sundayW53]);
-    expect(buckets.get('2021-W01')).toEqual([mondayW01]);
-  });
-
-  it('puts the last days of a calendar year into week 01 of the next ISO year', () => {
-    const item = itemAt('2024-12-30T08:00:00Z');
-
-    const buckets = bucketByWeek([item], ['2024-W52', '2025-W01']);
-
-    expect(buckets.get('2025-W01')).toEqual([item]);
-    expect(buckets.get('2024-W52')).toEqual([]);
-  });
-
-  it('keeps every requested week, drops other weeks and keeps the input order', () => {
-    const later = itemAt('2021-01-06T10:00:00Z');
-    const earlier = itemAt('2021-01-05T10:00:00Z');
-    const outside = itemAt('2021-02-01T10:00:00Z');
-
-    const buckets = bucketByWeek([later, outside, earlier], ['2021-W01', '2021-W02']);
-
-    expect([...buckets.keys()]).toEqual(['2021-W01', '2021-W02']);
-    expect(buckets.get('2021-W01')).toEqual([later, earlier]);
-    expect(buckets.get('2021-W02')).toEqual([]);
-  });
-});
-
-describe('renderCandidates', () => {
-  it('lists each item as a numbered entry with id, source, title, URL and summary', () => {
-    const first = itemAt('2021-01-05T10:00:00Z', {
-      id: 'aaaa1111bbbb2222',
-      title: 'Ollama 0.5 adds tool calling',
-      url: 'https://example.com/ollama-0-5',
-      summary: 'Streaming tool calls land.',
-    });
-    const second = itemAt('2021-01-04T09:00:00Z', {
-      id: 'cccc3333dddd4444',
-      sourceId: 'repo-b',
-      kind: 'github',
-      title: 'v1.2.0',
-      url: 'https://github.com/example/repo-b/releases/tag/v1.2.0',
-      summary: 'Bug fixes.',
-    });
-
-    const markdown = renderCandidates('2021-W01', [first, second]);
-
-    expect(markdown.startsWith('# Candidates: 2021-W01\n')).toBe(true);
-    expect(markdown).toContain('2 items');
-    expect(markdown).toContain('1. **Ollama 0.5 adds tool calling**');
-    expect(markdown).toContain('2. **v1.2.0**');
-    expect(markdown).toContain('- id: `aaaa1111bbbb2222`');
-    expect(markdown).toContain('- source: feed-a, published 2021-01-05');
-    expect(markdown).toContain('- source: repo-b, published 2021-01-04');
-    expect(markdown).toContain('- url: https://example.com/ollama-0-5');
-    expect(markdown).toContain('- summary: Streaming tool calls land.');
-    expect(markdown.indexOf('1. **Ollama')).toBeLessThan(markdown.indexOf('2. **v1.2.0'));
-    expect(markdown.endsWith('\n')).toBe(true);
-  });
-
-  it('cuts the summary to 200 characters and keeps each entry on single lines', () => {
-    const item = itemAt('2021-01-05T10:00:00Z', {
-      title: 'A title\nwith a   line break',
-      summary: `${'word '.repeat(100)}\nsecond line`,
-    });
-
-    const markdown = renderCandidates('2021-W01', [item]);
-
-    const summaryLine = markdown.split('\n').find((line) => line.startsWith('   - summary: '));
-    expect(summaryLine).toBeDefined();
-    expect((summaryLine ?? '').slice('   - summary: '.length).length).toBeLessThanOrEqual(200);
-    expect(summaryLine).toMatch(/\.\.\.$/);
-    expect(markdown).toContain('1. **A title with a line break**');
-  });
-
-  it('marks items without a title or summary', () => {
-    const markdown = renderCandidates('2021-W01', [
-      itemAt('2021-01-05T10:00:00Z', { title: '', summary: '' }),
-    ]);
-
-    expect(markdown).toContain('1. **(untitled)**');
-    expect(markdown).toContain('- summary: (none)');
-  });
-
-  it('says so when the week has no items', () => {
-    const markdown = renderCandidates('2021-W01', []);
-
-    expect(markdown).toContain('No items were recorded for this week.');
-  });
-});
-
-describe('resolveSources', () => {
-  const noEnv = (overrides: LoadOptions = {}): LoadOptions => ({
-    envPath: join(fixtures, 'missing.env'),
-    processEnv: {},
-    platform: { os: 'darwin', arch: 'arm64' },
-    ...overrides,
-  });
-
-  it('falls back to the default allowlist when there is no config file', async () => {
-    const resolved = await resolveSources(noEnv({ configPath: join(fixtures, 'missing.json') }));
-
-    expect(resolved.sources).toEqual(DEFAULT_SOURCES);
-    expect(resolved.githubToken).toBeUndefined();
-  });
-
-  it('uses the configured sources and the GitHub token from the environment', async () => {
-    const resolved = await resolveSources(
-      noEnv({
-        configPath: join(fixtures, 'valid.config.json'),
-        processEnv: { GITHUB_TOKEN: 'ghp_example' },
-      }),
-    );
-
-    expect(resolved.sources.map((source) => source.id)).toEqual(['example-feed']);
-    expect(resolved.githubToken).toBe('ghp_example');
-  });
-
-  it('fails when the config path cannot be checked instead of using the defaults', async () => {
-    await expect(
-      resolveSources(noEnv({ configPath: join(fixtures, 'valid.config.json', 'nested.json') })),
-    ).rejects.toThrow(/ENOTDIR/);
-  });
-
-  it('fails on an invalid config instead of silently using the defaults', async () => {
-    await expect(
-      resolveSources(noEnv({ configPath: join(fixtures, 'bad-schema.config.json') })),
-    ).rejects.toBeInstanceOf(DigestError);
-  });
-});
 
 describe('recordWeeks', () => {
   it('records the six complete ISO weeks before the current one', async () => {
@@ -406,6 +236,20 @@ describe('recordWeeks', () => {
     await expect(run({ 'feed-a': [] })).rejects.toThrow(/2021-W02[\\/]items\.json/);
   });
 
+  it('lets the other weeks finish writing before it rejects for one that failed', async () => {
+    await mkdir(join(outDir, '2021-W02'), { recursive: true });
+    await writeFile(join(outDir, '2021-W02', 'items.json'), '{"not":"a list"}');
+
+    await expect(run({ 'feed-a': [] })).rejects.toThrow(/2021-W02/);
+
+    const others = RECORDED_WEEKS.filter((week) => week !== '2021-W02');
+    for (const week of others) {
+      expect(await readdir(join(outDir, week))).toEqual(
+        expect.arrayContaining(['items.json', 'labels.json', 'candidates.md']),
+      );
+    }
+  });
+
   it('writes candidates.md for every week', async () => {
     await run({
       'feed-a': [itemAt('2021-01-12T10:00:00Z', { id: 'one', title: 'Only item' })],
@@ -464,7 +308,7 @@ describe('recordWeeks', () => {
       {},
       {
         sources: undefined,
-        config: { configPath: join(fixtures, 'missing.json'), processEnv: {} },
+        config: { configPath: join(CONFIG_FIXTURES, 'missing.json'), processEnv: {} },
       },
     );
 
@@ -517,8 +361,8 @@ describe('recordWeeks fetcher warnings', () => {
     fetchers: undefined,
     sources: undefined,
     config: {
-      configPath: join(fixtures, 'valid.config.json'),
-      envPath: join(fixtures, 'missing.env'),
+      configPath: join(CONFIG_FIXTURES, 'valid.config.json'),
+      envPath: join(CONFIG_FIXTURES, 'missing.env'),
       processEnv: { GITHUB_TOKEN: TOKEN },
       platform: { os: 'darwin', arch: 'arm64' },
     },
