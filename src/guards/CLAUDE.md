@@ -62,8 +62,9 @@ flowchart TD
 | `guardQuestions.ts`                                  | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
 | `adapters/ruleInjection.ts`, `ruleInjectionRules.ts` | The rule guard and its `RULES` table                                                                            |
 | `adapters/clefPolicy.ts`, `granite.ts`               | The decision-model guards; the Granite guards, `GRANITE_CRITERIA`                                               |
+| `adapters/CLAUDE.md`                                 | The five guards: model roles, thresholds, how a verdict is made, recorded fixtures                              |
 
-Tests sit next to the code; `adapters/__fixtures__/granite/` holds 7 replies recorded live.
+Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings of live Granite calls.
 
 ## Gotchas
 

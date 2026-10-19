@@ -1,0 +1,84 @@
+# Guard adapters
+
+> The five guards behind the `Guard` port. Input (`InputGuard.checkItem`): `createRuleInjectionGuard`,
+> `createClefPolicyGuard`, `createGraniteRiskGuard`. Output (`OutputGuard.checkDraft`):
+> `createGraniteGroundednessGuard`, `createClefRubricGuard`. Each answers with one `GuardVerdict`.
+
+## Context
+
+```mermaid
+flowchart LR
+  container["app/container"] -->|"createXGuard(options)"| adapters["adapters: rule, clef, granite"]:::focus
+  cfg[("config: guardFlag, focusAreas, sources")] -.-> container
+  steps["guardInput, guardOutput"] -.->|"checkItem, checkDraft"| gp[[Guard]] -.-> adapters
+  adapters -.->|"decide guardPolicy, generate guardRisk"| mp[[ModelProvider]]
+  classDef focus stroke-width:3px
+```
+
+## Flow
+
+```mermaid
+flowchart TD
+  subject["Item (input) or Draft with its sources (output)"] --> kind{"which guard?"}
+  kind -->|ruleInjection| rule["RULES over title, summary and URL. No model call"]
+  kind -->|"clefPolicy, clefRubric"| clef["decide, role guardPolicy: yes/no questions"]
+  kind -->|"graniteRisk, graniteGroundedness"| gran["generate, role guardRisk, temperature 0"]
+  rule -->|"a rule matched"| flag["GuardVerdict flagged: true, with reason"]
+  clef -->|"any P(yes) above thresholds.guardFlag"| flag
+  clef -->|"answer missing or outside 0..1"| err["DigestError: the run fails"]
+  gran -->|"parseGraniteScore: yes, or unreadable"| flag
+  rule & clef & gran -->|otherwise| pass["GuardVerdict flagged: false"]
+```
+
+- A verdict is `{ check, flagged, probability?, reason? }`. Clef always sets `probability` (the
+  highest P(yes)) and a reason `label (0.xyz)` per question over the threshold. The others give only
+  a reason: rule ids, `granite4.1-guardian flagged jailbreak`, item ids (cut to 40 characters: they
+  come from writer output) or `unparsable guard output`.
+- `graniteRisk` asks `jailbreak`, then `harm`, and stops at the first yes or unreadable reply.
+  `graniteGroundedness` makes one `item` call per digest item (its claim text against its own source
+  item), then one `headline` call against every source cited. An item with no source flags the draft.
+- A guard is on only if `planGuards` finds its section and check on; `buildApp` builds all five
+  anyway. An off or missing check goes to `disabledChecks`: `run.json` `disabledGuards` and the
+  footer. A role whose checks are all off needs no model (`modelsInUse`), so doctor skips its tag.
+
+## Rules
+
+- Clef asks `decide` on `guardPolicy`, Granite `generate` on `guardRisk`, the rule guard no model.
+  `unusedGuardRoles` (`config/profiles.ts`) relies on this map to pick the tags doctor needs.
+- Only Clef reads a threshold: `thresholds.guardFlag` (0.35) as `flagThreshold`, flag when P(yes) is
+  above it, one value for both guards. A value outside 0..1 throws at creation, as NaN never flags.
+  Granite gives no probability. `focusAreas` only words the rubric's off-task question.
+- A Granite call is the criterion plus `UNTRUSTED_DATA_RULE` as the system prompt and the wrapped
+  data as the user message: the rule in the judged message made groundedness worse. Text comes
+  from `canonicalClaimText` and `canonicalHeadlineText`: the bytes stay those of the recordings.
+- The rule guard has no state. A rule is one entry in `RULES` plus a bad and a good case in
+  `ruleInjection.test.ts`. It blocks in mode `all` too, as a hit is certain: `guardInputStep` runs
+  it first as `blocking`. Known hosts: `allowedHosts` (the feed hosts) and the item's own host.
+
+## Files
+
+| File                    | Role                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `ruleInjection.ts`      | `createRuleInjectionGuard`, `RuleInjectionOptions`: the context, `RULES`, verdict  |
+| `ruleInjectionRules.ts` | `RULES` (each with the attack it catches), `RuleContext`, `RULE_IDS`, link helpers |
+| `clefPolicy.ts`         | `createClefPolicyGuard` and `createClefRubricGuard` over one `decide` call         |
+| `granite.ts`            | The two Granite guards, `GRANITE_CRITERIA`, `parseGraniteScore`                    |
+| `__fixtures__/granite/` | 9 recordings from `granite4.1-guardian:8b`: the prompts sent, the replies, verdict |
+
+`graniteRecorded.test.ts` replays the fixtures. `clefRubricContext.test.ts` runs the rubric guard
+through the real Ollama adapter (fake `fetch`): a full-size draft must fit `strands-decider` whole.
+
+## Gotchas
+
+- The abort signal never reaches a guard in a run. Clef and Granite forward `GuardCallOptions.signal`
+  (tested with one passed in), but `guardInputStep` and `guardOutputStep` call `checkItem(item)` and
+  `checkDraft(draft, sources)` with no options, their deps carry no signal, and `runChain` checks
+  the run's signal between stages only: an aborted run waits for the guard step to end.
+- `graniteRecorded.test.ts` compares the stored `system` and `prompt` with what the guard sends: a
+  new criterion, data rule, `itemGuardText` or claim text fails it until the fixtures are recorded
+  again by hand on live Ollama (no script; `recordedWith` says how). The headline call is not
+  recorded (the replay answers `no`); `granite.headline.test.ts` pins it.
+- `evals/thresholds` builds the Clef and Granite risk guards; `test/live/think.live.test.ts` imports
+  `GRANITE_CRITERIA` and `parseGraniteScore`; `app/container.model.test.ts` wraps the two Granite
+  factories. A new guard also needs `GuardCheckIdSchema`, `cli/doctor/checks/guards.ts` and, with a
+  model, `unusedGuardRoles`.
