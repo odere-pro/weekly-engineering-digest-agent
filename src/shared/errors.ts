@@ -41,14 +41,6 @@ export class FetchError extends DigestError {
   }
 }
 
-/** Thrown by Wave 0 stubs until the owning issue implements the module. */
-export class NotImplementedError extends Error {
-  constructor(issueId: string) {
-    super(`Not implemented yet (see issue ${issueId})`);
-    this.name = 'NotImplementedError';
-  }
-}
-
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }

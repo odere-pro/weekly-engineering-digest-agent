@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ExitCode } from '../domain/schemas';
 import { fixedClock, systemClock } from './clock';
-import { DigestError, FetchError, NotImplementedError, errorMessage } from './errors';
+import { DigestError, FetchError, errorMessage } from './errors';
 import { noopLogger, noopTracer } from './telemetry';
 
 describe('errors', () => {
@@ -49,10 +49,6 @@ describe('errors', () => {
       expect(error.step).toBe('collect');
       expect(error.exitCode).toBe(ExitCode.Blocked);
     });
-  });
-
-  it('NotImplementedError names the issue', () => {
-    expect(new NotImplementedError('W1-01').message).toContain('W1-01');
   });
 
   it('errorMessage handles non-errors', () => {
