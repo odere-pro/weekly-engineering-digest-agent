@@ -5,11 +5,15 @@ import { describe, expect, it } from 'vitest';
 // The tap that captures raw bodies (W8-06) serves `digest fetch` and a run's source archive: the
 // container gives the run's fetchers the archive's tap, so a week keeps what each source answered
 // (dist/<monday>/<source>/raw). Nothing else may pass one, or build a fetcher that takes one.
+// In `digest fetch` that is `sourceRun/`: the recorder (`recorder.ts`), the fetchers it is passed
+// to (`buildFetchers.ts`) and the report type that holds the entry counts (`types.ts`).
 
 const ROOT = join(import.meta.dirname, '..', '..', '..');
 const TAP_OWNERS = [
   'src/app/container.ts',
-  'src/cli/fetch/fetch.ts',
+  'src/cli/fetch/sourceRun/buildFetchers.ts',
+  'src/cli/fetch/sourceRun/recorder.ts',
+  'src/cli/fetch/sourceRun/types.ts',
   'src/sources/adapters/archive/archivingFetcher.ts',
   'src/sources/adapters/githubReleases.ts',
   'src/sources/adapters/http.ts',
@@ -21,7 +25,7 @@ const TAP_WORDS = /\b(?:tap|SourceTap|onAnswer|SourceAnswer|SourceEntries)\b/;
 /** Every module that builds a fetcher straight from an adapter. */
 const FETCHER_BUILDERS = [
   'evals/recordSources.ts',
-  'src/cli/fetch/fetch.ts',
+  'src/cli/fetch/sourceRun/buildFetchers.ts',
   'src/sources/adapters/githubReleases.ts',
   'src/sources/adapters/pipeline.ts',
   'src/sources/adapters/rss.ts',
@@ -48,7 +52,7 @@ async function sourceFiles(): Promise<{ path: string; text: string }[]> {
 }
 
 describe('the source tap', () => {
-  it('is named only by the pipeline, the HTTP reader, the fetchers, the archive and `digest fetch`', async () => {
+  it('is named only by the pipeline, the HTTP reader, the fetchers, the archive and `digest fetch` (`sourceRun/`)', async () => {
     const mentions = (await sourceFiles())
       .filter(({ text }) => TAP_WORDS.test(text))
       .map(({ path }) => path);
