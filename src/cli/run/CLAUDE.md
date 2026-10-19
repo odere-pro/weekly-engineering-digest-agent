@@ -68,7 +68,7 @@ channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured o
 
 ## Gotchas
 
-- `run.ts` is 295 lines; the cap is 300. Extract a subfolder (the summary, the dry-run copy) before
+- `run.ts` is 291 lines; the cap is 300. Extract a subfolder (the summary, the dry-run copy) before
   adding code.
 - Two adapter imports are on purpose: `markdownFileOptions`, `markdownFolder` and `digestFilePaths`
   (`delivery/adapters/markdownFile`) give the paths the channel writes to, and `DIGEST_FILE`

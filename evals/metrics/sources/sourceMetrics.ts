@@ -41,7 +41,7 @@ export function sourceParse(results: readonly SourceResult[]): Measurement {
   return { ...measurement, note };
 }
 
-/** Parsed items with a real summary (`MIN_SUMMARY_CHARS` in `sourceEval.ts`) over items parsed. */
+/** Parsed items with a real summary (`MIN_SUMMARY_CHARS` in `sourceConformance/conformance/tally.ts`) over items parsed. */
 export function sourceSummaryFill(results: readonly SourceResult[]): Measurement {
   return sourceMeasurement(
     results.map((r) => ({

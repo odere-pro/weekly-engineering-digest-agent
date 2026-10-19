@@ -22,7 +22,7 @@ swaps in the real Ollama adapter on a scripted `fetch`.
 - The run store is real (a temp dir per test); models, feeds, guards, deliveries and the clock are fakes.
 - Feed items have fixed URLs, so item ids match across worlds and processes, and are dated from `now`.
 - Decisions stay on the fake model, even in an Ollama world, unless `decideOnFake: false`.
-- Import from the file that defines a name; `harness.ts` keeps compat lines only.
+- Import from the file that defines a name; there is no `harness.ts` and no barrel.
 
 ## Files
 
@@ -34,12 +34,11 @@ swaps in the real Ollama adapter on a scripted `fetch`.
 | `harness/dataDir.ts`, `runFiles.ts`, `lock.ts` | `useDataDir`; `runFile`, `readRunJson`; `lockExists`, `writeLock`, `deadPid` |
 | `harness/recordingLogger.ts`, `runCli.ts`      | `World.logs` lines; `runCli` (exit code, stdout, stderr)                     |
 | `fakeOllama.ts`                                | A scripted Ollama `fetch`: hang, refuse, or answer per call; opens no socket |
-| `harness.ts`                                   | Compat lines for `src/scheduler/scheduler.runDigest.test.ts`                 |
 
 Seven `*.test.ts` files sit beside the kit; `dryRun.test.ts` has its own wiring and a `MemoryRunStore`.
 
 ## Gotchas
 
-- `src/scheduler/scheduler.runDigest.test.ts` imports `harness.ts`: move it to `harness/` files, then delete it.
+- `src/scheduler/scheduler.runDigest.test.ts` also uses the kit (`harness/` files): a rename there breaks it too.
 - `defaultAnswers` is keyed by `QUESTION_IDS` and `JUDGE_CRITERIA`: renaming one changes every world.
 - `TEST_TIMEOUT_MS` (15 s) covers real retry backoffs. Under load these tests flake: rerun alone.

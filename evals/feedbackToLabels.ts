@@ -30,7 +30,7 @@ const NEW_LABELS = { mustInclude: [], mustExclude: [], notes: '' };
 
 export interface FeedbackToLabelsOptions {
   readonly week: string;
-  /** The data folder (config dataDir): the week's run and feedback/ (`src/store/layout.ts`). */
+  /** The data folder (config dataDir): the week's run and feedback/ (the folder name is a literal here and in `cli/feedback/feedback.ts`). */
   readonly dataDir: string;
   /** The folder with weeks/. */
   readonly evalsDir: string;

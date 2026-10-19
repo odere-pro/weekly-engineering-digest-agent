@@ -1,4 +1,4 @@
-// RAM figures shared with `digest init` (through the bridge in ../readiness.ts) and the readiness table.
+// RAM figures shared with `digest init` (imported by `init/prompts/profile.ts`) and the readiness table.
 
 export const GIB = 1024 ** 3;
 const QUALITY_MIN_RAM_GIB = 32;

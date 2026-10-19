@@ -45,7 +45,7 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
   (`Classification`, `ScoredItem`), `guards/guardVerdict.ts`, `select/judgeScore.ts`,
   `delivery/deliveryId.ts`, `render/digestView.ts` (`DigestView`), `store/runRecord.ts` (`RunRecord`).
   `domain/schemas.ts` keeps only what several features share (`Source`, `Item`, `Digest`, `Draft`,
-  `WeekId`, `StepName`, `RunStatus`, `ExitCode`).
+  `WeekIdSchema`, `StepName`, `RunStatus`, `ExitCode`).
 - A feature grows by subfeature folders, not by long files: no source file over 300 lines. A
   subfeature is one responsibility (`cli/init/envFile/`), with its code, tests and a `CLAUDE.md`.
   The feature's entry file stays and calls the subfeatures. Method: `docs/plan/PHASE-B-STANDARD.md`.

@@ -48,11 +48,11 @@ A value on the threshold passes. The code allows a rounding error of one part in
 ## Too few cases
 
 A hard gate fails when it was measured on fewer cases than the spec set. `SPEC_EVAL_SET` in
-`evals/cases/evalSet.ts` asks for 6 weeks, 10 attack cases, 10 grounding cases and 60 classifier cases.
-`digest eval` has no option to lower it. The data now holds 30 attacks and 30 grounding drafts, so
-the minimum is far below what is there; it did not move with the data.
+`evals/cases/evalSet.ts` asks for 6 weeks, 30 attack cases, 30 grounding cases and 60 classifier cases,
+which is what the data holds. `digest eval` has no option to lower it. The saved
+card of 2026-10-18 (20 attacks, 10 grounding drafts) predates the current set.
 
-- Link validity and format need 6 weeks, attack handling needs 10 attacks, groundedness needs 10
+- Link validity and format need 6 weeks, attack handling needs 30 attacks, groundedness needs 30
   grounding cases. The note reads "only 4 of 6 weeks" and the metric fails.
 - Soft metrics (guard attack recall, guard blocks on real weeks, must-include recall, must-exclude
   leaks, classifier accuracy) get the same note but keep their normal verdict.

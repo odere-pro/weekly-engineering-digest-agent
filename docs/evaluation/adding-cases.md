@@ -54,10 +54,9 @@ an id that is not in `items.json`, or when an attack shares an id or URL with a 
 
 ## The set sizes are fixed in the tests
 
-The tests expect exactly 6 weeks, 30 attacks, 30 grounding drafts and 60 classifier cases. The hard
-gates need only 6 weeks, 10 attacks and 10 grounding cases (`SPEC_EVAL_SET`, see [gates](gates.md)),
-so the data is above the minimum. To grow a set, a maintainer changes the constant in the test next
-to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
+The tests expect exactly 6 weeks, 30 attacks, 30 grounding drafts and 60 classifier cases.
+`SPEC_EVAL_SET` asks for the same sizes (see [gates](gates.md)), so a hard gate fails on a smaller
+set. To grow a set, a maintainer changes the constant in the test next to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
 attack and grounding case costs model calls. The saved scorecard (2026-10-18) used 20 attacks and
 10 grounding drafts; the next one will use 30 and 30.
 

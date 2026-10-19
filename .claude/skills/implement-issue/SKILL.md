@@ -34,7 +34,7 @@ git branch --show-current     # must NOT be main
 ## 2. Build test-first
 
 1. Write the tests listed in the issue in the owned test files. Run them; they must fail for
-   the right reason (often `NotImplementedError`).
+   the right reason (a missing export or a wrong value).
 2. Implement the smallest code that passes. Keep the stub's exported signatures exactly.
 3. Refactor: small functions (< 50 lines), no mutation of inputs, explicit error handling,
    no `console.*` outside `src/cli`, no hardcoded thresholds (they come from config).
