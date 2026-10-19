@@ -39,13 +39,14 @@ going when these numbers were taken).
 | `guardInput`, role `guardPolicy`     | `clef:latest`            | 147   | 3,045 s (50.7 min) | 15.2 s      | 31.5 s          | 107.5 s |
 | `guardInput`, role `guardRisk`       | `granite4.1-guardian:8b` | 294   | 851 s (14.2 min)   | 2.3 s       | 5.9 s           | 9.4 s   |
 | `guardInput` in all                  |                          | 441   | 3,897 s (65 min)   |             |                 |         |
-| `classify`, role `classify`          | `clef:latest`            | 147   | not finished       | 12.7 s      |                 | 34.9 s  |
+| `classify`, role `classify`          | `clef:latest`            | 147   | not finished       | 12.2 s      | 25.3 s          | 34.9 s  |
 | process, write, output guard, select | writers, judge           |       | not measured       |             |                 |         |
 
 How to read it:
 
-- The `classify` row is a snapshot of its first 10 calls. At 13 s per item the whole step would be
-  about 32 min (an estimate: 147 times 13 s), so the writers have not started after about 1 h 40 min.
+- The `classify` row is a snapshot of its first 49 calls (737 s), taken at 22:23 UTC when the run
+  was still in this step. At 12 s per item the whole step would be about 30 min (an estimate: 147
+  times 12.2 s), so the writers have not started after about 1 h 35 min.
 - A `guardPolicy` call sends about 800 tokens and gets a decision, no text. Taking 15 s for that
   (about 55 prompt tokens per second) fits a model that does not fit in memory and is paged
   from swap. It is not proven by the log.

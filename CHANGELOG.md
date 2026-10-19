@@ -39,6 +39,9 @@ All notable changes to this project are listed here. The format follows
 - `pnpm docs:mermaid` parses every Mermaid block in tracked Markdown; `pnpm check` and CI run it.
 - `digest init` shows "Save locally" with this week's digest folder as the first, preselected
   delivery choice. It cannot be unticked: local files are always written.
+- `Progress` log lines: the input guard, the output guard and `classify` log done, total, the median
+  call and the time left every 25 items or minute, so a slow `quality` model is not an hour of
+  silence. A model call that had to load its model logs `coldStart: true`.
 
 ### Changed
 
@@ -50,6 +53,12 @@ All notable changes to this project are listed here. The format follows
 - `evals/calibrate.ts --write` saves to `<dataDir>/eval/calibration/<profile>.json`, no longer
   into the code folder `evals/calibration/`.
 - The `commit-msg` hook rejects a subject over 72 characters.
+- A call to a model the server has not answered with last gets 5 minutes more per attempt, so the
+  first call to a big model no longer times out while it loads and then runs again (the first
+  `guardPolicy` call to `clef` took 107 s with its retry on a 32 GB M1 Pro).
+- `digest init` warns about `quality` from 32 GB up to 48 GB, not only under 32 GB, and quotes what
+  was measured there: swap in use and an input guard of 65 min. `light` stays the recommendation.
+  Measured numbers: [cost and hardware](docs/overview/cost-and-hardware.md).
 - `digest init` recommends `light` and merges into an existing `.env`. The schema default is
   still `quality`.
 - `SLACK_WEBHOOK_URL` must be `https:`. A source URL with a username or password is rejected.
