@@ -87,21 +87,30 @@ describe('graniteRisk replayed from recorded replies', () => {
 });
 
 describe('graniteGroundedness replayed from recorded replies', () => {
-  it.each(['grounded-all', 'grounded-fabricated', 'grounded-subtle'])(
-    'reaches the recorded verdict for %s',
-    async (name) => {
-      const recorded = fixture(name, GroundednessFixtureSchema);
-      const model = replayModel(recorded.calls);
-      const { draft, sources } = recorded.input;
+  it.each([
+    'grounded-all',
+    'grounded-fabricated',
+    'grounded-subtle',
+    'grounded-real-w36-run1',
+    'grounded-real-w36-run3',
+  ])('reaches the recorded verdict for %s', async (name) => {
+    const recorded = fixture(name, GroundednessFixtureSchema);
+    const model = replayModel(recorded.calls);
+    const { draft, sources } = recorded.input;
 
-      const verdict = await createGraniteGroundednessGuard({ model }).checkDraft(draft, sources);
+    const verdict = await createGraniteGroundednessGuard({ model }).checkDraft(draft, sources);
 
-      expect(verdict).toEqual(recorded.verdict);
-      expect(sentPrompts(model)).toEqual(
-        recorded.calls.map(({ system, prompt }) => ({ system, prompt })),
-      );
-    },
-  );
+    expect(verdict).toEqual(recorded.verdict);
+    expect(sentPrompts(model)).toEqual(
+      recorded.calls.map(({ system, prompt }) => ({ system, prompt })),
+    );
+  });
+
+  it('passes the two real W36 drafts that the generic criterion blocked', () => {
+    for (const name of ['grounded-real-w36-run1', 'grounded-real-w36-run3']) {
+      expect(fixture(name, GroundednessFixtureSchema).verdict.flagged).toBe(false);
+    }
+  });
 
   it('catches a wrong Python version and names only the vLLM item', () => {
     const { verdict } = fixture('grounded-subtle', GroundednessFixtureSchema);

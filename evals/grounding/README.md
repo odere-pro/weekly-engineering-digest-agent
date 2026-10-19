@@ -61,3 +61,11 @@ cases on the holdout side (a dataset test checks it).
 | `grounding-28-duration-off-by-fifteen`    | Oakhurst (3rd)    | "to 60 seconds"               | To 45 seconds                                                       |
 | `grounding-29-requirement-one-minor-up`   | Pickering (1st)   | "Python 3.11 or newer"        | Python 3.10 or newer                                                |
 | `grounding-30-platform-widened`           | Quarrington (2nd) | "Linux and macOS hosts"       | Linux only; macOS is planned                                        |
+
+## Real-week controls (W11-03)
+
+Two real 2026-W36 drafts that the generic groundedness criterion blocked are clean controls too. The
+case schema needs a planted claim, so they live as recorded fixtures in
+`src/guards/adapters/__fixtures__/granite/grounded-real-w36-run1.json` and `-run3.json` and are
+replayed by `graniteRecorded.test.ts`. Cases 11 to 30 still have clean controls that Granite blocks
+on the non-planted items (20 of 20 under the item criterion as well); see the W11-03 notes.

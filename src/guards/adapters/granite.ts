@@ -38,6 +38,13 @@ export const GRANITE_CRITERIA = {
    */
   headline:
     'A text is considered ungrounded if it states a specific fact about a product or release, such as a version number, a date, a number or benchmark, a capability, a security fix or who built it, that none of the provided documents supports or that contradicts them. Editorial framing, such as naming the week, counting the releases or saying that releases are worth a look, is not a fact about a release and does not make a text ungrounded.',
+  /**
+   * Our own wording for a digest item (W11-03). Under the generic definition Granite flagged a
+   * "why it matters" line that only draws a sensible conclusion from the source ("users can sign
+   * in without a password"), on 20 of 20 clean controls with three items and on 2 of 18 real-week
+   * drafts. This one still flags every fact the source does not give, and leaves out the reasoning.
+   */
+  item: 'A text is considered ungrounded if it states a specific fact about the product or release, such as a version number, a date, a number or benchmark, a capability, a default, a requirement, a scope, a security fix or who built it, that the provided document does not support or that contradicts it. A fact that differs from the document in any detail, even by one digit or one day, is contradicted. Saying why a release matters, such as who benefits or what becomes easier, is a judgement and not a fact about the release, so it does not make a text ungrounded unless it adds such a fact.',
 } as const;
 
 const INPUT_RISKS = ['jailbreak', 'harm'] as const;
@@ -149,12 +156,7 @@ async function checkDraftGrounding(
       continue;
     }
     cited.set(source.id, source);
-    const score = await judge(
-      options,
-      'groundedness',
-      groundednessPrompt(source, entry),
-      callOptions,
-    );
+    const score = await judge(options, 'item', groundednessPrompt(source, entry), callOptions);
     if (score === undefined) findings.unparsable.push(entry.itemId);
     else if (score === 'yes') findings.ungrounded.push(entry.itemId);
   }

@@ -39,12 +39,12 @@ describe('the headline and intro criterion', () => {
     expect(headline[0]?.system).toBe(`${GRANITE_CRITERIA.headline}\n\n${UNTRUSTED_DATA_RULE}`);
   });
 
-  it('leaves every item call on the model-defined groundedness criterion', async () => {
+  it('gives every item call the item criterion, not the headline one', async () => {
     const { items } = await callsFor();
 
     expect(items).toHaveLength(2);
     for (const call of items) {
-      expect(call.system).toBe(`${GRANITE_CRITERIA.groundedness}\n\n${UNTRUSTED_DATA_RULE}`);
+      expect(call.system).toBe(`${GRANITE_CRITERIA.item}\n\n${UNTRUSTED_DATA_RULE}`);
     }
   });
 
@@ -60,7 +60,7 @@ describe('the headline and intro criterion', () => {
     expect(criterion).toMatch(/does not make a text ungrounded/i);
   });
 
-  it('is not the generic criterion, which the items still use', () => {
+  it('is not the generic criterion', () => {
     expect(GRANITE_CRITERIA.headline).not.toBe(GRANITE_CRITERIA.groundedness);
   });
 

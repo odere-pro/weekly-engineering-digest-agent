@@ -194,8 +194,8 @@ describe('createGraniteGroundednessGuard', () => {
     expect(verdict).toEqual({ check: 'graniteGroundedness', flagged: false });
     expect(model.generateCalls).toHaveLength(3);
     expect(model.generateCalls.map((call) => criterionOf(call.system))).toEqual([
-      'groundedness',
-      'groundedness',
+      'item',
+      'item',
       'headline',
     ]);
     expect(model.generateCalls.every((call) => call.role === 'guardRisk')).toBe(true);
