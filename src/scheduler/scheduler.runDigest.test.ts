@@ -13,18 +13,11 @@ import {
   type SchedulerHandle,
   type SchedulerOptions,
 } from './scheduler';
-import {
-  FRIDAY,
-  TEST_TIMEOUT_MS,
-  WEEK,
-  createWorld,
-  lockExists,
-  readRunJson,
-  runFile,
-  useDataDir,
-  writeLock,
-  type World,
-} from '../../test/integration/harness';
+import { FRIDAY, TEST_TIMEOUT_MS, WEEK } from '../../test/integration/harness/constants';
+import { createWorld, type World } from '../../test/integration/harness/world';
+import { lockExists, writeLock } from '../../test/integration/harness/lock';
+import { readRunJson, runFile } from '../../test/integration/harness/runFiles';
+import { useDataDir } from '../../test/integration/harness/dataDir';
 
 const HOUR_MS = 3_600_000;
 const dataDir = useDataDir();
