@@ -38,6 +38,12 @@ a tag sequence (England, Scotland, Wales) shows as the plain black flag, and a z
 non-joiner in Persian or Indic text becomes a space. The terminal printers use `printableLine`
 alone, so there a joined emoji prints as its parts.
 
+The input side has the same list. The `ruleInjection` guard flags a bidi override, an isolate, a
+deprecated format control (U+206A to U+206F) or a tag character anywhere in an item, and a
+zero-width character or an Arabic letter mark (U+061C) between two Latin letters. It also drops all
+of them before the phrase rules read the text, so a command split with one still matches. A real
+Arabic title keeps its letter mark. See [guards](../configuration/guards.md).
+
 ## Guards are switchable, checks are not
 
 Guards look at text before and after writing. Four ask a model; `ruleInjection` is fixed rules in

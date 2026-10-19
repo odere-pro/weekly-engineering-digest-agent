@@ -70,7 +70,8 @@ Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings 
   keys in order, not the guards built. `ruleInjection` is first, so it runs before the model
   guards. A new guard needs a key in frozen `config/schema.ts`.
 - `ruleInjection.test.ts` pins `evals/weeks` (6 weeks, 369 items) and `evals/sources` as clean and
-  needs 8 of the first 10 `evals/attacks` flagged: recording a new week changes the count.
+  needs 8 of the first 10 `evals/attacks` flagged, and `attack-31` flagged by rule alone: recording a
+  new week changes the count. A change to its character lists is checked there against all of them.
 - `graniteRecorded.test.ts` replays fixtures that store the prompts: a prompt change fails it until
   they are recorded again (live Ollama, one at a time). `guardQuestions.test.ts` pins the wording,
   e.g. that reporting a security fix is not harmful. Any question change moves verdicts: re-check

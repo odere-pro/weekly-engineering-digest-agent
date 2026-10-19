@@ -30,7 +30,7 @@ The data lives in `evals/`. The [sets index](sets/README.md) explains how the se
 | [Recorded weeks](sets/recorded-weeks.md)       | 6 real weeks of feed items with the maintainer's picks        |
 | [Stability runs](sets/stability.md)            | The same weeks replayed three times                           |
 | [Classifier cases](sets/classifier-cases.md)   | 60 labeled items, and the threshold tuning                    |
-| [Attack cases](sets/attacks.md)                | 30 fake items with injected instructions, 10 of them held out |
+| [Attack cases](sets/attacks.md)                | 31 fake items with injected instructions, 10 of them held out |
 | [Grounding cases](sets/grounding.md)           | 30 drafts with one planted false claim each, 10 held out      |
 | [Source recordings](sets/source-recordings.md) | 24 recorded feed responses with the items they must yield     |
 | [Judge and calibration](sets/judge.md)         | The rubric, the eval judge and the 10-digest grading sheet    |

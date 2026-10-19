@@ -8,7 +8,7 @@ Part of [Evaluation](README.md).
 - Models: `strands-decider:2b-mlx-bf16` (classify, guardPolicy), `granite4.1-guardian:8b` (guardRisk),
   `gemma4:e4b-mlx` (write, one writer). Eval judge `clef:latest`, not calibrated.
 - Cases: 6 weeks (2026-W36 to W41), 60 classifier, 20 attacks, 10 grounding, 24 sources. It predates
-  wave 11: the next scorecard uses 30 attacks and 30 grounding drafts, and has 17 metrics, not 16. Wave 12 adds fact carry, the 18th.
+  wave 11: the next scorecard uses 31 attacks and 30 grounding drafts, and has 17 metrics, not 16. Wave 12 adds fact carry, the 18th.
 
 ## All metrics
 

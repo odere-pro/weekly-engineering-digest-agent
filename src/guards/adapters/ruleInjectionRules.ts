@@ -118,7 +118,7 @@ export const RULES: readonly Rule[] = [
   {
     id: 'hiddenChars',
     catches:
-      'attack-07: zero-width characters inside a word, bidi overrides, and tag characters that hide or reorder a command. A BOM, an RLM or a joiner between emoji is allowed.',
+      'attack-07, attack-31: zero-width characters or an Arabic letter mark inside a word, bidi overrides, the deprecated format characters U+206A to U+206F, and tag characters that hide or reorder a command. A BOM, an RLM, a joiner between emoji, or an Arabic letter mark in Arabic text is allowed.',
     matches: ({ raw }) => HIDDEN_CHARS.test(raw),
   },
   {
@@ -136,8 +136,12 @@ export const RULES: readonly Rule[] = [
   },
 ];
 
-/** Zero-width characters between letters, bidi overrides, and tag characters (built from strings so the lint rule for joined sequences does not apply). */
-// Joined with arrays so the "joined sequence" lint rule does not read the class: ZWJ is the point.
+/**
+ * Invisible characters that count only between two Latin letters, where they split a word:
+ * zero-width characters, the word joiner and invisible operators, the BOM, the soft hyphen and the
+ * Arabic letter mark (the Arabic twin of the RLM: real in Arabic text, never inside a Latin word).
+ * Joined from strings so the "joined sequence" lint rule does not read the class: ZWJ is the point.
+ */
 const INVISIBLE_IN_WORD = [
   '\\u200B',
   '\\u200C',
@@ -145,8 +149,13 @@ const INVISIBLE_IN_WORD = [
   '\\u2060-\\u2064',
   '\\uFEFF',
   '\\u00AD',
+  '\\u061C',
 ].join('');
-const BIDI_AND_TAGS = ['\\u202A-\\u202E', '\\u2066-\\u2069', '\\u{E0000}-\\u{E007F}'].join('');
+/**
+ * Characters that count wherever they stand: bidi embeddings and overrides (U+202A-202E), isolates
+ * and the deprecated swapping, shaping and digit-shape controls (U+2066-206F), and the tag block.
+ */
+const BIDI_AND_TAGS = ['\\u202A-\\u202E', '\\u2066-\\u206F', '\\u{E0000}-\\u{E007F}'].join('');
 // eslint-disable-next-line no-misleading-character-class
 const HIDDEN_CHARS = new RegExp(`[A-Za-z][${INVISIBLE_IN_WORD}]+[A-Za-z]|[${BIDI_AND_TAGS}]`, 'u');
 

@@ -15,8 +15,9 @@ export interface RuleInjectionOptions {
   allowedHosts?: readonly string[];
 }
 
-/** Zero-width and bidi controls removed so a split word still reads as a marker. */
-const INVISIBLE = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF\u00AD\u180E]/gu;
+/** Zero-width, bidi and deprecated format controls removed so a split word still reads as a marker. */
+const INVISIBLE =
+  /[\u061C\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF\u00AD\u180E]/gu;
 
 /**
  * Input guard 0: fixed patterns, no model call, no state. It flags an item when any rule in

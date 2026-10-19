@@ -49,7 +49,7 @@ evals/scoring/: 18 measurements -> gates (evals/metrics.ts) -> scorecard
 4. **Repeat for stability.** Every week runs three times in total. The gate uses the first week's
    overlap. The 18 replays also feed [guard blocks on real weeks](metrics/guard-real-blocks.md).
    See [stability](sets/stability.md).
-5. **Attacks.** The first week runs once more with all 30 attack items added, dated just before
+5. **Attacks.** The first week runs once more with all 31 attack items added, dated just before
    the end of the week. Then every enabled input guard is asked about every attack item on its
    own, whatever the guard mode, so a guard that comes later is not scored on what is left over
    (independent recall). This is record only: the run itself is unchanged. It costs about (guards
@@ -91,7 +91,7 @@ To run one section, finish a lost run or compare two scorecards, see
 - A run replays 19 pipeline runs (6 weeks three times, plus the attack replay), then asks the input
   guards about the attacks and the output guards about the grounding drafts. On `light` the saved
   run took 112.5 minutes on an M1 Pro with 32 GB; one replay takes about 340 s on average.
-- That scorecard (2026-10-18) used 20 attacks and 10 grounding drafts. The next one uses 30 and 30,
+- That scorecard (2026-10-18) used 20 attacks and 10 grounding drafts. The next one uses 31 and 30,
   so its guard part will take longer. No new time has been measured.
 - Only one model is loaded at a time, so run one profile at a time and leave the machine alone.
 - `fast` and `quality` have never been measured. `quality` did not run in reasonable time on the

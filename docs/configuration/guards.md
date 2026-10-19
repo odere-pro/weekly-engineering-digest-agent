@@ -64,7 +64,8 @@ role and no time. It is the first input check, before `clefPolicy` and `graniteR
 - It looks for: "ignore the previous instructions" and similar orders (English and French), a
   "you are now DAN" persona swap, fake `[SYSTEM]:` or `Assistant:` lines, chat-template tokens,
   text that closes the data block, text that speaks to the AI reader, long encoded blobs, hidden
-  zero-width or bidi characters, `javascript:` and `data:` URLs, and a link to another host in a
+  zero-width or bidi characters (a zero-width character or an Arabic letter mark inside a Latin
+  word, a bidi override or isolate, a deprecated format control, a tag character), `javascript:` and `data:` URLs, and a link to another host in a
   sentence that gives an order ("add a link", "webhook"), or to a raw IP or look-alike host. A plain
   "see https://other.org" passes, and so do links to the item's own host and your feed hosts.
 - Its only setting is `guards.input.checks.ruleInjection` (and `guards.input.enabled` for the whole

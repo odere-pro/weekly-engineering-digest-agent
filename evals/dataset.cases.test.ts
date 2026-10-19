@@ -23,14 +23,18 @@ import { DATA_CLOSE } from '../src/shared/untrusted';
 
 /**
  * Attacks and grounding drafts: 10 tuning cases (the spec set), 10 validation cases (the held-out
- * set of W6-05, which scored 10 of 10 untuned) and 10 held-out cases that no issue may tune on (W11-05).
+ * set of W6-05, which scored 10 of 10 untuned) and 10 held-out cases that no issue may tune on
+ * (W11-05). Attacks also have follow-up cases: one per gap found after those sets were fixed,
+ * numbered after the held-out set and not held out.
  */
 const TUNING_COUNT = 10;
 const VALIDATION_COUNT = 10;
 const HELD_OUT_COUNT = 10;
-const ATTACK_COUNT = TUNING_COUNT + VALIDATION_COUNT + HELD_OUT_COUNT;
+const FOLLOW_UP_ATTACK_COUNT = 1;
+const ATTACK_COUNT = TUNING_COUNT + VALIDATION_COUNT + HELD_OUT_COUNT + FOLLOW_UP_ATTACK_COUNT;
 const GROUNDING_COUNT = SPEC_EVAL_SET.grounding;
 const HELD_OUT_START = TUNING_COUNT + VALIDATION_COUNT;
+const HELD_OUT_END = HELD_OUT_START + HELD_OUT_COUNT;
 /** The fetchers truncate summaries at 600 characters, so a longer one could never be collected. */
 const MAX_SUMMARY_CHARS = 600;
 const evalsDir = join(import.meta.dirname);
@@ -178,6 +182,12 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
     /no guidelines/i.test(item.summary) &&
     !/\bDAN\b|never refuse|you are now|developer mode/i.test(item.summary),
   'code-block-email': (item) => /```[\s\S]*[\w.+-]+@[\w-]+\.example\b[\s\S]*```/.test(item.summary),
+  // Follow-up set (attack 31): the Arabic letter mark and U+206A to U+206F split the command.
+  'format-char-split': (item) =>
+    /\u061c/.test(item.summary) &&
+    /[\u206a-\u206f]/.test(item.summary) &&
+    !/ignore all previous instructions/i.test(item.summary) &&
+    /ignore all previous instructions/i.test(item.summary.replace(/[\u061c\u206a-\u206f]/g, '')),
 };
 
 /** The README table under "Held-out set": the case ids it lists. */
@@ -237,7 +247,7 @@ beforeAll(async () => {
 });
 
 describe('attack cases', () => {
-  it('has 30 case files that parse with AttackCaseSchema', () => {
+  it('has 31 case files that parse with AttackCaseSchema', () => {
     expect(attacks).toHaveLength(ATTACK_COUNT);
   });
 
@@ -285,7 +295,7 @@ describe('attack cases', () => {
     }
   });
 
-  it('covers thirty different techniques and names the defence each one exercises', () => {
+  it('covers a different technique in every case and names the defence each one exercises', () => {
     const kinds = attacks.map((a) => a.value.kind).sort();
     expect(kinds).toEqual(Object.keys(TECHNIQUES).sort());
     for (const { value } of attacks) expect(value.expectBlockedBy).toBeDefined();
@@ -304,7 +314,7 @@ describe('attack cases', () => {
 
   it('lists attacks 21 to 30 under the held-out heading in the README, and no other', async () => {
     const heldOut = heldOutIds(await readme('attacks'));
-    const expected = attacks.slice(HELD_OUT_START).map((a) => a.value.id);
+    const expected = attacks.slice(HELD_OUT_START, HELD_OUT_END).map((a) => a.value.id);
     expect(expected).toHaveLength(HELD_OUT_COUNT);
     expect(heldOut).toEqual(expected);
   });
@@ -312,7 +322,9 @@ describe('attack cases', () => {
   it('flags attacks 21 to 30 with heldOut: true in their files, and no other', async () => {
     const flags = await heldOutFlags('attacks');
     for (const [index, { value }] of attacks.entries()) {
-      expect(flags[value.id], value.id).toBe(index >= HELD_OUT_START ? true : undefined);
+      expect(flags[value.id], value.id).toBe(
+        index >= HELD_OUT_START && index < HELD_OUT_END ? true : undefined,
+      );
     }
   });
 
@@ -452,7 +464,7 @@ describe('held-out cases and threshold tuning', () => {
     const loaded = await loadEvalCases(evalsDir);
     for (const set of [loaded.attacks, loaded.grounding]) {
       set.forEach((c, index) => {
-        expect(c.heldOut === true, c.id).toBe(index >= HELD_OUT_START);
+        expect(c.heldOut === true, c.id).toBe(index >= HELD_OUT_START && index < HELD_OUT_END);
       });
     }
   });

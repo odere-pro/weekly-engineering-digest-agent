@@ -33,7 +33,8 @@ is read by `loadEvalCases` in `evals/cases/loadEvalCases.ts`. Each set has its o
   guard prompt, a rule or a threshold. Do not read them while you tune. Add new cases instead. The threshold sweep keeps them on its
   holdout side, and a dataset test checks it.
   Cases `attack-11` to `attack-20` were held out once and are now a regression set. Attacks 21 to 30
-  are written by `evals/attacks/mutate.ts`. See [attacks](sets/attacks.md) and
+  are written by `evals/attacks/mutate.ts`. A gap found later gets a follow-up attack (`attack-31` on),
+  written by hand and not held out. See [attacks](sets/attacks.md) and
   [grounding](sets/grounding.md).
 
 ## What the tests check
@@ -45,7 +46,7 @@ files fail with a message that names the broken file.
 | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `evals/dataset.labels.test.ts`            | 5 unique must-include ids per week, ids exist in `items.json`, review note present       |
 | `evals/dataset.classifierCases.test.ts`   | 60 cases, whole relevance 0 to 3, area known, balance, real items unchanged              |
-| `evals/dataset.cases.test.ts`             | 30 attacks and 30 grounding drafts: technique, uniqueness, README rows, `heldOut`, hosts |
+| `evals/dataset.cases.test.ts`             | 31 attacks and 30 grounding drafts: technique, uniqueness, README rows, `heldOut`, hosts |
 | `evals/dataset.sources.test.ts`           | every default source has a recording, `reviewed: true`, fetcher output matches           |
 | `evals/schema.test.ts`, `runEval.test.ts` | the zod schemas and the loader (duplicate ids, items outside their week)                 |
 
@@ -54,11 +55,11 @@ an id that is not in `items.json`, or when an attack shares an id or URL with a 
 
 ## The set sizes are fixed in the tests
 
-The tests expect exactly 6 weeks, 30 attacks, 30 grounding drafts and 60 classifier cases.
-`SPEC_EVAL_SET` asks for the same sizes (see [gates](gates.md)), so a hard gate fails on a smaller
-set. To grow a set, a maintainer changes the constant in the test next to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
+The tests expect exactly 6 weeks, 31 attacks (30 plus one follow-up case), 30 grounding drafts and 60
+classifier cases. `SPEC_EVAL_SET` asks for 6, 30, 30 and 60 (see [gates](gates.md)), so a hard gate
+fails on a smaller set; the follow-up attack is extra. To grow a set, a maintainer changes the constant in the test next to the data. A bigger set also makes `digest eval` slower: each week costs three replays, and every
 attack and grounding case costs model calls. The saved scorecard (2026-10-18) used 20 attacks and
-10 grounding drafts; the next one will use 30 and 30.
+10 grounding drafts; the next one will use 31 and 30.
 
 ## After you add data
 

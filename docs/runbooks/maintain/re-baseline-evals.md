@@ -14,7 +14,7 @@ baseline matches what the code does today.
 - After you [add an eval case](add-eval-case-from-a-bad-week.md): old scorecards measured a
   smaller set and no longer compare. The saved scorecard (2026-10-18) predates wave 11: it has 16
   metrics, 20 attacks and 10 grounding drafts, and measured the classifier the old way. The next
-  full run is the first with 18 metrics (guard blocks on real weeks and fact carry), 30 and 30 cases, the
+  full run is the first with 18 metrics (guard blocks on real weeks and fact carry), 31 and 30 cases, the
   rule guard on and the within-one classifier measure, so it is a new baseline, not a like-for-like
   repeat.
 - To just look at the numbers once, use [Run evals](../run/run-evals.md).
@@ -23,7 +23,7 @@ baseline matches what the code does today.
 
 - A maintainer on a clone (this edits files that are committed), on a quiet machine with the
   profile's models pulled. `light` took about 110 minutes on the last full run; the data has since
-  grown to 30 attacks and 30 grounding drafts, so allow longer. Only `light` has a baseline.
+  grown to 31 attacks and 30 grounding drafts, so allow longer. Only `light` has a baseline.
 - `pnpm check` passes first, so a red scorecard is not a broken build.
 - A config without `models.writers`, so the writers are the profile's own.
 - Know today's files: `ls evals/scorecards`. The name is `<UTC date>-<profile>.json`.
