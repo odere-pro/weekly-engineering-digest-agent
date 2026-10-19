@@ -23,7 +23,8 @@ channel. Use it when the week already has a sent digest, or when a resume is ref
 - You accept that every channel gets a second digest. Tell the readers first.
 - It is the same ISO week as the run you want to replace. `digest run` takes the current week
   in `schedule.timeZone` and has no option for another one.
-- Copy `data/runs/<week>/` to a place outside `data/runs/` if you may want the old digest back.
+- Copy `dist/<monday>/` (the run folder and the source data) to a place outside `dist/` if you may
+  want the old digest back.
 
 ## Steps
 
@@ -78,7 +79,7 @@ channel. If the summary says `Kept the sent run record`, the old digest stands.
 ## Roll back
 
 A message that was sent cannot be recalled. If the new run replaced the files and you want the
-old ones, copy the saved run folder back into `data/runs/` while no run is going. Nothing else
+old ones, copy the saved folder back to `dist/<monday>/` while no run is going. Nothing else
 needs undoing.
 
 ## Troubleshooting

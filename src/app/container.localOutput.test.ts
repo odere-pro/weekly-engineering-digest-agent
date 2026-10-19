@@ -8,6 +8,9 @@ import type { LoadedConfig } from '../config/load';
 import { resolveProfile, type Platform } from '../config/profiles';
 import { EnvSchema, SecretsSchema, type ConfigInput } from '../config/schema';
 import type { Delivery, DigestMessage, DigestView } from '../delivery/Delivery';
+import type { DigestDeps } from '../digest/runDigest';
+import type { Source } from '../domain/schemas';
+import type { FetchWindow, SourceFetcher } from '../sources/SourceFetcher';
 import { makeConfig } from '../../test/builders';
 
 // The factory still builds the real channel; the spy only records how it was called.
@@ -80,12 +83,14 @@ function markdownChannel(app: Awaited<ReturnType<typeof buildApp>>): Delivery {
 }
 
 describe('buildApp: the local output folder', () => {
-  it('writes to dist/digests when the config does not name a folder', async () => {
-    await buildApp(loadedConfig({ dataDir: join(root, 'data') }));
+  it("writes into each week's digest folder when the config does not name a folder", async () => {
+    const dataDir = join(root, 'dist');
+    const app = await buildApp(loadedConfig({ dataDir }));
 
-    expect(vi.mocked(createMarkdownFileDelivery)).toHaveBeenCalledExactlyOnceWith({
-      dir: 'dist/digests',
-    });
+    expect(vi.mocked(createMarkdownFileDelivery)).toHaveBeenCalledExactlyOnceWith({ dataDir });
+    await markdownChannel(app).sendDigest(MESSAGE);
+    // 2026-10-12 is the Monday of 2026-W42.
+    expect(await readdir(join(dataDir, '2026-10-12', 'digest'))).toEqual(['2026-W42.md']);
   });
 
   it('writes <week>.md and <week>.html into the configured folder', async () => {
@@ -126,3 +131,71 @@ describe('buildApp: the local output folder', () => {
     expect(markdown + html).not.toContain(GITHUB_TOKEN);
   });
 });
+
+describe('buildApp: what a run fetched', () => {
+  const SOURCE: Source = { id: 'example-news', kind: 'rss', url: 'https://example.com/feed.xml' };
+  const WINDOW: FetchWindow = {
+    since: new Date('2026-10-12T00:00:00Z'),
+    until: new Date('2026-10-19T08:00:00Z'),
+    maxItems: 10,
+  };
+  const FEED =
+    '<?xml version="1.0"?><rss version="2.0"><channel><title>Example</title>' +
+    '<item><title>Gateway 2.0</title><link>https://example.com/gateway</link>' +
+    '<pubDate>Wed, 14 Oct 2026 10:00:00 GMT</pubDate>' +
+    `<description>Rotate ${GITHUB_TOKEN} now.</description></item></channel></rss>`;
+
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(() =>
+        Promise.resolve(
+          new Response(FEED, { status: 200, headers: { 'content-type': 'application/rss+xml' } }),
+        ),
+      ),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("saves each source's raw answer and items in the run's Monday folder, without secrets", async () => {
+    const dataDir = join(root, 'dist');
+    const app = await buildApp(loadedConfig({ dataDir }));
+
+    const items = await app.deps.tracer.span('runDigest', { runId: '2026-W43' }, () =>
+      fetcherFor(app.deps, 'rss').fetch(SOURCE, WINDOW),
+    );
+    // The save runs in the background; closing the app waits for it.
+    await app.close();
+
+    // 2026-10-19 is the Monday of 2026-W43.
+    const dir = join(dataDir, '2026-10-19', 'example-news');
+    const raw = await readFile(join(dir, 'raw', 'response-1.xml'), 'utf8');
+    const formatted = await readFile(join(dir, 'formatted', 'items.json'), 'utf8');
+    expect(raw).toContain('<title>Gateway 2.0</title>');
+    expect(JSON.parse(formatted)).toHaveLength(1);
+    expect(items.map((item) => item.title)).toEqual(['Gateway 2.0']);
+    for (const text of [raw, formatted]) {
+      expect(text).not.toContain(GITHUB_TOKEN);
+      expect(text).toContain('[redacted]');
+    }
+  });
+
+  it('saves nothing for a fetch outside a run', async () => {
+    const dataDir = join(root, 'dist');
+    const app = await buildApp(loadedConfig({ dataDir }));
+
+    await fetcherFor(app.deps, 'rss').fetch(SOURCE, WINDOW);
+    await app.close();
+
+    expect(await readdir(root)).toEqual([]);
+  });
+});
+
+function fetcherFor(deps: DigestDeps, kind: keyof DigestDeps['fetchers']): SourceFetcher {
+  const fetcher = deps.fetchers[kind];
+  if (!fetcher) throw new Error(`no ${kind} fetcher`);
+  return fetcher;
+}

@@ -11,10 +11,11 @@
 flowchart LR
   collect["collect.ts"] -.->|"fetch(source, window, signal)"| port[[SourceFetcher]]
   port -.-> adapters:::focus
-  container["app/container"] -.->|"createRssFetcher, createGithubReleasesFetcher"| adapters
+  container["app/container"] -.->|"createRssFetcher, createGithubReleasesFetcher, createSourceArchiving"| adapters
   tools["cli/fetch, evals"] -.->|"createFetcher, SourceTap"| adapters
   adapters -.->|"GET, redirects by hand"| net[("feed hosts, api.github.com, article pages")]
   adapters -->|"Item[]"| collect
+  adapters -->|"answers via the tap, items"| archive[("dataDir/day/sourceId/raw, formatted")]
   classDef focus stroke-width:3px
 ```
 
@@ -65,6 +66,7 @@ flowchart TD
 | `githubAtomAdapter.ts`                 | The `releases.atom` adapter (about 10 releases, prereleases not flagged)            |
 | `githubRestAdapter.ts`                 | The REST adapter (20 per page, no drafts or prereleases)                            |
 | `githubShared.ts`, `githubReleases.ts` | `parseRepo`, `httpError`, `releaseEntry`; `createGithubReleasesFetcher`             |
+| `archive/`                             | Saves each source's raw answers and items per day. See `archive/CLAUDE.md`          |
 
 Tests sit next to the code. `__fixtures__/` holds recorded feeds, GitHub answers and article pages.
 
@@ -72,7 +74,8 @@ Tests sit next to the code. `__fixtures__/` holds recorded feeds, GitHub answers
 
 - Two entry types, two names: `RawEntry` (`entries/types.ts`) is what `parse` returns; `XmlEntry`
   (`feedFields.ts`) is the feed library's own entry, read through `getExtraEntryFields`.
-- `cli/fetch/fetch.tap.test.ts` scans product code: only `pipeline.ts`, `http.ts` and `cli/fetch/fetch.ts`
+- `cli/fetch/fetch.tap.test.ts` scans product code: only `pipeline.ts`, `http.ts`, `rss.ts`,
+  `githubReleases.ts`, `archive/archivingFetcher.ts`, `app/container.ts` and `cli/fetch/fetch.ts`
   may use the words `tap`, `SourceTap`, `onAnswer`, `SourceAnswer`, `SourceEntries`, and only five
-  files may call `createFetcher(`. So the tap code stays in `pipeline.ts` and `entries/` avoids
-  those words. Only `digest fetch` passes a tap; a run never does.
+  files may call `createFetcher(`. So `entries/` avoids those words. A run passes the archive's tap
+  (`archive/`) and `digest fetch` its own.

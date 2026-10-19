@@ -16,8 +16,9 @@ files you can open. It sends nothing and calls no model.
 
 ## Prerequisites
 
-- The week has a saved run with a winner: `data/runs/<week>/run.json` and `drafts.json`. Weeks
-  older than `keepWeeks` keep only `digest.md`, so they cannot be previewed.
+- The week has a saved run with a winner: `dist/<monday>/digest/run.json` and `drafts.json`
+  (`dist/2026-10-12/digest/` for `2026-W42`). Weeks older than `keepWeeks` keep only `digest.md` and
+  the delivered digest files, so they cannot be previewed.
 - `-c <path>` goes before `preview` if your config is not `digest.config.json`.
 
 ## Steps
@@ -29,7 +30,8 @@ files you can open. It sends nothing and calls no model.
    ```
 
 2. Render it. `--channel` is `markdown`, `email`, `slack` or `all` (default). `--out` is the
-   folder for the previews (default `dist/preview`).
+   folder for the previews (default `preview/` in the week's digest folder; with `--out <dir>`
+   the files go to `<dir>/<week>/`).
 
    ```bash
    pnpm digest preview 2026-W42
@@ -38,15 +40,15 @@ files you can open. It sends nothing and calls no model.
    The command prints one absolute path per file:
 
    ```text
-   /path/to/clone/dist/preview/2026-W42/digest.md
-   /path/to/clone/dist/preview/2026-W42/email.html
-   /path/to/clone/dist/preview/2026-W42/email.txt
-   /path/to/clone/dist/preview/2026-W42/slack.json
+   /path/to/clone/dist/2026-10-12/digest/preview/digest.md
+   /path/to/clone/dist/2026-10-12/digest/preview/email.html
+   /path/to/clone/dist/2026-10-12/digest/preview/email.txt
+   /path/to/clone/dist/2026-10-12/digest/preview/slack.json
    ```
 
 3. Open `email.html` in a browser, `email.txt` in an editor, and read `slack.json` (Block Kit
-   JSON). Docker: `docker compose run --rm digest preview 2026-W42`, then look in `dist/preview`
-   inside the container, so add `--out data/preview` to land the files in the mounted folder.
+   JSON). Docker: `docker compose run --rm digest preview 2026-W42`; the files land in
+   `./dist/2026-10-12/digest/preview/` on the host, because `./dist` is mounted.
 
 The files are built from `drafts.json` with today's templates, so they can differ from what was
 sent if the layout changed since. Secrets are removed and control characters stripped. For a week
@@ -57,12 +59,12 @@ words.", because `preview` does not read the record's `fallback` flag. The sent 
 ## Verify
 
 - Exit code 0 and the file paths printed.
-- `slack.json` is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('dist/preview/2026-W42/slack.json','utf8'))"`.
+- `slack.json` is valid JSON: `node -e "JSON.parse(require('fs').readFileSync('dist/2026-10-12/digest/preview/slack.json','utf8'))"`.
 - `email.html` lists the same items as `pnpm digest show 2026-W42 --part digest`.
 
 ## Roll back
 
-Nothing was sent or changed in the run folder. Delete `dist/preview/<week>/`.
+Nothing was sent or changed in the run folder. Delete the `preview/` folder of the week.
 
 ## Troubleshooting
 

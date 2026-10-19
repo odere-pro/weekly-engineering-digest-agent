@@ -53,7 +53,8 @@ describe('loadConfig', () => {
       windowDays: 7,
       topN: 5,
       schedule: { cron: '45 7 * * 1', timeZone: 'Europe/Berlin' },
-      delivery: { markdown: { dir: 'dist/digests' } },
+      dataDir: 'dist',
+      delivery: { markdown: {} },
       models: { retries: 2 },
     });
     expect(loaded.env).toEqual({ OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' });

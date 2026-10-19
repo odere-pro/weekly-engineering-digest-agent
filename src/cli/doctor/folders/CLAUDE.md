@@ -2,8 +2,8 @@
 
 ## Intent
 
-Answers one question for each folder a run writes into (`dataDir`, the markdown folder): can a run
-write here, or create it? It tells a missing folder that a run can create from one that it cannot.
+Answers one question for each folder a run writes into (`dataDir`, and `delivery.markdown.dir` when
+it is set): can a run write here, or create it? It tells a missing folder that a run can create from one that it cannot.
 
 ## How it works
 
@@ -37,7 +37,7 @@ write here, or create it? It tells a missing folder that a run can create from o
 ## Depends on, used by
 
 Depends on: `report/checkResult`, `errorCode.ts`, `types.ts`, `shared/errors`.
-Used by: `doctor.ts` (data folder) and `checks/delivery.ts` (markdown folder).
+Used by: `doctor.ts` (data folder) and `checks/delivery.ts` (markdown folder, only when `delivery.markdown.dir` is set).
 
 ## Change it safely
 

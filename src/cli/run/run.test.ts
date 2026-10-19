@@ -56,6 +56,8 @@ interface HarnessOptions {
   deliveries?: readonly Delivery[];
   /** delivery.markdown.dir in the loaded config; default: the schema default. */
   markdownDir?: string;
+  /** dataDir in the loaded config; default: DATA_DIR. */
+  dataDir?: string;
 }
 
 function harness(result: RunResult | Error = sentResult(), options: HarnessOptions = {}): Harness {
@@ -64,7 +66,7 @@ function harness(result: RunResult | Error = sentResult(), options: HarnessOptio
   const { markdownDir, deliveries = [new CapturingDelivery('markdown')] } = options;
   const loaded: LoadedConfig = {
     config: makeConfig({
-      dataDir: DATA_DIR,
+      dataDir: options.dataDir ?? DATA_DIR,
       ...(markdownDir !== undefined && { delivery: { markdown: { dir: markdownDir } } }),
     }),
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
@@ -313,7 +315,8 @@ describe('runCommand: summary', () => {
     expect(summary).toMatch(/Status\s+sent/);
     expect(summary).toMatch(/Items\s+120 collected → 4 in digest/);
     expect(summary).toMatch(/Winner\s+qwen3\.5:27b/);
-    expect(summary).toContain(join(DATA_DIR, 'runs', '2026-W43', 'digest.md'));
+    // 2026-10-19 is the Monday of 2026-W43.
+    expect(summary).toContain(join(DATA_DIR, '2026-10-19', 'digest', 'digest.md'));
     expect(summary).toMatch(/Duration\s+7m 12s/);
     expect(text(h.err)).toBe('');
   });
@@ -503,7 +506,7 @@ describe('runCommand: --out', () => {
 
     const built = h.buildApp.mock.calls[0]![0];
     expect(built.config.delivery.markdown.dir).toBe('my/digests');
-    expect(h.loaded.config.delivery.markdown.dir).toBe('dist/digests');
+    expect(h.loaded.config.delivery.markdown.dir).toBeUndefined();
   });
 
   it('keeps every other setting of the loaded config', async () => {
@@ -517,13 +520,13 @@ describe('runCommand: --out', () => {
     expect(built.secrets).toBe(h.loaded.secrets);
   });
 
-  it('uses the configured folder, dist/digests by default, without --out', async () => {
+  it("uses the configured folder, by default the week's digest folder, without --out", async () => {
     const h = harness();
 
     await runCommand({}, h.deps);
 
     expect(h.buildApp.mock.calls[0]![0]).toBe(h.loaded);
-    expect(h.loaded.config.delivery.markdown.dir).toBe('dist/digests');
+    expect(h.loaded.config.delivery.markdown.dir).toBeUndefined();
   });
 
   it('uses the folder as given, absolute or relative', async () => {
@@ -602,7 +605,7 @@ describe('runCommand: local files', () => {
 
     await runCommand({ out: digestsDir }, h.deps);
 
-    expect(text(h.out)).toContain(join(DATA_DIR, 'runs', '2026-W43', 'digest.md'));
+    expect(text(h.out)).toContain(join(DATA_DIR, '2026-10-19', 'digest', 'digest.md'));
     expect(text(h.out)).toContain(join(digestsDir, '2026-W43.md'));
   });
 
@@ -723,6 +726,18 @@ describe('runCommand: dry run', () => {
     expect(text(h.out)).not.toMatch(/HTML/);
   });
 
+  it("writes into the week's digest folder of the data folder when no folder is set", async () => {
+    const dataDir = join(root, 'dist');
+    const markdownChannel = createMarkdownFileDelivery({ dataDir });
+    const h = harness(dryRun(), { deliveries: [markdownChannel], dataDir });
+
+    await runCommand({ dryRun: true }, h.deps);
+
+    const weekDir = join(dataDir, '2026-10-19', 'digest');
+    expect(await readFile(join(weekDir, '2026-W43.md'), 'utf8')).toBe(MARKDOWN);
+    expect(text(h.out)).toContain(join(weekDir, '2026-W43.md'));
+  });
+
   it('writes the HTML copy too when the run hands over the message with its view', async () => {
     const message: DigestMessage = {
       weekId: '2026-W43',
@@ -763,7 +778,7 @@ describe('runCommand: dry run', () => {
     await runCommand({ dryRun: true, force: true }, h.deps);
 
     expect(markdown.digests).toEqual([]);
-    expect(text(h.out)).not.toContain('dist/digests');
+    expect(text(h.out)).not.toContain('2026-W43.md');
   });
 
   it.each(['quiet', 'blocked', 'failed'] as const)(
@@ -802,7 +817,7 @@ describe('runCommand: dry run', () => {
 
     expect(code).toBe(0);
     expect(text(h.err)).toBe('');
-    expect(text(h.out)).not.toContain('dist/digests');
+    expect(text(h.out)).not.toContain('2026-W43.md');
   });
 
   it('reports a failed local write on stderr, exits 1 and prints no local path', async () => {

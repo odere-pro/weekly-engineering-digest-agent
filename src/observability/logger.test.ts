@@ -1,3 +1,6 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Writable } from 'node:stream';
 import { describe, expect, it, vi } from 'vitest';
 import { createLogger } from './logger';
@@ -359,5 +362,35 @@ describe('createLogger hardening', () => {
     createLogger({ level: 'info' }).info('to stdout');
 
     expect(String(write.mock.calls[0]?.[0])).toContain('"msg":"to stdout"');
+  });
+});
+
+describe('createLogger: the daily log file', () => {
+  it('also writes each line, redacted and at the same level, to dist/logs/<day>/digest.log', async () => {
+    const dataDir = await mkdtemp(join(tmpdir(), 'logger-file-'));
+    try {
+      const out = memoryDestination();
+      const logger = createLogger({
+        level: 'info',
+        destination: out.stream,
+        redactValues: [SECRET],
+        file: { dataDir, timeZone: 'UTC', now: () => new Date('2026-10-19T07:45:00Z') },
+      });
+
+      logger.debug('not at this level');
+      logger.info(`token ${SECRET}`, { runId: '2026-W43' });
+
+      const text = await readFile(join(dataDir, 'logs', '2026-10-19', 'digest.log'), 'utf8');
+      const lines = text
+        .trim()
+        .split('\n')
+        .map((line) => JSON.parse(line) as Record<string, unknown>);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toMatchObject({ level: 'info', runId: '2026-W43', service: 'eng-digest' });
+      expect(text).not.toContain(SECRET);
+      expect(out.lines()).toEqual(lines);
+    } finally {
+      await rm(dataDir, { recursive: true, force: true });
+    }
   });
 });

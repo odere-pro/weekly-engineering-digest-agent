@@ -5,6 +5,7 @@ import { renderEmailHtml, renderEmailText } from '../../delivery/adapters/emailR
 import { toSlackBlocks } from '../../delivery/adapters/slackBlocks';
 import { createFsRunStore, type FsRunStoreOptions } from '../../store/adapters/fsRunStore';
 import { writeFileAtomic } from '../../store/adapters/atomicFile';
+import { weekDigestDir } from '../../store/layout';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { buildDigestView } from '../../render/layout';
 import { renderView } from '../../render/markdown';
@@ -49,7 +50,7 @@ const CHANNELS = ['markdown', 'email', 'slack', 'all'] as const;
 type Channel = (typeof CHANNELS)[number];
 /** Escape codes and bidi overrides from feed text; newlines and tabs stay. */
 const UNPRINTABLE = /[^\P{Cc}\n\t\r]|\p{Cf}/gu;
-const DEFAULT_OUT = join('dist', 'preview');
+const PREVIEW_DIR = 'preview';
 
 /** A file of the preview: its name and the text it holds. */
 interface PreviewFile {
@@ -79,7 +80,11 @@ export async function previewCommand(
       ...file,
       content: redactor.text(file.content).replace(UNPRINTABLE, ''),
     }));
-    const dir = resolve(io.cwd, options.out ?? DEFAULT_OUT, options.week);
+    // By default next to the week's run: <dataDir>/<monday>/digest/preview (`store/layout`).
+    const dir =
+      options.out === undefined
+        ? resolve(io.cwd, weekDigestDir(loaded.config.dataDir, options.week), PREVIEW_DIR)
+        : resolve(io.cwd, options.out, options.week);
     await mkdir(dir, { recursive: true });
     for (const file of files) await writeFileAtomic(join(dir, file.name), file.content);
     io.stdout(`${files.map((file) => join(dir, file.name)).join('\n')}\n`);

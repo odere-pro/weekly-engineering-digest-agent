@@ -33,7 +33,7 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
    Items:      3 collected, 3 after guards, 3 classified, 1 selected, 0 in the digest
    ```
 
-   The same numbers are `counts` in `data/runs/<week>/run.json`: `collected`,
+   The same numbers are `counts` in `dist/<monday>/digest/run.json`: `collected`,
    `afterGuardInput`, `classified`, `afterProcess`, `selected`, `digestItems`.
 
 2. Find the first count that falls.
@@ -72,7 +72,7 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
    To test `sent-before`, search the earlier runs for the item URL:
 
    ```bash
-   grep -l 'https://github.com/ollama/ollama/releases/tag/v0.41.0' data/runs/*/run.json
+   grep -l 'https://github.com/ollama/ollama/releases/tag/v0.41.0' dist/*/digest/run.json
    ```
 
 4. Try a longer window as a dry run. It sends nothing. The window is 1 to 31 days.
@@ -110,7 +110,7 @@ key you changed.
 | `collected` 0 and no `Source failed:` line | The window held no entries          | Step 4, or raise `windowDays`                             |
 | `classified` far below `collected`         | The input guards flagged many items | [Guard settings](../../configuration/guards.md); `doctor` |
 | Quiet every week, no note                  | Items are collected, then filtered  | Step 3                                                    |
-| The dry run wrote `dist/digests/<week>.md` | It found 3 or more items            | Run for real                                              |
+| The dry run wrote `<week>.md`              | It found 3 or more items            | Run for real                                              |
 
 ## Related
 

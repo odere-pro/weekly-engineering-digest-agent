@@ -16,7 +16,9 @@ It is a supporting layer built by the app wiring. Pipeline features never import
 
 ## What it does
 
-- Writes logs as JSON on stdout, one line each, with an ISO time, a `level` label and the field
+- Writes logs as JSON, one line each, on stdout and, for runs and `digest eval`, also to the day's
+  file `<dataDir>/logs/<day>/digest.log`. The day is the date in `schedule.timeZone`, so a `serve`
+  process starts a new file at midnight. Each line has an ISO time, a `level` label and the field
   `service` set to `eng-digest`. Lines of a run carry its `runId` (the week) and, inside a step,
   the `step`. Each model call logs role, model, latency, attempts and token counts. No prompt, no
   answer and no feed text.
@@ -38,6 +40,7 @@ It is a supporting layer built by the app wiring. Pipeline features never import
 - `LOG_LEVEL` and `OTEL_EXPORTER_OTLP_ENDPOINT` in `.env` or the environment. See
   [environment](../configuration/environment.md) and
   [environment variables](../reference/environment-variables.md).
+- The log file follows `dataDir` and `schedule.timeZone`. The log folders of days before the oldest kept week (`keepWeeks`) are deleted after a run.
 - Nothing else. The redaction list is the three declared secrets plus the Slack webhook path.
 - With Docker Compose the `tracing` profile adds Jaeger on port 16686. See
   [view traces in Jaeger](../runbooks/observe/view-traces-in-jaeger.md).
@@ -47,6 +50,9 @@ It is a supporting layer built by the app wiring. Pipeline features never import
 - Too much or too little detail in the logs: change `LOG_LEVEL`. See
   [read logs](../runbooks/observe/read-logs.md) and
   [follow one run](../runbooks/observe/follow-one-run.md).
+- The log file cannot be written (a read-only folder, a full disk, an unknown time zone): one
+  warning goes to stderr and the logs continue on stdout only. A folder removed under a running
+  process is made again. The run is not affected.
 - No traces appear: the endpoint is empty or wrong, or the collector is down. The run still
   succeeds; the flush failure is only a warning. See
   [observability operations](../operations/observability.md).

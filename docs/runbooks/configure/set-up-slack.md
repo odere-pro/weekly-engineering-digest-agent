@@ -53,7 +53,7 @@ Markdown files are still written; Slack is an extra channel.
    pnpm digest preview 2026-W42 --channel slack
    ```
 
-   The preview writes `slack.json` (the Block Kit payload) under `dist/preview/2026-W42/`. Use a
+   The preview writes `slack.json` (the Block Kit payload) under `dist/2026-10-12/digest/preview/`. Use a
    week that has a saved run.
 
 5. Post for real. No command posts a test message; the webhook is first used in a run. If the

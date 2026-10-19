@@ -12,9 +12,14 @@ All notable changes to this project are listed here. The format follows
   The Markdown is a table per urgency group under the title "Week <id>: <n> releases, <k> need
   action".
 - Every run also writes `<week>.html`. Email goes out as HTML and plain text; Slack as Block Kit.
-- The digest folder is `dist/digests` by default (`run --out <dir>` overrides it). Docker keeps
-  `data/digests`. A dry run writes the files too.
-- `digest fetch`: fetch the sources only and save raw and parsed data for debugging.
+- Everything the project produces goes under `dist/` (the `dataDir` default, was `data`):
+  `dist/artifacts/` for the build, `dist/<monday>/digest/` for a week's run and its digest files,
+  `dist/<day>/<source>/raw/` and `formatted/` for what each source answered and the items read
+  from it, and `dist/logs/<day>/digest.log` for the logs. `run --out <dir>` still picks another
+  digest folder; a dry run writes the files too. Docker mounts `./dist`. Old `data/runs/`
+  folders are not read.
+- `digest fetch`: fetch the sources only and save raw and parsed data into the day's source
+  folders, as a run does.
 - `digest show <week>` and `digest preview <week>`: inspect a saved run and render it for each
   channel without sending.
 - `digest doctor --readiness`: a verdict per profile for this machine.

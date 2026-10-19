@@ -22,7 +22,7 @@ Run the `digest` CLI from a clone, with Ollama on the same machine. You end with
 - Git. The package is not on npm, so you install from a clone.
 
 The package is not published to npm, so commands run as `pnpm digest <command>`. After
-`pnpm build` you can also run `node dist/cli.js <command>`.
+`pnpm build` you can also run `node dist/artifacts/cli.js <command>`.
 
 ## Steps
 
@@ -56,7 +56,7 @@ The package is not published to npm, so commands run as `pnpm digest <command>`.
    pnpm digest doctor
    ```
 
-6. Optional: build the single-file CLI. It lands in `dist/cli.js`.
+6. Optional: build the single-file CLI. It lands in `dist/artifacts/cli.js`.
 
    ```bash
    pnpm build
@@ -73,8 +73,8 @@ The package is not published to npm, so commands run as `pnpm digest <command>`.
 
 ## Roll back
 
-Nothing outside the folder was installed. To remove it, delete the clone (it holds `data/`,
-`dist/` and your config). Remove any OS schedule you saved
+Nothing outside the folder was installed. To remove it, delete the clone (it holds `dist/`
+and your config). Remove any OS schedule you saved
 ([schedule weekly runs](schedule-weekly-runs.md#roll-back)). To free the models, see
 [prune disk](../maintain/prune-disk.md).
 

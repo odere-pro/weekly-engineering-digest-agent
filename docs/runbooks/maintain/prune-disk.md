@@ -4,7 +4,7 @@ Part of [Runbooks](../README.md) / Maintain.
 
 ## Purpose
 
-Free disk by trimming old run folders, debug output and unused models, without losing the
+Free disk by trimming old run folders, source data, logs and unused models, without losing the
 history the next run needs.
 
 ## When to use
@@ -17,16 +17,19 @@ history the next run needs.
 
 - The settings that control pruning:
 
-| Key           | Default | Meaning                                                                               |
-| ------------- | ------- | ------------------------------------------------------------------------------------- |
-| `keepWeeks`   | 12      | Run folders older than this many weeks keep only `digest.md`. At least 1.             |
-| `dedupeWeeks` | 4       | Weeks of sent links removed from new digests (0 to 12). `keepWeeks` may not be lower. |
+| Key           | Default | Meaning                                                                                                                 |
+| ------------- | ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `keepWeeks`   | 12      | Weeks older than this keep only `digest.md` and the delivered digest files; their fetched data and logs go. At least 1. |
+| `dedupeWeeks` | 4       | Weeks of sent links removed from new digests (0 to 12). `keepWeeks` may not be lower.                                   |
 
-- Pruning runs by itself at the end of every run and is best effort. It deletes everything in an
-  old week folder except `digest.md`, including `run.json`. After that `history`, `show` and
-  `preview` no longer see the week, and its links no longer count for dedupe.
-- Do not delete `data/runs/<week>` for the last `dedupeWeeks` weeks: items would repeat. Do not
-  delete `data/digest.lock` while a run is live, nor `digest.config.json` or `.env`.
+- Pruning runs by itself at the end of every run and is best effort. For an old week it deletes
+  the Monday's source folders (`raw`, `formatted`) and everything in `digest/` except `digest.md`
+  and the delivered `<week>.md`, `<week>.html` and `<week>.failed.md`, including `run.json`. After that `history`, `show` and
+  `preview` no longer see the week, and its links no longer count for dedupe. The same pass deletes
+  the logs (`dist/logs/<day>/`) and the `digest fetch` folders (`dist/<day>/`) of every day before
+  the oldest kept week.
+- Do not delete `dist/<monday>/digest/` for the last `dedupeWeeks` weeks: items would repeat. Do
+  not delete `dist/digest.lock` while a run is live, nor `digest.config.json` or `.env`.
 
 ## Steps
 
@@ -37,17 +40,21 @@ history the next run needs.
    ```
 
    ```bash
-   du -sh data/runs data/digests dist ~/.ollama/models
+   du -sh dist dist/logs ~/.ollama/models
    ```
 
 2. Trim run history with config. Lower `keepWeeks` in `digest.config.json` (not below
    `dedupeWeeks`). It takes effect at the end of the next run. Restart `serve` so it reads it.
 3. Remove generated output you do not need. All of it can be rebuilt.
-   - `dist/fetch/` and `dist/preview/` (output of `digest fetch` and `digest preview`).
-   - Old `dist/digests/<week>.md` and `.html`, if you do not need the archive.
-   - `data/feedback/<week>.json` once merged into the eval labels.
+   - The `dist/<day>/` folders of `digest fetch` (days that are not a run's Monday), and the
+     `digest/preview/` folders of `digest preview`.
+   - `dist/<monday>/<source>/` (what each source answered), for any week. The run does not need it.
+   - `dist/logs/<day>/` folders. The app deletes those older than the oldest kept week; remove more
+     by hand to free disk sooner.
+   - `dist/feedback/<week>.json` once merged into the eval labels.
 4. Remove one old week by hand if you cannot wait for the next run, for example
-   `rm -r data/runs/2026-W20`. Keep `digest.md` if you want the archive.
+   `rm -r dist/2026-05-11` (the Monday of 2026-W20). Copy `dist/2026-05-11/digest/digest.md` out
+   first if you want the archive.
 5. Remove models you no longer use. `ollama list` shows sizes. Keep every tag of the profile you
    run (`doctor` tells you which).
 

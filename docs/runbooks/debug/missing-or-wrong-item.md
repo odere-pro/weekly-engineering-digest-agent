@@ -15,7 +15,9 @@ turn a real miss into an eval case.
 
 ## Prerequisites
 
-- The run folder of the week (`data/runs/<week>/`). Keep a copy before you change anything.
+- The run folder of the week (`dist/<monday>/digest/`, for `2026-W42` `dist/2026-10-12/digest/`).
+  Keep a copy before you change anything. `dist/<monday>/<source>/raw/` holds what each source
+  answered, if you need to see the feed itself.
 - The item's title or URL, and the source id it should come from.
 
 ## Steps
@@ -76,14 +78,14 @@ turn a real miss into an eval case.
    The link and format checks only prove that links are collected URLs. They do not judge
    relevance. The `Area` and `Hype` numbers in the scores say how the classifier saw it.
 
-6. Record the miss. Open `data/runs/<week>/review.md`: tick a picked item that should not be
+6. Record the miss. Open `dist/<monday>/digest/review.md`: tick a picked item that should not be
    there and a candidate (the 20 best left-out items) that should have been. Then save it.
 
    ```bash
    pnpm digest feedback 2026-W42
    ```
 
-   This writes `data/feedback/2026-W42.json`. Keep the run folder. Maintainers turn it into a
+   This writes `dist/feedback/2026-W42.json`. Keep the run folder. Maintainers turn it into a
    case: see [Add an eval case from a bad week](../maintain/add-eval-case-from-a-bad-week.md).
 
 7. To change behaviour, see [Change thresholds](../configure/change-thresholds.md) and
@@ -97,7 +99,7 @@ threshold or by `sent-before`, cut by `topN`, or left out by the writers.
 
 ## Roll back
 
-Steps 1 to 5 only read. Delete `data/feedback/<week>.json` to undo step 6.
+Steps 1 to 5 only read. Delete `dist/feedback/<week>.json` to undo step 6.
 
 ## Troubleshooting
 

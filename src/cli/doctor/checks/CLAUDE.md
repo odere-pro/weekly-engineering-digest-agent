@@ -13,8 +13,9 @@ are the delivery secrets set, which guards are off. Each returns `CheckResult`s 
    classify, guardPolicy and judge) and `checkThink` (the effective `think` per role).
 3. `sources.ts`: `checkSources` reads one item from every source in the last day with the real
    fetchers, in parallel, within `SOURCE_TIMEOUT_MS` (10 s).
-4. `delivery.ts`: `checkDelivery` checks the markdown folder, then `SMTP_PASSWORD` (if email is
-   configured) and `SLACK_WEBHOOK_URL` (if Slack is enabled).
+4. `delivery.ts`: `checkDelivery` checks the markdown folder (with no `delivery.markdown.dir` it
+   says digests go to each week's folder in the data folder, which the data dir check covers), then
+   `SMTP_PASSWORD` (if email is configured) and `SLACK_WEBHOOK_URL` (if Slack is enabled).
 5. `guards.ts`: `checkGuards` names each guard check that is off.
 
 ## Design

@@ -18,11 +18,11 @@ scan any of them the same way:
 
 Examples use `pnpm digest <command>`. Other ways to run the same command:
 
-| Setup  | Prefix                                            |
-| ------ | ------------------------------------------------- |
-| Node   | `pnpm digest <command>`                           |
-| Built  | `node dist/cli.js <command>` (after `pnpm build`) |
-| Docker | `docker compose run --rm digest <command>`        |
+| Setup  | Prefix                                                      |
+| ------ | ----------------------------------------------------------- |
+| Node   | `pnpm digest <command>`                                     |
+| Built  | `node dist/artifacts/cli.js <command>` (after `pnpm build`) |
+| Docker | `docker compose run --rm digest <command>`                  |
 
 The global option `-c, --config <path>` (default `digest.config.json`) goes before the command
 name. Look up any command in the [CLI reference](../reference/cli-commands.md).

@@ -47,6 +47,8 @@ const FETCHER_WARNING = 'Skipped feed entries that could not be read';
 const REQUEST: GenerateRequest = { role: 'write', system: 'sys', prompt: 'prompt' };
 const ANY_FUNCTION: unknown = expect.any(Function);
 const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
+/** The archive's tap on the raw answers (`sources/adapters/archive`). */
+const ANY_TAP: unknown = expect.objectContaining({ answer: ANY_FUNCTION });
 
 function loadedConfig(
   config?: Partial<ConfigInput>,
@@ -459,6 +461,7 @@ describe('fetcher warnings and the run', () => {
     expect(lastCallOptions(createGithubReleasesFetcher)).toEqual({
       token: GITHUB_TOKEN,
       logger: ANY_LOGGER,
+      tap: ANY_TAP,
     });
   });
 

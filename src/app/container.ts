@@ -1,15 +1,18 @@
 // Composition root: the only place that turns config into real adapters.
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { createMarkdownFileDelivery } from '../delivery/adapters/markdownFile';
+import { createMarkdownFileDelivery, markdownFileOptions } from '../delivery/adapters/markdownFile';
 import { createSlackDelivery } from '../delivery/adapters/slack';
 import { createSmtpDelivery } from '../delivery/adapters/smtp';
 import { createRuleInjectionGuard } from '../guards/adapters/ruleInjection';
 import { createClefPolicyGuard, createClefRubricGuard } from '../guards/adapters/clefPolicy';
 import { createGraniteGroundednessGuard, createGraniteRiskGuard } from '../guards/adapters/granite';
 import { createOllamaProvider, effectiveTemperature } from '../models/adapters/ollama';
+import { createSourceArchiving } from '../sources/adapters/archive/archivingFetcher';
+import { createSourceArchive } from '../sources/adapters/archive/sourceArchive';
 import { createGithubReleasesFetcher } from '../sources/adapters/githubReleases';
 import { createRssFetcher } from '../sources/adapters/rss';
 import { createFsRunStore } from '../store/adapters/fsRunStore';
+import { weekDay } from '../store/layout';
 import type { LoadedConfig } from '../config/load';
 import type { Config, Secrets } from '../config/schema';
 import type { DigestDeps } from '../digest/runDigest';
@@ -64,6 +67,22 @@ export function createModelProvider(
   });
 }
 
+/**
+ * The logger of a run and of `digest eval`: JSON lines at `LOG_LEVEL` on stdout and in the day's
+ * log file (`<dataDir>/logs/<day>/digest.log`), with every known secret taken out.
+ */
+export function createAppLogger({
+  config,
+  env,
+  secrets,
+}: Pick<LoadedConfig, 'config' | 'env' | 'secrets'>): Logger {
+  return createLogger({
+    level: env.LOG_LEVEL,
+    redactValues: knownSecrets(secrets),
+    file: { dataDir: config.dataDir, timeZone: config.schedule.timeZone },
+  });
+}
+
 /** The seed and the temperature each role's calls send, as the run record keeps them. */
 export function samplingOf(
   models: Pick<Config['models'], 'seed' | 'temperature'>,
@@ -79,11 +98,23 @@ function assemble(loaded: LoadedConfig): AppHandle {
   const channels = buildDeliveries(config, secrets);
   const redactValues = knownSecrets(secrets);
   const redactor = createRedactor(redactValues);
-  const logger = createLogger({ level: env.LOG_LEVEL, redactValues });
+  const logger = createAppLogger(loaded);
   // The model and the fetchers are built once, but a `serve` process runs many weeks: what they
   // log belongs to the run in flight, so they get a logger that looks the run up on every line.
-  const runs = new AsyncLocalStorage<Logger>();
+  const runs = new AsyncLocalStorage<RunScope>();
   const runLogger = perRunLogger(logger, runs);
+  // A run saves what each source answered and returned in its week's day folder (`store/layout`).
+  const archiving = createSourceArchiving({
+    archive: createSourceArchive({
+      dataDir: config.dataDir,
+      redact: (text) => redactor.text(text),
+    }),
+    day: () => {
+      const runId = runs.getStore()?.runId;
+      return runId === undefined ? undefined : weekDay(runId);
+    },
+    logger: runLogger,
+  });
   const tracing = deferTracer();
   const model = traceModel(createModelProvider(loaded, { logger: runLogger }), tracing.tracer);
   const decision = {
@@ -96,8 +127,14 @@ function assemble(loaded: LoadedConfig): AppHandle {
     profile,
     model,
     fetchers: {
-      rss: createRssFetcher({ logger: runLogger }),
-      github: createGithubReleasesFetcher({ token: secrets.GITHUB_TOKEN, logger: runLogger }),
+      rss: archiving.wrap(createRssFetcher({ logger: runLogger, tap: archiving.tap })),
+      github: archiving.wrap(
+        createGithubReleasesFetcher({
+          token: secrets.GITHUB_TOKEN,
+          logger: runLogger,
+          tap: archiving.tap,
+        }),
+      ),
     },
     inputGuards: [
       createRuleInjectionGuard({ allowedHosts: feedHosts(config.sources) }),
@@ -122,6 +159,8 @@ function assemble(loaded: LoadedConfig): AppHandle {
   return {
     deps: { ...parts, tracer: scopeRuns(tracer, logger, runs) },
     close: async () => {
+      // The fetched data of the last run is saved in the background: wait for it (never rejects).
+      await archiving.flush();
       try {
         await tracer.shutdown();
       } catch (error) {
@@ -153,8 +192,8 @@ function guardChannels(
 
 /** Markdown always, then email and Slack when configured. Recipients come from config only. */
 function buildDeliveries(config: Config, secrets: Secrets): Delivery[] {
-  const { markdown, email, slack } = config.delivery;
-  const deliveries: Delivery[] = [createMarkdownFileDelivery({ dir: markdown.dir })];
+  const { email, slack } = config.delivery;
+  const deliveries: Delivery[] = [createMarkdownFileDelivery(markdownFileOptions(config))];
   if (email) {
     deliveries.push(
       createSmtpDelivery({
@@ -185,6 +224,12 @@ function requireSecret(value: string | undefined, name: string, needer: string):
   throw new DigestError(`${needer} is configured but ${name} is not set. Add ${name} to .env.`);
 }
 
+/** The run in flight on an async call chain: its logger and its week id. */
+interface RunScope {
+  logger: Logger;
+  runId: string;
+}
+
 /**
  * A logger for what is built once and used by every run (F45, D8). Each line goes to the logger
  * of the run in flight on this async call chain, so it carries that run's `runId` and the `step`
@@ -193,11 +238,11 @@ function requireSecret(value: string | undefined, name: string, needer: string):
  */
 function perRunLogger(
   root: Logger,
-  runs: AsyncLocalStorage<Logger>,
+  runs: AsyncLocalStorage<RunScope>,
   bindings: LogFields = {},
 ): Logger {
   const current = (): Logger => {
-    const target = runs.getStore() ?? root;
+    const target = runs.getStore()?.logger ?? root;
     return Object.keys(bindings).length === 0 ? target : target.child(bindings);
   };
   return {
@@ -223,13 +268,15 @@ function perRunLogger(
  * in that step: the logger above finds the logger for both there, and two runs in one process
  * never see each other's.
  */
-function scopeRuns(tracer: Tracer, root: Logger, runs: AsyncLocalStorage<Logger>): Tracer {
+function scopeRuns(tracer: Tracer, root: Logger, runs: AsyncLocalStorage<RunScope>): Tracer {
   return {
     span: (name, attributes, fn) => {
       const { runId, step } = attributes;
       if (typeof runId !== 'string') return tracer.span(name, attributes, fn);
-      const scope = typeof step === 'string' ? { runId, step } : { runId };
-      return runs.run(root.child(scope), () => tracer.span(name, attributes, fn));
+      const fields = typeof step === 'string' ? { runId, step } : { runId };
+      return runs.run({ logger: root.child(fields), runId }, () =>
+        tracer.span(name, attributes, fn),
+      );
     },
   };
 }

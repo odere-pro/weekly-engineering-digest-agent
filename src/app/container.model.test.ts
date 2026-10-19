@@ -43,6 +43,8 @@ vi.mock('../observability/tracing', (load) => wrapFactories(load, ['createTracer
 // Any logger: the one the model and the fetchers get is run-aware (container.runLogging.test.ts).
 const ANY_FUNCTION: unknown = expect.any(Function);
 const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
+/** The archive's tap on the raw answers (`sources/adapters/archive`). */
+const ANY_TAP: unknown = expect.objectContaining({ answer: ANY_FUNCTION });
 
 interface LoadedOptions {
   config?: Partial<ConfigInput>;
@@ -147,7 +149,7 @@ describe('buildApp fetchers', () => {
     await buildApp(loadedConfig());
 
     // Run-aware, like the model's: container.runLogging.test.ts shows the run id on its lines.
-    expect(firstCallOptions(createRssFetcher)).toEqual({ logger: ANY_LOGGER });
+    expect(firstCallOptions(createRssFetcher)).toEqual({ logger: ANY_LOGGER, tap: ANY_TAP });
   });
 });
 

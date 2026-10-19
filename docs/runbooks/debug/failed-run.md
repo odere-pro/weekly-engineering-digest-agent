@@ -37,7 +37,7 @@ week to `sent`.
    pnpm digest show 2026-W41
    ```
 
-3. For the stack and the time, open `data/runs/2026-W41/error.json` (it has `step`, `name`,
+3. For the stack and the time, open `dist/2026-10-05/digest/error.json` (it has `step`, `name`,
    `message`, `at` and `stack`). It is written only for a failure, and only when the run's
    record was saved.
 4. Run the health check. Each problem has a `fix:` line.
@@ -76,7 +76,7 @@ week to `sent`.
 ## Verify
 
 `pnpm digest history -n 1` shows the week as `sent` (exit code 0), and `<week>.md` is in the
-digest folder (`dist/digests`, in Docker `data/digests`).
+week's digest folder (`dist/2026-10-05/digest/` for `2026-W41`; or `delivery.markdown.dir`).
 
 ## Roll back
 

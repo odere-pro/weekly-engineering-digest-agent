@@ -51,8 +51,10 @@ flowchart TD
 - Errors come from `redactedError`: a new `DeliveryError` with a copy of the cause chain (5 levels
   at most), secrets replaced, never the original. Retry facts (`code`, `originalCode`, `status`,
   `responseCode`, `timeoutType`) are plain identifiers or integers; the retry rule reads them.
-- Markdown channel: the week id must match `WEEK_ID_PATTERN` (it becomes a file name). The HTML is
-  rendered first and the old `.html` removed first, writes are atomic: the two files never disagree.
+- Markdown channel: the week id must match `WEEK_ID_PATTERN` (it becomes a file name). The folder is
+  `delivery.markdown.dir` when set, else the week's `digest/` folder in the data folder
+  (`markdownFileOptions`, `markdownFolder`). The HTML is rendered first and the old `.html` removed
+  first, writes are atomic: the two files never disagree.
 
 ## Files
 
@@ -60,7 +62,7 @@ flowchart TD
 | ------------------------------------------- | ---------------------------------------------------------------- |
 | `Delivery.ts`                               | The port, `DigestMessage`, `FailureNote`, `DigestView`           |
 | `deliveryId.ts`                             | `DeliveryIdSchema`, `DeliveryId`: channel ids kept in `run.json` |
-| `adapters/markdownFile.ts`                  | Always-on file channel, `digestFilePaths`                        |
+| `adapters/markdownFile.ts`                  | Always-on file channel, `digestFilePaths`, `markdownFolder`      |
 | `adapters/smtp.ts`                          | Email through nodemailer; `MailTransport` is injectable          |
 | `adapters/slack.ts`                         | Slack incoming webhook; `fetch` is injectable                    |
 | `adapters/emailRender.ts`                   | `renderEmailText`, `renderEmailHtml` from a view                 |
@@ -73,8 +75,10 @@ flowchart TD
 - Email layout: edit `emailRender.ts`, run its test with `UPDATE_GOLDEN=1`, read the diff
   (`__fixtures__/email/`). The Slack golden `digest-blocks.json` is edited by hand.
 - `DigestView` is imported by `render/`, `evals/metrics.ts` and `cli/preview` (which also calls
-  `emailRender`, `slackBlocks`); `cli/run` uses `digestFilePaths`.
+  `emailRender`, `slackBlocks`); `cli/run` uses `digestFilePaths` and `markdownFolder`.
 - A new channel needs its id in `Delivery.id` and `DeliveryIdSchema`, an entry in
   `DeliveryConfigSchema` (frozen `config/schema.ts`) and a branch in `app/container.ts`.
+- `store` prune keeps the files named `<week>.*` in a week's `digest/` folder: keep that prefix on
+  every file this channel writes there.
 - `deliveryRetry.test.ts` imports `app/retryingDelivery`: change the facts and the rule together.
   A send can still land twice if the server took it, then answered 429/5xx or SMTP 421/450/451.

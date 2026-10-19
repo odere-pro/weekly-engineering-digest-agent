@@ -12,13 +12,13 @@ GitHub token is set).
 
 ## Fields of one source
 
-| Field      | Type    | Required | Rule                                                                  |
-| ---------- | ------- | -------- | --------------------------------------------------------------------- |
-| `id`       | string  | yes      | Lowercase letters, digits and dashes, starting with a letter or digit |
-| `kind`     | string  | yes      | `rss` (RSS or Atom feed) or `github` (releases of one repository)     |
-| `url`      | string  | yes      | A valid URL, without a user name or password                          |
-| `area`     | string  | no       | A hint for the classifier, for example `ai-tooling`. See below        |
-| `maxItems` | integer | no       | 1 to 100. Cap for this source. Falls back to `maxItemsPerSource` (20) |
+| Field      | Type    | Required | Rule                                                                                |
+| ---------- | ------- | -------- | ----------------------------------------------------------------------------------- |
+| `id`       | string  | yes      | Lowercase letters, digits and dashes, starting with a letter or digit. Not `digest` |
+| `kind`     | string  | yes      | `rss` (RSS or Atom feed) or `github` (releases of one repository)                   |
+| `url`      | string  | yes      | A valid URL, without a user name or password                                        |
+| `area`     | string  | no       | A hint for the classifier, for example `ai-tooling`. See below                      |
+| `maxItems` | integer | no       | 1 to 100. Cap for this source. Falls back to `maxItemsPerSource` (20)               |
 
 ```json
 {
@@ -51,6 +51,8 @@ GitHub token is set).
   host `github.com`, no port, query or fragment, and a repository name that does not end in
   `.git`. The config loads even when the URL is wrong. The source then fails at fetch time with
   `Source <id> is not a GitHub repository URL`, and `digest doctor` warns.
+- **Reserved id.** The id `digest` is refused: a source's data goes in a folder named after it, next
+  to the week's `digest/` folder.
 - **No credentials in URLs.** A URL with `user:pass@` is refused when the config loads. Keep
   secrets in `.env`. A `GITHUB_TOKEN` there switches GitHub sources from the Atom feed to the REST API.
 - **Area hint.** `area` is passed to the classifier as a line `Source tag: <area>`. The classifier
@@ -69,7 +71,8 @@ GitHub token is set).
 pnpm digest fetch --source kubernetes-blog --since 7d
 ```
 
-This fetches only that source, calls no model and saves the raw reply under `dist/fetch`.
+This fetches only that source, calls no model and saves the raw reply under
+`dist/<day>/kubernetes-blog/raw/` (`<day>` is today). A run keeps the same files for its week.
 
 ## Change it
 

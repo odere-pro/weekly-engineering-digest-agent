@@ -16,7 +16,7 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
 ## Prerequisites
 
 - The run writes to a terminal or to Docker logs you can reach.
-- For the lock check in step 4, read access to the `data/` folder (`dataDir` in the config).
+- For the lock check in step 4, read access to the `dist/` folder (`dataDir` in the config).
 
 ## Steps
 
@@ -26,6 +26,9 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
    ```bash
    docker compose logs -f digest
    ```
+
+   The same lines are also in the day's log file, `dist/logs/<day>/digest.log` (`<day>` is the date
+   in `schedule.timeZone`), so `tail -f` on it works for a run started in any way.
 
 2. Show only the step lines. Each step logs `Step finished` with its time in `ms` when it ends.
    The order is `collect`, `guardInput`, `classify`, `process`, `write`, `guardOutput`,
@@ -54,7 +57,7 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
    last heartbeat. The holder rewrites `heartbeatAt` every 60 seconds.
 
    ```bash
-   cat data/digest.lock
+   cat dist/digest.lock
    ```
 
 5. When it ends, the last line is `Run finished` with `status`, `winner` and `counts`. Then read
@@ -67,7 +70,7 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
 ## Verify
 
 The newest row of `history` shows the week you followed, with its final status. The same week
-no longer has a `data/digest.lock` (the lock is removed at the end of a run).
+no longer has a `dist/digest.lock` (the lock is removed at the end of a run).
 
 ## Roll back
 

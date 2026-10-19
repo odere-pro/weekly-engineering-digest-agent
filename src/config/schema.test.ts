@@ -13,7 +13,7 @@ describe('config schema', () => {
       dedupeWeeks: 4,
       keepWeeks: 12,
       schedule: { cron: '45 7 * * 1', timeZone: 'Europe/Berlin' },
-      delivery: { markdown: { dir: 'dist/digests' } },
+      delivery: { markdown: {} },
       guards: {
         input: {
           enabled: true,
@@ -39,6 +39,31 @@ describe('config schema', () => {
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.path).toEqual(['keepWeeks']);
     expect(ConfigSchema.safeParse({ ...base, keepWeeks: 4, dedupeWeeks: 4 }).success).toBe(true);
+  });
+
+  it('puts everything the project produces in dist by default', () => {
+    const config = ConfigSchema.parse({
+      focusAreas: ['a'],
+      sources: [{ id: 'x', kind: 'rss', url: 'https://example.com/feed' }],
+    });
+    expect(config.dataDir).toBe('dist');
+  });
+
+  it('writes the Markdown channel into the week folder unless a dir is set', () => {
+    expect(makeConfig().delivery.markdown.dir).toBeUndefined();
+    expect(makeConfig({ delivery: { markdown: { dir: 'out' } } }).delivery.markdown.dir).toBe(
+      'out',
+    );
+  });
+
+  it('refuses the source id "digest", the name of the week digest folder', () => {
+    const result = ConfigSchema.safeParse({
+      focusAreas: ['a'],
+      sources: [{ id: 'digest', kind: 'rss', url: 'https://example.com/feed' }],
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.path).toEqual(['sources', 0, 'id']);
+    expect(result.error?.issues[0]?.message).toMatch(/reserved/);
   });
 
   describe('source URLs', () => {

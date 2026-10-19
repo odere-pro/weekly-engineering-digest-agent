@@ -2,7 +2,7 @@
 
 Local-first CLI agent: collects allowlisted RSS/Atom feeds and GitHub releases, then runs
 guard-input → classify → process → write (writer panel) → guard-output → select → deliver,
-all on Ollama. Output: a weekly Markdown digest of the 3-5 releases that matter.
+all on Ollama. Output: a weekly Markdown digest of the 3-5 releases that matter, in `dist/`.
 Full spec (private, main checkout only): `docs/plan/spec.md`.
 
 ## Map
@@ -10,27 +10,27 @@ Full spec (private, main checkout only): `docs/plan/spec.md`.
 The code is split into feature folders. Each one has its own `CLAUDE.md` (intent, design, how it
 works), and its tests sit next to the code. Pipeline order:
 
-| Folder                                                | What                                                                                               |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `src/digest/`                                         | The weekly run: `runDigest` (lock → chain → finish), run ending, resume, the step loop             |
-| `src/sources/`                                        | `SourceFetcher` port, the collect step, default sources, `adapters/` (RSS, GitHub, fetch pipeline) |
-| `src/guards/`                                         | `Guard` port, input and output guard steps, guard questions, `adapters/` (Granite, clef)           |
-| `src/classify/`                                       | Classify step and prompt: relevance, area, hype, minor release per item                            |
-| `src/process/`                                        | Filter by thresholds, cross-week dedupe, rank, top N                                               |
-| `src/write/`                                          | Writer panel step and prompt                                                                       |
-| `src/checks/`                                         | Link check and format check (always on)                                                            |
-| `src/select/`                                         | Judge step and prompt: picks the best passing draft                                                |
-| `src/render/`                                         | Digest view, Markdown, canonical scoring text, review sheet                                        |
-| `src/delivery/`                                       | `Delivery` port, `adapters/` (Markdown file, SMTP and email HTML, Slack blocks)                    |
-| `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama, decision endpoint)              |
-| `src/store/`                                          | `RunStore` port, `adapters/` (run folders, lock, atomic files)                                     |
-| `src/domain/`                                         | `schemas.ts`: the types several features share (zod); feature-owned types live in their feature    |
-| `src/config/`                                         | `schema.ts` (zod), `profiles.ts` (role → model tag), `load.ts`                                     |
-| `src/app/`                                            | `container.ts`: the composition root (config → adapters → `DigestDeps`), plus decorators           |
-| `src/cli/`                                            | `program.ts` registers commands; one folder per command (`init/`, `doctor/`, `run/`, …)            |
-| `src/scheduler/`, `src/observability/`, `src/shared/` | Weekly scheduler; pino logs and OTel; small utilities                                              |
-| `evals/`                                              | Eval data (recorded weeks, cases, scorecards) and the harness code with its tests                  |
-| `test/`                                               | Shared test kit (`fakes/`, `builders.ts`), cross-feature `integration/` and `live/` tests          |
+| Folder                                                | What                                                                                                           |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `src/digest/`                                         | The weekly run: `runDigest` (lock → chain → finish), run ending, resume, the step loop                         |
+| `src/sources/`                                        | `SourceFetcher` port, the collect step, default sources, `adapters/` (RSS, GitHub, fetch pipeline, `archive/`) |
+| `src/guards/`                                         | `Guard` port, input and output guard steps, guard questions, `adapters/` (Granite, clef)                       |
+| `src/classify/`                                       | Classify step and prompt: relevance, area, hype, minor release per item                                        |
+| `src/process/`                                        | Filter by thresholds, cross-week dedupe, rank, top N                                                           |
+| `src/write/`                                          | Writer panel step and prompt                                                                                   |
+| `src/checks/`                                         | Link check and format check (always on)                                                                        |
+| `src/select/`                                         | Judge step and prompt: picks the best passing draft                                                            |
+| `src/render/`                                         | Digest view, Markdown, canonical scoring text, review sheet                                                    |
+| `src/delivery/`                                       | `Delivery` port, `adapters/` (Markdown file, SMTP and email HTML, Slack blocks)                                |
+| `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama, decision endpoint)                          |
+| `src/store/`                                          | `RunStore` port, `layout.ts` (the `dist/` layout), `adapters/` (run folders, lock, atomic files)               |
+| `src/domain/`                                         | `schemas.ts`: the types several features share (zod); feature-owned types live in their feature                |
+| `src/config/`                                         | `schema.ts` (zod), `profiles.ts` (role → model tag), `load.ts`                                                 |
+| `src/app/`                                            | `container.ts`: the composition root (config → adapters → `DigestDeps`), plus decorators                       |
+| `src/cli/`                                            | `program.ts` registers commands; one folder per command (`init/`, `doctor/`, `run/`, …)                        |
+| `src/scheduler/`, `src/observability/`, `src/shared/` | Weekly scheduler; pino logs and OTel; small utilities                                                          |
+| `evals/`                                              | Eval data (recorded weeks, cases, scorecards) and the harness code with its tests                              |
+| `test/`                                               | Shared test kit (`fakes/`, `builders.ts`), cross-feature `integration/` and `live/` tests                      |
 
 ## Commands
 
@@ -40,7 +40,7 @@ pnpm check                 # typecheck + lint + unit tests: must be green before
 pnpm test:watch
 pnpm vitest run --coverage --coverage.include='src/path/file.ts'   # coverage of one file
 pnpm digest run --dry-run  # tsx, no build needed
-pnpm build                 # esbuild → dist/cli.js
+pnpm build                 # esbuild → dist/artifacts/cli.js
 ```
 
 ## Hard rules
@@ -59,6 +59,10 @@ pnpm build                 # esbuild → dist/cli.js
 - **Link check and format check are always on.** Config can never disable them.
 - **Recipients and endpoints come from config/.env only**, never from model output.
 - **Secrets never reach logs, run records or traces.** Never read `.env`.
+- **Everything the project produces goes under `dist/`** (`config.dataDir`), laid out by
+  `src/store/layout.ts`: build output in `dist/artifacts/`, a week's run in `dist/<monday>/digest/`,
+  each source's fetched data in `dist/<day>/<sourceId>/raw/` and `formatted/`, logs in
+  `dist/logs/<day>/`. Never write anywhere else; tests get a temp data folder from `makeConfig`.
 - ESM, relative imports without extensions, named exports, no default exports, no barrels.
 - Immutable data: return new objects; do not mutate inputs.
 

@@ -70,7 +70,7 @@ leaking the old or the new value.
   and, for what you rotated, `✓ email: SMTP_PASSWORD is set (...)` or `✓ slack: SLACK_WEBHOOK_URL is set`.
   These check that a value exists, not that the provider accepts it.
 - After the next run, `pnpm digest show <week>` has a `Delivered:` line with `email` or `slack`.
-- No secret appears in `docker compose logs digest` or in `data/runs/<week>/`. The tool redacts
+- No secret appears in `docker compose logs digest` or in `dist/<monday>/` (the run folder, the source data) or `dist/logs/`. The tool redacts
   known secrets there, which is a second line of defence, not a reason to be careless.
 
 ## Roll back

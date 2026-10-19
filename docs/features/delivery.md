@@ -37,7 +37,8 @@ It is the last step, deliver, after select. See [data flow](../architecture/data
 
 ## What you can configure
 
-- `delivery.markdown.dir` (default `dist/digests`; Docker: `data/digests`). See
+- `delivery.markdown.dir` (no default: unset, the files go to the week's `digest/` folder in the
+  data folder, `dist/<monday>/digest/`). See
   [Markdown delivery](../configuration/delivery-markdown.md).
 - `delivery.email` (`host`, `port`, `secure`, `requireTLS`, `user`, `from`, `to`) and
   `SMTP_PASSWORD`. See [email delivery](../configuration/delivery-email.md) and

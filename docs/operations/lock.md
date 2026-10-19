@@ -2,7 +2,8 @@
 
 Part of [Operations](README.md).
 
-Only one run may use a `data/` folder at a time. The lock is the file `data/digest.lock`.
+Only one run may use a data folder (`dist/` by default) at a time. The lock is the file
+`dist/digest.lock`.
 
 ## How it works
 
@@ -32,7 +33,7 @@ contenders cannot both remove the stale lock. Acquire tries 3 times, then fails.
 
 - **A run is going:** wait.
 - **No run is going:** do nothing. The next run takes over a stale lock.
-- **It still refuses:** stop everything that uses this `data/` folder and delete the file. See
+- **It still refuses:** stop everything that uses this data folder and delete the file. See
   [stuck lock](../runbooks/debug/stuck-lock.md).
 - **A run hangs but stays alive** keeps its lock. In Docker, `docker compose kill digest` ends it at
   once (`restart` and `stop` wait up to 90 minutes), then `docker compose up -d` starts it again.
@@ -41,7 +42,7 @@ contenders cannot both remove the stale lock. Acquire tries 3 times, then fails.
 
 - A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run.
 - The lock is plain files, with no operating-system lock. It needs a file system with hard
-  links. Do not share `data/` between machines.
+  links. Do not share the data folder between machines.
 - `release()` never removes a lock that another run took over.
 
 ## Related

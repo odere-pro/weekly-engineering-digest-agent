@@ -14,6 +14,7 @@ import { RunRecordSchema } from '../../src/store/runRecord';
 import type { SourceFetcher } from '../../src/sources/SourceFetcher';
 import type { DigestViewItem } from '../../src/delivery/Delivery';
 import { sameUrl } from '../../src/shared/url';
+import { weekDigestDir } from '../../src/store/layout';
 
 const EXAMPLE_CONFIG = fileURLToPath(new URL('../../digest.config.example.json', import.meta.url));
 const SMOKE_PROFILE = 'light';
@@ -76,7 +77,7 @@ async function startSmokeRun(workDir: string): Promise<{ app: AppHandle; run: Sm
     fetchers: recordingFetchers(app.deps.fetchers, collected),
   };
   const result = await runDigest(deps, { dryRun: true });
-  const runDir = join(loaded.config.dataDir, 'runs', result.record.runId);
+  const runDir = weekDigestDir(loaded.config.dataDir, result.record.runId);
   return { app, run: { loaded, result, collected, runDir } };
 }
 

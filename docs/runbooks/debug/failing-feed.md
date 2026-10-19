@@ -34,6 +34,10 @@ feed never stops a run: it is skipped and listed, and the other feeds still coun
    Source failed: openai-news: HTTP 404 fetching openai-news
    ```
 
+   The run also kept what the source answered, in the folder of that week's Monday:
+   `dist/2026-10-05/openai-news/raw/` for `2026-W41` (the bodies and `responses.json` with the url
+   without its query, the status and the content type of each answer). A failed source has no `formatted/` folder.
+
 2. Check every feed now. A source line is `!` when it fails, with a `fix:` line. This probe
    reads one day of one item, waits 10 seconds, and does not retry. `doctor` still exits 0
    for a failing feed.
@@ -54,8 +58,8 @@ feed never stops a run: it is skipped and listed, and the other feeds still coun
    openai-news  failed  404   0      -        0.4s  HTTP 404 fetching openai-news
    ```
 
-   The files land in `dist/fetch/<timestamp>/`: `raw/<id>.xml` (or `.json`, `.html`),
-   `items.json` and `summary.json`. The command exits 1 when any source failed.
+   The files land in `dist/<day>/` (today): `<id>/raw/response-1.xml` (or `.json`, `.html`),
+   `<id>/formatted/items.json` and `fetch-summary.json`. The command exits 1 when any source failed.
 
 4. Match the error and fix it.
 
@@ -86,17 +90,17 @@ feed never stops a run: it is skipped and listed, and the other feeds still coun
 
 ## Roll back
 
-`fetch` only writes below `dist/fetch/`; delete the folder if you do not need it. Undo a
+`fetch` only writes `dist/<day>/<id>/` and `dist/<day>/fetch-summary.json`; delete them if you do
+not need them. Undo a
 config edit by restoring the old `sources` entry.
 
 ## Troubleshooting
 
-| Symptom                                        | Cause                               | Fix                                              |
-| ---------------------------------------------- | ----------------------------------- | ------------------------------------------------ |
-| `fetch` works, the run still lists the source  | `serve` runs with the old config    | `docker compose restart digest`                  |
-| Works on the laptop, fails in Docker           | DNS or proxy of the container       | Test with `docker compose run --rm digest fetch` |
-| `Unknown source: <id>. Sources in the config:` | A typo in `--source`                | Use an id from the list in the message           |
-| `--out must not be inside the data folder`     | `fetch --out` points into `dataDir` | Choose another folder                            |
+| Symptom                                        | Cause                            | Fix                                              |
+| ---------------------------------------------- | -------------------------------- | ------------------------------------------------ |
+| `fetch` works, the run still lists the source  | `serve` runs with the old config | `docker compose restart digest`                  |
+| Works on the laptop, fails in Docker           | DNS or proxy of the container    | Test with `docker compose run --rm digest fetch` |
+| `Unknown source: <id>. Sources in the config:` | A typo in `--source`             | Use an id from the list in the message           |
 
 ## Related
 

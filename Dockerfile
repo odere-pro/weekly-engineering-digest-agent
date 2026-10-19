@@ -9,7 +9,7 @@ RUN corepack enable
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
-# Production dependencies only: dist/cli.js keeps its packages external.
+# Production dependencies only: dist/artifacts/cli.js keeps its packages external.
 FROM base AS prod-deps
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --prod
@@ -25,17 +25,19 @@ RUN pnpm build
 
 FROM ${NODE_IMAGE} AS runtime
 ENV NODE_ENV=production
-WORKDIR /app
+# The program lives in /opt/eng-digest. /app is the working folder: digest.config.json, .env,
+# evals and dist/, the data folder (dataDir defaults to dist), where runs, fetched data and logs go.
+# Compose bind-mounts ./dist over /app/dist, which is why the CLI cannot sit in /app/dist/artifacts.
+WORKDIR /opt/eng-digest
 COPY package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist/artifacts ./dist/artifacts
+WORKDIR /app
 # `digest eval` reads the recorded weeks and labeled cases from here.
 COPY evals ./evals
-# /app/data is a mount point for the state; /app/dist/digests is where the digest files go, because
-# delivery.markdown.dir defaults to dist/digests (relative to /app). Compose bind-mounts ./data and
-# ./data/digests over them and ignores this ownership, so Linux hosts set DIGEST_UID/DIGEST_GID
-# instead (see docker-compose.yml). Run without Compose, the digests stay inside the container.
-RUN mkdir -p /app/data /app/dist/digests && chown node:node /app/data /app/dist/digests
+# Compose ignores this ownership (its bind mount wins), so Linux hosts set DIGEST_UID/DIGEST_GID
+# instead (see docker-compose.yml). Run without Compose, the files stay inside the container.
+RUN mkdir -p /app/dist && chown node:node /app/dist
 USER node
-ENTRYPOINT ["node", "dist/cli.js"]
+ENTRYPOINT ["node", "/opt/eng-digest/dist/artifacts/cli.js"]
 CMD ["serve"]

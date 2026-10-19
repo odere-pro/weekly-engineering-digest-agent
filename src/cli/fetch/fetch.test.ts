@@ -14,7 +14,8 @@ import { makeConfig } from '../../../test/builders';
 import { fixedClock } from '../../../test/fakes';
 
 const NOW = '2026-10-13T00:00:00Z';
-const STAMP = '2026-10-13T00-00-00-000Z';
+/** NOW in the config's time zone (Europe/Berlin): the day folder of the fetch. */
+const DAY = '2026-10-13';
 
 const fixture = (path: string): Promise<string> =>
   readFile(
@@ -144,8 +145,27 @@ async function harness(options: HarnessOptions = {}): Promise<Harness> {
   };
 }
 
-const outputRoot = (): string => join(dir, 'dist', 'fetch');
-const runFolder = (): string => join(outputRoot(), STAMP);
+/** The config's data folder (see `harness`). */
+const outputRoot = (): string => join(dir, 'data');
+const runFolder = (): string => join(outputRoot(), DAY);
+const summaryPath = (): string => join(runFolder(), 'fetch-summary.json');
+const rawPath = (sourceId: string, extension: string): string =>
+  join(runFolder(), sourceId, 'raw', `response-1.${extension}`);
+const itemsPath = (sourceId: string): string =>
+  join(runFolder(), sourceId, 'formatted', 'items.json');
+/** The items saved for these sources, one after the other. */
+async function savedItems(...sourceIds: string[]): Promise<Item[]> {
+  const lists = await Promise.all(
+    sourceIds.map(async (id) => (await readJson(itemsPath(id))) as Item[]),
+  );
+  return lists.flat();
+}
+/** What one source leaves in the day folder after a fetch that worked. */
+const sourceFiles = (sourceId: string, extension: string): string[] => [
+  `${sourceId}/formatted/items.json`,
+  `${sourceId}/raw/response-1.${extension}`,
+  `${sourceId}/raw/responses.json`,
+];
 const readJson = async (path: string): Promise<unknown> =>
   JSON.parse(await readFile(path, 'utf8')) as unknown;
 
@@ -185,17 +205,16 @@ interface Summary {
 }
 
 describe('fetchCommand: what it saves', () => {
-  it('writes raw bodies, items.json and summary.json under <out>/<timestamp>/', async () => {
+  it('writes each source to <out>/<day>/<source>/raw and formatted, and fetch-summary.json', async () => {
     const h = await harness({ sources: [RSS, REPO] });
 
     const code = await fetchCommand({ out: join(dir, 'saved') }, h.deps);
 
     expect(code).toBe(0);
-    expect(await allFiles(join(dir, 'saved', STAMP))).toEqual([
-      'items.json',
-      'raw/acme-widgets.xml',
-      'raw/example-feed.xml',
-      'summary.json',
+    expect(await allFiles(join(dir, 'saved', DAY))).toEqual([
+      ...sourceFiles('acme-widgets', 'xml'),
+      ...sourceFiles('example-feed', 'xml'),
+      'fetch-summary.json',
     ]);
   });
 
@@ -204,25 +223,25 @@ describe('fetchCommand: what it saves', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(await readFile(join(runFolder(), 'raw', 'example-feed.xml'), 'utf8')).toBe(
+    expect(await readFile(rawPath('example-feed', 'xml'), 'utf8')).toBe(
       await fixture('feeds/rss2.xml'),
     );
   });
 
-  it('defaults the output folder to dist/fetch under the working directory', async () => {
+  it("defaults the output folder to the config's data folder, in the day's folder", async () => {
     const h = await harness();
 
     await fetchCommand({}, h.deps);
 
-    expect(await readdir(outputRoot())).toEqual([STAMP]);
+    expect(await readdir(outputRoot())).toEqual([DAY]);
   });
 
-  it('puts the parsed items of every source in items.json, in config order', async () => {
+  it("puts each source's parsed items in its formatted/items.json", async () => {
     const h = await harness({ sources: [ATOM, RSS] });
 
     await fetchCommand({}, h.deps);
 
-    const items = (await readJson(join(runFolder(), 'items.json'))) as Item[];
+    const items = await savedItems('example-atom', 'example-feed');
     expect(items.map((item) => item.sourceId)).toEqual([
       'example-atom',
       'example-atom',
@@ -255,15 +274,15 @@ describe('fetchCommand: what it saves', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(await readJson(join(runFolder(), 'items.json'))).toEqual(expected);
+    expect(await savedItems('example-feed', 'example-atom', 'acme-widgets')).toEqual(expected);
   });
 
-  it('describes the window and every source in summary.json', async () => {
+  it('describes the window and every source in fetch-summary.json', async () => {
     const h = await harness({ sources: [RSS, REPO] });
 
     await fetchCommand({}, h.deps);
 
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.startedAt).toBe('2026-10-13T00:00:00.000Z');
     expect(summary.window).toEqual({
       since: '2026-10-06T00:00:00.000Z',
@@ -282,7 +301,8 @@ describe('fetchCommand: what it saves', () => {
         items: 2,
         durationMs: 0,
         error: null,
-        raw: ['raw/example-feed.xml'],
+        raw: ['example-feed/raw/response-1.xml'],
+        formatted: 'example-feed/formatted/items.json',
       },
       expect.objectContaining({
         id: 'acme-widgets',
@@ -293,7 +313,7 @@ describe('fetchCommand: what it saves', () => {
         entries: 5,
         skipped: 0,
         items: 3,
-        raw: ['raw/acme-widgets.xml'],
+        raw: ['acme-widgets/raw/response-1.xml'],
       }),
     ]);
     expect(summary.totals).toEqual({ sources: 2, ok: 2, failed: 0, items: 5 });
@@ -321,10 +341,11 @@ describe('fetchCommand: raw file extension', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(await allFiles(join(runFolder(), 'raw'))).toEqual([`example-feed.${extension}`]);
-    expect(await readFile(join(runFolder(), 'raw', `example-feed.${extension}`), 'utf8')).toBe(
-      body,
-    );
+    expect(await allFiles(join(runFolder(), 'example-feed', 'raw'))).toEqual([
+      `response-1.${extension}`,
+      'responses.json',
+    ]);
+    expect(await readFile(rawPath('example-feed', extension), 'utf8')).toBe(body);
   });
 });
 
@@ -359,7 +380,7 @@ describe('fetchCommand: the table and the exit code', () => {
     await fetchCommand({}, h.deps);
 
     expect(tableRows(h.out())[1]?.at(-1)).toBe('1.5s');
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources[0]?.durationMs).toBe(1_500);
   });
 
@@ -383,13 +404,13 @@ describe('fetchCommand: the table and the exit code', () => {
     ]);
     expect(h.out()).toContain('2 sources: 1 ok, 1 failed, 2 items');
     expect(await allFiles(runFolder())).toEqual([
-      'items.json',
-      'raw/example-atom.html',
-      'raw/example-feed.xml',
-      'summary.json',
+      'example-atom/raw/response-1.html',
+      'example-atom/raw/responses.json',
+      ...sourceFiles('example-feed', 'xml'),
+      'fetch-summary.json',
     ]);
-    expect(await readFile(join(runFolder(), 'raw', 'example-atom.html'), 'utf8')).toBe('oops');
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    expect(await readFile(rawPath('example-atom', 'html'), 'utf8')).toBe('oops');
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources[1]).toEqual(
       expect.objectContaining({
         status: 'failed',
@@ -398,7 +419,7 @@ describe('fetchCommand: the table and the exit code', () => {
         skipped: null,
         items: 0,
         error: 'HTTP 500 fetching example-atom',
-        raw: ['raw/example-atom.html'],
+        raw: ['example-atom/raw/response-1.html'],
       }),
     );
   });
@@ -410,10 +431,10 @@ describe('fetchCommand: the table and the exit code', () => {
     const code = await fetchCommand({}, h.deps);
 
     expect(code).toBe(1);
-    expect(await readFile(join(runFolder(), 'raw', 'example-feed.xml'), 'utf8')).toBe(
+    expect(await readFile(rawPath('example-feed', 'xml'), 'utf8')).toBe(
       '<rss><channel><item></channel>',
     );
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources[0]).toEqual(
       expect.objectContaining({ status: 'failed', httpStatus: 200 }),
     );
@@ -435,7 +456,7 @@ describe('fetchCommand: the table and the exit code', () => {
       '0.0s',
       'fetch failed',
     ]);
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources[0]?.httpStatus).toBeNull();
   });
 
@@ -460,7 +481,7 @@ describe('fetchCommand: the table and the exit code', () => {
     for (const code of [0x1b, 0x9b, 0x202e]) {
       expect(h.out()).not.toContain(String.fromCharCode(code));
     }
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources[0]?.error?.length).toBeLessThanOrEqual(300);
     expect(summary.sources[0]?.error?.length).toBeGreaterThan(80);
   });
@@ -518,9 +539,10 @@ describe('fetchCommand: --source', () => {
       'example-feed',
       'acme-widgets',
     ]);
-    expect(await allFiles(join(runFolder(), 'raw'))).toEqual([
-      'acme-widgets.xml',
-      'example-feed.xml',
+    expect(await readdir(runFolder())).toEqual([
+      'acme-widgets',
+      'example-feed',
+      'fetch-summary.json',
     ]);
   });
 
@@ -552,7 +574,7 @@ describe('fetchCommand: the window', () => {
 
     await fetchCommand({}, h.deps);
 
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.window.days).toBe(1);
     expect(summary.sources[0]?.items).toBe(1);
   });
@@ -562,7 +584,7 @@ describe('fetchCommand: the window', () => {
 
     await fetchCommand({ since: '30d' }, h.deps);
 
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.window).toEqual({
       since: '2026-09-13T00:00:00.000Z',
       until: '2026-10-13T00:00:00.000Z',
@@ -593,55 +615,74 @@ describe('fetchCommand: the window', () => {
 
     await fetchCommand({}, h.deps);
 
-    const summary = (await readJson(join(runFolder(), 'summary.json'))) as Summary;
+    const summary = (await readJson(summaryPath())) as Summary;
     expect(summary.sources.map((source) => source.items)).toEqual([1, 2]);
-    const items = (await readJson(join(runFolder(), 'items.json'))) as Item[];
-    expect(items[0]?.title).toBe('Kubernetes 1.40 released');
+    const items = await savedItems('example-feed');
+    expect(items.map((item) => item.title)).toEqual(['Kubernetes 1.40 released']);
   });
 });
 
 describe('fetchCommand: where it writes', () => {
-  it('creates nothing under the data folder, not even the folder', async () => {
+  it("writes only the day's source folders and summary into the data folder", async () => {
     const h = await harness({ sources: [RSS, ATOM] });
 
     await fetchCommand({}, h.deps);
 
-    expect(await readdir(dir)).toEqual(['dist']);
+    expect(await readdir(dir)).toEqual(['data']);
+    expect(await readdir(runFolder())).toEqual([
+      'example-atom',
+      'example-feed',
+      'fetch-summary.json',
+    ]);
   });
 
-  it('leaves what is already in the data folder alone', async () => {
-    await mkdir(join(dir, 'data', 'runs'), { recursive: true });
-    await writeFile(join(dir, 'data', 'run.lock'), 'held');
+  it("leaves the week's digest, the lock and other days alone", async () => {
+    await mkdir(join(runFolder(), 'digest'), { recursive: true });
+    await writeFile(join(runFolder(), 'digest', 'run.json'), '{}');
+    await mkdir(join(outputRoot(), '2026-10-12', 'example-feed', 'raw'), { recursive: true });
+    await writeFile(join(outputRoot(), 'digest.lock'), 'held');
     const h = await harness();
 
     await fetchCommand({}, h.deps);
 
-    expect(await allFiles(join(dir, 'data'))).toEqual(['run.lock']);
-    expect(await readFile(join(dir, 'data', 'run.lock'), 'utf8')).toBe('held');
+    expect(await readFile(join(runFolder(), 'digest', 'run.json'), 'utf8')).toBe('{}');
+    expect(await readFile(join(outputRoot(), 'digest.lock'), 'utf8')).toBe('held');
+    expect(await readdir(join(outputRoot(), '2026-10-12', 'example-feed'))).toEqual(['raw']);
   });
 
-  it.each([
-    ['the data folder itself', 'data'],
-    ['a folder inside the data folder', 'data/fetch'],
-    ['a folder inside it, spelled with ..', 'dist/../data/x'],
-  ])('refuses --out %s', async (_name, out) => {
+  it("replaces a source's files from an earlier fetch that day", async () => {
+    await mkdir(join(runFolder(), 'example-feed', 'raw'), { recursive: true });
+    await writeFile(join(runFolder(), 'example-feed', 'raw', 'response-2.xml'), 'old');
+    await writeFile(summaryPath(), 'from an earlier fetch');
     const h = await harness();
 
-    const code = await fetchCommand({ out }, h.deps);
-
-    expect(code).toBe(1);
-    expect(h.err()).toContain('--out must not be inside the data folder');
-    expect(h.calls).toEqual([]);
-    expect(await readdir(dir)).toEqual([]);
-  });
-
-  it('accepts a folder whose name only starts like the data folder', async () => {
-    const h = await harness();
-
-    const code = await fetchCommand({ out: 'data-fetch' }, h.deps);
+    const code = await fetchCommand({}, h.deps);
 
     expect(code).toBe(0);
-    expect(await readdir(join(dir, 'data-fetch'))).toEqual([STAMP]);
+    expect(await allFiles(runFolder())).toEqual([
+      ...sourceFiles('example-feed', 'xml'),
+      'fetch-summary.json',
+    ]);
+    expect(await readFile(summaryPath(), 'utf8')).not.toBe('from an earlier fetch');
+  });
+
+  it('writes into another folder with --out, resolved against the working directory', async () => {
+    const h = await harness();
+
+    const code = await fetchCommand({ out: 'elsewhere' }, h.deps);
+
+    expect(code).toBe(0);
+    expect(await readdir(join(dir, 'elsewhere'))).toEqual([DAY]);
+    expect(await readdir(dir)).toEqual(['elsewhere']);
+  });
+
+  it('names the day in the time zone of the schedule', async () => {
+    const h = await harness({ clock: fixedClock('2026-10-13T22:30:00Z') });
+
+    await fetchCommand({}, h.deps);
+
+    // 00:30 on 14 October in Berlin.
+    expect(await readdir(outputRoot())).toEqual(['2026-10-14']);
   });
 
   it('fails with the reason, before any request, when the output folder cannot be written', async () => {
@@ -653,19 +694,6 @@ describe('fetchCommand: where it writes', () => {
     expect(code).toBe(1);
     expect(h.err()).toMatch(/ENOTDIR|EEXIST/);
     expect(h.calls).toEqual([]);
-  });
-
-  it('never reuses a folder: a second run in the same instant stops before it fetches', async () => {
-    await mkdir(runFolder(), { recursive: true });
-    await writeFile(join(runFolder(), 'summary.json'), 'from an earlier run');
-    const h = await harness();
-
-    const code = await fetchCommand({}, h.deps);
-
-    expect(code).toBe(1);
-    expect(h.err()).toBe(`${runFolder()} already exists; run the command again.\n`);
-    expect(h.calls).toEqual([]);
-    expect(await readFile(join(runFolder(), 'summary.json'), 'utf8')).toBe('from an earlier run');
   });
 });
 
@@ -679,9 +707,8 @@ describe('fetchCommand: the GitHub token', () => {
     expect(h.calls.map((call) => call.url)).toEqual([REPO_API_URL]);
     expect(h.calls[0]?.headers.get('authorization')).toBe(`Bearer ${TOKEN}`);
     expect(await allFiles(runFolder())).toEqual([
-      'items.json',
-      'raw/acme-widgets.json',
-      'summary.json',
+      ...sourceFiles('acme-widgets', 'json'),
+      'fetch-summary.json',
     ]);
     await expectNoSecretAnywhere(h, TOKEN);
   });
@@ -694,7 +721,7 @@ describe('fetchCommand: the GitHub token', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(await readJson(join(runFolder(), 'items.json'))).toEqual(await run.fetch(REPO, window));
+    expect(await savedItems('acme-widgets')).toEqual(await run.fetch(REPO, window));
   });
 
   it.each([
@@ -709,9 +736,7 @@ describe('fetchCommand: the GitHub token', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(h.out() + (await readFile(join(runFolder(), 'summary.json'), 'utf8'))).not.toContain(
-      'ghp_',
-    );
+    expect(h.out() + (await readFile(summaryPath(), 'utf8'))).not.toContain('ghp_');
   });
 
   it("leaves a feed's own words alone when another secret is a common word", async () => {
@@ -719,10 +744,10 @@ describe('fetchCommand: the GitHub token', () => {
 
     await fetchCommand({}, h.deps);
 
-    expect(await readFile(join(runFolder(), 'raw', 'example-feed.xml'), 'utf8')).toBe(
+    expect(await readFile(rawPath('example-feed', 'xml'), 'utf8')).toBe(
       await fixture('feeds/rss2.xml'),
     );
-    const items = (await readJson(join(runFolder(), 'items.json'))) as Item[];
+    const items = await savedItems('example-feed');
     expect(items.map((item) => item.title)).toContain('Postgres 19 beta');
   });
 
@@ -733,7 +758,7 @@ describe('fetchCommand: the GitHub token', () => {
     await fetchCommand({}, h.deps);
 
     expect(tableRows(h.out())[1]?.at(-1)).toBe('login failed for [redacted]');
-    expect(await readFile(join(runFolder(), 'summary.json'), 'utf8')).not.toContain('hunter2');
+    expect(await readFile(summaryPath(), 'utf8')).not.toContain('hunter2');
   });
 
   it('reads the public feed, with no authorization, when there is no token', async () => {
@@ -763,7 +788,7 @@ describe('fetchCommand: the GitHub token', () => {
 
     await fetchCommand({}, h.deps);
 
-    const raw = await readFile(join(runFolder(), 'raw', 'acme-widgets.json'), 'utf8');
+    const raw = await readFile(rawPath('acme-widgets', 'json'), 'utf8');
     expect(raw).toContain('[redacted]');
     await expectNoSecretAnywhere(h, TOKEN);
   });

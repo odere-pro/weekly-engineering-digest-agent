@@ -26,11 +26,11 @@ name. Run commands as `pnpm digest <command>`. In Docker the prefix is
 | `doctor`          | One line per check with a `fix:` hint; `--readiness` gives a verdict per profile    |
 | `run`             | One full run: `--since`, `--dry-run`, `--force`, `--seed`, `--out`                  |
 | `eval`            | Runs the eval set for `--profile <name>` or `all` and prints the scorecard          |
-| `fetch`           | Fetches the sources only, with no models, into `dist/fetch/<timestamp>/`            |
+| `fetch`           | Fetches the sources only, with no models, into `dist/<day>/<source>/`               |
 | `show <week>`     | Prints a saved run; `--part` picks items, scores, drafts, digest, run or review     |
-| `preview <week>`  | Renders the digest for markdown, email and Slack into `dist/preview/<week>/`        |
+| `preview <week>`  | Renders the digest for markdown, email and Slack into the week's `digest/preview/`  |
 | `history`         | Lists the last 12 runs (`-n` changes the count)                                     |
-| `feedback <week>` | Turns the ticks in `review.md` into `data/feedback/<week>.json`                     |
+| `feedback <week>` | Turns the ticks in `review.md` into `dist/feedback/<week>.json`                     |
 | `serve`           | Runs the weekly scheduler in the foreground (the Docker Compose service)            |
 
 - Exit codes: 0 sent, dry-run, skipped or fine; 1 failed; 2 blocked; 3 quiet. `doctor` exits 1 on
@@ -71,7 +71,7 @@ name. Run commands as `pnpm digest <command>`. In Docker the prefix is
 
 - Folder: [src/cli/](../../src/cli/). Maintainer notes: [CLAUDE.md](../../src/cli/CLAUDE.md).
 - No port. One folder per command inside it; `program.ts` registers them. The build bundles the
-  entry point into `dist/cli.js`.
+  entry point into `dist/artifacts/cli.js`.
 - Tests sit next to each handler. They pass fake I/O objects, collect the output and check the
   returned exit code.
 

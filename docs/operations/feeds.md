@@ -26,7 +26,8 @@ The full fetch rules, the default list and the hosts contacted are on [default s
 pnpm digest fetch --source <id> --since 7d
 ```
 
-No models run. Raw and parsed data land in `dist/fetch/<timestamp>/`. See
+No models run. Raw and parsed data land in `dist/<day>/<source>/` (`raw/` and `formatted/`), and a
+run keeps the same files for its week in `dist/<monday>/<source>/`. See
 [fetch sources only](../runbooks/run/fetch-sources-only.md).
 
 ## Fixing a failing feed

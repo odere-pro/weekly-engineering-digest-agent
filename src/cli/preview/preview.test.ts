@@ -11,6 +11,8 @@ import { makeConfig, makeDraft, makeItem, makeRunRecord } from '../../../test/bu
 import { MemoryRunStore } from '../../../test/fakes';
 
 const WEEK = '2026-W42';
+/** The default folder: <dataDir>/<monday>/digest/preview, with dataDir `dist` under cwd. */
+const previewDir = (): string => join(cwd, 'dist', '2026-10-12', 'digest', 'preview');
 const SECRET = 'hunter2-secret-token';
 
 let cwd: string;
@@ -43,7 +45,7 @@ function harness(
   const out: string[] = [];
   const err: string[] = [];
   const loaded: LoadedConfig = {
-    config: makeConfig(),
+    config: makeConfig({ dataDir: 'dist' }),
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: options.secrets ?? {},
     profile: PROFILES.quality,
@@ -61,10 +63,10 @@ function harness(
 }
 
 describe('previewCommand', () => {
-  it('writes every channel file under dist/preview/<week> and prints the paths', async () => {
+  it("writes every channel file into the week's digest folder, preview/, and prints the paths", async () => {
     const h = harness();
     expect(await previewCommand({ week: WEEK }, h.deps)).toBe(0);
-    const dir = join(cwd, 'dist', 'preview', WEEK);
+    const dir = previewDir();
     expect((await readdir(dir)).sort()).toEqual([
       'digest.md',
       'email.html',
@@ -79,7 +81,7 @@ describe('previewCommand', () => {
   it('renders the winning draft, not another one', async () => {
     const h = harness();
     await previewCommand({ week: WEEK }, h.deps);
-    const dir = join(cwd, 'dist', 'preview', WEEK);
+    const dir = previewDir();
     const markdown = await readFile(join(dir, 'digest.md'), 'utf8');
     expect(markdown).toBe(renderView(buildDigestView(winner.digest, { disabledGuards: [] })));
     expect(markdown).toContain('Picked release');
@@ -95,7 +97,7 @@ describe('previewCommand', () => {
   it('shows the fallback footer for a fallback week, and not for a normal one', async () => {
     const fallback = harness({ fallback: true });
     await previewCommand({ week: WEEK, channel: 'markdown' }, fallback.deps);
-    const text = await readFile(join(cwd, 'dist', 'preview', WEEK, 'digest.md'), 'utf8');
+    const text = await readFile(join(previewDir(), 'digest.md'), 'utf8');
     expect(text).toContain(FALLBACK_NOTE);
     expect(text).toBe(
       renderView(buildDigestView(winner.digest, { disabledGuards: [], fallback: true })),
@@ -110,7 +112,7 @@ describe('previewCommand', () => {
   it('writes only the chosen channel', async () => {
     const h = harness();
     expect(await previewCommand({ week: WEEK, channel: 'slack' }, h.deps)).toBe(0);
-    expect(await readdir(join(cwd, 'dist', 'preview', WEEK))).toEqual(['slack.json']);
+    expect(await readdir(previewDir())).toEqual(['slack.json']);
     const e = harness();
     await previewCommand({ week: WEEK, channel: 'email', out: 'mail' }, e.deps);
     expect((await readdir(join(cwd, 'mail', WEEK))).sort()).toEqual(['email.html', 'email.txt']);
@@ -133,7 +135,7 @@ describe('previewCommand', () => {
       makeRunRecord({ runId: WEEK, winner: 'winner-model', disabledGuards: ['graniteRisk'] }),
     );
     await previewCommand({ week: WEEK, channel: 'markdown' }, h.deps);
-    const markdown = await readFile(join(cwd, 'dist/preview', WEEK, 'digest.md'), 'utf8');
+    const markdown = await readFile(join(previewDir(), 'digest.md'), 'utf8');
     expect(markdown).toContain('graniteRisk');
   });
 
@@ -142,7 +144,7 @@ describe('previewCommand', () => {
     const leaky = makeDraft([makeItem({ title: `Key ${SECRET}` })], 'winner-model');
     h.store.artifacts.set(`${WEEK}/drafts.json`, JSON.stringify({ drafts: [leaky] }));
     await previewCommand({ week: WEEK }, h.deps);
-    const dir = join(cwd, 'dist/preview', WEEK);
+    const dir = previewDir();
     for (const name of await readdir(dir)) {
       expect(await readFile(join(dir, name), 'utf8')).not.toContain(SECRET);
     }
@@ -214,7 +216,7 @@ describe('previewCommand: hostile text', () => {
     const leaky = makeDraft([makeItem({ title: `Key ${secret} \u001b[31mred` })], 'winner-model');
     h.store.artifacts.set(`${WEEK}/drafts.json`, JSON.stringify({ drafts: [leaky] }));
     await previewCommand({ week: WEEK }, h.deps);
-    const dir = join(cwd, 'dist/preview', WEEK);
+    const dir = previewDir();
     for (const name of await readdir(dir)) {
       const text = await readFile(join(dir, name), 'utf8');
       expect(text).not.toContain(secret);

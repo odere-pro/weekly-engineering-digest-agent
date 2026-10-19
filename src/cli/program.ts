@@ -60,7 +60,10 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .option('--dry-run', 'write the digest to disk and send nothing')
     .option('--force', 'run even if this week already has a sent digest')
     .option('--seed <n>', 'sampling seed for this run (overrides models.seed)', nonNegativeInt)
-    .option('--out <dir>', 'folder for the Markdown digest (default: delivery.markdown.dir)')
+    .option(
+      '--out <dir>',
+      "folder for the Markdown digest (default: delivery.markdown.dir, else the week's digest folder)",
+    )
     .action(
       async (options: {
         since?: string;
@@ -96,7 +99,7 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .description('fetch the sources only, no models; save raw and parsed data for debugging')
     .option('--source <id...>', 'only these source ids')
     .option('--since <window>', 'collection window, e.g. 7d')
-    .option('--out <dir>', 'folder for the fetch output (default: dist/fetch)')
+    .option('--out <dir>', 'data folder to write <day>/<source>/ into (default: dataDir, dist)')
     .action(async (options: { source?: string[]; since?: string; out?: string }) => {
       setExitCode(await fetchCommand(withConfig(options)));
     });
@@ -116,7 +119,10 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .description("render a run's digest for each channel into files, without sending")
     .argument('<week>', 'ISO week id, for example 2026-W42')
     .option('--channel <name>', 'markdown, email, slack or all (default: all)')
-    .option('--out <dir>', 'folder for the previews (default: dist/preview)')
+    .option(
+      '--out <dir>',
+      "folder for the previews (default: preview/ in the week's digest folder)",
+    )
     .action(async (week: string, options: { channel?: string; out?: string }) => {
       setExitCode(await previewCommand(withConfig({ week, ...options })));
     });
@@ -131,7 +137,7 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
 
   program
     .command('feedback')
-    .description('turn the ticks in data/runs/<week>/review.md into eval labels')
+    .description("turn the ticks in the week's digest/review.md into eval labels")
     .argument('<week>', 'ISO week id, for example 2026-W43')
     .action(async (week: string) => {
       setExitCode(await feedbackCommand(withConfig({ week })));

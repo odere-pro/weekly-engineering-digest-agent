@@ -2,7 +2,7 @@ import type { SourceFetcher } from '../SourceFetcher';
 import type { Logger } from '../../shared/telemetry';
 import { githubAtomAdapter } from './githubAtomAdapter';
 import { createGithubRestAdapter } from './githubRestAdapter';
-import { createFetcher } from './pipeline';
+import { createFetcher, type SourceTap } from './pipeline';
 
 export interface GithubReleasesOptions {
   fetch?: typeof fetch;
@@ -11,6 +11,8 @@ export interface GithubReleasesOptions {
   maxSummaryChars?: number;
   /** Where a release that had to be skipped is reported, once per source (W5-01, F18). */
   logger?: Logger;
+  /** Sees each raw answer, see `SourceTap`: a run archives them (`archive/`). */
+  tap?: SourceTap;
 }
 
 /** GitHub releases for repositories on the allowlist (W1-02). */
@@ -21,5 +23,6 @@ export function createGithubReleasesFetcher(options: GithubReleasesOptions = {})
     ...(options.fetch ? { fetch: options.fetch } : {}),
     ...(options.maxSummaryChars === undefined ? {} : { maxSummaryChars: options.maxSummaryChars }),
     ...(options.logger ? { logger: options.logger } : {}),
+    ...(options.tap ? { tap: options.tap } : {}),
   });
 }

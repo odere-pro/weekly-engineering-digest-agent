@@ -25,7 +25,8 @@ It is the first thing every command does, and the input of the app wiring. See
 - Applies the limits. Examples: `topN` 3 to 5 (default 5), `windowDays` 1 to 31 (default 7),
   `focusAreas` 1 to 25 unique entries, `dedupeWeeks` 0 to 12 (default 4), `keepWeeks` at least 1
   (default 12) and not below `dedupeWeeks`, `models.retries` 0 to 5 (default 2), `models.seed` 42.
-- Refuses a source URL that contains `user:pass@`, and a `SLACK_WEBHOOK_URL` that is not https.
+- Refuses a source URL that contains `user:pass@`, a source with the id `digest` (that name is the
+  week's digest folder), and a `SLACK_WEBHOOK_URL` that is not https.
 - Works out which machine the models run on. `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH` override the
   process, for Docker on a Mac. On anything but Apple silicon every profile resolves to an untuned
   fallback set, and `digest doctor` says so.

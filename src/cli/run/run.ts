@@ -1,7 +1,12 @@
 import { access } from 'node:fs/promises';
 import { join } from 'node:path';
-import { digestFilePaths } from '../../delivery/adapters/markdownFile';
+import {
+  digestFilePaths,
+  markdownFileOptions,
+  markdownFolder,
+} from '../../delivery/adapters/markdownFile';
 import { DIGEST_FILE } from '../../store/adapters/runFolders';
+import { weekDigestDir } from '../../store/layout';
 import { buildApp, type AppHandle } from '../../app/container';
 import { loadConfig, redactSecrets, type LoadedConfig } from '../../config/load';
 import type { Secrets } from '../../config/schema';
@@ -99,7 +104,7 @@ export async function runCommand(
         force: options.force,
       });
       const copy = await saveDryRunCopy(app, result);
-      const dir = loaded.config.delivery.markdown.dir;
+      const dir = markdownFolder(markdownFileOptions(loaded.config), result.record.runId);
       printSummary(report, loaded, result, await localFilesOf(dir, result, copy.written));
       if (copy.error === undefined) return result.exitCode;
       report.err(`Error: could not write the dry-run digest to ${dir}: ${copy.error}\n`);
@@ -249,7 +254,7 @@ function printSummary(
     ['Duration', formatRunDuration(record)],
   ];
   if (result.markdown !== undefined) {
-    fields.push(['Digest', join(loaded.config.dataDir, 'runs', record.runId, DIGEST_FILE)]);
+    fields.push(['Digest', join(weekDigestDir(loaded.config.dataDir, record.runId), DIGEST_FILE)]);
   }
   if (files) {
     fields.push(['Markdown', files.markdown]);

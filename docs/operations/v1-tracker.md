@@ -6,7 +6,7 @@ v1.0 is declared after four Mondays in a row delivered on time with every gate g
 manual fix. Any manual fix resets the count to zero.
 
 One row per scheduled Monday run. Fill it from `digest history` and the run folder
-(`data/runs/<week>/run.json`).
+(`dist/<monday>/digest/run.json`).
 
 | Date (Monday) | ISO week | Run status | Duration | Manual intervention | Clean streak |
 | ------------- | -------- | ---------- | -------- | ------------------- | ------------ |

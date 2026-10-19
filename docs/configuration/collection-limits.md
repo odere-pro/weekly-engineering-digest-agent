@@ -5,14 +5,14 @@ Part of [Configuration](README.md).
 These six keys decide how much the agent collects, how many items reach the digest, how long
 history is kept, and where it is stored.
 
-| Key                 | Type    | Default | Limits    | What it sets                                           |
-| ------------------- | ------- | ------- | --------- | ------------------------------------------------------ |
-| `windowDays`        | integer | 7       | 1 to 31   | How far back to collect, in days                       |
-| `maxItemsPerSource` | integer | 20      | 1 to 100  | Newest items kept from each source                     |
-| `topN`              | integer | 5       | 3 to 5    | Items in the digest                                    |
-| `dedupeWeeks`       | integer | 4       | 0 to 12   | Weeks of sent URLs removed from new digests            |
-| `keepWeeks`         | integer | 12      | 1 or more | Weeks of full run folders kept. At least `dedupeWeeks` |
-| `dataDir`           | string  | `data`  | not empty | Where runs and the lock live                           |
+| Key                 | Type    | Default | Limits    | What it sets                                                                 |
+| ------------------- | ------- | ------- | --------- | ---------------------------------------------------------------------------- |
+| `windowDays`        | integer | 7       | 1 to 31   | How far back to collect, in days                                             |
+| `maxItemsPerSource` | integer | 20      | 1 to 100  | Newest items kept from each source                                           |
+| `topN`              | integer | 5       | 3 to 5    | Items in the digest                                                          |
+| `dedupeWeeks`       | integer | 4       | 0 to 12   | Weeks of sent URLs removed from new digests                                  |
+| `keepWeeks`         | integer | 12      | 1 or more | Weeks kept in full, with their fetched data and logs. At least `dedupeWeeks` |
+| `dataDir`           | string  | `dist`  | not empty | Where runs, fetched data, logs and the lock live                             |
 
 ```json
 {
@@ -21,7 +21,7 @@ history is kept, and where it is stored.
   "topN": 5,
   "dedupeWeeks": 4,
   "keepWeeks": 12,
-  "dataDir": "data"
+  "dataDir": "dist"
 }
 ```
 
@@ -46,14 +46,18 @@ history is kept, and where it is stored.
 
 ## Storing
 
-- `keepWeeks`: after each run, week folders older than `keepWeeks` weeks lose everything except
-  `digest.md`. There is no upper limit. `keepWeeks` below `dedupeWeeks` is refused, because pruned
+- `keepWeeks`: after each run, weeks older than `keepWeeks` weeks are pruned: they lose their
+  source data and everything in their `digest/` folder except `digest.md` and the delivered
+  `<week>.md`, `<week>.html` and `<week>.failed.md`, and the fetched data and logs of their days go
+  too (see [disk and pruning](../operations/disk-and-pruning.md)). There is no upper limit. `keepWeeks` below `dedupeWeeks` is refused, because pruned
   weeks would drop out of the dedupe.
-- `dataDir` is relative to the folder you run from. Under it: `runs/<week>/`, `digest.lock` and
-  `feedback/`. The folder must be on a local disk that supports hard links. `digest doctor` checks
-  that it is writable (`data dir`).
-- In Docker the folder `./data` is mounted at `/app/data`. Keep `dataDir` at `data`, or the
-  history is written inside the container and lost with it.
+- `dataDir` is relative to the folder you run from. Under it: `<monday>/digest/` (a week's run),
+  `<monday>/<source>/` (what each source answered that week), `<day>/<source>/` (`digest fetch`),
+  `logs/<day>/digest.log`, `digest.lock`, `feedback/`, `eval/checkpoints/` and `artifacts/` (the
+  `pnpm build` output). See [files and paths](../reference/files-and-paths.md). The folder must be
+  on a local disk that supports hard links. `digest doctor` checks that it is writable (`data dir`).
+- In Docker the folder `./dist` is mounted at `/app/dist`, the default `dataDir`. Keep `dataDir` at
+  `dist`, or the history is written inside the container and lost with it.
 
 ## Change it
 

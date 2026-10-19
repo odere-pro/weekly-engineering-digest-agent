@@ -1,6 +1,6 @@
 import type { SourceFetcher } from '../SourceFetcher';
 import type { Logger } from '../../shared/telemetry';
-import { createFetcher } from './pipeline';
+import { createFetcher, type SourceTap } from './pipeline';
 import { rssAdapter } from './rssAdapter';
 
 export interface RssFetcherOptions {
@@ -10,6 +10,8 @@ export interface RssFetcherOptions {
   maxSummaryChars?: number;
   /** Where an entry that had to be skipped is reported. */
   logger?: Logger;
+  /** Sees each raw answer, see `SourceTap`: a run archives them (`archive/`). */
+  tap?: SourceTap;
 }
 
 /** RSS and Atom feeds (W1-01). */

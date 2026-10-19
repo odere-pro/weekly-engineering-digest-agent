@@ -33,7 +33,7 @@ in [data flow](../architecture/data-flow.md).
   fallback digest from the selected items' own text (no model) and sends that. Only when the
   fallback itself cannot be built does the week end `blocked`. See [Fallback digest](#fallback-digest).
 - At the end it saves `run.json`, the held files, `review.md` and `error.json` (failure only),
-  sends a failure note when one is due, and prunes run folders older than `keepWeeks`.
+  sends a failure note when one is due, and prunes the weeks older than `keepWeeks`.
 - It never replaces a record that got further. A `sent` week stays `sent`, and a partly
   delivered week stays that way unless the new run reaches a channel too.
 

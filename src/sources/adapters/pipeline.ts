@@ -51,9 +51,9 @@ export interface SourceEntries {
 }
 
 /**
- * A debug tap for `digest fetch` (W8-06): sees the raw answers and the entry counts of a
- * source, and does not alter what is fetched. Its listeners must not throw. Off by default; a
- * run never builds a fetcher with one. Article pages fetched to fill in missing text are not
+ * A tap on a source's raw answers and entry counts (W8-06); it does not alter what is fetched.
+ * Its listeners must not throw. Off by default. `digest fetch` and a run's archive (`archive/`)
+ * set one to save what each source answered. Article pages fetched to fill in missing text are not
  * reported, only the source's own requests.
  */
 export interface SourceTap {
@@ -75,7 +75,7 @@ export interface FetcherOptions {
    * allowlist. Defaults to the hosts of `DEFAULT_SOURCES`.
    */
   collectionHosts?: readonly string[];
-  /** Debug tap, see `SourceTap`. Never set by a run. */
+  /** See `SourceTap`. */
   tap?: SourceTap;
 }
 
@@ -91,7 +91,7 @@ interface GetterContext {
   signal: AbortSignal | undefined;
 }
 
-/** A `Get` for one source: redirects go only where `allowed` says; `onAnswer` is the debug tap. */
+/** A `Get` for one source: redirects go only where `allowed` says; `onAnswer` is the tap. */
 function getterFor(
   { fetchImpl, source, signal }: GetterContext,
   allowed: (hostname: string) => boolean,

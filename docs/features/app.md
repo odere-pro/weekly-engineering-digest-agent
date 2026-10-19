@@ -22,13 +22,18 @@ pipeline uses them through ports. See [ports and adapters](../architecture/ports
   true. A missing `SMTP_PASSWORD` or `SLACK_WEBHOOK_URL` stops the start with an error that names
   the variable.
 - Builds the Ollama model provider, the RSS and GitHub fetchers (a `GITHUB_TOKEN` switches GitHub
-  sources to the REST API), the five guards and the file run store. The rule guard gets the hosts
-  of your configured feeds, so a link to one of them is never off-host.
+  sources to the REST API), the five guards and the file run store. A run saves what each source
+  answered and the items it was read into (`raw/` and `formatted/` per source, in the week's
+  Monday folder). The saves run in the background and `close()` waits for them; a failed save is
+  only a warning, and nothing is saved outside a run. The rule guard gets the hosts of your
+  configured feeds, so a link to one of them is never off-host.
 - Wraps every delivery channel with retry (2 retries, after 5 s then 10 s, only when sending again
   cannot double the message) and with secret redaction. Redaction wraps the retry, so each retry
   sends the same cleaned message.
 - Wraps the run store so secrets are removed from every artifact and run record before they reach
   disk. A record that no longer fits its schema after redaction is not saved.
+- Builds the logger: JSON lines on stdout and in the day's log file (`<dataDir>/logs/<day>/digest.log`),
+  used by runs and by `digest eval`.
 - Gives log lines the right `runId` and `step`, even though the model, fetchers and guards are built
   once and `digest serve` runs many weeks. The model calls get spans with the role and the model
   (token counts too), never a prompt or an answer.

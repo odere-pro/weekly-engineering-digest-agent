@@ -60,8 +60,10 @@ This is the first command to run after any week that did not end well.
    `run.json`.
 
    ```bash
-   ls data/runs
+   ls -d dist/*/digest
    ```
+
+   Each match is the run folder of one week, inside the folder of that week's Monday.
 
 ## Verify
 
@@ -76,8 +78,8 @@ Nothing changed. The command is read-only.
 
 | Symptom                                       | Cause                                               | Fix                                                               |
 | --------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------- |
-| `No runs yet.`                                | Wrong folder, or no run has finished                | Check `dataDir` in the config; Docker uses `./data`               |
-| A week is not listed                          | Older than `keepWeeks`, so only `digest.md` is left | Read `data/runs/<week>/digest.md`                                 |
+| `No runs yet.`                                | Wrong folder, or no run has finished                | Check `dataDir` in the config; Docker uses `./dist`               |
+| A week is not listed                          | Older than `keepWeeks`, so only `digest.md` is left | Read `dist/<monday>/digest/digest.md`                             |
 | A week is not listed (recent)                 | The run never saved a record: lock held, bad config | Read the logs; see [Failed run](../debug/failed-run.md)           |
 | Log line `Ignoring unreadable run.json`       | The file is corrupt or belongs to another week      | Re-run the week; see [Re-run a week](../recover/re-run-a-week.md) |
 | `-n` is refused: `must be a positive integer` | `-n` takes a whole number of 1 or more              | Pass a positive integer, for example `-n 4`                       |

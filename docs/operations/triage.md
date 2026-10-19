@@ -8,10 +8,11 @@ Start here after any run that did not end `sent`, and after a `sent` week whose 
 ## The first four steps
 
 1. `pnpm digest history -n 4`. The newest row is the run to look at.
-2. `pnpm digest show <week>` for a summary, or open `data/runs/<week>/run.json`. After a failure
+2. `pnpm digest show <week>` for a summary, or open `dist/<monday>/digest/run.json`. After a failure
    also open `error.json` in the same folder.
 3. `pnpm digest doctor`. It prints a `fix:` line for each problem.
-4. Logs are JSON on stdout (`docker compose logs digest` in Docker). Filter by `runId` for one
+4. Logs are JSON on stdout (`docker compose logs digest` in Docker) and in
+   `dist/logs/<day>/digest.log`. Filter by `runId` for one
    week and `step` for one step. `LOG_LEVEL=debug` adds detail.
 
 Failed and blocked runs send a short failure note on every channel and write `<week>.failed.md`.
@@ -39,7 +40,7 @@ signs.
 | `Another run is in progress`                               | The lock is held                                                | [Stuck lock](../runbooks/debug/stuck-lock.md)                                   |
 | `Run aborted before the <step> step`                       | `serve` hit its 3 hour limit or got a second stop signal        | [Scheduler](scheduler.md)                                                       |
 | Invalid config or `Invalid --since`                        | A field is wrong; the message names it                          | [Config file](../configuration/config-file.md)                                  |
-| `Could not save the run record`                            | `data/` is not writable or the disk is full                     | [Prune disk](../runbooks/maintain/prune-disk.md)                                |
+| `Could not save the run record`                            | `dist/` is not writable or the disk is full                     | [Prune disk](../runbooks/maintain/prune-disk.md)                                |
 
 ## Check ids on a blocked or fallback run
 
@@ -59,8 +60,8 @@ week, read the draft before you switch the guard off. Mode `all` rejects less an
 
 ## Keep the evidence
 
-Before you change a prompt, a threshold or a model, keep the `data/runs/<week>/` folder of the
-bad week. It is the raw material for a new eval case:
+Before you change a prompt, a threshold or a model, keep the `dist/<monday>/` folder of the
+bad week (the `digest/` folder and what each source answered). It is the raw material for a new eval case:
 [add an eval case from a bad week](../runbooks/maintain/add-eval-case-from-a-bad-week.md).
 
 ## Related

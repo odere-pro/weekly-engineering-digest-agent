@@ -34,6 +34,10 @@ It is the first step, collect, at the start of the chain described in
   host.
 - A source that fails goes to `failedSources` in `run.json`, with its error text cut to 300
   characters. The other sources carry on. If nothing at all is collected, the week ends `quiet`.
+- During a run, saves what each source answered and the items it was read into, under the week's
+  Monday folder: `<dataDir>/<monday>/<sourceId>/raw/` and `formatted/items.json`. A failed save is
+  only a warning, and the save runs in the background, so a slow disk never eats the fetch time limit.
+  See [data layout](../architecture/data-layout.md).
 - `digest init` writes the 24 default sources. See the [default source list](../sources.md).
 
 ## What you can configure
@@ -60,7 +64,8 @@ It is the first step, collect, at the start of the chain described in
   in `run.json`.
 - Every source fails or the window is empty: the week is `quiet`. See
   [quiet week](../runbooks/debug/quiet-week.md).
-- To see what a feed returned, with no models, run `pnpm digest fetch --source <id>`. See
+- To see what a feed returned during a run, open `<dataDir>/<monday>/<sourceId>/raw/`. To see it
+  now, with no models, run `pnpm digest fetch --source <id>`. See
   [fetch sources only](../runbooks/run/fetch-sources-only.md) and
   [feeds](../operations/feeds.md).
 

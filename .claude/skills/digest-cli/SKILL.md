@@ -14,17 +14,17 @@ gets a new user running and sends every other question to one runbook in `docs/r
 - Never invent a flag or a config key. Check `pnpm digest <command> --help` and
   `src/config/schema.ts` (full list: `docs/reference/config-keys.md`).
 - Ask before anything that sends or repeats a delivery (`run` without `--dry-run`, `--force`),
-  deletes data (`data/runs/`, `data/digest.lock`) or changes the schedule.
+  deletes data (`dist/<monday>/`, `dist/digest.lock`) or changes the schedule.
 - Never push or merge. Commits are the maintainer's.
 - Prefer `--dry-run` while exploring. It writes the digest files and sends nothing.
 
 ## Command prefix
 
-| Setup  | Prefix                                            |
-| ------ | ------------------------------------------------- |
-| Node   | `pnpm digest <command>`                           |
-| Built  | `node dist/cli.js <command>` (after `pnpm build`) |
-| Docker | `docker compose run --rm digest <command>`        |
+| Setup  | Prefix                                                      |
+| ------ | ----------------------------------------------------------- |
+| Node   | `pnpm digest <command>`                                     |
+| Built  | `node dist/artifacts/cli.js <command>` (after `pnpm build`) |
+| Docker | `docker compose run --rm digest <command>`                  |
 
 The global option `-c, --config <path>` (default `digest.config.json`) goes before the command.
 
@@ -42,7 +42,7 @@ Work through these with the user. Stop at the first red line and use the linked 
 5. **Health.** `pnpm digest doctor`. Every line must be `✓` or an accepted `!`. Fix each `✗`
    from its `fix:` line.
 6. **First dry run.** `pnpm digest run --dry-run`. It must exit 0 and write `<week>.md` and
-   `<week>.html` to `dist/digests` (Docker: `data/digests`).
+   `<week>.html` to the week's folder, `dist/<monday>/digest/` (Docker: the same, in `./dist`).
    Details: `docs/runbooks/set-up/first-run.md`.
 7. **Schedule.** Only after step 6 works: `docs/runbooks/set-up/schedule-weekly-runs.md`.
 

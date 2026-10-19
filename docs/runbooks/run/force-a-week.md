@@ -36,7 +36,8 @@ How `--force` differs from the default:
 `--force` does not skip the run lock, the guards, the link check or the format check. It does not
 change the window or the week id.
 
-1. Check the state and, if you want the old files, copy `data/runs/<week>/`.
+1. Check the state and, if you want the old files, copy `dist/<monday>/` (the run folder and the source data). The run replaces each source's files
+   as soon as it fetches them, even if it fails later.
 2. Run the week.
 
    ```bash
@@ -48,7 +49,8 @@ change the window or the week id.
 ## Verify
 
 - Exit code 0 and `Status    sent`; `pnpm digest history -n 1` shows `sent` with a new duration.
-- `data/runs/<week>/` and `dist/digests/<week>.md` hold the new digest.
+- `dist/<monday>/digest/` and `<week>.md` (in `delivery.markdown.dir`, or by default beside it)
+  hold the new digest. The source data in `dist/<monday>/<source>/` is replaced too.
 - If the forced run ends `failed`, `blocked` or `quiet`, the earlier sent record and files stay.
   The summary says the week's run folder is unchanged.
 

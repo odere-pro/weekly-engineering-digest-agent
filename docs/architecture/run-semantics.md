@@ -7,12 +7,13 @@ The rules for what counts as "a run", when a run may start, and how it ends.
 ## Week id
 
 A run belongs to an ISO week, for example `2026-W43`. The week is read in `schedule.timeZone`.
-The run folder, the run record and the digest files are all named by the week id. `--since`
+The run record and the digest files are named by the week id, and the run folder by the Monday of
+that week (`dist/2026-10-19/digest/` for `2026-W43`), whatever day the run starts. `--since`
 changes the collection window, not the week.
 
 ## One run at a time
 
-- **Lock.** A run takes `data/digest.lock` (inside `dataDir`) before it does anything. A holder
+- **Lock.** A run takes `dist/digest.lock` (inside `dataDir`) before it does anything. A holder
   rewrites the heartbeat every 60 seconds. A lock whose heartbeat is 5 minutes old, or whose
   process is gone on the same host, is taken over. Otherwise a second run fails with exit 1 and
   the message "Another run is in progress". See [lock](../operations/lock.md).

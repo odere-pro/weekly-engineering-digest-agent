@@ -24,7 +24,7 @@ subnet, no NAT gateway (a NAT gateway alone costs about $36).
 
 | Question                               | A: Fargate + GPU EC2                                  | B: Fargate + Bedrock                        | C: local + S3 and SES                              |
 | -------------------------------------- | ----------------------------------------------------- | ------------------------------------------- | -------------------------------------------------- |
-| What runs where                        | Task starts a `g5.xlarge` with Ollama, runs, stops it | Task calls Bedrock models instead of Ollama | Mac as today; `data/` synced to S3; SES sends mail |
+| What runs where                        | Task starts a `g5.xlarge` with Ollama, runs, stops it | Task calls Bedrock models instead of Ollama | Mac as today; `dist/` synced to S3; SES sends mail |
 | Monthly cost                           | about $19                                             | about $3.50                                 | about $1                                           |
 | Same models and scores as the fallback | yes                                                   | no                                          | yes (Mac profiles)                                 |
 | Code to write                          | a start/stop wrapper                                  | new provider, guards, root                  | none                                               |

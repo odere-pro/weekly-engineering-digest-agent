@@ -54,9 +54,9 @@ runs the whole pipeline and sends nothing. Do it before you schedule weekly runs
    Items     131 collected → 5 in digest
    Winner    gemma4:e4b-mlx
    Duration  5m 40s
-   Digest    data/runs/2026-W43/digest.md
-   Markdown  dist/digests/2026-W43.md
-   HTML      dist/digests/2026-W43.html
+   Digest    dist/2026-10-19/digest/digest.md
+   Markdown  dist/2026-10-19/digest/2026-W43.md
+   HTML      dist/2026-10-19/digest/2026-W43.html
    Dry run: nothing was sent.
    ```
 
@@ -69,16 +69,17 @@ runs the whole pipeline and sends nothing. Do it before you schedule weekly runs
 ## Verify
 
 - `run --dry-run` exits 0 and prints `Status    dry-run`.
-- `<week>.md` and `<week>.html` exist in `dist/digests` (Node) or `data/digests` (Docker).
-- `data/runs/<week>/` holds `run.json`, `items.json`, `scores.json`, `drafts.json`, `digest.md`
-  and `review.md`.
+- `<week>.md` and `<week>.html` exist in the week's folder, `dist/<monday>/digest/` (Node and
+  Docker; `delivery.markdown.dir` moves them).
+- `dist/<monday>/digest/` holds `run.json`, `items.json`, `scores.json`, `drafts.json`,
+  `digest.md` and `review.md`. `dist/<monday>/<source>/raw/` holds what each source answered.
 - A dry run does not test email or Slack. `doctor` only checks that `SMTP_PASSWORD` or
   `SLACK_WEBHOOK_URL` is set, not that the provider accepts it.
 
 ## Roll back
 
 Nothing needs undoing. A dry run sends nothing and sends no failure note. Its run folder and
-digest files stay; delete them if you want a clean start (`data/runs/<week>/`, `dist/digests/`).
+digest files stay; delete them if you want a clean start (`dist/<monday>/`).
 
 A `dry-run` week is not `sent`. When you later start `digest serve`, it runs this week for real if
 the Monday slot has already passed. See [schedule weekly runs](schedule-weekly-runs.md).
@@ -90,7 +91,7 @@ the Monday slot has already passed. See [schedule weekly runs](schedule-weekly-r
 | Exit 3, `Status    quiet`                                   | Nothing collected, or fewer than 3 items qualified                               | Often fine. See [quiet week](../debug/quiet-week.md). Try `run --dry-run --since 14d`. |
 | Exit 1, `Ollama is not reachable ... Start Ollama`          | Ollama is down or `OLLAMA_URL` is wrong                                          | Start Ollama, then run `doctor`.                                                       |
 | Exit 1, `Ollama is missing models for profile "light": ...` | A model is not pulled                                                            | Run the `ollama pull` lines from `doctor`.                                             |
-| Exit 1, `Another run is in progress`                        | Another run holds `data/digest.lock`                                             | Wait, or see [stuck lock](../debug/stuck-lock.md).                                     |
+| Exit 1, `Another run is in progress`                        | Another run holds `dist/digest.lock`                                             | Wait, or see [stuck lock](../debug/stuck-lock.md).                                     |
 | Exit 2, `Status    blocked`                                 | Every draft failed a check or a guard, and the fallback digest could not be made | See [blocked run](../debug/blocked-run.md).                                            |
 | `Error: could not write the dry-run digest to ...`          | The digest folder is not writable                                                | Fix permissions, or pass `--out <dir>`.                                                |
 

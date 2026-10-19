@@ -19,13 +19,15 @@ mistake shows up in the next scorecard if it comes back.
 
 - A maintainer. **People own the labels.** The tools only add labels and print conflicts. A model
   may propose a label; you decide and review it.
-- The run folder `data/runs/<week>/` still exists. Folders older than `keepWeeks` keep only
-  `digest.md`, so do this before pruning.
+- The run folder `dist/<monday>/digest/` still exists (`<monday>` is the Monday of the week:
+  `2026-W43` is `2026-10-19`). Weeks older than `keepWeeks` keep only `digest.md` and the delivered
+  digest files, so do this before pruning.
 - Do not change a prompt, a threshold or a model first. Keep the evidence, then change one thing.
 
 ## Steps
 
-1. Copy the evidence out of `data/`, for example `cp -R data/runs/<week> ~/bad-weeks/<week>`.
+1. Copy the evidence out of `dist/`, for example `cp -R dist/<monday> ~/bad-weeks/<week>`. It holds
+   the run files and what each source answered (`<source>/raw/`).
 2. See what happened: `pnpm digest show <week> --part scores` (which items were scored and which made the digest),
    `--part drafts` (what each writer wrote and why it was rejected), `--part items`.
 3. Pick the case type.
@@ -37,7 +39,7 @@ mistake shows up in the next scorecard if it comes back.
    | An injection got past the input guards     | Attack          | A new file in `evals/attacks/`: [attacks](../../evaluation/sets/attacks.md)                              |
    | A false claim got past the output guard    | Grounding       | A new file in `evals/grounding/`: [grounding](../../evaluation/sets/grounding.md)                        |
 
-4. Tick the review sheet. Open `data/runs/<week>/review.md`. Tick `[x]` a picked item that should
+4. Tick the review sheet. Open `dist/<monday>/digest/review.md`. Tick `[x]` a picked item that should
    not have been there, and a candidate that should have been. Change nothing else: an edited
    item line is refused with its line number.
 5. Turn the ticks into a feedback file.
@@ -47,7 +49,7 @@ mistake shows up in the next scorecard if it comes back.
    ```
 
    ```text
-   2026-W43: 1 wrong pick, 2 missed -> data/feedback/2026-W43.json
+   2026-W43: 1 wrong pick, 2 missed -> dist/feedback/2026-W43.json
    ```
 
 6. Merge it into the labels of the same week id. Missed items become `mustInclude`, wrong picks
@@ -90,7 +92,7 @@ goes in as an ordinary tuning case, never as a held-out one.
 
 ## Roll back
 
-`git restore evals/` and delete `data/feedback/<week>.json`. Labels are only ever added, so the
+`git restore evals/` and delete `dist/feedback/<week>.json`. Labels are only ever added, so the
 restore removes exactly what you added. Your copy from step 1 is untouched.
 
 ## Troubleshooting
@@ -101,7 +103,7 @@ restore removes exactly what you added. Your copy from step 1 is untouched.
 | `CONFLICT <id>: feedback says missed, but labels say must-exclude`      | You and an earlier label disagree              | Decide by hand; edit `labels.json`.         |
 | `WARNING: <week> has N must-include ids; digest eval expects exactly 5` | Merge went above or below 5                    | Trim or complete the list by hand.          |
 | `Run digest feedback <week> first: cannot read ...`                     | Step 5 was skipped                             | Run `digest feedback <week>`.               |
-| `Cannot create the week folder: no items.json to copy at ...`           | The run folder was pruned                      | Restore your copy into `data/runs/<week>/`. |
+| `Cannot create the week folder: no items.json to copy at ...`           | The run folder was pruned                      | Restore your copy into `dist/<monday>/`.    |
 | `N item(s) were not published in <week>`                                | The week folder holds items from another week  | See "Check the week id first".              |
 
 ## Related

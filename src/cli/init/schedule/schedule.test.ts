@@ -116,9 +116,9 @@ describe('defaultScheduleProgram', () => {
   });
 
   it('resolves a relative script path', () => {
-    process.argv = [process.execPath, 'dist/cli.js'];
+    process.argv = [process.execPath, 'dist/artifacts/cli.js'];
 
-    expect(defaultScheduleProgram().endsWith(resolve('dist/cli.js'))).toBe(true);
+    expect(defaultScheduleProgram().endsWith(resolve('dist/artifacts/cli.js'))).toBe(true);
   });
 
   it('quotes a script path with spaces', () => {

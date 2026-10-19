@@ -18,7 +18,7 @@ new digest. The channels that already have it get nothing more.
 ## Prerequisites
 
 - The cause of the delivery failure is fixed ([Failed delivery](../debug/failed-delivery.md)).
-- `data/runs/<week>/digest.md` still exists. A resume needs no Ollama.
+- `dist/<monday>/digest/digest.md` still exists. A resume needs no Ollama.
 - It is still the same ISO week. `digest run` always works on the current week in
   `schedule.timeZone`; it has no option to name another week.
 
@@ -76,7 +76,7 @@ the error are updated.
 | `This week already has a sent digest. Use --force ...` | The resume already finished             | Nothing to do                                        |
 | Log `Sending the saved digest without its view`        | `drafts.json` is gone or does not match | Channels get the plain Markdown; content is the same |
 | Exit code 1 and `Delivery failed on slack (...)`       | The channel is still broken             | [Failed delivery](../debug/failed-delivery.md)       |
-| It is a later week and the failed one was last week    | `digest run` cannot name a week         | Send `data/runs/<week>/digest.md` by hand            |
+| It is a later week and the failed one was last week    | `digest run` cannot name a week         | Send `dist/<monday>/digest/digest.md` by hand        |
 
 ## Related
 

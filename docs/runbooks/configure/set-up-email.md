@@ -76,7 +76,7 @@ files are still written; email is an extra channel.
    pnpm digest preview 2026-W42 --channel email
    ```
 
-   The preview writes `email.html` and `email.txt` under `dist/preview/2026-W42/`. Use a week that
+   The preview writes `email.html` and `email.txt` under `dist/2026-10-12/digest/preview/`. Use a week that
    has a saved run.
 
 5. Send for real. No command sends a test mail; the connection is first used in a run. If the

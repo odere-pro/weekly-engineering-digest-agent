@@ -22,6 +22,9 @@ export interface RunStore {
   sentUrls(runId: string, weeks: number): Promise<Set<string>>;
   /** Most recent first. */
   listRuns(limit?: number): Promise<RunRecord[]>;
-  /** Deletes runs older than `keepWeeks` before `runId`, keeping their digest.md. Returns pruned run ids. */
+  /**
+   * Deletes runs older than `keepWeeks` before `runId`, keeping their digest.md (and, on disk, the
+   * delivered files and the fetched data and logs of older days). Returns pruned run ids.
+   */
   prune(runId: string, keepWeeks: number): Promise<string[]>;
 }

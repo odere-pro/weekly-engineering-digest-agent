@@ -42,7 +42,7 @@ pnpm digest eval --profile light --resume
 ```
 
 Every week replay is saved when it ends, under `<dataDir>/eval/checkpoints/<date>/` (`dataDir` is
-`data` by default), as `<profile>.<week>.run<n>.json`. That covers all three replays of each week
+`dist` by default), as `<profile>.<week>.run<n>.json`. That covers all three replays of each week
 and the first-week replay a `guards` run needs. Files are written on every run. They are read only
 with `--resume`.
 

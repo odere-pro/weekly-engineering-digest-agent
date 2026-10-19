@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { RoleSchema } from '../models/roles';
 import { SourceSchema } from '../domain/schemas';
+import { isReservedSourceId } from '../store/layout';
 
 export const ProfileNameSchema = z.enum(['quality', 'fast', 'light']);
 export type ProfileName = z.infer<typeof ProfileNameSchema>;
@@ -64,8 +65,11 @@ export const EmailDeliverySchema = z.object({
 });
 
 export const DeliveryConfigSchema = z.object({
-  /** Always on: the digest is written here. */
-  markdown: z.object({ dir: z.string().min(1).default('dist/digests') }).prefault({}),
+  /**
+   * Always on: the digest is written as <weekId>.md and .html, into `dir` when set, else into the
+   * week's digest folder (`<dataDir>/<monday>/digest/`).
+   */
+  markdown: z.object({ dir: z.string().min(1).optional() }).prefault({}),
   email: EmailDeliverySchema.optional(),
   /** The webhook URL lives in .env (SLACK_WEBHOOK_URL). */
   slack: z.object({ enabled: z.boolean().default(false) }).optional(),
@@ -129,7 +133,11 @@ const CredentialFreeSourceSchema = SourceSchema.refine(
     message: 'the URL must not contain a username or password; keep secrets in .env',
     path: ['url'],
   },
-);
+).refine(({ id }) => !isReservedSourceId(id), {
+  // A source's raw and formatted data share the day folder with the week's digest folder.
+  message: 'the id "digest" is reserved for the digest folder; choose another',
+  path: ['id'],
+});
 
 export const ConfigSchema = z
   .object({
@@ -153,9 +161,10 @@ export const ConfigSchema = z
     topN: z.number().int().min(3).max(5).default(5),
     /** Weeks of sent URLs removed from new digests. */
     dedupeWeeks: z.number().int().min(0).max(12).default(4),
-    /** Run folders older than this are pruned (digest.md kept). */
+    /** Weeks older than this are pruned (digest.md kept), with the fetched data and logs of their days. */
     keepWeeks: z.number().int().min(1).default(12),
-    dataDir: z.string().min(1).default('data'),
+    /** Where everything the project produces goes: runs, fetched data, logs (`store/layout.ts`). */
+    dataDir: z.string().min(1).default('dist'),
     schedule: ScheduleSchema.prefault({}),
     delivery: DeliveryConfigSchema.prefault({}),
     guards: GuardsConfigSchema.prefault({}),

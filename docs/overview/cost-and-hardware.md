@@ -45,7 +45,9 @@ Nothing else is called, so this is the whole allowlist:
 ## Disk
 
 - Models: see the table above. They live in Ollama's store (or the `ollama-models` Docker volume).
-- Runs: `data/runs/<week>/` is small. Folders older than `keepWeeks` (12) keep only `digest.md`.
+- Runs: `dist/<monday>/digest/` is small. The raw answers of the sources, saved beside it for each
+  week, are the bulk (a feed answer is capped at 5 MiB). Weeks older than `keepWeeks` (12) keep
+  only `digest.md` and the delivered digest files, and their fetched data and logs are deleted.
   See [disk and pruning](../operations/disk-and-pruning.md).
 
 ## Related

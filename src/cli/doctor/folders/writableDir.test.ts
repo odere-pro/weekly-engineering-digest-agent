@@ -286,8 +286,17 @@ describe('doctor folder checks', () => {
       );
     });
 
-    it('resolves the default relative folder against the working directory', async () => {
-      const h = harness();
+    it("says the digests go to each week's folder in the data folder when no folder is set", async () => {
+      const { code, text } = await runDoctor({});
+
+      expect(code).toBe(0);
+      expect(resultFor(text, '✓', 'markdown:')).toContain(
+        `digests are written to each week's folder in ${DATA_DIR}`,
+      );
+    });
+
+    it('resolves a relative folder against the working directory', async () => {
+      const h = harness({ config: { delivery: { markdown: { dir: 'out/digests' } } } });
       const seen: string[] = [];
       const lstat = h.io.lstat!;
       h.io.lstat = async (path) => {
@@ -297,7 +306,7 @@ describe('doctor folder checks', () => {
 
       await doctorCommand({}, h.io);
 
-      expect(seen).toContain(join(process.cwd(), 'dist/digests'));
+      expect(seen).toContain(join(process.cwd(), 'out/digests'));
     });
   });
 });

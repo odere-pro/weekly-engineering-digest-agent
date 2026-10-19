@@ -49,7 +49,7 @@ current week at once if the Monday slot has passed and the week is not `sent`, `
 1. `digest init` printed a snippet and a save path. If you no longer have it, write the file by
    hand from the examples below. The command inside must use absolute paths. A snippet made by
    `pnpm digest init` says plain `digest run`, which only works when a `digest` command is on the
-   scheduler's PATH. After `pnpm build`, use `node /abs/path/dist/cli.js run`.
+   scheduler's PATH. After `pnpm build`, use `node /abs/path/dist/artifacts/cli.js run`.
 2. macOS: save the plist as `~/Library/LaunchAgents/dev.eng-digest.weekly.plist`, then:
 
    ```bash
@@ -68,7 +68,7 @@ current week at once if the Monday slot has passed and the week is not `sent`, `
    [Service]
    Type=oneshot
    WorkingDirectory=/abs/path/to/clone
-   ExecStart=/usr/bin/node /abs/path/to/clone/dist/cli.js run
+   ExecStart=/usr/bin/node /abs/path/to/clone/dist/artifacts/cli.js run
    # dev.eng-digest.weekly.timer
    [Timer]
    OnCalendar=Mon *-*-* 07:45:00
@@ -101,13 +101,13 @@ The snippet takes only a cron of the form `m h * * dow`. Anything else needs you
 
 ## Troubleshooting
 
-| Symptom                                                  | Cause                                                    | Fix                                                        |
-| -------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
-| The job ran at the wrong hour                            | OS timers use local time; a container uses UTC           | Match the zone, or set `schedule.timeZone` for `serve`.    |
-| `digest: command not found` in the job log               | The snippet says plain `digest`                          | Use the absolute `node .../dist/cli.js run` command.       |
-| `No OS schedule snippet is available`                    | Platform not supported, or the cron is not `m h * * dow` | Use `serve`, or call `digest run` from your own scheduler. |
-| The Windows snippet is refused (quote or `& \| < > ^ %`) | `cmd.exe` would act on those characters                  | Use a path without them, or point at a wrapper script.     |
-| Nothing ran while the machine was off                    | An OS timer has no catch-up (except systemd)             | Run `pnpm digest run` by hand, or use `serve`.             |
+| Symptom                                                  | Cause                                                    | Fix                                                            |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
+| The job ran at the wrong hour                            | OS timers use local time; a container uses UTC           | Match the zone, or set `schedule.timeZone` for `serve`.        |
+| `digest: command not found` in the job log               | The snippet says plain `digest`                          | Use the absolute `node .../dist/artifacts/cli.js run` command. |
+| `No OS schedule snippet is available`                    | Platform not supported, or the cron is not `m h * * dow` | Use `serve`, or call `digest run` from your own scheduler.     |
+| The Windows snippet is refused (quote or `& \| < > ^ %`) | `cmd.exe` would act on those characters                  | Use a path without them, or point at a wrapper script.         |
+| Nothing ran while the machine was off                    | An OS timer has no catch-up (except systemd)             | Run `pnpm digest run` by hand, or use `serve`.                 |
 
 ## Related
 

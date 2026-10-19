@@ -50,7 +50,7 @@ environment, and names the variable. The path of the URL is the secret. It never
   [delivery retries](../operations/delivery-retries.md).
 
 Preview the message without posting it: `pnpm digest preview 2026-W42 --channel slack` writes
-`slack.json` under `dist/preview/2026-W42/`.
+`slack.json` under `dist/2026-10-12/digest/preview/`.
 
 ## Change it
 

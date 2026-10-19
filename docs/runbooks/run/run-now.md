@@ -20,7 +20,7 @@ waiting for the schedule.
 
 - A green `digest doctor` and a [first run](../set-up/first-run.md) that worked.
 - Nobody else is running the week. One run at a time per `dataDir` (the lock in
-  `data/digest.lock`).
+  `dist/digest.lock`).
 - Email and Slack recipients will get the digest. Use a dry run if you are only testing.
 - Time: about 6 minutes for `light`, about 1 hour for `quality`. In Docker the command is
   `docker compose run --rm digest run` (a second container is fine: the lock stops overlap).
@@ -44,9 +44,9 @@ waiting for the schedule.
    Items     131 collected → 5 in digest
    Winner    gemma4:e4b-mlx
    Duration  5m 40s
-   Digest    data/runs/2026-W43/digest.md
-   Markdown  dist/digests/2026-W43.md
-   HTML      dist/digests/2026-W43.html
+   Digest    dist/2026-10-19/digest/digest.md
+   Markdown  dist/2026-10-19/digest/2026-W43.md
+   HTML      dist/2026-10-19/digest/2026-W43.html
    ```
 
 | Exit | Status                | Next                                                                                                                                                    |
@@ -62,8 +62,8 @@ waiting for the schedule.
 - `pnpm digest history -n 1` lists the week as `sent`.
 - `pnpm digest show <week>` has a `Delivered:` line that names every channel you configured
   (`markdown`, plus `email` and `slack` if set).
-- `<week>.md` and `<week>.html` exist in `delivery.markdown.dir` (default `dist/digests`;
-  Docker: `data/digests`).
+- `<week>.md` and `<week>.html` exist in `delivery.markdown.dir`, or with no such key in the
+  week's folder `dist/<monday>/digest/` (Docker: the same, in `./dist`).
 
 ## Roll back
 

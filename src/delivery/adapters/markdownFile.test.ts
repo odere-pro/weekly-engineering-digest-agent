@@ -2,7 +2,7 @@ import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMarkdownFileDelivery } from './markdownFile';
+import { createMarkdownFileDelivery, markdownFileOptions, markdownFolder } from './markdownFile';
 import { writeFileAtomic } from '../../store/adapters/atomicFile';
 
 // Delegates to the real writer, so tests can assert the digest goes through the atomic path.
@@ -27,6 +27,37 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await rm(root, { recursive: true, force: true });
+});
+
+describe('the folder a week goes to', () => {
+  it("is the week's digest folder below the data folder when no dir is set", async () => {
+    const dataDir = join(root, 'dist');
+    await createMarkdownFileDelivery({ dataDir }).sendDigest(message);
+
+    // 2026-10-12 is the Monday of 2026-W42.
+    const weekDir = join(dataDir, '2026-10-12', 'digest');
+    expect(await readFile(join(weekDir, '2026-W42.md'), 'utf8')).toBe(message.markdown);
+  });
+
+  it('puts a failure note in the same week folder', async () => {
+    const dataDir = join(root, 'dist');
+    await createMarkdownFileDelivery({ dataDir }).sendFailure({
+      weekId: '2026-W42',
+      message: 'boom',
+    });
+
+    expect(await readdir(join(dataDir, '2026-10-12', 'digest'))).toEqual(['2026-W42.failed.md']);
+  });
+
+  it('is the configured dir when set, else the data folder (from the config)', () => {
+    const dataDir = 'dist';
+    expect(markdownFileOptions({ dataDir, delivery: { markdown: { dir: 'out' } } })).toEqual({
+      dir: 'out',
+    });
+    expect(markdownFileOptions({ dataDir, delivery: { markdown: {} } })).toEqual({ dataDir });
+    expect(markdownFolder({ dir: 'out' }, '2026-W42')).toBe('out');
+    expect(markdownFolder({ dataDir }, '2026-W42')).toBe(join('dist', '2026-10-12', 'digest'));
+  });
 });
 
 describe('createMarkdownFileDelivery', () => {

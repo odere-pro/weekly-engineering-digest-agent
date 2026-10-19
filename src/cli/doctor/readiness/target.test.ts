@@ -81,7 +81,7 @@ describe('resolveTarget', () => {
     const target = await resolveTarget(undefined, io({ platform: MAC }));
 
     expect(target).toMatchObject({
-      dataDir: 'data',
+      dataDir: 'dist',
       ollamaUrl: 'http://localhost:11434',
       platform: MAC,
       configNote: 'no config used (ENOENT: no config); showing defaults',

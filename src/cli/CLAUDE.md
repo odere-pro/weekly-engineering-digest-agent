@@ -15,7 +15,7 @@ flowchart LR
   cli -->|"EvalOptions"| evals["evals/"]
   cli -.->|"createFsRunStore: read run folders"| store[[RunStore]]
   cli -.->|"doctor: health; fetch, doctor: sources"| outside[("Ollama, feeds")]
-  cli -->|"files"| disk[("config, .env, data/, dist/")]
+  cli -->|"files"| disk[("config, .env, dist/")]
   classDef focus stroke-width:3px
 ```
 
@@ -45,7 +45,8 @@ flowchart TD
   `doctor` also strips `user:pass@` and names `.env` keys, never values. Feed and model text:
   `show`, `preview`, `fetch`, `eval` strip control, bidi and tag characters; tables cut long cells.
 - `show`, `preview`, `history`, `feedback`, `fetch` build no app, take no lock, call no model.
-  `fetch` writes only below `--out`, never inside the data folder, never into a used folder.
+  `fetch` writes only its sources' `<day>/<source>/` folders and `fetch-summary.json` below `--out`
+  (default `dataDir`), never the digest folder or the lock; a second fetch that day replaces them.
 - `init` refuses to overwrite `digest.config.json` under `--yes`. It merges `.env` (`OLLAMA_URL` only
   if absent), writes it mode 0600 via temp file and rename (in place on a Docker bind mount), and
   fails if it stays readable by others. It recommends `light` until `quality` has a measured baseline.
@@ -54,17 +55,17 @@ flowchart TD
 
 | File / folder | Role                                                                                                      |
 | ------------- | --------------------------------------------------------------------------------------------------------- |
-| `index.ts`    | Entry, bundled by `scripts/build.mjs` to `dist/cli.js`. Frozen                                            |
+| `index.ts`    | Entry, bundled by `scripts/build.mjs` to `dist/artifacts/cli.js`. Frozen                                  |
 | `program.ts`  | Registers the 10 commands and global `-c, --config`. Frozen                                               |
 | `init/`       | `initCommand`: prompts or `--yes`; writes config and `.env`; OS schedule or Docker                        |
 | `doctor/`     | `doctorCommand`: a line per check, `fix:` on `✗`/`!`; subfolders, see `doctor/CLAUDE.md`                  |
 | `run/`        | `runCommand`: `buildApp`, `runDigest`, summary; a dry run still writes the Markdown file                  |
 | `eval/`       | `evalCommand`: `runEval` per profile, scorecard to `evals/scorecards/`; `--only`, `--resume`, `--compare` |
-| `fetch/`      | `fetchCommand`: sources only, 4 at once, 10 s each, no retry; `summary.json` last                         |
+| `fetch/`      | `fetchCommand`: sources only, 4 at once, 10 s each, no retry; `fetch-summary.json` last                   |
 | `show/`       | `showCommand <week>`: summary, or `--part` items, scores, drafts, digest, run, review                     |
-| `preview/`    | `previewCommand <week>`: `--channel` files in `dist/preview/<week>/`, sends nothing                       |
+| `preview/`    | `previewCommand <week>`: `--channel` files in the week's `digest/preview/`, sends nothing                 |
 | `history/`    | `historyCommand`: last 12 runs; exports `formatDuration`                                                  |
-| `feedback/`   | `feedbackCommand <week>`: `review.md` ticks to `data/feedback/<week>.json`                                |
+| `feedback/`   | `feedbackCommand <week>`: `review.md` ticks to `<dataDir>/feedback/<week>.json`                           |
 | `serve/`      | `serveCommand`: `startScheduler`; signal 1 stops and waits, 2 aborts the run, 3 exits                     |
 
 ## Gotchas
@@ -77,4 +78,4 @@ flowchart TD
   calls `runCommand`.
 - `fetch.tap.test.ts` allows `fetch.ts` to name the source tap and call `createFetcher(`. Its
   `buildFetchers` mirrors `createGithubReleasesFetcher` (token picks REST, else Atom): change both.
-- Over the 300 line cap: `init` 773, `fetch` 467, `eval` 407, `show` 312.
+- Over the 300 line cap: `init` 773, `fetch` 426, `eval` 409, `show` 312.

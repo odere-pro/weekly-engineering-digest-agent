@@ -1,4 +1,4 @@
-// `pnpm tsx evals/feedbackToLabels.ts <week>`: merges data/feedback/<week>.json into
+// `pnpm tsx evals/feedbackToLabels.ts <week>`: merges dist/feedback/<week>.json into
 // evals/weeks/<week>/labels.json (W7-07). Missed items become must-include, wrong picks
 // must-exclude. An existing label is never overwritten; a disagreement is printed and left alone.
 import { realpathSync } from 'node:fs';
@@ -8,10 +8,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { WeekIdSchema } from '../src/domain/schemas';
 import { DigestError, errorMessage } from '../src/shared/errors';
+import { weekDigestDir } from '../src/store/layout';
 import { MUST_INCLUDE_COUNT } from './schema';
 
 const DEFAULT_EVALS_DIR = fileURLToPath(new URL('.', import.meta.url));
-const DEFAULT_DATA_DIR = 'data';
+const DEFAULT_DATA_DIR = 'dist';
 
 const FeedbackFileSchema = z.object({
   weekId: WeekIdSchema,
@@ -29,7 +30,7 @@ const NEW_LABELS = { mustInclude: [], mustExclude: [], notes: '' };
 
 export interface FeedbackToLabelsOptions {
   readonly week: string;
-  /** The folder with runs/ and feedback/ (config dataDir). */
+  /** The data folder (config dataDir): the week's run and feedback/ (`src/store/layout.ts`). */
   readonly dataDir: string;
   /** The folder with weeks/. */
   readonly evalsDir: string;
@@ -67,7 +68,7 @@ export async function feedbackToLabels(
   const feedback = await readFeedback(join(dataDir, 'feedback', `${week}.json`), week);
   const weekDir = join(evalsDir, 'weeks', week);
   const labelsPath = join(weekDir, 'labels.json');
-  const createdWeek = await ensureWeek(weekDir, join(dataDir, 'runs', week, 'items.json'));
+  const createdWeek = await ensureWeek(weekDir, join(weekDigestDir(dataDir, week), 'items.json'));
   const existing = await readLabels(labelsPath);
 
   const include = [...existing.mustInclude];

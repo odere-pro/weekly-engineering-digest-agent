@@ -2,7 +2,7 @@
 
 Part of [Reference](README.md).
 
-Each run leaves a folder `<dataDir>/runs/<week>/` (default `data/runs/2026-W42/`). `run.json` is
+Each run leaves a folder `<dataDir>/<monday>/digest/` (default `dist/2026-10-12/digest/` for `2026-W42`). `run.json` is
 the record: the one file that says how the week went. This page lists its fields, from
 `RunRecordSchema` in `src/store/runRecord.ts` (it moved there from `src/domain/schemas.ts`), and
 what the other files hold. The folder layout is in

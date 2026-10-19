@@ -152,9 +152,7 @@
   "maxItemsPerSource": 20,
   "topN": 5,
   "schedule": { "cron": "45 7 * * 1", "timeZone": "Europe/Berlin" },
-  "delivery": {
-    "markdown": { "dir": "data/digests" }
-  },
+  "dataDir": "dist",
   "guards": {
     "input": {
       "enabled": true,

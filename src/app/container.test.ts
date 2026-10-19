@@ -62,6 +62,8 @@ vi.mock('../observability/tracing', (load) => wrapFactories(load, ['createTracer
 // Any logger: the one the model and the fetchers get is run-aware (container.runLogging.test.ts).
 const ANY_FUNCTION: unknown = expect.any(Function);
 const ANY_LOGGER: unknown = expect.objectContaining({ warn: ANY_FUNCTION, child: ANY_FUNCTION });
+/** The archive's tap on the raw answers (`sources/adapters/archive`). */
+const ANY_TAP: unknown = expect.objectContaining({ answer: ANY_FUNCTION });
 
 const SMTP_PASSWORD = 'smtp-password-4f9a';
 const SLACK_WEBHOOK_PATH = '/services/T000/B000/slack-secret-7c1e';
@@ -271,6 +273,7 @@ describe('buildApp wiring', () => {
     expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({
       token: GITHUB_TOKEN,
       logger: ANY_LOGGER,
+      tap: ANY_TAP,
     });
 
     vi.mocked(createGithubReleasesFetcher).mockClear();
@@ -278,6 +281,7 @@ describe('buildApp wiring', () => {
     expect(firstCallOptions(createGithubReleasesFetcher)).toEqual({
       token: undefined,
       logger: ANY_LOGGER,
+      tap: ANY_TAP,
     });
   });
 

@@ -28,7 +28,8 @@ fixes which time zone decides the ISO week id.
   does, at start-up, and stops with `Invalid schedule (cron "...", time zone "..."): <reason>` and
   exit code 1.
 - The ISO week id comes from `timeZone` too, for `serve` and for `digest run`. A Monday run near
-  midnight lands in the week of the local calendar, not UTC.
+  midnight lands in the week of the local calendar, not UTC. The day folder of `digest fetch` and
+  the day of a log file (`dist/logs/<day>/digest.log`) come from `timeZone` as well.
 
 ## What `serve` does with it
 

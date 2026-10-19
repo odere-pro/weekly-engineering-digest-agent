@@ -55,11 +55,11 @@ In Docker every command is `docker compose run --rm digest <command>`. The globa
 
 ### Linux
 
-1. Make the folders and files, and tell Compose which user owns them. Without `data/digests`, Docker
-   creates it as root and the container cannot write the digest files.
+1. Make the folders and files, and tell Compose which user owns them. Without `dist`, Docker
+   creates it as root and the container cannot write the runs, digest files and logs.
 
    ```bash
-   mkdir -p data/digests && touch digest.config.json && (umask 077 && touch .env)
+   mkdir -p dist && touch digest.config.json && (umask 077 && touch .env)
    echo "DIGEST_UID=$(id -u)" >> .env && echo "DIGEST_GID=$(id -g)" >> .env
    ```
 
@@ -89,7 +89,8 @@ On Linux every profile resolves to the fallback models (`clef:latest`, `granite4
 - `docker compose ps` shows `digest` up. On Linux `ollama` is up and `model-pull` has exited 0.
 - `docker compose logs digest` has a line with `Scheduler started`, `cron`, `timeZone` and `nextRun`.
 - `doctor` ends with `Doctor: all checks passed.` (or only warnings you accept) and exits 0.
-- Digests appear in `data/digests/<week>.md` and `<week>.html` after a run.
+- Digests appear in `dist/<monday>/digest/<week>.md` and `<week>.html` after a run, with the run
+  record and the sources' data beside them. Logs go to `dist/logs/<day>/digest.log`.
 
 ## Roll back
 
@@ -97,8 +98,8 @@ On Linux every profile resolves to the fallback models (`clef:latest`, `granite4
 docker compose --profile linux down
 ```
 
-This removes the containers. `data/`, `digest.config.json` and `.env` stay. Add `--volumes` to also
-delete the `ollama-models` volume (Linux). Delete `data/` only if you want to lose the run history.
+This removes the containers. `dist/`, `digest.config.json` and `.env` stay. Add `--volumes` to also
+delete the `ollama-models` volume (Linux). Delete `dist/` only if you want to lose the run history, fetched data and logs.
 
 ## Troubleshooting
 
@@ -109,7 +110,7 @@ delete the `ollama-models` volume (Linux). Delete `data/` only if you want to lo
 | `doctor`: `ollama: ... no answer`                     | Mac: the Ollama app is not running              | Start it. `OLLAMA_URL` in `.env` must be `http://host.docker.internal:11434`.                      |
 | `doctor`: `... falls back to the untuned profile`     | Mac: `DIGEST_HOST_OS` and `_ARCH` were not set  | Use `make`, or export both variables (step 3).                                                     |
 | `.env is readable by others and cannot be restricted` | Linux: the container user cannot chmod the file | `chmod 600 .env` on the host, and set `DIGEST_UID` and `DIGEST_GID`.                               |
-| Digest files are not written (permission denied)      | Docker created `data/digests` as root           | Change its owner to your user, or remove it and recreate it before `up`.                           |
+| Digest files are not written (permission denied)      | Docker created `dist` as root                   | Change its owner to your user, or remove it and recreate it before `up`.                           |
 | The schedule fires at the wrong hour                  | The container runs on UTC unless `TZ` is set    | Set `schedule.timeZone`: [change the schedule](../configure/change-the-schedule-and-time-zone.md). |
 
 ## Related

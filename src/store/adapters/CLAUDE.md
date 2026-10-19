@@ -1,7 +1,8 @@
 # Store adapters
 
 > The file `RunStore`: `createFsRunStore({ dataDir, clock?, logger? })` (`fsRunStore.ts`). One
-> folder per ISO week, one lock file per data folder, atomic writes, no database. `runLock.ts`
+> `digest/` folder per ISO week (in its Monday's folder, `../layout.ts`), one lock file per data
+> folder, atomic writes, no database. `runLock.ts`
 > only orders the lock steps; the work sits in `lockState/`, `heartbeat/` and `takeover/`.
 
 ## Flow
@@ -22,7 +23,7 @@ flowchart TD
 ```
 
 On disk: `<dataDir>/digest.lock` (the lock, JSON), `digest.lock.takeover` (the guard, for
-milliseconds) and `runs/<weekId>/` with `run.json` and the six artifacts.
+milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
 
 ## Rules
 
@@ -38,16 +39,16 @@ milliseconds) and `runs/<weekId>/` with `run.json` and the six artifacts.
 
 ## Files
 
-| File                                  | Role                                                                                          |
-| ------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `fsRunStore.ts`                       | `createFsRunStore`: all port methods on the folder layout                                     |
-| `artifactFiles.ts`                    | `ARTIFACT_FILES`, `artifactFile(name)`                                                        |
-| `runFolders.ts`                       | `assertRunId`, `runDir`, `listWeekFolders` (newest first), `readRunRecord`, `pruneWeekFolder` |
-| `atomicFile.ts`                       | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`          |
-| `runLock.ts`                          | `acquireRunLock`, `AcquireLockOptions` (host, PID namespace, beat interval for tests)         |
-| `lockState/` `heartbeat/` `takeover/` | The lock, by job. Each has its own `CLAUDE.md`                                                |
-| `lockContender.ts`                    | Child process of the contention test; not app code                                            |
-| `*.test.ts`                           | Next to the code. `fsRunStore.test.ts` covers `runFolders.ts`; no fixtures                    |
+| File                                  | Role                                                                                                                                                                                                                                                              |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fsRunStore.ts`                       | `createFsRunStore`: all port methods on the folder layout                                                                                                                                                                                                         |
+| `artifactFiles.ts`                    | `ARTIFACT_FILES`, `artifactFile(name)`                                                                                                                                                                                                                            |
+| `runFolders.ts`                       | `assertRunId`, `runDir`, `listWeekFolders` (Monday folders with `digest/`, newest first), `readRunRecord`, `pruneWeekFolder` (a week's source folders, and its `digest/` but `digest.md` and `<week>.*`), `pruneOldDays` (older source folders and `logs/<day>/`) |
+| `atomicFile.ts`                       | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`                                                                                                                                                                              |
+| `runLock.ts`                          | `acquireRunLock`, `AcquireLockOptions` (host, PID namespace, beat interval for tests)                                                                                                                                                                             |
+| `lockState/` `heartbeat/` `takeover/` | The lock, by job. Each has its own `CLAUDE.md`                                                                                                                                                                                                                    |
+| `lockContender.ts`                    | Child process of the contention test; not app code                                                                                                                                                                                                                |
+| `*.test.ts`                           | Next to the code. `fsRunStore.test.ts` covers `runFolders.ts`; no fixtures                                                                                                                                                                                        |
 
 ## Gotchas
 

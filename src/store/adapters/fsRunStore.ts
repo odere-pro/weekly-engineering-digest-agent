@@ -2,6 +2,7 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { RunRecordSchema, type RunRecord } from '../runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../RunStore';
+import { LOCK_FILE, weekDay } from '../layout';
 import { systemClock, type Clock } from '../../shared/clock';
 import { previousWeekIds } from '../../shared/isoWeek';
 import { noopLogger, type Logger } from '../../shared/telemetry';
@@ -10,6 +11,7 @@ import { readTextIfExists, writeFileAtomic } from './atomicFile';
 import {
   assertRunId,
   listWeekFolders,
+  pruneOldDays,
   pruneWeekFolder,
   readRunRecord,
   RUN_RECORD_FILE,
@@ -19,14 +21,12 @@ import {
 import { acquireRunLock } from './runLock';
 
 export interface FsRunStoreOptions {
-  /** Root data dir; runs live in <dataDir>/runs/<weekId>/, the lock in <dataDir>/. */
+  /** The data folder; runs live in <dataDir>/<monday>/digest/, the lock in <dataDir>/. */
   dataDir: string;
   clock?: Clock;
   /** Receives warnings (stale lock takeover, corrupt run.json). Defaults to silent. */
   logger?: Logger;
 }
-
-const LOCK_FILE = 'digest.lock';
 
 /** A sent week, or a failed one that some channels already got: its URLs must not repeat. */
 function reachedAChannel(record: RunRecord): boolean {
@@ -37,7 +37,7 @@ function reachedAChannel(record: RunRecord): boolean {
 export function createFsRunStore(options: FsRunStoreOptions): RunStore {
   const clock = options.clock ?? systemClock;
   const logger = options.logger ?? noopLogger;
-  const folders: RunFolders = { runsDir: join(options.dataDir, 'runs'), logger };
+  const folders: RunFolders = { dataDir: options.dataDir, logger };
   const getRunRecord = (runId: string): Promise<RunRecord | undefined> =>
     readRunRecord(folders, runId);
 
@@ -102,6 +102,8 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
       for (const id of old) {
         if (await pruneWeekFolder(folders, id)) pruned.push(id);
       }
+      // Fetched data and logs of days before the oldest kept week go too.
+      await pruneOldDays(folders, weekDay(previousWeekIds(runId, keepWeeks).at(-1) ?? runId));
       return pruned;
     },
   };

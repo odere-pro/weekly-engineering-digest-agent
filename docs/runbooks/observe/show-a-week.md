@@ -17,7 +17,8 @@ digest. You can do this at any time, with no Ollama and no network.
 
 ## Prerequisites
 
-- A run folder for the week: `<dataDir>/runs/<week>/` (default `data/runs/<week>/`).
+- A run folder for the week: `<dataDir>/<monday>/digest/` (default `dist/<monday>/digest/`), where
+  `<monday>` is the Monday of the ISO week: `2026-W43` is `dist/2026-10-19/digest/`.
 - A valid config, because `show` reads `dataDir` from it. Secrets are removed from the output.
 - The week as an ISO week id, for example `2026-W43`.
 
@@ -77,7 +78,7 @@ digest. You can do this at any time, with no Ollama and no network.
    ```
 
 4. In Docker, use `docker compose run --rm digest show 2026-W43`. The same files are in
-   `./data/runs/2026-W43/` on the host.
+   `./dist/2026-10-19/digest/` on the host.
 
 ## Verify
 

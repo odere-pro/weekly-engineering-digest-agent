@@ -74,7 +74,7 @@ with `email delivery is configured but SMTP_PASSWORD is not set. Add SMTP_PASSWO
 `digest doctor` reports an error.
 
 Preview the mail without sending: `pnpm digest preview 2026-W42 --channel email` writes
-`email.html` and `email.txt` under `dist/preview/2026-W42/`.
+`email.html` and `email.txt` under `dist/2026-10-12/digest/preview/`.
 
 ## Change it
 

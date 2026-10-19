@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { feedbackToLabels } from './feedbackToLabels';
 import { makeItem } from '../test/builders';
+import { weekDigestDir } from '../src/store/layout';
 
 const WEEK = '2026-W42';
 let root: string;
@@ -19,7 +20,7 @@ afterEach(async () => {
 
 const paths = () => ({
   feedback: join(root, 'data', 'feedback', `${WEEK}.json`),
-  runItems: join(root, 'data', 'runs', WEEK, 'items.json'),
+  runItems: join(weekDigestDir(join(root, 'data'), WEEK), 'items.json'),
   weekDir: join(root, 'evals', 'weeks', WEEK),
   labels: join(root, 'evals', 'weeks', WEEK, 'labels.json'),
 });

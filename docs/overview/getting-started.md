@@ -35,7 +35,8 @@ runs before the dry run works.
 
 ## 5. Find the digest
 
-`<week>.md` and `<week>.html` land in `dist/digests` (Node) or `data/digests` (Docker). A dry
+`<week>.md` and `<week>.html` land in the week's folder, `dist/<monday>/digest/` (for `2026-W43`:
+`dist/2026-10-19/digest/`), on Node and, through the `./dist` mount, in Docker. A dry
 run writes the files too. See [files and paths](../reference/files-and-paths.md).
 
 ## 6. Schedule it

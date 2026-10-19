@@ -44,6 +44,8 @@ flowchart TD
   0-12 (4), `keepWeeks` at least 1 (12), `models.retries` 0-5 (2), `models.seed` 42, role timeout at
   least 1,000 ms, `profile` `quality`, `schedule.cron` `45 7 * * 1`, thresholds `minRelevance` 1.5,
   `maxHype` 0.6, `maxMinorRelease` 0.75, `guardFlag` 0.35.
+- Folders: `dataDir` (`dist`) holds everything the project produces, laid out by `store/layout.ts`.
+  `delivery.markdown.dir` has no default: unset, the Markdown files go to each week's `digest/` folder.
 
 ## Rules
 
@@ -52,6 +54,8 @@ flowchart TD
   `user:pass@` is refused: `fetch` echoes the whole URL into errors, logs and run records.
 - Error messages name fields and rules, never the rejected values (`z.prettifyError`).
 - A new setting needs a default, so existing `digest.config.json` files still load.
+- A source id must not be `digest`: a source's folder shares the day folder with the week's
+  `digest/` (`isReservedSourceId`, `store/layout.ts`).
 - `keepWeeks >= dedupeWeeks`: a pruned week drops out of cross-week dedupe. `writers` are unique:
   outcomes and scores are keyed by tag. `focusAreas` are unique, 1-25: decision models take 26 options.
 - `mergeEnvText` (for `digest init`) changes only the keys asked for, keeps comments and line endings,

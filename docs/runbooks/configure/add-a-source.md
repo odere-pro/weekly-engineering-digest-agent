@@ -63,7 +63,7 @@ read on the next run.
    example-blog  ok      200   3      0        0.4s
 
    1 source: 1 ok, 0 failed, 3 items
-   Saved to /work/digest/dist/fetch/2026-10-19T08-00-00-000Z
+   Saved to /work/digest/dist/2026-10-19
    ```
 
    Zero items can be normal for a quiet feed. Try `--since 14d` to look further back.

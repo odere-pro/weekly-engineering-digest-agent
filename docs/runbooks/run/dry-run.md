@@ -33,18 +33,17 @@ disk, while sending nothing. Use it to see what a real run would produce.
 
 What a dry run does and does not do:
 
-| It writes                                                                                                                | It does not do                                         |
-| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| `data/runs/<week>/`: `run.json` (status `dry-run`), `items.json`, `scores.json`, `drafts.json`, `digest.md`, `review.md` | Send email or Slack, or run the `deliver` step         |
-| `<week>.md` and `<week>.html` in `delivery.markdown.dir` (or `--out`)                                                    | Send a failure note, even if the run fails             |
-|                                                                                                                          | Count as `sent`: its links stay out of the dedupe list |
+| It writes                                                                                                                                                                          | It does not do                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `dist/<monday>/digest/`: `run.json` (status `dry-run`), `items.json`, `scores.json`, `drafts.json`, `digest.md`, `review.md`; `dist/<monday>/<source>/`: what each source answered | Send email or Slack, or run the `deliver` step         |
+| `<week>.md` and `<week>.html` in `delivery.markdown.dir` (or `--out`; with neither, in `dist/<monday>/digest/`)                                                                    | Send a failure note, even if the run fails             |
+|                                                                                                                                                                                    | Count as `sent`: its links stay out of the dedupe list |
 
 A week left at `dry-run` is unsettled. If `digest serve` starts later and the Monday slot has
 passed, it runs the week for real.
 
 If the week is already `sent`, a plain dry run ends `skipped`. With `--dry-run --force` it runs,
-but it never replaces the sent record or the week's files, and it writes nothing to the digest
-folder. The summary then says the week's run folder is unchanged.
+but it never replaces the sent record or the week's files, and it writes no digest files. The summary then says the week's run folder is unchanged.
 
 ## Verify
 
@@ -54,8 +53,8 @@ folder. The summary then says the week's run folder is unchanged.
 
 ## Roll back
 
-Nothing was sent, so nothing needs undoing. Delete `dist/digests/<week>.*` (or your `--out`
-folder) if you do not want the files. The next real run replaces the `dry-run` record.
+Nothing was sent, so nothing needs undoing. Delete `<week>.*` in `dist/<monday>/digest/` (or in your `--out` or
+`delivery.markdown.dir` folder) if you do not want the files. The next real run replaces the `dry-run` record.
 
 ## Troubleshooting
 

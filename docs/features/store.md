@@ -17,7 +17,9 @@ It is a supporting layer used at the start and the end of every run, as shown in
 
 ## What it does
 
-- Keeps one folder per ISO week at `<dataDir>/runs/<week>/` with `run.json`, `items.json`,
+- Keeps one `digest/` folder per ISO week, inside the folder of that week's Monday:
+  `<dataDir>/<monday>/digest/`. Week 2026-W43 is `dist/2026-10-19/digest/`, whatever day the run
+  runs, so a resume or `--force` finds the same folder. It holds `run.json`, `items.json`,
   `scores.json`, `drafts.json`, `digest.md`, `review.md` and, after a failure, `error.json`. Every
   file is written atomically, so a reader never sees half a file.
 - Holds the run lock as the file `<dataDir>/digest.lock`. It records the process, the host and a
@@ -28,16 +30,20 @@ It is a supporting layer used at the start and the end of every run, as shown in
   version with no heartbeat is abandoned after 6 hours.
 - Answers "was this week already sent?" and "which URLs went out recently?". The URL list covers
   the `dedupeWeeks` weeks before the run, and only weeks that reached a channel.
-- Prunes at the end of a run: week folders older than `keepWeeks` are emptied except for
-  `digest.md`. A failed prune is only logged.
+- Prunes at the end of a run: for weeks older than `keepWeeks` it deletes that Monday's source
+  folders and everything in `digest/` except `digest.md` and the delivered `<week>.md`,
+  `<week>.html` and `<week>.failed.md`. It also deletes the fetched data and the logs of the days
+  before the oldest kept week, including old `digest fetch` days. A failed prune is only logged.
 - Serves the commands that read history: `history`, `show`, `preview` and `feedback`.
 - A `run.json` that is missing, unreadable, no longer matches the schema or belongs to another
   week is read as "no record", with a warning in the log.
-- Week ids become folder names, so only a valid ISO week id such as `2026-W43` is accepted.
+- Week ids name the Monday folder, so only a valid ISO week id such as `2026-W43` is accepted. A
+  W53 in a year that has 52 weeks (`2025-W53`) is refused.
+  The paths of the whole layout come from one file, `src/store/layout.ts`.
 
 ## What you can configure
 
-- `dataDir` (default `data`): where runs and the lock live. See the
+- `dataDir` (default `dist`): the data folder, where runs, fetched data, logs and the lock live. See the
   [config file](../configuration/config-file.md).
 - `keepWeeks` (default 12, at least 1, not below `dedupeWeeks`) and `dedupeWeeks` (0 to 12,
   default 4). See [collection limits](../configuration/collection-limits.md).

@@ -1,10 +1,12 @@
+import { resolve } from 'node:path';
 import type { LoadedConfig } from '../../../config/load';
 import { checkWritableDir, markdownDirCheck } from '../folders/writableDir';
 import type { DirIo } from '../folders/inspectDir';
 import { fail, ok, type CheckResult } from '../report/checkResult';
 
 /**
- * The markdown folder, and the secret each configured channel needs. Nothing is sent: only the
+ * The markdown folder (the data folder's own check covers it when no dir is set), and the secret
+ * each configured channel needs. Nothing is sent: only the
  * presence of `SMTP_PASSWORD` and `SLACK_WEBHOOK_URL` is looked at, never their values.
  */
 export async function checkDelivery(
@@ -13,7 +15,9 @@ export async function checkDelivery(
 ): Promise<CheckResult[]> {
   const { email, slack, markdown } = config.delivery;
   return [
-    await checkWritableDir(markdownDirCheck(markdown.dir), io),
+    markdown.dir === undefined
+      ? ok('markdown', `digests are written to each week's folder in ${resolve(config.dataDir)}`)
+      : await checkWritableDir(markdownDirCheck(markdown.dir), io),
     ...(email
       ? [
           secrets.SMTP_PASSWORD

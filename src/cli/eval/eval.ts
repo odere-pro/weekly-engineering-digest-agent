@@ -22,13 +22,16 @@ import { runEval, type EvalDeps, type EvalOptions } from '../../../evals/runEval
 import { METRIC_IDS, type MetricResult, type WeekDetail } from '../../../evals/schema';
 import { formatComparison } from './compareText';
 import { gateCell, resultCell, table, valueCell } from './cells';
-import { buildApp, createModelProvider, type AppHandle } from '../../app/container';
-import { knownSecrets } from '../../app/redacting';
+import {
+  buildApp,
+  createAppLogger,
+  createModelProvider,
+  type AppHandle,
+} from '../../app/container';
 import { loadConfig, platformOf, type LoadedConfig } from '../../config/load';
 import { resolveProfile, type Platform } from '../../config/profiles';
 import { ProfileNameSchema, type ProfileName } from '../../config/schema';
 import { runDigest } from '../../digest/runDigest';
-import { createLogger } from '../../observability/logger';
 import type { ModelProvider } from '../../models/ModelProvider';
 import { systemClock, type Clock } from '../../shared/clock';
 import { DigestError, errorMessage } from '../../shared/errors';
@@ -115,9 +118,8 @@ async function currentGitSha(): Promise<string> {
 
 const defaultIo: EvalCommandIo = {
   casesDir: 'evals',
-  // The same logger the app builds for a run: JSON on stdout at LOG_LEVEL, secrets taken out.
-  createEvalLogger: ({ env, secrets }) =>
-    createLogger({ level: env.LOG_LEVEL, redactValues: knownSecrets(secrets) }),
+  // The same logger the app builds for a run: stdout and the day's log file, secrets taken out.
+  createEvalLogger: createAppLogger,
   createProvider: createModelProvider,
   loadConfig: (options) => loadConfig(options),
   buildApp,

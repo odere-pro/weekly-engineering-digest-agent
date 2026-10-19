@@ -7,8 +7,9 @@ Three ways to run the same code. All of them need Ollama; the digest never calls
 ## Docker Compose
 
 The image is non-root and runs `digest serve` by default. The Compose project is `eng-digest`
-(`docker-compose.yml`). Compose bind-mounts `./data` to `/app/data` and `./data/digests` to
-`/app/dist/digests`, so Docker keeps its files under `data/`.
+(`docker-compose.yml`). Compose bind-mounts `./dist` to `/app/dist`, the default data folder, so
+Docker keeps everything it produces (runs, fetched data, logs, digest files) under `dist/`. The
+program itself sits outside that folder, in `/opt/eng-digest`, so the mount cannot hide it.
 
 | Service      | Profile   | Role                                                                 |
 | ------------ | --------- | -------------------------------------------------------------------- |
@@ -21,7 +22,7 @@ The image is non-root and runs `digest serve` by default. The Compose project is
   `http://host.docker.internal:11434`. `make docker-*` exports `DIGEST_HOST_OS` and
   `DIGEST_HOST_ARCH`, so the container picks the Mac profiles.
 - **Linux.** Compose adds its own Ollama (`--profile linux`). Every profile uses the fallback
-  model set. `DIGEST_UID` and `DIGEST_GID` let the container write `./data` and read a
+  model set. `DIGEST_UID` and `DIGEST_GID` let the container write `./dist` and read a
   `chmod 600` `.env`.
 - **Stopping.** `stop_grace_period` is 90 minutes, so `docker compose stop` waits for a running
   digest. See [stopping and restarts](../operations/stopping-and-restarts.md).
@@ -32,15 +33,15 @@ start. Secrets are read from the mounted `.env`, not from `env_file`, so they st
 
 ## Node
 
-`pnpm digest <command>` runs from source with tsx. `pnpm build` makes `dist/cli.js`
-(`node dist/cli.js <command>`). A host scheduler calls `digest run`, or you keep
+`pnpm digest <command>` runs from source with tsx. `pnpm build` makes `dist/artifacts/cli.js`
+(`node dist/artifacts/cli.js <command>`). A host scheduler calls `digest run`, or you keep
 `digest serve` running. `digest init` prints a launchd, systemd or `schtasks` entry for the host
 scheduler. Those fire in the machine's local time zone, not `schedule.timeZone`.
 
 ## One machine, one replica
 
-The lock is a file on local disk. Do not run two copies against one `data/` folder, and do not
-share `data/` over a network file system. The cloud is a proposal only:
+The lock is a file on local disk. Do not run two copies against one data folder (`dist/`), and do not
+share it over a network file system. The cloud is a proposal only:
 [cloud proposal](../operations/cloud-proposal.md).
 
 ## Which to choose

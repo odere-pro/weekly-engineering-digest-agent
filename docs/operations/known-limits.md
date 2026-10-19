@@ -32,8 +32,8 @@ The honest list. Each item says what happens and why.
 
 ## Running
 
-- One replica. The lock is a file on local disk. Two machines sharing `data/` over a network file
-  system are not supported, and `data/` needs hard links (not FAT, exFAT or some SMB shares).
+- One replica. The lock is a file on local disk. Two machines sharing `dist/` over a network file
+  system are not supported, and `dist/` needs hard links (not FAT, exFAT or some SMB shares).
 - A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run.
 - The abort signal is checked between steps only. A hanging model call holds a run until its
   timeout.

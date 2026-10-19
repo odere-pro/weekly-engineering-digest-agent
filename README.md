@@ -66,7 +66,7 @@ pnpm digest run --dry-run   # a full run that sends nothing
 ```
 
 Pull the models first with `ollama pull <tag>`; `doctor` prints the exact line for each missing
-model. The digest lands in `dist/digests` (`data/digests` in Docker). Docker setup and
+model. The digest lands in `dist/<monday>/digest/` (the `./dist` folder in Docker). Docker setup and
 scheduling: [getting started](docs/overview/getting-started.md).
 
 ## Documentation

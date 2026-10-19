@@ -3,7 +3,7 @@ import { FetchError } from '../../shared/errors';
 /** A feed or API body larger than this fails the source: no real feed comes close. */
 export const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
-/** How much of a failed answer's body the debug tap gets to see: enough for an error page. */
+/** How much of a failed answer's body the tap gets to see: enough for an error page. */
 export const ERROR_PREVIEW_BYTES = 64 * 1024;
 
 const BYTES_PER_MIB = 1024 * 1024;
@@ -24,8 +24,8 @@ export interface Reply {
 }
 
 /**
- * The final answer to a request, as `getText` read it. Only a debug tap sees it (`digest
- * fetch`); a run passes none. It carries nothing of the request, so no header can leak.
+ * The final answer to a request, as `getText` read it. Only a tap sees it (`digest fetch`, a run's
+ * archive). It carries nothing of the request, so no header can leak.
  */
 export interface Answer {
   /** The URL that answered, after any redirects. */
@@ -51,7 +51,7 @@ export interface GetOptions {
   signal?: AbortSignal | undefined;
   /** Defaults to `MAX_BODY_BYTES`. */
   maxBytes?: number;
-  /** Debug tap, off by default: told the final answer once it is read. Redirect hops are not. */
+  /** Tap, off by default: told the final answer once it is read. Redirect hops are not. */
   onAnswer?: ((answer: Answer) => void) | undefined;
 }
 
@@ -124,7 +124,7 @@ export async function getText(url: string, options: GetOptions): Promise<Reply> 
   }
 }
 
-/** Reads the final answer and, if a tap listens, tells it. A run has no tap and reads no more. */
+/** Reads the final answer and, if a tap listens, tells it; only then is a failed body read. */
 async function answered(response: Response, url: string, options: GetOptions): Promise<Reply> {
   const { onAnswer } = options;
   const preview = !response.ok && onAnswer ? await readPreview(response) : undefined;
@@ -152,7 +152,7 @@ async function readPreview(response: Response): Promise<string> {
       received += value.byteLength;
     }
   } catch {
-    // A debug aid must not change how a failed request ends; the status is already known.
+    // The tap must not change how a failed request ends; the status is already known.
   } finally {
     await reader.cancel().catch(() => undefined);
     reader.releaseLock();

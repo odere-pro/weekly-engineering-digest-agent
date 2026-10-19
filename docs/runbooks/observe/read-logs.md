@@ -18,21 +18,27 @@ dropped item.
 
 ## Prerequisites
 
-- Access to the standard output of the process: your terminal, or the Docker logs.
+- Access to the standard output of the process (your terminal, or the Docker logs), or to the
+  `dist/logs/` folder (`dataDir`).
 - `jq` is optional. Every filter below also works with `grep`.
 
 ## Steps
 
-1. Find where the lines go. The app writes one JSON object per line to standard output (pino).
-   Nothing is written to a log file.
+1. Find where the lines go. `run`, `serve` and `eval` write one JSON object per line (pino) to
+   standard output and to the log file of the day, `dist/logs/<day>/digest.log`. `<day>` is the
+   date in `schedule.timeZone`; a new file starts at midnight, and the folders of days older than the oldest kept week
+   (`keepWeeks`) are deleted after a run.
    - Node: `pnpm digest run` prints the JSON lines and the human summary in the same stream.
-   - Docker `serve` service: `docker compose logs digest`.
+   - Docker `serve` service: `docker compose logs digest`, or the file in `./dist/logs/`.
    - One-shot Docker command: `docker compose run --rm digest run` prints to your terminal.
-2. Save a run so you can search it later.
+2. Pick what to search. The log file holds only JSON lines, and every run of that day. To keep
+   the lines and the human summary of one run together, save the stream.
 
    ```bash
    pnpm digest run --dry-run > run.log 2>&1
    ```
+
+   The examples below read `run.log`; use `dist/logs/<day>/digest.log` the same way.
 
 3. Read one line. Every line has `level`, `time` (ISO), `service` (`eng-digest`) and `msg`.
    Lines of a run also carry `runId` (the week), and lines inside a step carry `step`.
@@ -97,14 +103,15 @@ Nothing changed. To return to the default detail, remove `LOG_LEVEL` from `.env`
 
 ## Troubleshooting
 
-| Symptom                        | Cause                                       | Fix                                    |
-| ------------------------------ | ------------------------------------------- | -------------------------------------- |
-| `jq: parse error`              | The stream mixes the summary with JSON      | Use `jq -R 'fromjson?'` as in step 5   |
-| No `runId` on a line           | The line is outside a run, such as start-up | Filter by time instead                 |
-| `debug` lines do not show      | `LOG_LEVEL` is still `info`                 | Set `debug` in `.env`, restart `serve` |
-| `LOG_LEVEL` is ignored         | The process environment wins over `.env`    | Unset the variable in the shell        |
-| Secrets look like `[redacted]` | The logger replaces every known secret      | Expected; the real value is in `.env`  |
-| Docker logs are empty          | The `digest` service is not running         | `docker compose ps`, then `up -d`      |
+| Symptom                        | Cause                                                                                      | Fix                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `jq: parse error`              | The stream mixes the summary with JSON                                                     | Use `jq -R 'fromjson?'` as in step 5   |
+| No `runId` on a line           | The line is outside a run, such as start-up                                                | Filter by time instead                 |
+| `debug` lines do not show      | `LOG_LEVEL` is still `info`                                                                | Set `debug` in `.env`, restart `serve` |
+| `LOG_LEVEL` is ignored         | The process environment wins over `.env`                                                   | Unset the variable in the shell        |
+| Secrets look like `[redacted]` | The logger replaces every known secret                                                     | Expected; the real value is in `.env`  |
+| Docker logs are empty          | The `digest` service is not running                                                        | `docker compose ps`, then `up -d`      |
+| No file in `dist/logs/`        | Only `run`, `serve` and `eval` write it, or the folder is not writable (stderr warns once) | Use one of them; fix the folder        |
 
 ## Related
 

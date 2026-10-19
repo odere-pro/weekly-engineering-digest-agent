@@ -5,6 +5,7 @@ import { loadConfig, type LoadedConfig } from '../../config/load';
 import { parseReviewSheet } from '../../render/reviewSheet';
 import { ExitCode, WeekIdSchema } from '../../domain/schemas';
 import type { RunStore } from '../../store/RunStore';
+import { weekDigestDir } from '../../store/layout';
 import { DigestError, errorMessage } from '../../shared/errors';
 
 export interface FeedbackCommandOptions {
@@ -42,8 +43,8 @@ const defaultDeps: FeedbackCommandDeps = {
 };
 
 /**
- * `digest feedback <week>` (W7-07): reads the ticks in data/runs/<week>/review.md and writes
- * data/feedback/<week>.json. Returns the process exit code.
+ * `digest feedback <week>` (W7-07): reads the ticks in <dataDir>/<monday>/digest/review.md and writes
+ * <dataDir>/feedback/<week>.json. Returns the process exit code.
  */
 export async function feedbackCommand(
   options: FeedbackCommandOptions,
@@ -57,13 +58,13 @@ export async function feedbackCommand(
     const sheet = await io.createFsRunStore({ dataDir }).readArtifact(week, 'review.md');
     if (sheet === undefined) {
       throw new DigestError(
-        `No review sheet for ${week}: run the week first (${join(dataDir, 'runs', week, 'review.md')})`,
+        `No review sheet for ${week}: run the week first (${join(weekDigestDir(dataDir, week), 'review.md')})`,
       );
     }
     const feedback = parseReviewSheet(sheet);
     if (feedback.weekId !== week) {
       throw new DigestError(
-        `The sheet in data/runs/${week} is for ${feedback.weekId}, not ${week}`,
+        `The sheet in ${weekDigestDir(dataDir, week)} is for ${feedback.weekId}, not ${week}`,
       );
     }
     const dir = join(dataDir, FEEDBACK_DIR);

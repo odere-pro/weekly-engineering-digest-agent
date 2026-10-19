@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 import { ARTIFACT_FILES } from './artifactFiles';
 import { createFsRunStore } from './fsRunStore';
 import type { ArtifactName, RunStore } from '../RunStore';
+import { weekDigestDir } from '../layout';
 import { DigestError } from '../../shared/errors';
 import { fixedClock } from '../../shared/clock';
 import { noopLogger, type Logger } from '../../shared/telemetry';
@@ -34,7 +35,7 @@ function makeStore(): RunStore {
 }
 
 function runPath(runId: string, file: string): string {
-  return join(dataDir, 'runs', runId, file);
+  return join(weekDigestDir(dataDir, runId), file);
 }
 
 function expectRunJsonWarning(runId: string): void {
@@ -53,7 +54,7 @@ async function listAll(dir: string): Promise<string[]> {
 describe('artifacts', () => {
   // Driven by the artifact table, so a new artifact name is covered the day it is added.
   it.each(Object.keys(ARTIFACT_FILES) as ArtifactName[])(
-    'round-trips %s under runs/<week>/',
+    'round-trips %s under <monday>/digest/',
     async (name) => {
       const store = makeStore();
       await store.saveArtifact('2026-W42', name, `content of ${name}`);
@@ -69,14 +70,14 @@ describe('artifacts', () => {
     await store.saveArtifact('2026-W42', 'digest.md', 'first');
     await store.saveArtifact('2026-W42', 'digest.md', 'second');
     await expect(readFile(runPath('2026-W42', 'digest.md'), 'utf8')).resolves.toBe('second');
-    await expect(readdir(join(dataDir, 'runs', '2026-W42'))).resolves.toEqual(['digest.md']);
+    await expect(readdir(weekDigestDir(dataDir, '2026-W42'))).resolves.toEqual(['digest.md']);
   });
 
   it('cleans up its temp file when the final rename fails', async () => {
     const store = makeStore();
     await mkdir(runPath('2026-W42', 'digest.md'), { recursive: true });
     await expect(store.saveArtifact('2026-W42', 'digest.md', 'x')).rejects.toThrow();
-    await expect(readdir(join(dataDir, 'runs', '2026-W42'))).resolves.toEqual(['digest.md']);
+    await expect(readdir(weekDigestDir(dataDir, '2026-W42'))).resolves.toEqual(['digest.md']);
   });
 
   it.skipIf(process.platform === 'win32' || process.getuid?.() === 0)(
@@ -84,7 +85,7 @@ describe('artifacts', () => {
     async () => {
       const store = makeStore();
       await store.saveArtifact('2026-W42', 'digest.md', 'previous');
-      const dir = join(dataDir, 'runs', '2026-W42');
+      const dir = weekDigestDir(dataDir, '2026-W42');
       await chmod(dir, 0o500);
       try {
         await expect(store.saveArtifact('2026-W42', 'digest.md', 'new')).rejects.toThrow();
@@ -189,7 +190,7 @@ describe('run record', () => {
 
   it('treats unparseable run.json as missing and warns', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W42'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W42'), { recursive: true });
     await writeFile(runPath('2026-W42', 'run.json'), '{ not json');
 
     await expect(store.getRunRecord('2026-W42')).resolves.toBeUndefined();
@@ -198,7 +199,7 @@ describe('run record', () => {
 
   it('treats schema-invalid run.json as missing and warns', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W42'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W42'), { recursive: true });
     await writeFile(runPath('2026-W42', 'run.json'), JSON.stringify({ runId: '2026-W42' }));
 
     await expect(store.getRunRecord('2026-W42')).resolves.toBeUndefined();
@@ -207,7 +208,7 @@ describe('run record', () => {
 
   it('treats a run.json whose runId differs from its folder as missing', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W42'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W42'), { recursive: true });
     await writeFile(
       runPath('2026-W42', 'run.json'),
       JSON.stringify(makeRunRecord({ runId: '2026-W41' })),
@@ -238,7 +239,7 @@ describe('hasSentDigest', () => {
 
   it('is false when run.json is corrupt', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W42'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W42'), { recursive: true });
     await writeFile(runPath('2026-W42', 'run.json'), 'garbage');
     await expect(store.hasSentDigest('2026-W42')).resolves.toBe(false);
   });
@@ -323,7 +324,7 @@ describe('sentUrls', () => {
 
   it('skips corrupt run records', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W41'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W41'), { recursive: true });
     await writeFile(runPath('2026-W41', 'run.json'), '{');
     await store.saveRunRecord(
       makeRunRecord({ runId: '2026-W40', sentUrls: ['https://example.com/ok'] }),
@@ -359,7 +360,7 @@ describe('listRuns', () => {
     const store = makeStore();
     await store.saveRunRecord(makeRunRecord({ runId: '2026-W40' }));
     await store.saveRunRecord(makeRunRecord({ runId: '2026-W41' }));
-    await mkdir(join(dataDir, 'runs', '2026-W42'), { recursive: true });
+    await mkdir(weekDigestDir(dataDir, '2026-W42'), { recursive: true });
     await writeFile(runPath('2026-W42', 'run.json'), 'broken');
 
     const runs = await store.listRuns(2);
@@ -369,8 +370,11 @@ describe('listRuns', () => {
   it('ignores folders and files that are not week ids, and weeks without run.json', async () => {
     const store = makeStore();
     await store.saveRunRecord(makeRunRecord({ runId: '2026-W41' }));
-    await mkdir(join(dataDir, 'runs', 'notes'), { recursive: true });
-    await writeFile(join(dataDir, 'runs', '.DS_Store'), '');
+    await mkdir(join(dataDir, 'notes'), { recursive: true });
+    await writeFile(join(dataDir, '.DS_Store'), '');
+    // A `digest fetch` day (a Wednesday) and a Monday with source data but no digest folder.
+    await mkdir(join(dataDir, '2026-10-14', 'openai-news', 'raw'), { recursive: true });
+    await mkdir(join(dataDir, '2026-09-28', 'openai-news', 'raw'), { recursive: true });
     await store.saveArtifact('2026-W42', 'digest.md', 'only a digest');
 
     const runs = await store.listRuns();
@@ -395,20 +399,75 @@ describe('prune', () => {
     const pruned = await store.prune('2026-W42', 3);
 
     expect(pruned).toEqual(['2026-W30']);
-    await expect(readdir(join(dataDir, 'runs', '2026-W30'))).resolves.toEqual(['digest.md']);
+    await expect(readdir(weekDigestDir(dataDir, '2026-W30'))).resolves.toEqual(['digest.md']);
     await expect(readFile(runPath('2026-W30', 'digest.md'), 'utf8')).resolves.toBe(
       '2026-W30/digest.md',
     );
+  });
+
+  it("deletes an old week's source folders but keeps the files the Markdown channel wrote", async () => {
+    const store = makeStore();
+    await seedWeek(store, '2026-W30');
+    const digestDir = weekDigestDir(dataDir, '2026-W30');
+    for (const name of ['2026-W30.md', '2026-W30.html', '2026-W30.failed.md']) {
+      await writeFile(join(digestDir, name), name);
+    }
+    // 2026-07-20 is the Monday of 2026-W30.
+    await mkdir(join(dataDir, '2026-07-20', 'openai-news', 'raw'), { recursive: true });
+    await writeFile(join(dataDir, '2026-07-20', 'openai-news', 'raw', 'feed.xml'), '<rss/>');
+
+    await expect(store.prune('2026-W42', 3)).resolves.toEqual(['2026-W30']);
+
+    await expect(readdir(join(dataDir, '2026-07-20'))).resolves.toEqual(['digest']);
+    await expect(readdir(digestDir).then((names) => names.sort())).resolves.toEqual([
+      '2026-W30.failed.md',
+      '2026-W30.html',
+      '2026-W30.md',
+      'digest.md',
+    ]);
+  });
+
+  it('deletes `digest fetch` days and log days older than the kept window, and keeps newer ones', async () => {
+    const store = makeStore();
+    await seedWeek(store, '2026-W42');
+    // The window of 2026-W42 with keepWeeks 3 starts on 2026-09-21, the Monday of 2026-W39.
+    for (const day of ['2026-09-16', '2026-09-21', '2026-10-14']) {
+      await mkdir(join(dataDir, day, 'openai-news', 'raw'), { recursive: true });
+      await mkdir(join(dataDir, 'logs', day), { recursive: true });
+      await writeFile(join(dataDir, 'logs', day, 'digest.log'), '{}\n');
+    }
+    await mkdir(join(dataDir, 'artifacts'), { recursive: true });
+
+    await expect(store.prune('2026-W42', 3)).resolves.toEqual([]);
+
+    const left = (await readdir(dataDir)).sort();
+    expect(left).toEqual(['2026-09-21', '2026-10-12', '2026-10-14', 'artifacts', 'logs']);
+    await expect(readdir(join(dataDir, 'logs'))).resolves.toEqual(['2026-09-21', '2026-10-14']);
+  });
+
+  it('removes a stale temp file next to the delivered files of a pruned week', async () => {
+    const store = makeStore();
+    await seedWeek(store, '2026-W30');
+    const digestDir = weekDigestDir(dataDir, '2026-W30');
+    await writeFile(join(digestDir, '2026-W30.md'), 'delivered');
+    await writeFile(join(digestDir, '2026-W30.md.123.abc.tmp'), 'half');
+
+    await store.prune('2026-W42', 3);
+
+    await expect(readdir(digestDir).then((names) => names.sort())).resolves.toEqual([
+      '2026-W30.md',
+      'digest.md',
+    ]);
   });
 
   it('keeps the current week and every week inside the window untouched', async () => {
     const store = makeStore();
     await seedWeek(store, '2026-W39');
     await seedWeek(store, '2026-W42');
-    const before = await listAll(join(dataDir, 'runs'));
+    const before = await listAll(dataDir);
 
     await expect(store.prune('2026-W42', 3)).resolves.toEqual([]);
-    await expect(listAll(join(dataDir, 'runs'))).resolves.toEqual(before);
+    await expect(listAll(dataDir)).resolves.toEqual(before);
   });
 
   it('prunes the first week outside the window', async () => {
@@ -433,24 +492,24 @@ describe('prune', () => {
     await seedWeek(store, '2026-W30');
     await expect(store.prune('2026-W42', 3)).resolves.toEqual(['2026-W30']);
     await expect(store.prune('2026-W42', 3)).resolves.toEqual([]);
-    await expect(readdir(join(dataDir, 'runs', '2026-W30'))).resolves.toEqual(['digest.md']);
+    await expect(readdir(weekDigestDir(dataDir, '2026-W30'))).resolves.toEqual(['digest.md']);
   });
 
   it('removes subfolders and corrupt run.json of old weeks, and ignores stray entries', async () => {
     const store = makeStore();
-    await mkdir(join(dataDir, 'runs', '2026-W20', 'extra'), { recursive: true });
+    await mkdir(join(weekDigestDir(dataDir, '2026-W20'), 'extra'), { recursive: true });
     await writeFile(runPath('2026-W20', 'run.json'), 'broken');
     await writeFile(runPath('2026-W20', 'extra/x.txt'), 'x');
-    await mkdir(join(dataDir, 'runs', 'notes'), { recursive: true });
-    await writeFile(join(dataDir, 'runs', 'stray.txt'), 'x');
+    await mkdir(join(dataDir, 'notes'), { recursive: true });
+    await writeFile(join(dataDir, 'stray.txt'), 'x');
 
     await expect(store.prune('2026-W42', 3)).resolves.toEqual(['2026-W20']);
-    await expect(readdir(join(dataDir, 'runs', '2026-W20'))).resolves.toEqual([]);
-    await expect(stat(join(dataDir, 'runs', 'notes'))).resolves.toBeDefined();
-    await expect(stat(join(dataDir, 'runs', 'stray.txt'))).resolves.toBeDefined();
+    await expect(readdir(weekDigestDir(dataDir, '2026-W20'))).resolves.toEqual([]);
+    await expect(stat(join(dataDir, 'notes'))).resolves.toBeDefined();
+    await expect(stat(join(dataDir, 'stray.txt'))).resolves.toBeDefined();
   });
 
-  it('returns an empty list when there is no runs folder', async () => {
+  it('returns an empty list when there is no data folder', async () => {
     await expect(makeStore().prune('2026-W42', 12)).resolves.toEqual([]);
   });
 });
@@ -476,7 +535,9 @@ describe('edge cases', () => {
   it('a plain file named like a week id does not break listing or pruning', async () => {
     const store = makeStore();
     await store.saveRunRecord(makeRunRecord({ runId: '2026-W41' }));
-    await writeFile(join(dataDir, 'runs', '2026-W20'), 'not a folder');
+    // 2026-05-11 is the Monday of 2026-W20.
+    await mkdir(dataDir, { recursive: true });
+    await writeFile(join(dataDir, '2026-05-11'), 'not a folder');
 
     await expect(store.listRuns()).resolves.toHaveLength(1);
     await expect(store.prune('2026-W42', 3)).resolves.toEqual([]);
@@ -552,8 +613,7 @@ describe('contract parity with MemoryRunStore', () => {
 describe('unexpected filesystem errors', () => {
   it('propagate instead of being treated as missing data', async () => {
     const store = makeStore();
-    await mkdir(dataDir, { recursive: true });
-    await writeFile(join(dataDir, 'runs'), 'a file where the runs folder should be');
+    await writeFile(dataDir, 'a file where the data folder should be');
 
     await expect(store.listRuns()).rejects.toThrow();
     await expect(store.getRunRecord('2026-W42')).rejects.toThrow();

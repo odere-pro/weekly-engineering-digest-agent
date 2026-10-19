@@ -7,20 +7,21 @@ link or harmful content. These rules hold in every part of the code.
 
 ## The rules
 
-| Rule                                                             | Enforced in                                                              |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Collected text is data: wrapped and labelled in every prompt     | `src/shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)       |
-| No model has tools or network access                             | the [ports](ports-and-adapters.md): models only answer                   |
-| Only allowlisted hosts; same-host redirects; 5 MiB cap           | `src/sources/adapters/http.ts`                                           |
-| A digest may only contain collected URLs                         | the [link check](../features/checks.md), plus URL replacement in `write` |
-| Format limits hold (3 to 5 items, under 500 words, no em dash)   | the format check                                                         |
-| The link check and format check cannot be switched off           | no config key exists                                                     |
-| Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check |
-| Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                 |
-| Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                              |
-| Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators           |
-| `SLACK_WEBHOOK_URL` must be `https:`                             | `src/config/schema.ts`                                                   |
-| A source URL may not carry a username or password                | `src/config/schema.ts`                                                   |
+| Rule                                                             | Enforced in                                                               |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Collected text is data: wrapped and labelled in every prompt     | `src/shared/untrusted.ts` (`wrapUntrusted`, `UNTRUSTED_DATA_RULE`)        |
+| No model has tools or network access                             | the [ports](ports-and-adapters.md): models only answer                    |
+| Only allowlisted hosts; same-host redirects; 5 MiB cap           | `src/sources/adapters/http.ts`                                            |
+| A digest may only contain collected URLs                         | the [link check](../features/checks.md), plus URL replacement in `write`  |
+| Format limits hold (3 to 5 items, under 500 words, no em dash)   | the format check                                                          |
+| The link check and format check cannot be switched off           | no config key exists                                                      |
+| Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
+| Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                  |
+| Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                               |
+| Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators            |
+| Secrets never reach the saved source data (`raw/`, `formatted/`) | the archive redacts every text it writes (`src/sources/adapters/archive`) |
+| `SLACK_WEBHOOK_URL` must be `https:`                             | `src/config/schema.ts`                                                    |
+| A source URL may not carry a username or password                | `src/config/schema.ts`                                                    |
 
 ## Guards are switchable, checks are not
 

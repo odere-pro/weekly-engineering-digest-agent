@@ -8,6 +8,9 @@ Four ways to see what the agent did: logs, traces, history and health checks.
 
 - pino JSON on stdout. The level comes from `LOG_LEVEL` (`debug`, `info`, `warn`, `error`;
   default `info`).
+- `run`, `serve` and `eval` also write every line to `dist/logs/<day>/digest.log` (`<dataDir>`
+  instead of `dist` if you changed it). `<day>` is the date in `schedule.timeZone`, so there is
+  one file per day. Logs of days older than the oldest kept week (`keepWeeks`) are deleted by pruning.
 - Lines of a run carry `runId` (the week id). Lines inside a step also carry `step`.
 - Each model call logs the role, the model, the latency, the attempts and the token counts.
   Never a prompt or an answer.
@@ -25,7 +28,7 @@ Jaeger on `http://localhost:16686`. See
 
 ## History
 
-Every run writes `data/runs/<week>/run.json`. `pnpm digest history` lists past runs (status,
+Every run writes `dist/<monday>/digest/run.json` (`dist/2026-10-19/digest/run.json` for `2026-W43`). `pnpm digest history` lists past runs (status,
 item counts, duration, winner). `pnpm digest show <week>` prints one run. See
 [view run history](../runbooks/observe/view-run-history.md) and
 [show a week](../runbooks/observe/show-a-week.md).

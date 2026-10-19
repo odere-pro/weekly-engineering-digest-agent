@@ -6,11 +6,11 @@ Every `digest` command and option, with the defaults the program uses. `pnpm dig
 
 ## Three ways to run
 
-| Where         | Prefix                                     | Note                                                          |
-| ------------- | ------------------------------------------ | ------------------------------------------------------------- |
-| From source   | `pnpm digest <command>`                    | Runs `src/cli/index.ts` with tsx. No build needed             |
-| After a build | `node dist/cli.js <command>`               | `pnpm build` makes `dist/cli.js`                              |
-| Docker        | `docker compose run --rm digest <command>` | The image runs `node dist/cli.js`; default command is `serve` |
+| Where         | Prefix                                     | Note                                                            |
+| ------------- | ------------------------------------------ | --------------------------------------------------------------- |
+| From source   | `pnpm digest <command>`                    | Runs `src/cli/index.ts` with tsx. No build needed               |
+| After a build | `node dist/artifacts/cli.js <command>`     | `pnpm build` makes `dist/artifacts/cli.js`                      |
+| Docker        | `docker compose run --rm digest <command>` | The image runs `node dist/artifacts/cli.js`; default is `serve` |
 
 On a Mac, `make docker-init` and `make docker-up` wrap `digest init` and `docker compose up -d`.
 
@@ -57,23 +57,26 @@ asks before overwriting. Needs no Ollama.
 Prints one line per check with `✓`, `!` or `✗`, a `fix:` line for each problem, and
 `Doctor: all checks passed.` or `Doctor: N errors, M warnings.` Checks: `config`, `ollama`,
 `ollama version`, `apple silicon`, `model <tag>`, `think`, `source <id>`, `markdown`, `email`,
-`slack`, `.env`, `.env values`, `guards`, `data dir`. A bad feed is a warning, not an error.
+`slack`, `.env`, `.env values`, `guards`, `data dir`. A bad feed is a warning, not an error. With no
+`delivery.markdown.dir`, the `markdown` line says digests go to each week's folder in the data
+folder, which `data dir` checks.
 `--readiness` works without a config and calls only Ollama.
 
 ## `run [options]`
 
-| Option             | Default                 | Meaning                                                 |
-| ------------------ | ----------------------- | ------------------------------------------------------- |
-| `--since <window>` | `windowDays` (7)        | Collection window, `Nd` with N from 1 to 31             |
-| `--dry-run`        | off                     | Write the digest to disk and send nothing               |
-| `--force`          | off                     | Run even if the week already has a sent digest          |
-| `--seed <n>`       | `models.seed` (42)      | Sampling seed for this run, a whole number of 0 or more |
-| `--out <dir>`      | `delivery.markdown.dir` | Folder for the Markdown and HTML digest                 |
+| Option             | Default                 | Meaning                                                                    |
+| ------------------ | ----------------------- | -------------------------------------------------------------------------- |
+| `--since <window>` | `windowDays` (7)        | Collection window, `Nd` with N from 1 to 31                                |
+| `--dry-run`        | off                     | Write the digest to disk and send nothing                                  |
+| `--force`          | off                     | Run even if the week already has a sent digest                             |
+| `--seed <n>`       | `models.seed` (42)      | Sampling seed for this run, a whole number of 0 or more                    |
+| `--out <dir>`      | `delivery.markdown.dir` | Folder for the Markdown and HTML digest (else the week's `digest/` folder) |
 
 Prints `Week`, `Status`, `Items` (`N collected → M in digest`), `Winner`, `Duration`, the paths of
 the digest files, each `Failed source:` and `Rejected draft:`, and a note for `dry-run` and
-`skipped`. Errors go to stderr. Writes the run folder, the digest files and, on `failed`,
-`blocked` or a `quiet` week with nothing collected, a failure note. Exit code follows the run
+`skipped`. Errors go to stderr. Writes the run folder, what each source answered, the digest
+files, the log file and, on `failed`, `blocked` or a `quiet` week with nothing collected, a failure
+note. Exit code follows the run
 status ([exit codes](exit-codes.md)). A held lock or a bad option exits 1. When every draft is
 rejected, `Winner` reads `fallback`: a digest built from the items' own text was sent (exit 0),
 see [blocked run](../runbooks/debug/blocked-run.md).
@@ -89,16 +92,18 @@ see [blocked run](../runbooks/debug/blocked-run.md).
 
 ## `fetch [options]`
 
-| Option             | Default          | Meaning                                |
-| ------------------ | ---------------- | -------------------------------------- |
-| `--source <id...>` | all sources      | Only these source ids (one or more)    |
-| `--since <window>` | `windowDays` (7) | Collection window, `Nd` from 1d to 31d |
-| `--out <dir>`      | `dist/fetch`     | Folder for the output                  |
+| Option             | Default            | Meaning                                |
+| ------------------ | ------------------ | -------------------------------------- |
+| `--source <id...>` | all sources        | Only these source ids (one or more)    |
+| `--since <window>` | `windowDays` (7)   | Collection window, `Nd` from 1d to 31d |
+| `--out <dir>`      | `dataDir` (`dist`) | The data folder to write into          |
 
 Calls no model and takes no lock. Fetches each source once (10 s limit, no retries), prints a table
 (`Source`, `Status`, `HTTP`, `Items`, `Skipped`, `Time`, `Error`) and `Saved to <folder>`. Saves
-`raw/<id>.<ext>`, `items.json` and `summary.json` under `<out>/<timestamp>/`. Refuses an `--out`
-inside the data folder. Exit 1 if any source failed.
+`<day>/<id>/raw/response-<n>.<ext>` with `responses.json`, `<day>/<id>/formatted/items.json` and
+`<day>/fetch-summary.json` under `<out>`, where `<day>` is today in `schedule.timeZone`. A second
+fetch on the same day replaces each source's files and the summary. It writes only those, never
+the `digest/` folder or the lock. Exit 1 if any source failed.
 
 ## `show [options] <week>`
 
@@ -114,13 +119,14 @@ no saved run, or a missing file.
 
 ## `preview [options] <week>`
 
-| Option             | Default        | Meaning                               |
-| ------------------ | -------------- | ------------------------------------- |
-| `--channel <name>` | `all`          | `markdown`, `email`, `slack` or `all` |
-| `--out <dir>`      | `dist/preview` | Folder for the previews               |
+| Option             | Default                      | Meaning                               |
+| ------------------ | ---------------------------- | ------------------------------------- |
+| `--channel <name>` | `all`                        | `markdown`, `email`, `slack` or `all` |
+| `--out <dir>`      | the week's `digest/preview/` | Folder for the previews               |
 
-Writes `<out>/<week>/digest.md`, `email.html`, `email.txt` and `slack.json` (those for the chosen
-channel), prints their paths, and sends nothing. Needs a run with a winning draft.
+Writes `digest.md`, `email.html`, `email.txt` and `slack.json` (those for the chosen channel) to
+`<dataDir>/<monday>/digest/preview/`, or to `<out>/<week>/` with `--out`, prints their paths, and
+sends nothing. Needs a run with a winning draft.
 
 ## `history [options]`
 
@@ -133,7 +139,7 @@ or `No runs yet.`
 
 ## `feedback <week>`
 
-No options. Reads `<dataDir>/runs/<week>/review.md` and writes `<dataDir>/feedback/<week>.json`.
+No options. Reads `<dataDir>/<monday>/digest/review.md` and writes `<dataDir>/feedback/<week>.json`.
 Prints `<week>: <n> wrong pick(s), <m> missed -> <path>`. Exit 1 when the sheet is missing,
 belongs to another week, or was edited beyond the tick boxes.
 

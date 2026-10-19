@@ -1,8 +1,9 @@
 # Observability
 
-> The real `Logger` and `Tracer`: pino JSON logs, optional OpenTelemetry traces, and the redactor both
-> write through. The pipeline sees only the `shared/telemetry` interfaces; `app/container` wires this.
-> Entry: `createLogger(options)`, `createTracer(options) → TracingHandle`, `createRedactor(secrets)`.
+> The real `Logger` and `Tracer`: pino JSON logs (on stdout and in a file per day), optional
+> OpenTelemetry traces, and the redactor both write through. The pipeline sees only the `shared/telemetry` interfaces; `app/container` wires this.
+> Entry: `createLogger(options)` (`options.file` adds the day file), `createTracer(options) → TracingHandle`,
+> `createRedactor(secrets)`.
 
 ## Context
 
@@ -14,6 +15,8 @@ flowchart LR
   container -->|"Logger, Tracer in DigestDeps"| pipeline["pipeline steps"]
   pipeline -.->|"info, warn, child, span"| telemetry
   obs -->|"JSON lines"| stdout[("stdout")]
+  obs -->|"the same lines"| logfile[("dataDir/logs/day/digest.log")]
+  obs -.->|"logsDir, dayOf"| layout["store/layout"]
   obs -->|"OTLP/HTTP spans"| otlp[("Jaeger or any OTLP collector")]
   classDef focus stroke-width:3px
 ```
@@ -25,7 +28,7 @@ flowchart TD
   redactor["createRedactor(redactValues): one each in logger and tracer"] --> logCall["Logger call: message, fields"]
   logCall --> level{"level enabled?"}
   level -->|"no"| dropped["dropped, fields never read"]
-  level -->|"yes"| pino["redact message and fields, pino JSON line on stdout"]
+  level -->|"yes"| pino["redact message and fields, pino JSON line on stdout and in the day's file"]
   redactor --> spanCall["Tracer.span(name, attributes, fn)"]
   spanCall --> endpoint{"OTLP endpoint set?"}
   endpoint -->|"no"| noop["no-op: runs fn"]
@@ -34,6 +37,9 @@ flowchart TD
   span --> batch["BatchSpanProcessor to OTLP/HTTP"] --> shutdown["close(): shutdown flushes within 5 s"]
 ```
 
+- The day file is `<dataDir>/logs/<day>/digest.log`, `<day>` the line's date in `schedule.timeZone`
+  (`dayOf`): a `serve` process starts a new file at midnight. `app/container.createAppLogger` sets it
+  for runs and `digest eval`; other `createLogger` callers log to stdout only.
 - Tracing is on only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set (Compose `tracing` profile: Jaeger UI
   `127.0.0.1:16686`, endpoint `http://jaeger:4318/v1/traces`). `LOG_LEVEL` sets the level, default `info`.
 - Spans of a real run: `runDigest` (`runId`, `dryRun`), one per step (`runId`, `step`), `deliver` on a
@@ -55,15 +61,21 @@ flowchart TD
   throws until the earlier `shutdown()` finished. No endpoint gives a no-op, not counted.
 - `shutdown()` waits at most `shutdownTimeoutMs` (5000, also the exporter's request timeout), then
   rejects; the global registration is released either way. `container.close()` logs a warning, never fails.
+- The day file is `dailyLogFile.ts`: lines are appended one by one, synchronously, so they keep
+  their order and survive an exit. If the logs folder was removed under a running process it is
+  made again and the line retried once. A write that still fails, or an unknown time zone, never
+  throws: it is reported once on stderr and the line still reached stdout. `store` prune removes the
+  folders of days older than the oldest kept week (`keepWeeks`).
 - Span attributes keep strings, numbers, booleans and arrays of one primitive kind; else JSON text.
 
 ## Files
 
-| File         | Role                                                                                        |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `logger.ts`  | `createLogger`, `LoggerOptions`: pino (`service: "eng-digest"`, ISO time) plus the redactor |
-| `redact.ts`  | `createRedactor`, `Redactor`; markers `REDACTED`, `CIRCULAR`, `TRUNCATED`, `UNSERIALIZABLE` |
-| `tracing.ts` | `createTracer`, `TracingHandle`, `TracerOptions`: `NodeTracerProvider` with OTLP, or no-op  |
+| File              | Role                                                                                           |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| `logger.ts`       | `createLogger`, `LoggerOptions`: pino (`service: "eng-digest"`, ISO time) plus the redactor    |
+| `dailyLogFile.ts` | `createDailyLogFile`, `DailyLogFileOptions`: the pino destination that appends to the day file |
+| `redact.ts`       | `createRedactor`, `Redactor`; markers `REDACTED`, `CIRCULAR`, `TRUNCATED`, `UNSERIALIZABLE`    |
+| `tracing.ts`      | `createTracer`, `TracingHandle`, `TracerOptions`: `NodeTracerProvider` with OTLP, or no-op     |
 
 Tests sit next to each file; they inject a stream as `destination` and an in-memory span `exporter`.
 

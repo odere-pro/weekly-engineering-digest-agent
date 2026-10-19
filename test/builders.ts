@@ -1,4 +1,6 @@
 // Test data builders. Each returns a valid object; pass overrides for what the test cares about.
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { ConfigSchema, type Config, type ConfigInput } from '../src/config/schema';
 import type { Classification, ScoredItem } from '../src/classify/classification';
 import type { Digest, DigestItem, Draft, Item } from '../src/domain/schemas';
@@ -74,11 +76,18 @@ export function makeDraft(
   return { writer, digest: makeDigest(items, overrides) };
 }
 
+/**
+ * The data folder of a config a test did not give one: outside the repo, so an app a test builds
+ * never writes logs or fetched data into ./dist. The schema default (`dist`) is tested on its own.
+ */
+export const TEST_DATA_DIR = join(tmpdir(), 'eng-digest-test-data');
+
 export function makeConfig(overrides: Partial<ConfigInput> = {}): Config {
   return ConfigSchema.parse({
     focusAreas: ['AI models and tooling', 'Platform engineering'],
     sources: [{ id: 'example-feed', kind: 'rss', url: 'https://example.com/feed.xml' }],
     schedule: { timeZone: 'Europe/Berlin' },
+    dataDir: TEST_DATA_DIR,
     ...overrides,
   });
 }

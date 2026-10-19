@@ -12,6 +12,8 @@ flowchart LR
   collect -.->|"fetch, per source"| sf[[SourceFetcher]]
   sf -.-> adapters["adapters: rss, github"]
   adapters -.-> feeds[("feed hosts, api.github.com")]
+  adapters -.->|"each answer, via the tap"| archive["adapters/archive"]
+  archive --> disk[("dataDir: day/sourceId/raw, formatted")]
   collect -->|"Item[]"| guardInput
   classDef focus stroke-width:3px
 ```
@@ -68,6 +70,7 @@ flowchart TD
 | `adapters/feedFields.ts`                | Raw feed fields and `parseFeedDate`; `XmlEntry` is the feed library's entry, not an adapter's `RawEntry`          |
 | `adapters/rss.ts`, `rssAdapter.ts`      | `createRssFetcher`; the RSS 2.0 and Atom adapter                                                                  |
 | `adapters/github*.ts`                   | `githubReleases` picks REST with a token (20 per page, no drafts or prereleases), else `releases.atom` (about 10) |
+| `adapters/archive/`                     | Saves each source's raw answers and items per day (`raw/`, `formatted/`), in the background. Own `CLAUDE.md`      |
 
 Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and article samples.
 
@@ -75,8 +78,8 @@ Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and arti
 
 - `defaultSources.test.ts` fails when `DEFAULT_SOURCES` drifts from `digest.config.example.json` or
   from the table and the "Only these hosts" paragraph in `docs/sources.md`.
-- Renames break `cli/fetch` (`createFetcher`, the three adapters, `SourceTap`) and
-  `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
+- Renames break `cli/fetch` (`createFetcher`, the three adapters, `SourceTap`), `app/container.ts`
+  (the run's fetchers get the archive's tap and `wrap`) and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
 - Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`,
   so the hosts of configured sources are not used.
 - The run's abort signal does not reach the fetchers: `collect.ts` passes each attempt only its own

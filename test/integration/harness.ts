@@ -26,6 +26,7 @@ import type {
 } from '../../src/models/ModelProvider';
 import type { OutputGuard } from '../../src/guards/Guard';
 import type { RunStore } from '../../src/store/RunStore';
+import { weekDigestDir } from '../../src/store/layout';
 import type { Clock } from '../../src/shared/clock';
 import type { LogFields, Logger } from '../../src/shared/telemetry';
 import { DATA_OPEN } from '../../src/shared/untrusted';
@@ -406,7 +407,7 @@ export function useDataDir(): () => string {
 }
 
 export function runFile(dataDir: string, weekId: string, name: string): string {
-  return join(dataDir, 'runs', weekId, name);
+  return join(weekDigestDir(dataDir, weekId), name);
 }
 
 function isNoEntry(error: unknown): boolean {

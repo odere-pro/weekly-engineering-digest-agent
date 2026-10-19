@@ -15,6 +15,7 @@ flowchart LR
   adapters -.->|"implement"| ports[["ModelProvider, Guard, SourceFetcher, Delivery, RunStore"]]
   digest -.->|"calls"| ports
   adapters -->|"HTTP, SMTP, files"| world[("Ollama, feeds, GitHub, SMTP, Slack, disk")]
+  obs -->|"JSON lines"| logs[("stdout, dataDir/logs/day/digest.log")]
   classDef focus stroke-width:3px
 ```
 
@@ -24,12 +25,12 @@ flowchart LR
 flowchart TD
   loaded["LoadedConfig: config, env, secrets, profile"] --> channels["buildDeliveries: markdown, SMTP, Slack"]
   channels -->|"channel lacks its secret"| fail["DigestError names the variable, nothing started"]
-  channels --> redactor["knownSecrets: one Redactor, the logger"]
+  channels --> redactor["knownSecrets: one Redactor, createAppLogger (stdout and the day's log file)"]
   redactor --> model["traceModel(createModelProvider), run-aware logger"]
-  model --> build["fetchers rss, github. Input guards ruleInjection (feed hosts), clefPolicy, graniteRisk. Output guards graniteGroundedness, clefRubric"]
+  model --> build["fetchers rss, github, each wrapped by archiving.wrap. Input guards ruleInjection (feed hosts), clefPolicy, graniteRisk. Output guards graniteGroundedness, clefRubric"]
   build --> wrap["redactDelivery(withDeliveryRetry(channel)), redactStore(fsRunStore)"]
   wrap --> tracer["createTracer last, bound into deferTracer"]
-  tracer --> handle["AppHandle: deps.tracer = scopeRuns(tracer), close() shuts the tracer down, failure only logged"]
+  tracer --> handle["AppHandle: deps.tracer = scopeRuns(tracer), close() flushes the archive, then shuts the tracer down, failure only logged"]
 ```
 
 - Redaction is layered, so one leaky adapter ends up in none: adapters keep secrets out of errors; the
@@ -50,17 +51,21 @@ flowchart TD
 - Model, fetchers and guards are built once, but `digest serve` runs many weeks. `perRunLogger` looks up
   the logger of the run in flight (AsyncLocalStorage); `scopeRuns` sets it from the `runId` and `step`
   span attributes core passes. A callback started outside the run (an abort listener) sees no run.
+- A run archives what each source answered: `createSourceArchiving` gives the rss and github
+  fetchers its `tap` and wraps them. The day folder is `weekDay(runId)`, read from the run in flight
+  like the logger; a fetch outside a run saves nothing. The archive gets the app's redactor. Saves
+  run in the background, so `close()` calls `archiving.flush()` first, before the tracer shutdown.
 - The tracer registers process-wide, so it is built last: a failure earlier leaves none registered.
   `traceModel` puts role, model and token counts on spans, never a prompt, text or answer.
 
 ## Files
 
-| File                  | Role                                                                                                      |
-| --------------------- | --------------------------------------------------------------------------------------------------------- |
-| `container.ts`        | `buildApp`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns` |
-| `redacting.ts`        | `knownSecrets`, `redactStore`, `redactDelivery`, `FieldRules`                                             |
-| `retryingDelivery.ts` | `withDeliveryRetry`, `isTransientDeliveryError`                                                           |
-| `tracedModel.ts`      | `traceModel`, `deferTracer`                                                                               |
+| File                  | Role                                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `container.ts`        | `buildApp`, `createAppLogger`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns` |
+| `redacting.ts`        | `knownSecrets`, `redactStore`, `redactDelivery`, `FieldRules`                                                                |
+| `retryingDelivery.ts` | `withDeliveryRetry`, `isTransientDeliveryError`                                                                              |
+| `tracedModel.ts`      | `traceModel`, `deferTracer`                                                                                                  |
 
 Tests: `container*.test.ts` (wiring, secrets, model, run logging, local output, Docker), one file for
 each other file, and `scheduler*.test.ts`, which test `src/scheduler/scheduler.ts` (misplaced).
@@ -74,7 +79,8 @@ each other file, and `scheduler*.test.ts`, which test `src/scheduler/scheduler.t
   trace, channel or the store; extend it with a new secret or channel.
 - A guard built here runs only if `guards.input|output.checks` has a key for its id (`planGuards`): a new
   guard needs a line here and a key in `config/schema.ts`.
-- `cli/show`, `cli/preview`, `cli/eval` call `knownSecrets`; `cli/doctor` and `cli/eval` call
-  `createModelProvider` (doctor only `health()`, with its own `fetch`): keep it free of per-run state.
-- `container.docker.test.ts` ties the default `delivery.markdown.dir` (`dist/digests`) to the
-  `Dockerfile` WORKDIR, the `docker-compose.yml` mounts and `docker/validate.sh`.
+- `cli/show`, `cli/preview` call `knownSecrets`; `cli/eval` calls `createAppLogger` and
+  `createModelProvider`; `cli/doctor` calls `createModelProvider` (doctor only `health()`, with its own `fetch`): keep it free of per-run state.
+- `container.docker.test.ts` ties the default `dataDir` (`dist`, `/app/dist` in the image) to the
+  `Dockerfile` WORKDIR and CLI path, the `docker-compose.yml` mount (`./dist:/app/dist`) and
+  `docker/validate.sh`.

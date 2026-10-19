@@ -1,4 +1,4 @@
-// Entry point for `digest` (bundled to dist/cli.js).
+// Entry point for `digest` (bundled to dist/artifacts/cli.js).
 import { buildProgram } from './program';
 
 const program = buildProgram((code) => {

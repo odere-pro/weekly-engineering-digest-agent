@@ -17,7 +17,7 @@ lock safely. One run at a time may use a data folder.
 
 ## Prerequisites
 
-- A shell on the host, with read access to the data folder (`dataDir`, default `data/`).
+- A shell on the host, with read access to the data folder (`dataDir`, default `dist/`).
 - Permission to stop the digest process or container. Nothing else needs to change.
 
 ## Steps
@@ -25,7 +25,7 @@ lock safely. One run at a time may use a data folder.
 1. Read the lock. It exists only while a run is going.
 
    ```bash
-   cat data/digest.lock
+   cat dist/digest.lock
    ```
 
    ```json
@@ -58,10 +58,10 @@ lock safely. One run at a time may use a data folder.
    container that uses this data folder, and confirmed with `ps` or `docker compose ps`.
 
    ```bash
-   rm data/digest.lock
+   rm dist/digest.lock
    ```
 
-   Remove `data/digest.lock.takeover` too if it exists (a guard that is left behind goes
+   Remove `dist/digest.lock.takeover` too if it exists (a guard that is left behind goes
    stale after 30 seconds on its own).
 
 6. Run the week.
@@ -72,7 +72,7 @@ lock safely. One run at a time may use a data folder.
 
 ## Verify
 
-The run starts, and `data/digest.lock` shows the new `runId` while it runs. After it ends the
+The run starts, and `dist/digest.lock` shows the new `runId` while it runs. After it ends the
 file is gone. `pnpm digest history -n 1` shows the status of the week.
 
 ## Roll back
