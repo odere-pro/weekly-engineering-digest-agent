@@ -1,8 +1,8 @@
 // The text `digest eval --compare` prints: every metric with both values, the delta and the gate,
 // then the per-week rows whose status changed.
-import type { ScorecardComparison, WeekChange } from '../../../evals/compare';
-import type { MetricResult } from '../../../evals/schema';
-import { gateCell, resultCell, table, valueCell } from './cells';
+import type { ScorecardComparison, WeekChange } from '../../../../evals/compare';
+import type { MetricResult } from '../../../../evals/schema';
+import { gateCell, resultCell, table, valueCell } from '../scorecardText/cells';
 
 const PERCENT = 100;
 const MS_PER_SECOND = 1000;

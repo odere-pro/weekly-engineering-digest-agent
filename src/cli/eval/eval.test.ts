@@ -1,9 +1,6 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import { assembleMetrics, failedHardGates, type Measurement } from '../../../evals/metrics';
-import { METRIC_IDS, ScorecardSchema, type MetricId, type Scorecard } from '../../../evals/schema';
+import { describe, expect, it, vi, type Mock } from 'vitest';
+import { ScorecardSchema, type Scorecard } from '../../../evals/schema';
 import type { DigestDeps } from '../../digest/runDigest';
 import { evalCommand, type EvalCommandIo } from './eval';
 import { loadConfig, type LoadedConfig } from '../../config/load';
@@ -12,31 +9,9 @@ import type { ConfigInput, ProfileName } from '../../config/schema';
 import type { ModelHealth } from '../../models/ModelProvider';
 import { DigestError } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
-import { makeConfig, makeDraft, makeItem } from '../../../test/builders';
+import { makeConfig } from '../../../test/builders';
 import { FakeModelProvider, fixedClock, noopLogger } from '../../../test/fakes';
-
-function makeScorecard(
-  profile: ProfileName,
-  overrides: Partial<Record<MetricId, Measurement>> = {},
-  judgeAgreement: number | null = 0.9,
-): Scorecard {
-  const base = Object.fromEntries(METRIC_IDS.map((id) => [id, { value: 1 }])) as Record<
-    MetricId,
-    Measurement
-  >;
-  const metrics = assembleMetrics({ ...base, ...overrides }, judgeAgreement);
-  return {
-    profile,
-    date: '2026-10-16T09:00:00.000Z',
-    weeks: ['2026-W40', '2026-W41'],
-    counts: { weeks: 2, classifier: 60, attacks: 10, grounding: 10 },
-    judgeAgreement,
-    models: { classify: 'clef:latest', judge: null },
-    metrics,
-    hardGatesPassed: failedHardGates(metrics).length === 0,
-    timings: { totalMs: 12_345, byWeekMs: { '2026-W40': 6000, '2026-W41': 6345 } },
-  };
-}
+import { makeScorecard } from './__fixtures__/scorecardKit';
 
 interface Harness {
   io: EvalCommandIo;
@@ -399,7 +374,9 @@ describe('evalCommand', () => {
     });
   });
 
-  describe('eval judge (EVAL_JUDGE)', () => {
+  // How the command wires the judge. The EVAL_JUDGE handling itself (blank values, .env or shell,
+  // the provider, the installed checks) is tested in judgeSetup/prepareEvalJudge.test.ts.
+  describe('eval judge (EVAL_JUDGE environment variable)', () => {
     const JUDGE_TAG = 'clef:latest';
 
     /** The deps the command handed to runEval on its first call. */
@@ -422,18 +399,6 @@ describe('evalCommand', () => {
         expect(h.calls).toEqual(['runEval']);
       });
 
-      it.each([
-        ['empty', ''],
-        ['blank', '   '],
-      ])('gives runEval no judge when EVAL_JUDGE is %s', async (_name, value) => {
-        const h = harness(undefined, 'quality', { evalJudge: value });
-
-        const deps = await depsFor(h);
-
-        expect(deps).not.toHaveProperty('judge');
-        expect(h.createProvider).not.toHaveBeenCalled();
-      });
-
       it('wires a judge that uses the tag in the loaded env, trimmed', async () => {
         const h = harness(undefined, 'quality', { evalJudge: ` ${JUDGE_TAG} ` });
 
@@ -441,112 +406,9 @@ describe('evalCommand', () => {
 
         expect(deps.judge?.model).toBe(JUDGE_TAG);
       });
-
-      it('does not look at process.env: the loaded env is the only source', async () => {
-        vi.stubEnv('EVAL_JUDGE', 'from-the-process:1b');
-        try {
-          const h = harness();
-
-          const deps = await depsFor(h);
-
-          expect(deps).not.toHaveProperty('judge');
-          expect(h.createProvider).not.toHaveBeenCalled();
-        } finally {
-          vi.unstubAllEnvs();
-        }
-      });
-    });
-
-    describe('with the real loader: .env or the shell', () => {
-      const tempDirs: string[] = [];
-      afterEach(async () => {
-        await Promise.all(tempDirs.splice(0).map((dir) => rm(dir, { recursive: true })));
-      });
-
-      /** A `.env` file of the test's own, in a folder of its own. */
-      async function dotEnv(content: string): Promise<string> {
-        const dir = await mkdtemp(join(tmpdir(), 'eval-judge-'));
-        tempDirs.push(dir);
-        const path = join(dir, '.env');
-        await writeFile(path, content, 'utf8');
-        return path;
-      }
-
-      /** Runs the command with the real `loadConfig` over this `.env` file and shell environment. */
-      async function runWithLoader(
-        envPath: string,
-        processEnv: Record<string, string>,
-      ): Promise<Harness> {
-        const h = harness();
-        const io: EvalCommandIo = {
-          ...h.io,
-          loadConfig: (options) => loadConfig({ ...options, envPath, processEnv }),
-        };
-        expect(await evalCommand({ config: VALID_CONFIG }, io)).toBe(0);
-        return h;
-      }
-
-      /** The judge tag the command built a provider for. */
-      async function judgeTagFor(
-        envPath: string,
-        processEnv: Record<string, string>,
-      ): Promise<string | null | undefined> {
-        const h = await runWithLoader(envPath, processEnv);
-        expect(h.createProvider).toHaveBeenCalledTimes(1);
-        return h.createProvider.mock.calls[0]?.[0].profile.judge;
-      }
-
-      it('takes the tag from the shell environment', async () => {
-        expect(await judgeTagFor(MISSING_ENV, { EVAL_JUDGE: 'from-shell:1b' })).toBe(
-          'from-shell:1b',
-        );
-      });
-
-      it('takes the tag from the .env file', async () => {
-        const envPath = await dotEnv('EVAL_JUDGE=from-dotenv:1b\n');
-
-        expect(await judgeTagFor(envPath, {})).toBe('from-dotenv:1b');
-      });
-
-      it('prefers the shell to the .env file, as the loader does for every variable', async () => {
-        const envPath = await dotEnv('EVAL_JUDGE=from-dotenv:1b\n');
-
-        expect(await judgeTagFor(envPath, { EVAL_JUDGE: 'from-shell:1b' })).toBe('from-shell:1b');
-      });
-
-      it('builds no judge when neither has the tag', async () => {
-        const h = await runWithLoader(MISSING_ENV, {});
-
-        expect(h.createProvider).not.toHaveBeenCalled();
-      });
     });
 
     describe('the judge provider', () => {
-      it('is built from the loaded config, with the judge tag in the profile', async () => {
-        // light has no judge of its own: the tag must come from EVAL_JUDGE, or the judge role has no model.
-        const tag = 'judge-under-test:1b';
-        const h = harness(undefined, 'light', { evalJudge: tag });
-
-        await depsFor(h);
-
-        expect(PROFILES.light.judge).toBeNull();
-        expect(h.createProvider).toHaveBeenCalledTimes(1);
-        expect(h.createProvider.mock.calls[0]?.[0]).toEqual({
-          ...h.loaded,
-          profile: { ...PROFILES.light, judge: tag },
-        });
-      });
-
-      it('gets the eval logger, so its retry and timeout warnings are visible', async () => {
-        const h = harness(undefined, 'quality', { evalJudge: JUDGE_TAG });
-
-        await depsFor(h);
-
-        expect(h.createEvalLogger).toHaveBeenCalledTimes(1);
-        expect(h.createEvalLogger).toHaveBeenCalledWith(h.loaded);
-        expect(h.createProvider.mock.calls[0]?.[1].logger).toBe(h.logger);
-      });
-
       it('is the container’s model provider by default, on the loaded OLLAMA_URL', async () => {
         const requested: string[] = [];
         vi.stubGlobal('fetch', (input: string | URL | Request) => {
@@ -636,66 +498,9 @@ describe('evalCommand', () => {
         expect(h.out).toEqual([]);
         expect(h.files.size).toBe(0);
       });
-
-      it('fails when the model is installed but is not a decision model', async () => {
-        const h = harness(undefined, 'quality', {
-          evalJudge: JUDGE_TAG,
-          health: { reachable: true, models: [{ name: JUDGE_TAG, capabilities: ['completion'] }] },
-        });
-
-        expect(await evalCommand({}, h.io)).toBe(1);
-
-        expect(h.err.join('')).toContain('not a decision model');
-        expect(h.calls).toEqual(['health']);
-      });
-
-      it('fails with the reason when Ollama cannot be reached', async () => {
-        const h = harness(undefined, 'quality', {
-          evalJudge: JUDGE_TAG,
-          health: { reachable: false, models: [], error: 'Ollama is not reachable at http://x.' },
-        });
-
-        expect(await evalCommand({}, h.io)).toBe(1);
-
-        expect(h.err.join('')).toContain('Ollama is not reachable at http://x.');
-        expect(h.calls).toEqual(['health']);
-      });
     });
 
     describe('scoring', () => {
-      it('asks the judge role of that provider and turns the levels into a 1-5 score', async () => {
-        const provider = new FakeModelProvider({
-          health: installedAs(JUDGE_TAG),
-          decide: (request) =>
-            Object.fromEntries(
-              Object.keys(request.questions).map((id) => [
-                id,
-                { type: 'score', level: 3, score: 0.75, probabilities: {}, confidence: 1 } as const,
-              ]),
-            ),
-        });
-        const h = harness(undefined, 'quality', {
-          evalJudge: JUDGE_TAG,
-          config: { focusAreas: ['Platform engineering'] },
-        });
-        h.createProvider.mockReturnValue(provider);
-        const items = [makeItem(), makeItem()];
-
-        const deps = await depsFor(h);
-        const score = await deps.judge?.score(makeDraft(items, 'gemma4:e4b-mlx'), items);
-
-        expect(provider.decideCalls).toHaveLength(1);
-        expect(provider.decideCalls[0]?.role).toBe('judge');
-        expect(provider.decideCalls[0]?.questions['focusFit']?.instructions).toContain(
-          'Platform engineering',
-        );
-        expect(score).toEqual({
-          writer: 'gemma4:e4b-mlx',
-          score: 4,
-          byCriterion: { accuracy: 4, clarity: 4, whyItMatters: 4, focusFit: 4 },
-        });
-      });
-
       it('builds one judge and hands the same one to every profile of --profile all', async () => {
         const h = harness(undefined, 'quality', { evalJudge: JUDGE_TAG });
 

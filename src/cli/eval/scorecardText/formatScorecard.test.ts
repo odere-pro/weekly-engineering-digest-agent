@@ -1,32 +1,8 @@
 // `formatScorecard`: the scorecard as the plain text `digest eval` prints.
 import { describe, expect, it } from 'vitest';
-import { assembleMetrics, failedHardGates, type Measurement } from '../../../evals/metrics';
-import { METRIC_IDS, type MetricId, type Scorecard, type WeekDetail } from '../../../evals/schema';
-import { formatScorecard } from './eval';
-import type { ProfileName } from '../../config/schema';
-
-function makeScorecard(
-  profile: ProfileName,
-  overrides: Partial<Record<MetricId, Measurement>> = {},
-  judgeAgreement: number | null = 0.9,
-): Scorecard {
-  const base = Object.fromEntries(METRIC_IDS.map((id) => [id, { value: 1 }])) as Record<
-    MetricId,
-    Measurement
-  >;
-  const metrics = assembleMetrics({ ...base, ...overrides }, judgeAgreement);
-  return {
-    profile,
-    date: '2026-10-16T09:00:00.000Z',
-    weeks: ['2026-W40', '2026-W41'],
-    counts: { weeks: 2, classifier: 60, attacks: 10, grounding: 10 },
-    judgeAgreement,
-    models: { classify: 'clef:latest', judge: null },
-    metrics,
-    hardGatesPassed: failedHardGates(metrics).length === 0,
-    timings: { totalMs: 12_345, byWeekMs: { '2026-W40': 6000, '2026-W41': 6345 } },
-  };
-}
+import type { WeekDetail } from '../../../../evals/schema';
+import { makeScorecard } from '../__fixtures__/scorecardKit';
+import { formatScorecard } from './formatScorecard';
 
 describe('formatScorecard', () => {
   it('prints a table with value, gate and result for every metric', () => {

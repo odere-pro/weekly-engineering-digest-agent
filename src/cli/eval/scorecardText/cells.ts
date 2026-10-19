@@ -1,5 +1,5 @@
 // Table cells shared by the scorecard text and the compare text.
-import type { MetricResult } from '../../../evals/schema';
+import type { MetricResult } from '../../../../evals/schema';
 
 export function valueCell(metric: MetricResult): string {
   if (metric.value === null) return 'n/a';
