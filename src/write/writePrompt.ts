@@ -5,6 +5,7 @@ import {
   DIGEST_MIN_ITEMS,
   DIGEST_WORD_LIMIT,
 } from '../checks/formatCheck';
+import { MALFORMED_LINK_PROBLEM, UNKNOWN_URL_PROBLEM } from '../checks/linkCheck';
 import type { ScoredItem } from '../classify/classification';
 import { truncate } from '../shared/text';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted';
@@ -128,16 +129,13 @@ const URL_REMOVED = '[url removed]';
 
 /**
  * What the link check reports, with the kind of fault in plain words. The check puts the offending
- * link after the colon. The prompt drops all of it, whatever its form (`ftp:`, `mailto:`, a bare
- * host), so the model learns what was wrong with a link but is never shown the link. Keep in step
- * with `linkCheck`; a test runs the real one.
+ * link after the prefix. The prompt drops all of it, whatever its form (`ftp:`, `mailto:`, a bare
+ * host), so the model learns what was wrong with a link but is never shown the link. The prefixes
+ * are the constants `linkCheck` builds its problems from; a test runs the real check.
  */
 const LINK_PROBLEM_KINDS: readonly { prefix: string; kind: string }[] = [
-  {
-    prefix: 'Malformed or scheme-less link: ',
-    kind: 'this link has no https:// scheme or is malformed',
-  },
-  { prefix: 'Unknown URL not in collected items: ', kind: 'this link is not one of the item urls' },
+  { prefix: MALFORMED_LINK_PROBLEM, kind: 'this link has no https:// scheme or is malformed' },
+  { prefix: UNKNOWN_URL_PROBLEM, kind: 'this link is not one of the item urls' },
 ];
 
 /**

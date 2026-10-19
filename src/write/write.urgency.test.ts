@@ -1,16 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { DigestItem, Urgency } from '../domain/schemas';
 import type { ScoredItem } from '../classify/classification';
-import {
-  prepareDraft,
-  writeCheckedStep,
-  writeStep,
-  type CheckedWriteDeps,
-  type WriteDeps,
-} from './write';
+import { writeCheckedStep, writeStep, type CheckedWriteDeps, type WriteDeps } from './write';
 import type { GenerateRequest } from '../models/ModelProvider';
 import type { Logger } from '../shared/telemetry';
-import { makeDigest, makeDigestItem, makeItem, makeScoredItem } from '../../test/builders';
+import { makeDigestItem, makeScoredItem } from '../../test/builders';
 import { FakeModelProvider, noopLogger } from '../../test/fakes';
 
 const WEEK_ID = '2026-W42';
@@ -287,50 +281,6 @@ describe('writeStep security floor (W8-01)', () => {
 
     expect(result.checked[0]?.problems).toEqual([]);
     expect(result.checked[0]?.rejectedBy).toEqual([]);
-  });
-});
-
-describe('prepareDraft on the action line (W8-01)', () => {
-  const source = makeItem({ url: 'https://example.com/posts/1' });
-  const prepared = (patch: Partial<DigestItem>): DigestItem => {
-    const draft = {
-      writer: 'w',
-      digest: makeDigest([source], { items: [makeDigestItem(source, patch)] }),
-    };
-    return prepareDraft(draft, 5, [source.url]).digest.items[0]!;
-  };
-
-  it('replaces an em dash in the action, like in every other field', () => {
-    expect(prepared({ action: 'Upgrade now — before Friday' }).action).toBe(
-      'Upgrade now, before Friday',
-    );
-  });
-
-  it('does not repair a link in the action: the format check rejects any link there', () => {
-    expect(prepared({ action: 'Read //example.com/posts/1 first' }).action).toBe(
-      'Read //example.com/posts/1 first',
-    );
-  });
-
-  it('cuts an action longer than the schema allows, so the draft can be stored', () => {
-    const action = prepared({ action: 'word '.repeat(100) }).action ?? '';
-
-    expect(action.length).toBeLessThanOrEqual(200);
-    expect(action.endsWith('...')).toBe(true);
-  });
-
-  it('leaves an item without an action without one', () => {
-    expect(prepared({ urgency: 'good-to-know' }).action).toBeUndefined();
-  });
-
-  it('keeps urgency, and does not change the input item', () => {
-    const item = makeDigestItem(source, { urgency: 'act-now', action: 'Upgrade — now' });
-    const draft = { writer: 'w', digest: makeDigest([source], { items: [item] }) };
-
-    const out = prepareDraft(draft, 5, []);
-
-    expect(out.digest.items[0]?.urgency).toBe('act-now');
-    expect(item.action).toBe('Upgrade — now');
   });
 });
 

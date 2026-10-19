@@ -3,6 +3,15 @@ import { truncate } from '../shared/text';
 import { normalizeUrl } from '../shared/url';
 import type { CheckResult } from './types';
 
+/**
+ * What each problem starts with; the quoted link or reference follows. The writer's retry prompt
+ * (`write/writePrompt.ts`) matches on the first two to say what was wrong without showing the link,
+ * so reword them here and the prompt follows.
+ */
+export const UNKNOWN_URL_PROBLEM = 'Unknown URL not in collected items: ';
+export const MALFORMED_LINK_PROBLEM = 'Malformed or scheme-less link: ';
+export const INVALID_REFERENCE_PROBLEM = 'Invalid character reference: ';
+
 /** Bare http(s) URL; allows one level of balanced parentheses. */
 const BARE_URL = /https?:\/\/(?:[^\s<>"'`()[\]]|\([^\s()]*\))+/gi;
 /** Markdown link destination `](dest)`; allows one level of balanced parentheses. */
@@ -116,15 +125,15 @@ export function linkCheck(digest: Digest, markdown: string, items: readonly Item
 
   // Item URLs must match as whole strings, so nothing can ride along after a known prefix.
   for (const item of digest.items) {
-    if (!isKnown(item.url)) problems.add(`Unknown URL not in collected items: ${item.url}`);
+    if (!isKnown(item.url)) problems.add(`${UNKNOWN_URL_PROBLEM}${item.url}`);
   }
   for (const text of [...digestTexts(digest), markdown]) {
     const { urls, rejected, invalid } = linkCandidates(text, isKnown);
     for (const url of urls.filter((u) => !isKnown(u))) {
-      problems.add(`Unknown URL not in collected items: ${url}`);
+      problems.add(`${UNKNOWN_URL_PROBLEM}${url}`);
     }
-    for (const url of rejected) problems.add(`Malformed or scheme-less link: ${url}`);
-    for (const reference of invalid) problems.add(`Invalid character reference: ${reference}`);
+    for (const url of rejected) problems.add(`${MALFORMED_LINK_PROBLEM}${url}`);
+    for (const reference of invalid) problems.add(`${INVALID_REFERENCE_PROBLEM}${reference}`);
   }
   return { ok: problems.size === 0, problems: [...problems] };
 }

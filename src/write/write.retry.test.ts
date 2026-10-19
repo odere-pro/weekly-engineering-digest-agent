@@ -1,17 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { buildRetryPrompt } from './writePrompt';
-import type { Digest, DigestItem, Draft } from '../domain/schemas';
+import type { DigestItem } from '../domain/schemas';
 import type { ScoredItem } from '../classify/classification';
-import { prepareDraft, retryStep, writeStep, type WriteDeps } from './write';
+import { retryStep, writeStep, type WriteDeps } from './write';
 import type { GenerateRequest } from '../models/ModelProvider';
 import { UNTRUSTED_DATA_RULE } from '../shared/untrusted';
 import type { Logger } from '../shared/telemetry';
-import { makeDigest, makeDigestItem, makeScoredItem } from '../../test/builders';
+import { makeDigestItem, makeScoredItem } from '../../test/builders';
 import { FakeModelProvider, noopLogger } from '../../test/fakes';
 
 const WEEK_ID = '2026-W42';
 const FOCUS_AREAS = ['AI models and tooling', 'Platform engineering'] as const;
-const EM_DASH = '—';
 
 function makeItems(count = 4): ScoredItem[] {
   return Array.from({ length: count }, (_, i) =>
@@ -141,58 +140,5 @@ describe('retryStep (W5-06, F1)', () => {
       true,
     ]);
     expect(byMessage('Writer failed').map((line) => line.fields.retry)).toEqual([true]);
-  });
-});
-
-describe('prepareDraft (moved from runDigest by W5-06)', () => {
-  const draftOf = (count: number, overrides: Partial<Digest> = {}): Draft => ({
-    writer: 'writer-a',
-    digest: makeDigest(makeItems(count), overrides),
-  });
-
-  it('keeps at most topN items and does not change the draft it was given', () => {
-    const draft = draftOf(5);
-    const snapshot = structuredClone(draft);
-
-    const prepared = prepareDraft(draft, 3, []);
-
-    expect(prepared.digest.items).toHaveLength(3);
-    expect(prepared.writer).toBe('writer-a');
-    expect(draft).toEqual(snapshot);
-  });
-
-  it('replaces a run of em dashes with one comma, and drops them at the ends of a field', () => {
-    const prepared = prepareDraft(
-      draftOf(3, {
-        headline: `${EM_DASH} Runners, ${EM_DASH} gateways ${EM_DASH}`,
-        intro: `Fast ${EM_DASH}${EM_DASH} faster`,
-      }),
-      5,
-      [],
-    );
-
-    expect(prepared.digest.headline).toBe('Runners, gateways');
-    expect(prepared.digest.intro).toBe('Fast, faster');
-  });
-
-  it('cleans every text field of every item', () => {
-    const [first, ...rest] = makeItems(3);
-    const dirty = makeDigestItem(first!, {
-      title: `A ${EM_DASH} B`,
-      area: `C ${EM_DASH} D`,
-      summary: `E ${EM_DASH} F`,
-      whyItMatters: `G ${EM_DASH} H`,
-    });
-    const items = [dirty, ...rest.map((item) => makeDigestItem(item))];
-
-    const [item] = prepareDraft({ writer: 'w', digest: makeDigest([], { items }) }, 5, []).digest
-      .items;
-
-    expect(item).toMatchObject({
-      title: 'A, B',
-      area: 'C, D',
-      summary: 'E, F',
-      whyItMatters: 'G, H',
-    });
   });
 });

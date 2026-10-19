@@ -1,9 +1,41 @@
 import { describe, expect, it } from 'vitest';
-import { linkCheck } from './linkCheck';
+import {
+  INVALID_REFERENCE_PROBLEM,
+  MALFORMED_LINK_PROBLEM,
+  UNKNOWN_URL_PROBLEM,
+  linkCheck,
+} from './linkCheck';
 import { renderDigest } from '../render/markdown';
 import { makeDigest, makeItem } from '../../test/builders';
 
 const items = [makeItem(), makeItem(), makeItem()];
+
+describe('linkCheck problem prefixes', () => {
+  // The writer's retry prompt matches on these, so a reworded problem must change the constant.
+  it('starts every kind of problem with its exported prefix', () => {
+    const digest = makeDigest(items, {
+      intro: 'See www.evil.example/a, https://evil.example/b and &#x110000; today.',
+    });
+
+    const { problems } = linkCheck(digest, '', items);
+
+    expect(problems).toEqual([
+      `${UNKNOWN_URL_PROBLEM}https://evil.example/b`,
+      `${MALFORMED_LINK_PROBLEM}www.evil.example/a`,
+      `${INVALID_REFERENCE_PROBLEM}&#x110000;`,
+    ]);
+  });
+
+  it('keeps the prefixes apart: none starts with another, so a startsWith match is unambiguous', () => {
+    const prefixes = [UNKNOWN_URL_PROBLEM, MALFORMED_LINK_PROBLEM, INVALID_REFERENCE_PROBLEM];
+
+    for (const a of prefixes) {
+      for (const b of prefixes.filter((other) => other !== a)) {
+        expect(b.startsWith(a)).toBe(false);
+      }
+    }
+  });
+});
 
 describe('linkCheck', () => {
   it('passes a clean digest', () => {

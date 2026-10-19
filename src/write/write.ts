@@ -1,24 +1,22 @@
-import { z } from 'zod';
-import {
-  DigestItemSchema,
-  DigestSchema,
-  UrgencySchema,
-  type DigestItem,
-  type Draft,
-  type Item,
-} from '../domain/schemas';
-import { type GuardCheckId } from '../guards/guardVerdict';
-import { type ScoredItem } from '../classify/classification';
-import { DIGEST_MIN_ITEMS, formatCheck } from '../checks/formatCheck';
-import { linkCheck } from '../checks/linkCheck';
-import { boundProblems, buildRetryPrompt, buildWritePrompt, type WritePrompt } from './writePrompt';
-import { renderDigest, type RenderOptions } from '../render/markdown';
+import type { Draft } from '../domain/schemas';
+import type { ScoredItem } from '../classify/classification';
+import { DIGEST_MIN_ITEMS } from '../checks/formatCheck';
+import { buildRetryPrompt, buildWritePrompt, type WritePrompt } from './writePrompt';
+import { DigestBodySchema } from './writerSchema';
+import { checkDraft } from './checkedStep/checkDraft';
+import { mergeRetries } from './checkedStep/mergeRetries';
+import { noteRejections } from './checkedStep/noteRejections';
+import type { CheckContext, CodeChecked, Rejection } from './checkedStep/types';
+import { enforceProvenance } from './provenance/enforceProvenance';
+import { raiseSecurityItems } from './provenance/securityFloor';
+import { tidyTitle } from './tidy/title';
 import { generateStructured } from '../models/structured';
 import type { ModelProvider } from '../models/ModelProvider';
 import { errorMessage } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';
-import { truncate } from '../shared/text';
-import { normalizeUrl } from '../shared/url';
+
+// Compat (W10-B23): `digest` imports these from here. Remove when callers move to checkedStep/types.
+export type { CheckedDraft, CodeChecked } from './checkedStep/types';
 
 export interface WriteDeps {
   model: ModelProvider;
@@ -43,55 +41,6 @@ export interface RetryRequest {
   /** The check's problems; they quote model text, so the prompt wraps them as untrusted data. */
   problems: readonly string[];
 }
-
-/**
- * The step replaces every item url with the source url, so a missing or malformed url from the
- * model is not worth a repair call.
- *
- * The writer must say how urgent each item is and what to do about it (W8-01), so urgency and
- * action are required here, while `DigestSchema` keeps them optional for drafts written before
- * W8. The action is a string that is empty for good-to-know. Its length is the format check's
- * business (a retry can fix it), so no maximum here; `prepare` bounds it before it is stored.
- */
-const WrittenItemSchema = DigestItemSchema.extend({
-  url: z.string().nullish(),
-  urgency: UrgencySchema,
-  action: z.string(),
-});
-type WrittenItem = z.infer<typeof WrittenItemSchema>;
-
-/** What `DigestItemSchema` allows for an action. */
-const ACTION_MAX_CHARS = 200;
-
-/**
- * The floor under urgency (W8-01): an item whose source names a CVE, a security advisory or a
- * vulnerability, or calls itself a security fix, patch, update or release, is never good-to-know,
- * whatever the model says. It reads the collected source and never the model's own text. A source
- * that only mentions the word ("vulnerability scanner") raises the item too: the floor errs toward
- * worth-a-look, and never goes above it.
- */
-const SECURITY_SOURCE =
-  /\bCVEs?\b|\bGHSA-|\bsecurity (?:advisor(?:y|ies)|fix(?:es)?|patch(?:es)?|updates?|releases?)\b|\bvulnerabilit(?:y|ies)\b/i;
-/** The action of an item the floor raised when the writer gave it none. */
-const SECURITY_FLOOR_ACTION = 'Relevant if you use this project. Check its security notes.';
-
-/** The model writes everything but the week; the step sets it. */
-const DigestBodySchema = DigestSchema.omit({ weekId: true }).extend({
-  items: z.array(WrittenItemSchema).min(1),
-});
-
-/** Words that add nothing next to a version: "Release v1.2.0", "Version 1.2.0". */
-const RELEASE_FILLER: ReadonlySet<string> = new Set(['release', 'released', 'version', 'tag', 'v']);
-
-/** Item ids in logs come from model output; keep them short. */
-const LOGGED_ID_MAX_CHARS = 80;
-
-/**
- * Feed titles carry em dashes the format check rejects. A run of them, with the spaces and
- * commas around it, becomes one comma; at either end of a field it is dropped.
- */
-const EM_DASH_RUN = /[\s,]*\u2014[\s,\u2014]*/g;
-const EM_DASH_REPLACEMENT = ', ';
 
 /**
  * Each writer drafts the digest from the same top items, one after another (W1-09).
@@ -139,137 +88,7 @@ function summarize(outcomes: readonly WriterOutcome[]): WriteOutput {
   };
 }
 
-/**
- * A link a browser or renderer would still follow, but without `https://`: `www.host/path` or
- * protocol-relative `//host/path`. It starts a match only at the start of the text or after
- * whitespace or an opening or emphasis character, so the `//` or `www.` inside `https://www.host`,
- * or in the path or query of any url (`?u=//host`), never does.
- */
-const SCHEME_LESS_LINK = /(?<=^|[\s([{<>"'*_~])(?:www\.|\/\/(?=[^\s/]))[^\s<>"'`\]]+/gi;
-/** What can end a sentence or close a Markdown link without being part of the url. */
-const LINK_TRAILING = /[)\]}.,;:!?*_~]$/;
-/** A collected url is far shorter; a longer token is not worth a lookup. */
-export const MAX_LINK_CHARS = 2048;
-/** Closing characters tried off the end of a token, so the work per token is bounded. */
-export const MAX_TRAILING_CHARS = 8;
-
-interface PreparedDraft {
-  readonly draft: Draft;
-  /** How many links got their `https://`. */
-  readonly repairedLinks: number;
-}
-
-/**
- * Deterministic fixes the writers keep needing: at most topN items (defense in depth), no em
- * dashes, and `https://` on a link that names a collected item without it (W5-11).
- */
-export function prepareDraft(draft: Draft, topN: number, collectedUrls: readonly string[]): Draft {
-  return prepare(draft, topN, collectedUrls).draft;
-}
-
-function prepare(draft: Draft, topN: number, collectedUrls: readonly string[]): PreparedDraft {
-  const { digest } = draft;
-  const known = new Map(collectedUrls.map((url) => [normalizeUrl(url), url]));
-  let repairedLinks = 0;
-  const tidy = (text: string): string =>
-    withSchemes(withoutEmDashes(text), known, () => {
-      repairedLinks += 1;
-    });
-  const items = digest.items.slice(0, topN).map((item): DigestItem => ({
-    ...item,
-    title: tidy(item.title),
-    area: tidy(item.area),
-    summary: tidy(item.summary),
-    whyItMatters: tidy(item.whyItMatters),
-    // No link repair: an action may not hold a link at all, and the format check says so.
-    ...(item.action === undefined
-      ? {}
-      : { action: truncate(withoutEmDashes(item.action), ACTION_MAX_CHARS) }),
-  }));
-  const headline = tidy(digest.headline);
-  const prepared = { ...draft, digest: { ...digest, headline, intro: tidy(digest.intro), items } };
-  return { draft: prepared, repairedLinks };
-}
-
-/**
- * Adds the scheme to each scheme-less link in `text` that is, once `https://` is in front and
- * both sides are normalised the way the link check does, exactly a collected url. The collected
- * url as written replaces it, so the draft can only gain urls the link check accepts. Any other
- * link stays as it is, and the link check rejects it. `onRepair` is called once per link fixed.
- */
-function withSchemes(
-  text: string,
-  known: ReadonlyMap<string, string>,
-  onRepair: () => void,
-): string {
-  if (known.size === 0) return text;
-  return text.replace(SCHEME_LESS_LINK, (token) => {
-    const fixed = collectedUrlFor(token, known);
-    if (fixed !== token) onRepair();
-    return fixed;
-  });
-}
-
-/** The collected url the token names, followed by what was trimmed off its end; else the token. */
-function collectedUrlFor(token: string, known: ReadonlyMap<string, string>): string {
-  if (token.length > MAX_LINK_CHARS) return token;
-  let end = token.length;
-  for (let trimmed = 0; trimmed <= MAX_TRAILING_CHARS; trimmed += 1) {
-    const link = token.slice(0, end);
-    const url = known.get(
-      normalizeUrl(link.startsWith('//') ? `https:${link}` : `https://${link}`),
-    );
-    if (url !== undefined) return url + token.slice(end);
-    if (!LINK_TRAILING.test(link)) break;
-    end -= 1;
-  }
-  return token;
-}
-
-function withoutEmDashes(text: string): string {
-  return text.replace(EM_DASH_RUN, (run: string, offset: number) =>
-    offset === 0 || offset + run.length === text.length ? '' : EM_DASH_REPLACEMENT,
-  );
-}
-
-// ---------------------------------------------------------------------------------------------
-// Writing with the link and format checks, and one retry (W5-06: F1, F6)
-
-/** A draft with the exact Markdown that was checked. */
-export interface CheckedDraft {
-  readonly draft: Draft;
-  readonly markdown: string;
-}
-
-/** A draft with what the link and format checks said; `rejectedBy` is empty when it passed. */
-export interface CodeChecked extends CheckedDraft {
-  readonly rejectedBy: readonly string[];
-  /**
-   * Format problems first, then link problems: the retry prompt, the log and drafts.json keep
-   * only the first few, and a draft with many bad links must not hide a word-count problem.
-   * Whole here; each consumer bounds them.
-   */
-  readonly problems: readonly string[];
-}
-
-/** One draft the link or format check rejected, as drafts.json keeps it. */
-export interface Rejection {
-  readonly writer: string;
-  /** 1 for the writer's first draft, 2 for its retry. */
-  readonly attempt: 1 | 2;
-  readonly rejectedBy: readonly string[];
-  /** Bounded: the first few, each cut short. They can quote model text. */
-  readonly problems: readonly string[];
-}
-
-export interface CheckedWriteDeps extends WriteDeps {
-  /** Every collected item: the link check accepts only their URLs. */
-  collected: readonly Item[];
-  /** The guards that are off this run; the rendered footer names them. */
-  disabledGuards: readonly GuardCheckId[];
-  /** A draft keeps at most this many items. */
-  topN: number;
-}
+export interface CheckedWriteDeps extends WriteDeps, CheckContext {}
 
 export interface CheckedWriteOutput {
   /** One entry per writer that has a draft: its retry when that exists, else its first draft. */
@@ -292,17 +111,7 @@ export async function writeCheckedStep(
   items: readonly ScoredItem[],
   deps: CheckedWriteDeps,
 ): Promise<CheckedWriteOutput> {
-  const collectedUrls = deps.collected.map((item) => item.url);
-  const check = (draft: Draft): CodeChecked => {
-    const { draft: prepared, repairedLinks } = prepare(draft, deps.topN, collectedUrls);
-    if (repairedLinks > 0) {
-      deps.logger.info('Added https:// to links the writer left bare', {
-        writer: draft.writer,
-        links: repairedLinks,
-      });
-    }
-    return codeCheck(prepared, deps.collected, { disabledGuards: deps.disabledGuards });
-  };
+  const check = (draft: Draft): CodeChecked => checkDraft(draft, deps);
   const first = await writeStep(items, deps);
   const checked = first.drafts.map(check);
   const rejections = noteRejections(deps.logger, checked, 1);
@@ -315,49 +124,12 @@ export async function writeCheckedStep(
   });
   // Last writer first: its model is still loaded, and only one model fits in memory at a time.
   const retried = await retryStep(items, requests.toReversed(), deps);
-  const again = new Map(retried.drafts.map(check).map((entry) => [entry.draft.writer, entry]));
-  const final = checked.map((entry) => again.get(entry.draft.writer) ?? entry);
-  const second = final.filter((entry) => again.get(entry.draft.writer) === entry);
+  const merged = mergeRetries(checked, retried.drafts.map(check));
   return {
     ...output,
-    checked: final,
+    checked: merged.checked,
     retryFailures: retried.failures,
-    rejections: [...rejections, ...noteRejections(deps.logger, second, 2)],
-  };
-}
-
-/** Logs, at warn, each draft the checks rejected, and returns them for drafts.json. */
-function noteRejections(
-  logger: Logger,
-  checked: readonly CodeChecked[],
-  attempt: Rejection['attempt'],
-): Rejection[] {
-  const rejections = checked
-    .filter((entry) => entry.rejectedBy.length > 0)
-    .map(({ draft, rejectedBy, problems }): Rejection => ({
-      writer: draft.writer,
-      attempt,
-      rejectedBy,
-      problems: boundProblems(problems),
-    }));
-  for (const rejection of rejections) logger.warn('Draft failed the checks', { ...rejection });
-  return rejections;
-}
-
-/** Renders the draft as the digest will read, and runs the link and format checks on that text. */
-export function codeCheck(
-  draft: Draft,
-  collected: readonly Item[],
-  render: RenderOptions,
-): CodeChecked {
-  const markdown = renderDigest(draft.digest, render);
-  const link = linkCheck(draft.digest, markdown, collected);
-  const format = formatCheck(draft.digest, markdown);
-  return {
-    draft,
-    markdown,
-    rejectedBy: [...(link.ok ? [] : ['linkCheck']), ...(format.ok ? [] : ['formatCheck'])],
-    problems: [...format.problems, ...link.problems],
+    rejections: [...rejections, ...noteRejections(deps.logger, merged.retried, 2)],
   };
 }
 
@@ -397,104 +169,6 @@ async function draftWith(
     logger.warn('Writer failed', { error: message });
     return { failure: { writer, error: message } };
   }
-}
-
-/**
- * Keeps only items that point at a collected item, once each, with the source URL.
- * The model can name an item but never choose where its link goes.
- */
-function enforceProvenance(
-  drafted: readonly WrittenItem[],
-  sources: ReadonlyMap<string, ScoredItem>,
-  logger: Logger,
-): DigestItem[] {
-  const seen = new Set<string>();
-  return drafted.flatMap((item) => {
-    const source = sources.get(item.itemId);
-    if (!source) {
-      logger.warn('Removed digest item with unknown itemId', { itemId: loggedId(item.itemId) });
-      return [];
-    }
-    if (seen.has(item.itemId)) {
-      logger.warn('Removed repeated digest item', { itemId: loggedId(item.itemId) });
-      return [];
-    }
-    seen.add(item.itemId);
-    return [withSourceUrl(item, source)];
-  });
-}
-
-/** The source url, and the action trimmed: good-to-know items carry none, not an empty string. */
-function withSourceUrl(item: WrittenItem, source: ScoredItem): DigestItem {
-  const { action, ...rest } = item;
-  const trimmed = action.trim();
-  return { ...rest, url: source.url, ...(trimmed === '' ? {} : { action: trimmed }) };
-}
-
-/**
- * Applies the security floor (W8-01): a good-to-know item whose source names a security issue
- * becomes worth-a-look, and says so in the log. It keeps the writer's action; with none, it gets
- * a fixed line, so the floor cannot make the draft fail the format check's "needs an action".
- */
-function raiseSecurityItems(
-  items: readonly DigestItem[],
-  sources: ReadonlyMap<string, ScoredItem>,
-  logger: Logger,
-): DigestItem[] {
-  return items.map((item) => {
-    const source = sources.get(item.itemId);
-    if (item.urgency !== 'good-to-know' || source === undefined || !namesSecurityIssue(source)) {
-      return item;
-    }
-    logger.info('Raised urgency: the source names a security issue', {
-      itemId: loggedId(item.itemId),
-      from: item.urgency,
-      to: 'worth-a-look',
-    });
-    return { ...item, urgency: 'worth-a-look', action: item.action ?? SECURITY_FLOOR_ACTION };
-  });
-}
-
-function namesSecurityIssue(source: ScoredItem): boolean {
-  return SECURITY_SOURCE.test(`${source.title}\n${source.summary}`);
-}
-
-function tidyTitle(item: DigestItem): DigestItem {
-  return { ...item, title: collapseRestatedTag(item.title) };
-}
-
-/** Lowercase words of a title, with a sentence-ending dot and a version's "v" prefix removed. */
-function comparableWords(text: string): string[] {
-  return text
-    .toLowerCase()
-    .split(/[\s,;:()[\]]+/)
-    .map((word) => withoutTrailingDots(word).replace(/^v(?=\d)/, ''))
-    .filter(Boolean);
-}
-
-/** A loop, not `/\.+$/`: that pattern is quadratic on a long run of dots inside model output. */
-function withoutTrailingDots(word: string): string {
-  let end = word.length;
-  while (end > 0 && word[end - 1] === '.') end -= 1;
-  return word.slice(0, end);
-}
-
-/**
- * "tool v1.2.0: Release v1.2.0" becomes "tool v1.2.0". A title tail after the first colon that
- * only repeats words from the head, plus filler like "Release", says nothing new.
- */
-function collapseRestatedTag(title: string): string {
-  const colon = title.indexOf(':');
-  const head = colon > 0 ? title.slice(0, colon).trim() : '';
-  const tail = colon > 0 ? title.slice(colon + 1).trim() : '';
-  if (head === '' || tail === '') return title;
-  const known = new Set(comparableWords(head));
-  const isNew = (word: string): boolean => !known.has(word) && !RELEASE_FILLER.has(word);
-  return comparableWords(tail).some(isNew) ? title : head;
-}
-
-function loggedId(itemId: string): string {
-  return truncate(itemId, LOGGED_ID_MAX_CHARS);
 }
 
 /** Keeps the validation detail that generateStructured puts in `cause`. */

@@ -4,7 +4,8 @@ import type { ScoredItem } from '../classify/classification';
 import type { GuardCheckId } from '../guards/guardVerdict';
 import type { RenderOptions } from '../render/markdown';
 import { truncate } from '../shared/text';
-import { codeCheck, type CodeChecked } from './write';
+import { codeCheck } from './checkedStep/codeCheck';
+import type { CodeChecked } from './checkedStep/types';
 
 /** The `writer` of the fallback draft in the run record. */
 export const FALLBACK_WRITER = 'fallback';

@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { linkCheck } from '../checks/linkCheck';
+import {
+  INVALID_REFERENCE_PROBLEM,
+  MALFORMED_LINK_PROBLEM,
+  UNKNOWN_URL_PROBLEM,
+  linkCheck,
+} from '../checks/linkCheck';
 import { boundProblems, buildRetryPrompt, MAX_PROBLEMS } from './writePrompt';
 import { DATA_CLOSE, DATA_OPEN } from '../shared/untrusted';
 import { makeDigest, makeItem, makeScoredItem } from '../../test/builders';
 
 const FOCUS_AREAS = ['AI models and tooling', 'Platform engineering'] as const;
-const NO_SCHEME =
-  'Malformed or scheme-less link: [url removed] (this link has no https:// scheme or is malformed)';
-const NOT_AN_ITEM =
-  'Unknown URL not in collected items: [url removed] (this link is not one of the item urls)';
+const NO_SCHEME = `${MALFORMED_LINK_PROBLEM}[url removed] (this link has no https:// scheme or is malformed)`;
+const NOT_AN_ITEM = `${UNKNOWN_URL_PROBLEM}[url removed] (this link is not one of the item urls)`;
 
 /** The lines of the problem block of a retry prompt. */
 function problemLines(problems: readonly string[]): string[] {
@@ -21,16 +24,14 @@ function problemLines(problems: readonly string[]): string[] {
 describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
   it('says that a link has no scheme, and keeps the url out', () => {
     const lines = problemLines([
-      'Malformed or scheme-less link: www.docker.com/blog/docker-sandbox-kit-spec-cncf/)',
+      `${MALFORMED_LINK_PROBLEM}www.docker.com/blog/docker-sandbox-kit-spec-cncf/)`,
     ]);
 
     expect(lines).toEqual([`- ${NO_SCHEME}`]);
   });
 
   it('says that a link is not one of the item urls, and keeps the url out', () => {
-    const lines = problemLines([
-      'Unknown URL not in collected items: https://evil.example/payload',
-    ]);
+    const lines = problemLines([`${UNKNOWN_URL_PROBLEM}https://evil.example/payload`]);
 
     expect(lines).toEqual([`- ${NOT_AN_ITEM}`]);
   });
@@ -39,21 +40,21 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
     const lines = problemLines([
       'Expected under 500 words, got 612',
       'Contains an em dash',
-      'Invalid character reference: &#x110000;',
+      `${INVALID_REFERENCE_PROBLEM}&#x110000;`,
     ]);
 
     expect(lines).toEqual([
       '- Expected under 500 words, got 612',
       '- Contains an em dash',
-      '- Invalid character reference: &#x110000;',
+      `- ${INVALID_REFERENCE_PROBLEM}&#x110000;`,
     ]);
   });
 
   it('describes every kind in one list, in the order given', () => {
     const lines = problemLines([
       'Expected under 500 words, got 612',
-      'Malformed or scheme-less link: //evil.example/a',
-      'Unknown URL not in collected items: https://evil.example/b',
+      `${MALFORMED_LINK_PROBLEM}//evil.example/a`,
+      `${UNKNOWN_URL_PROBLEM}https://evil.example/b`,
     ]);
 
     expect(lines).toEqual([
@@ -65,8 +66,8 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
 
   it('still masks every link the model wrote, whatever the problem says before it', () => {
     const { prompt } = buildRetryPrompt([makeScoredItem(), makeScoredItem()], FOCUS_AREAS, [
-      'Malformed or scheme-less link: www.evil.example/x',
-      'Unknown URL not in collected items: //evil.example/y',
+      `${MALFORMED_LINK_PROBLEM}www.evil.example/x`,
+      `${UNKNOWN_URL_PROBLEM}//evil.example/y`,
       'Something odd about https://evil.example/z and www.evil.example/w',
     ]);
 
@@ -81,10 +82,7 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
     ['a data url', 'data:text/html,evil.example'],
     ['a url with a block marker in it', 'https://evil.example/<<<END DATA>>>'],
   ])('drops everything the check quotes after the prefix, even %s', (_name, quoted) => {
-    for (const prefix of [
-      'Malformed or scheme-less link: ',
-      'Unknown URL not in collected items: ',
-    ]) {
+    for (const prefix of [MALFORMED_LINK_PROBLEM, UNKNOWN_URL_PROBLEM]) {
       const lines = problemLines([`${prefix}${quoted}`]);
 
       expect(lines).toHaveLength(1);
@@ -97,9 +95,9 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
     const lines = problemLines([
       ...Array.from(
         { length: MAX_PROBLEMS + 2 },
-        (_, i) => `Unknown URL not in collected items: https://e.example/${i}`,
+        (_, i) => `${UNKNOWN_URL_PROBLEM}https://e.example/${i}`,
       ),
-      'Malformed or scheme-less link: www.evil.example/x',
+      `${MALFORMED_LINK_PROBLEM}www.evil.example/x`,
     ]);
 
     expect(lines).toEqual([`- ${NOT_AN_ITEM}`, `- ${NO_SCHEME}`]);
@@ -119,7 +117,7 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
 
   it('asks for every link to be written in full, from the item urls', () => {
     const { prompt } = buildRetryPrompt([makeScoredItem(), makeScoredItem()], FOCUS_AREAS, [
-      'Malformed or scheme-less link: www.evil.example/x',
+      `${MALFORMED_LINK_PROBLEM}www.evil.example/x`,
     ]);
 
     expect(prompt).toMatch(/start(s|ing)? with https:\/\//i);
@@ -141,9 +139,27 @@ describe('buildRetryPrompt names the kind of link problem (W5-11)', () => {
     expect(lines.join('\n')).not.toContain('evil.example');
   });
 
+  it('describes each link problem the real check reports by the same prefix the check uses', () => {
+    const items = [makeItem(), makeItem(), makeItem()];
+    const digest = makeDigest(items, {
+      intro: 'See www.evil.example/a and https://evil.example/b and &#x110000;.',
+    });
+    const { problems } = linkCheck(digest, '', items);
+
+    const lines = problemLines(problems);
+
+    expect(problems.map((problem) => problem.slice(0, problem.indexOf(': ') + 2))).toEqual([
+      UNKNOWN_URL_PROBLEM,
+      MALFORMED_LINK_PROBLEM,
+      INVALID_REFERENCE_PROBLEM,
+    ]);
+    // A link problem is shown with its link removed; a reference problem as the check wrote it.
+    expect(lines).toEqual([`- ${NOT_AN_ITEM}`, `- ${NO_SCHEME}`, `- ${problems[2]}`]);
+  });
+
   it('leaves boundProblems alone: logs and drafts.json keep the check wording', () => {
-    expect(boundProblems(['Malformed or scheme-less link: www.evil.example/x'])).toEqual([
-      'Malformed or scheme-less link: www.evil.example/x',
+    expect(boundProblems([`${MALFORMED_LINK_PROBLEM}www.evil.example/x`])).toEqual([
+      `${MALFORMED_LINK_PROBLEM}www.evil.example/x`,
     ]);
   });
 });
