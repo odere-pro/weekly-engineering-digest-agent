@@ -1,6 +1,6 @@
 // Shared wiring for the resilience integration tests (W2-04). The run store is the real
 // createFsRunStore in a temp dir; models, feeds, guards and delivery are fakes. The chain, the
-// steps, the checks, the render and the Mastra workflow are the real ones.
+// steps, the checks, the render and the step loop are the real ones.
 import { spawnSync } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';

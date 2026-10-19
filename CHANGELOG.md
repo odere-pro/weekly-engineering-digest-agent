@@ -60,6 +60,10 @@ All notable changes to this project are listed here. The format follows
 - The link check ignores autolinks with a scheme other than `http(s)` and accepts a collected
   URL with extra tracking parameters.
 
+### Removed
+
+- Mastra is gone (ADR 0001): a plain loop runs the steps. 124 fewer packages and a faster CLI start.
+
 ## [0.1.0] - 2026-10-17
 
 First release. A local-first CLI agent that reads allowlisted RSS/Atom feeds and GitHub

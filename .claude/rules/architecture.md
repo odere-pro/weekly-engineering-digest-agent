@@ -50,7 +50,8 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
 
 - A step is a plain async function `(input, deps) => output` in its feature folder
   (`src/classify/classify.ts`). Deps are interfaces (ports, `Logger`, `Clock`), never adapters.
-- `src/digest/workflow.ts` (Mastra, pinned) only chains the steps; it holds no business logic.
+- `src/digest/workflow.ts` runs the steps in order with a plain loop; it holds no business logic.
+  No workflow framework: ADR 0001 (`docs/architecture/decisions/0001-mastra.md`) removed Mastra.
 - A step's prompt sits next to it: `src/<feature>/<feature>Prompt.ts`.
 
 ## Imports

@@ -1,5 +1,5 @@
 // Spec phase 1 exit gate: a dry run writes a digest from mock models. Every port is a fake;
-// the steps, checks, render and the Mastra workflow are the real ones.
+// the steps, checks, render and the step loop are the real ones.
 import { describe, expect, it } from 'vitest';
 import { runDigest, type DigestDeps } from '../../src/digest/runDigest';
 import { ExitCode, type Item } from '../../src/domain/schemas';

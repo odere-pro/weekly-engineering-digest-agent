@@ -27,10 +27,10 @@ sends failure notes, and finishes a week that was only partly delivered, with no
 
 ## Design
 
-- This folder only wires steps. The steps live in their own features. `workflow.ts` is the only
-  file that imports Mastra (`@mastra/core` 1.78.0, pinned). It rethrows a step's own error so a
-  `DigestError` keeps its exit code and step. It uses the internal `__setLogger`: re-check it
-  when the pin moves.
+- This folder only wires steps. The steps live in their own features. `workflow.ts` runs them
+  in order with a plain loop, so a step's own error propagates unchanged and a `DigestError`
+  keeps its exit code and step. No framework: ADR 0001 removed Mastra
+  (`docs/architecture/decisions/0001-mastra.md`), and ESLint blocks `@mastra/*` imports.
 - State is immutable. Each stage returns a new `ChainState`. A failing stage throws `StepFailure`
   (or `PartialFailure` after partial work) with the state so far, so the record keeps what ran.
 - The abort signal is checked before each stage and before a resume's delivery, never inside
@@ -70,7 +70,7 @@ sends failure notes, and finishes a week that was only partly delivered, with no
 | `runEnding.ts` | `endRun`, `shipDigest`, `digestMessage`, `toJson`, `abortedError`, failure notes           |
 | `runResume.ts` | `loadPartDelivery`, `resumeDelivery`: finish a partly delivered week                       |
 | `fallback.ts`  | `buildFallback`: the template-only digest, its checks and guard verdict                    |
-| `workflow.ts`  | `runWorkflow`: chains plain step functions as one Mastra workflow                          |
+| `workflow.ts`  | `runWorkflow`: runs the plain step functions in order, a loop                              |
 | `*.test.ts`    | One file per area, see below. No `__fixtures__/` here: tests use `test/fakes` and builders |
 
 ## Depends on, used by

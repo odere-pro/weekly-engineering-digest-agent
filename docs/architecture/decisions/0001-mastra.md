@@ -1,11 +1,10 @@
 # 0001. Remove Mastra and keep plain steps behind ports
 
-- Status: proposed
+- Status: accepted (2026-10-19)
 - Date: 2026-10-18
 - Decides: whether to use `@mastra/core` fully or remove it
 - Recommendation: **remove it** (option B)
-- Maintainer, 2026-10-19: recorded as evidence; Mastra stays as it is for now. The status stays
-  `proposed` until the maintainer accepts or rejects it.
+- Maintainer, 2026-10-19: accepted. Mastra is removed (issues 1 to 4 below, done together).
 
 ## Context
 
