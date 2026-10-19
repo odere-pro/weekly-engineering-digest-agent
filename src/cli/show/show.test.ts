@@ -229,6 +229,27 @@ describe('showCommand: failures', () => {
     expect(h.err()).toContain('scores.json');
   });
 
+  it('prints a part whose file exists even when the run has no record', async () => {
+    const h = harness();
+    h.store.records.delete(WEEK);
+    expect(await showCommand({ week: WEEK, part: 'items' }, h.deps)).toBe(0);
+    expect(h.out()).toContain('Picked release');
+  });
+
+  it('names the run status when the record has no such part', async () => {
+    const h = harness();
+    h.store.artifacts.delete(`${WEEK}/review.md`);
+    expect(await showCommand({ week: WEEK, part: 'review' }, h.deps)).toBe(1);
+    expect(h.err()).toBe('Week 2026-W42 has no review.md (run status: sent)\n');
+  });
+
+  it('names a missing week when a part is asked for too', async () => {
+    const h = harness({ seed: false });
+    expect(await showCommand({ week: WEEK, part: 'items' }, h.deps)).toBe(1);
+    expect(h.err()).toBe('No saved run for 2026-W42\n');
+    expect(h.out()).toBe('');
+  });
+
   it('rejects an unknown part and lists the valid ones', async () => {
     const h = harness();
     expect(await showCommand({ week: WEEK, part: 'nope' }, h.deps)).toBe(1);
