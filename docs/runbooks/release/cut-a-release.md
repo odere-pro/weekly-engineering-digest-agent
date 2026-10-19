@@ -24,7 +24,7 @@ There is nothing to publish. The package is not on npm or GHCR; people install f
 ## Steps
 
 1. Run the same gates as CI (`.github/workflows/ci.yml`: `format:check`, `typecheck`, `lint`,
-   `coverage` with 80% thresholds, `build`, `pnpm audit`, an image scan).
+   `docs:mermaid`, `coverage` with 80% thresholds, `build`, `pnpm audit`, an image scan).
 
    ```bash
    pnpm install --frozen-lockfile && pnpm check && pnpm coverage && pnpm build

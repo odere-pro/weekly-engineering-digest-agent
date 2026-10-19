@@ -41,6 +41,7 @@ pnpm test:watch
 pnpm vitest run --coverage --coverage.include='src/path/file.ts'   # coverage of one file
 pnpm digest run --dry-run  # tsx, no build needed
 pnpm build                 # esbuild → dist/artifacts/cli.js
+pnpm docs:mermaid          # parse every Mermaid block in tracked Markdown
 ```
 
 ## Hard rules

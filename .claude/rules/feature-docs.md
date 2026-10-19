@@ -38,6 +38,7 @@ folder: 20-45 lines, `## Context` optional.
   reads config.
 - Labels use the names in the code. Quote every label that has brackets or punctuation, edge
   labels too: `a["decide (per item)"]`, `-->|"Item[]"|`. Never use `end` or `call` as a node id.
+- `pnpm docs:mermaid` parses every block; `pnpm check` runs it.
 - Pipeline steps use the names in `chainSteps` (`src/digest/stages/chainSteps.ts`), in this order:
 
 ```mermaid

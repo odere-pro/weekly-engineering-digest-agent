@@ -35,7 +35,9 @@ swaps in the real Ollama adapter on a scripted `fetch`.
 | `harness/recordingLogger.ts`, `runCli.ts`      | `World.logs` lines; `runCli` (exit code, stdout, stderr)                     |
 | `fakeOllama.ts`                                | A scripted Ollama `fetch`: hang, refuse, or answer per call; opens no socket |
 
-Seven `*.test.ts` files sit beside the kit; `dryRun.test.ts` has its own wiring and a `MemoryRunStore`.
+Ten `*.test.ts` files sit beside the kit; `dryRun.test.ts` has its own wiring and a `MemoryRunStore`.
+`commitMsgHook.test.ts` and `mermaidCheck.test.ts` test repo tools (`.githooks/commit-msg`,
+`scripts/check-mermaid.mjs`) on temp files, not the chain.
 
 ## Gotchas
 

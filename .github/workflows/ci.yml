@@ -25,6 +25,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm docs:mermaid
       # Runs every test and fails under 80% lines, functions, branches or statements
       # (thresholds in vitest.config.ts).
       - run: pnpm coverage

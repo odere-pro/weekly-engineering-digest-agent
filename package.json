@@ -29,7 +29,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "docs:mermaid": "node scripts/check-mermaid.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm docs:mermaid",
     "eval:record": "tsx evals/recordWeeks.ts"
   },
   "dependencies": {
@@ -56,6 +57,8 @@
     "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.13.0",
+    "jsdom": "30.1.2",
+    "mermaid": "12.1.0",
     "prettier": "^3.9.10",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
