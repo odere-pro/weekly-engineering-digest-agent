@@ -1,7 +1,7 @@
 // Pairwise ranking experiment (W11-07): a Swiss-style tournament over the best candidates.
 // Every game asks one yes/no question in both orders and averages the two answers, which
 // cancels the model's bias for the first item. Item text always goes in as untrusted data.
-import type { ScoredItem } from '../domain/schemas';
+import type { ScoredItem } from './classification';
 import type { DecisionAnswer, DecisionQuestion, ModelProvider } from '../models/ModelProvider';
 import { DigestError } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';

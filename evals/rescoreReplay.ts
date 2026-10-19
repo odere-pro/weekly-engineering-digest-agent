@@ -12,7 +12,8 @@ import { buildApp } from '../src/app/container';
 import { loadConfig, platformOf } from '../src/config/load';
 import { resolveProfile } from '../src/config/profiles';
 import { ProfileNameSchema, type Config, type ProfileName } from '../src/config/schema';
-import type { Item, ScoredItem } from '../src/domain/schemas';
+import type { Item } from '../src/domain/schemas';
+import type { ScoredItem } from '../src/classify/classification';
 import { areaHintsOf, classifyStep, type ClassifyDeps } from '../src/classify/classify';
 import {
   CalibrationSchema,
