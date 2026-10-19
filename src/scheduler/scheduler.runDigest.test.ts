@@ -12,7 +12,7 @@ import {
   type CronFactory,
   type SchedulerHandle,
   type SchedulerOptions,
-} from '../scheduler/scheduler';
+} from './scheduler';
 import {
   FRIDAY,
   TEST_TIMEOUT_MS,

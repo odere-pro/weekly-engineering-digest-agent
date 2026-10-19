@@ -25,14 +25,14 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  start["startScheduler"] --> catchUp{"first slot of this week passed, status not sent, quiet or blocked?"}
+  start["startScheduler"] --> catchUp{"catchUp: first slot of this week passed, status not sent, quiet or blocked?"}
   catchUp -->|yes| exec{"run in flight? (yes: warn, skip the tick)"}
   catchUp -->|no| tick["croner tick"] --> exec
   exec -->|no| attempt["attemptRun: run(weekId, signal, notifyFailure) under runTimeoutMs"]
   attempt --> outcome{"how it ended"}
   outcome -->|"not failed, or only force can clear it"| done[done]
   outcome -->|"time limit hit, or another error thrown"| giveUp["handOver: onGiveUp sends the held note, if any"]
-  outcome -->|"lock held (message 'Another run is in progress'), or failed"| retry{"budget left, not stopped?"}
+  outcome -->|"lock held (isLockHeldError), or failed"| retry{"budget left, not stopped?"}
   retry -->|yes| wait["sleep: lock 5 min up to 2 h, failed 30 min twice"] --> attempt
   retry -->|no| giveUp
   wait -.->|"stop() cancels"| giveUp
@@ -52,9 +52,7 @@ flowchart TD
 - Run limit 3 h (zero or less: none). `failedRetry` is off unless given (`serve` passes
   `DEFAULT_FAILED_RETRY`): a retry keeps `whenIdle()` waiting. A wait or limit above 2^31-1 ms counts
   as off, since `setTimeout` would fire at once.
-- Catch-up covers the current ISO week in `schedule.timeZone`; `failed` and `dry-run` weeks run
-  again. It searches from Monday 00:00 UTC minus 14 h so a UTC+14 zone finds its slot. An
-  unreadable run store skips it. The run is not awaited: the caller needs the handle to stop.
+- Catch-up covers only the current ISO week, in `schedule.timeZone`.
 - OS schedules take only `m h * * dow` (weekday: `*`, number with 0 and 7 as Sunday, name, list or
   range), else `DigestError`; a new shape needs all three renderers and tests. They fire in the
   machine's time zone, not `schedule.timeZone`. Values are escaped per format; Windows refuses
@@ -62,19 +60,27 @@ flowchart TD
 
 ## Files
 
-| File            | Role                                                                                |
-| --------------- | ----------------------------------------------------------------------------------- |
-| `scheduler.ts`  | `startScheduler`, `DEFAULT_FAILED_RETRY`, option types; executor, retries, catch-up |
-| `simpleCron.ts` | `parseSimpleCron`: the cron subset; `osSchedule.test.ts` covers it, no test file    |
-| `osSchedule.ts` | `renderOsSchedule`: launchd (`darwin`), systemd (`linux`), `schtasks` (`win32`)     |
+| File            | Role                                                                                          |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `scheduler.ts`  | `startScheduler`, `DEFAULT_FAILED_RETRY`, option types; the cron job and the one-run executor |
+| `timing.ts`     | `MINUTE_MS`, `HOUR_MS`, `MAX_TIMER_MS`, `isTimerDelay`: what the three folders below share    |
+| `retry/`        | The attempt, the wait, the budgets, the held note: see `retry/CLAUDE.md`                      |
+| `runLimit/`     | The per-run time limit and its signal: see `runLimit/CLAUDE.md`                               |
+| `catchUp/`      | The missed-week check on start: see `catchUp/CLAUDE.md`                                       |
+| `simpleCron.ts` | `parseSimpleCron`: the cron subset; `osSchedule.test.ts` covers it, no test file              |
+| `osSchedule.ts` | `renderOsSchedule`: launchd (`darwin`), systemd (`linux`), `schtasks` (`win32`)               |
+
+`scheduler.test.ts` covers ticks, the handle and the real cron; `scheduler.runDigest.test.ts` runs
+it on the real `runDigest` and run store. No fixtures. Reader page: `docs/features/scheduler.md`.
 
 ## Gotchas
 
-- `scheduler.ts` is 582 lines, over the 300 cap. Split the retry loop and catch-up out first.
-- Read `scheduler.giveUp.test.ts` and `scheduler.notify.test.ts` before touching the retry loop (a
+- Read `retry/runWithRetries.giveUp.test.ts` and `.notify.test.ts` before touching the retry loop (a
   failed week must never end without one note). Tests inject `cronFactory`, `fixedClock` and fake
-  `setTimeout`. More sit in `src/app/scheduler{Retry,RunDigest}.test.ts` (they pin
-  `DEFAULT_FAILED_RETRY`) and `test/integration/schedulerRestart.test.ts`.
+  `setTimeout`. `retry/runWithRetries.failedRetry.test.ts` pins `DEFAULT_FAILED_RETRY`;
+  `test/integration/schedulerRestart.test.ts` also runs the scheduler.
 - `stop()` must not abort a run in flight; `serve` does that on a second signal. Retries also hang on
-  `RunResult`, `isUnretriable`, `needsForce` and `sendHeldNote` in `digest/runEnding`, and on the
-  lock message in `store/adapters/runLock.ts`: keep both strings in step.
+  `isUnretriable`, `needsForce` and `sendHeldNote` in `digest/runEnding`, `RunResult` in
+  `digest/runDigest`, and a lock miss on `isLockHeldError` in `store/adapters/lockState/`.
+- `cli/serve` and `schedulerRestart.test.ts` import `CronFactory`, `LockRetry`, `SchedulerOptions`
+  and the entry points from `scheduler.ts`: keep them exported there. No folder code imports it.

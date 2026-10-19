@@ -1,16 +1,16 @@
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../digest/runDigest';
-import { ExitCode, type RunStatus } from '../domain/schemas';
+import type { RunResult } from '../../digest/runDigest';
+import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   startScheduler,
   type CronFactory,
   type CronJobOptions,
   type SchedulerHandle,
   type SchedulerOptions,
-} from './scheduler';
-import type { Logger } from '../shared/telemetry';
-import { makeRunRecord } from '../../test/builders';
-import { fixedClock } from '../../test/fakes';
+} from '../scheduler';
+import type { Logger } from '../../shared/telemetry';
+import { makeRunRecord } from '../../../test/builders';
+import { fixedClock } from '../../../test/fakes';
 
 const BERLIN = 'Europe/Berlin';
 const DEFAULT_CRON = '45 7 * * 1';

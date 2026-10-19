@@ -1,21 +1,21 @@
 // W5-12: a failed week never ends silently. When a failed attempt held its failure note for a
 // retry and the retry does not happen, the scheduler hands the last failed result to `onGiveUp`,
-// which sends the note, exactly once. (scheduler.test.ts is at the file size cap.)
+// which sends the note, exactly once.
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../digest/runDigest';
-import { ExitCode, type RunStatus } from '../domain/schemas';
+import type { RunResult } from '../../digest/runDigest';
+import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,
   startScheduler,
   type CronFactory,
   type SchedulerHandle,
   type SchedulerOptions,
-} from './scheduler';
-import { RecordNotSavedError } from '../digest/runEnding';
-import { DigestError } from '../shared/errors';
-import type { Logger } from '../shared/telemetry';
-import { makeRunRecord } from '../../test/builders';
-import { fixedClock } from '../../test/fakes';
+} from '../scheduler';
+import { RecordNotSavedError } from '../../digest/runEnding';
+import { DigestError } from '../../shared/errors';
+import type { Logger } from '../../shared/telemetry';
+import { makeRunRecord } from '../../../test/builders';
+import { fixedClock } from '../../../test/fakes';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;

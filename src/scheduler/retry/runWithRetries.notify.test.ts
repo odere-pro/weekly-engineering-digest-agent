@@ -1,9 +1,8 @@
 // W5-12: the scheduler tells each attempt whether its failure note may go out. One root cause
 // then sends one note, from the last attempt; a run nobody will retry sends its note at once.
-// (scheduler.test.ts is at the file size cap, so these tests have a file of their own.)
 import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { RunResult } from '../digest/runDigest';
-import { ExitCode, type RunStatus } from '../domain/schemas';
+import type { RunResult } from '../../digest/runDigest';
+import { ExitCode, type RunStatus } from '../../domain/schemas';
 import {
   DEFAULT_FAILED_RETRY,
   startScheduler,
@@ -11,11 +10,11 @@ import {
   type FailedRetry,
   type SchedulerHandle,
   type SchedulerOptions,
-} from './scheduler';
-import { DigestError } from '../shared/errors';
-import type { Logger } from '../shared/telemetry';
-import { makeRunRecord } from '../../test/builders';
-import { fixedClock } from '../../test/fakes';
+} from '../scheduler';
+import { DigestError } from '../../shared/errors';
+import type { Logger } from '../../shared/telemetry';
+import { makeRunRecord } from '../../../test/builders';
+import { fixedClock } from '../../../test/fakes';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;
