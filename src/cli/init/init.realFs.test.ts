@@ -17,6 +17,8 @@ import {
   type Rule,
 } from './__fixtures__/initHarness';
 import { initCommand } from './init';
+import { pathExists } from './io/files';
+import { DOCKERENV_PATH } from './paths';
 import type { InitIo } from './types';
 
 // Real files, except that a test can make rename or chmod fail like a bind mount does.
@@ -24,6 +26,11 @@ vi.mock('node:fs/promises', async (importOriginal) => {
   const actual = await importOriginal<typeof Fs>();
   return { ...actual, rename: vi.fn(actual.rename), chmod: vi.fn(actual.chmod) };
 });
+
+// The real disk without /.dockerenv: init runs as on a host, so OLLAMA_URL is localhost even
+// when the tests themselves run in a container.
+const existsOnHost = async (path: string): Promise<boolean> =>
+  path !== DOCKERENV_PATH && (await pathExists(path));
 
 describe('in Docker, where the files are single-file bind mounts', () => {
   let dir: string;
@@ -61,6 +68,7 @@ describe('in Docker, where the files are single-file bind mounts', () => {
       timeZone: 'Europe/Berlin',
       cwd: dir,
       envPath,
+      exists: existsOnHost,
       renderSchedule: () => SCHEDULE,
       stdout: () => undefined,
       stderr: (text) => err.push(text),
@@ -250,6 +258,7 @@ describe('with the real file system', () => {
       totalMemoryBytes: 32 * GIB,
       cwd: dir,
       envPath: join(dir, '.env'),
+      exists: existsOnHost,
       renderSchedule: () => SCHEDULE,
       stdout: (text) => noise.push(text),
       stderr: (text) => noise.push(text),
