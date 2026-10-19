@@ -38,8 +38,8 @@ const defaultIo: ReadinessIo = {
 
 /**
  * `digest doctor --readiness`: the machine summary and a verdict for every profile (W7-02).
- * Contacts only Ollama; no feed, no delivery endpoint. Exit 0 if one profile is ready or needs
- * only pulls, 1 if none can run here.
+ * Contacts only Ollama; no feed, no delivery endpoint. Exit 0 if one profile can run here (ready,
+ * tight on RAM or needing only pulls), 1 if none can.
  */
 export async function readinessCommand(
   options: ReadinessCommandOptions,

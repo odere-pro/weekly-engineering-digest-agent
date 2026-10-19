@@ -15,7 +15,7 @@ flowchart LR
   doctor -.->|"one item per source"| feeds[("feed hosts, api.github.com")]
   doctor -.->|"stat, lstat, access, readFile"| disk[("data dir, markdown dir, .env")]
   doctor -->|"lines, summary, exit code"| out[("stdout")]
-  init["cli/init"] -.->|"errorCode, formatGiB, hasQualityMemory"| doctor
+  init["cli/init"] -.->|"errorCode, fitsRam, formatGiB, QUALITY_TIGHT_RAM"| doctor
   classDef focus stroke-width:3px
 ```
 

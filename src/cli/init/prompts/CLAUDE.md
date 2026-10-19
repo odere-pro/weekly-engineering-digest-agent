@@ -22,7 +22,8 @@ flowchart TD
   fields: they go to `.env`, never to the config.
 - `quality` carries a RAM warning when this process sees under 48 GB (5% slack): under 32 GB it says
   quality needs 32 GB; from 32 GB up it says that is tight and quotes the measured swap and time
-  (`QUALITY_TIGHT_RAM`). In Docker the container limit counts. `light` carries a warning unless the machine that runs Ollama is a Mac:
+  (`QUALITY_TIGHT_RAM`). The bands come from `fitsRam('quality', …)` and the quote from
+  `doctor/readiness/memory.ts`, so `digest doctor --readiness` says the same. In Docker the container limit counts. `light` carries a warning unless the machine that runs Ollama is a Mac:
   in Docker the named `host.hostOs` beats the container's platform.
 - "Save locally" is the first choice of the channels question, ticked, labelled with this week's
   folder (`localFolder`). Its `validate` refuses a selection without it, since the Markdown and HTML

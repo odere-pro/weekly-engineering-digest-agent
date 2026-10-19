@@ -70,7 +70,8 @@ Pick the model profile that fits this machine, then pull exactly the Ollama mode
 
 - `digest doctor` shows `✓ model <tag>: installed` for each tag. The classify, policy and judge
   tags read `installed (decision model)`.
-- `digest doctor --readiness` shows `ready` for your profile.
+- `digest doctor --readiness` shows `ready` for your profile (`tight on RAM` for `quality` on 32 GiB up
+  to 48 GiB: it runs, but swaps).
 - A guard whose checks are all switched off needs no model, so `doctor` does not ask for it.
 
 ## Roll back

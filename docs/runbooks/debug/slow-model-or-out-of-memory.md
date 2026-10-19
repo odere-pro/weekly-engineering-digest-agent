@@ -47,8 +47,9 @@ finishes in a normal time.
    ```
 
    It prints the RAM and Ollama version it sees and a verdict per profile: `ready`,
-   `pull models` or `not for this machine`. `digest init` suggests about 32 GiB of RAM for
-   `quality` and 16 GiB for `light`. In Docker on a Mac, Ollama runs on the host, because a
+   `tight on RAM`, `pull models` or `not for this machine`. `tight on RAM` on `quality` means 32 GiB
+   up to 48 GiB, where it swapped when measured; `light` is the way out. `digest init` suggests about
+   32 GiB of RAM for `quality` and 16 GiB for `light`. In Docker on a Mac, Ollama runs on the host, because a
    container cannot use the Apple GPU.
 
 3. Keep one model in memory. The steps run one after another and the models are large, so set

@@ -35,6 +35,15 @@ describe('verdictOf', () => {
   it('is "pull models" when the hardware fits and something is missing', () => {
     expect(verdictOf(true, false)).toBe('pull models');
   });
+
+  it('is "tight on RAM" when everything is there but the RAM is only just enough', () => {
+    expect(verdictOf(true, true, true)).toBe('tight on RAM');
+  });
+
+  it('keeps "pull models" and "not for this machine" ahead of "tight on RAM"', () => {
+    expect(verdictOf(true, false, true)).toBe('pull models');
+    expect(verdictOf(false, true, true)).toBe('not for this machine');
+  });
 });
 
 describe('versionStatus', () => {
@@ -80,6 +89,50 @@ describe('buildRow', () => {
       total: QUALITY_TAGS.length,
       missing: [],
       verdict: 'ready',
+    });
+  });
+
+  describe('quality on a 32 GiB Mac, where it swapped (measured 2026-10-19)', () => {
+    it('is tight on RAM, not ready, with every model installed', () => {
+      const row = buildRow('quality', MAC, 32 * GIB, healthWith(QUALITY_TAGS));
+
+      expect(row).toMatchObject({ ram: 'tight', missing: [], verdict: 'tight on RAM' });
+    });
+
+    it('is tight on RAM from 30.4 GiB (the 5% tolerance) up to just under 48 GiB', () => {
+      for (const ramGiB of [30.4, 31, 40, 45.5]) {
+        const row = buildRow('quality', MAC, ramGiB * GIB, healthWith(QUALITY_TAGS));
+
+        expect(row.verdict).toBe('tight on RAM');
+      }
+    });
+
+    it('is ready at 48 GiB, 45.7 GiB with the tolerance, and above', () => {
+      for (const ramGiB of [45.7, 48, 64]) {
+        const row = buildRow('quality', MAC, ramGiB * GIB, healthWith(QUALITY_TAGS));
+
+        expect(row).toMatchObject({ ram: 'yes', verdict: 'ready' });
+      }
+    });
+
+    it('still asks for the pull first when models are missing', () => {
+      const row = buildRow('quality', MAC, 32 * GIB, healthWith(['clef:latest']));
+
+      expect(row).toMatchObject({ ram: 'tight', verdict: 'pull models' });
+    });
+
+    it('is not for this machine below the 32 GiB floor', () => {
+      const row = buildRow('quality', MAC, 30.3 * GIB, healthWith(QUALITY_TAGS));
+
+      expect(row.verdict).toBe('not for this machine');
+    });
+
+    it('leaves light and fast as they were at 32 GiB', () => {
+      const light = buildRow('light', MAC, 32 * GIB, healthWith(requiredModels(PROFILES.light)));
+      const fast = buildRow('fast', MAC, 32 * GIB, healthWith(requiredModels(PROFILES.fast)));
+
+      expect(light).toMatchObject({ ram: 'yes', verdict: 'ready' });
+      expect(fast).toMatchObject({ ram: 'maybe', verdict: 'ready' });
     });
   });
 

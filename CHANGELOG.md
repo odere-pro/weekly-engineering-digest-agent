@@ -59,6 +59,8 @@ All notable changes to this project are listed here. The format follows
 - `digest init` warns about `quality` from 32 GB up to 48 GB, not only under 32 GB, and quotes what
   was measured there: swap in use and an input guard of 65 min. `light` stays the recommendation.
   Measured numbers: [cost and hardware](docs/overview/cost-and-hardware.md).
+- `digest doctor --readiness` agrees: `quality` from 32 GiB up to 48 GiB reads `tight` and
+  `tight on RAM` (was `yes` and `ready`), with the same measured numbers under the table.
 - `digest init` recommends `light` and merges into an existing `.env`. The schema default is
   still `quality`.
 - `SLACK_WEBHOOK_URL` must be `https:`. A source URL with a username or password is rejected.

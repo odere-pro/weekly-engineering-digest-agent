@@ -18,7 +18,7 @@ on them, and they are not renumbered.
 | --------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `init`                | Config and `.env` written                                                     | Cancelled, refused to overwrite with `--yes`, or a write failed                                     |
 | `doctor`              | No `✗` lines (warnings are allowed)                                           | At least one `✗`, or the config would not load                                                      |
-| `doctor --readiness`  | At least one profile is `ready` or needs only pulls                           | No profile can run on this machine                                                                  |
+| `doctor --readiness`  | At least one profile is `ready`, `tight on RAM` or needs only pulls           | No profile can run on this machine                                                                  |
 | `run`                 | `sent`, `dry-run`, `skipped`                                                  | `failed`, or an error before the run                                                                |
 | `run` (also 2 and 3)  |                                                                               | 2 is `blocked`, 3 is `quiet`                                                                        |
 | `eval`                | Every hard gate passed. `--only` and `--compare` always exit 0 when they work | A hard gate failed, an unknown profile or section, a bad `--compare`, or the judge is not installed |

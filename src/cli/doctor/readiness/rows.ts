@@ -10,7 +10,8 @@ import type { ModelHealth } from '../../../models/ModelProvider';
 import { fitsRam, type RamFit, type RowName } from './memory';
 import { compareCore, DEVELOPMENT_VERSION, normalizeTag, parseVersion } from './version';
 
-export type Verdict = 'ready' | 'pull models' | 'not for this machine';
+/** `tight on RAM`: everything is there and it fits, but only just (`quality` at 32 GiB swapped). */
+export type Verdict = 'ready' | 'tight on RAM' | 'pull models' | 'not for this machine';
 export type VersionStatus = 'ok' | 'too old' | 'unknown';
 
 /** One line of the readiness table: a profile (or the fallback) judged against this machine. */
@@ -53,13 +54,19 @@ export function buildRow(
     installed: listed ? tags.length - missing.length : undefined,
     total: tags.length,
     missing,
-    verdict: verdictOf(fitsHardware, listed && version !== 'too old' && missing.length === 0),
+    verdict: verdictOf(
+      fitsHardware,
+      listed && version !== 'too old' && missing.length === 0,
+      ram === 'tight',
+    ),
   };
 }
 
-export function verdictOf(fitsHardware: boolean, complete: boolean): Verdict {
+/** Hardware first, then what is left to pull; only a complete setup can be `ready` or `tight on RAM`. */
+export function verdictOf(fitsHardware: boolean, complete: boolean, tightRam = false): Verdict {
   if (!fitsHardware) return 'not for this machine';
-  return complete ? 'ready' : 'pull models';
+  if (!complete) return 'pull models';
+  return tightRam ? 'tight on RAM' : 'ready';
 }
 
 export function versionStatus(health: ModelHealth, minimum: string): VersionStatus {

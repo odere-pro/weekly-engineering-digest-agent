@@ -29,8 +29,10 @@ runs the whole pipeline and sends nothing. Do it before you schedule weekly runs
    pnpm digest doctor --readiness
    ```
 
-   The `verdict` column reads `ready`, `pull models` or `not for this machine`. The command exits 0
-   when at least one profile is `ready` or needs only pulls, and 1 when none can run here.
+   The `verdict` column reads `ready`, `tight on RAM`, `pull models` or `not for this machine`.
+   `tight on RAM` is `quality` on 32 GiB up to 48 GiB: it runs, but swapped when measured, and a line
+   under the table says how much. The command exits 0 when at least one profile can run here (it is
+   `ready`, `tight on RAM` or needs only pulls), and 1 when none can.
 
 2. Run the full check. It tests Ollama and its version, each model, every feed (10 s each), the
    delivery secrets, `.env` and the folders. Every line must be `✓`, or an accepted `!`.

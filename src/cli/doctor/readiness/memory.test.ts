@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { fitsRam, formatGiB, GIB, hasQualityHeadroom, hasQualityMemory, hasRam } from './memory';
+import {
+  fitsRam,
+  formatGiB,
+  GIB,
+  hasQualityHeadroom,
+  hasQualityMemory,
+  hasRam,
+  QUALITY_TIGHT_RAM,
+} from './memory';
 
 describe('RAM helpers', () => {
   it('hasRam allows a 5% tolerance below the figure', () => {
@@ -33,14 +41,44 @@ describe('RAM helpers', () => {
     expect(formatGiB(0)).toBe('0.0 GiB');
   });
 
-  it('fitsRam knows quality (32) and light (16); the rest get a 16 GiB floor, marked unmeasured', () => {
-    expect(fitsRam('quality', 31 * GIB)).toBe('yes');
-    expect(fitsRam('quality', 16 * GIB)).toBe('no');
+  it('fitsRam knows light (16); the rest get a 16 GiB floor, marked unmeasured', () => {
     expect(fitsRam('light', 16 * GIB)).toBe('yes');
     expect(fitsRam('light', 8 * GIB)).toBe('no');
     expect(fitsRam('fast', 8 * GIB)).toBe('no');
     expect(fitsRam('fast', 16 * GIB)).toBe('maybe');
+    expect(fitsRam('fast', 32 * GIB)).toBe('maybe');
     expect(fitsRam('fallback', 8 * GIB)).toBe('no');
     expect(fitsRam('fallback', 64 * GIB)).toBe('maybe');
+  });
+
+  it.each([
+    [64, 'yes'],
+    [48, 'yes'],
+    [45.7, 'yes'],
+    [45.5, 'tight'],
+    [32, 'tight'],
+    [31, 'tight'],
+    [30.4, 'tight'],
+    [30.3, 'no'],
+    [16, 'no'],
+  ] as const)('fitsRam says quality at %d GiB of RAM is %s', (ramGiB, fit) => {
+    expect(fitsRam('quality', ramGiB * GIB)).toBe(fit);
+  });
+
+  it('fitsRam agrees with hasQualityMemory and hasQualityHeadroom at every size', () => {
+    for (let ramGiB = 0; ramGiB <= 80; ramGiB += 0.5) {
+      const bytes = ramGiB * GIB;
+      const expected = hasQualityHeadroom(bytes) ? 'yes' : hasQualityMemory(bytes) ? 'tight' : 'no';
+      expect(fitsRam('quality', bytes)).toBe(expected);
+    }
+  });
+});
+
+describe('QUALITY_TIGHT_RAM', () => {
+  it('quotes what was measured on the reference laptop (2026-10-19)', () => {
+    expect(QUALITY_TIGHT_RAM).toMatch(/M1 Pro/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/input guard alone took about 1 h/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/8 of 9 GB of swap/);
+    expect(QUALITY_TIGHT_RAM).toMatch(/light needs 16 GB and took about 6 min for a whole week/);
   });
 });

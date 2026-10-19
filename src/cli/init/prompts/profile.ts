@@ -1,5 +1,5 @@
 import { ProfileNameSchema, type ProfileName } from '../../../config/schema';
-import { formatGiB, hasQualityHeadroom, hasQualityMemory } from '../../doctor/readiness/memory';
+import { fitsRam, formatGiB, QUALITY_TIGHT_RAM } from '../../doctor/readiness/memory';
 import type { Host, InitIo } from '../types';
 
 /** `light` is the 16 GB profile only where the tuned models run (a Mac with Apple silicon). */
@@ -8,10 +8,6 @@ const LIGHT_OFF_MAC =
 
 export const QUALITY_UNMEASURED =
   'quality is not measured end to end yet: on the reference laptop (M1 Pro, 32 GB) its input guard alone took about 1 h for 147 items';
-
-/** Why 32 GiB is tight for `quality`. Measured 2026-10-19, see docs/overview/cost-and-hardware.md. */
-export const QUALITY_TIGHT_RAM =
-  'on a 32 GB M1 Pro its input guard alone took about 1 h with 8 of 9 GB of swap in use. light needs 16 GB and took about 6 min for a whole week';
 
 export const PROFILE_DESCRIPTIONS: Readonly<Record<ProfileName, string>> = {
   quality: `Two writers and a judge. Best output expected, but ${QUALITY_UNMEASURED}. At least 32 GB RAM (48 GB or more is comfortable) and about 66 GB of disk for the models.`,
@@ -51,7 +47,7 @@ function qualityNote(io: InitIo, inDocker: boolean): { quality?: string } {
 
 /**
  * Says so when the RAM this process can see is short of what `quality` needs, or only just
- * enough: 32 GiB ran, but swapped (`QUALITY_TIGHT_RAM`). Inside Docker the figure is the
+ * enough: 32 GiB ran, but swapped (`QUALITY_TIGHT_RAM`, `fitsRam` says which). Inside Docker the figure is the
  * container's, not necessarily the machine's that runs Ollama, and the text names the limit when
  * there is one. The RAM figures live in `doctor/readiness/memory.ts`, so that
  * `digest doctor --readiness` and init cannot drift.
@@ -60,11 +56,13 @@ export function qualityMemoryWarning(io: InitIo, inDocker: boolean): string | un
   const limit = io.memoryLimitBytes ?? 0;
   const limited = limit > 0 && limit <= io.totalMemoryBytes;
   const seen = limited ? limit : io.totalMemoryBytes;
-  if (hasQualityHeadroom(seen)) return undefined;
+  const fit = fitsRam('quality', seen);
+  if (fit === 'yes') return undefined;
   const amount = formatGiB(seen);
-  const verdict = hasQualityMemory(seen)
-    ? `, which is tight for quality: ${QUALITY_TIGHT_RAM}.`
-    : '; quality needs about 32 GB.';
+  const verdict =
+    fit === 'tight'
+      ? `, which is tight for quality: ${QUALITY_TIGHT_RAM}.`
+      : '; quality needs about 32 GB.';
   if (!inDocker) return `This machine has ${amount} of RAM${verdict}`;
   if (limited) return `Docker limits this container to ${amount} (the container limit)${verdict}`;
   return `Docker shows this container ${amount} of RAM${verdict} Ollama may run elsewhere with more.`;

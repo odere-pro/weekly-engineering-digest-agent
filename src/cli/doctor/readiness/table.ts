@@ -1,6 +1,6 @@
 import { isAppleSilicon } from '../../../config/profiles';
 import type { ModelHealth } from '../../../models/ModelProvider';
-import { formatGiB } from './memory';
+import { formatGiB, QUALITY_TIGHT_RAM } from './memory';
 import type { ProfileRow } from './rows';
 import type { ReadinessIo, Target } from './target';
 
@@ -15,7 +15,7 @@ export interface RenderInput {
   disk: { data: number | undefined; models: number | undefined };
 }
 
-/** The whole readiness report: an optional config note, the machine, the table, the pull lists. */
+/** The whole readiness report: an optional config note, the machine, the table, the notes, the pull lists. */
 export function render({ target, health, rows, io, modelsDir, disk }: RenderInput): string {
   const lines = [
     ...(target.configNote ? [`! ${target.configNote}`, ''] : []),
@@ -24,6 +24,7 @@ export function render({ target, health, rows, io, modelsDir, disk }: RenderInpu
     '',
     'Profiles',
     ...tableLines(rows),
+    ...tightLines(rows, io.totalMemoryBytes),
     ...pullLines(rows, health),
     '',
   ];
@@ -88,6 +89,16 @@ export function tableLines(rows: readonly ProfileRow[]): string[] {
 function ramCell(row: ProfileRow): string {
   if (row.ram === 'maybe') return 'yes (not measured)';
   return row.ram;
+}
+
+/** Why a row is `tight`: the measured numbers `digest init` quotes for the same RAM. Empty when none is. */
+export function tightLines(rows: readonly ProfileRow[], totalMemoryBytes: number): string[] {
+  return rows
+    .filter((row) => row.ram === 'tight')
+    .flatMap((row) => [
+      '',
+      `${row.name} is tight on ${formatGiB(totalMemoryBytes)} of RAM: ${QUALITY_TIGHT_RAM}.`,
+    ]);
 }
 
 function versionCell(row: ProfileRow): string {

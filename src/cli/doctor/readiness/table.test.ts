@@ -6,9 +6,9 @@ import {
   type Platform,
 } from '../../../config/profiles';
 import type { ModelHealth } from '../../../models/ModelProvider';
-import { GIB } from './memory';
+import { GIB, QUALITY_TIGHT_RAM } from './memory';
 import { buildRow, type ProfileRow } from './rows';
-import { machineLines, pullLines, render, tableLines } from './table';
+import { machineLines, pullLines, render, tableLines, tightLines } from './table';
 import type { Target } from './target';
 
 const MAC: Platform = { os: 'darwin', arch: 'arm64' };
@@ -74,6 +74,24 @@ describe('tableLines', () => {
     expect(lines.find((l) => l.trimStart().startsWith('quality'))).not.toContain('not measured');
   });
 
+  it('shows quality as tight, with a "tight on RAM" verdict, on a 32 GiB Mac', () => {
+    const lines = tableLines(rows(READY, MAC, 32 * GIB));
+    const quality = lines.find((l) => l.trimStart().startsWith('quality'));
+    const light = lines.find((l) => l.trimStart().startsWith('light'));
+
+    expect(quality).toMatch(/^ {2}quality +tight +needed, present .* tight on RAM$/);
+    expect(light).toMatch(/ yes +needed, present .* ready$/);
+  });
+
+  it('keeps every column aligned when the verdict is the longest cell', () => {
+    const lines = tableLines(rows(READY, MAC, 32 * GIB));
+    const verdictColumn = lines[0]?.indexOf('verdict');
+
+    expect(lines.find((l) => l.includes('tight on RAM'))?.indexOf('tight on RAM')).toBe(
+      verdictColumn,
+    );
+  });
+
   it('shows the version verdict with the minimum', () => {
     const ok = tableLines(rows(READY)).join('\n');
     const old = tableLines(rows({ ...READY, version: '0.30.0' })).join('\n');
@@ -130,6 +148,26 @@ describe('pullLines', () => {
     const lines = pullLines(rows(health, LINUX), health);
 
     expect(lines.filter((l) => l.startsWith('To get'))).toEqual(['To get fallback ready:']);
+  });
+});
+
+describe('tightLines', () => {
+  it('is empty when no row is tight', () => {
+    expect(tightLines(rows(READY), 64 * GIB)).toEqual([]);
+    expect(tightLines(rows(READY, MAC, 48 * GIB), 48 * GIB)).toEqual([]);
+    expect(tightLines(rows(READY, MAC, 16 * GIB), 16 * GIB)).toEqual([]);
+  });
+
+  it('says after a blank line why quality is tight, with the measured numbers init quotes', () => {
+    const lines = tightLines(rows(READY, MAC, 32 * GIB), 32 * GIB);
+
+    expect(lines).toEqual(['', `quality is tight on 32.0 GiB of RAM: ${QUALITY_TIGHT_RAM}.`]);
+  });
+
+  it('names the RAM this process sees, to one decimal', () => {
+    const bytes = 31.04 * GIB;
+
+    expect(tightLines(rows(READY, MAC, bytes), bytes).join('\n')).toContain('31.0 GiB of RAM');
   });
 });
 
@@ -216,6 +254,26 @@ describe('render', () => {
     const text = render({ ...input, target: { ...TARGET, configNote: 'no config used (boom)' } });
 
     expect(text.startsWith('! no config used (boom)\n\nMachine\n')).toBe(true);
+  });
+
+  it('adds why quality is tight after the table and before the pull lists', () => {
+    const health: ModelHealth = { ...READY, models: [{ name: 'clef:latest', capabilities: [] }] };
+    const bytes = 32 * GIB;
+
+    const text = render({
+      ...input,
+      health,
+      rows: rows(health, MAC, bytes),
+      io: { ...IO, totalMemoryBytes: bytes },
+    });
+
+    expect(text).toContain(`quality is tight on 32.0 GiB of RAM: ${QUALITY_TIGHT_RAM}.`);
+    expect(text.indexOf('Profiles')).toBeLessThan(text.indexOf('quality is tight'));
+    expect(text.indexOf('quality is tight')).toBeLessThan(text.indexOf('To get quality ready:'));
+  });
+
+  it('prints no tight line when RAM is not tight', () => {
+    expect(render(input)).not.toContain('is tight');
   });
 
   it('adds the pull lists after the table', () => {

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { NON_MAC_FALLBACK, PROFILES, requiredModels } from '../../../config/profiles';
 import type { Platform } from '../../../config/profiles';
 import type { ModelHealth } from '../../../models/ModelProvider';
-import { GIB } from './memory';
+import { GIB, QUALITY_TIGHT_RAM } from './memory';
 import { readinessCommand } from './readiness';
 import type { ReadinessIo } from './target';
 
@@ -157,6 +157,62 @@ describe('readinessCommand', () => {
       .split('\n')
       .find((l) => l.trimStart().startsWith('light'));
     expect(light).toContain('ready');
+  });
+
+  describe('quality on a 32 GiB Mac, where it swapped (measured 2026-10-19)', () => {
+    const rowOf = (text: string, name: string): string | undefined =>
+      text.split('\n').find((l) => l.trimStart().startsWith(name));
+
+    it('is tight on RAM, not ready, and quotes the numbers init quotes', async () => {
+      const h = harness({ ramGiB: 32 });
+      const code = await readinessCommand({}, h.io);
+      const text = h.out();
+
+      expect(rowOf(text, 'quality')).toMatch(/^ {2}quality +tight .* tight on RAM$/);
+      expect(rowOf(text, 'quality')).not.toContain('ready');
+      expect(text).toContain(`quality is tight on 32.0 GiB of RAM: ${QUALITY_TIGHT_RAM}.`);
+      expect(code).toBe(0);
+    });
+
+    it('leaves light, fast and the fallback as they were', async () => {
+      const h = harness({ ramGiB: 32 });
+      await readinessCommand({}, h.io);
+
+      for (const name of ['fast', 'light', 'fallback']) {
+        expect(rowOf(h.out(), name)).toMatch(/ ready$/);
+      }
+    });
+
+    it('is tight on a "32 GB" Linux-style 31 GiB report', async () => {
+      const h = harness({ ramGiB: 31 });
+      await readinessCommand({}, h.io);
+
+      expect(rowOf(h.out(), 'quality')).toContain('tight on RAM');
+    });
+
+    it('asks for the pull first when models are missing, and still says why it is tight', async () => {
+      const h = harness({ ramGiB: 32, health: { models: installedAll(['clef:latest']) } });
+      await readinessCommand({}, h.io);
+
+      expect(rowOf(h.out(), 'quality')).toMatch(/pull models$/);
+      expect(h.out()).toContain(QUALITY_TIGHT_RAM);
+    });
+
+    it('is ready at 48 GiB, with no tight line', async () => {
+      const h = harness({ ramGiB: 48 });
+      await readinessCommand({}, h.io);
+
+      expect(rowOf(h.out(), 'quality')).toMatch(/ yes .* ready$/);
+      expect(h.out()).not.toContain('tight');
+    });
+
+    it('is still not for this machine at 24 GiB, with no tight line', async () => {
+      const h = harness({ ramGiB: 24 });
+      await readinessCommand({}, h.io);
+
+      expect(rowOf(h.out(), 'quality')).toMatch(/not for this machine$/);
+      expect(h.out()).not.toContain('tight');
+    });
   });
 
   it('exits 1 when every row is not for this machine', async () => {

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { ProfileName } from '../../../config/schema';
+import { fitsRam, QUALITY_TIGHT_RAM } from '../../doctor/readiness/memory';
 import { GIB, harness, type HarnessOptions } from '../__fixtures__/initHarness';
 import type { Host } from '../types';
 import {
   askProfile,
   PROFILE_DESCRIPTIONS,
-  QUALITY_TIGHT_RAM,
   QUALITY_UNMEASURED,
   qualityMemoryWarning,
 } from './profile';
@@ -203,6 +203,18 @@ describe('qualityMemoryWarning', () => {
     else if (kind === 'tight') expect(text).toMatch(/tight for quality/);
     else expect(text).toMatch(/quality needs about 32 GB/);
   });
+
+  it.each([64, 48, 45.7, 45.5, 40, 32, 31, 30.4, 30.3, 24, 16, 8])(
+    'warns at %d GiB exactly when `digest doctor --readiness` does not call quality fine',
+    (ramGiB) => {
+      const text = warn({ ramGiB });
+      const fit = fitsRam('quality', ramGiB * GIB);
+
+      expect(text === undefined).toBe(fit === 'yes');
+      expect(text?.includes('tight for quality') ?? false).toBe(fit === 'tight');
+      expect(text?.includes('quality needs about 32 GB') ?? false).toBe(fit === 'no');
+    },
+  );
 
   it('names the measured swap and time at exactly 32 GiB, and keeps light as the way out', () => {
     expect(warn({ ramGiB: 32 })).toBe(
