@@ -9,6 +9,7 @@ import { noteRejections } from './checkedStep/noteRejections';
 import type { CheckContext, CodeChecked, Rejection } from './checkedStep/types';
 import { enforceProvenance } from './provenance/enforceProvenance';
 import { raiseSecurityItems } from './provenance/securityFloor';
+import { groundTitles } from './provenance/titleFacts';
 import { tidyTitle } from './tidy/title';
 import { generateStructured } from '../models/structured';
 import type { ModelProvider } from '../models/ModelProvider';
@@ -153,7 +154,8 @@ async function draftWith(
       'write',
     );
     const owned = enforceProvenance(result.value.items, sources, logger);
-    const kept = raiseSecurityItems(owned, sources, logger).map(tidyTitle);
+    const grounded = groundTitles(raiseSecurityItems(owned, sources, logger), sources, logger);
+    const kept = grounded.map(tidyTitle);
     if (kept.length < DIGEST_MIN_ITEMS) {
       throw new Error(
         `Only ${kept.length} valid items after the provenance check; need at least ${DIGEST_MIN_ITEMS}`,

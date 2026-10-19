@@ -72,7 +72,10 @@ function makeSpyLogger(): { logger: Logger; warn: ReturnType<typeof vi.fn> } {
 
 describe('writeStep titles (F32)', () => {
   async function titleOf(drafted: string): Promise<string | undefined> {
-    const items = makeItems(3);
+    // The source carries the drafted title: a title naming a version its source lacks is
+    // repaired (W12-02), and these cases are about the tidying that follows.
+    const [source, ...others] = makeItems(3);
+    const items = [{ ...source!, title: drafted }, ...others];
     const first = writerItem(items[0]!, { title: drafted });
     const rest = items.slice(1).map((item) => writerItem(item));
     const model = scripted({ 'writer-a': [body([first, ...rest])] });

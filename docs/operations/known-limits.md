@@ -15,6 +15,18 @@ The honest list. Each item says what happens and why.
   one title has no version.
 - The link check ignores autolinks with a scheme other than `http(s)`, and accepts a collected
   URL with extra tracking parameters or a fragment.
+- A misreading that uses the source's own words passes every layer. In the recorded week
+  2026-W36, a Kubernetes storage version migration item said "use object storage in Kubernetes"
+  for a source that means stored API objects. No check compares meaning: only the judge's accuracy
+  score or a person sees it.
+- A version, CVE or GHSA id or date in an item title that its source lacks is replaced in code by
+  the source title, but the same fact in a summary or action line is not repaired. Only the
+  groundedness guard reads those, and it can miss one. A title may name a shorter version than the
+  source ("1.31" for "v1.31.2"). The check reads the source title and summary only: a version that
+  is only in the source URL is replaced too, and a version the summary mentions for something else
+  counts as present. See [write](../features/write.md).
+- The fallback digest starts only when every draft is rejected by the checks or the guards. A low
+  judge score never starts it: the best passing draft is sent, however weak.
 
 ## Fallback digest, guards and calibration
 

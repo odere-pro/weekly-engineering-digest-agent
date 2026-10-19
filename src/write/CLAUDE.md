@@ -22,7 +22,7 @@ flowchart LR
 ```mermaid
 flowchart TD
   items["selected ScoredItem[]"] --> gen["buildWritePrompt, then per writer in config order: draftWith, generateStructured"]
-  gen --> prov["provenance/: enforceProvenance, raiseSecurityItems; tidy/: tidyTitle"]
+  gen --> prov["provenance/: enforceProvenance, raiseSecurityItems, groundTitles; tidy/: tidyTitle"]
   prov --> enough{"at least 3 items left?"}
   enough -->|no| fail["writer fails: error in writeFailures"]
   enough -->|yes| prep["checkedStep/checkDraft: links/prepareDraft (topN, em dashes, https:// on a collected bare link)"]
@@ -47,8 +47,9 @@ flowchart TD
 
 - URL provenance: the model names an item (`itemId`) and never picks its link; `url` comes from
   the collected item. `WrittenItemSchema` makes `url` optional, so a bad one never costs a repair.
-- The security floor (`provenance/`) and the bare-link repair (`links/`) are exact and bounded; see
-  their `CLAUDE.md`. An `action` is not link-repaired.
+- The security floor and the title repair (`provenance/`) and the bare-link repair (`links/`) are
+  exact and bounded; see their `CLAUDE.md`. A title with a version, id or date its source lacks gets
+  the source title; a summary or `action` is not repaired, and an `action` is not link-repaired.
 - Prompt limits come from `checks/formatCheck.ts`, so prompt and check cannot drift; the writer is
   asked for less (400 words, summary 30, action 15).
 - Writers run in turn (one model in memory); `draftWith` never rejects, so a failed writer never
@@ -64,7 +65,7 @@ flowchart TD
 | `fallbackDigest.ts` | `buildFallbackDigest`, `checkedFallback`, `cutSummary`: the digest made without a model          |
 | `links/`            | `prepareDraft`, bare-link repair; see `links/CLAUDE.md`                                          |
 | `tidy/`             | Em dashes, restated release tags; see `tidy/CLAUDE.md`                                           |
-| `provenance/`       | Source urls, no repeats, the security floor; see `provenance/CLAUDE.md`                          |
+| `provenance/`       | Source urls, no repeats, the security floor, title facts; see `provenance/CLAUDE.md`             |
 | `checkedStep/`      | `codeCheck`, `checkDraft`, rejections, `mergeRetries`, result types; see `checkedStep/CLAUDE.md` |
 
 Tests sit next to the code and script `FakeModelProvider` replies per writer tag. No fixtures.

@@ -26,6 +26,14 @@ follow. See [data flow](../architecture/data-flow.md).
   scheme-less link that names a collected URL, and cuts an action to 200 characters.
 - Raises a "good to know" item to "worth a look", with a fixed action, when its collected source
   names a CVE, a GHSA id, an advisory or a vulnerability. It never raises an item higher.
+- Replaces a title with the item's own source title when the title names a version, a CVE or GHSA
+  id or a date that the source's title and summary do not have. The title is the link text and the
+  groundedness guard does not read it. A shorter version is fine ("1.31" for "v1.31.2"), but a
+  pre-release must match ("1.17" is not "1.17.0-beta1"). The new title drops any text that the link
+  check would read as a link and is cut to 120 characters, so a repair never costs a draft. A
+  summary or action is not repaired: the guard checks them, and the
+  [fact carry](../evaluation/metrics/fact-carry.md) metric measures them. A repair is logged as a
+  warning.
 - Runs the [link check and format check](checks.md) on every draft. If every draft is rejected,
   each writer that produced a draft gets one retry, with the problems listed and every link masked.
   There is no second retry.
