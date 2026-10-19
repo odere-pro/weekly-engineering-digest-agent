@@ -1,12 +1,44 @@
 #!/usr/bin/env bash
-# Reject AI attribution in commit messages. Commits are authored and signed by the maintainer only.
+# Reject AI attribution and a commit subject over 72 characters. Commits are authored and signed by
+# the maintainer only, and the subject must stay readable in a narrow sidebar.
 set -euo pipefail
 
 msg_file="$1"
+subject_limit=72
 
 if grep -Eiq '^[[:space:]]*co-authored-by:.*(claude|anthropic)' "$msg_file" \
   || grep -Eiq 'noreply@anthropic\.com' "$msg_file" \
   || grep -Eiq 'generated (with|by) .*claude' "$msg_file"; then
   echo "commit-msg: AI attribution (Co-Authored-By Claude/Anthropic or 'Generated with Claude') is not allowed." >&2
+  exit 1
+fi
+
+# Byte semantics for everything below, so the result does not depend on the caller's locale.
+export LC_ALL=C
+
+# The subject is the first line that is neither blank nor a '#' comment (git strips trailing
+# whitespace and carriage returns from it, so they do not count).
+subject=""
+while IFS= read -r line || [ -n "$line" ]; do
+  line="${line%$'\r'}"
+  case "$line" in '#'*) continue ;; esac
+  line="${line%"${line##*[![:space:]]}"}"
+  if [ -n "$line" ]; then
+    subject="$line"
+    break
+  fi
+done < "$msg_file"
+
+# Subjects git writes itself (merges, reverts, autosquash markers) are not the author's to shorten.
+case "$subject" in
+  'Merge '* | 'Revert "'* | 'fixup! '* | 'squash! '* | 'amend! '*) exit 0 ;;
+esac
+
+# Characters, not bytes: drop the UTF-8 continuation bytes (0x80-0xBF) and count what is left.
+subject_length="$(printf '%s' "$subject" | tr -d '\200-\277' | wc -c)"
+subject_length="${subject_length//[[:space:]]/}"
+
+if [ "$subject_length" -gt "$subject_limit" ]; then
+  echo "commit-msg: subject is ${subject_length} characters; the limit is ${subject_limit}." >&2
   exit 1
 fi

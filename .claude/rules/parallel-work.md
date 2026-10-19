@@ -38,7 +38,7 @@ Workers edit only their own issue file. Only the coordinator sets `done`.
 - Before review: `git rebase main`, then squash to one commit: `git reset --soft main && git commit`.
 - Commit as configured (Oleksandr Derechei, SSH-signed). Conventional subject ≤ 72 chars,
   e.g. `feat(sources): add RSS/Atom fetcher (W1-01)`. No Co-Authored-By or "Generated with" lines;
-  the `commit-msg` hook rejects them.
+  the `commit-msg` hook rejects them, and also a subject over 72 characters.
 - **Never push, never merge.** The coordinator merges locally with `git merge --ff-only`.
 
 ## Lanes
