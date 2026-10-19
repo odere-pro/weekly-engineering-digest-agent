@@ -34,9 +34,20 @@ All notable changes to this project are listed here. The format follows
 - New `doctor` checks: data dir, markdown folder, Ollama development builds, `.env` values cut
   at a `#`, and the heavy fallback of `light` off a Mac.
 - `digest eval` scores digests with `EVAL_JUDGE` and names the attack cases that got through.
+- `factCarry` eval metric: every version, CVE or GHSA id and date in a shipped digest must be
+  in its own source item. Each miss names the checks and guards it got past. Soft gate for now.
+- `pnpm docs:mermaid` parses every Mermaid block in tracked Markdown; `pnpm check` and CI run it.
+- `digest init` shows "Save locally" with this week's digest folder as the first, preselected
+  delivery choice. It cannot be unticked: local files are always written.
 
 ### Changed
 
+- The run's abort (the time limit, or stopping `digest serve`) now stops the collect step and the
+  guards within one call. A step that was running fails as `Run aborted during the <step> step`
+  and is not retried. Classify, write and select still finish their call first.
+- `evals/calibrate.ts --write` saves to `<dataDir>/eval/calibration/<profile>.json`, no longer
+  into the code folder `evals/calibration/`.
+- The `commit-msg` hook rejects a subject over 72 characters.
 - `digest init` recommends `light` and merges into an existing `.env`. The schema default is
   still `quality`.
 - `SLACK_WEBHOOK_URL` must be `https:`. A source URL with a username or password is rejected.
@@ -53,6 +64,9 @@ All notable changes to this project are listed here. The format follows
 
 ### Fixed
 
+- The eval scorecard printer replaced only a hand-listed set of invisible characters; U+061C,
+  U+2060-2064, U+206A-206F, U+FEFF and U+00AD got through. It now replaces every control and
+  format character.
 - The link check no longer rejects a valid URL with `www.` in it. This left one recorded week
   without a digest.
 - A bare `www.host/path` link that names a collected item gets `https://` instead of a reject.
