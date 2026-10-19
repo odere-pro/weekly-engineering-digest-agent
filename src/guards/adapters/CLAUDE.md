@@ -1,6 +1,6 @@
 # Guard adapters
 
-> The five guards behind the `Guard` port. Input (`InputGuard.checkItem`): `createRuleInjectionGuard`,
+> The five guards behind the guard ports. Input (`InputGuard.checkItem`): `createRuleInjectionGuard`,
 > `createClefPolicyGuard`, `createGraniteRiskGuard`. Output (`OutputGuard.checkDraft`):
 > `createGraniteGroundednessGuard`, `createClefRubricGuard`. Each answers with one `GuardVerdict`.
 

@@ -16,9 +16,10 @@ It is a supporting layer used by classify, guards, write and select, as shown in
 
 ## What it does
 
-- Offers two calls. `generate` returns free text, used for writing and for Granite Guardian.
+- Offers two model calls. `generate` returns free text, used for writing and for Granite Guardian.
   `decide` asks typed questions about a text (yes or no, a choice, a score) and returns
-  probabilities, used by classify, the policy guards and the judge.
+  probabilities, used by classify, the policy guards and the judge. A third method, `health`,
+  calls no model (see Health below).
 - Steps that need JSON use `generateStructured`: it sends the JSON schema, validates the reply and,
   if it is invalid, asks the same model once to repair it. A second failure fails the step.
 - The Ollama adapter maps a role to a model tag through the profile. `generate` uses `/api/chat`
@@ -66,7 +67,9 @@ It is a supporting layer used by classify, guards, write and select, as shown in
 
 - Folder: [src/models/](../../src/models/). Maintainer notes: [CLAUDE.md](../../src/models/CLAUDE.md).
 - Port: [ModelProvider.ts](../../src/models/ModelProvider.ts). Adapters:
-  [src/models/adapters/](../../src/models/adapters/) (Ollama chat and the decision endpoint).
+  [src/models/adapters/](../../src/models/adapters/): one adapter, Ollama (`ollama.ts`, with its
+  parts in `call/`, `chat/`, `decide/` and `health/`), plus `systemone.ts`, the helpers it uses
+  for `/v1/systemone` decision questions.
 - Tests sit next to the code. They inject a fake `fetch` that serves responses recorded from
   Ollama; no network. Tests against a real model are in [test/live](../../test/live/) and run only
   with `LIVE_OLLAMA=1`.

@@ -1,8 +1,9 @@
 # Guards
 
 > Safety checks on untrusted text: input guards judge each collected item, output guards each draft.
-> Entries: `guardInputStep(items, deps)`, `guardOutputStep(drafts, sources, deps)`. Port: `Guard`
-> (`InputGuard`, `OutputGuard`). The link and format checks are not guards: they live in `src/checks`.
+> Entries: `guardInputStep(items, deps)`, `guardOutputStep(drafts, sources, deps)`. Ports:
+> `InputGuard`, `OutputGuard` in `Guard.ts` (no `Guard` type). The link and format checks are not
+> guards: they live in `src/checks`.
 
 ## Context
 
@@ -11,7 +12,7 @@ flowchart LR
   collect -->|"Item[]"| guardInput:::focus -->|"Item[]"| classify
   write -->|"Draft[]"| guardOutput:::focus -->|"Draft[]"| select
   cfg[("config: guards, thresholds.guardFlag")] -.-> guardInput & guardOutput
-  guardInput & guardOutput -.-> gp[[Guard]]
+  guardInput & guardOutput -.-> gp[["InputGuard, OutputGuard"]]
   gp -.-> adapters["adapters: ruleInjection, clefPolicy, graniteRisk, graniteGroundedness, clefRubric"]
   adapters -.->|"decide guardPolicy, generate guardRisk"| mp[[ModelProvider]]
   classDef focus stroke-width:3px
@@ -61,7 +62,7 @@ flowchart TD
 
 | File                                             | Role                                                                                                            |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `Guard.ts`, `guardVerdict.ts`                    | The port; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own                                          |
+| `Guard.ts`, `guardVerdict.ts`                    | The ports `InputGuard`, `OutputGuard`; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own             |
 | `guardRun.ts`, `guardInput.ts`, `guardOutput.ts` | `planGuards`, `applyGuards`, `passProgress`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                   |
 | `guardQuestions.ts`                              | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
 | `adapters/`                                      | The five guards (rule, Clef, Granite), `GRANITE_CRITERIA`, recorded fixtures: see `adapters/CLAUDE.md`          |

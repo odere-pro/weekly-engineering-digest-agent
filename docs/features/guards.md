@@ -78,7 +78,7 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 ## Code and tests
 
 - Folder: [src/guards/](../../src/guards/). Maintainer notes: [CLAUDE.md](../../src/guards/CLAUDE.md).
-- Port: [Guard.ts](../../src/guards/Guard.ts). Adapters:
+- Ports: `InputGuard` and `OutputGuard` in [Guard.ts](../../src/guards/Guard.ts). Adapters:
   [src/guards/adapters/](../../src/guards/adapters/) (the rule guard, the decision-model guards and
   Granite Guardian). The guard check ids live in `src/guards/guardVerdict.ts`.
 - Tests sit next to the code. Granite replies recorded from the real model are replayed in a test.

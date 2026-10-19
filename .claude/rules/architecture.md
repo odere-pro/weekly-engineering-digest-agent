@@ -10,16 +10,22 @@ The code is split by feature. Each feature folder holds its code, its types, its
 one), its adapters, its tests and fixtures, and a `CLAUDE.md` with its intent and design.
 
 The pipeline runs the whole chain and knows no vendor, file or cloud. Everything outside it sits
-behind one of five **ports**, interfaces the pipeline owns and calls. An **adapter** plugs a real
-system into a port. Swapping Ollama for Bedrock, or files for S3, means adding an adapter.
+behind a **port**, an interface the pipeline owns and calls. An **adapter** plugs a real system
+into a port. Swapping Ollama for Bedrock, or files for S3, means adding an adapter.
 
-| Port            | Lives in        | Adapters in                                            |
-| --------------- | --------------- | ------------------------------------------------------ |
-| `ModelProvider` | `src/models/`   | `src/models/adapters/` (Ollama: chat and decisions)    |
-| `Guard`         | `src/guards/`   | `src/guards/adapters/` (Granite Guardian, clef policy) |
-| `SourceFetcher` | `src/sources/`  | `src/sources/adapters/` (RSS, GitHub, fetch pipeline)  |
-| `Delivery`      | `src/delivery/` | `src/delivery/adapters/` (Markdown file, SMTP, Slack)  |
-| `RunStore`      | `src/store/`    | `src/store/adapters/` (files, lock)                    |
+| Port            | Lives in                       | Adapters in                                                |
+| --------------- | ------------------------------ | ---------------------------------------------------------- |
+| `ModelProvider` | `src/models/ModelProvider.ts`  | `src/models/adapters/` (one adapter, Ollama)               |
+| `InputGuard`    | `src/guards/Guard.ts`          | `src/guards/adapters/` (rule guard, clef policy, Granite)  |
+| `OutputGuard`   | `src/guards/Guard.ts`          | `src/guards/adapters/` (clef rubric, Granite groundedness) |
+| `SourceFetcher` | `src/sources/SourceFetcher.ts` | `src/sources/adapters/` (RSS, GitHub, fetch pipeline)      |
+| `Delivery`      | `src/delivery/Delivery.ts`     | `src/delivery/adapters/` (Markdown file, SMTP, Slack)      |
+| `RunStore`      | `src/store/RunStore.ts`        | `src/store/adapters/` (files, lock)                        |
+
+There is no `Guard` type: `Guard.ts` holds the two guard interfaces. `ModelProvider` has
+`generate`, `decide` and `health`. The run also takes `Logger`, `Tracer`
+(`src/shared/telemetry.ts`) and `Clock` (`src/shared/clock.ts`): port-like interfaces in
+`shared`, so no feature owns them.
 
 ## Dependency direction
 

@@ -8,7 +8,7 @@ number of interfaces called ports.
 
 | Page                                        | Read it for                                                             |
 | ------------------------------------------- | ----------------------------------------------------------------------- |
-| [Ports and adapters](ports-and-adapters.md) | Why the pipeline knows no vendor, and the five ports                    |
+| [Ports and adapters](ports-and-adapters.md) | Why the pipeline knows no vendor, and where each port lives             |
 | [Feature folders](feature-folders.md)       | How `src/` is laid out and where new code goes                          |
 | [Data flow](data-flow.md)                   | The pipeline order, step by step, with inputs and outputs               |
 | [Run semantics](run-semantics.md)           | Week ids, the lock, idempotency, resume, abort and the six run statuses |

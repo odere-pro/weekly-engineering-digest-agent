@@ -14,7 +14,7 @@ works), and its tests sit next to the code. Pipeline order:
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `src/digest/`                                         | The weekly run: `runDigest` (lock → chain → finish), run ending, resume, the step loop                         |
 | `src/sources/`                                        | `SourceFetcher` port, the collect step, default sources, `adapters/` (RSS, GitHub, fetch pipeline, `archive/`) |
-| `src/guards/`                                         | `Guard` port, input and output guard steps, guard questions, `adapters/` (Granite, clef)                       |
+| `src/guards/`                                         | `InputGuard`, `OutputGuard` ports, guard steps and questions, `adapters/` (rule, Granite, clef)                |
 | `src/classify/`                                       | Classify step and prompt: relevance, area, hype, minor release per item                                        |
 | `src/process/`                                        | Filter by thresholds, cross-week dedupe, rank, top N                                                           |
 | `src/write/`                                          | Writer panel step and prompt                                                                                   |
@@ -22,7 +22,7 @@ works), and its tests sit next to the code. Pipeline order:
 | `src/select/`                                         | Judge step and prompt: picks the best passing draft                                                            |
 | `src/render/`                                         | Digest view, Markdown, canonical scoring text, review sheet                                                    |
 | `src/delivery/`                                       | `Delivery` port, `adapters/` (Markdown file, SMTP and email HTML, Slack blocks)                                |
-| `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama, decision endpoint)                          |
+| `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama: chat and decisions)                         |
 | `src/store/`                                          | `RunStore` port, `layout.ts` (the `dist/` layout), `adapters/` (run folders, lock with heartbeat and takeover) |
 | `src/domain/`                                         | `schemas.ts`: the types several features share (zod); feature-owned types live in their feature                |
 | `src/config/`                                         | `schema.ts` (zod), `profiles.ts` (role → model tag), `load.ts`                                                 |
