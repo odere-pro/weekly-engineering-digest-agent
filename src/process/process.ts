@@ -12,6 +12,11 @@ export interface ProcessInput {
   topN: number;
   /** When given, relevance is replaced by the calibrated score before filtering and ranking. */
   calibration?: Calibration | undefined;
+  /**
+   * Item ids in a model-chosen order (W11-07 pairwise experiment). Listed items rank by their
+   * position, before any unlisted item. Absent: ranking is unchanged.
+   */
+  pairwiseOrder?: readonly string[] | undefined;
 }
 
 export interface ProcessOutput {
@@ -50,7 +55,7 @@ interface Partition {
 
 /** Pure ranking and filtering in code, no model calls (W1-08). */
 export function processStep(input: ProcessInput): ProcessOutput {
-  const { sentUrls, thresholds, topN, calibration } = input;
+  const { sentUrls, thresholds, topN, calibration, pairwiseOrder } = input;
   assertTopN(topN);
   const items = calibration
     ? input.items.map((item) => ({
@@ -60,7 +65,7 @@ export function processStep(input: ProcessInput): ProcessOutput {
     : input.items;
 
   // Rank once up front: every later list (drops included) is in rank order, whatever the input order.
-  const ranked = items.map((item): Entry => ({ item })).sort(byRank);
+  const ranked = items.map((item): Entry => ({ item })).sort(rankBy(pairwiseOrder));
   const { kept: eligible, dropped } = filterStages(sentUrls, thresholds).reduce(applyStage, {
     kept: ranked,
     dropped: [],
@@ -275,6 +280,19 @@ function normalizeText(text: string): string {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}+#]+/gu, ' ')
     .trim();
+}
+
+/** Ranks by `byRank`, except that ids in `order` come first, in that order (W11-07). */
+function rankBy(order: readonly string[] | undefined): (a: Entry, b: Entry) => number {
+  if (order === undefined) return byRank;
+  const position = new Map(order.map((id, index) => [id, index]));
+  const at = (entry: Entry): number => position.get(entry.item.id) ?? Number.POSITIVE_INFINITY;
+  return (a, b) => {
+    const pa = at(a);
+    const pb = at(b);
+    if (pa === pb) return byRank(a, b);
+    return pa < pb ? -1 : 1;
+  };
 }
 
 /**

@@ -797,3 +797,33 @@ describe('processStep determinism', () => {
     expect({ items, sentUrls: [...sentUrls] }).toEqual(before);
   });
 });
+
+describe('processStep pairwise order (W11-07)', () => {
+  it('ranks listed items by their position before relevance', () => {
+    const low = makeScoredItem({}, { relevance: 2 });
+    const high = makeScoredItem({}, { relevance: 3 });
+    const input = {
+      items: [high, low],
+      sentUrls: new Set<string>(),
+      thresholds,
+      topN: 1,
+    };
+    expect(processStep(input).selected.map((i) => i.id)).toEqual([high.id]);
+    expect(
+      processStep({ ...input, pairwiseOrder: [low.id, high.id] }).selected.map((i) => i.id),
+    ).toEqual([low.id]);
+  });
+
+  it('ranks items outside the order after the listed ones', () => {
+    const listed = makeScoredItem({}, { relevance: 2 });
+    const other = makeScoredItem({}, { relevance: 3 });
+    const out = processStep({
+      items: [other, listed],
+      sentUrls: new Set<string>(),
+      thresholds,
+      topN: 2,
+      pairwiseOrder: [listed.id],
+    });
+    expect(out.selected.map((i) => i.id)).toEqual([listed.id, other.id]);
+  });
+});

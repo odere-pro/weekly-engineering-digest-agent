@@ -12,14 +12,15 @@ import { buildApp } from '../src/app/container';
 import { loadConfig, platformOf } from '../src/config/load';
 import { resolveProfile } from '../src/config/profiles';
 import { ProfileNameSchema, type Config, type ProfileName } from '../src/config/schema';
-import type { Item } from '../src/domain/schemas';
+import type { Item, ScoredItem } from '../src/domain/schemas';
 import { areaHintsOf, classifyStep, type ClassifyDeps } from '../src/classify/classify';
 import {
   CalibrationSchema,
   calibrateClassification,
   type Calibration,
 } from '../src/process/calibration';
-import { processStep } from '../src/process/process';
+import { PAIRWISE_TOP, pairwiseRank } from '../src/classify/pairwise';
+import { processStep, type ProcessInput } from '../src/process/process';
 import { systemClock, type Clock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
 import type { ModelProvider } from '../src/models/ModelProvider';
@@ -42,10 +43,13 @@ export interface RescoreReplayDeps {
   clock: Clock;
   /** Applied by the process step and to the classifier cases (W11-06). Absent: as before. */
   calibration?: Calibration | undefined;
+  /** Re-rank the best candidates with a pairwise tournament before the final pick (W11-07). */
+  pairwise?: boolean | undefined;
 }
 
 export interface RescoreResult {
   rescoreWithWriter: boolean;
+  pairwise?: boolean;
   calibrated?: boolean;
   weeks: number;
   /** Mean must-include items found in the top 5 per week (gate: at least 3). */
@@ -81,6 +85,25 @@ function classifyDeps(deps: RescoreReplayDeps, rescore: boolean): ClassifyDeps {
   };
 }
 
+/** The process step, with the optional pairwise re-rank of the best `PAIRWISE_TOP` survivors. */
+async function selectTop(scored: ScoredItem[], deps: RescoreReplayDeps) {
+  const base: ProcessInput = {
+    items: scored,
+    sentUrls: new Set<string>(),
+    thresholds: deps.config.thresholds,
+    topN: REPLAY_TOP_N,
+    calibration: deps.calibration,
+  };
+  if (!deps.pairwise) return processStep(base);
+  const { selected: candidates } = processStep({ ...base, topN: PAIRWISE_TOP });
+  const pairwiseOrder = await pairwiseRank(candidates, {
+    model: deps.model,
+    focusAreas: deps.config.focusAreas,
+    logger: deps.logger,
+  });
+  return processStep({ ...base, pairwiseOrder });
+}
+
 async function replayWeek(
   week: EvalCases['weeks'][number],
   deps: RescoreReplayDeps,
@@ -89,13 +112,7 @@ async function replayWeek(
   const served = servedItems(week.items, deps.config);
   const startMs = deps.clock.now().getTime();
   const scored = await classifyStep(served, classifyDeps(deps, rescore));
-  const { selected } = processStep({
-    items: scored,
-    sentUrls: new Set<string>(),
-    thresholds: deps.config.thresholds,
-    topN: REPLAY_TOP_N,
-    calibration: deps.calibration,
-  });
+  const { selected } = await selectTop(scored, deps);
   const seconds = Math.max(0, deps.clock.now().getTime() - startMs) / MS_PER_SECOND;
   const hits: WeekHits = {
     mustInclude: week.labels.mustInclude,
@@ -141,6 +158,7 @@ export async function replayRescore(
   const hits = runs.map((run) => run.hits);
   return {
     rescoreWithWriter: rescore,
+    ...(deps.pairwise ? { pairwise: true } : {}),
     ...(deps.calibration ? { calibrated: true } : {}),
     weeks: cases.weeks.length,
     mustIncludeRecall: mustIncludeRecall(hits).value,
@@ -156,7 +174,7 @@ export function formatResult(profile: string, result: RescoreResult): string {
   const accuracy =
     result.classifierAccuracy === null ? 'n/a' : `${(result.classifierAccuracy * 100).toFixed(1)}%`;
   return [
-    `profile: ${profile}  rescoreWithWriter: ${result.rescoreWithWriter ? 'on' : 'off'}  calibration: ${result.calibrated ? 'on' : 'off'}  weeks: ${result.weeks}`,
+    `profile: ${profile}  rescoreWithWriter: ${result.rescoreWithWriter ? 'on' : 'off'}  calibration: ${result.calibrated ? 'on' : 'off'}  pairwise: ${result.pairwise ? 'on' : 'off'}  weeks: ${result.weeks}`,
     `must-include recall: ${num(result.mustIncludeRecall, 2)} of ${REPLAY_TOP_N}`,
     `must-exclude leaks: ${num(result.mustExcludeLeaks, 2)}`,
     `classifier accuracy: ${accuracy}`,
@@ -181,12 +199,13 @@ export function holdoutOf(cases: EvalCases, weeks: readonly string[]): EvalCases
 
 const EVALS_DIR = fileURLToPath(new URL('.', import.meta.url));
 const USAGE =
-  'Usage: tsx evals/rescoreReplay.ts --profile light|fast|... --flag on|off [--config <digest.config.json>] [--calibration <file>] [--holdout <weeks>]\n';
+  'Usage: tsx evals/rescoreReplay.ts --profile light|fast|... --flag on|off [--config <digest.config.json>] [--calibration <file>] [--holdout <weeks>] [--pairwise on|off]\n';
 
 interface RunOptions {
   profile: ProfileName;
   config: string | undefined;
   calibration?: Calibration | undefined;
+  pairwise?: boolean;
 }
 
 export interface RescoreCliIo {
@@ -219,6 +238,7 @@ async function runWithApp(
         logger: app.deps.logger,
         clock: systemClock,
         calibration: options.calibration,
+        pairwise: options.pairwise,
       },
       rescore,
     );
@@ -249,6 +269,7 @@ type Parsed =
       config: string | undefined;
       calibration: string | undefined;
       holdout: string[] | undefined;
+      pairwise: boolean;
     }
   | { ok: false; reason: string };
 
@@ -262,12 +283,15 @@ function parseCli(args: readonly string[]): Parsed {
         config: { type: 'string' },
         calibration: { type: 'string' },
         holdout: { type: 'string' },
+        pairwise: { type: 'string' },
       },
     });
     const profile = ProfileNameSchema.safeParse(values.profile);
     if (!profile.success) return { ok: false, reason: 'unknown or missing --profile' };
     if (values.flag !== 'on' && values.flag !== 'off')
       return { ok: false, reason: '--flag must be on or off' };
+    if (values.pairwise !== undefined && values.pairwise !== 'on' && values.pairwise !== 'off')
+      return { ok: false, reason: '--pairwise must be on or off' };
     return {
       ok: true,
       profile: profile.data,
@@ -275,6 +299,7 @@ function parseCli(args: readonly string[]): Parsed {
       config: values.config,
       calibration: values.calibration,
       holdout: values.holdout === undefined ? undefined : parseHoldoutWeeks(values.holdout),
+      pairwise: values.pairwise === 'on',
     };
   } catch (error) {
     return { ok: false, reason: errorMessage(error) };
@@ -298,7 +323,7 @@ export async function runCli(
     const calibration =
       parsed.calibration === undefined ? undefined : await io.loadCalibration(parsed.calibration);
     const result = await io.run(
-      { profile: parsed.profile, config: parsed.config, calibration },
+      { profile: parsed.profile, config: parsed.config, calibration, pairwise: parsed.pairwise },
       cases,
       parsed.flag,
     );

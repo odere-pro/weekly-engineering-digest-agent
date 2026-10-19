@@ -71,3 +71,10 @@ Used by: `digest/runDigest.ts` (the `process` stage, which also reads `store.sen
 - Add a failing test for any new duplicate case before touching `releaseKeyOf`. Wrong merges are
   worse than missed merges.
 - Keep it pure: no model, no `node:fs`, no clock, no network.
+
+## Pairwise order (W11-07, experiment)
+
+`ProcessInput.pairwiseOrder` is an optional list of item ids. Listed items rank by their
+position, before every unlisted item; ties and unlisted items fall back to `byRank`. Absent, the
+ranking is unchanged. Filters and the area spread still apply. Only `evals/rescoreReplay.ts`
+sets it (`--pairwise on`); a real run never does. The experiment failed its keep rule.

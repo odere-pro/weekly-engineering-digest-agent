@@ -115,6 +115,37 @@ describe('replayRescore', () => {
     });
   });
 
+  it('with pairwise on re-ranks the survivors with the judge and counts the calls', async () => {
+    const fake = new FakeModelProvider({
+      // The classifier gives every item 2. The pairwise judge always prefers the item whose
+      // title is alphabetically later ("Item e" beats "Item a").
+      decide: (request) => {
+        if (!('prefer' in request.questions)) return answers(2);
+        const titles = [...request.state.matchAll(/Title: Item (\w)/g)].map((m) => m[1] ?? '');
+        return {
+          prefer: { type: 'yesno', probability: (titles[0] ?? '') > (titles[1] ?? '') ? 1 : 0 },
+        };
+      },
+    });
+    const set = cases();
+    set.weeks = [{ weekId: '2026-W41', items, labels: { mustInclude: ['e'], mustExclude: [] } }];
+    set.classifier = { reviewed: true, cases: [] };
+    const config = makeConfig({ topN: 5 });
+
+    const off = await replayRescore(set, { ...deps(fake), config }, false);
+    const on = await replayRescore(set, { ...deps(fake), config, pairwise: true }, false);
+
+    expect(off).not.toHaveProperty('pairwise');
+    expect(on.pairwise).toBe(true);
+    // All items score 2, so rank is a tie and "off" keeps the date/id order (e is last).
+    // The judge prefers later titles, so "on" moves e to the front.
+    expect(off.mustIncludeRecall).toBe(1);
+    expect(on.mustIncludeRecall).toBe(1);
+    const pairwiseCalls = fake.decideCalls.filter((call) => 'prefer' in call.questions);
+    expect(pairwiseCalls.length).toBeLessThanOrEqual(40);
+    expect(fake.decideCalls.some((call) => 'prefer' in call.questions)).toBe(true);
+  });
+
   it('serves only each source newest items up to the cap', async () => {
     const fake = model();
     const config = makeConfig({ topN: 5, maxItemsPerSource: 2 });
@@ -282,7 +313,32 @@ describe('runCli', () => {
     );
 
     expect(code).toBe(0);
-    expect(seen).toEqual([{ profile: 'light', config: undefined, calibration }, 0]);
+    expect(seen).toEqual([
+      { profile: 'light', config: undefined, calibration, pairwise: false },
+      0,
+    ]);
+  });
+
+  it('passes --pairwise on through and rejects other values', async () => {
+    const kit = io();
+    const seen: unknown[] = [];
+    const run = (o: unknown) => {
+      seen.push(o);
+      return Promise.resolve(result);
+    };
+
+    expect(
+      await runCli(['--profile', 'light', '--flag', 'off', '--pairwise', 'on'], {
+        ...kit.overrides,
+        run,
+      }),
+    ).toBe(0);
+    expect(seen).toEqual([
+      { profile: 'light', config: undefined, calibration: undefined, pairwise: true },
+    ]);
+    expect(
+      await runCli(['--profile', 'light', '--flag', 'off', '--pairwise', 'maybe'], kit.overrides),
+    ).toBe(2);
   });
 
   it('exits 1 and says why when the run fails', async () => {
