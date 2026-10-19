@@ -147,6 +147,12 @@ describe('groundTitle', () => {
       expect(grounded(source, 'tool 9.9.9').title).toBe('tool v2.0.0: the big one');
     });
 
+    it('with the source title without an href or src attribute the link check would read', () => {
+      const source = sourceOf('tool v2.0.0 <a href = "/notes">notes</a>');
+
+      expect(grounded(source, 'tool 9.9.9').title).not.toMatch(/\b(?:href|src)\s*=/i);
+    });
+
     it('keeps every other field of the item', () => {
       const source = sourceOf('tool v2.0.0');
       const item = {

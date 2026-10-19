@@ -20,8 +20,9 @@ flowchart TD
   `v` before a digit, so `v1.2.0.` and `1.2.0` are the same word.
 - `withoutEmDashes` turns a run of em dashes, with the spaces and commas around it, into one
   comma; at the start or end of the text the run is dropped.
-- `safeSourceText` splits at whitespace and drops each token that holds `://`, `//`, `www.`, `](`,
-  `&#`, a scheme such as `http:` or `mailto:`, or a character reference (`&amp;`).
+- `safeSourceText` cuts every `href=` or `src=` attribute (spaces around `=` too), then splits at
+  whitespace and drops each token that holds `://`, `//`, `www.`, `](`, `&#`, a scheme such as
+  `http:` or `mailto:`, or a character reference (`&amp;`).
 
 ## Rules
 
@@ -31,8 +32,8 @@ flowchart TD
   and the title is model output. `title.test.ts` checks the run time.
 - All return new values and change nothing they were given.
 - `safeSourceText` is the one cleaner of source text; the checks keep their own link detectors.
-  The fallback digest (`../fallbackDigest.ts`, after its own em dash, `href=`, pipe and backslash
-  steps) and the title repair (`../provenance/titleFacts.ts`, after `printableLine`) both call it.
+  The fallback digest (`../fallbackDigest.ts`, after its own em dash, pipe and backslash steps)
+  and the title repair (`../provenance/titleFacts.ts`, after `printableLine`) both call it.
 
 ## Files
 

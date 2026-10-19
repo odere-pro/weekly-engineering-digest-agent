@@ -15,8 +15,6 @@ const NO_SUMMARY = 'No summary in the source.';
 const INTRO = "These are the selected releases, in the sources' own words.";
 const MAX_AREAS = 3;
 const ELLIPSIS = '...';
-/** An attribute the link check reads as a destination; its value is dropped with it. */
-const ATTRIBUTE = /\b(?:href|src)\s*=/gi;
 const EM_DASH = /\s*—+\s*/g;
 const WORD = /[\p{L}\p{N}]/u;
 /** A sentence ends at ., ! or ? followed by a space, so "1.0" and "v2.1.3" do not end one. */
@@ -32,14 +30,12 @@ export interface FallbackOptions {
 }
 
 /**
- * Plain text from a source: one line, no link-like token (`safeSourceText`), no `href=` or `src=`
- * the link check reads as a destination, no em dash (the format check rejects it), no pipe (a
- * table cell separator). Pure.
+ * Plain text from a source: one line, no link-like token and no `href=` or `src=` attribute
+ * (`safeSourceText`), no em dash (the format check rejects it), no pipe (a table cell separator).
+ * Backslashes go first, so `href\\=` cannot hide an attribute. Pure.
  */
 function plain(text: string): string {
-  return safeSourceText(
-    text.replace(EM_DASH, ' - ').replace(ATTRIBUTE, ' ').replaceAll('|', ' ').replaceAll('\\', ''),
-  );
+  return safeSourceText(text.replace(EM_DASH, ' - ').replaceAll('|', ' ').replaceAll('\\', ''));
 }
 
 const wordsOf = (text: string): string[] => text.split(' ').filter((t) => WORD.test(t));

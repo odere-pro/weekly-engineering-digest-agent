@@ -31,6 +31,18 @@ describe('safeSourceText', () => {
     expect(safeSourceText(text)).toBe(kept);
   });
 
+  it.each([
+    ['an href attribute', 'See href=/x now', 'See /x now'],
+    [
+      'an src attribute with spaces and quotes',
+      'An img src = "/a.png" here',
+      'An img "/a.png" here',
+    ],
+    ['an attribute in capitals', 'Click HREF=/y', 'Click /y'],
+  ])('drops %s, which the link check reads as a link destination', (_name, text, kept) => {
+    expect(safeSourceText(text)).toBe(kept);
+  });
+
   it('makes one line of single spaces', () => {
     expect(safeSourceText('  one\n\ttwo   three \r\n')).toBe('one two three');
   });

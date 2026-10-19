@@ -28,6 +28,10 @@ describe('cutSummary', () => {
     expect(cutSummary(text, 10)).toBe(text);
   });
 
+  it('leaves no href attribute, even one a backslash tried to hide', () => {
+    expect(cutSummary('See href\\=/x and src = "/y" now.', 30)).not.toMatch(/\b(?:href|src)\s*=/i);
+  });
+
   it('cuts a first sentence that is too long at a word, with an ellipsis', () => {
     const cut = cutSummary('word '.repeat(100).trim() + '.', 10);
 
