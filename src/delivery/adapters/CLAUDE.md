@@ -41,21 +41,20 @@ flowchart TD
 
 ## Files
 
-| File                                                                | Role                                                                                                       |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `markdownFile.ts`                                                   | `createMarkdownFileDelivery`, `markdownFileOptions`, `markdownFolder`, `digestFilePaths`                   |
-| `smtp.ts`                                                           | `createSmtpDelivery`, `SmtpOptions`, `MailTransport`, `MailMessage`                                        |
-| `slack.ts`                                                          | `createSlackDelivery`, `SlackOptions`                                                                      |
-| `email/`                                                            | The mail as text and as HTML. See `email/CLAUDE.md`                                                        |
-| `slackBlocks/`                                                      | Block Kit from a view; Markdown as mrkdwn. See `slackBlocks/CLAUDE.md`                                     |
-| `errors/`                                                           | `DeliveryError` and its facts, secret redaction, failure note text. See `errors/CLAUDE.md`                 |
-| `emailRender.ts`, `slackBlocks.ts`, `deliveryError.ts`, `redact.ts` | One-line `// compat` re-exports for `cli/preview` and `app/retryingDelivery`. New code imports the folders |
+| File              | Role                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `markdownFile.ts` | `createMarkdownFileDelivery`, `markdownFileOptions`, `markdownFolder`, `digestFilePaths`   |
+| `smtp.ts`         | `createSmtpDelivery`, `SmtpOptions`, `MailTransport`, `MailMessage`                        |
+| `slack.ts`        | `createSlackDelivery`, `SlackOptions`                                                      |
+| `email/`          | The mail as text and as HTML. See `email/CLAUDE.md`                                        |
+| `slackBlocks/`    | Block Kit from a view; Markdown as mrkdwn. See `slackBlocks/CLAUDE.md`                     |
+| `errors/`         | `DeliveryError` and its facts, secret redaction, failure note text. See `errors/CLAUDE.md` |
 
 Tests sit next to each file. Goldens and fixtures are in the folders' `__fixtures__/`.
 
 ## Gotchas
 
-- `markdownFile.test.ts` and `markdownFile.html.test.ts` mock `store/adapters/atomicFile`: moving
+- `markdownFile.test.ts` and `markdownFile.html.test.ts` mock `shared/atomicFile`: moving
   `writeFileAtomic` breaks them.
 - `smtp.mime.test.ts` builds the real MIME with nodemailer's stream transport, so it pins the
   headers and parts. `smtp.test.ts` mocks `nodemailer` instead.

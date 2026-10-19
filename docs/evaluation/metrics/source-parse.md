@@ -15,7 +15,8 @@ any network or model.
 
 ## How it is computed
 
-`sourceParse` in `evals/metrics.ts`, on the results of `evaluateSources` in `evals/sourceEval.ts`.
+`sourceParse` in `evals/metrics/sources/sourceMetrics.ts`, on the results of `evaluateSources` in
+`evals/sourceConformance/conformance/evaluateSources.ts`.
 
 1. The real fetcher of each source's kind (RSS or GitHub) runs over the source's recording.
 2. Per source: items parsed divided by items expected (`expected.json`), at most 1.

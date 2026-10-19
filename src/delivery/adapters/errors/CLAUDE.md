@@ -40,6 +40,6 @@ Tests sit next to each file; no fixtures.
 
 ## Gotchas
 
-- `app/retryingDelivery.ts` reads the facts: a new fact needs the retry rule changed too. Its tests
-  and `container.secrets.test.ts` import these modules through the `// compat` files in `adapters/`.
+- `app/retryingDelivery.ts` and `app/deliveryRetry/transientError.ts` read the facts: a new fact needs
+  the retry rule changed too. Their tests and `container.secrets.test.ts` import `deliveryError.ts` and `redact.ts`.
 - `config/load.ts` has its own `redactSecrets`, over the `Secrets` object. This one takes a list.

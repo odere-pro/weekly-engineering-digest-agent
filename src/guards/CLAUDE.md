@@ -31,8 +31,8 @@ flowchart TD
 ```
 
 - `ruleInjection` (input, no model call): flags when a rule in `RULES` matches the title, summary
-  or URL; the reason is `ruleInjection: id1, id2`. A link is off-host only if its sentence also
-  gives a link order (`LINK_DIRECTIVE`) or it is a public raw IP or punycode host.
+  or URL; the reason is `ruleInjection: id1, id2`. A hit drops the item in mode `all` too:
+  `guardInputStep` runs it first as `ALWAYS_BLOCKING`.
 - `clefPolicy` (input) and `clefRubric` (output): one `decide` call, role `guardPolicy`, several
   yes/no questions. Flag when any P(yes) is above `thresholds.guardFlag` (0.35, strict, both).
 - `graniteRisk` asks `jailbreak`, then `harm`, stopping at the first yes. `graniteGroundedness`
@@ -55,14 +55,12 @@ flowchart TD
 
 ## Files
 
-| File                                                 | Role                                                                                                            |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `Guard.ts`, `guardVerdict.ts`                        | The port; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own                                          |
-| `guardRun.ts`, `guardInput.ts`, `guardOutput.ts`     | `planGuards`, `applyGuards`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                                   |
-| `guardQuestions.ts`                                  | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
-| `adapters/ruleInjection.ts`, `ruleInjectionRules.ts` | The rule guard and its `RULES` table                                                                            |
-| `adapters/clefPolicy.ts`, `granite.ts`               | The decision-model guards; the Granite guards, `GRANITE_CRITERIA`                                               |
-| `adapters/CLAUDE.md`                                 | The five guards: model roles, thresholds, how a verdict is made, recorded fixtures                              |
+| File                                             | Role                                                                                                            |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `Guard.ts`, `guardVerdict.ts`                    | The port; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own                                          |
+| `guardRun.ts`, `guardInput.ts`, `guardOutput.ts` | `planGuards`, `applyGuards`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                                   |
+| `guardQuestions.ts`                              | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
+| `adapters/`                                      | The five guards (rule, Clef, Granite), `GRANITE_CRITERIA`, recorded fixtures: see `adapters/CLAUDE.md`          |
 
 Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings of live Granite calls.
 
@@ -77,6 +75,6 @@ Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings 
   they are recorded again (live Ollama, one at a time). `guardQuestions.test.ts` pins the wording,
   e.g. that reporting a security fix is not harmful. Any question change moves verdicts: re-check
   the thresholds in `evals/`.
-- Callers: `runDigest`, `digest/fallback.ts` (runs `guardOutputStep` on the template digest,
-  advisory only) and `evals/runEval.ts`. Check ids are stored in `run.json`: renaming breaks them.
-- The steps do not pass an abort signal, though `GuardCallOptions.signal` exists.
+- Callers: `digest/stages/guardInput.ts` and `guardOutput.ts`, `digest/fallback.ts` (runs
+  `guardOutputStep` on the template digest, advisory only) and `evals/classifierRun/checkGrounding.ts`.
+  Check ids are stored in `run.json`: renaming breaks them. The steps pass no abort signal.

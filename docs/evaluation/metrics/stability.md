@@ -14,7 +14,7 @@ different items, nobody can trust any single run, and a "fix" cannot be told fro
 
 ## How it is computed
 
-`stability` in `evals/metrics.ts`. Every recorded week runs three times. For the first week, the
+`stability` in `evals/metrics/run/stability.ts`. Every recorded week runs three times. For the first week, the
 eval keeps the ids of the items each run linked to.
 
 1. Every pair of runs is compared: (1, 2), (1, 3), (2, 3).

@@ -49,12 +49,12 @@ waiting for the schedule.
    HTML      dist/2026-10-19/digest/2026-W43.html
    ```
 
-| Exit | Status                | Next                                                                                                                                                    |
-| ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0    | `sent` (or `skipped`) | Done. `skipped` means the week was already sent. A `Winner:     fallback` line means no model wrote the digest: [Blocked run](../debug/blocked-run.md). |
-| 1    | `failed`              | [Failed run](../debug/failed-run.md)                                                                                                                    |
-| 2    | `blocked`             | [Blocked run](../debug/blocked-run.md)                                                                                                                  |
-| 3    | `quiet`               | [Quiet week](../debug/quiet-week.md)                                                                                                                    |
+| Exit | Status                | Next                                                                                                                                                  |
+| ---- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | `sent` (or `skipped`) | Done. `skipped` means the week was already sent. A `Winner    fallback` line means no model wrote the digest: [Blocked run](../debug/blocked-run.md). |
+| 1    | `failed`              | [Failed run](../debug/failed-run.md)                                                                                                                  |
+| 2    | `blocked`             | [Blocked run](../debug/blocked-run.md)                                                                                                                |
+| 3    | `quiet`               | [Quiet week](../debug/quiet-week.md)                                                                                                                  |
 
 ## Verify
 

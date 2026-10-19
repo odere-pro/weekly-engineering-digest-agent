@@ -18,7 +18,8 @@ blocks a real week costs a digest. This metric asks the same question on the rea
 
 ## How it is computed
 
-`guardRealBlocks` in `evals/metrics.ts`, fed by `replayEndOf` in `evals/runEval.ts`.
+`guardRealBlocks` in `evals/metrics/guards/guardRealBlocks.ts`, fed by `replayEndOf` in
+`evals/scoring/replaySamples.ts`.
 
 1. The harness wraps the output guards in every week replay and keeps each verdict with its reason.
 2. A replay is a **guard block** when its run ended `blocked`, it had at least one draft, and a

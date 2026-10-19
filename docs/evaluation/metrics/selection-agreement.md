@@ -17,7 +17,7 @@ It is not measured on every eval run. The scorecard copies `selectionAgreement` 
 `evals/judge/calibration.json` and adds the note `from judge/calibration.json`. Without a
 calibration file, or on a profile without a judge, the value is not measured.
 
-`selectionAgreement` in `evals/metrics.ts` makes the number, and `evals/judge/calibrate.ts` calls it
+`selectionAgreement` in `evals/metrics/judging/judgeMetrics.ts` makes the number, and `evals/judge/calibrate.ts` calls it
 on the hand-graded sheet.
 
 1. For each week where the maintainer compared two drafts, the **human pick** is the writer named

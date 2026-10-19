@@ -55,26 +55,26 @@ sequenceDiagram
   about 65 s thinking. `effectiveTemperature` and `effectiveThink` own these rules.
 - A reply cut at the token limit is returned as is with a warning; `generateStructured` repairs it.
 - `decide` takes 1-64 questions, 2-26 choice options, 2-10 unique score levels; a missing or
-  mistyped answer throws. The state is cut to the model's context less the questions (`decide/`).
+  mistyped answer throws. The state is cut to the model's context less the questions (`adapters/decide/`).
 - `health()` never throws: no version means unreachable, failing tags mean no models.
 
 ## Files
 
-| File / folder                            | Role                                                                                |
-| ---------------------------------------- | ----------------------------------------------------------------------------------- |
-| `ModelProvider.ts`, `roles.ts`           | The port and its request, answer and health types; `Role`                           |
-| `structured.ts`                          | `generateStructured`: schema in, validated object out, one repair                   |
-| `adapters/ollama.ts`                     | `createOllamaProvider`: wires the three calls. The folder: `adapters/CLAUDE.md`     |
-| `adapters/call/`                         | `callOllama`: timeout, retries, log, errors; `resolveModel`. See `call/CLAUDE.md`   |
-| `adapters/chat/`                         | `generate` on `/api/chat`: body, stream, `think`, temperature. See `chat/CLAUDE.md` |
-| `adapters/decide/`                       | `decide` on `/v1/systemone`: the call, the state fit. See `decide/CLAUDE.md`        |
-| `adapters/health/`                       | `health`: version and installed models. See `health/CLAUDE.md`                      |
-| `adapters/ollamaHttp.ts`, `systemone.ts` | The fetch transport and its errors; the `/v1/systemone` mapping                     |
+| File / folder                            | Role                                                                                         |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ModelProvider.ts`, `roles.ts`           | The port and its request, answer and health types; `Role`                                    |
+| `structured.ts`                          | `generateStructured`: schema in, validated object out, one repair                            |
+| `adapters/ollama.ts`                     | `createOllamaProvider`: wires the three calls. The folder: `adapters/CLAUDE.md`              |
+| `adapters/call/`                         | `callOllama`: timeout, retries, log, errors; `resolveModel`. See `adapters/call/CLAUDE.md`   |
+| `adapters/chat/`                         | `generate` on `/api/chat`: body, stream, `think`, temperature. See `adapters/chat/CLAUDE.md` |
+| `adapters/decide/`                       | `decide` on `/v1/systemone`: the call, the state fit. See `adapters/decide/CLAUDE.md`        |
+| `adapters/health/`                       | `health`: version and installed models. See `adapters/health/CLAUDE.md`                      |
+| `adapters/ollamaHttp.ts`, `systemone.ts` | The fetch transport and its errors; the `/v1/systemone` mapping                              |
 
 Tests sit next to the code; `adapters/__fixtures__/` holds the replies and the test kit.
 
 ## Gotchas
 
 - `cli/doctor` reads `effectiveThink`; `app/container` reads `effectiveTemperature` for the run
-  record. Both come through bridges in `adapters/ollama.ts`. `FakeModelProvider` and
+  record. Both live in `adapters/chat/chatSettings.ts`. `FakeModelProvider` and
   `test/integration/fakeOllama.ts` follow the port: change both.

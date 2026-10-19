@@ -53,7 +53,7 @@ flowchart TD
 
 | File / folder   | Role                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------- |
-| `ollama.ts`     | `createOllamaProvider`, `OllamaProviderOptions`; bridges to `chat/chatSettings`             |
+| `ollama.ts`     | `createOllamaProvider`, `OllamaProviderOptions`                                             |
 | `ollamaHttp.ts` | fetch transport (JSON, NDJSON), typed errors, `isRetryable`, `toDigestError`                |
 | `systemone.ts`  | Port questions and answers to and from `/v1/systemone`, limits, state trim                  |
 | `call/`         | One model call: timeout, retries, log, errors; `resolveModel`. See `call/CLAUDE.md`         |
@@ -66,8 +66,8 @@ flowchart TD
 
 ## Gotchas
 
-- `app/container` and `cli/doctor` import `effectiveTemperature`, `effectiveThink` and
-  `ThinkSetting` from `ollama.ts`, where they are bridges to `chat/chatSettings`. Keep them.
+- `app/container` and `cli/doctor` import `effectiveTemperature`, `effectiveThink` and `ThinkSetting`
+  from `chat/chatSettings.ts`: keep them there.
 - `src/app/container*.test.ts` mock `../models/adapters/ollama` and wrap `createOllamaProvider`: keep
   that name and place.
 - Changing a mapping means re-recording the fixture in `__fixtures__/ollama/` and its test together.

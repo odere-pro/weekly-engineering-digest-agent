@@ -6,8 +6,9 @@ Part of [Features](README.md).
 
 Small helpers that many features need and no feature should own: errors with exit codes, clocks,
 retry and timeout, ISO weeks, URL and text cleaning, the untrusted-data wrapper, and the logger and
-tracer interfaces. They hold no state and do no I/O, so any layer can import them. Putting them here
-stops features from importing each other for small things.
+tracer interfaces, and the one atomic file writer. They hold no state, so any layer can import them
+(only the file writer touches the disk). Putting them here stops features from importing each other
+for small things.
 
 ## Where it sits
 
@@ -35,6 +36,9 @@ It is the lowest shared layer, next to [domain](domain.md). Almost every folder 
   its own data block.
 - Logger and tracer interfaces, plus do-nothing versions used in tests. The real ones are in
   [observability](observability.md).
+- Files: `writeFileAtomic` writes a temp file in the same folder, flushes it and renames it, so a
+  reader sees the old file or the new one, never half. The run store, the Markdown channel, the
+  source archive and `preview` all write through it.
 
 ## What you can configure
 
@@ -54,7 +58,8 @@ It is the lowest shared layer, next to [domain](domain.md). Almost every folder 
 ## Code and tests
 
 - Folder: [src/shared/](../../src/shared/). Maintainer notes: [CLAUDE.md](../../src/shared/CLAUDE.md).
-- No port. The only Node import is the crypto module used for item ids.
+- No port. The only Node imports are the crypto module (item ids) and the file system (`atomicFile.ts`,
+  the one writer behind every saved file).
 - Tests sit next to the code and build their inputs inline. They include run-time checks on
   hostile text.
 

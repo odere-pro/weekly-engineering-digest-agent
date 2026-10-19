@@ -21,7 +21,7 @@ produced one. You control it through the size of the writer panel; there is no j
 
 ## Steps
 
-1. Know the rules. They come from `src/config/profiles.ts` and `src/digest/runDigest.ts`.
+1. Know the rules. They come from `src/config/profiles.ts` and `src/digest/stages/selectWinner.ts`.
 
    | Setup                                          | Judge         | Select step |
    | ---------------------------------------------- | ------------- | ----------- |
@@ -31,7 +31,8 @@ produced one. You control it through the size of the writer panel; there is no j
    | `models.writers` with 1 tag                    | None          | Skipped     |
 
    On a machine without Apple silicon every profile falls back to one writer (`gemma4:31b`) and
-   no judge, unless you set `models.writers`.
+   no judge, unless you set `models.writers`. The judge never shares a model family with a
+   writer: such a panel fails when the config loads, with a message naming both.
 
    The judge scores each passing draft from 1 to 5 on accuracy, clarity, why it matters and focus
    fit. The best mean wins. A tie goes to the writer listed first. If only one draft passes the
@@ -58,7 +59,7 @@ produced one. You control it through the size of the writer panel; there is no j
 
 Do not confuse this with `EVAL_JUDGE`. That is an environment variable for `digest eval` only: it
 names a model that scores winning digests of a profile without a judge, and the scores are only
-reported. It has no effect on `digest run`.
+reported. It has no effect on `digest run`, and it is not the judge a `models.writers` list gets.
 
 ## Verify
 

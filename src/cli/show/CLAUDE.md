@@ -12,7 +12,7 @@ flowchart LR
   show -.->|"loadConfig"| cfg[("digest.config.json, .env")]
   show -.->|"getRunRecord, readArtifact"| store[[RunStore]]
   store -.-> disk[("dist/YYYY-MM-DD/digest/")]
-  show -.->|"createRedactor, knownSecrets"| obs["observability, app/redacting"]
+  show -.->|"createRedactor, knownSecrets"| obs["observability, app/redaction"]
   show -->|"text"| out[("stdout")]
   classDef focus stroke-width:3px
 ```
@@ -64,7 +64,7 @@ Tests sit next to each file; `show.test.ts` drives `showCommand` with `MemoryRun
 
 ## Gotchas
 
-- `cli/program.ts` (frozen) imports `showCommand`. `show.ts` takes `toJson` from `digest/runEnding`;
+- `cli/program.ts` (frozen) imports `showCommand`. `show.ts` takes `toJson` from `digest/ending/runFiles/runFiles.ts`;
   `summary/summary.ts` takes the duration helpers from `cli/history/history`.
 - Tests pin the table headers and the summary labels (`Winner:`, `Guards off:`).
 - Errors go to stderr as they are, not cleaned or redacted. `parseFile` repeats `JSON.parse`'s

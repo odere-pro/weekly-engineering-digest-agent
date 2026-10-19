@@ -26,8 +26,8 @@ flowchart TD
 - `parseSince` runs before the config loads, so a typo in `--since` never reads the config.
 - A blank `--out` counts as absent. A relative `--out` and `dataDir` resolve against `env.cwd`,
   not the process directory.
-- The clock is read once; `startedAt`, the day and the window all come from that reading.
-- `Plan` and the option types live in `types.ts` so no file here imports `fetch.ts`.
+- The clock is read once: `startedAt`, the day and the window all come from that reading. `Plan` and
+  the option types live in `types.ts` so no file here imports `fetch.ts`.
 
 ## Files
 
@@ -37,8 +37,6 @@ flowchart TD
 | `parseSince.ts`    | `parseSince`: `7d` to 7, with the 1 to 31 limits              |
 | `selectSources.ts` | `selectSources`: the named ids, deduplicated, in config order |
 | `types.ts`         | `Plan`, `PlanOptions`, `PlanEnv`                              |
-
-Tests sit next to each file; `planFetch.test.ts` uses the real fetchers over a scripted network.
 
 ## Gotchas
 

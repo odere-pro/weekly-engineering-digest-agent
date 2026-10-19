@@ -13,7 +13,8 @@ The output guards are the defence, so the eval plants known errors and checks th
 
 ## How it is computed
 
-`groundedness` in `evals/metrics.ts`, fed by `checkGrounding` in `evals/runEval.ts`.
+`groundedness` in `evals/metrics/guards/groundedness.ts`, fed by `checkGrounding` in
+`evals/classifierRun/checkGrounding.ts`.
 
 1. For each of the 30 grounding cases (the saved scorecard has 10), the draft with the planted claim and its clean control (the draft
    without the planted item) go through `guardOutputStep` together. All output checks are on,

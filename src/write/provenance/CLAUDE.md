@@ -31,14 +31,13 @@ flowchart TD
 
 ## Files
 
-| File                        | Role                                                                |
-| --------------------------- | ------------------------------------------------------------------- |
-| `enforceProvenance.ts`      | `enforceProvenance`, `withSourceUrl` (an empty action is left out)  |
-| `securityFloor.ts`          | `raiseSecurityItems`, `namesSecurityIssue`, `SECURITY_FLOOR_ACTION` |
-| `loggedId.ts`               | `loggedId`: an item id cut to 80 characters for logs (model output) |
-| `enforceProvenance.test.ts` | Replaced urls, dropped and repeated items, order, logs              |
-| `securityFloor.test.ts`     | Which sources count, no demotion, source not writer, logs           |
-| `loggedId.test.ts`          | Short ids stay, long ids are cut                                    |
+| File                   | Role                                                                |
+| ---------------------- | ------------------------------------------------------------------- |
+| `enforceProvenance.ts` | `enforceProvenance`, `withSourceUrl` (an empty action is left out)  |
+| `securityFloor.ts`     | `raiseSecurityItems`, `namesSecurityIssue`, `SECURITY_FLOOR_ACTION` |
+| `loggedId.ts`          | `loggedId`: an item id cut to 80 characters for logs (model output) |
+
+One test file per code file.
 
 ## Gotchas
 

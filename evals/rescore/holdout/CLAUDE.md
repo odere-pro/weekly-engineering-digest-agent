@@ -31,4 +31,4 @@ The test uses six cases and two weeks and checks which ids stay.
 ## Gotchas
 
 - This is not `splitCapture`: it cuts `EvalCases` (what the replay reads), not a raw capture.
-- `--holdout` week ids are checked in `cli/parseCli.ts`, not here.
+- `--holdout` week ids are checked in `../cli/parseCli.ts`, not here.

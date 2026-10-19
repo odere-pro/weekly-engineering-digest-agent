@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart TD
-  res["SourceResult[] from sourceEval.ts"] --> counts["good and total per source: parsed over expected, or parsed minus empty summaries over parsed"]
+  res["SourceResult[] from sourceConformance/conformance"] --> counts["good and total per source: parsed over expected, or parsed minus empty summaries over parsed"]
   counts --> skip["a source with total 0 is left out"]
   skip --> pool["value: pooled ratio, capped at 1"]
   skip --> per["detail: a ratio per source, capped at 1"]
@@ -32,11 +32,11 @@ flowchart TD
 | ------------------ | --------------------------------------------------------------------------------- |
 | `sourceMetrics.ts` | `sourceParse`, `sourceSummaryFill`, `SOURCE_PARSE_MIN`, `SOURCE_SUMMARY_FILL_MIN` |
 
-The test sits next to it. `evals/sourceMetrics.test.ts` runs the same functions through the bridge
-in `../../metrics.ts`, plus the gates and old scorecards.
+The test sits next to it. `evals/sourceMetrics.test.ts` runs the same functions with the gates in
+`../../metrics.ts`, and old scorecards.
 
 ## Gotchas
 
-- `MIN_SUMMARY_CHARS` (`../../sourceEval.ts`) decides what an empty summary is, so changing it
-  moves `sourceSummaryFill`.
+- `MIN_SUMMARY_CHARS` (`../../sourceConformance/conformance/tally.ts`) decides what an empty summary
+  is, so changing it moves `sourceSummaryFill`.
 - Both metrics are soft: a weak source shows red and never fails the run.

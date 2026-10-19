@@ -18,8 +18,8 @@ export interface GraniteGuardOptions {
  * It answers `<score>yes</score>` when the risk is present, with its reasoning in a think block
  * that Ollama may or may not split off, and gives no probabilities.
  *
- * The criteria below, except `headline`, are the model's own definitions, copied from its chat
- * template, so the data rule can sit in the same system prompt: a risk name alone leaves no room
+ * The criteria below, except `headline` and `item` (our own wording), are the model's own
+ * definitions, copied from its chat template, so the data rule can sit in the same system prompt: a risk name alone leaves no room
  * for it, and putting the rule in the judged message made the groundedness verdicts worse in live
  * checks.
  */

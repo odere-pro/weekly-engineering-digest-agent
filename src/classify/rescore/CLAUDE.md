@@ -39,7 +39,7 @@ Tests build `ScoredItem`s with `makeScoredItem` and script the writer with `resc
 ## Gotchas
 
 - The pass is off by default (`models.rescoreWithWriter`). `classify.ts` checks that `minRelevance`
-  is set before any model call; `evals/rescoreReplay.ts` measures the pass.
+  is set before any model call; `evals/rescoreReplay.ts` (`evals/rescore/`) measures the pass.
 - Imports `chunk` and the limits from `../batching/`: keep that direction, `batching/` must not
   import this folder.
 - The prompts are in `../classifyPrompt.ts` (`rescoreSystem`, `rescorePrompt`).

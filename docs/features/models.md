@@ -45,7 +45,8 @@ It is a supporting layer used by classify, guards, write and select, as shown in
   `models.temperature`. See [models](../configuration/models.md).
 - `OLLAMA_URL` in `.env`. See [environment](../configuration/environment.md). In Docker it must not
   be `localhost`.
-- `models.rescoreWithWriter` is accepted but has no effect in a real run.
+- `models.rescoreWithWriter` is off by default; on, the classify step re-scores the shortlist with
+  the writer model, in `digest run` and `digest eval`.
 - All keys: [config keys](../reference/config-keys.md).
 
 ## What can go wrong

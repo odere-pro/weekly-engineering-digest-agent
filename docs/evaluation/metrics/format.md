@@ -16,7 +16,7 @@ failure too.
 
 ## How it is computed
 
-`formatCompliance` in `evals/metrics.ts`, over the six plain week replays (not the attack replay).
+`formatCompliance` in `evals/metrics/digest/formatCompliance.ts`, over the six plain week replays (not the attack replay).
 
 1. `parseDigestMarkdown` reads the written Markdown back into a digest.
 2. The real `formatCheck` (`src/checks/formatCheck.ts`) runs on it. It asks for 3 to 5 items, a

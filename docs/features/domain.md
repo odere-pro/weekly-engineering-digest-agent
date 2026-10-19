@@ -46,7 +46,7 @@ Types that moved into the feature that owns them:
 | `DeliveryId`                   | `src/delivery/deliveryId.ts`     |
 | `RunRecord`, `DraftOutcome`    | `src/store/runRecord.ts`         |
 
-The shared file keeps `Source`, `Item`, `Digest`, `DigestItem`, `Draft`, `Urgency`, `WeekId`,
+The shared file keeps `Source`, `Item`, `Digest`, `DigestItem`, `Draft`, `Urgency`, `WeekIdSchema`,
 `StepName`, `RunStatus`, `ExitCode` and `exitCodeFor`. The five roles are `classify`,
 `guardPolicy`, `guardRisk`, `write` and `judge`.
 

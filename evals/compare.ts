@@ -1,5 +1,5 @@
 // `digest eval --compare <a> <b>`: what changed between two saved scorecards, as data. The CLI
-// prints it (src/cli/eval/compareText.ts).
+// prints it (src/cli/eval/compare/formatComparison.ts).
 import { z } from 'zod';
 import { DigestError } from '../src/shared/errors';
 import { SavedScorecardSchema, type SavedScorecard } from './checkpointSections';

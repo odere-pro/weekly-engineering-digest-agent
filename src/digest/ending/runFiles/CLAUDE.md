@@ -41,5 +41,5 @@ flowchart TD
 
 ## Gotchas
 
-- `toJson` and `DraftsFileSchema` are imported by `cli fetch`, `preview` and `show` through
-  `../../runEnding.ts`; a change to either changes those commands.
+- `toJson` and `DraftsFileSchema` (`runFiles.ts`) are imported by `cli fetch`, `preview` and `show`;
+  a change to either changes those commands.

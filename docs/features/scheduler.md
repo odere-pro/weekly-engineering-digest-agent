@@ -66,8 +66,8 @@ See [feature folders](../architecture/feature-folders.md).
 - Folder: [src/scheduler/](../../src/scheduler/). Maintainer notes:
   [CLAUDE.md](../../src/scheduler/CLAUDE.md).
 - No port. It uses the cron library croner, and tests inject a fake cron and a fixed clock.
-- Tests sit next to the code and use fake timers. Two more scheduler test files live in
-  [src/app/](../../src/app/) for historic reasons.
+- Tests sit next to the code and use fake timers. `scheduler.runDigest.test.ts` runs the scheduler
+  on the real `runDigest` and run store.
 
 ## Related
 

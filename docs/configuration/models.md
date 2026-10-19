@@ -13,7 +13,7 @@ retries, thinking, and sampling. Every key is optional. Without them the profile
 | `models.think`             | map of role to setting | `guardRisk` off       | `true`, `false`, `low`, `medium`, `high` |
 | `models.seed`              | integer                | 42                    | 0 or more                                |
 | `models.temperature`       | map of role to number  | `write` 0.2, others 0 | 0 to 2                                   |
-| `models.rescoreWithWriter` | boolean                | `false`               | no effect in a run today                 |
+| `models.rescoreWithWriter` | boolean                | `false`               | `true` or `false`                        |
 
 Roles are `classify`, `guardPolicy`, `guardRisk`, `write` and `judge`.
 
@@ -36,8 +36,10 @@ Roles are `classify`, `guardPolicy`, `guardRisk`, `write` and `judge`.
 writer drafts the digest in turn. One entry turns the panel off: there is then no judge and no
 select step. Two or more entries bring the judge back, even on `light` or `fast` (it uses
 `clef:latest` there, which `doctor` then asks you to pull). Tags must be unique. See
-[judge](judge.md). The writers are not checked against any list: `digest doctor` and the check
-at the start of a run only look that each tag is installed in Ollama.
+[judge](judge.md). The judge never shares a model family with a writer: a writer from the judge's
+family (`clef:latest` counts as `qwen`) fails at config load with a message that names the writer
+and the judge. Beyond that the writers are not checked against any list: `digest doctor` and the
+check at the start of a run only look that each tag is installed in Ollama.
 
 ## Timeouts and retries
 
@@ -67,9 +69,11 @@ payload is not retried. When all attempts fail, the step fails and the run ends 
 
 ## `models.rescoreWithWriter`
 
-The schema accepts this key and the classify step can use it to re-score relevant items with the
-writer model. `digest run` does not switch that on, so the key changes nothing in a normal run.
-Only the eval replay (`evals/rescoreReplay.ts`) uses it.
+When `true`, the classify step scores the items at or above `thresholds.minRelevance` a second time
+with the writer model, and the writer's relevance replaces the first score. It takes effect in
+`digest run` and in `digest eval`. It is off by default: the measurement on `light` found it worse
+(recall fell and a week took about two minutes longer). The eval replay (`evals/rescoreReplay.ts`)
+can turn it on for one run to compare.
 
 ## Change it
 

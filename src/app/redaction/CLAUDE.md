@@ -12,8 +12,7 @@ flowchart TD
   ks -->|"string[]"| redactor["createRedactor (observability)"]
   msg["DigestMessage"] --> rm["redactMessage: a rule per field"]:::focus
   note["FailureNote"] --> rn["redactNote: a rule per field"]:::focus
-  redactor -.->|"text"| rm
-  redactor -.->|"text"| rn
+  redactor -.->|"text"| rm & rn
   rm -->|"copy, texts redacted"| channel[["Delivery"]]
   rn -->|"copy, texts redacted"| channel
   classDef focus stroke-width:3px
@@ -27,8 +26,8 @@ flowchart TD
   is a type error until it says `text` or `unchanged`.
 - Only the fields with a rule are sent. A field the type does not know (an object built with a cast)
   is dropped, so a field added later cannot leak. An absent field stays absent.
-- `unchanged` is for ids set in code (week, step, urgency), never for text from a feed, a model or an
-  error. A URL is `text`: a token can sit in its query string.
+- `unchanged` is for ids set in code (week, step, urgency), never for text from a feed, a model or
+  an error. A URL is `text`: a token can sit in its query string.
 
 ## Files
 
@@ -37,10 +36,10 @@ flowchart TD
 | `knownSecrets.ts`   | `knownSecrets`: every secret value that is set, plus the Slack webhook path                 |
 | `deliveryFields.ts` | `redactMessage`, `redactNote`, `FieldRules`; the rule tables for message, view, group, item |
 
-Tests sit next to each file. No fixtures.
+Tests sit next to each file, no fixtures.
 
 ## Gotchas
 
-- `cli/show` and `cli/preview` import `knownSecrets` from `app/redacting`, which re-exports it.
+- `cli/show` and `cli/preview` import `knownSecrets` from `app/redaction/knownSecrets`.
 - A new `DigestMessage` or `DigestView` field reaches email, Slack and the file only after it has a rule here.
 - `app/redacting.test.ts` and `container.secrets.test.ts` pin the end result: no secret reaches a channel.

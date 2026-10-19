@@ -65,26 +65,25 @@ flowchart TD
 
 ## Files
 
-| File / folder   | Role                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| `runDigest.ts`  | `runDigest`, `runChain`, lock handling; re-exports the three types below                    |
-| `types.ts`      | `DigestDeps`, `RunOptions`, `RunResult`                                                     |
-| `runEnding.ts`  | Re-exports of `ending/` symbols that `cli`, `scheduler` and `test/integration` still import |
-| `fallback.ts`   | `buildFallback`: the template digest from `write/fallbackDigest`, plus its guard verdict    |
-| `workflow.ts`   | `runWorkflow`: a plain loop over the stages; a step's error propagates unchanged            |
-| `chain/`        | `RunContext`, `ChainState`, the stage wrapper, failure carriers: see `chain/CLAUDE.md`      |
-| `stages/`       | One file per stage and `chainSteps`: see `stages/CLAUDE.md`                                 |
-| `health/`       | `assertModelsReady`: Ollama up, models pulled: see `health/CLAUDE.md`                       |
-| `record/`       | `finish`, `skipped`, `resumed`, `buildRecord`: see `record/CLAUDE.md`                       |
-| `ending/`       | `endRun` and its parts: record, files, notes, shipping: see `ending/CLAUDE.md`              |
-| `resume/`       | `loadPartDelivery`, `resumeDelivery`: finish a part-delivered week: see `resume/CLAUDE.md`  |
-| `__fixtures__/` | Test kits: `runKit.ts` (whole runs), `stageKit.ts` (a context and chain state)              |
+| File / folder   | Role                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| `runDigest.ts`  | `runDigest`, `runChain`, lock handling                                                     |
+| `types.ts`      | `DigestDeps`, `RunOptions`, `RunResult`                                                    |
+| `fallback.ts`   | `buildFallback`: the template digest from `write/fallbackDigest`, plus its guard verdict   |
+| `workflow.ts`   | `runWorkflow`: a plain loop over the stages; a step's error propagates unchanged           |
+| `chain/`        | `RunContext`, `ChainState`, the stage wrapper, failure carriers: see `chain/CLAUDE.md`     |
+| `stages/`       | One file per stage and `chainSteps`: see `stages/CLAUDE.md`                                |
+| `health/`       | `assertModelsReady`: Ollama up, models pulled: see `health/CLAUDE.md`                      |
+| `record/`       | `finish`, `skipped`, `resumed`, `buildRecord`: see `record/CLAUDE.md`                      |
+| `ending/`       | `endRun` and its parts: record, files, notes, shipping: see `ending/CLAUDE.md`             |
+| `resume/`       | `loadPartDelivery`, `resumeDelivery`: finish a part-delivered week: see `resume/CLAUDE.md` |
+| `__fixtures__/` | Test kits: `runKit.ts` (whole runs), `stageKit.ts` (a context and chain state)             |
 
 ## Gotchas
 
 - Renames break: `KEPT_SENT_REASON` and `KEPT_PARTLY_REASON` (`RunResult.kept`, shown by the run
   command); `--force` and `Run aborted` in a message, read by `needsForce` and `isUnretriable` and
   by `scheduler/retry/attemptRun.ts` with `RecordNotSavedError`; `DraftsFileSchema` and `toJson` (`cli` show,
-  preview, fetch). `DigestDeps` is built in `app/container.ts` and `test/integration/harness.ts`.
+  preview, fetch). `DigestDeps` is built in `app/container.ts` and `test/integration/harness/world.ts`.
 - `RunResult.markdown` is set only when this run wrote digest.md; `message` when a draft won here.
 - Model call order is pinned (`runDigest.failures.test.ts`). The writer retry and checks live in `write/`.

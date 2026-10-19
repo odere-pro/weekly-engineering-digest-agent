@@ -28,7 +28,8 @@ a measured baseline. A config file with no `profile` key gets `quality`.
 Disk sizes are approximate registry sizes, and the RAM figures are what `digest init` and
 `doctor --readiness` use. The tags come from `src/config/profiles.ts`.
 With two writers (`quality`) a judge picks the better draft. With one writer there is no judge and no
-select step: see [judge](judge.md).
+select step: see [judge](judge.md). A writer panel that shares a model family with the judge fails at
+config load with a readable message.
 
 ## Apple silicon and the fallback
 

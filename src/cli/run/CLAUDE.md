@@ -74,7 +74,7 @@ channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured o
   (`delivery/adapters/markdownFile`) give the paths the channel writes to, and `DIGEST_FILE`
   (`store/adapters/runFolders`) names the run folder's `digest.md`. The `RunStore` port returns file
   text, not paths. See `../CLAUDE.md`.
-- `formatRunDuration` comes from `../history/history`. `test/integration/harness.ts` calls
+- `formatRunDuration` comes from `../history/history`. `test/integration/harness/runCli.ts` calls
   `runCommand`; tests pin the labels, `Dry run: nothing was sent.` and the error lines.
 - The report does not strip control characters, unlike `show` and `fetch`: its fields (sources,
   rejected drafts, run error) are composed in code, never copied from a feed or a model.

@@ -14,7 +14,7 @@ schedule slot, to compare profiles and to notice that a new model or setting mad
 
 ## How it is computed
 
-`runTime` in `evals/metrics.ts`. The eval times each plain replay of a recorded week with the system
+`runTime` in `evals/metrics/run/runTime.ts`. The eval times each plain replay of a recorded week with the system
 clock, around the dry run of `runDigest`. The value is the mean of those times. `detail.totalMs` is
 their sum.
 

@@ -36,6 +36,5 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `evals/judge/calibrate.ts` and `judgeWinners.ts` import these through the bridge in
-  `../../metrics.ts`.
+- `evals/judge/calibrate.ts` and `judgeWinners.ts` import these functions from here directly.
 - A writer tag is a key in `detail`; `countBy` handles tags that look like object properties.

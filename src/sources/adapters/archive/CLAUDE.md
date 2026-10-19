@@ -1,14 +1,14 @@
 # Source archive
 
 > Saves what each source answered (`raw/`) and the items it was read into (`formatted/`), per
-> source and day, to trace a bad week to its feed. A run uses `createSourceArchiving({ archive, day,
-logger })` → `{ tap, wrap, flush }`; `digest fetch` calls `createSourceArchive` directly.
+> source and day, to trace a bad week to its feed. A run uses `createSourceArchiving` (it returns
+> `tap`, `wrap` and `flush`); `digest fetch` calls `createSourceArchive` directly.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  call["wrapped fetch(source)"] --> run{"day(): a run in flight?"}
+  wrapped["wrapped fetch(source)"] --> run{"day(): a run in flight?"}
   run -->|"no, or day() throws"| plain["fetch, nothing saved. A throw: one warning"]
   run -->|"yes"| record["number the attempt, fetch: its own answers come from the tap"]
   record --> out["return the items or rethrow the error, unchanged"]
@@ -36,11 +36,10 @@ flowchart TD
 | --------------------- | ----------------------------------------------------------------------------------------- |
 | `sourceArchive.ts`    | `createSourceArchive`: `raw/response-<n>.<ext>`, `responses.json`, `formatted/items.json` |
 | `archivingFetcher.ts` | `createSourceArchiving`: the tap, `wrap`, the queues, `flush`                             |
-| `*.test.ts`           | Next to the code; temp folders and fake fetchers; one test reads a real feed              |
 
 ## Gotchas
 
 - `responses.json` lists every answer (file, url, status, contentType); one without a body gets no
   file. A non-2xx body is cut at 64 KiB. `sourceDir` refuses the id `digest`.
 - `cli/fetch` builds `fetch-summary.json` from the paths `save` returns, relative to the day folder.
-  `store` prune deletes these folders for old weeks and days (`store/layout.ts`).
+  `store` prune deletes these folders for old weeks and days. Tests use temp folders and fake fetchers.

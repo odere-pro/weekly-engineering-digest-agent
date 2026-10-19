@@ -1,69 +1,72 @@
 # Doctor
 
-## Intent
+> `digest doctor`: tells the user in one screen whether this machine can run a digest and what to
+> fix, with a `fix:` line under each problem. `--readiness` prints the machine and a verdict per
+> profile instead. Entry: `doctorCommand(options, overrides?) → exit code` (`doctor.ts`). Tests
+> replace `DoctorIo`. No port. Reader page: `docs/features/cli.md`.
 
-`digest doctor` tells the user in one screen whether this machine can run a digest and what to fix.
-It checks the config, Ollama, the models, every feed, the delivery secrets, `.env`, the guards and
-the folders a run writes to, and prints a `fix:` line for each problem. `--readiness` prints the
-machine and a verdict per profile instead. The entry file only wires the parts; each part is a
-subfeature folder.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  program["cli/program.ts"] -->|"DoctorCommandOptions"| doctor:::focus
+  doctor -.->|"loadConfig"| cfg[("digest.config.json, .env")]
+  doctor -.->|"health()"| mp[[ModelProvider]] -.-> ollama[(Ollama)]
+  doctor -.->|"one item per source"| feeds[("feed hosts, api.github.com")]
+  doctor -.->|"stat, lstat, access, readFile"| disk[("data dir, markdown dir, .env")]
+  doctor -->|"lines, summary, exit code"| out[("stdout")]
+  init["cli/init"] -.->|"errorCode, formatGiB, hasQualityMemory"| doctor
+  classDef focus stroke-width:3px
+```
 
-1. `doctorCommand(options, overrides)` merges `overrides` into `defaultIo` (real disk, `fetch`,
-   clock, stdout, `.env` in the working directory).
-2. With `--readiness` it hands over to `readinessCommand` and returns its exit code.
-3. Otherwise `tryLoadConfig` loads the config. If that fails, it prints one `✗ config` line with a
-   fix, runs no other check and returns 1.
-4. It asks the model provider for `health()` once (Ollama version and installed models).
-5. It collects the results in this order: config, ollama and its version, apple silicon, models,
-   think, one line per source, the markdown folder, email, Slack, `.env`, `.env values`, guards,
-   data folder.
-6. `report` prints them with a summary and returns 1 if any is an error, else 0.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  start["doctorCommand: overrides over defaultIo"] --> mode{"--readiness?"}
+  mode -->|yes| ready["readinessCommand: machine, a row per profile"] --> code
+  mode -->|no| load["tryLoadConfig"]
+  load -->|"fails"| bad["one config error line with a fix; no other check"] --> code
+  load -->|ok| health["health() once: Ollama version and models"]
+  health --> checks["checks in a fixed order: config, ollama, version, apple silicon, models, think, sources, markdown, email, slack, .env, .env values, guards, data dir"]
+  checks --> report["report: lines, summary, secrets removed"] --> code["exit code: 1 if any error, else 0"]
+```
 
-- Doctor sends nothing. It reads one item from each feed (last day, 10 s each) and asks Ollama for
-  its version and models. A broken feed is a warning, because a run skips that feed.
+- Doctor sends nothing. It reads one item from each feed (last day, 10 s each) and asks Ollama for its
+  version and models. A broken feed is a warning, because a run skips that feed.
+- The platform judged is the one the loader resolved for the profile, so a bad `DIGEST_HOST_OS` is a
+  config error and the checks judge the host the profile was chosen for.
+
+## Rules
+
 - All outside access goes through `DoctorIo` (`types.ts`): config loader, provider, `fetch`, clock,
   `stat`, `lstat`, `readFile`, `access`, stdout. Tests replace it with a fake machine.
-- Output never carries a secret. `report` redacts the whole text, and `.env` checks name a key and a
-  line, never a value.
-- The platform checked is the one the loader resolved for the profile, so a bad
-  `DIGEST_HOST_OS` is a config error, and the checks judge the same host the profile was chosen for.
+- Output never carries a secret: `report` redacts the whole text, and the `.env` checks name a key
+  and a line, never a value.
+- An error is a missing model, an old Ollama, a blocked folder or a missing secret; a warning (a
+  feed that fails, a loose `.env`, a guard switched off) never fails the exit code.
+- A folder here never imports `doctor.ts`; shared types go in `types.ts`.
 
 ## Files
 
-| File / folder                            | Role                                                                                     |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `doctor.ts`                              | `doctorCommand`, `DoctorCommandOptions`, `defaultIo`, `tryLoadConfig`                    |
-| `types.ts`                               | `DoctorIo`, `PathInfo`                                                                   |
-| `errorCode.ts`                           | `errorCode`, `isNotFound`: read a Node error code                                        |
-| `readiness.ts`                           | Bridge: `formatGiB`, `hasQualityMemory` for `init` until W10-B23                         |
-| `report/`                                | Result type, lines, summary, exit codes, URL credential stripper. See `report/CLAUDE.md` |
-| `checks/`                                | Ollama, models, sources, delivery, guards. See `checks/CLAUDE.md`                        |
-| `envFile/`                               | `.env` permissions and values cut at `#`. See `envFile/CLAUDE.md`                        |
-| `folders/`                               | Can a run write to or create a folder. See `folders/CLAUDE.md`                           |
-| `readiness/`                             | `--readiness`: profile table, RAM, versions. See `readiness/CLAUDE.md`                   |
-| `__fixtures__/`                          | `doctorHarness.ts`: the fake machine the tests run against                               |
-| `doctor.test.ts`                         | Wiring: all green, config failure, credential URLs, host platform                        |
-| `doctor.defaults.test.ts`                | The real config loader, provider and `fetch` (stubbed), and stdout                       |
-| `doctor.fs.test.ts`                      | The real `stat`, `lstat`, `readFile` and `access` on a temporary folder                  |
-| `doctor.readiness.test.ts`               | The `--readiness` flag                                                                   |
-| `errorCode.test.ts`, `readiness.test.ts` | The helper and the bridge                                                                |
+| File / folder  | Role                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| `doctor.ts`    | `doctorCommand`, `DoctorCommandOptions`, `defaultIo`, `tryLoadConfig`                    |
+| `types.ts`     | `DoctorIo`, `PathInfo`                                                                   |
+| `errorCode.ts` | `errorCode`, `isNotFound`: read a Node error code                                        |
+| `report/`      | Result type, lines, summary, exit codes, URL credential stripper. See `report/CLAUDE.md` |
+| `checks/`      | Ollama, models, sources, delivery, guards. See `checks/CLAUDE.md`                        |
+| `envFile/`     | `.env` permissions and values cut at `#`. See `envFile/CLAUDE.md`                        |
+| `folders/`     | Can a run write to or create a folder. See `folders/CLAUDE.md`                           |
+| `readiness/`   | `--readiness`: profile table, RAM, versions. See `readiness/CLAUDE.md`                   |
 
-## Depends on, used by
+Tests sit next to the code. `__fixtures__/doctorHarness.ts` is the fake machine; `doctor.fs.test.ts`
+and `doctor.defaults.test.ts` run the real disk calls and the real defaults.
 
-Depends on: `app/container` (`createModelProvider`), `config`, `models/adapters/ollama`,
-`sources/adapters` (rss, GitHub releases), `guards/guardVerdict` (a type), `shared`.
-Used by: `cli/program.ts` (`doctorCommand`), `cli/init/init.ts` (`formatGiB`, `hasQualityMemory`
-through `readiness.ts`).
+## Gotchas
 
-## Change it safely
-
-- Run `pnpm vitest run src/cli/doctor`. A test builds a fake machine with `harness` or `runDoctor`
-  and reads the printed lines with `resultFor`.
-- Printed text, result order and exit codes are public. Tests pin them.
-- A new check is a function in `checks/` (or its own folder if it is complex), one line in
-  `doctorCommand` and a test.
-- A folder here never imports `doctor.ts`. Shared types go in `types.ts`.
+- Printed text, check labels, result order and exit codes are public: tests find lines by `label:`.
+- `cli/init` imports `errorCode.ts` (`init/envFile/secretFile.ts`, `init/io/files.ts`) and
+  `readiness/memory.ts` (`init/prompts/profile.ts`). Moving either breaks init.
+- A new check is a function in `checks/` (its own folder if it is complex), one line in
+  `doctorCommand` and a test on the harness.

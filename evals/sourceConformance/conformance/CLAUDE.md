@@ -38,10 +38,8 @@ flowchart TD
 | `evaluateSources.ts`     | `evaluateSources`; private `evaluateOne`       |
 | `conformanceProblems.ts` | `conformanceProblems`; private `fieldProblems` |
 
-Tests build items with `goodItem` and recordings with `recording` (`../__fixtures__/conformanceKit.ts`).
-
 ## Gotchas
 
-- `SourceResult` reaches `runEval` and `metrics/sources` through `../../sourceEval.ts`. A new field
-  there also needs a metric and a scorecard entry.
-- Changing `MIN_SUMMARY_CHARS` moves the `sourceSummaryFill` metric.
+- Tests use `goodItem` and `recording` of `../__fixtures__/conformanceKit.ts`.
+- `SourceResult` (`types.ts`) reaches `runEval`, `scoring/` and `metrics/sources`: a new field also needs
+  a metric and a scorecard entry. Changing `MIN_SUMMARY_CHARS` moves `sourceSummaryFill`.

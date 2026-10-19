@@ -1,46 +1,43 @@
 # Doctor report
 
-## Intent
+> Everything doctor prints. A check returns a `CheckResult`; `report(results, stdout, secrets)`
+> (`report.ts`) turns the list into lines, a summary and the exit code. It also holds
+> `withoutUrlCredentials`, which `--readiness` uses too.
 
-Everything doctor prints. A check returns a `CheckResult`; this folder turns a list of them into
-the lines on screen, the summary and the exit code. It also holds the helper that removes
-credentials from URLs, which `--readiness` uses too.
+## Flow
 
-## How it works
+```mermaid
+flowchart TD
+  check["a check: ok, warn or fail (checkResult.ts)"] --> list["CheckResult[]"]
+  list --> fmt["formatResult: symbol, label, first line; later lines indented; fix: on warn and error"]
+  fmt --> sum["blank line, summary(errors, warnings)"]
+  sum --> clean["redactSecrets, then withoutUrlCredentials, on the whole text"]
+  clean --> out["stdout"]
+  list --> code{"any error?"}
+  code -->|yes| failed["EXIT_FAILED (1)"]
+  code -->|no| good["EXIT_OK (0)"]
+```
 
-1. A check builds its result with `ok`, `warn` or `fail` (`checkResult.ts`).
-2. `report(results, stdout, secrets)` formats each result with `formatResult`: the symbol (`✓`,
-   `!`, `✗`), the label and the first line of the message. Later message lines are indented. A
-   warning or an error adds a `fix:` line.
-3. It adds a blank line and `summary(errors, warnings)`.
-4. The whole text goes through `redactSecrets` and `withoutUrlCredentials`, then to `stdout`.
-5. It returns `EXIT_FAILED` (1) if any result is an error, else `EXIT_OK` (0). Warnings never fail.
+## Rules
 
-## Design
-
-- Redaction runs on the finished text, so no check has to remember it. A secret or a `user:pass@`
-  in an Ollama error or a feed error cannot reach the terminal.
-- `fix` shows only for warnings and errors. An ok result never prints one.
-- Exit codes are public. `exitCodes.ts` is the one home for them in this feature.
+- Redaction runs on the finished text, so no check has to remember it: a secret or a `user:pass@`
+  in an Ollama or feed error cannot reach the terminal.
+- `fix` shows only for warnings and errors; an ok result never prints one. Warnings never fail.
+- Exit codes are public (`exitCodes.ts`): `EXIT_OK` 0, `EXIT_FAILED` 1, `EXIT_NONE_FIT` 1
+  (readiness: no profile fits). Do not renumber.
 
 ## Files
 
-| File                       | Role                                                              |
-| -------------------------- | ----------------------------------------------------------------- |
-| `checkResult.ts`           | `CheckResult`, `Severity`, `ok`, `warn`, `fail`                   |
-| `report.ts`                | `report`, `formatResult`, `summary`                               |
-| `withoutUrlCredentials.ts` | Strips `user:pass@` from `http(s)` URLs                           |
-| `exitCodes.ts`             | `EXIT_OK`, `EXIT_FAILED`, `EXIT_NONE_FIT`                         |
-| `*.test.ts`                | One per file. `report.test.ts` also runs the redaction end to end |
+| File                       | Role                                            |
+| -------------------------- | ----------------------------------------------- |
+| `checkResult.ts`           | `CheckResult`, `Severity`, `ok`, `warn`, `fail` |
+| `report.ts`                | `report`, `formatResult`, `summary`             |
+| `withoutUrlCredentials.ts` | Strips `user:pass@` from `http(s)` URLs         |
+| `exitCodes.ts`             | `EXIT_OK`, `EXIT_FAILED`, `EXIT_NONE_FIT`       |
 
-## Depends on, used by
+One test per file; `report.test.ts` also runs the redaction end to end.
 
-Depends on: `config/load` (`redactSecrets`, `LoadedConfig`).
-Used by: `doctor.ts`, `checks/`, `envFile/`, `folders/` (results), `readiness/` (exit codes and
-`withoutUrlCredentials`).
+## Gotchas
 
-## Change it safely
-
-- Run `pnpm vitest run src/cli/doctor/report`.
-- Tests pin the exact text: symbols, indent, `fix:` and the summary wording.
-- Do not move redaction into the checks. Do not print a value from `.env` or a secret.
+- Tests pin the symbols, the indent, `fix:` and the summary wording.
+- Do not move redaction into the checks, and print no value from `.env`.

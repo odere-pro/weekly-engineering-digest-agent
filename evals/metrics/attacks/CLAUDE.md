@@ -41,5 +41,5 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `../../runEval.ts` builds the outcomes; `scorecardGuards.test.ts` runs them end to end.
+- `../../replay/replayAttacks.ts` builds the outcomes; `scorecardGuards.test.ts` runs them end to end.
 - A new default input guard adds a key to the recall detail.

@@ -29,9 +29,10 @@ It is the third step, after guardInput and before process. See
   is not one of the options, fails the run at step `classify`. It never falls back to a default.
 - Returns the scored items in input order. The scores are saved as `scores.json` in the run folder.
   `pnpm digest show <week> --part scores` prints them as a table.
-- Two things exist in the code but do not run in a real week: a "generate" mode for models without
-  decision support, and re-scoring with the writer model. `models.rescoreWithWriter` is accepted in
-  the config but has no effect today. Only the eval tooling turns re-scoring on.
+- A "generate" mode for models without decision support exists in the code but does not run in a
+  real week. Re-scoring with the writer model runs only when `models.rescoreWithWriter` is `true`
+  (off by default), in `digest run` and `digest eval`: the writer model scores the items at or
+  above `thresholds.minRelevance` a second time.
 
 ## What you can configure
 

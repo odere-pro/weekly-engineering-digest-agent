@@ -58,7 +58,8 @@ canonical text, and delivery sends the view. See [data flow](../architecture/dat
 ## Code and tests
 
 - Folder: [src/render/](../../src/render/). Maintainer notes: [CLAUDE.md](../../src/render/CLAUDE.md).
-- No port and no adapters. The view type is defined with the delivery port.
+- No port and no adapters. The view types (`DigestView`) are defined
+  in `digestView.ts`; the delivery channels import them.
 - Tests sit next to the code. Golden files in a fixtures folder pin the Markdown, and the same
   goldens are run through both checks.
 

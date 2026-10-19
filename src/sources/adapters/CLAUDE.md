@@ -32,9 +32,8 @@ flowchart TD
   pages --> merge["mergeEnriched"] --> out
 ```
 
-- Two readers per fetch, both `getText`: `get` for the feed or API (the source's own host plus the
-  adapter's `redirectHosts`, and the only one the tap sees) and `getPage` for article pages (also
-  the `collectionHosts`, default `hostsOf(DEFAULT_SOURCES)`).
+- Two readers per fetch, both `getText`: `get` for the feed or API (the source's host plus the adapter's
+  `redirectHosts`; the only one the tap sees) and `getPage` for article pages (also `collectionHosts`).
 - Three adapters: `rssAdapter` (RSS 2.0 and Atom), `githubAtomAdapter` (`releases.atom`),
   `createGithubRestAdapter(token)`. `createRssFetcher` and `createGithubReleasesFetcher` (REST when a
   token is set, else Atom) build the fetchers the app uses.
@@ -43,8 +42,7 @@ flowchart TD
 
 - Only `getText` touches the network: redirects by hand, at most 5, only to hosts the caller
   allows; never https to http, another port, or credentials. Network allowlist.
-- A feed or API body over 5 MiB fails the source, and a page over 2 MiB is skipped: a hostile
-  server must not fill memory.
+- A feed or API body over 5 MiB fails the source, a page over 2 MiB is skipped: no hostile memory fill.
 - Errors say whether another try can help: `statusFailure` (5xx, 408, 429 retry), `permanentFailure`
   (never). Adapters never retry; `collect.ts` reads `FetchError.retryable`.
 - The GitHub token goes only to the start origin, and the REST adapter redacts it from network
@@ -75,7 +73,8 @@ Tests sit next to the code. `__fixtures__/` holds recorded feeds, GitHub answers
 - Two entry types, two names: `RawEntry` (`entries/types.ts`) is what `parse` returns; `XmlEntry`
   (`feedFields.ts`) is the feed library's own entry, read through `getExtraEntryFields`.
 - `cli/fetch/fetch.tap.test.ts` scans product code: only `pipeline.ts`, `http.ts`, `rss.ts`,
-  `githubReleases.ts`, `archive/archivingFetcher.ts`, `app/container.ts` and `cli/fetch/fetch.ts`
-  may use the words `tap`, `SourceTap`, `onAnswer`, `SourceAnswer`, `SourceEntries`, and only five
-  files may call `createFetcher(`. So `entries/` avoids those words. A run passes the archive's tap
-  (`archive/`) and `digest fetch` its own.
+  `githubReleases.ts`, `archive/archivingFetcher.ts`, `app/container.ts` and
+  `cli/fetch/sourceRun/{buildFetchers,recorder,types}.ts` may use the words `tap`, `SourceTap`,
+  `onAnswer`, `SourceAnswer`, `SourceEntries`, and only five files may call `createFetcher(`. So
+  `entries/` avoids those words. A run passes the archive's tap (`archive/`) and `digest fetch` its own
+  (`recorder.ts`).

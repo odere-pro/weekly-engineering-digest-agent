@@ -76,5 +76,5 @@ Tests sit next to the code. `__fixtures__/initHarness.ts` is the scripted user a
 
 - Tests pin printed text and match prompts by their message (`/SMTP host/`, `/Model profile/`):
   rewording a question or a summary line breaks them on purpose.
-- Two imports reach into `cli/doctor`: the RAM figures (`readiness/memory.ts`) and `errorCode.ts`.
+- Two imports reach into `cli/doctor`: the RAM figures (`doctor/readiness/memory.ts`) and `errorCode.ts`.
   Moving either breaks init.

@@ -58,16 +58,16 @@ metadata (unpacked, before their own dependencies): `@mastra/libsql` 4.1 MB, `@m
 of the 82 MB. "Lines removed" is the most our code could shrink, not a promise. Numbers marked
 "est." or "about" are estimates.
 
-| Candidate                     | Our code it could replace                       | Lines removed | Added deps, storage                                    | Lost behaviour                                                    | Test impact                                    |
-| ----------------------------- | ----------------------------------------------- | ------------- | ------------------------------------------------------ | ----------------------------------------------------------------- | ---------------------------------------------- |
-| 1a Typed steps, retries, loop | writer loop in `write.ts`                       | about 4       | zod schemas for `ChainState` (est. +60 to +90 lines)   | error class on rethrow; retry does not fit our retries            | `workflow.test.ts` stays; no step test changes |
-| 1b Suspend/resume             | `runResume.ts` (238)                            | 0 to 10       | `@mastra/libsql`, `@libsql/client`, native `libsql`    | week-keyed resume without a model call and the link match check   | new storage fixtures; resume tests stay        |
-| 2 Model calls (AI SDK)        | `generate` path in `ollama.ts` (est. 70 to 120) | 70 to 120     | `ollama-ai-provider-v2`, `ai` ^7                       | timeouts, keep-alive, header-wait rules unless re-built           | new fakes for a second model path              |
-| 2b `/v1/systemone`            | `systemone.ts` (226) and `decide`               | 0             | none exist                                             | stays on our adapter: classify, both clef guards, judge           | none                                           |
-| 3 Scorers and datasets        | `evals/metrics.ts` (706), `runEval.ts` (863)    | 0             | `@mastra/evals` (peer `vitest <5`, repo has 5.0.5), DB | git-reviewed frozen data; offline gates and exit codes            | metrics tests stay, scorer wrappers added      |
-| 4 Schedules                   | cron wiring in `scheduler.ts` (582)             | about 25      | `Mastra` instance, storage with a `schedules` table    | catch-up, lock-race retry, failed-tick retry, give-up note, limit | scheduler tests stay or are rewritten          |
-| 5 Processors                  | `guards/` (clef 104, questions 138, run 184)    | 0             | an `Agent` per guard call                              | calibrated probabilities, tuned 0.35 threshold, fail closed       | guard tests and eval thresholds redone         |
-| 6 Observability               | `tracedModel.ts` (63); `tracing.ts` (185)       | 0 to 63       | `@mastra/observability`, `@mastra/otel-exporter`       | spans on every model call at the port; redaction proof            | `tracing` and `redact` tests redone            |
+| Candidate                     | Our code it could replace                                   | Lines removed | Added deps, storage                                    | Lost behaviour                                                    | Test impact                                    |
+| ----------------------------- | ----------------------------------------------------------- | ------------- | ------------------------------------------------------ | ----------------------------------------------------------------- | ---------------------------------------------- |
+| 1a Typed steps, retries, loop | writer loop in `write.ts`                                   | about 4       | zod schemas for `ChainState` (est. +60 to +90 lines)   | error class on rethrow; retry does not fit our retries            | `workflow.test.ts` stays; no step test changes |
+| 1b Suspend/resume             | `runResume.ts` (238, now `digest/resume/resumeDelivery.ts`) | 0 to 10       | `@mastra/libsql`, `@libsql/client`, native `libsql`    | week-keyed resume without a model call and the link match check   | new storage fixtures; resume tests stay        |
+| 2 Model calls (AI SDK)        | `generate` path in `ollama.ts` (est. 70 to 120)             | 70 to 120     | `ollama-ai-provider-v2`, `ai` ^7                       | timeouts, keep-alive, header-wait rules unless re-built           | new fakes for a second model path              |
+| 2b `/v1/systemone`            | `systemone.ts` (226) and `decide`                           | 0             | none exist                                             | stays on our adapter: classify, both clef guards, judge           | none                                           |
+| 3 Scorers and datasets        | `evals/metrics.ts` (706), `runEval.ts` (863)                | 0             | `@mastra/evals` (peer `vitest <5`, repo has 5.0.5), DB | git-reviewed frozen data; offline gates and exit codes            | metrics tests stay, scorer wrappers added      |
+| 4 Schedules                   | cron wiring in `scheduler.ts` (582)                         | about 25      | `Mastra` instance, storage with a `schedules` table    | catch-up, lock-race retry, failed-tick retry, give-up note, limit | scheduler tests stay or are rewritten          |
+| 5 Processors                  | `guards/` (clef 104, questions 138, run 184)                | 0             | an `Agent` per guard call                              | calibrated probabilities, tuned 0.35 threshold, fail closed       | guard tests and eval thresholds redone         |
+| 6 Observability               | `tracedModel.ts` (63); `tracing.ts` (185)                   | 0 to 63       | `@mastra/observability`, `@mastra/otel-exporter`       | spans on every model call at the port; redaction proof            | `tracing` and `redact` tests redone            |
 
 Option A total: at most about 220 lines out of 16,270 non-test lines in `src` (1.4%), against about 150 new
 lines (est.) and 6 new direct packages (about 27 MB) plus a database file. Option B removes 54 lines
@@ -181,7 +181,7 @@ Package files are frozen on branches, so issue 2 is for the coordinator on `main
    `pnpm check` and `pnpm build` pass. Record the new `node_modules` size and `digest --help` time.
 3. **Docs and comments.** Lane `research`. Update `.claude/rules/architecture.md` (line 42),
    `src/digest/CLAUDE.md` (design bullet, files table, tests list), `docs/how-it-works.md`
-   (line 26, docs session), the comments in `test/integration/dryRun.test.ts` and
+   (since replaced by `docs/architecture/`), the comments in `test/integration/dryRun.test.ts` and
    `harness.ts`, and add a `CHANGELOG.md` entry. Leave the old entry at line 75, it is history.
 4. **Keep it out.** Lane `cpu`, coordinator. Add `@mastra/*` to the `no-restricted-imports` list in
    the ESLint config with a message that points to this record, so a return needs ADR 0002.

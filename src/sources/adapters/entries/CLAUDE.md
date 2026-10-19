@@ -39,9 +39,7 @@ flowchart TD
 | `selectEntries.ts`  | `selectEntries`, `withDistinctLinks`: distinct links, window, order, cap |
 | `mergeEnriched.ts`  | `mergeEnriched`: page text back into the items                           |
 
-Each file has a test next to it that calls it directly. No fixtures.
-
 ## Gotchas
 
 - `cli/fetch/fetch.tap.test.ts` scans product code: no file here may use the word `tap` or call
-  `createFetcher(`.
+  `createFetcher(`. Each file has a test that calls it directly.

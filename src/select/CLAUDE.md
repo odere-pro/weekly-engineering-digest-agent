@@ -33,7 +33,7 @@ flowchart TD
   best --> out["SelectOutput: winner, scores, judged true"]
 ```
 
-- The gate is in `runDigest.ts`. `quality` has a judge (`clef`), as does any profile with a
+- The gate is in `digest/stages/selectWinner.ts`. `quality` has a judge (`clef`), as does any profile with a
   `models.writers` override of 2+ writers; `fast` and `light` have none, so
   `evals/judge/evalJudge.ts` judges their winner. `selectStep` also takes one draft (returned
   unjudged) and none (`DigestError`, Blocked).
@@ -56,8 +56,8 @@ flowchart TD
 - `toJudgeScore` throws `DigestError` (step `select`) on a missing or non-`score` answer or a
   non-finite level. `evals/judge/evalJudge.ts` converts answers with it and reuses the questions,
   `buildJudgeState` and `resolveDraftSources`.
-- `winner` is one of the `Draft` objects passed in, never a copy: `runDigest` finds it by identity
-  and throws otherwise. Inputs are not changed.
+- `winner` is one of the `Draft` objects passed in, never a copy: `selectWinner` finds it by
+  identity and throws otherwise. Inputs are not changed.
 - Cited ids that were not collected are skipped with a warning. Logs never hold draft text.
 
 ## Files
@@ -72,9 +72,7 @@ Tests sit next to each file and script `decide` answers on `FakeModelProvider`. 
 
 ## Gotchas
 
-- Names cross over: in `runDigest.ts` stage `select` runs a function called `pickWinner`, and stage
-  `process` runs `selectItems`. Here `pickWinner` is the private highest-mean pick.
 - `JUDGE_CRITERIA` are the keys of `JudgeScore.byCriterion` (saved in `run.json`) and drive the fake
-  answers in `test/integration/harness.ts`. A renamed criterion, question or level moves every
+  answers in `test/integration/harness/answers.ts`. A renamed criterion, question or level moves every
   score: re-check `evals/judge/calibrate.ts` and run `evals/judge/evalJudge.test.ts` and
-  `evals/judgeInHarness.test.ts`.
+  `evals/judge/judgeInHarness.test.ts`.

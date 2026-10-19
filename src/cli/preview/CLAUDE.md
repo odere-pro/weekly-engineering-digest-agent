@@ -66,12 +66,13 @@ winner, the footers, `--out`, secrets, hostile text, each failure and the defaul
 
 - The CLI may call adapter code here because the preview must show what the channels send:
   `renderEmailHtml`, `renderEmailText` and `toSlackBlocks` are the very functions the email and Slack
-  channels use, and `writeFileAtomic` is the store's file writer. A copy would drift. The `RunStore`
-  port has no write for preview files (its artifact names are fixed). See `../CLAUDE.md`.
+  channels use, and `writeFileAtomic` (`shared/atomicFile`) is the writer the store and the channels
+  use. A copy would drift. The `RunStore` port has no write for preview files (its artifact names
+  are fixed). See `../CLAUDE.md`.
 - `UNPRINTABLE` repeats the pattern of `clean` in `show/tables/table.ts`; `fetch`
-  (`sourceRun/fetchSource.ts`) and `eval` (`scorecardText/printable.ts`) keep similar ones. A new
+  (`fetch/sourceRun/fetchSource.ts`) and `eval` (`eval/scorecardText/printable.ts`) keep similar ones. A new
   unsafe character has to be added to each.
-- `DraftsFileSchema` and `toJson` come from `digest/runEnding`; a change to `drafts.json` changes
-  this command.
+- `DraftsFileSchema` and `toJson` come from `digest/ending/runFiles/runFiles.ts`; a change to
+  `drafts.json` changes this command.
 - The default folder `digest/preview/` sits inside the week's folder (`weekDigestDir`), so `prune`
   deletes it with the old week. `--out` keeps a preview anywhere else.

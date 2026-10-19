@@ -50,27 +50,21 @@ flowchart TD
 - Every fetch goes through `getText`: at most 5 redirects, by hand, only to the source's own host
   (`www.` is the same) or the adapter's `redirectHosts` (`api.github.com`); no https to http,
   other port, credentials in a URL or non-http(s) target. A body over 5 MiB fails the source.
-- The GitHub token goes only to the start origin (`accept` and `x-github-api-version` may travel);
-  the REST adapter redacts it from network errors. A rate limit is not retried (asking again can
-  lengthen the penalty). Release links stay on github.com. Errors name the source id and a refused
-  host, never the URL: config values may carry secrets.
+- The GitHub token goes only to the start origin; the REST adapter redacts it from network errors. A
+  rate limit is not retried. Release links stay on github.com. Errors name the source id and a
+  refused host, never the URL: config values may carry secrets.
 - Sources merge in config order, so the earlier source wins a duplicate id. Duplicates go before
   the per-source cap (`source.maxItems ?? maxItemsPerSource`), so they cannot crowd out real items.
 
 ## Files
 
-| File                                    | Role                                                                                                              |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                                  |
-| `collect.ts`                            | `collectStep`: concurrency, timeout, retry, validation, merge, cap, order                                         |
-| `adapters/`                             | The adapters and the shared fetch pipeline: see `adapters/CLAUDE.md`                                              |
-| `adapters/pipeline.ts`                  | `createFetcher`, `hostsOf`, `SourceAdapter`, `Get`, `SourceTap`                                                   |
-| `adapters/entries/`                     | `normalizeEntry`, `RawEntry`, read, select and merge the entries: see `adapters/entries/CLAUDE.md`                |
-| `adapters/http.ts`, `enrich.ts`         | `getText`, `sameSiteAs`; `enrichEntries` (page text for empty summaries)                                          |
-| `adapters/feedFields.ts`                | Raw feed fields and `parseFeedDate`; `XmlEntry` is the feed library's entry, not an adapter's `RawEntry`          |
-| `adapters/rss.ts`, `rssAdapter.ts`      | `createRssFetcher`; the RSS 2.0 and Atom adapter                                                                  |
-| `adapters/github*.ts`                   | `githubReleases` picks REST with a token (20 per page, no drafts or prereleases), else `releases.atom` (about 10) |
-| `adapters/archive/`                     | Saves each source's raw answers and items per day (`raw/`, `formatted/`), in the background. Own `CLAUDE.md`      |
+| File                                    | Role                                                                                                       |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                           |
+| `collect.ts`                            | `collectStep`: concurrency, timeout, retry, validation, merge, cap, order                                  |
+| `adapters/`                             | The adapters and the shared fetch pipeline: see `adapters/CLAUDE.md`                                       |
+| `adapters/entries/`                     | Entries to items: normalize, read, select, merge: see `adapters/entries/CLAUDE.md`                         |
+| `adapters/archive/`                     | Saves each source's raw answers and items per day (`raw/`, `formatted/`): see `adapters/archive/CLAUDE.md` |
 
 Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and article samples.
 
@@ -78,9 +72,9 @@ Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and arti
 
 - `defaultSources.test.ts` fails when `DEFAULT_SOURCES` drifts from `digest.config.example.json` or
   from the table and the "Only these hosts" paragraph in `docs/sources.md`.
-- Renames break `cli/fetch` (`createFetcher`, the three adapters, `SourceTap`), `app/container.ts`
-  (the run's fetchers get the archive's tap and `wrap`) and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
-- Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`,
-  so the hosts of configured sources are not used.
+- Renames break `cli/fetch/sourceRun/{buildFetchers,recorder,types}.ts` (the tap owners: `createFetcher`,
+  the adapters, `SourceTap`), `app/container.ts` (the run's fetchers get the archive's tap and `wrap`)
+  and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
+- Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`.
 - The run's abort signal does not reach the fetchers: `collect.ts` passes each attempt only its own
-  timeout signal. The fetchers already pass on the signal they get.
+  timeout signal.

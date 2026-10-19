@@ -12,8 +12,8 @@ flowchart LR
   process -->|"ScoredItem[]"| write -->|"CodeChecked[]"| guardOutput
   write -->|"Digest, Markdown, Item[]"| checks:::focus
   fallback["digest: buildFallback"] -->|"via checkedFallback"| write
-  digest["digest: runDigest"] -.->|"DIGEST_MIN_ITEMS"| checks
-  evals["evals: metrics"] -->|"Digest, Markdown, Item[]"| checks
+  digest["digest: processItems"] -.->|"DIGEST_MIN_ITEMS"| checks
+  evals["evals: metrics/digest"] -->|"Digest, Markdown, Item[]"| checks
   classDef focus stroke-width:3px
 ```
 
@@ -32,7 +32,7 @@ flowchart TD
   p1 & p2 & p3 & p4 --> result["CheckResult: ok when no problems"]
 ```
 
-- `write.ts` `codeCheck` renders the draft with `renderDigest`, runs both checks and names a failing
+- `write/checkedStep/codeCheck.ts` renders the draft with `renderDigest`, runs both checks and names a failing
   one in `rejectedBy` (`linkCheck`, `formatCheck`). Format problems come first, link problems after.
 - Limits (`DIGEST_*` in `formatCheck.ts`, imported by the write prompt): 3-5 items, under 500 words
   (500 fails), at most 3 `act-now`, action at most 20 words, summary at most 40. The prompt aims
@@ -68,13 +68,12 @@ Tests sit next to each file (`linkCheck`, `.www`, `.action`, `formatCheck`, `.ur
 
 ## Gotchas
 
-- `LINK_PROBLEM_KINDS` in `write/writePrompt.ts` matches the start of the first two problem texts in
-  the Flow. Reword both together; `writePrompt.retry.test.ts` runs the real check.
-- `linkCheck` and `formatCheck` are plain strings in `rejectedBy` (saved in `drafts.json` and
-  `run.json`). `evals/metrics.ts` (`CONTENT_REJECTIONS`) and `evals/schema.ts` match them.
+- The prefixes `UNKNOWN_URL_PROBLEM`, `MALFORMED_LINK_PROBLEM` and `INVALID_REFERENCE_PROBLEM`
+  (`linkCheck.ts`) start the problem texts above; `write/writePrompt.ts` (`LINK_PROBLEM_KINDS`) matches them
+  and `writePrompt.retry.test.ts` runs the real check.
+- `linkCheck` and `formatCheck` are plain strings in `rejectedBy` (saved in `drafts.json` and `run.json`);
+  `evals/metrics/attacks/attackRun.ts` (`CONTENT_REJECTIONS`) and `evals/schema.ts` match them.
 - The checks read the rendered Markdown. A template change in `src/render/` can move the word count
   or add link-like text; `render/markdown.fixtures.test.ts` runs both checks on its goldens.
 - Bare URLs in text are found for `http(s)` only: a bare `ftp://host/x` passes the link check (known
   limit, `docs/operations/known-limits.md`). Markdown destinations of any scheme are checked.
-- Tests elsewhere use the limits: `write/write.prompts.test.ts`, `write/fallbackDigest.test.ts`,
-  `write/writePrompt.urgency.test.ts`, `evals/metrics.test.ts`.

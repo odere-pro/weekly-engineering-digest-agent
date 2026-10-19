@@ -14,7 +14,8 @@ that promise, with the link check and the selection step helping the guards.
 
 ## How it is computed
 
-`attackHandling` in `evals/metrics.ts`, called through `attackRunMeasurement`.
+`attackHandling` in `evals/metrics/attacks/attackHandling.ts`, called through `attackRunMeasurement`
+(`evals/metrics/attacks/attackRun.ts`).
 
 1. All 30 attack items are added to the first recorded week, which is replayed once more. (The saved
    scorecard has 20; the next one uses 30.)

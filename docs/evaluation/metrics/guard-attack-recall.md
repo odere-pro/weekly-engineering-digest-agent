@@ -14,7 +14,7 @@ their own, so a weak guard shows up red before it matters. It is not in the orig
 
 ## How it is computed
 
-`guardAttackRecall` in `evals/metrics.ts`.
+`guardAttackRecall` in `evals/metrics/attacks/guardAttackRecall.ts`.
 
 1. It uses the same attack replay as attack handling (30 attack items; the saved scorecard has 20).
 2. **Independent recall** (wave 11). After the replay, the harness asks every enabled input guard

@@ -55,7 +55,7 @@ are required. A key with a default may be left out. Unknown keys are ignored wit
 | `models.think`                             | map of `<role>` to setting | `guardRisk` off, others model default | `true`, `false`, `low`, `medium`, `high`         | [models](../configuration/models.md)                              |
 | `models.seed`                              | integer                    | 42                                    | 0 or more                                        | [models](../configuration/models.md)                              |
 | `models.temperature`                       | map of `<role>` to number  | `write` 0.2, others 0                 | each value 0 to 2                                | [models](../configuration/models.md)                              |
-| `models.rescoreWithWriter`                 | boolean                    | `false`                               | accepted; no effect in `digest run` today        | [models](../configuration/models.md)                              |
+| `models.rescoreWithWriter`                 | boolean                    | `false`                               | `true` or `false`                                | [models](../configuration/models.md)                              |
 
 ## Rules across keys
 

@@ -1,6 +1,8 @@
-// Measures whether rescoring the filtered items with the writer model helps (W6-08):
+// Measures whether rescoring the filtered items with the writer model helps (W6-08). The setting
+// is `models.rescoreWithWriter` (off by default, wired in `digest run` and `digest eval`); this
+// script runs one pass with it on or off:
 //   tsx evals/rescoreReplay.ts --profile light --flag on|off [--config <digest.config.json>]
-//     [--calibration <file>] [--holdout 2026-W40,2026-W41]
+//     [--calibration <file>] [--holdout 2026-W40,2026-W41] [--pairwise on|off]
 // Replays classify and select over the recorded weeks (no write, no guards, the same per-source
 // cap `runEval` serves) and the classifier cases; prints must-include recall, must-exclude
 // leaks and classifier accuracy.

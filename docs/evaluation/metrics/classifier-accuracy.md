@@ -17,8 +17,8 @@ one step, alone.
 
 ## How it is computed
 
-`classifierRanking` in `evals/metrics.ts` (wave 11, ranking accuracy), fed by `classifyCases` in
-`evals/runEval.ts`.
+`classifierRanking` in `evals/metrics/ranking/classifier.ts` (wave 11, ranking accuracy), fed by
+`classifyCases` in `evals/classifierRun/classifyCases.ts`.
 
 1. All 60 items go through `classifyStep` with the focus areas and area hints of the loaded config.
 2. A case is right when its relevance is within 1 of the label (the labels are whole numbers 0 to 3).
@@ -30,7 +30,7 @@ one step, alone.
 4. The area no longer decides the gate.
 
 The old function `classifierAccuracy` (area and relevance within 0.5 both right) stays in
-`metrics.ts` for the threshold sweep and the rescore replay. The scorecard does not use it.
+`evals/metrics/ranking/classifier.ts` for the threshold sweep and the rescore replay. The scorecard does not use it.
 Scorecards written before wave 11 keep their old `detail` keys (`area`, `relevance`) and still parse.
 
 If `classifier-cases.json` has `reviewed: false` the note says the labels are not reviewed yet.

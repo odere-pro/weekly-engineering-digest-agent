@@ -13,7 +13,7 @@ flowchart LR
   classify -.->|"decide, role classify"| mp[[ModelProvider]]
   classify -.->|"generate, roles classify and write"| mp
   mp -.-> ollama[(Ollama)]
-  evals["evals: runEval, rescoreReplay, thresholds capture"] -.-> classify
+  evals["evals: classifierRun, rescore, thresholds capture"] -.-> classify
   classDef focus stroke-width:3px
 ```
 
@@ -42,7 +42,7 @@ flowchart TD
 - `pairwiseRank` (`pairwise.ts`, experiment): a short Swiss tournament over the first
   `PAIRWISE_TOP` (20) items, at most `PAIRWISE_MAX_CALLS` (40) decide calls. Each game asks in both
   orders and averages, to cancel first-item bias. Its ids feed `process`'s `pairwiseOrder`; only
-  `evals/rescoreReplay.ts` calls it.
+  `evals/rescore/replay/replayWeek.ts` calls it.
 
 ## Rules
 
@@ -76,5 +76,5 @@ Tests sit next to each file; `__fixtures__/classifyKit.ts` has the scripted answ
 - The no-hint prompt must stay byte-identical to the old one. `classifyPrompt.test.ts` pins it.
 - A change to a question, a level text or a prompt moves the scores. Run the classifier cases in
   `evals/` before and after.
-- `classifyStep` is also called by `evals/runEval.ts`, `evals/rescoreReplay.ts` and
-  `evals/thresholds/capture/calls.ts` (whose test mocks it). Keep its signature.
+- `classifyStep` is also called by `evals/classifierRun/classifyCases.ts`, `evals/rescore/replay/`
+  and `evals/thresholds/capture/calls.ts` (whose test mocks it). Keep its signature.

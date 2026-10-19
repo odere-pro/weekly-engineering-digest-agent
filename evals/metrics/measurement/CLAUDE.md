@@ -39,7 +39,6 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `evals/judge/` and the `src/cli` eval tests use the `Measurement` type through the bridge in
-  `../../metrics.ts`.
+- `evals/judge/`, `evals/scoring/` and the `src/cli/eval` tests import the `Measurement` type from here.
 - A new field on `Measurement` also needs a field on `MetricResultSchema` and a copy in `toResult`
   (`../../metrics.ts`), or it never reaches the scorecard.

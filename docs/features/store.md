@@ -74,7 +74,8 @@ It is a supporting layer used at the start and the end of every run, as shown in
 - The run record schema (`RunRecordSchema`, `DraftOutcome`) lives here, in
   [runRecord.ts](../../src/store/runRecord.ts). It moved from the shared domain file.
 - Port: [RunStore.ts](../../src/store/RunStore.ts). Adapters:
-  [src/store/adapters/](../../src/store/adapters/) (run folders, the lock, atomic file writes).
+  [src/store/adapters/](../../src/store/adapters/) (run folders, the lock). The atomic file writer they use is
+  [src/shared/atomicFile.ts](../../src/shared/atomicFile.ts).
 - Tests sit next to the code and use temporary folders and a fake clock. The lock contention test
   starts real processes, so it runs longer than the rest.
 

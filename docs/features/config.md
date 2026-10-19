@@ -31,7 +31,8 @@ It is the first thing every command does, and the input of the app wiring. See
   process, for Docker on a Mac. On anything but Apple silicon every profile resolves to an untuned
   fallback set, and `digest doctor` says so.
 - Turns the profile into model tags per role and applies `models.writers` if set. The writer panel
-  is `profile.writers`; one writer means no judge and no select step.
+  is `profile.writers`; one writer means no judge and no select step. A panel with a writer from
+  the judge's model family fails here, at config load, with a message naming both.
 - Skips the model of a guard role whose checks are all off, so `doctor` and the start-up check do
   not ask for a model nobody will call.
 - Has no setting for the link check or the format check. Guards can be switched off; those two
@@ -63,7 +64,7 @@ This feature is where every setting is defined. The pages for each group:
   short. Quote the value. `doctor` warns about this and about a `.env` readable by other users.
 - A source URL with a password, or an `http` webhook, is refused with a message that names the
   field only.
-- `models.rescoreWithWriter` is accepted but has no effect in a real run today.
+- `models.rescoreWithWriter` is off by default; on, it takes effect in `digest run` and `digest eval`.
 - Config is read once when a command starts. `digest serve` needs a restart to see a change. See
   [stopping and restarts](../operations/stopping-and-restarts.md).
 - A change that is easy to get wrong has a runbook, for example

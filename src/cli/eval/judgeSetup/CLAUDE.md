@@ -20,9 +20,9 @@ flowchart TD
 ## Rules
 
 - `EVAL_JUDGE` here is the environment variable (`EnvSchema.EVAL_JUDGE`, read from `loaded.env`:
-  `.env` with the shell on top). The model-tag constant `EVAL_JUDGE` of `config/profiles.ts`
-  (`MODEL_TAGS.clef`) is another thing: the fallback judge `resolveProfile` gives a profile when
-  config lists 2 or more writers. This folder never imports it.
+  `.env` with the shell on top). `OVERRIDE_JUDGE` of `config/profiles.ts` (`MODEL_TAGS.clef`) is
+  another thing: the judge `resolveProfile` gives a profile when config lists 2 or more writers.
+  This folder never imports it.
 - Only `loaded.env` is read, never `process.env`: the loader already merged them, and a second
   source could disagree with it.
 - The check runs before the first replay, so a typo costs no long run. It never pulls a model.

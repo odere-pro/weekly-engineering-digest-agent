@@ -26,7 +26,7 @@ load and check every file (a bad file stops the run, exit 1)
    '-> optional: a judge model scores each week's winning digest (EVAL_JUDGE)
    |
    v
-evals/metrics.ts: 17 measurements -> gates -> scorecard
+evals/scoring/: 17 measurements -> gates (evals/metrics.ts) -> scorecard
    |
    +-> printed on the terminal, saved to evals/scorecards/<date>-<profile>.json
    '-> exit code 1 when a hard gate failed
@@ -34,8 +34,8 @@ evals/metrics.ts: 17 measurements -> gates -> scorecard
 
 ## Steps
 
-1. **Load.** `loadEvalCases` reads every file under `evals/` and checks it with the schemas in
-   `evals/schema.ts`. An unreadable or invalid file stops the run and the message names the file.
+1. **Load.** `loadEvalCases` (`evals/cases/`) reads every file under `evals/` and checks it with the
+   schemas in `evals/schema.ts`. An unreadable or invalid file stops the run and the message names the file.
    A missing case folder counts as an empty set, and a hard gate cannot pass on an empty set.
 2. **Source recordings.** The real fetchers run over the recorded feed bodies. No model is used.
    See [source recordings](sets/source-recordings.md).
@@ -62,7 +62,8 @@ evals/metrics.ts: 17 measurements -> gates -> scorecard
    scores each week's winning digest. It runs last so the judge model loads once. A model that is
    not installed, or has no decision capability, stops the run before anything is replayed.
    See [judge](sets/judge.md).
-9. **Score.** `evals/metrics.ts` turns the results into 17 measurements and adds the gates. The
+9. **Score.** `evals/scoring/measure.ts` turns the results into 17 measurements (the metric functions are in
+   `evals/metrics/`) and `evals/metrics.ts` adds the gates. The
    digest is read back from the Markdown that was written, so the real link check and format
    check judge what a reader would get. The classifier is scored on ranking: see
    [classifier accuracy](metrics/classifier-accuracy.md).

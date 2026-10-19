@@ -11,9 +11,9 @@
 ```mermaid
 flowchart LR
   classify -->|"ScoredItem[]"| process:::focus -->|"selected ScoredItem[]"| write
-  store[[RunStore]] -.->|"sentUrls, read by runDigest"| process
+  store[[RunStore]] -.->|"sentUrls, read by processItems"| process
   cfg[("config: thresholds, topN")] -.-> process
-  evals["evals: calibrate, rescoreReplay, tuneThresholds"] -.-> process
+  evals["evals: calibration, rescore, thresholds sweep"] -.-> process
   classDef focus stroke-width:3px
 ```
 
@@ -51,7 +51,7 @@ flowchart TD
 - `topN` must be a whole number of 0 or more, else `DigestError` (step `process`).
 - Calibration (`calibration.ts`: a monotone map plus a per-area bias, clamped to 0-3, fitted by
   `evals/calibrate.ts`) and `pairwiseOrder` (`rescoreReplay.ts --pairwise on`, failed its keep
-  rule) are evals only: `runDigest` passes neither.
+  rule) are evals only: the digest's `processItems` passes neither.
 
 ## Files
 
@@ -70,11 +70,11 @@ Tests sit next to each file; `__fixtures__/processKit.ts` has `scored`, `story` 
 
 ## Gotchas
 
-- The quiet rule is not here. `selectItems` in `src/digest/runDigest.ts` ends the run `quiet` when
-  fewer than `DIGEST_MIN_ITEMS` (3, `checks/formatCheck.ts`) are selected, and sets
+- The quiet rule is not here. `processItems` (`src/digest/stages/processItems.ts`) ends the run
+  `quiet` when fewer than `DIGEST_MIN_ITEMS` (3, `checks/formatCheck.ts`) are selected, and sets
   `counts.afterProcess` to `selected` plus the `below-top-n` drops, matched by that name.
-- `evals/thresholds/sweep/keepsItem.ts` repeats the three threshold rules; its test runs it against
-  `processStep` on a grid and fails when they drift. Until it calls `passesThresholds`, change both.
+- `evals/thresholds/sweep/keepsItem.ts` calls `passesThresholds`, so the sweep and this step share
+  one rule; its test still runs `processStep` on a table of items to pin that.
 - `areaKey` (trim, lowercase) keys `areaBias`; the spread uses `normalizeText`: not the same grouping.
-- Evals call `processStep` too (`calibrate.ts`, `rescoreReplay.ts`, `keepsItem.test.ts`): keep its
+- Evals call `processStep` too (`calibration/measure/`, `rescore/replay/`, `keepsItem.test.ts`): keep its
   path and signature.

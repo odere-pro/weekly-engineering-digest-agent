@@ -15,7 +15,7 @@ answer is always 100% and says nothing.
 
 ## How it is computed
 
-`writerWinRate` in `evals/metrics.ts`. It takes the `winner` of each replayed week's run record,
+`writerWinRate` in `evals/metrics/judging/writerWinRate.ts`. It takes the `winner` of each replayed week's run record,
 skips weeks without a winner, and counts wins per writer. `detail` has the share of each writer. The
 value is the largest share. With no winners the value is not measured.
 

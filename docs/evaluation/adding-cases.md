@@ -3,7 +3,7 @@
 Part of [Evaluation](README.md).
 
 How to add data to each eval set, and the rules the tests enforce. The data lives in `evals/` and
-is read by `loadEvalCases` in `evals/runEval.ts`. Each set has its own page with the details.
+is read by `loadEvalCases` in `evals/cases/loadEvalCases.ts`. Each set has its own page with the details.
 
 | Set                                            | Where it lives                             | Add one by                              |
 | ---------------------------------------------- | ------------------------------------------ | --------------------------------------- |

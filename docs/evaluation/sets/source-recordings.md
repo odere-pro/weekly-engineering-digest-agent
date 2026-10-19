@@ -73,7 +73,7 @@ and errors are reported and not saved.
   been checked against the body: entry count, titles, links, dates and summary text.
 - A new default source needs a recording and a hand-checked `expected.json`. Its host must be in
   the [default source list](../../sources.md), which a test compares with `SOURCE_ALLOWED_HOSTS` in
-  `evals/sourceEval.ts`.
+  `evals/sourceConformance/conformance/sourceAllowedHosts.ts`.
 - Page files are named `<item id>.html.txt` and must match an expected item.
 - Recorded bodies are untrusted text.
 

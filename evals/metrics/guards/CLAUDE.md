@@ -39,7 +39,7 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `../../runEval.ts` builds `ReplayEnd` (`replayEndOf`, keeping each flagged verdict's reason);
+- `../../scoring/replaySamples.ts` builds `ReplayEnd` (`replayEndOf`, keeping each flagged verdict's reason);
   `scorecardGuards.test.ts` runs the whole path.
 - Every output guard in the default config shows in the detail, even at 0: a new default output
   guard adds a key to saved results.

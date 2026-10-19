@@ -21,14 +21,14 @@ design. To change a feature you open one folder.
 | `src/render/`        | Digest view, Markdown, canonical scoring text, review sheet                         | [render](../features/render.md)               |
 | `src/delivery/`      | `Delivery` port, `adapters/` (Markdown file, SMTP, Slack)                           | [delivery](../features/delivery.md)           |
 | `src/models/`        | `ModelProvider` port, structured output, `adapters/` (Ollama, decision endpoint)    | [models](../features/models.md)               |
-| `src/store/`         | `RunStore` port, `adapters/` (run folders, lock, atomic files)                      | [store](../features/store.md)                 |
+| `src/store/`         | `RunStore` port, `adapters/` (run folders, lock)                                    | [store](../features/store.md)                 |
 | `src/domain/`        | The shared types (zod schemas)                                                      | [domain](../features/domain.md)               |
 | `src/config/`        | Config schema, profiles, loading                                                    | [config](../features/config.md)               |
 | `src/app/`           | The composition root and its decorators                                             | [app](../features/app.md)                     |
 | `src/cli/`           | `program.ts` registers commands; one folder per command                             | [cli](../features/cli.md)                     |
 | `src/scheduler/`     | The weekly scheduler and OS schedule snippets                                       | [scheduler](../features/scheduler.md)         |
 | `src/observability/` | pino logs, OpenTelemetry traces, the redactor                                       | [observability](../features/observability.md) |
-| `src/shared/`        | Small stateless helpers: errors, clocks, retry, URLs, text                          | [shared](../features/shared.md)               |
+| `src/shared/`        | Small helpers: errors, clocks, retry, URLs, text, the atomic file writer            | [shared](../features/shared.md)               |
 | `evals/`             | Eval data and the harness that scores it                                            | [evals](../features/evals.md)                 |
 | `test/`              | Shared test kit (`fakes/`, `builders.ts`), cross-feature `integration/` and `live/` | not a feature                                 |
 

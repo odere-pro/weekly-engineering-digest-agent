@@ -23,8 +23,10 @@ All notable changes to this project are listed here. The format follows
 - `digest show <week>` and `digest preview <week>`: inspect a saved run and render it for each
   channel without sending.
 - `digest doctor --readiness`: a verdict per profile for this machine.
-- `run --seed` and the `models.seed`, `models.temperature` and `models.rescoreWithWriter` keys.
-  A rerun of a week repeats itself.
+- `run --seed` and the `models.seed` and `models.temperature` keys. A rerun of a week repeats
+  itself.
+- `models.rescoreWithWriter` (off by default): the writer model scores the items at or above
+  `thresholds.minRelevance` a second time. It takes effect in `digest run` and `digest eval`.
 - Each writer gets one retry when every draft fails the link or format check.
 - Email and Slack sends are retried twice, but only when nothing was sent.
 - A week that fails in `serve` is retried at most twice and sends one failure note.
@@ -45,6 +47,9 @@ All notable changes to this project are listed here. The format follows
 - Secrets are redacted again just before a record is saved or a message is sent, including the
   digest view.
 - Two items about the same release from different sources are merged.
+- A `models.writers` list with a writer from the judge's model family fails at config load.
+  `clef` counts as Qwen.
+- `pnpm pack` and `pnpm publish` build `dist/artifacts/cli.js` first (`prepack`).
 
 ### Fixed
 

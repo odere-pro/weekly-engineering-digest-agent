@@ -10,7 +10,7 @@
 flowchart LR
   select -->|"winner draft"| deliver
   deliver -->|"DigestMessage, shipDigest"| port[[Delivery]]:::focus
-  resume["runResume"] -->|"saved digest"| port
+  resume["resumeDelivery"] -->|"saved digest"| port
   endRun["endRun"] -->|"FailureNote"| port
   container["app/container"] -.->|"builds, wraps"| port
   port --> markdown["markdownFile"]:::focus --> disk[("disk")]
@@ -35,8 +35,8 @@ flowchart TD
 ```
 
 - `shipDigest` (`digest/ending/shipping/shipping.ts`) tries each channel in turn and never throws.
-  A failure ends the run `failed` naming the channels that got it; `runResume` sends the saved
-  `digest.md` to the rest. A failure note is best effort: a channel that fails is logged.
+  A failure ends the run `failed` naming the channels that got it; `resumeDelivery`
+  (`digest/resume/resumeDelivery.ts`) sends the saved `digest.md` to the rest. A failure note is best effort: a channel that fails is logged.
 
 ## Rules
 
@@ -56,22 +56,22 @@ flowchart TD
 
 ## Files
 
-| File                        | Role                                                                                                   |
-| --------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `Delivery.ts`               | The port, `DigestMessage`, `FailureNote`, `DigestView`                                                 |
-| `deliveryId.ts`             | `DeliveryIdSchema`, `DeliveryId`: channel ids kept in `run.json`                                       |
-| `adapters/`                 | The channels: `markdownFile.ts` (always on), `smtp.ts`, `slack.ts`; see `adapters/CLAUDE.md`           |
-| `adapters/email/`           | `renderEmailText`, `renderEmailHtml` from a view; see its `CLAUDE.md`                                  |
-| `adapters/slackBlocks/`     | `toSlackBlocks`; `escapeSlack`, `toSlackMrkdwn`; see its `CLAUDE.md`                                   |
-| `adapters/errors/`          | `DeliveryError` and facts, `redactedError`, `failureTitle`, `failureOneLiner`; see its `CLAUDE.md`     |
-| `adapters/` four re-exports | `emailRender`, `slackBlocks`, `deliveryError`, `redact`: `// compat` bridges; see `adapters/CLAUDE.md` |
+| File                    | Role                                                                                         |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| `Delivery.ts`           | The port, `DigestMessage`, `FailureNote`                                                     |
+| `deliveryId.ts`         | `DeliveryIdSchema`, `DeliveryId`: channel ids kept in `run.json`                             |
+| `adapters/`             | The channels: `markdownFile.ts` (always on), `smtp.ts`, `slack.ts`; see `adapters/CLAUDE.md` |
+| `adapters/email/`       | `renderEmailText`, `renderEmailHtml` from a view; see its `CLAUDE.md`                        |
+| `adapters/slackBlocks/` | `toSlackBlocks`; `escapeSlack`, `toSlackMrkdwn`; see its `CLAUDE.md`                         |
+| `adapters/errors/`      | `DeliveryError`, `redactedError`, `failureTitle`; see its `CLAUDE.md`                        |
 
 ## Gotchas
 
 - Email layout: edit `adapters/email/`, run its renderer tests with `UPDATE_GOLDEN=1`, read the
   diff. The Slack golden `digest-blocks.json` is edited by hand.
-- `DigestView` is imported by `render/`, `evals/metrics.ts` and `cli/preview` (which also calls the
-  renderers, through the `// compat` files); `cli/run` uses `digestFilePaths`, `markdownFolder`.
+- `DigestView` lives in `render/digestView.ts`; the channels, `digest/` (shipping, resume), `app/redaction`
+  and `cli/preview` import it there (`cli/preview` also calls the email and Slack renderers);
+  `cli/run` uses `digestFilePaths`, `markdownFolder`.
 - A new channel needs its id in `Delivery.id` and `DeliveryIdSchema`, an entry in
   `DeliveryConfigSchema` (frozen `config/schema.ts`) and a branch in `app/container.ts`.
 - `store` prune keeps the files named `<week>.*` in a week's `digest/` folder: keep that prefix on

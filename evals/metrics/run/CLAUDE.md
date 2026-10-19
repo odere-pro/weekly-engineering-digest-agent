@@ -33,7 +33,7 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `stability` measures one repeated week. `stabilityAcrossWeeks` in `../../runEval.ts` builds the
+- `stability` measures one repeated week. `stabilityAcrossWeeks` in `../../scoring/stabilityAcrossWeeks.ts` builds the
   per-week view when several weeks were repeated, and names why a run was empty with
   `noDigestCause`.
 - The gate is `GATES.stability`, a count of shared items (`../../metrics.ts`), not a share.

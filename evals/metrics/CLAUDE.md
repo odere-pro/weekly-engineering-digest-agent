@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart LR
-  run["runEval: measure()"] -->|"outcomes, samples, hits"| fns["metrics/: one function per metric"]:::focus
+  run["scoring/measure"] -->|"outcomes, samples, hits"| fns["metrics/: one function per metric"]:::focus
   fns -->|Measurement| asm["metrics.ts: assembleMetrics"]
   tbl["GATES, METRIC_META"] -.-> asm
   ids["schema.ts: METRIC_IDS, LATER_METRICS"] -.-> asm
@@ -52,28 +52,28 @@ flowchart TD
 
 ## Files
 
-| Path            | Role                                                                                                  |
-| --------------- | ----------------------------------------------------------------------------------------------------- |
-| `../metrics.ts` | `GATES`, `METRIC_META`, `withCoverage`, `evaluateGate`, `assembleMetrics`, `failedHardGates`, bridges |
-| `measurement/`  | `Measurement`, `share`, `mean`, `countBy`, week detail; see `measurement/CLAUDE.md`                   |
-| `digest/`       | Link validity and format on the Markdown read back; see `digest/CLAUDE.md`                            |
-| `attacks/`      | Attack handling, the attack replay, guard attack recall; see `attacks/CLAUDE.md`                      |
-| `guards/`       | Groundedness, false blocks, blocks on the real weeks; see `guards/CLAUDE.md`                          |
-| `ranking/`      | Must-include recall, must-exclude leaks, the classifier; see `ranking/CLAUDE.md`                      |
-| `judging/`      | Writing quality, judge agreement, writer win rate; see `judging/CLAUDE.md`                            |
-| `run/`          | Stability and run time; see `run/CLAUDE.md`                                                           |
-| `sources/`      | Source parse yield and summary fill; see `sources/CLAUDE.md`                                          |
+| Path            | Role                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `../metrics.ts` | `GATES`, `METRIC_META`, `withCoverage`, `evaluateGate`, `assembleMetrics`, `failedHardGates` |
+| `measurement/`  | `Measurement`, `share`, `mean`, `countBy`, week detail; see `measurement/CLAUDE.md`          |
+| `digest/`       | Link validity and format on the Markdown read back; see `digest/CLAUDE.md`                   |
+| `attacks/`      | Attack handling, the attack replay, guard attack recall; see `attacks/CLAUDE.md`             |
+| `guards/`       | Groundedness, false blocks, blocks on the real weeks; see `guards/CLAUDE.md`                 |
+| `ranking/`      | Must-include recall, must-exclude leaks, the classifier; see `ranking/CLAUDE.md`             |
+| `judging/`      | Writing quality, judge agreement, writer win rate; see `judging/CLAUDE.md`                   |
+| `run/`          | Stability and run time; see `run/CLAUDE.md`                                                  |
+| `sources/`      | Source parse yield and summary fill; see `sources/CLAUDE.md`                                 |
 
-Tests sit next to each file. `../metrics.test.ts` covers the gate table, the assembly and the bridges.
+Tests sit next to each file. `../metrics.test.ts` covers the gate table and the assembly.
 
 ## Gotchas
 
 - A new metric needs: an id in `METRIC_IDS` (`../schema.ts`); a gate in `GATES`, a label in
-  `METRIC_META`; a line in `measure()` (`../runEval.ts`); an entry in `SECTION_METRICS`
+  `METRIC_META`; a line in `measure()` (`../scoring/measure.ts`); an entry in `SECTION_METRICS`
   (`../checkpointSections.ts`: missing means `not run` in every `--only` run, no test catches it);
   an entry in `LATER_METRICS` if saved scorecards lack it (`../scorecardCompat.test.ts`).
 - Saved scorecards in `../scorecards/` must keep parsing: never rename an id or change a shape
   without a default in `schema.ts`.
-- The bridges in `../metrics.ts` (marked `compat`) serve `judge/`, `rescoreReplay.ts`, `calibrate.ts`,
-  `thresholds/split.ts` and tests outside this folder. Do not add to them.
+- `judge/`, `rescore/`, `calibration/` and `thresholds/split.ts` import the metric functions from the
+  folder that defines them, not through `../metrics.ts`.
 - `thresholds/sweep/measures.ts` reads `GATES`: a changed gate moves the tuning gates too.

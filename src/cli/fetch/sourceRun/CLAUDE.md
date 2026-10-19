@@ -14,17 +14,15 @@ flowchart TD
   port -.->|"every answer, entry counts"| rec["recorder.tap"]
   one -->|"Outcome"| rep["reportOf: last answer, entries, duration"]
   rec -.-> rep
-  rep --> err["errorText: redact, one line, no control characters, 300 chars"]
-  rep --> out[SourceReport]
+  rep --> err["errorText: redact, one line, no control characters, 300 chars"] --> out[SourceReport]
 ```
 
 ## Rules
 
 - One try, no retry: this command shows what a source does the first time. The limit is the
   deps' `sourceTimeoutMs`, for the feed and any article pages together.
-- A failure becomes a report with `ok: false` and no items, never a throw: the other sources and
-  the saved raw body still count.
-- Secrets leave an error text first, then it is cut, so no piece of a secret survives the cut.
+- A failure becomes a report with `ok: false` and no items, never a throw: the other sources and the
+  saved raw body still count. Secrets leave an error text first, then it is cut.
 - The recorder keeps answers per source id, so sources fetched at once never share answers.
 - `buildFetchers` picks REST with a GitHub token, else the Atom feed, as the container does.
 
@@ -38,12 +36,10 @@ flowchart TD
 | `mapWithConcurrency.ts` | `mapWithConcurrency`: a bounded pool that keeps the input order         |
 | `types.ts`              | `SourceReport`, `FetchRun`                                              |
 
-Tests sit next to each file; `buildFetchers.test.ts` uses the scripted network from
-`../__fixtures__/fetchHarness.ts`, `fetchSource.test.ts` uses `FakeSourceFetcher`.
-
 ## Gotchas
 
+- `buildFetchers.test.ts` uses the scripted network of `../__fixtures__/fetchHarness.ts`;
+  `fetchSource.test.ts` uses `FakeSourceFetcher`.
 - `recorder.ts`, `buildFetchers.ts` and `types.ts` are the only files here that may use the words
-  `tap`, `SourceTap`, `SourceAnswer`, `SourceEntries` (`../fetch.tap.test.ts`). Keep them out of
-  the others, comments included.
+  `tap`, `SourceTap`, `SourceAnswer`, `SourceEntries` (`../fetch.tap.test.ts`), comments included.
 - `Recorder.tap` has both listeners set (`Required<SourceTap>`), so tests call them directly.

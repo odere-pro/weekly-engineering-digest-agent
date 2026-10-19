@@ -36,10 +36,10 @@ flowchart TD
 | `caseFiles.ts`     | `loadCaseDir`, `assertAttacksAreDistinct`                                     |
 | `loadEvalCases.ts` | `loadEvalCases`: the folder check, then every part                            |
 
-Tests sit next to each file and write a cases folder in a temp dir (`useCasesDir` in `evalKit.ts`).
-
 ## Gotchas
 
-- `SPEC_EVAL_SET` is the size a full eval needs; a hard gate fails on less. `../dataset.*.test.ts`
-  check the real data against it, so a changed count there needs the constant to follow.
-- `../runEval.ts` re-exports `loadEvalCases`, `EvalCases` and `SPEC_EVAL_SET` until callers move.
+- Tests write a cases folder in a temp dir (`useCasesDir` in `evalKit.ts`).
+- `SPEC_EVAL_SET` is the size a full eval needs; a hard gate fails on less. `../dataset.*.test.ts` check
+  the real data against it: a changed count needs the constant to follow.
+- `runEval`, `calibrate`, `rescoreReplay`, `tuneThresholds` and `scoring/` import `loadEvalCases`,
+  `EvalCases` and `SPEC_EVAL_SET` from here.

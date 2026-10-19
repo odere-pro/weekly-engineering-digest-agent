@@ -15,6 +15,7 @@ flowchart TD
   held --> notes["notes: sendOrHoldNote"]
   notes --> prune["pruneOldRuns: keepWeeks, best effort"]
   prune --> done["log Run finished; return written and kept"]
+  classDef focus stroke-width:3px
 ```
 
 ## Rules
@@ -41,5 +42,7 @@ flowchart TD
 
 ## Gotchas
 
-- `KEPT_SENT_REASON`, `isUnretriable`, `needsForce`, `RecordNotSavedError`, `sendHeldNote`, `toJson`
-  and `DraftsFileSchema` are imported outside `src/digest` through `../runEnding.ts`.
+- Outside `src/digest`, `cli`, `scheduler` and `test/integration` import from the defining files:
+  `KEPT_SENT_REASON` (`keepReason.ts`), `RecordNotSavedError` (`saveRecord.ts`), `isUnretriable` and
+  `needsForce` (`notes/unretriable.ts`), `sendHeldNote` (`notes/failureNotes.ts`), `toJson` and
+  `DraftsFileSchema` (`runFiles/runFiles.ts`). A rename breaks them.

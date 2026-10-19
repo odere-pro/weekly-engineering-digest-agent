@@ -73,5 +73,5 @@ flowchart TD
   `program.test.ts` pins the flags.
 - `currentGitSha` runs `git` in the working directory. A dirty tree adds a hash of the diff, so
   editing a prompt makes `--resume` start over; outside a checkout the value is new every time.
-- `EVAL_JUDGE` is two things (the environment variable and a model-tag constant): see
-  `judgeSetup/CLAUDE.md`.
+- `EVAL_JUDGE` (the variable) and `OVERRIDE_JUDGE` (the multi-writer judge in `config/profiles.ts`) are
+  two things: see `judgeSetup/CLAUDE.md`.

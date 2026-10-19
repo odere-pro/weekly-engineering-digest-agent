@@ -15,7 +15,7 @@ real draft too, in code. This metric proves that nothing slipped past it in the 
 
 ## How it is computed
 
-`linkValidity` in `evals/metrics.ts` takes the digest of each plain week replay and of the attack
+`linkValidity` in `evals/metrics/digest/linkValidity.ts` takes the digest of each plain week replay and of the attack
 replay (shown as `<week> (attacks)`).
 
 1. `parseDigestMarkdown` reads the Markdown that was written back into a digest. Each link is

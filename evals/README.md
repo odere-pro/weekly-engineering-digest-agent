@@ -73,8 +73,8 @@ is undefined).
 Why: exact match on area and relevance within half a point punished small slips that do not change
 what reaches the top 5. What matters is that the classifier ranks items in the right order and
 puts them in about the right place.
-How: `classifierRanking` in `metrics.ts`. Ties get the mean of their ranks. The old measure stays
-as `classifierAccuracy` in `metrics.ts` for the threshold sweep and the rescore replay, which
-compare runs of their own.
+How: `classifierRanking` in `metrics/ranking/classifier.ts`. Ties get the mean of their ranks. The
+old measure stays as `classifierAccuracy` in the same file for the threshold sweep and the rescore
+replay, which compare runs of their own.
 Gate: soft, at least 0.8 on the within-one share. Scorecards written before this change keep their
 old `detail` keys and still parse.

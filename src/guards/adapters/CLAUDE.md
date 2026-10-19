@@ -31,23 +31,21 @@ flowchart TD
 ```
 
 - A verdict is `{ check, flagged, probability?, reason? }`. Clef always sets `probability` (the
-  highest P(yes)) and a reason `label (0.xyz)` per question over the threshold. The others give only
-  a reason: rule ids, `granite4.1-guardian flagged jailbreak`, item ids (cut to 40 characters: they
-  come from writer output) or `unparsable guard output`.
+  highest P(yes)) and a reason per question over the threshold. The others give only a reason: rule
+  ids, `granite4.1-guardian flagged jailbreak`, item ids (cut to 40 characters) or `unparsable guard output`.
 - `graniteRisk` asks `jailbreak`, then `harm`, and stops at the first yes or unreadable reply.
   `graniteGroundedness` makes one `item` call per digest item (its claim text against its own source
   item), then one `headline` call against every source cited. An item with no source flags the draft.
-- A guard is on only if `planGuards` finds its section and check on; `buildApp` builds all five
-  anyway. An off or missing check goes to `disabledChecks`: `run.json` `disabledGuards` and the
-  footer. A role whose checks are all off needs no model (`modelsInUse`), so doctor skips its tag.
+- A guard is on only if `planGuards` finds its check on; `buildApp` builds all five anyway. An off
+  check goes to `disabledChecks` (`run.json`, the footer). A role whose checks are all off needs no
+  model (`modelsInUse`), so doctor skips its tag.
 
 ## Rules
 
 - Clef asks `decide` on `guardPolicy`, Granite `generate` on `guardRisk`, the rule guard no model.
   `unusedGuardRoles` (`config/profiles.ts`) relies on this map to pick the tags doctor needs.
 - Only Clef reads a threshold: `thresholds.guardFlag` (0.35) as `flagThreshold`, flag when P(yes) is
-  above it, one value for both guards. A value outside 0..1 throws at creation, as NaN never flags.
-  Granite gives no probability. `focusAreas` only words the rubric's off-task question.
+  above it, for both guards. A value outside 0..1 throws at creation. Granite gives no probability.
 - A Granite call is the criterion plus `UNTRUSTED_DATA_RULE` as the system prompt and the wrapped
   data as the user message: the rule in the judged message made groundedness worse. Text comes
   from `canonicalClaimText` and `canonicalHeadlineText`: the bytes stay those of the recordings.
@@ -70,15 +68,13 @@ through the real Ollama adapter (fake `fetch`): a full-size draft must fit `stra
 
 ## Gotchas
 
-- The abort signal never reaches a guard in a run. Clef and Granite forward `GuardCallOptions.signal`
-  (tested with one passed in), but `guardInputStep` and `guardOutputStep` call `checkItem(item)` and
-  `checkDraft(draft, sources)` with no options, their deps carry no signal, and `runChain` checks
-  the run's signal between stages only: an aborted run waits for the guard step to end.
+- The abort signal never reaches a guard in a run. Clef and Granite forward `GuardCallOptions.signal`,
+  but `guardInputStep` and `guardOutputStep` call `checkItem` and `checkDraft` with no options and
+  `runChain` checks the signal between stages only: an aborted run waits for the guard step to end.
 - `graniteRecorded.test.ts` compares the stored `system` and `prompt` with what the guard sends: a
   new criterion, data rule, `itemGuardText` or claim text fails it until the fixtures are recorded
-  again by hand on live Ollama (no script; `recordedWith` says how). The headline call is not
-  recorded (the replay answers `no`); `granite.headline.test.ts` pins it.
+  again by hand on live Ollama (`recordedWith` says how). The headline call is not recorded (the
+  replay answers `no`); `granite.headline.test.ts` pins it.
 - `evals/thresholds` builds the Clef and Granite risk guards; `test/live/think.live.test.ts` imports
-  `GRANITE_CRITERIA` and `parseGraniteScore`; `app/container.model.test.ts` wraps the two Granite
-  factories. A new guard also needs `GuardCheckIdSchema`, `cli/doctor/checks/guards.ts` and, with a
-  model, `unusedGuardRoles`.
+  `GRANITE_CRITERIA` and `parseGraniteScore`. A new guard also needs `GuardCheckIdSchema`,
+  `cli/doctor/checks/guards.ts` and, with a model, `unusedGuardRoles`.

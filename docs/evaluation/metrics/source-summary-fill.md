@@ -14,7 +14,7 @@ article page to fill the text in. This metric shows whether that works.
 
 ## How it is computed
 
-`sourceSummaryFill` in `evals/metrics.ts`, on the results of `evaluateSources`.
+`sourceSummaryFill` in `evals/metrics/sources/sourceMetrics.ts`, on the results of `evaluateSources`.
 
 1. The real fetchers run over the recordings, with the recorded article pages served for any page
    request.

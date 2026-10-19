@@ -11,10 +11,10 @@
 flowchart LR
   render:::focus -->|"Markdown"| write
   render -->|"canonical text"| guardOutput & select
-  render -->|"DigestView"| digest["digest: runDigest, runResume"] -->|"DigestMessage"| deliver
-  render -->|"review sheet"| ending["digest: runEnding"] -.-> store[[RunStore]]
+  render -->|"DigestView"| digest["digest: ending/shipping, resumeDelivery"] -->|"DigestMessage"| deliver
+  render -->|"review sheet"| ending["digest: ending/runFiles"] -.-> store[[RunStore]]
   render -->|"view, Markdown, ReviewFeedback"| cli["cli: preview, feedback"]
-  render -->|"renderDigest, readSavedView"| evals["evals: metrics, evalKit"]
+  render -->|"renderDigest, readSavedView"| evals["evals: metrics/digest, evalKit"]
   classDef focus stroke-width:3px
 ```
 
@@ -24,7 +24,6 @@ flowchart LR
 flowchart TD
   digest[Digest] --> view["buildDigestView: title, groups by urgency, footer"]
   view --> md["renderView: Markdown, one table per group"]
-  view --> chan["DigestView to each channel (delivery adapters)"]
   md --> file["digest.md"]
   file -->|"readSavedView, readSavedDigest"| back["DigestView, or headline and urls"]
   digest --> canon["canonicalDigestText, canonicalClaimText, canonicalHeadlineText"]
@@ -57,22 +56,23 @@ flowchart TD
 
 ## Files
 
-| File             | Role                                                                       |
-| ---------------- | -------------------------------------------------------------------------- |
-| `layout.ts`      | `buildDigestView`: grouping, labels, title, footer                         |
-| `markdown.ts`    | `renderView`, `renderDigest`, `readSavedView`, `readSavedDigest`, escaping |
-| `canonical.ts`   | `canonicalDigestText`, `canonicalClaimText`, `canonicalHeadlineText`       |
-| `reviewSheet.ts` | `buildReviewSheet`, `parseReviewSheet`, `MAX_CANDIDATES`                   |
+| File             | Role                                                                            |
+| ---------------- | ------------------------------------------------------------------------------- |
+| `digestView.ts`  | `DigestView`, `DigestViewGroup`, `DigestViewItem`: the view every channel shows |
+| `layout.ts`      | `buildDigestView`: grouping, labels, title, footer                              |
+| `markdown.ts`    | `renderView`, `renderDigest`, `readSavedView`, `readSavedDigest`, escaping      |
+| `canonical.ts`   | `canonicalDigestText`, `canonicalClaimText`, `canonicalHeadlineText`            |
+| `reviewSheet.ts` | `buildReviewSheet`, `parseReviewSheet`, `MAX_CANDIDATES`                        |
 
-Tests sit next to each file. `__fixtures__/render/` holds four digests (`mixed`, `old-draft`,
-`quiet-week`, `escaping`) with `.golden.txt` goldens (Prettier rewrites table pipes in `.md`).
+Tests sit next to each file; `__fixtures__/render/` holds four digests with `.golden.txt` goldens
+(Prettier rewrites table pipes in `.md`).
 
 ## Gotchas
 
-- The marker, the title shape and the table layout are the saved-file format. `TITLE_LINE`
-  (`markdown.ts`) must match `titleOf` (`layout.ts`). Resume must still find the item URLs in
-  `digest.md` (rows start `| [`) or it refuses until `--force`; if the rebuilt view no longer
-  renders to the file, channels get the Markdown without the view. Change writer and reader as one.
+- The marker, the title shape and the table layout are the saved-file format: `TITLE_LINE` (`markdown.ts`)
+  must match `titleOf` (`layout.ts`), and resume must find the item URLs in `digest.md` (rows start
+  `| [`) or it refuses until `--force`. If the rebuilt view no longer renders to the file, channels get
+  the Markdown without the view. Change writer and reader as one.
 - `checks/` counts the Markdown (under 500 words) and reads its links, so template words, links or
   an em dash can fail every draft. `markdown.fixtures.test.ts` runs both checks on the goldens.
 - Changing canonical text changes judge and guard input; eval baselines stop comparing.

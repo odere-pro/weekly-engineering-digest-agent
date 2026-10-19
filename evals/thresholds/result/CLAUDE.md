@@ -1,53 +1,45 @@
 # Result
 
-## Intent
+> Turns one raw capture into the tuning result: the proposed thresholds, how they score on the train
+> and holdout sides, and whether they pass the spec gates. Pure: no files, no model calls. Entry:
+> `tuneThresholds(raw, split?)` (`tune.ts`).
 
-This folder turns one raw capture into the tuning result: the proposed thresholds, how they score
-on the train and holdout sides, and whether they pass the spec gates. It is pure: no files, no
-model calls. The result file is what the maintainer reads before changing a threshold.
+## Flow
 
-## How it works
+```mermaid
+flowchart TD
+  raw["RawCapture"] --> split["split: default two newest weeks and every third case held out"]
+  split --> sweeps["both sweeps on the train side, joined as proposed"]
+  sweeps --> score["scoreSide on both sides, compareSides"]
+  score --> weeks["weekCheck: must-include kept, must-exclude dropped"]
+  weeks --> acc["acceptanceOf: classifier accuracy, filter accuracy, worst guard false block, input false blocks, failed calls"]
+  acc --> res["TuningResult"] --> sum["summaryText: in use against proposed, then train and holdout"]
+```
 
-1. `tuneThresholds(raw, split?)` (`tune.ts`) splits the capture (default: two newest weeks and
-   every third case held out), runs both sweeps on the train side and joins the picks as
-   `proposed`.
-2. It scores `proposed` on both sides (`scoreSide`), compares them (`compareSides`) and checks the
-   week items against the maintainer's week labels (`weekCheck.ts`).
-3. `acceptanceOf` (`acceptance.ts`) judges the train side against the gates: classifier accuracy,
-   filter accuracy, the worst guard false-block rate, input false blocks in mode "any", and
-   failed calls.
-4. `TuningResultSchema` (`schema.ts`) is the shape of `<date>-<profile>.json`.
-5. `summaryText` (`summary.ts`) is the text `sweep` prints: thresholds in use against proposed,
-   the headline numbers, then train and holdout side by side.
+## Rules
 
-## Design
-
-- Every section of the result describes the train side. Only `split` and `scores` describe both.
-  Both are optional, so results from before the split still parse.
-- A rate that could not be measured is `null` and fails its gate. It is never 0 and never NaN.
+- Every section of the result describes the train side; only `split` and `scores` describe both,
+  and both are optional so results from before the split still parse.
+- A rate that could not be measured is `null` and fails its gate: never 0, never NaN.
 - A failed call counts for the whole capture, not just the train side.
-- The order of the keys in `tune.ts` and `acceptance.ts` is the order in the JSON file. `../committedTuning.test.ts`
-  compares the committed result key for key.
-- `METHOD` in `tune.ts` is written into the result so the file explains how it was made.
+- The order of the keys in `tune.ts` and `acceptance.ts` is the order in the JSON file;
+  `../committedTuning.test.ts` compares the committed result key for key.
+- A gate number comes from `GATES` (`evals/metrics.ts`), not a literal. `METHOD` in `tune.ts` is
+  written into the result so the file explains how it was made.
 
 ## Files
 
-| File            | Role                                                                        |
-| --------------- | --------------------------------------------------------------------------- |
-| `schema.ts`     | `TuningResultSchema`, `TuningResult`, `WeekCheck`                           |
-| `tune.ts`       | `tuneThresholds`                                                            |
-| `weekCheck.ts`  | `weekCheck`: must-include kept, must-exclude dropped                        |
-| `acceptance.ts` | `acceptanceOf`, `atLeast`, `atMost`                                         |
-| `summary.ts`    | `summaryText`                                                               |
-| `*.test.ts`     | One per file. `tune.test.ts` covers the split, nothing-to-measure and gates |
+| File            | Role                                                 |
+| --------------- | ---------------------------------------------------- |
+| `schema.ts`     | `TuningResultSchema`, `TuningResult`, `WeekCheck`    |
+| `tune.ts`       | `tuneThresholds`                                     |
+| `weekCheck.ts`  | `weekCheck`: must-include kept, must-exclude dropped |
+| `acceptance.ts` | `acceptanceOf`, `atLeast`, `atMost`                  |
+| `summary.ts`    | `summaryText`: the text `sweep` prints               |
 
-## Depends on, used by
+`tune.test.ts` covers the split, nothing-to-measure and the gates.
 
-Depends on: `../capture/schemas`, `../sweep/`, `../split.ts`, `src/config/schema`.
-Used by: `../cli/sweepCommand.ts`, `../committedTuning.test.ts`.
+## Gotchas
 
-## Change it safely
-
-- Run `pnpm vitest run evals/thresholds/result`.
-- A new field in the result needs an entry in `schema.ts` and, if old files lack it, `.optional()`.
-- A new gate goes into `acceptanceOf` and `schema.ts`; its number comes from `GATES`, not a literal.
+- A new field in the result needs an entry in `schema.ts` and, if old files lack it, `.optional()`; a
+  new gate goes into `acceptanceOf` and `schema.ts`. Only `../cli/sweepCommand.ts` calls this.

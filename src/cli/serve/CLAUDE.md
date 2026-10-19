@@ -15,7 +15,7 @@ flowchart LR
   serve -->|"cron, timeZone, run, runStatus, onGiveUp"| sched["scheduler/startScheduler"]
   sched -.->|"run(weekId, limit, attempt)"| digest["digest/runDigest"]
   sched -.->|"runStatus(weekId)"| store[[RunStore]]
-  sched -.->|"onGiveUp: sendHeldNote"| ending["digest/runEnding"]
+  sched -.->|"onGiveUp: sendHeldNote"| ending["digest/ending/notes"]
   classDef focus stroke-width:3px
 ```
 
@@ -74,7 +74,7 @@ note, with `CapturingDelivery`.
 
 - The tests pin the order: signal listener before config, then `stop()`, wait, close, return 0. The
   second-signal tests count the cancel signals handed to `waitForSignal`; keep the call order.
-- `sendHeldNote` comes from `digest/runEnding` and `DEFAULT_FAILED_RETRY` from `scheduler/scheduler`:
+- `sendHeldNote` comes from `digest/ending/notes/failureNotes.ts` and `DEFAULT_FAILED_RETRY` from `scheduler/scheduler`:
   renaming either breaks this command. A new scheduler option reaches the service only when it is
   passed to `startScheduler` here.
 - The service logs through `deps.logger`; stderr carries only a `DigestError`. There is no summary.

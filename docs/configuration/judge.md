@@ -43,6 +43,10 @@ Scores are saved in `run.json` on each draft (`score` and `byCriterion`).
 That file gives `light` two writers, so the judge is `clef:latest`. Pull it first, and expect a
 longer run: each writer drafts, and the judge scores each draft.
 
+The judge never shares a model family with a writer. `clef:latest` is Qwen based, so a writer
+from the Qwen family is refused when the config loads, with a message that names the writer and
+the judge.
+
 ## When select is skipped
 
 The step makes no judge call, and the first passing draft in writer order wins, when:
@@ -56,9 +60,10 @@ timeout is `models.timeoutsMs.judge`, 120000 ms by default.
 
 ## `EVAL_JUDGE` is a different thing
 
-`EVAL_JUDGE` is an environment variable for `digest eval` only. On a profile with no judge, it
-names a model that scores the winning digest of each replayed week, so the writing-quality
-metric has a value. The score is reported, not gated, until the judge is calibrated. `digest
+`EVAL_JUDGE` is an environment variable for `digest eval` only. It is not the judge that a
+`models.writers` list of two or more gets (that one is `clef:latest`, set in code). On a profile
+with no judge, `EVAL_JUDGE` names a model that scores the winning digest of each replayed week,
+so the writing-quality metric has a value. The score is reported, not gated, until the judge is calibrated. `digest
 run` ignores it. If the tag is not installed, or is not a decision model, `eval` stops with exit
 1 before it replays anything. Set it in `.env`: see [environment](environment.md).
 

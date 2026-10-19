@@ -14,7 +14,7 @@ maintainer marks the items that must stay out. This metric counts the ones that 
 
 ## How it is computed
 
-`mustExcludeLeaks` in `evals/metrics.ts`, through the same `hitsPerWeek` as
+`mustExcludeLeaks` in `evals/metrics/ranking/labelHits.ts`, through the same `hitsPerWeek` as
 [must-include recall](must-include-recall.md).
 
 1. For each week, take the `mustExclude` ids that the replay served.

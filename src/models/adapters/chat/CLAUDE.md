@@ -41,5 +41,5 @@ Tests run on the fake `fetch` of `../__fixtures__/ollamaHarness.ts` and the reco
 
 ## Gotchas
 
-- `../ollama.ts` bridges `effectiveThink`, `effectiveTemperature` and `ThinkSetting` for
-  `app/container` and `cli/doctor`: move or rename them and those two break.
+- `app/container` and `cli/doctor` import `effectiveThink`, `effectiveTemperature` and `ThinkSetting`
+  from `chatSettings.ts`: move or rename them and those two break.

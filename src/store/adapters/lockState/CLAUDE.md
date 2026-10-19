@@ -24,8 +24,8 @@ flowchart TD
   5 min old. A guard ignores its heartbeat.
 - Timings (`lockTimings.ts`): beat 60 s, abandoned 5 min, a lock with no heartbeat 6 h, guard 30 s,
   orphaned temp files 10 min. Interval × 3 stays under the timeout (`lockTimings.test.ts`).
-- `parseLockFile` gives `undefined` for anything unreadable, so `inspect` says stale. `isLockHeldError`
-  matches a `DigestError` starting with `LOCK_HELD_MESSAGE` ("Another run is in progress").
+- `parseLockFile` gives `undefined` for anything unreadable, so `inspect` says stale. `lockHeldError`
+  builds the error from `LOCK_HELD_MESSAGE` ("Another run is in progress", `../../lockHeld.ts`).
 
 ## Files
 
@@ -35,11 +35,11 @@ flowchart TD
 | `lockFile.ts`      | Schema, `LockFile`, `OwnLock`, `parseLockFile`, `sameLock`, `createLockFile`, `isOurs` |
 | `liveness.ts`      | `staleReason`, `inspect`, `LockState`, `LockKind`                                      |
 | `ownLock.ts`       | `buildOwnLock`, `readPidNamespace`, the per-process token                              |
-| `lockHeldError.ts` | `LOCK_HELD_MESSAGE`, `lockHeldError`, `isLockHeldError`                                |
+| `lockHeldError.ts` | `lockHeldError(lock)`: the "another run is in progress" error                          |
 | `*.test.ts`        | One per file; `liveness.test.ts` pins each limit on both sides                         |
 
 ## Gotchas
 
-- `LOCK_HELD_MESSAGE` is copied in `scheduler.ts:149` and `MemoryRunStore` and quoted in
-  `docs/runbooks/debug/stuck-lock.md`. Nothing outside the store calls `isLockHeldError`.
+- `LOCK_HELD_MESSAGE` (`store/lockHeld.ts`) is copied in `MemoryRunStore` and quoted in
+  `docs/runbooks/debug/stuck-lock.md`. `scheduler/retry/attemptRun.ts` matches it with `isLockHeldError`.
 - A new lock file field must be optional, or older locks turn unreadable and get taken over.

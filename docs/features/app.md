@@ -71,7 +71,6 @@ pipeline uses them through ports. See [ports and adapters](../architecture/ports
 - No port of its own. It is the one place that imports the adapters of every port.
 - Tests sit next to the code. They wrap each factory with a spy that still builds the real
   adapter, then check the options it got, and they test that a secret reaches no log or record.
-  Some scheduler tests also live here, for historic reasons.
 
 ## Related
 

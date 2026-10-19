@@ -3,7 +3,7 @@
 > Runs every fetcher over the response the recorder saved for its source and counts what comes out.
 > No network: the fetcher gets a `fetch` that serves the recording. Entries:
 > `loadSourceRecordings(dir)`, `evaluateSources(recordings, factories) → SourceResult[]`,
-> `conformanceProblems(actual, expected, knownGaps) → string[]`. `../sourceEval.ts` is the old path.
+> `conformanceProblems(actual, expected, knownGaps) → string[]`.
 
 ## Context
 
@@ -49,19 +49,16 @@ flowchart TD
 
 ## Files
 
-| File               | Role                                                                   |
-| ------------------ | ---------------------------------------------------------------------- |
-| `recordings/`      | `SourceRecording` and loading it from disk. See `recordings/CLAUDE.md` |
-| `replayFetch/`     | A recording served as `fetch`; the fetcher factories. See its doc      |
-| `conformance/`     | Tally, allowlist, problems, `evaluateSources`. See its doc             |
-| `../sourceEval.ts` | Bridges to the names above; callers outside the folder still use it    |
+| File           | Role                                                                   |
+| -------------- | ---------------------------------------------------------------------- |
+| `recordings/`  | `SourceRecording` and loading it from disk. See `recordings/CLAUDE.md` |
+| `replayFetch/` | A recording served as `fetch`; the fetcher factories. See its doc      |
+| `conformance/` | Tally, allowlist, problems, `evaluateSources`. See its doc             |
 
 Tests sit next to each file. `__fixtures__/conformanceKit.ts` has `goodItem`, `recording` and `factoriesFor`.
 
 ## Gotchas
 
-- `sourceEval.ts` holds no code: `// compat (W10-B23)` lines for the runEval folders, the source
-  metrics and `dataset.sources.test.ts`. Remove them when the callers import from here.
 - Page files are `pages/<item id>.html.txt`, not `.html`: prettier would try to format a page.
 - Item ids hash the URL: a `normalizeUrl` change re-records every source.
 - `MIN_SUMMARY_CHARS` (`conformance/tally.ts`) decides what an empty summary is, so changing it

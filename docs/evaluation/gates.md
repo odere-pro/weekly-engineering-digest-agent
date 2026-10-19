@@ -48,7 +48,7 @@ A value on the threshold passes. The code allows a rounding error of one part in
 ## Too few cases
 
 A hard gate fails when it was measured on fewer cases than the spec set. `SPEC_EVAL_SET` in
-`evals/runEval.ts` asks for 6 weeks, 10 attack cases, 10 grounding cases and 60 classifier cases.
+`evals/cases/evalSet.ts` asks for 6 weeks, 10 attack cases, 10 grounding cases and 60 classifier cases.
 `digest eval` has no option to lower it. The data now holds 30 attacks and 30 grounding drafts, so
 the minimum is far below what is there; it did not move with the data.
 
@@ -61,7 +61,7 @@ the minimum is far below what is there; it did not move with the data.
 ## The judge-agreement rule
 
 Writing quality and selection agreement come from a model judge. They are gated only when the judge
-agrees with the maintainer at least 80% of the time (`JUDGE_AGREEMENT_MIN` in `evals/metrics.ts`).
+agrees with the maintainer at least 80% of the time (`JUDGE_AGREEMENT_MIN` in `evals/metrics/judging/judgeMetrics.ts`).
 
 | Situation                                   | Verdict      | Note on the scorecard                                          |
 | ------------------------------------------- | ------------ | -------------------------------------------------------------- |

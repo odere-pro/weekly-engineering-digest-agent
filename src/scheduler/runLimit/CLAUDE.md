@@ -36,4 +36,4 @@ flowchart LR
 
 - The default is 3 hours and lives here, but `scheduler.ts` applies it (`runTimeoutMs ?? default`).
 - A run that hit the limit is never retried. `retry/attemptRun.ts` reads `timedOut()`, and
-  `isUnretriable` in `digest/runEnding` reads the `Run aborted` prefix that `abortedError` adds.
+  `isUnretriable` (`digest/ending/notes/unretriable.ts`) reads the `Run aborted` prefix that `abortedError` adds.

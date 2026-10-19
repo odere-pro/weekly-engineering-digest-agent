@@ -13,7 +13,7 @@ good: accurate against its sources, clear, useful and on topic.
 
 ## How it is computed
 
-`writingQuality` in `evals/metrics.ts` is the mean of a list of scores. Where the scores come from
+`writingQuality` in `evals/metrics/judging/judgeMetrics.ts` is the mean of a list of scores. Where the scores come from
 depends on the profile.
 
 - **A profile with a judge** (`quality`): the score the select step gave the winning draft of each

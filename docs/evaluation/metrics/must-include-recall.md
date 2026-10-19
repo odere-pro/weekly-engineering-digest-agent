@@ -15,7 +15,7 @@ ranking or the writers dropped something important.
 
 ## How it is computed
 
-`mustIncludeRecall` in `evals/metrics.ts`, through `hitsPerWeek`.
+`mustIncludeRecall` in `evals/metrics/ranking/labelHits.ts`, through `hitsPerWeek`.
 
 1. For each week, take the `mustInclude` ids from `labels.json` that the replay served.
 2. Count how many of them are among the items the digest links to (`digestItemIds`).

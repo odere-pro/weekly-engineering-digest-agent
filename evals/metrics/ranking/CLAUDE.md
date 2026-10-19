@@ -41,5 +41,5 @@ Tests sit next to each file. No fixtures.
 
 ## Gotchas
 
-- `evals/calibrate.ts`, `evals/rescoreReplay.ts` and `thresholds/split.ts` import `WeekHits`, the
-  two label metrics and `classifierAccuracy` through the bridge in `../../metrics.ts`.
+- `evals/calibration/measure/`, `evals/rescore/replay/` and `thresholds/split.ts` import `WeekHits`, the
+  two label metrics and `classifierAccuracy` from here directly.

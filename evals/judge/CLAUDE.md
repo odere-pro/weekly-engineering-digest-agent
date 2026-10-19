@@ -39,8 +39,8 @@ flowchart TD
 ## Rules
 
 - `EVAL_JUDGE` in this folder is the environment variable (`EnvSchema`), which the error texts name
-  because the user sets it. It is not the `EVAL_JUDGE` constant of `src/config/profiles.ts`, a model
-  tag that `resolveProfile` gives a multi-writer run as its judge. Nothing here imports the constant.
+  because the user sets it. It is not `OVERRIDE_JUDGE` of `src/config/profiles.ts`, the model tag that
+  `resolveProfile` gives a multi-writer run as its judge. Nothing here imports the constant.
 - The judge runs last and one week at a time, only for a profile without a judge: the model loads
   once, after every replay (`runEval` orders it).
 - A `DigestError` on one week is listed and logged and the other weeks keep their scores. Any other

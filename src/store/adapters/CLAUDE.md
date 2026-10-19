@@ -27,7 +27,7 @@ milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
 
 ## Rules
 
-- Every write is `writeFileAtomic`: a temp file `<name>.<pid>.<uuid>.tmp` in the same folder,
+- Every write is `writeFileAtomic` (`shared/atomicFile.ts`): a temp file `<name>.<pid>.<uuid>.tmp` in the same folder,
   fsync, rename. A reader sees the old file or the new one, never half. No plain `writeFile`.
 - `createFileExclusive` hard-links a temp file, so a new file appears complete or not at all.
   FAT, exFAT and some network or FUSE mounts have no hard links: a raw `EPERM` or `ENOTSUP`.
@@ -44,7 +44,6 @@ milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
 | `fsRunStore.ts`                       | `createFsRunStore`: all port methods on the folder layout                                                                                                                                                                                                         |
 | `artifactFiles.ts`                    | `ARTIFACT_FILES`, `artifactFile(name)`                                                                                                                                                                                                                            |
 | `runFolders.ts`                       | `assertRunId`, `runDir`, `listWeekFolders` (Monday folders with `digest/`, newest first), `readRunRecord`, `pruneWeekFolder` (a week's source folders, and its `digest/` but `digest.md` and `<week>.*`), `pruneOldDays` (older source folders and `logs/<day>/`) |
-| `atomicFile.ts`                       | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`                                                                                                                                                                              |
 | `runLock.ts`                          | `acquireRunLock`, `AcquireLockOptions` (host, PID namespace, beat interval for tests)                                                                                                                                                                             |
 | `lockState/` `heartbeat/` `takeover/` | The lock, by job. Each has its own `CLAUDE.md`                                                                                                                                                                                                                    |
 | `lockContender.ts`                    | Child process of the contention test; not app code                                                                                                                                                                                                                |
@@ -54,5 +53,5 @@ milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
 
 - `runLock.contention.test.ts` is the only test of the real race (4 processes, 40 rounds, slow).
   Run it after any change to the lock, the guard or the heartbeat.
-- `heartbeat/` and `takeover/` import only `atomicFile` and `lockState`: not each other, not `runLock.ts`.
+- `heartbeat/` and `takeover/` import only `shared/atomicFile` and `lockState`: not each other, not `runLock.ts`.
 - A new artifact goes in `ArtifactName` (`../RunStore.ts`, frozen) and in `ARTIFACT_FILES`.

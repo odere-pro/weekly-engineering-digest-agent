@@ -17,7 +17,7 @@ controls; [guard blocks on real weeks](guard-real-blocks.md) asks the same quest
 
 ## How it is computed
 
-`guardFalseBlocks` in `evals/metrics.ts`, fed by two kinds of clean subjects.
+`guardFalseBlocks` in `evals/metrics/guards/guardFalseBlocks.ts`, fed by two kinds of clean subjects.
 
 - **Input guards** (`ruleInjection`, `clefPolicy`, `graniteRisk`): every item the guards checked in
   the six plain week replays. The eval treats all recorded items as clean. The rule guard was

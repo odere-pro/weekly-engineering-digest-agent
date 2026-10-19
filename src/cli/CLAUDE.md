@@ -74,7 +74,7 @@ flowchart TD
   text, table headers and `fix:` lines.
 - Some folders import a sibling: `run`, `show/summary` and `fetch/report` take the duration helpers
   from `history/history`; `init` takes the RAM check from `doctor/readiness/memory.ts` and `errorCode`
-  from `doctor/errorCode.ts`; `eval.ts` imports `evals/`. `test/integration/harness.ts` calls `runCommand`.
+  from `doctor/errorCode.ts`; `eval.ts` imports `evals/`. `test/integration/harness/runCli.ts` calls `runCommand`.
 - `fetch/fetch.tap.test.ts` lets only `fetch/sourceRun/{buildFetchers,recorder,types}.ts` among the
   CLI files say `tap` or `SourceTap`, and only `buildFetchers.ts` call `createFetcher(`. A new CLI
   file that does either fails it.

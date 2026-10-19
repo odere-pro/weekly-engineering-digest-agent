@@ -49,14 +49,10 @@ flowchart TD
   the collected item. `WrittenItemSchema` makes `url` optional, so a bad one never costs a repair.
 - The security floor (`provenance/`) and the bare-link repair (`links/`) are exact and bounded; see
   their `CLAUDE.md`. An `action` is not link-repaired.
-- The retry prompt never carries a model url or an unmasked problem: the untrusted-data rule allows
-  urls inside a data block, so `writePrompt.ts` masks them.
-- `urgency` and `action` are required in `WrittenItemSchema`; `DigestSchema` keeps them optional
-  for older drafts. `prepareDraft` cuts an action to 200 characters.
-- Prompt limits come from `checks/formatCheck.ts`, so prompt and check cannot drift. The writer is
-  asked for less: 400 words, summary 30, action 15.
-- Writers run in turn (one model in memory, `OLLAMA_MAX_LOADED_MODELS=1`); `draftWith` never
-  rejects, so a failed writer never stops the next. Under 3 items no writer runs (`tooFewItems`).
+- Prompt limits come from `checks/formatCheck.ts`, so prompt and check cannot drift; the writer is
+  asked for less (400 words, summary 30, action 15).
+- Writers run in turn (one model in memory); `draftWith` never rejects, so a failed writer never
+  stops the next. Under 3 items no writer runs (`tooFewItems`).
 
 ## Files
 
@@ -75,9 +71,9 @@ Tests sit next to the code and script `FakeModelProvider` replies per writer tag
 
 ## Gotchas
 
-- `LINK_PROBLEM_KINDS` in `writePrompt.ts` is keyed by `UNKNOWN_URL_PROBLEM` and
-  `MALFORMED_LINK_PROBLEM` from `checks/linkCheck.ts`; `writePrompt.retry.test.ts` runs the real check.
-- `runDigest.ts` reads `writeCheckedStep`, `CodeChecked`, `CheckedDraft` and `rejections`;
-  `digest/fallback.ts` reads `CheckedDraft`, `checkedFallback` and `FALLBACK_WRITER`. The two types
-  are a compat re-export in `write.ts`; `fallbackDigest.ts` calls `codeCheck` from `checkedStep/`.
+- `LINK_PROBLEM_KINDS` in `writePrompt.ts` is keyed by `UNKNOWN_URL_PROBLEM` and `MALFORMED_LINK_PROBLEM`
+  from `checks/linkCheck.ts`; `writePrompt.retry.test.ts` runs the real check.
+- `digest/stages/write.ts` reads `writeCheckedStep` and its `rejections`; `digest/chain/state.ts` and
+  `digest/fallback.ts` read `CheckedDraft`, `CodeChecked` (`checkedStep/types.ts`), `checkedFallback`
+  and `FALLBACK_WRITER`.
 - Subfolders never import `write.ts`: `checkedStep/` sits above `links/`, `links/` above `tidy/`.

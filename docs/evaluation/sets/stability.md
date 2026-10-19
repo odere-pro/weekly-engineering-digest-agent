@@ -25,7 +25,7 @@ temperature, so the picks should repeat. The stability runs prove it, or show wh
 
 ## How the overlap is computed
 
-`stability` in `evals/metrics.ts` compares every pair of runs. For runs a, b and c it looks at
+`stability` in `evals/metrics/run/stability.ts` compares every pair of runs. For runs a, b and c it looks at
 (a, b), (a, c) and (b, c). For each pair it counts the distinct item ids found in both. The value is
 the mean of those counts. The most it can be is 5, when all runs picked the same five items.
 

@@ -12,7 +12,7 @@ flowchart LR
   domain -->|"Source, SourceKind, Item"| collecting["sources, classify, config"]
   domain -->|"Item, Digest, DigestItem, Draft"| drafting["write, checks, guards, select, render"]
   domain -->|"Urgency, WEEK_ID_PATTERN"| channels["render, delivery"]
-  domain -->|"StepName, RunStatus, WeekId"| runs["digest, store, scheduler, models, shared"]
+  domain -->|"StepName, RunStatus, WeekIdSchema"| runs["digest, store, scheduler, models, shared"]
   domain -->|"ExitCode, exitCodeFor"| exits["digest, select, cli, shared/errors"]
   classDef focus stroke-width:3px
 ```
@@ -28,7 +28,7 @@ flowchart TD
   draft -->|"select"| score["JudgeScore (select)"]
   verdict --> outcome["DraftOutcome (store): rejectedBy ids, score"]
   score --> outcome
-  outcome --> record["RunRecord (store): runId WeekId, status RunStatus, timings StepName"]
+  outcome --> record["RunRecord (store): runId WeekIdSchema, status RunStatus, timings StepName"]
   record --> exit["exitCodeFor(status) → ExitCode (domain)"]
 ```
 
