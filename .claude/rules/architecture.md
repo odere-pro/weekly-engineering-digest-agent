@@ -34,14 +34,18 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
   or `nodemailer`. ESLint (`no-restricted-imports`) fails the build otherwise.
   The rule covers every subfolder of those features too, except their own `adapters/`.
 - Adapters implement a port and may import `shared`, `domain` and `config`, never `cli`.
-- Only `src/app/container.ts` turns config into adapters. CLI, scheduler and evals call it.
+- Only `src/app/container.ts` turns config into adapters. CLI, scheduler and evals call it. A CLI
+  command may import an adapter file for two reasons only: the default dependency behind a port
+  (`createFsRunStore` as a `RunStore`), or a pure helper that must match the pipeline (`preview`
+  renders with the channels' own renderers). `src/cli/CLAUDE.md` says which.
 
 ## Types and subfeatures
 
 - A type lives in the feature that owns it: `models/roles.ts` (`Role`), `classify/classification.ts`
   (`Classification`, `ScoredItem`), `guards/guardVerdict.ts`, `select/judgeScore.ts`,
-  `delivery/deliveryId.ts`, `store/runRecord.ts` (`RunRecord`). `domain/schemas.ts` keeps only what
-  several features share (`Source`, `Item`, `Digest`, `Draft`, `WeekId`, `StepName`, `RunStatus`, `ExitCode`).
+  `delivery/deliveryId.ts`, `render/digestView.ts` (`DigestView`), `store/runRecord.ts` (`RunRecord`).
+  `domain/schemas.ts` keeps only what several features share (`Source`, `Item`, `Digest`, `Draft`,
+  `WeekId`, `StepName`, `RunStatus`, `ExitCode`).
 - A feature grows by subfeature folders, not by long files: no source file over 300 lines. A
   subfeature is one responsibility (`cli/init/envFile/`), with its code, tests and a `CLAUDE.md`.
   The feature's entry file stays and calls the subfeatures. Method: `docs/plan/PHASE-B-STANDARD.md`.

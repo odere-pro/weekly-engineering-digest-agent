@@ -1,4 +1,4 @@
-// digest.config.json and .env schemas. Frozen after Wave 0; defaults and thresholds are tuned on main.
+// digest.config.json and .env schemas. Frozen: defaults and thresholds are tuned on main.
 import { z } from 'zod';
 import { RoleSchema } from '../models/roles';
 import { SourceSchema } from '../domain/schemas';

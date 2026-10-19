@@ -1,4 +1,4 @@
-// CLI wiring. Every command is registered here once (Wave 0); issues implement the handlers.
+// CLI wiring. Every command is registered here once; each handler lives in its own folder.
 import { Command, InvalidArgumentError } from 'commander';
 import { doctorCommand } from './doctor/doctor';
 import { evalCommand } from './eval/eval';

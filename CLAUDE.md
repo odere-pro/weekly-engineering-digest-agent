@@ -23,12 +23,12 @@ works), and its tests sit next to the code. Pipeline order:
 | `src/render/`                                         | Digest view, Markdown, canonical scoring text, review sheet                                                    |
 | `src/delivery/`                                       | `Delivery` port, `adapters/` (Markdown file, SMTP and email HTML, Slack blocks)                                |
 | `src/models/`                                         | `ModelProvider` port, `generateStructured()`, `adapters/` (Ollama, decision endpoint)                          |
-| `src/store/`                                          | `RunStore` port, `layout.ts` (the `dist/` layout), `adapters/` (run folders, lock, atomic files)               |
+| `src/store/`                                          | `RunStore` port, `layout.ts` (the `dist/` layout), `adapters/` (run folders, lock with heartbeat and takeover) |
 | `src/domain/`                                         | `schemas.ts`: the types several features share (zod); feature-owned types live in their feature                |
 | `src/config/`                                         | `schema.ts` (zod), `profiles.ts` (role → model tag), `load.ts`                                                 |
 | `src/app/`                                            | `container.ts`: the composition root (config → adapters → `DigestDeps`), plus decorators                       |
 | `src/cli/`                                            | `program.ts` registers commands; one folder per command (`init/`, `doctor/`, `run/`, …)                        |
-| `src/scheduler/`, `src/observability/`, `src/shared/` | Weekly scheduler; pino logs and OTel; small utilities                                                          |
+| `src/scheduler/`, `src/observability/`, `src/shared/` | Weekly scheduler; pino logs and OTel; small utilities (errors, retry, text, `atomicFile`)                      |
 | `evals/`                                              | Eval data (recorded weeks, cases, scorecards) and the harness code with its tests                              |
 | `test/`                                               | Shared test kit (`fakes/`, `builders.ts`), cross-feature `integration/` and `live/` tests                      |
 
