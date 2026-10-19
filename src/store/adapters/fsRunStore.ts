@@ -3,9 +3,9 @@ import { join } from 'node:path';
 import { RunRecordSchema, type RunRecord } from '../runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../RunStore';
 import { systemClock, type Clock } from '../../shared/clock';
-import { DigestError } from '../../shared/errors';
 import { previousWeekIds } from '../../shared/isoWeek';
 import { noopLogger, type Logger } from '../../shared/telemetry';
+import { artifactFile } from './artifactFiles';
 import { readTextIfExists, writeFileAtomic } from './atomicFile';
 import {
   assertRunId,
@@ -27,14 +27,6 @@ export interface FsRunStoreOptions {
 }
 
 const LOCK_FILE = 'digest.lock';
-const ARTIFACT_NAMES: ReadonlySet<string> = new Set<ArtifactName>([
-  'items.json',
-  'scores.json',
-  'drafts.json',
-  'digest.md',
-  'review.md',
-  'error.json',
-]);
 
 /** A sent week, or a failed one that some channels already got: its URLs must not repeat. */
 function reachedAChannel(record: RunRecord): boolean {
@@ -61,15 +53,15 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
     },
 
     async saveArtifact(runId: string, name: ArtifactName, content: string): Promise<void> {
-      if (!ARTIFACT_NAMES.has(name)) throw new DigestError(`Unknown artifact name "${name}"`);
+      const file = artifactFile(name);
       const dir = runDir(folders, runId);
       await mkdir(dir, { recursive: true });
-      await writeFileAtomic(join(dir, name), content);
+      await writeFileAtomic(join(dir, file), content);
     },
 
     async readArtifact(runId: string, name: ArtifactName): Promise<string | undefined> {
-      if (!ARTIFACT_NAMES.has(name)) throw new DigestError(`Unknown artifact name "${name}"`);
-      return readTextIfExists(join(runDir(folders, runId), name));
+      const file = artifactFile(name);
+      return readTextIfExists(join(runDir(folders, runId), file));
     },
 
     async saveRunRecord(record: RunRecord): Promise<void> {

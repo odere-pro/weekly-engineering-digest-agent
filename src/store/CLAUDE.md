@@ -45,18 +45,30 @@ tool stays local-first with no database.
 - `release()` is safe to repeat and never removes a lock that another run took over.
 - Known limits (plain files, no OS lock) are written in the doc comment of `acquireRunLock`; the
   operator view is in `docs/operations/lock.md`. The lock needs a filesystem with hard links.
+- The lock code is split by job into `adapters/lockState/`, `adapters/heartbeat/` and
+  `adapters/takeover/`; `adapters/runLock.ts` only orders the steps. `isLockHeldError`
+  (`adapters/lockState/lockHeldError.ts`) is the typed test for "another run holds the lock";
+  match on it, never on the message text.
+- Artifact names come from one table, `ARTIFACT_FILES` (`adapters/artifactFiles.ts`), checked
+  against the `ArtifactName` type by `satisfies`.
 
 ## Files
 
-| File                        | Role                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| `RunStore.ts`               | The port, `RunLock`, `ArtifactName`                                                  |
-| `adapters/fsRunStore.ts`    | `createFsRunStore`: the folder layout and all port methods                           |
-| `adapters/runLock.ts`       | `acquireRunLock`: lock file, heartbeat, takeover guard, limits                       |
-| `adapters/runFolders.ts`    | Week folders: `assertRunId`, `runDir`, `readRunRecord`, `pruneWeekFolder`            |
-| `adapters/atomicFile.ts`    | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles` |
-| `adapters/lockContender.ts` | Child process for the contention test; not app code                                  |
-| `adapters/*.test.ts`        | `fsRunStore`, `runLock`, `runLock.contention`, `atomicFile` tests                    |
+| File                        | Role                                                                                                  |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `RunStore.ts`               | The port, `RunLock`, `ArtifactName`                                                                   |
+| `runRecord.ts`              | `RunRecord` and `RunRecordSchema`                                                                     |
+| `adapters/CLAUDE.md`        | The file adapter: data folder layout, atomic writes, the lock                                         |
+| `adapters/fsRunStore.ts`    | `createFsRunStore`: the folder layout and all port methods                                            |
+| `adapters/artifactFiles.ts` | `ARTIFACT_FILES`, `artifactFile`: the one artifact name table                                         |
+| `adapters/runLock.ts`       | `acquireRunLock`: the lock steps in order, and the known limits                                       |
+| `adapters/lockState/`       | Is a lock live, stale or ours? Format, timings, errors. See `adapters/lockState/CLAUDE.md`            |
+| `adapters/heartbeat/`       | Keep and release our lock. See `adapters/heartbeat/CLAUDE.md`                                         |
+| `adapters/takeover/`        | Replace a stale lock, sweep temp files. See `adapters/takeover/CLAUDE.md`                             |
+| `adapters/runFolders.ts`    | Week folders: `assertRunId`, `runDir`, `readRunRecord`, `pruneWeekFolder`                             |
+| `adapters/atomicFile.ts`    | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`                  |
+| `adapters/lockContender.ts` | Child process for the contention test; not app code                                                   |
+| `adapters/*.test.ts`        | `fsRunStore`, `fsRunStore.lock`, `artifactFiles`, `runLock`, `runLock.contention`, `atomicFile` tests |
 
 ## Depends on, used by
 
@@ -70,12 +82,14 @@ Used by: `digest` (`runDigest`, `runEnding`), `app` (container, redacting), `cli
 
 - Run `pnpm vitest run src/store`. Tests use temp folders and fake clocks. `runLock.contention`
   starts 4 real processes for 40 rounds to race for the lock, so it takes longer than the rest.
+- No source file in `src/store` is over 300 lines (a test file, 800); add a subfeature folder
+  with its own `CLAUDE.md` instead of growing one.
 - `fsRunStore.test.ts` has a parity block that runs the same cases on `test/fakes/MemoryRunStore`.
   If you change port behavior, change the fake too (a frozen file: ask the coordinator).
-- A new artifact name goes in two places: the `ArtifactName` type and `ARTIFACT_NAMES` in
-  `fsRunStore.ts`.
-- Do not weaken the lock rules (token check, heartbeat, guard re-checks). Tests in `runLock.test.ts`
-  and `fsRunStore.test.ts` cover each one.
+- A new artifact name goes in two places: the `ArtifactName` type (frozen, ask the coordinator)
+  and `ARTIFACT_FILES` in `adapters/artifactFiles.ts`. Typecheck fails until both agree.
+- Do not weaken the lock rules (token check, heartbeat, guard re-checks). Tests in each lock
+  folder, `runLock.test.ts` and `fsRunStore.lock.test.ts` cover each one.
 - Do not write files with plain `writeFile`. Use `writeFileAtomic`.
 - Secrets are removed before data gets here, by `app/redacting.ts`. Keep the store free of
   secret handling, but never add fields to a run record that could hold one.

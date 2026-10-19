@@ -14,41 +14,40 @@ import {
 import { hostname as osHostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { acquireRunLock, type AcquireLockOptions } from './runLock';
+import { isLockHeldError } from './lockState/lockHeldError';
 import {
-  acquireRunLock,
   LOCK_HEARTBEAT_INTERVAL_MS,
   LOCK_HEARTBEAT_TIMEOUT_MS,
   LOCK_MAX_AGE_MS,
   ORPHANED_TEMP_MAX_AGE_MS,
   TAKEOVER_GUARD_MAX_AGE_MS,
-  type AcquireLockOptions,
-} from './runLock';
+} from './lockState/lockTimings';
+import { takeOverStaleLock } from './takeover/takeover';
 import type * as Os from 'node:os';
 import type * as AtomicFile from './atomicFile';
+import type * as Takeover from './takeover/takeover';
 import type { RunLock } from '../RunStore';
 import { DigestError } from '../../shared/errors';
 import { noopLogger, type Logger } from '../../shared/telemetry';
 
-// Heartbeat writes go through writeFileAtomic and the temp file sweep through
-// removeStaleTempFiles; a test can make either fail.
-const atomic = vi.hoisted(() => ({ failWrites: false, failSweep: false, stuckFile: false }));
+// The temp file sweep goes through removeStaleTempFiles; a test can make it fail.
+const atomic = vi.hoisted(() => ({ failSweep: false }));
 vi.mock('./atomicFile', async (importOriginal) => {
   const actual = await importOriginal<typeof AtomicFile>();
   return {
     ...actual,
-    writeFileAtomic: (path: string, content: string) =>
-      atomic.failWrites
-        ? Promise.reject(new Error('disk full'))
-        : actual.writeFileAtomic(path, content),
     removeStaleTempFiles: (...args: Parameters<typeof actual.removeStaleTempFiles>) => {
       if (atomic.failSweep) return Promise.reject(new Error('folder unreadable'));
-      if (atomic.stuckFile) {
-        const failed = [{ name: 'digest.lock.1.stuck.tmp', error: 'operation not permitted' }];
-        return Promise.resolve({ removed: [], failed });
-      }
       return actual.removeStaleTempFiles(...args);
     },
   };
+});
+
+// A takeover that loses the race is hard to stage for real; the contention test races real ones.
+vi.mock('./takeover/takeover', async (importOriginal) => {
+  const actual = await importOriginal<typeof Takeover>();
+  return { ...actual, takeOverStaleLock: vi.fn(actual.takeOverStaleLock) };
 });
 
 // The machine name is read once per lock; a test can blank it.
@@ -84,9 +83,7 @@ beforeEach(async () => {
   lockPath = join(dir, 'digest.lock');
   guardPath = `${lockPath}.takeover`;
   nowMs = Date.parse(NOW);
-  atomic.failWrites = false;
   atomic.failSweep = false;
-  atomic.stuckFile = false;
   warn = vi.fn<Logger['warn']>();
   logger = { ...noopLogger, warn, child: () => logger };
   held = [];
@@ -115,10 +112,14 @@ async function acquire(overrides: Partial<AcquireLockOptions> = {}): Promise<Run
   return lock;
 }
 
+/** The pid of a process that has exited. Spawned once per file: spawning is slow on a busy machine. */
+let exitedPid: number | undefined;
 function deadPid(): number {
+  if (exitedPid !== undefined) return exitedPid;
   const child = spawnSync(process.execPath, ['-e', '']);
   if (child.error) throw child.error;
-  return child.pid;
+  exitedPid = child.pid;
+  return exitedPid;
 }
 
 interface LockContent {
@@ -503,23 +504,17 @@ describe('the takeover guard', () => {
 });
 
 describe('the heartbeat', () => {
-  async function heartbeatAt(): Promise<string | undefined> {
-    return (await readLock()).heartbeatAt;
-  }
-
-  it('refreshes heartbeatAt while the lock is held, and nothing else', async () => {
+  it('starts with the lock and refreshes heartbeatAt while it is held', async () => {
     await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-    const before = await readLock();
 
     nowMs += MINUTE_MS;
+
     await vi.waitFor(
       async () => {
-        expect(await heartbeatAt()).toBe(iso());
+        expect((await readLock()).heartbeatAt).toBe(iso());
       },
       { timeout: 3000 },
     );
-
-    expect(await readLock()).toEqual({ ...before, heartbeatAt: iso() });
   });
 
   it('keeps a long run live: a contender sees a fresh heartbeat after the timeout has passed', async () => {
@@ -528,41 +523,13 @@ describe('the heartbeat', () => {
     nowMs += LOCK_HEARTBEAT_TIMEOUT_MS + MINUTE_MS;
     await vi.waitFor(
       async () => {
-        expect(await heartbeatAt()).toBe(iso());
+        expect((await readLock()).heartbeatAt).toBe(iso());
       },
       { timeout: 3000 },
     );
 
     await expect(acquire({ hostname: OTHER_HOST })).rejects.toThrow(DigestError);
     expect(warn).not.toHaveBeenCalled();
-  });
-
-  it('stops on release and does not bring the file back', async () => {
-    const lock = await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-    await lock.release();
-
-    await new Promise((resolve) => setTimeout(resolve, FAST_BEAT_MS * 6));
-
-    expect(await readdir(dir)).toEqual([]);
-  });
-
-  it('waits for a beat in flight, so release leaves no file behind', async () => {
-    const lock = await acquire({ heartbeatIntervalMs: 1 });
-    await new Promise((resolve) => setTimeout(resolve, 20));
-
-    await lock.release();
-    await new Promise((resolve) => setTimeout(resolve, 20));
-
-    expect(await readdir(dir)).toEqual([]);
-  });
-
-  it('does not keep the process alive', async () => {
-    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
-
-    await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-
-    const timer = setIntervalSpy.mock.results[0]?.value as NodeJS.Timeout;
-    expect(timer.hasRef()).toBe(false);
   });
 
   it('beats every 60 seconds by default', async () => {
@@ -576,76 +543,18 @@ describe('the heartbeat', () => {
       hostname: HOST,
     }).then((lock) => held.push(lock));
 
-    expect(LOCK_HEARTBEAT_INTERVAL_MS).toBe(60_000);
     expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), LOCK_HEARTBEAT_INTERVAL_MS);
   });
 
-  it('beats well inside the timeout', () => {
-    expect(LOCK_HEARTBEAT_TIMEOUT_MS).toBe(5 * MINUTE_MS);
-    expect(LOCK_HEARTBEAT_INTERVAL_MS * 3).toBeLessThan(LOCK_HEARTBEAT_TIMEOUT_MS);
-  });
+  it('stops on release and does not bring the file back', async () => {
+    const lock = await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
+    await lock.release();
 
-  it('does not overwrite a lock another run took over, and stops beating', async () => {
-    await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-    const theirs = remoteLock();
-    await writeLock(theirs);
-
-    await vi.waitFor(
-      () => {
-        expect(warn).toHaveBeenCalledWith(
-          'Run lock is no longer ours (taken over or removed); its heartbeat stops',
-          expect.objectContaining({ runId: '2026-W42' }),
-        );
-      },
-      { timeout: 3000 },
-    );
-    nowMs += MINUTE_MS;
-    await new Promise((resolve) => setTimeout(resolve, FAST_BEAT_MS * 4));
-
-    expect(await readLock()).toEqual(theirs);
-    expect(warn).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not bring back a lock file that was removed, and stops beating', async () => {
-    await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-    await rm(lockPath);
-
-    await vi.waitFor(
-      () => {
-        expect(warn).toHaveBeenCalledWith(
-          'Run lock is no longer ours (taken over or removed); its heartbeat stops',
-          expect.objectContaining({ runId: '2026-W42' }),
-        );
-      },
-      { timeout: 3000 },
-    );
-    await new Promise((resolve) => setTimeout(resolve, FAST_BEAT_MS * 4));
+    await new Promise((resolve) => setTimeout(resolve, FAST_BEAT_MS * 6));
 
     expect(await readdir(dir)).toEqual([]);
-  });
-
-  it('logs a failed beat, keeps the run going and tries again', async () => {
-    await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
-    atomic.failWrites = true;
-
-    await vi.waitFor(
-      () => {
-        expect(warn).toHaveBeenCalledWith(
-          'Could not refresh the run lock heartbeat',
-          expect.objectContaining({ error: 'disk full' }),
-        );
-      },
-      { timeout: 3000 },
-    );
-
-    atomic.failWrites = false;
-    nowMs += MINUTE_MS;
-    await vi.waitFor(
-      async () => {
-        expect(await heartbeatAt()).toBe(iso());
-      },
-      { timeout: 3000 },
-    );
+    // A heartbeat left running would find the file gone and say so.
+    expect(warn).not.toHaveBeenCalled();
   });
 });
 
@@ -663,7 +572,6 @@ describe('orphaned temp files', () => {
   const names = async (): Promise<string[]> => (await readdir(dir)).sort();
 
   it('are removed when the lock is taken, once they are 10 minutes old', async () => {
-    expect(ORPHANED_TEMP_MAX_AGE_MS).toBe(10 * MINUTE_MS);
     const orphan = tempName('digest.lock');
     await writeAged(orphan, ORPHANED_TEMP_MAX_AGE_MS);
 
@@ -672,40 +580,6 @@ describe('orphaned temp files', () => {
     expect(await names()).toEqual(['digest.lock']);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith('Removed orphaned run lock temp files', { files: [orphan] });
-  });
-
-  it('are kept while younger than 10 minutes, because their writer may be running', async () => {
-    const fresh = tempName('digest.lock');
-    await writeAged(fresh, ORPHANED_TEMP_MAX_AGE_MS - SECOND_MS);
-
-    await acquire();
-
-    expect(await names()).toEqual(['digest.lock', fresh].sort());
-    expect(warn).not.toHaveBeenCalled();
-  });
-
-  it('are removed for the takeover guard as well', async () => {
-    const orphan = tempName('digest.lock.takeover');
-    await writeAged(orphan, 3 * ORPHANED_TEMP_MAX_AGE_MS);
-
-    await acquire();
-
-    expect(await names()).toEqual(['digest.lock']);
-  });
-
-  it('leave foreign files alone, old as they are', async () => {
-    const foreign = [
-      'notes.tmp',
-      'digest.lock.bak',
-      tempName('digest.json'),
-      tempName('other.lock'),
-    ];
-    for (const name of foreign) await writeAged(name, 24 * HOUR_MS);
-
-    await acquire();
-
-    expect(await names()).toEqual(['digest.lock', ...foreign].sort());
-    expect(warn).not.toHaveBeenCalled();
   });
 
   it('are also removed when a live run holds the lock', async () => {
@@ -740,16 +614,72 @@ describe('orphaned temp files', () => {
     });
     expect((await readLock()).runId).toBe('2026-W42');
   });
+});
 
-  it('are reported when one cannot be removed, and the lock is still taken', async () => {
-    atomic.stuckFile = true;
+describe('giving up', () => {
+  it('fails after three takeovers that lose the race, with an error that is not "lock held"', async () => {
+    await writeLock('not json');
+    vi.mocked(takeOverStaleLock)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false);
 
+    const attempt = acquire();
+
+    await expect(attempt).rejects.toThrow('Could not take the run lock: another run is starting');
+    expect(takeOverStaleLock).toHaveBeenCalledTimes(3);
+    expect(isLockHeldError(await attempt.catch((error: unknown) => error))).toBe(false);
+  });
+});
+
+describe('the error for a held lock', () => {
+  it('is recognised by isLockHeldError', async () => {
     await acquire();
 
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith('Could not remove orphaned run lock temp files', {
-      failed: [{ name: 'digest.lock.1.stuck.tmp', error: 'operation not permitted' }],
-    });
-    expect((await readLock()).runId).toBe('2026-W42');
+    const second = await acquire({ runId: '2026-W43' }).catch((error: unknown) => error);
+
+    expect(isLockHeldError(second)).toBe(true);
+  });
+
+  it('is also what a live takeover guard throws', async () => {
+    await writeLock(remoteLock({ hostname: HOST, pid: deadPid() }));
+    await writeLock(remoteLock({ runId: '2026-W43' }), guardPath);
+
+    const second = await acquire().catch((error: unknown) => error);
+
+    expect(isLockHeldError(second)).toBe(true);
+  });
+});
+
+describe('clock readings', () => {
+  // A test in fsRunStore.lock.test.ts plants a guard at the fourth reading, so the order is pinned.
+  function countingClock(): { clock: { now: () => Date }; reads: () => number } {
+    let count = 0;
+    return {
+      clock: {
+        now: () => {
+          count += 1;
+          return new Date(nowMs);
+        },
+      },
+      reads: () => count,
+    };
+  }
+
+  it('reads the clock twice for a free lock: the temp file sweep, then the start time', async () => {
+    const { clock, reads } = countingClock();
+
+    await acquire({ clock });
+
+    expect(reads()).toBe(2);
+  });
+
+  it('reads it twice more to take over a stale lock: the first look, then the look under the guard', async () => {
+    await writeLock(remoteLock({ heartbeatAt: iso(-LOCK_HEARTBEAT_TIMEOUT_MS) }));
+    const { clock, reads } = countingClock();
+
+    await acquire({ clock });
+
+    expect(reads()).toBe(4);
   });
 });
