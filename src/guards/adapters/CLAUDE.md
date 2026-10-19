@@ -68,9 +68,9 @@ through the real Ollama adapter (fake `fetch`): a full-size draft must fit `stra
 
 ## Gotchas
 
-- The abort signal never reaches a guard in a run. Clef and Granite forward `GuardCallOptions.signal`,
-  but `guardInputStep` and `guardOutputStep` call `checkItem` and `checkDraft` with no options and
-  `runChain` checks the signal between stages only: an aborted run waits for the guard step to end.
+- The run's abort signal reaches a guard: the steps pass it as `GuardCallOptions.signal`, and Clef and
+  Granite forward it to the model. An aborted call must throw. A guard that caught it and answered
+  would turn an abort into a flag or a pass; the rule guard makes no call, the steps stop it.
 - `graniteRecorded.test.ts` compares the stored `system` and `prompt` with what the guard sends: a
   new criterion, data rule, `itemGuardText` or claim text fails it until the fixtures are recorded
   again by hand on live Ollama (`recordedWith` says how). The headline call is not recorded (the

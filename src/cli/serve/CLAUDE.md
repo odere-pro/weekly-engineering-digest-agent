@@ -52,7 +52,8 @@ sequenceDiagram
 - `waitForShutdownSignal` removes its listeners once a signal arrives. That is why a third signal
   ends the process: nothing listens. `untilIdle` cancels its own listener when the run ends first.
 - The run's signal is `AbortSignal.any([limit, quitNow.signal])`: `limit` is the scheduler's time
-  limit (3 hours by default), `quitNow` the second signal. A run checks it between steps only.
+  limit (3 hours by default), `quitNow` the second signal. Collect and the guards stop within one
+  call; other steps finish before the run checks it.
 - `notifyFailure` follows the scheduler's attempt: false on a failed attempt that will be retried
   (`failedRetry: DEFAULT_FAILED_RETRY`, two more tries 30 minutes apart; the scheduler has none by
   default), so a failed week sends one note. `onGiveUp` sends the held note with `sendHeldNote` when

@@ -11,6 +11,11 @@ export interface GuardOutputDeps {
   logger: Logger;
   /** Most drafts one guard checks at once; GUARD_CONCURRENCY when absent. */
   concurrency?: number;
+  /**
+   * The run's abort signal: given to every guard call, and no new call starts once it fires. The
+   * step then rejects; an aborted call is never a verdict.
+   */
+  signal?: AbortSignal;
 }
 
 export interface GuardOutputOutput {
@@ -26,7 +31,10 @@ export async function guardOutputStep(
   deps: GuardOutputDeps,
 ): Promise<GuardOutputOutput> {
   const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
-  const checks = active.map((guard) => (draft: Draft) => guard.checkDraft(draft, sources));
+  const checks = active.map((guard) => (draft: Draft) => {
+    deps.signal?.throwIfAborted();
+    return guard.checkDraft(draft, sources, { signal: deps.signal });
+  });
   const { kept, dropped } = await applyGuards(drafts, checks, deps.config.mode, deps.concurrency);
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('output guards rejected draft', {

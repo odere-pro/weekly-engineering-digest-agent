@@ -76,5 +76,5 @@ Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and arti
   the adapters, `SourceTap`), `app/container.ts` (the run's fetchers get the archive's tap and `wrap`)
   and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
 - Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`.
-- The run's abort signal does not reach the fetchers: `collect.ts` passes each attempt only its own
-  timeout signal.
+- The run's abort signal (`CollectDeps.signal`) is linked into each attempt's timeout signal and ends
+  a retry back-off. `collectStep` then rejects: an abort is no broken feed, so no `failedSources`.

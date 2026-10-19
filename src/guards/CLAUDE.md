@@ -77,4 +77,4 @@ Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings 
   the thresholds in `evals/`.
 - Callers: `digest/stages/guardInput.ts` and `guardOutput.ts`, `digest/fallback.ts` (runs
   `guardOutputStep` on the template digest, advisory only) and `evals/classifierRun/checkGrounding.ts`.
-  Check ids are stored in `run.json`: renaming breaks them. The steps pass no abort signal.
+  Check ids are stored in `run.json`: renaming breaks them. `deps.signal` stops a step within one call.

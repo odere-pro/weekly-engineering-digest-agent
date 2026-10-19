@@ -50,10 +50,10 @@ flowchart TD
 
 ## Rules
 
-- The abort signal is checked at chain start, before each stage and before a resume's delivery,
-  never inside a stage. It does not reach the guards (`GuardCallOptions.signal`), the fetchers or
-  the model calls: a running stage finishes first. It would enter in `stages/collect.ts`,
-  `guardInput.ts` and `guardOutput.ts`. The failure text starts `Run aborted` (`isUnretriable`).
+- The abort signal is checked at chain start, before each stage and before a resume's delivery. It
+  also enters `stages/collect.ts`, `guardInput.ts`, `guardOutput.ts` and the fallback: collect and
+  the guards stop within one call. A classify, write or select model call finishes first. The
+  failure starts `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
 - A run never replaces a record that got further (`keepReason`), else a sent week goes out twice.
   Meanwhile (`holdArtifacts`) its files wait in `ChainState.held`, written only if its record is saved.
 - `notifyFailure` false holds a `failed` run's note for a retrying caller (the scheduler);

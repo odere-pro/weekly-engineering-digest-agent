@@ -20,6 +20,12 @@ export interface CollectDeps {
   /** Per source. Spec: 10 s and 2 retries. */
   timeoutMs?: number;
   retries?: number;
+  /**
+   * The run's abort signal. Once it fires no fetch starts, the running ones are aborted, a back-off
+   * ends, and `collectStep` rejects: a run told to stop is not a broken feed, so nothing is
+   * listed in `failedSources`.
+   */
+  signal?: AbortSignal;
 }
 
 export interface CollectOutput {
@@ -73,7 +79,8 @@ const NETWORK_ERROR_CODES: ReadonlySet<string> = new Set([
 
 /**
  * Fetches every allowlisted source (W1-03). A source that fails after its retries is listed in
- * `failedSources` and skipped; feed problems never make this step throw.
+ * `failedSources` and skipped; feed problems never make this step throw. Only `deps.signal`
+ * firing does: the step then rejects as soon as the running fetches are aborted.
  */
 export async function collectStep(input: CollectInput, deps: CollectDeps): Promise<CollectOutput> {
   const outcomes = await mapWithConcurrency(input.sources, MAX_CONCURRENT_SOURCES, (source) =>
@@ -84,7 +91,7 @@ export async function collectStep(input: CollectInput, deps: CollectDeps): Promi
   return { items, failedSources };
 }
 
-/** Never rejects: every failure becomes a `failure` on the outcome. */
+/** Rejects only when the run's signal fired; every other failure becomes a `failure`. */
 async function collectSource(
   source: Source,
   input: CollectInput,
@@ -107,6 +114,8 @@ async function collectSource(
     }
     return { items, maxItems };
   } catch (error) {
+    // The run was told to stop: that is no broken feed, so it is neither logged nor recorded.
+    if (deps.signal?.aborted) throw error;
     const message = cappedMessage(error);
     deps.logger.warn('Source failed', { sourceId: source.id, error: message });
     return { items: [], maxItems, failure: { sourceId: source.id, error: message } };
@@ -121,8 +130,9 @@ function fetchWithRetry(
 ): Promise<unknown> {
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   return withRetry(
-    () => withTimeout((signal) => fetcher.fetch(source, window, signal), timeoutMs),
+    () => withTimeout((signal) => fetcher.fetch(source, window, signal), timeoutMs, deps.signal),
     {
+      signal: deps.signal,
       retries: deps.retries ?? DEFAULT_RETRIES,
       baseDelayMs: RETRY_BASE_DELAY_MS,
       shouldRetry: isRetryableFetchError,

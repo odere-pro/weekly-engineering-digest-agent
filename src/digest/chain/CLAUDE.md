@@ -13,7 +13,7 @@ flowchart TD
   stage -->|"state.settled"| skip["return the state: later stages do nothing"]
   stage -->|"signal fired"| abort["StepFailure: Run aborted before the step"]
   stage -->|else| timed["timed: span, logger bound to the step, fn, timing"]
-  timed -->|"fn threw"| fail["StepFailure, with the state kept"]
+  timed -->|"fn threw"| fail["StepFailure, state kept. Signal fired: Run aborted during the step"]
   timed -->|ok| next["new state, settled.step stamped"]
   fail --> settle["settle: ChainOutcome, never rejects"]:::focus
   classDef focus stroke-width:3px
@@ -27,7 +27,8 @@ flowchart TD
   normally and `finish` builds the record. `timed` stamps `settled.step`.
 - `StepFailure.state` is the state the step started from plus the failed step's timing. A stage that
   fails after part of its work throws `PartialFailure` with that work (`write`, `deliver`).
-- The abort check runs before a stage, never inside one, and skips a settled run.
+- The abort check runs before a stage and skips a settled run. A stage that throws once the signal
+  fired fails as `Run aborted during the <step> step` (`abortedDuring`), whatever it threw.
 
 ## Files
 

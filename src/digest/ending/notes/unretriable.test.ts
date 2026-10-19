@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { abortedError, isUnretriable, needsForce } from './unretriable';
+import { abortedDuring, abortedError, isUnretriable, needsForce } from './unretriable';
 import { DigestError } from '../../../shared/errors';
 
 describe('abortedError', () => {
@@ -35,6 +35,33 @@ describe('abortedError', () => {
     controller.abort();
 
     expect(abortedError(controller.signal)?.exitCode).toBe(1);
+  });
+});
+
+describe('abortedDuring', () => {
+  it('is nothing for no signal or a signal that has not fired', () => {
+    expect(abortedDuring(undefined, 'collect')).toBeUndefined();
+    expect(abortedDuring(new AbortController().signal, 'collect')).toBeUndefined();
+  });
+
+  it('names the step the run was in and the reason', () => {
+    const controller = new AbortController();
+    controller.abort(new Error('scheduler timeout after 2h'));
+
+    const error = abortedDuring(controller.signal, 'collect');
+
+    expect(error).toBeInstanceOf(DigestError);
+    expect(error?.message).toBe('Run aborted during the collect step: scheduler timeout after 2h');
+    expect(error?.step).toBe('collect');
+    expect(error?.cause).toBe(controller.signal.reason);
+    expect(error?.exitCode).toBe(1);
+  });
+
+  it('writes a message that isUnretriable knows, so no retry follows it', () => {
+    const controller = new AbortController();
+    controller.abort('shutting down');
+
+    expect(isUnretriable(abortedDuring(controller.signal, 'guardInput')?.message)).toBe(true);
   });
 });
 

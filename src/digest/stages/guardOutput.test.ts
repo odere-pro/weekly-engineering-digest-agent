@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { guardOutput } from './guardOutput';
 import { FALLBACK_WRITER } from '../../write/fallbackDigest';
 import type { CodeChecked } from '../../write/checkedStep/types';
-import type { Draft } from '../../domain/schemas';
+import type { Draft, Item } from '../../domain/schemas';
+import type { GuardCallOptions, OutputGuard } from '../../guards/Guard';
+import type { GuardVerdict } from '../../guards/guardVerdict';
 import { FakeOutputGuard } from '../../../test/fakes';
 import {
   WRITER_A,
@@ -145,5 +147,60 @@ describe('guardOutput', () => {
         `every draft was rejected: ${WRITER_A} (graniteGroundedness)`,
       );
     });
+  });
+});
+
+describe('guardOutput when the run is told to stop', () => {
+  /** Remembers the options of each call; flags the first draft it sees when told to. */
+  class SignalGuard implements OutputGuard {
+    readonly options: (GuardCallOptions | undefined)[] = [];
+    readonly id = 'graniteGroundedness' as const;
+    constructor(private readonly flagFirst = false) {}
+    checkDraft(
+      _draft: Draft,
+      _sources: readonly Item[],
+      options?: GuardCallOptions,
+    ): Promise<GuardVerdict> {
+      this.options.push(options);
+      return Promise.resolve({
+        check: this.id,
+        flagged: this.flagFirst && this.options.length === 1,
+      });
+    }
+  }
+
+  it('hands the run signal to the guards', async () => {
+    const controller = new AbortController();
+    const guard = new SignalGuard();
+    const h = contextFor({ outputGuards: [guard], signal: controller.signal });
+
+    await guardOutput(h.ctx, stateWith(checked(WRITER_A), checked(WRITER_B)), h.logger);
+
+    expect(guard.options).toHaveLength(2);
+    expect(guard.options.every((options) => options?.signal === controller.signal)).toBe(true);
+  });
+
+  it('hands it to the fallback digest check too', async () => {
+    const controller = new AbortController();
+    const guard = new SignalGuard(true);
+    const h = contextFor({ outputGuards: [guard], signal: controller.signal });
+
+    const next = await guardOutput(h.ctx, stateWith(checked(WRITER_A)), h.logger);
+
+    expect(next.fallback).toBe(true);
+    expect(guard.options).toHaveLength(2);
+    expect(guard.options.every((options) => options?.signal === controller.signal)).toBe(true);
+  });
+
+  it('fails with the reason and calls no guard when the signal fired already', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    controller.abort(reason);
+    const guard = new SignalGuard();
+    const h = contextFor({ outputGuards: [guard], signal: controller.signal });
+
+    await expect(guardOutput(h.ctx, stateWith(checked(WRITER_A)), h.logger)).rejects.toBe(reason);
+
+    expect(guard.options).toEqual([]);
   });
 });

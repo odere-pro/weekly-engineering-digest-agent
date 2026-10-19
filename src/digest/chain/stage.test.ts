@@ -3,6 +3,7 @@ import { PartialFailure, StepFailure } from './failures';
 import type { RunContext } from './runContext';
 import { stage, type StageFn } from './stage';
 import { DigestError } from '../../shared/errors';
+import { isUnretriable } from '../ending/notes/unretriable';
 import type { Clock } from '../../shared/clock';
 import { WEEK, contextFor, stateOf } from '../__fixtures__/stageKit';
 
@@ -165,6 +166,94 @@ describe('stage', () => {
           fields: { runId: WEEK, step: 'write', reason: 'scheduler timeout after 2h' },
         }),
       );
+    });
+
+    it('fails a stage that was running when the signal fired as an abort, which no retry follows', async () => {
+      const controller = new AbortController();
+      const h = contextFor({ signal: controller.signal });
+      const earlier = { step: 'collect' as const, ms: 40 };
+      const state = stateOf({ timings: [earlier] });
+      const aborting: StageFn = () => {
+        controller.abort(new Error('run timed out after 2 h'));
+        return Promise.reject(new Error('The operation was aborted'));
+      };
+
+      const failure = await stage(h.ctx, 'collect', aborting)
+        .run(state)
+        .catch((error: unknown) => error);
+
+      expect(failure).toBeInstanceOf(StepFailure);
+      const { cause } = failure as StepFailure;
+      expect(cause).toBeInstanceOf(DigestError);
+      expect((cause as DigestError).message).toBe(
+        'Run aborted during the collect step: run timed out after 2 h',
+      );
+      expect(isUnretriable((cause as DigestError).message)).toBe(true);
+      expect((failure as StepFailure).state.timings).toEqual([earlier, { step: 'collect', ms: 0 }]);
+      expect(h.logs).toContainEqual(
+        expect.objectContaining({
+          level: 'error',
+          message: 'Step failed',
+          fields: expect.objectContaining({
+            error: 'Run aborted during the collect step: run timed out after 2 h',
+            thrown: 'The operation was aborted',
+          }) as object,
+        }),
+      );
+    });
+
+    it('keeps what the step threw in the log, so a real failure during an abort is not lost', async () => {
+      const controller = new AbortController();
+      const h = contextFor({ signal: controller.signal });
+      const failing: StageFn = () => {
+        controller.abort(new Error('run timed out'));
+        return Promise.reject(new PartialFailure(stateOf(), new Error('SMTP 554 rejected')));
+      };
+
+      await stage(h.ctx, 'deliver', failing)
+        .run(stateOf())
+        .catch(() => undefined);
+
+      expect(h.logs).toContainEqual(
+        expect.objectContaining({
+          message: 'Step failed',
+          fields: expect.objectContaining({
+            error: 'Run aborted during the deliver step: run timed out',
+            thrown: 'SMTP 554 rejected',
+          }) as object,
+        }),
+      );
+    });
+
+    it('keeps the partial work of a stage that failed after the signal fired', async () => {
+      const controller = new AbortController();
+      const h = contextFor({ signal: controller.signal });
+      const partial = stateOf({ sentUrls: ['https://example.com/a'] });
+      const aborting: StageFn = () => {
+        controller.abort(new Error('run timed out'));
+        return Promise.reject(new PartialFailure(partial, new Error('Delivery failed on email')));
+      };
+
+      const failure = await stage(h.ctx, 'deliver', aborting)
+        .run(stateOf())
+        .catch((error: unknown) => error);
+
+      expect(failure).toMatchObject({
+        step: 'deliver',
+        message: 'Run aborted during the deliver step: run timed out',
+      });
+      expect((failure as StepFailure).state.sentUrls).toEqual(['https://example.com/a']);
+    });
+
+    it('leaves the failure of a stage alone when the signal has not fired', async () => {
+      const h = contextFor({ signal: new AbortController().signal });
+      const cause = new DigestError('classify: bad answer', { step: 'classify' });
+
+      const failure = await stage(h.ctx, 'classify', () => Promise.reject(cause))
+        .run(stateOf())
+        .catch((error: unknown) => error);
+
+      expect(failure).toMatchObject({ step: 'classify', cause });
     });
 
     it('lets a settled run finish quietly: it has nothing left to stop', async () => {

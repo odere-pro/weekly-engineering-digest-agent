@@ -113,8 +113,9 @@ async function serveUntilSignal(
 }
 
 /**
- * Waits for the run in flight. A second signal asks it to stop after its current step (a run
- * checks its signal between steps); a third ends the process the usual way, as nothing listens.
+ * Waits for the run in flight. A second signal asks it to stop: collect and the guards stop
+ * within one call, other steps finish first; a third ends the process the usual way, as nothing
+ * listens.
  */
 async function untilIdle(
   io: ServeCommandIo,

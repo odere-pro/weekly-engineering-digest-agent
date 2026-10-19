@@ -14,6 +14,11 @@ export interface GuardInputDeps {
   logger: Logger;
   /** Most items one guard checks at once; GUARD_CONCURRENCY when absent. */
   concurrency?: number;
+  /**
+   * The run's abort signal: given to every guard call, and no new call starts once it fires. The
+   * step then rejects; an aborted call is never a verdict.
+   */
+  signal?: AbortSignal;
 }
 
 export interface GuardInputOutput {
@@ -30,7 +35,10 @@ export async function guardInputStep(
 ): Promise<GuardInputOutput> {
   const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
   // The rule guard is deterministic, so a hit always blocks, also in mode `all`.
-  const toCheck = (guard: InputGuard) => (item: Item) => guard.checkItem(item);
+  const toCheck = (guard: InputGuard) => (item: Item) => {
+    deps.signal?.throwIfAborted();
+    return guard.checkItem(item, { signal: deps.signal });
+  };
   const blocking = active.filter((guard) => guard.id === ALWAYS_BLOCKING).map(toCheck);
   const checks = active.filter((guard) => guard.id !== ALWAYS_BLOCKING).map(toCheck);
   const { kept, dropped } = await applyGuards(

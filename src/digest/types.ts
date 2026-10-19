@@ -38,7 +38,8 @@ export interface RunOptions {
   weekId?: string;
   /**
    * Ends the run `failed`, releasing the lock, once it has fired. Checked before each step and
-   * before a resume's delivery, never inside one: a step that is running finishes first. The
+   * before a resume's delivery; the collect step and the guards also stop within one call (the
+   * fetchers and guards get it), while a classify, write or select model call finishes first. The
    * reason goes into run.json and the failure note as given, so the caller must compose it
    * (a timeout message), never copy model or feed text into it.
    */

@@ -72,6 +72,108 @@ describe('withRetry', () => {
   });
 });
 
+describe('withRetry with an abort signal', () => {
+  const stopped = (reason: unknown = new Error('run timed out')): AbortSignal => {
+    const controller = new AbortController();
+    controller.abort(reason);
+    return controller.signal;
+  };
+
+  it('throws the reason and never calls fn when the signal fired before the start', async () => {
+    const reason = new Error('run timed out');
+    const fn = vi.fn().mockResolvedValue('ok');
+
+    await expect(
+      withRetry(fn, { retries: 2, baseDelayMs: 1, signal: stopped(reason), sleep: noSleep }),
+    ).rejects.toBe(reason);
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('does not retry an attempt that failed after the signal fired', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    const failure = new Error('socket closed');
+    const fn = vi.fn().mockImplementation(() => {
+      controller.abort(reason);
+      return Promise.reject(failure);
+    });
+    const onRetry = vi.fn();
+
+    await expect(
+      withRetry(fn, { retries: 5, baseDelayMs: 1, signal: controller.signal, onRetry }),
+    ).rejects.toBe(failure);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(onRetry).not.toHaveBeenCalled();
+  });
+
+  it('ends the back-off at once when the signal fires and rejects with the reason', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    const fn = vi.fn().mockRejectedValue(new Error('down'));
+    // A real, long back-off: the test only ends in time if the abort cuts it short.
+    const pending = withRetry(fn, { retries: 2, baseDelayMs: 60_000, signal: controller.signal });
+    await vi.waitFor(() => {
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    controller.abort(reason);
+
+    await expect(pending).rejects.toBe(reason);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('races an injected sleep with the abort too', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    const fn = vi.fn().mockRejectedValue(new Error('down'));
+    const neverWakes = (): Promise<void> => new Promise<void>(() => undefined);
+    const pending = withRetry(fn, {
+      retries: 2,
+      baseDelayMs: 1,
+      signal: controller.signal,
+      sleep: neverWakes,
+    });
+    await vi.waitFor(() => {
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    controller.abort(reason);
+
+    await expect(pending).rejects.toBe(reason);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('removes its abort listener once the back-off is over', async () => {
+    const controller = new AbortController();
+    const removed = vi.spyOn(controller.signal, 'removeEventListener');
+    const fn = vi.fn().mockRejectedValueOnce(new Error('a')).mockResolvedValue('ok');
+
+    await withRetry(fn, { retries: 1, baseDelayMs: 1, signal: controller.signal, sleep: noSleep });
+
+    expect(removed).toHaveBeenCalledWith('abort', expect.any(Function));
+  });
+
+  it('behaves as before while the signal has not fired', async () => {
+    const controller = new AbortController();
+    const delays: number[] = [];
+    const fn = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('a'))
+      .mockRejectedValueOnce(new Error('b'))
+      .mockResolvedValue('ok');
+
+    const result = await withRetry(fn, {
+      retries: 2,
+      baseDelayMs: 100,
+      signal: controller.signal,
+      sleep: (ms) => (delays.push(ms), Promise.resolve()),
+    });
+
+    expect(result).toBe('ok');
+    expect(delays).toEqual([100, 200]);
+  });
+});
+
 describe('withTimeout', () => {
   it('resolves when fn finishes in time', async () => {
     await expect(withTimeout(() => Promise.resolve(42), 1000)).resolves.toBe(42);

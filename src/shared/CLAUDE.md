@@ -48,8 +48,8 @@ flowchart TD
 - `printableLine` turns each run of Unicode control (`Cc`) and format (`Cf`) characters, U+2028 and U+2029
   into one space, then trims. It matches the classes, not a list of ranges, so a new invisible format
   character is covered. A zero-width joiner counts: a joined emoji prints as its parts.
-- `withRetry`: `retries` counts extra tries, delay `baseDelayMs * 2^attempt` up to `maxDelayMs`.
-  `withTimeout` rejects with `TimeoutError` even when `fn` ignores the signal.
+- `withRetry`: `retries` counts extra tries, delay `baseDelayMs * 2^attempt` up to `maxDelayMs`; a
+  fired `signal` ends it at once. `withTimeout` rejects with `TimeoutError` even when `fn` ignores the signal.
 
 ## Files
 

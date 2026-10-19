@@ -18,7 +18,7 @@ export async function collect(
   const since = new Date(until.getTime() - ctx.sinceDays * DAY_MS);
   const { items, failedSources } = await collectStep(
     { sources: config.sources, since, until, maxItemsPerSource: config.maxItemsPerSource },
-    { fetchers, logger, clock },
+    { fetchers, logger, clock, signal: ctx.signal },
   );
   const held = await keepArtifact(ctx, state, 'items.json', toJson(items));
   logger.info('Collected items', { items: items.length, failedSources: failedSources.length });

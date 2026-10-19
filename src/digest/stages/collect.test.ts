@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { collect } from './collect';
 import { FakeSourceFetcher } from '../../../test/fakes';
+import type { Item } from '../../domain/schemas';
+import type { SourceFetcher } from '../../sources/SourceFetcher';
 import { makeItem } from '../../../test/builders';
 import { NOW, WEEK, contextFor, stateOf } from '../__fixtures__/stageKit';
 
@@ -91,5 +93,54 @@ describe('collect', () => {
     expect(next.collected).toHaveLength(3);
     expect(next.failedSources.map((failed) => failed.sourceId)).toEqual(['other-feed']);
     expect(next.settled).toBeUndefined();
+  });
+});
+
+describe('collect when the run is told to stop', () => {
+  /** Hangs until the signal it is given fires, as a real fetch does. */
+  const hangingFetcher = (seen: AbortSignal[]): SourceFetcher => ({
+    kind: 'rss',
+    fetch: async (_source, _window, signal) => {
+      if (signal) seen.push(signal);
+      await new Promise<void>((resolve) => {
+        signal?.addEventListener(
+          'abort',
+          () => {
+            resolve();
+          },
+          { once: true },
+        );
+      });
+      signal?.throwIfAborted();
+      return [] as Item[];
+    },
+  });
+
+  it('gives the fetchers a signal that fires with the run signal, and fails with its reason', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    const seen: AbortSignal[] = [];
+    const h = contextFor({ fetchers: { rss: hangingFetcher(seen) }, signal: controller.signal });
+    const pending = collect(h.ctx, stateOf(), h.logger);
+    await vi.waitFor(() => {
+      expect(seen).toHaveLength(1);
+    });
+
+    controller.abort(reason);
+
+    await expect(pending).rejects.toBe(reason);
+    expect(seen[0]?.aborted).toBe(true);
+  });
+
+  it('starts no fetch when the signal fired already, and records no failed source', async () => {
+    const controller = new AbortController();
+    controller.abort(new Error('run timed out'));
+    const fetcher = new FakeSourceFetcher('rss', { 'example-feed': items });
+    const h = contextFor({ fetchers: { rss: fetcher }, signal: controller.signal });
+
+    await expect(collect(h.ctx, stateOf(), h.logger)).rejects.toThrow('run timed out');
+
+    expect(fetcher.calls).toEqual([]);
+    expect(h.store.artifacts.size).toBe(0);
   });
 });

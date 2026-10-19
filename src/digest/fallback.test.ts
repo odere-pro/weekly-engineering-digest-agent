@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { buildFallback, type FallbackInput } from './fallback';
 import { FALLBACK_WRITER } from '../write/fallbackDigest';
 import type { LogFields } from '../shared/telemetry';
+import type { Draft, Item } from '../domain/schemas';
+import type { GuardCallOptions, OutputGuard } from '../guards/Guard';
+import type { GuardVerdict } from '../guards/guardVerdict';
 import { makeConfig, makeScoredItem } from '../../test/builders';
 import { FakeOutputGuard, noopLogger } from '../../test/fakes';
 
@@ -52,5 +55,43 @@ describe('buildFallback', () => {
 
     expect(await buildFallback(two)).toBeUndefined();
     expect(errors).toEqual([{ rejectedBy: ['formatCheck'] }]);
+  });
+});
+
+describe('buildFallback when the run is told to stop', () => {
+  class SignalGuard implements OutputGuard {
+    readonly options: (GuardCallOptions | undefined)[] = [];
+    readonly id = 'graniteGroundedness' as const;
+    checkDraft(
+      _draft: Draft,
+      _sources: readonly Item[],
+      options?: GuardCallOptions,
+    ): Promise<GuardVerdict> {
+      this.options.push(options);
+      return Promise.resolve({ check: this.id, flagged: false });
+    }
+  }
+
+  it('hands the signal to the output guard that checks the digest', async () => {
+    const controller = new AbortController();
+    const guard = new SignalGuard();
+
+    await buildFallback({ ...input().input, outputGuards: [guard], signal: controller.signal });
+
+    expect(guard.options).toHaveLength(1);
+    expect(guard.options[0]?.signal).toBe(controller.signal);
+  });
+
+  it('rejects with the reason, and starts no guard call, when the signal fired already', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    controller.abort(reason);
+    const guard = new SignalGuard();
+
+    await expect(
+      buildFallback({ ...input().input, outputGuards: [guard], signal: controller.signal }),
+    ).rejects.toBe(reason);
+
+    expect(guard.options).toEqual([]);
   });
 });

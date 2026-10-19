@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { withFallback } from './withFallback';
 import { FALLBACK_NOTE } from '../../render/layout';
 import { FALLBACK_WRITER } from '../../write/fallbackDigest';
+import type { Draft, Item } from '../../domain/schemas';
+import type { GuardCallOptions, OutputGuard } from '../../guards/Guard';
+import type { GuardVerdict } from '../../guards/guardVerdict';
 import { makeDraft } from '../../../test/builders';
 import { FakeModelProvider } from '../../../test/fakes';
 import { WEEK, WRITER_A, contextFor, scored, stateOf } from '../__fixtures__/stageKit';
@@ -91,5 +94,44 @@ describe('withFallback', () => {
 
     expect(h.store.artifacts.size).toBe(0);
     expect(h.logs.some((line) => line.level === 'error')).toBe(true);
+  });
+});
+
+describe('withFallback when the run is told to stop', () => {
+  class SignalGuard implements OutputGuard {
+    readonly options: (GuardCallOptions | undefined)[] = [];
+    readonly id = 'graniteGroundedness' as const;
+    checkDraft(
+      _draft: Draft,
+      _sources: readonly Item[],
+      options?: GuardCallOptions,
+    ): Promise<GuardVerdict> {
+      this.options.push(options);
+      return Promise.resolve({ check: this.id, flagged: false });
+    }
+  }
+
+  it('hands the run signal to the output guard that checks the fallback digest', async () => {
+    const controller = new AbortController();
+    const guard = new SignalGuard();
+    const h = contextFor({ outputGuards: [guard], signal: controller.signal });
+
+    await withFallback(h.ctx, rejectedState(), h.logger);
+
+    expect(guard.options).toHaveLength(1);
+    expect(guard.options[0]?.signal).toBe(controller.signal);
+  });
+
+  it('fails with the reason, and keeps drafts.json unwritten, when the signal fired already', async () => {
+    const controller = new AbortController();
+    const reason = new Error('run timed out');
+    controller.abort(reason);
+    const guard = new SignalGuard();
+    const h = contextFor({ outputGuards: [guard], signal: controller.signal });
+
+    await expect(withFallback(h.ctx, rejectedState(), h.logger)).rejects.toBe(reason);
+
+    expect(guard.options).toEqual([]);
+    expect(h.store.artifacts.size).toBe(0);
   });
 });

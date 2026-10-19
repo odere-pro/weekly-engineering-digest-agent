@@ -1,7 +1,7 @@
 import type { StepName } from '../../domain/schemas';
 import { errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
-import { abortedError } from '../ending/notes/unretriable';
+import { abortedDuring, abortedError } from '../ending/notes/unretriable';
 import type { WorkflowStep } from '../workflow';
 import { PartialFailure, StepFailure } from './failures';
 import type { RunContext } from './runContext';
@@ -12,7 +12,8 @@ export type StageFn = (ctx: RunContext, state: ChainState, logger: Logger) => Pr
 
 /**
  * Skips a settled run; stops one whose signal fired, keeping the steps that finished; otherwise
- * times, traces and logs the step with the run id and step.
+ * times, traces and logs the step with the run id and step. A step that fails once the signal
+ * fired fails as `Run aborted during the <step> step`, whatever it threw, so no retry follows.
  */
 export function stage(ctx: RunContext, step: StepName, fn: StageFn): WorkflowStep<ChainState> {
   return {
@@ -46,9 +47,16 @@ async function timed(
   } catch (error) {
     const failed = timing();
     const partial = error instanceof PartialFailure;
-    const cause = partial ? error.cause : error;
+    const thrown = partial ? error.cause : error;
+    const aborted = abortedDuring(ctx.signal, step);
+    const cause = aborted ?? thrown;
     const kept = partial ? error.state : state;
-    logger.error('Step failed', { ms: failed.ms, error: errorMessage(cause) });
+    // An abort replaces the failure, so what the step threw (a real SMTP error, say) stays in the log.
+    logger.error('Step failed', {
+      ms: failed.ms,
+      error: errorMessage(cause),
+      ...(aborted && { thrown: errorMessage(thrown) }),
+    });
     throw new StepFailure(step, { ...kept, timings: [...kept.timings, failed] }, cause);
   }
 }

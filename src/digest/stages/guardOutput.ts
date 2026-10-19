@@ -23,7 +23,7 @@ export async function guardOutput(
   const guarded = await guardOutputStep(
     clean.map((entry) => entry.draft),
     state.selected,
-    { guards: outputGuards, config: config.guards.output, logger },
+    { guards: outputGuards, config: config.guards.output, logger, signal: ctx.signal },
   );
   const passing = new Set(guarded.passed);
   const passed = clean.filter((entry) => passing.has(entry.draft));

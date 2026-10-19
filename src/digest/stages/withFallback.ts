@@ -23,6 +23,7 @@ export async function withFallback(
     guardConfig: config.guards.output,
     drafts: state.drafts,
     logger,
+    signal: ctx.signal,
   });
   if (!fallback) return undefined;
   // The record names the fallback as winner, so drafts.json must hold its draft (preview, show).

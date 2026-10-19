@@ -21,6 +21,8 @@ export interface FallbackInput {
   /** What happened to the writers' drafts: check and guard ids only, never model text. */
   readonly drafts: readonly DraftOutcome[];
   readonly logger: Logger;
+  /** The run's abort signal: given to the output guards, and no guard call starts after it fires. */
+  readonly signal?: AbortSignal;
 }
 
 export interface Fallback {
@@ -49,6 +51,7 @@ export async function buildFallback(input: FallbackInput): Promise<Fallback | un
     guards: input.outputGuards,
     config: input.guardConfig,
     logger,
+    signal: input.signal,
   });
   const flagged = guarded.rejected.flatMap((entry) => flaggedBy(entry.verdicts));
   logger.warn('No draft survived; sending the fallback', {

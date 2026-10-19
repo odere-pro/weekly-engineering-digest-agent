@@ -29,10 +29,10 @@ flowchart TD
 
 ## Files
 
-| File              | Role                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| `failureNotes.ts` | `failureNote`, `sendOrHoldNote`, `sendFailureNote`, `sendHeldNote`                   |
-| `unretriable.ts`  | `abortedError`, `isUnretriable`, `needsForce`; the `Run aborted` and `--force` texts |
+| File              | Role                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| `failureNotes.ts` | `failureNote`, `sendOrHoldNote`, `sendFailureNote`, `sendHeldNote`                                 |
+| `unretriable.ts`  | `abortedError`, `abortedDuring`, `isUnretriable`, `needsForce`; the `Run aborted`, `--force` texts |
 
 Tests sit next to each file; the `notifyFailure` cases through the whole ending are in
 `../endRun.notify.test.ts`.

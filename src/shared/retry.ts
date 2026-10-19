@@ -7,30 +7,64 @@ export interface RetryOptions {
   onRetry?: (error: unknown, attempt: number) => void;
   /** Injected for tests. */
   sleep?: (ms: number) => Promise<void>;
+  /**
+   * Stops the retrying. Once it fires no attempt starts, a failed attempt is not retried and a
+   * back-off ends at once; `withRetry` then rejects with the reason (or, for an attempt that was
+   * already running, with its own error).
+   */
+  signal?: AbortSignal;
 }
 
-const defaultSleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-
-/** Runs `fn` with exponential backoff. `attempt` starts at 0. */
+/**
+ * Runs `fn` with exponential backoff. `attempt` starts at 0. An abort `signal` is checked before
+ * every attempt and during every back-off.
+ */
 export async function withRetry<T>(
   fn: (attempt: number) => Promise<T>,
   options: RetryOptions,
 ): Promise<T> {
-  const sleep = options.sleep ?? defaultSleep;
+  const { signal } = options;
   const maxDelay = options.maxDelayMs ?? Number.POSITIVE_INFINITY;
   for (let attempt = 0; ; attempt++) {
+    signal?.throwIfAborted();
     try {
       return await fn(attempt);
     } catch (error) {
-      const canRetry = attempt < options.retries && (options.shouldRetry?.(error, attempt) ?? true);
+      const canRetry =
+        !signal?.aborted &&
+        attempt < options.retries &&
+        (options.shouldRetry?.(error, attempt) ?? true);
       if (!canRetry) throw error;
       options.onRetry?.(error, attempt);
-      await sleep(Math.min(options.baseDelayMs * 2 ** attempt, maxDelay));
+      await backOff(Math.min(options.baseDelayMs * 2 ** attempt, maxDelay), options);
     }
   }
+}
+
+/**
+ * Waits `ms` with the injected sleep or a timer. A fired `signal` ends the wait at once, and the
+ * wait then throws the signal's reason.
+ */
+async function backOff(ms: number, { sleep, signal }: RetryOptions): Promise<void> {
+  signal?.throwIfAborted();
+  let timer: NodeJS.Timeout | undefined;
+  let wake: () => void = () => undefined;
+  const woken = new Promise<void>((resolve) => {
+    wake = resolve;
+  });
+  const slept =
+    sleep?.(ms) ??
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, ms);
+    });
+  signal?.addEventListener('abort', wake, { once: true });
+  try {
+    await Promise.race([slept, woken]);
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', wake);
+  }
+  signal?.throwIfAborted();
 }
 
 export class TimeoutError extends Error {
