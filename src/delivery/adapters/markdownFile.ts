@@ -5,8 +5,8 @@ import type { Config } from '../../config/schema';
 import type { Delivery, DigestMessage, FailureNote } from '../Delivery';
 import { writeFileAtomic } from '../../store/adapters/atomicFile';
 import { weekDigestDir } from '../../store/layout';
-import { renderEmailHtml } from './emailRender';
-import { failureTitle } from './failureNote';
+import { renderEmailHtml } from './email/emailHtml';
+import { failureTitle } from './errors/failureNote';
 
 /** One folder for every week, or each week's digest folder below the data folder. */
 export type MarkdownFileOptions = { dir: string } | { dataDir: string };

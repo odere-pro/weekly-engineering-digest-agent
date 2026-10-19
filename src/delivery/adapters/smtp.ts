@@ -1,8 +1,9 @@
 import { createTransport } from 'nodemailer';
 import type { Delivery, DigestMessage } from '../Delivery';
-import { renderEmailHtml, renderEmailText } from './emailRender';
-import { failureTitle } from './failureNote';
-import { redactedError, redactSecrets } from './redact';
+import { renderEmailHtml } from './email/emailHtml';
+import { renderEmailText } from './email/emailText';
+import { failureTitle } from './errors/failureNote';
+import { redactedError, redactSecrets } from './errors/redact';
 
 const CONNECTION_TIMEOUT_MS = 15_000;
 const GREETING_TIMEOUT_MS = 15_000;

@@ -1,5 +1,5 @@
-import type { FailureNote } from '../Delivery';
-import { truncate } from '../../shared/text';
+import type { FailureNote } from '../../Delivery';
+import { truncate } from '../../../shared/text';
 
 const MAX_ONE_LINE_REASON_CHARS = 300;
 

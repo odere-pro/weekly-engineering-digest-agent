@@ -1,6 +1,7 @@
 import { createTransport } from 'nodemailer';
 import { describe, expect, it } from 'vitest';
-import { renderEmailHtml, renderEmailText } from './emailRender';
+import { renderEmailHtml } from './email/emailHtml';
+import { renderEmailText } from './email/emailText';
 import { createSmtpDelivery, type MailMessage } from './smtp';
 import type { DigestMessage, DigestView } from '../Delivery';
 

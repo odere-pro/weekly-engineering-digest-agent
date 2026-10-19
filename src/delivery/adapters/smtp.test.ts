@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { DeliveryError } from './deliveryError';
-import { renderEmailHtml, renderEmailText } from './emailRender';
+import { renderEmailHtml } from './email/emailHtml';
+import { renderEmailText } from './email/emailText';
+import { DeliveryError } from './errors/deliveryError';
 import { createSmtpDelivery, type SmtpOptions, type SmtpTransportConfig } from './smtp';
 import type { DigestView } from '../Delivery';
 

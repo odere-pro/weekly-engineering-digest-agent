@@ -1,9 +1,9 @@
 import type { Delivery } from '../Delivery';
-import { DeliveryError } from './deliveryError';
-import { failureOneLiner } from './failureNote';
-import { redactedError, redactSecrets } from './redact';
-import { toSlackBlocks, type SlackMessage } from './slackBlocks';
-import { toSlackMrkdwn } from './slackFormat';
+import { DeliveryError } from './errors/deliveryError';
+import { failureOneLiner } from './errors/failureNote';
+import { redactedError, redactSecrets } from './errors/redact';
+import { toSlackMrkdwn } from './slackBlocks/slackFormat';
+import { toSlackBlocks, type SlackMessage } from './slackBlocks/toSlackBlocks';
 
 const REQUEST_TIMEOUT_MS = 15_000;
 

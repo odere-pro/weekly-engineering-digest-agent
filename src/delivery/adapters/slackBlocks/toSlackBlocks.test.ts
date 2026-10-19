@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { toSlackBlocks, type SlackBlock, type SlackMessage } from './slackBlocks';
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../Delivery';
+import { toSlackBlocks, type SlackBlock, type SlackMessage } from './toSlackBlocks';
+import type { DigestView, DigestViewGroup, DigestViewItem } from '../../Delivery';
 
 const SECTION_LIMIT = 3000;
 const BLOCK_LIMIT = 50;
 const HEADER_LIMIT = 150;
 
-const fixtures = join(import.meta.dirname, '__fixtures__', 'slack');
+const fixtures = join(import.meta.dirname, '__fixtures__');
 
 function loadView(): DigestView {
   return JSON.parse(readFileSync(join(fixtures, 'digest-view.json'), 'utf8')) as DigestView;

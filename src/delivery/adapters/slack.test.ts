@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { DeliveryError } from './deliveryError';
+import { DeliveryError } from './errors/deliveryError';
 import { createSlackDelivery } from './slack';
-import { toSlackBlocks } from './slackBlocks';
+import { toSlackBlocks } from './slackBlocks/toSlackBlocks';
 import type { DigestView } from '../Delivery';
 
 const WEBHOOK = 'https://hooks.slack.test/services/T000/B000/s3cr3tT0ken';
@@ -179,7 +179,10 @@ describe('createSlackDelivery', () => {
 
   describe('sendDigest with a laid-out view', () => {
     const view: DigestView = JSON.parse(
-      readFileSync(join(import.meta.dirname, '__fixtures__', 'slack', 'digest-view.json'), 'utf8'),
+      readFileSync(
+        join(import.meta.dirname, 'slackBlocks', '__fixtures__', 'digest-view.json'),
+        'utf8',
+      ),
     ) as DigestView;
     const withView = { ...message, view };
 

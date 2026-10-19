@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderEmailHtml } from './emailRender';
+import { renderEmailHtml } from './email/emailHtml';
 import { createMarkdownFileDelivery, digestFilePaths } from './markdownFile';
 import { writeFileAtomic } from '../../store/adapters/atomicFile';
 import type { DigestMessage, DigestView } from '../Delivery';

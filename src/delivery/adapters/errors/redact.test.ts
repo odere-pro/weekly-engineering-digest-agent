@@ -342,15 +342,3 @@ describe('redactedError', () => {
     });
   });
 });
-
-describe('DeliveryError', () => {
-  it('is an Error named DeliveryError that carries only what it was given', () => {
-    const error = new DeliveryError('Slack webhook answered HTTP 503', { status: 503 });
-
-    expect(error).toBeInstanceOf(Error);
-    expect(error.name).toBe('DeliveryError');
-    expect(error.status).toBe(503);
-    expect(error.code).toBeUndefined();
-    expect(error.cause).toBeUndefined();
-  });
-});
