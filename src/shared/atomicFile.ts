@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { link, lstat, open, readdir, readFile, rename, rm, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
-import { errorMessage } from '../../shared/errors';
+import { errorMessage } from './errors';
 
 const TEMP_SUFFIX = '.tmp';
 /** The `<pid>.<uuid>` between a file's name and `.tmp` in the names `tempFilePath` builds. */

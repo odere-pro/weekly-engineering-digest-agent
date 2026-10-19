@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createFileExclusive, readTextIfExists } from '../atomicFile';
+import { createFileExclusive, readTextIfExists } from '../../../shared/atomicFile';
 
 /**
  * `hostname`, `token`, `pidNamespace` and `heartbeatAt` are missing in locks written by older

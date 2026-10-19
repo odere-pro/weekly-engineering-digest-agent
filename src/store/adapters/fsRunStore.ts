@@ -7,7 +7,7 @@ import { systemClock, type Clock } from '../../shared/clock';
 import { previousWeekIds } from '../../shared/isoWeek';
 import { noopLogger, type Logger } from '../../shared/telemetry';
 import { artifactFile } from './artifactFiles';
-import { readTextIfExists, writeFileAtomic } from './atomicFile';
+import { readTextIfExists, writeFileAtomic } from '../../shared/atomicFile';
 import {
   assertRunId,
   listWeekFolders,

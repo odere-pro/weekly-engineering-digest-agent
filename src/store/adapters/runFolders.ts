@@ -5,7 +5,7 @@ import { DIGEST_DIR, isDayName, LOGS_DIR, weekDay, weekDigestDir, weekOfDay } fr
 import { WEEK_ID_PATTERN } from '../../domain/schemas';
 import { DigestError, errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
-import { isErrnoException, readTextIfExists } from './atomicFile';
+import { isErrnoException, readTextIfExists } from '../../shared/atomicFile';
 
 export const RUN_RECORD_FILE = 'run.json';
 export const DIGEST_FILE = 'digest.md';

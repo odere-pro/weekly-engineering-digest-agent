@@ -1,7 +1,7 @@
 import { mkdir, rm } from 'node:fs/promises';
 import { join, posix } from 'node:path';
 import type { Item } from '../../../domain/schemas';
-import { writeFileAtomic } from '../../../store/adapters/atomicFile';
+import { writeFileAtomic } from '../../../shared/atomicFile';
 import { sourceDir } from '../../../store/layout';
 import type { Answer } from '../http';
 

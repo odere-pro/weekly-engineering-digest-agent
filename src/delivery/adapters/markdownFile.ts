@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { WEEK_ID_PATTERN } from '../../domain/schemas';
 import type { Config } from '../../config/schema';
 import type { Delivery, DigestMessage, FailureNote } from '../Delivery';
-import { writeFileAtomic } from '../../store/adapters/atomicFile';
+import { writeFileAtomic } from '../../shared/atomicFile';
 import { weekDigestDir } from '../../store/layout';
 import { renderEmailHtml } from './email/emailHtml';
 import { failureTitle } from './errors/failureNote';

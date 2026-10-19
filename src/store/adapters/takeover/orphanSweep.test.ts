@@ -6,11 +6,11 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 import { sweepOrphanedTempFiles } from './orphanSweep';
 import { ORPHANED_TEMP_MAX_AGE_MS } from '../lockState/lockTimings';
 import { noopLogger, type Logger } from '../../../shared/telemetry';
-import type * as AtomicFile from '../atomicFile';
+import type * as AtomicFile from '../../../shared/atomicFile';
 
 // The sweep goes through removeStaleTempFiles; a test can make it fail or report a stuck file.
 const atomic = vi.hoisted(() => ({ failSweep: false, stuckFile: false }));
-vi.mock('../atomicFile', async (importOriginal) => {
+vi.mock('../../../shared/atomicFile', async (importOriginal) => {
   const actual = await importOriginal<typeof AtomicFile>();
   return {
     ...actual,

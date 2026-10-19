@@ -1,4 +1,4 @@
-import { isErrnoException, readTextIfExists } from '../atomicFile';
+import { isErrnoException, readTextIfExists } from '../../../shared/atomicFile';
 import { parseLockFile, type LockFile, type OwnLock } from './lockFile';
 import {
   LOCK_HEARTBEAT_TIMEOUT_MS,

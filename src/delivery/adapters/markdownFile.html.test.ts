@@ -4,12 +4,12 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderEmailHtml } from './email/emailHtml';
 import { createMarkdownFileDelivery, digestFilePaths } from './markdownFile';
-import { writeFileAtomic } from '../../store/adapters/atomicFile';
+import { writeFileAtomic } from '../../shared/atomicFile';
 import type { DigestMessage } from '../Delivery';
 import type { DigestView } from '../../render/digestView';
 
 // Delegates to the real writer, so tests can assert both files go through the atomic path.
-vi.mock('../../store/adapters/atomicFile', async (importOriginal) => {
+vi.mock('../../shared/atomicFile', async (importOriginal) => {
   const actual = await importOriginal<{ writeFileAtomic: typeof writeFileAtomic }>();
   return { ...actual, writeFileAtomic: vi.fn(actual.writeFileAtomic) };
 });
@@ -132,7 +132,7 @@ describe('createMarkdownFileDelivery: the HTML copy', () => {
     const delivery = createMarkdownFileDelivery({ dir });
     await delivery.sendDigest({ ...message, view });
     const actual = await vi.importActual<{ writeFileAtomic: typeof writeFileAtomic }>(
-      '../../store/adapters/atomicFile',
+      '../../shared/atomicFile',
     );
     // The Markdown is written first and goes through; the HTML write after it fails.
     vi.mocked(writeFileAtomic)

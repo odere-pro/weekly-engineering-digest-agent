@@ -1,4 +1,4 @@
-import { writeFileAtomic } from '../atomicFile';
+import { writeFileAtomic } from '../../../shared/atomicFile';
 import { isOurs, type OwnLock } from '../lockState/lockFile';
 import { LOCK_HEARTBEAT_INTERVAL_MS } from '../lockState/lockTimings';
 import type { Clock } from '../../../shared/clock';

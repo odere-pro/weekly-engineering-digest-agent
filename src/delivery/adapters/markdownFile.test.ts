@@ -3,10 +3,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMarkdownFileDelivery, markdownFileOptions, markdownFolder } from './markdownFile';
-import { writeFileAtomic } from '../../store/adapters/atomicFile';
+import { writeFileAtomic } from '../../shared/atomicFile';
 
 // Delegates to the real writer, so tests can assert the digest goes through the atomic path.
-vi.mock('../../store/adapters/atomicFile', async (importOriginal) => {
+vi.mock('../../shared/atomicFile', async (importOriginal) => {
   const actual = await importOriginal<{ writeFileAtomic: typeof writeFileAtomic }>();
   return { ...actual, writeFileAtomic: vi.fn(actual.writeFileAtomic) };
 });

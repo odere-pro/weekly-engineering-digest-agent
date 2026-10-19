@@ -5,7 +5,7 @@ import { renderEmailHtml } from '../../delivery/adapters/email/emailHtml';
 import { renderEmailText } from '../../delivery/adapters/email/emailText';
 import { toSlackBlocks } from '../../delivery/adapters/slackBlocks/toSlackBlocks';
 import { createFsRunStore, type FsRunStoreOptions } from '../../store/adapters/fsRunStore';
-import { writeFileAtomic } from '../../store/adapters/atomicFile';
+import { writeFileAtomic } from '../../shared/atomicFile';
 import { weekDigestDir } from '../../store/layout';
 import { loadConfig, type LoadedConfig } from '../../config/load';
 import { buildDigestView } from '../../render/layout';

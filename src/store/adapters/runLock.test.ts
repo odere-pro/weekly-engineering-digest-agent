@@ -25,7 +25,7 @@ import {
 } from './lockState/lockTimings';
 import { takeOverStaleLock } from './takeover/takeover';
 import type * as Os from 'node:os';
-import type * as AtomicFile from './atomicFile';
+import type * as AtomicFile from '../../shared/atomicFile';
 import type * as Takeover from './takeover/takeover';
 import type { RunLock } from '../RunStore';
 import { DigestError } from '../../shared/errors';
@@ -33,7 +33,7 @@ import { noopLogger, type Logger } from '../../shared/telemetry';
 
 // The temp file sweep goes through removeStaleTempFiles; a test can make it fail.
 const atomic = vi.hoisted(() => ({ failSweep: false }));
-vi.mock('./atomicFile', async (importOriginal) => {
+vi.mock('../../shared/atomicFile', async (importOriginal) => {
   const actual = await importOriginal<typeof AtomicFile>();
   return {
     ...actual,

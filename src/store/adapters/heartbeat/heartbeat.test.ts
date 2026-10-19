@@ -6,7 +6,7 @@ import { startHeartbeat, type Heartbeat, type HeartbeatOptions } from './heartbe
 import { createLockFile, type LockFile, type OwnLock } from '../lockState/lockFile';
 import { LOCK_HEARTBEAT_INTERVAL_MS } from '../lockState/lockTimings';
 import { noopLogger, type Logger } from '../../../shared/telemetry';
-import type * as AtomicFile from '../atomicFile';
+import type * as AtomicFile from '../../../shared/atomicFile';
 
 // Heartbeat writes go through writeFileAtomic; a test can make them fail or wait.
 const atomic = vi.hoisted(() => ({
@@ -14,7 +14,7 @@ const atomic = vi.hoisted(() => ({
   writes: 0,
   gate: undefined as Promise<void> | undefined,
 }));
-vi.mock('../atomicFile', async (importOriginal) => {
+vi.mock('../../../shared/atomicFile', async (importOriginal) => {
   const actual = await importOriginal<typeof AtomicFile>();
   return {
     ...actual,

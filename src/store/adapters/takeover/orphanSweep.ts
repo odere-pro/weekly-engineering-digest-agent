@@ -1,5 +1,5 @@
 import { basename, dirname } from 'node:path';
-import { removeStaleTempFiles } from '../atomicFile';
+import { removeStaleTempFiles } from '../../../shared/atomicFile';
 import { ORPHANED_TEMP_MAX_AGE_MS } from '../lockState/lockTimings';
 import { GUARD_SUFFIX } from './takeoverGuard';
 import type { Clock } from '../../../shared/clock';
