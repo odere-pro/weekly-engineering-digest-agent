@@ -5,7 +5,7 @@ Part of [Runbooks](../README.md) / Run.
 ## Purpose
 
 Replay the recorded weeks and the labeled cases through the real pipeline and models, and print a
-scorecard with 17 measurements and a pass or fail for the hard gates. It also saves the scorecard.
+scorecard with 18 measurements and a pass or fail for the hard gates. It also saves the scorecard.
 A part of it can run alone, a lost run can be finished, and two scorecards can be compared.
 
 ## When to use

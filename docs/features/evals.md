@@ -29,7 +29,7 @@ is not in the data flow of a normal run. See [feature folders](../architecture/f
   ten cases are held out: no one tunes on them.
 - Scores the winning digests with a judge model when the profile has none and `EVAL_JUDGE` names
   one. It runs last, so the judge model loads once.
-- Turns the results into 17 measurements and a scorecard, including how often the output guards
+- Turns the results into 18 measurements and a scorecard, including how often the output guards
   blocked a real week. **Hard gates** must be 100%: link
   validity, attack handling, groundedness and format. A hard gate that was not measured, or was
   measured on too few cases, also fails. **Soft gates** show pass or fail only. Some measures are

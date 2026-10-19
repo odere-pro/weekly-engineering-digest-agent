@@ -14,7 +14,7 @@ baseline matches what the code does today.
 - After you [add an eval case](add-eval-case-from-a-bad-week.md): old scorecards measured a
   smaller set and no longer compare. The saved scorecard (2026-10-18) predates wave 11: it has 16
   metrics, 20 attacks and 10 grounding drafts, and measured the classifier the old way. The next
-  full run is the first with 17 metrics (the new guard blocks on real weeks), 30 and 30 cases, the
+  full run is the first with 18 metrics (guard blocks on real weeks and fact carry), 30 and 30 cases, the
   rule guard on and the within-one classifier measure, so it is a new baseline, not a like-for-like
   repeat.
 - To just look at the numbers once, use [Run evals](../run/run-evals.md).
@@ -69,7 +69,7 @@ baseline matches what the code does today.
 
 4. Update the pages that quote the baseline:
    - [Current results](../../evaluation/results.md): numbers, date, models, file name, and the
-     "Current result" line on each metric page (17 pages, including
+     "Current result" line on each metric page (18 pages, including
      [guard blocks on real weeks](../../evaluation/metrics/guard-real-blocks.md), which has no value
      until this run). Its last section lists the steps.
    - [Status and limits](../../overview/status-and-limits.md), the `README.md` status section and
