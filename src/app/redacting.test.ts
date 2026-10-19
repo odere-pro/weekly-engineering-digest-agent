@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import { knownSecrets, redactDelivery, redactStore } from './redacting';
+import { describe, expect, expectTypeOf, it } from 'vitest';
+import { knownSecrets, redactDelivery, redactStore, type FieldRules } from './redacting';
 import { createRedactor, REDACTED } from '../observability/redact';
-import type { DigestMessage, FailureNote } from '../delivery/Delivery';
+import type { DigestMessage, DigestView, FailureNote } from '../delivery/Delivery';
 import { makeRunRecord } from '../../test/builders';
 import { CapturingDelivery, MemoryRunStore } from '../../test/fakes';
 
@@ -247,6 +247,65 @@ describe('redactDelivery', () => {
     expect(inner.failures).toEqual([{ weekId: '2026-W42', message: 'plain' }]);
   });
 
+  it('never sends a field the message type does not know, so one added later cannot leak', async () => {
+    const inner = new CapturingDelivery('slack');
+    const withExtra = { ...message, preheader: `Preview ${SMTP_PASSWORD}` } as DigestMessage;
+
+    await redactDelivery(inner, redactor).sendDigest(withExtra);
+
+    expect(JSON.stringify(inner.digests)).not.toContain(SMTP_PASSWORD);
+    expect(inner.digests).toEqual([
+      {
+        weekId: '2026-W42',
+        subject: `Digest for ${REDACTED}`,
+        markdown: `# Digest\n\nToken ${REDACTED}\n`,
+      },
+    ]);
+  });
+
+  it('never sends a field the failure note type does not know', async () => {
+    const inner = new CapturingDelivery('slack');
+    const withExtra = { ...note, detail: `Token ${GITHUB_TOKEN}` } as FailureNote;
+
+    await redactDelivery(inner, redactor).sendFailure(withExtra);
+
+    expect(JSON.stringify(inner.failures)).not.toContain(GITHUB_TOKEN);
+    expect(inner.failures).toEqual([
+      { weekId: '2026-W42', step: 'deliver', message: `SMTP refused ${REDACTED}` },
+    ]);
+  });
+
+  it('drops a field the view types do not know, at every level, rather than send it', async () => {
+    const inner = new CapturingDelivery('slack');
+    const item = { title: 'Release', url: 'https://example.test/r', whatChanged: 'Changed' };
+    const group = {
+      urgency: 'act-now' as const,
+      label: 'Act now',
+      items: [{ ...item, note: GITHUB_TOKEN }],
+      hint: WEBHOOK_PATH,
+    };
+    const view = {
+      weekId: '2026-W42',
+      title: 'Week 2026-W42',
+      headline: 'Headline',
+      groups: [group],
+      subtitle: SMTP_PASSWORD,
+    } as DigestView;
+
+    await redactDelivery(inner, redactor).sendDigest({ ...message, view });
+
+    const sent = JSON.stringify(inner.digests[0]?.view);
+    for (const secret of [GITHUB_TOKEN, WEBHOOK_PATH, SMTP_PASSWORD]) {
+      expect(sent).not.toContain(secret);
+    }
+    expect(inner.digests[0]?.view).toEqual({
+      weekId: '2026-W42',
+      title: 'Week 2026-W42',
+      headline: 'Headline',
+      groups: [{ urgency: 'act-now', label: 'Act now', items: [item] }],
+    });
+  });
+
   it('does not change the message it was given', async () => {
     await redactDelivery(new CapturingDelivery(), redactor).sendDigest(message);
 
@@ -258,5 +317,14 @@ describe('redactDelivery', () => {
     inner.failWith = new Error('Slack webhook answered HTTP 503');
 
     await expect(redactDelivery(inner, redactor).sendDigest(message)).rejects.toBe(inner.failWith);
+  });
+});
+
+describe('FieldRules', () => {
+  it('needs a rule for every field, optional ones too, so a new field does not compile without one', () => {
+    const keep = (value: string): string => value;
+
+    expectTypeOf({ weekId: keep, step: keep, message: keep }).toExtend<FieldRules<FailureNote>>();
+    expectTypeOf({ weekId: keep, message: keep }).not.toExtend<FieldRules<FailureNote>>();
   });
 });

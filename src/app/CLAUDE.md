@@ -34,7 +34,7 @@ flowchart TD
 
 - Redaction is layered, so one leaky adapter ends up in none: adapters keep secrets out of errors; the
   logger and tracer redact their output (`redactValues`); `redactStore` covers artifact text and the run
-  record, `redactDelivery` the subject, Markdown, every `DigestView` text and the failure `message`. It
+  record, `redactDelivery` every text field of the message, its `DigestView` and the failure note. It
   wraps the retry, so every attempt sends the same message. Reads are untouched.
 
 ## Rules
@@ -43,6 +43,7 @@ flowchart TD
 - `knownSecrets` adds the Slack webhook path: it is the secret part, and a message can carry it alone.
 - `redactStore` does not save a record that no longer fits `RunRecordSchema` after redaction (a secret
   equal to `"sent"` would rewrite the status): unsaved beats saved wrong.
+- `redactDelivery` sends only the fields its `FieldRules` tables name: a field added later cannot leak.
 - Retry only when sending again cannot double the message: 2 retries, 5 s then 10 s (cap 30 s), for
   connect-phase failures (`CONNECT_PHASE_CODES`, `CONNECT_PHASE_TIMEOUTS`), HTTP 429 and 5xx, SMTP 421,
   450, 451. Not after the body went out (reset, socket timeout). Reads `DeliveryError` facts, not text.
@@ -57,7 +58,7 @@ flowchart TD
 | File                  | Role                                                                                                      |
 | --------------------- | --------------------------------------------------------------------------------------------------------- |
 | `container.ts`        | `buildApp`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns` |
-| `redacting.ts`        | `knownSecrets`, `redactStore`, `redactDelivery`                                                           |
+| `redacting.ts`        | `knownSecrets`, `redactStore`, `redactDelivery`, `FieldRules`                                             |
 | `retryingDelivery.ts` | `withDeliveryRetry`, `isTransientDeliveryError`                                                           |
 | `tracedModel.ts`      | `traceModel`, `deferTracer`                                                                               |
 
@@ -66,9 +67,8 @@ each other file, and `scheduler*.test.ts`, which test `src/scheduler/scheduler.t
 
 ## Gotchas
 
-- `redactStore` (all 9 `RunStore` methods), `redactDelivery`, `redactedView`, `traceModel` and
-  `withDeliveryRetry` list members by hand. A new required member fails the typecheck; a new optional
-  `DigestView` field is dropped; a new text field on `DigestMessage` or `FailureNote` passes unredacted.
+- `redactStore` (all 9 `RunStore` methods), `redactDelivery`, `traceModel` and `withDeliveryRetry` list
+  members by hand. A new port member or delivery field fails the typecheck; `unchanged` is for ids only.
 - Container tests `vi.mock` each adapter module and wrap its factory in a spy that still builds the real
   one: moving a factory breaks them. `container.secrets.test.ts` guards that no secret reaches a log,
   trace, channel or the store; extend it with a new secret or channel.

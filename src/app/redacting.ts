@@ -3,7 +3,14 @@
 // run store or a delivery channel, so a leak in one adapter ends up in none of them.
 import type { Secrets } from '../config/schema';
 import type { Redactor } from '../observability/redact';
-import type { Delivery, DigestView } from '../delivery/Delivery';
+import type {
+  Delivery,
+  DigestMessage,
+  DigestView,
+  DigestViewGroup,
+  DigestViewItem,
+  FailureNote,
+} from '../delivery/Delivery';
 import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import type { RunStore } from '../store/RunStore';
 import { DigestError } from '../shared/errors';
@@ -67,38 +74,69 @@ function redactedRecord(record: RunRecord, redactor: Redactor): RunRecord {
   return checked.data;
 }
 
-/** The laid-out digest with the secrets taken out of every text, the URLs included. */
-function redactedView(view: DigestView, redactor: Redactor): DigestView {
-  const text = (value: string): string => redactor.text(value);
-  return {
-    weekId: view.weekId,
-    title: text(view.title),
-    headline: text(view.headline),
-    groups: view.groups.map((group) => ({
-      urgency: group.urgency,
-      label: text(group.label),
-      items: group.items.map((item) => ({
-        title: text(item.title),
-        url: text(item.url),
-        whatChanged: text(item.whatChanged),
-        ...(item.action === undefined ? {} : { action: text(item.action) }),
-      })),
-    })),
-    ...(view.footer === undefined ? {} : { footer: text(view.footer) }),
-  };
+/**
+ * How each field of a delivery type is redacted. Every field needs a rule, optional ones too, so a
+ * field added to `DigestMessage`, `FailureNote` or the view later is a type error until it has one.
+ */
+export type FieldRules<T> = {
+  readonly [K in keyof T]-?: (value: NonNullable<T[K]>, redactor: Redactor) => NonNullable<T[K]>;
+};
+
+/** For ids set in code (week, step, urgency), never text from a feed, a model or an error. */
+const unchanged = <V>(value: V): V => value;
+const text = (value: string, redactor: Redactor): string => redactor.text(value);
+
+const ITEM_RULES: FieldRules<DigestViewItem> = {
+  title: text,
+  url: text,
+  whatChanged: text,
+  action: text,
+};
+
+const GROUP_RULES: FieldRules<DigestViewGroup> = {
+  urgency: unchanged,
+  label: text,
+  items: (items, redactor) => items.map((item) => redactFields(item, ITEM_RULES, redactor)),
+};
+
+const VIEW_RULES: FieldRules<DigestView> = {
+  weekId: unchanged,
+  title: text,
+  headline: text,
+  groups: (groups, redactor) => groups.map((group) => redactFields(group, GROUP_RULES, redactor)),
+  footer: text,
+};
+
+const MESSAGE_RULES: FieldRules<DigestMessage> = {
+  weekId: unchanged,
+  subject: text,
+  markdown: text,
+  view: (view, redactor) => redactFields(view, VIEW_RULES, redactor),
+};
+
+const NOTE_RULES: FieldRules<FailureNote> = {
+  weekId: unchanged,
+  step: unchanged,
+  message: text,
+};
+
+/**
+ * A copy that has only the fields with a rule, each passed through it. A field the type does not
+ * know (an object built with a cast) is dropped, never sent as it is. An absent field stays absent.
+ */
+function redactFields<T extends object>(value: T, rules: FieldRules<T>, redactor: Redactor): T {
+  const fields = (Object.keys(rules) as (keyof T)[]).flatMap((key): [keyof T, unknown][] => {
+    const field = value[key];
+    return field === undefined || field === null ? [] : [[key, rules[key](field, redactor)]];
+  });
+  return Object.fromEntries(fields) as T;
 }
 
 /** A channel that gets the digest and the failure notes with the secrets taken out of the text. */
 export function redactDelivery(delivery: Delivery, redactor: Redactor): Delivery {
   return {
     id: delivery.id,
-    sendDigest: (message) =>
-      delivery.sendDigest({
-        ...message,
-        subject: redactor.text(message.subject),
-        markdown: redactor.text(message.markdown),
-        ...(message.view === undefined ? {} : { view: redactedView(message.view, redactor) }),
-      }),
-    sendFailure: (note) => delivery.sendFailure({ ...note, message: redactor.text(note.message) }),
+    sendDigest: (message) => delivery.sendDigest(redactFields(message, MESSAGE_RULES, redactor)),
+    sendFailure: (note) => delivery.sendFailure(redactFields(note, NOTE_RULES, redactor)),
   };
 }
