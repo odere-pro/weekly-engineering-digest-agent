@@ -1,3 +1,5 @@
+import { visibleText } from '../../visibleText';
+
 const HEADING_LINE = /^#{1,6}[ \t]+(\S.*)$/;
 // Only absolute http(s) destinations, one level of balanced parentheses, no `|` (Slack's separator).
 const MARKDOWN_LINK = /!?\[([^\]\n]{1,200})\]\((https?:\/\/(?:[^()\s|]|\([^()\s|]*\)){1,2048})\)/g;
@@ -15,11 +17,13 @@ function headingToBold(line: string): string {
 
 /**
  * Digest Markdown to Slack mrkdwn: [t](u) to <u|t>, **b** to *b*, headings to bold lines.
- * Everything is escaped first, and only http(s) links become Slack links, so collected text
- * cannot produce `<!channel>`, `<@U123>` or similar control tokens.
+ * Invisible characters go first (`visibleText`: line breaks stay), so a bidi override or a
+ * zero-width character cannot reorder or hide what Slack shows. Then everything is escaped, and
+ * only http(s) links become Slack links, so collected text cannot produce `<!channel>`,
+ * `<@U123>` or similar control tokens.
  */
 export function toSlackMrkdwn(markdown: string): string {
-  const escaped = escapeSlack(markdown.replaceAll('\r\n', '\n'));
+  const escaped = escapeSlack(visibleText(markdown));
   return escaped
     .split('\n')
     .map(headingToBold)

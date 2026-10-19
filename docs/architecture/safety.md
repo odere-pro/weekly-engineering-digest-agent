@@ -18,7 +18,7 @@ link or harmful content. These rules hold in every part of the code.
 | Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
 | Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                  |
 | Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                               |
-| Email and Slack text has no invisible character that reorders it | `src/delivery/visibleLine.ts`: format characters out, emoji joiners stay  |
+| Email and Slack text has no invisible character that reorders it | `src/delivery/visibleLine.ts`, `visibleText.ts`: format characters out    |
 | Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators            |
 | Secrets never reach the saved source data (`raw/`, `formatted/`) | the archive redacts every text it writes (`src/sources/adapters/archive`) |
 | `SLACK_WEBHOOK_URL` must be `https:`                             | `src/config/schema.ts`                                                    |
@@ -37,6 +37,13 @@ each side, which makes a joined emoji such as a technologist one glyph. A joiner
 a tag sequence (England, Scotland, Wales) shows as the plain black flag, and a zero-width
 non-joiner in Persian or Indic text becomes a space. The terminal printers use `printableLine`
 alone, so there a joined emoji prints as its parts.
+
+Slack also gets text that must keep its line breaks: the Markdown digest when a message has no
+layout, and the one-line failure note. That text goes through `visibleText`, before the `& < >`
+escaping. It removes the same characters with the same joiner rule (it imports the pattern from
+`visibleLine`), but leaves `\n` and the indentation of a line, and trims the trailing blanks of
+each line. Not covered: the plain-text mail sent without a layout and the `.md` file carry the
+Markdown as it is.
 
 The input side has the same list. The `ruleInjection` guard flags a bidi override, an isolate, a
 deprecated format control (U+206A to U+206F) or a tag character anywhere in an item, and a

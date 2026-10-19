@@ -212,6 +212,18 @@ describe('createSlackDelivery', () => {
       });
     });
 
+    it('drops invisible format characters from the Markdown it posts when there is no view', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendDigest({
+        ...message,
+        markdown: '# Dig\u{202E}est\n\n**Olla\u{200B}ma** shipped\n\u{E0041}\u{2066}done\n',
+      });
+
+      expect(bodyOf(fetchMock.mock.calls[0]?.[1])).toEqual({
+        text: '*Dig est*\n\n*Olla ma* shipped\ndone\n',
+      });
+    });
+
     it('never puts the webhook url in the posted message, even when collected text echoes it', async () => {
       const fetchMock = okFetch();
       const echoing: DigestView = {
@@ -404,6 +416,18 @@ describe('createSlackDelivery', () => {
       });
 
       expect(postedText(fetchMock)).not.toMatch(/<[!@#]/);
+    });
+
+    it('drops invisible format characters from the message', async () => {
+      const fetchMock = okFetch();
+      await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).sendFailure({
+        weekId: '2026-W42',
+        step: 'write',
+        message: 'bad\u{202E}draft\u{200B}\u{E0041}!',
+      });
+
+      const text = postedText(fetchMock);
+      expect(text).toBe('Weekly digest 2026-W42 failed at write: bad draft !');
     });
 
     it('escapes Slack control characters in the message', async () => {

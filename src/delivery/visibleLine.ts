@@ -1,14 +1,15 @@
 import { printableLine } from '../shared/text';
 
-const ZERO_WIDTH_JOINER = '\u{200D}';
+export const ZERO_WIDTH_JOINER = '\u{200D}';
 
 /**
  * A zero-width joiner with an emoji on each side: the only place a joiner is visible, because it
  * fuses the two into one glyph (a technologist, a family, a rainbow flag). The emoji before it may
  * carry a skin tone (`Emoji_Modifier`) or a variation selector. Anywhere else a joiner shows
- * nothing and can only hide a word break.
+ * nothing and can only hide a word break. Not global (no `lastIndex` state), so `visibleText`
+ * shares it: the rule for a kept joiner lives here only.
  */
-const EMOJI_JOINER =
+export const EMOJI_JOINER =
   /(?<=[\p{Extended_Pictographic}\p{Emoji_Modifier}]\u{FE0F}?)\u{200D}(?=\p{Extended_Pictographic})/u;
 
 /** A stretch with no kept joiner in it: invisible characters gone, one space between words. */

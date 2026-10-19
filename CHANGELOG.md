@@ -77,6 +77,9 @@ All notable changes to this project are listed here. The format follows
 
 ### Fixed
 
+- Slack and email text no longer carries a bidi override, a zero-width or tag character or another
+  invisible format character; a joined emoji stays whole. This includes the Markdown that Slack
+  gets when a message has no layout, and the failure note, which keep their line breaks.
 - The eval scorecard printer replaced only a hand-listed set of invisible characters; U+061C,
   U+2060-2064, U+206A-206F, U+FEFF and U+00AD got through. It now replaces every control and
   format character.

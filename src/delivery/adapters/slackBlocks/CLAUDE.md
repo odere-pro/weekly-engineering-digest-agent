@@ -13,7 +13,8 @@ flowchart TD
   body --> fit["fitBlocks: 50 blocks in all, the last body slot says what was cut"]
   head --> out["SlackMessage: text for notifications, blocks"]
   fit --> out
-  md["Markdown: no view, or a failure line"] --> mrkdwn["toSlackMrkdwn: escape, headings and ** to bold, links to Slack links"]
+  md["Markdown: no view, or a failure line"] --> strip["visibleText: invisible characters out, line breaks stay"]
+  strip --> mrkdwn["toSlackMrkdwn: escape, headings and ** to bold, links to Slack links"]
 ```
 
 ## Rules
@@ -27,8 +28,10 @@ flowchart TD
   overrides and marks, zero-width, tag) become a space, so a feed cannot reorder or hide what is
   shown. A joiner between two emoji stays, so a joined emoji arrives whole; email follows the same
   rule. A backtick becomes an apostrophe, so no code fence swallows later bullets.
-- `toSlackMrkdwn` (the no-view and failure paths) does not do this: it keeps the Markdown's own
-  line breaks and escapes only `& < >`.
+- `toSlackMrkdwn` (the no-view and failure paths) keeps the Markdown's own line breaks, so it uses
+  `visibleText` (`delivery/visibleText`), not `visibleLine`: the same characters and the same
+  emoji-joiner rule, but `\n` stays, indentation stays and each line loses its trailing blanks. It
+  runs before the escaping, so the headings, bold and links are read from clean text.
 - Pure: the same view gives the same message, and each divider is a new object.
 
 ## Files

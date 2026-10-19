@@ -101,11 +101,58 @@ describe('toSlackMrkdwn', () => {
   });
 
   it('ignores a heading marker with no title', () => {
-    expect(toSlackMrkdwn('#   ')).toBe('#   ');
+    expect(toSlackMrkdwn('#   ')).toBe('#');
   });
 
   it('handles Windows line endings', () => {
     expect(toSlackMrkdwn('# Title\r\n\r\nbody **x**\r\n')).toBe('*Title*\n\nbody *x*\n');
+  });
+
+  describe('invisible characters', () => {
+    // Written as escapes: a literal bidi override in a test file would reorder what the reader
+    // of the file sees.
+    it.each([
+      ['a bidi override', '\u{202E}'],
+      ['a bidi isolate', '\u{2066}'],
+      ['a zero-width space', '\u{200B}'],
+      ['the byte order mark', '\u{FEFF}'],
+      ['a soft hyphen', '\u{00AD}'],
+      ['a tag character', '\u{E0041}'],
+      ['the Arabic letter mark', '\u{061C}'],
+    ])('removes %s from the text', (_name, invisible) => {
+      const output = toSlackMrkdwn(`Ollama${invisible}0.9 shipped\nsecond line${invisible}`);
+
+      expect(output).toBe('Ollama 0.9 shipped\nsecond line');
+      expect(output).not.toContain(invisible);
+    });
+
+    it('keeps the line breaks and the Markdown it converts', () => {
+      expect(
+        toSlackMrkdwn(
+          '# Ti\u{202E}tle\n\n**bi\u{200B}g** [a\u{2066}b](https://example.com/r)\n- one\u{FEFF}\n',
+        ),
+      ).toBe('*Ti tle*\n\n*bi g* <https://example.com/r|a b>\n- one\n');
+    });
+
+    it('removes them before it escapes, so & < > are still escaped once', () => {
+      expect(toSlackMrkdwn('a <\u{200B}!channel> & b')).toBe('a &lt; !channel&gt; &amp; b');
+    });
+
+    it('keeps a joined emoji whole', () => {
+      const joined = '\u{1F468}\u{200D}\u{1F4BB}';
+
+      expect(toSlackMrkdwn(`by ${joined}\n- ${joined} too`)).toBe(`by ${joined}\n- ${joined} too`);
+    });
+
+    it('drops a joiner that joins nothing', () => {
+      expect(toSlackMrkdwn('ig\u{200D}nore')).toBe('ig nore');
+    });
+
+    it('does not make a Slack link of a URL that held an invisible character', () => {
+      expect(toSlackMrkdwn('[x](https://exa\u{200B}mple.com/a)')).toBe(
+        '[x](https://exa mple.com/a)',
+      );
+    });
   });
 
   it.each([
@@ -113,6 +160,9 @@ describe('toSlackMrkdwn', () => {
     ['unclosed links', '[a]('.repeat(25_000)],
     ['a heading with a long run of spaces', `# a${' '.repeat(100_000)}b`],
     ['unclosed bold', '**a '.repeat(25_000)],
+    ['invisible characters', ' \u{202E}\u{200B}'.repeat(34_000)],
+    ['a long run of trailing spaces', `a${' '.repeat(100_000)}\nb`],
+    ['joiners after emoji', '\u{1F468}\u{200D}'.repeat(34_000)],
   ])('stays fast on hostile input: %s', (_name, input) => {
     const started = performance.now();
     toSlackMrkdwn(input);
