@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { write } from './write';
 import { PartialFailure } from '../chain/failures';
 import type { Draft, Item } from '../../domain/schemas';
@@ -129,5 +129,57 @@ describe('write', () => {
     expect(state.drafts.map((outcome) => outcome.rejectedBy)).toEqual([['write'], ['write']]);
     expect(h.draftsFile().drafts).toEqual([]);
     expect(h.draftsFile().failures).toHaveLength(2);
+  });
+});
+
+describe('write when the run is told to stop', () => {
+  const reason = new Error('run timed out');
+
+  /** A writer call that ends only when the signal it is given fires. */
+  const hanging = () =>
+    new FakeModelProvider({
+      generate: (request) =>
+        new Promise((_resolve, reject) => {
+          request.signal?.addEventListener(
+            'abort',
+            () => {
+              reject(request.signal?.reason as Error);
+            },
+            { once: true },
+          );
+        }),
+    });
+
+  it('gives the writer calls the run signal, and fails with its reason, not as a failed writer', async () => {
+    const controller = new AbortController();
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+    const pending = write(h.ctx, stateOf({ selected: items, collected: items }), h.logger);
+    await vi.waitFor(() => {
+      expect(fake.generateCalls).toHaveLength(1);
+    });
+    expect(fake.generateCalls[0]?.signal).toBe(controller.signal);
+
+    controller.abort(reason);
+
+    const failure = await pending.catch((error: unknown) => error);
+    expect(failure).toBe(reason);
+    expect(failure).not.toBeInstanceOf(PartialFailure);
+    expect(fake.generateCalls).toHaveLength(1);
+    expect(h.store.artifacts.size).toBe(0);
+  });
+
+  it('starts no writer, and writes no drafts.json, when the signal fired already', async () => {
+    const controller = new AbortController();
+    controller.abort(reason);
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+
+    await expect(
+      write(h.ctx, stateOf({ selected: items, collected: items }), h.logger),
+    ).rejects.toBe(reason);
+
+    expect(fake.generateCalls).toEqual([]);
+    expect(h.store.artifacts.size).toBe(0);
   });
 });

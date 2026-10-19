@@ -23,6 +23,11 @@ export interface WriteDeps {
   focusAreas: readonly string[];
   weekId: string;
   logger: Logger;
+  /**
+   * The run's abort signal: given to every writer call, and no writer starts once it fires. The
+   * step then rejects with the signal's reason; an aborted writer is never listed as failed.
+   */
+  signal?: AbortSignal;
 }
 
 export interface WriteOutput {
@@ -42,7 +47,8 @@ export interface RetryRequest {
 
 /**
  * Each writer drafts the digest from the same top items, one after another (W1-09).
- * A writer that fails is listed in `failures` and the next one still runs.
+ * A writer that fails is listed in `failures` and the next one still runs, unless the run's
+ * signal fired: then no writer starts and the step rejects.
  */
 export async function writeStep(
   items: readonly ScoredItem[],
@@ -54,6 +60,7 @@ export async function writeStep(
   const outcomes: WriterOutcome[] = [];
   // Sequential on purpose: one model in memory at a time (OLLAMA_MAX_LOADED_MODELS=1).
   for (const writer of deps.writers) {
+    deps.signal?.throwIfAborted();
     outcomes.push(await draftWith(writer, prompt, sources, deps));
   }
   return summarize(outcomes);
@@ -62,7 +69,8 @@ export async function writeStep(
 /**
  * One more try for the writers named in `requests` (W5-06, F1): the same items, plus the problems
  * the link or format check found in their draft. The caller decides who retries and when; a
- * failed retry is a failure for that writer, like a failed first attempt.
+ * failed retry is a failure for that writer, like a failed first attempt. Like `writeStep`, it
+ * starts no writer once the run's signal fired.
  */
 export async function retryStep(
   items: readonly ScoredItem[],
@@ -73,6 +81,7 @@ export async function retryStep(
   const retryDeps = { ...deps, logger: deps.logger.child({ retry: true }) };
   const outcomes: WriterOutcome[] = [];
   for (const { writer, problems } of requests) {
+    deps.signal?.throwIfAborted();
     const prompt = buildRetryPrompt(items, deps.focusAreas, problems);
     outcomes.push(await draftWith(writer, prompt, sources, retryDeps));
   }
@@ -138,7 +147,7 @@ function tooFewItems(count: number, deps: WriteDeps): WriteOutput {
   return { drafts: [], failures: deps.writers.map((writer) => ({ writer, error })) };
 }
 
-/** Never rejects: every error becomes a failure for this writer. */
+/** Rejects only when the run's signal fired; every other error becomes a failure for this writer. */
 async function draftWith(
   writer: string,
   prompt: WritePrompt,
@@ -149,7 +158,7 @@ async function draftWith(
   try {
     const result = await generateStructured(
       deps.model,
-      { role: 'write', model: writer, ...prompt },
+      { role: 'write', model: writer, ...prompt, signal: deps.signal },
       DigestBodySchema,
       'write',
     );
@@ -164,6 +173,8 @@ async function draftWith(
     logger.info('Writer drafted digest', { items: kept.length, repaired: result.repaired });
     return { draft: { writer, digest: { ...result.value, items: kept, weekId: deps.weekId } } };
   } catch (error) {
+    // Whatever the aborted call threw, it is not this writer's fault.
+    deps.signal?.throwIfAborted();
     const message = describeError(error);
     logger.warn('Writer failed', { error: message });
     return { failure: { writer, error: message } };

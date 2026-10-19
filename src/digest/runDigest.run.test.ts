@@ -284,7 +284,7 @@ describe('runDigest: the abort signal (F46)', () => {
     expect(sentNotes(h)).toHaveLength(2);
   });
 
-  it('stops before the next step when the signal fires during a step, and keeps the finished steps', async () => {
+  it('stops within the classify step when the signal fires during it, and keeps the finished steps', async () => {
     const controller = new AbortController();
     const h = setup({
       onClassify: () => {
@@ -298,31 +298,25 @@ describe('runDigest: the abort signal (F46)', () => {
     expect(result.record).toMatchObject({
       status: 'failed',
       error: {
-        step: 'process',
-        message: 'Run aborted before the process step: scheduler timeout after 2h',
+        step: 'classify',
+        message: 'Run aborted during the classify step: scheduler timeout after 2h',
       },
-      counts: { collected: 5, afterGuardInput: 5, classified: 5 },
+      counts: { collected: 5, afterGuardInput: 5 },
     });
+    expect(result.record.counts.classified).toBe(0);
     expect(result.record.timings.map((timing) => timing.step)).toEqual([
       'collect',
       'guardInput',
       'classify',
     ]);
+    // One decide call started the abort; no second item and no writer followed.
+    expect(h.model.decideCalls).toHaveLength(1);
     expect(h.model.generateCalls).toEqual([]);
     expect(h.store.isLocked).toBe(false);
-    expect(logged(h, 'Run aborted')).toEqual([
-      expect.objectContaining({
-        level: 'warn',
-        fields: expect.objectContaining({
-          step: 'process',
-          reason: 'scheduler timeout after 2h',
-        }) as LogFields,
-      }),
-    ]);
-    expect(JSON.parse(h.artifact('error.json') ?? '{}')).toMatchObject({ step: 'process' });
+    expect(JSON.parse(h.artifact('error.json') ?? '{}')).toMatchObject({ step: 'classify' });
     for (const delivery of h.deliveries) {
       expect(delivery.failures).toEqual([
-        { weekId: WEEK, step: 'process', message: result.record.error?.message },
+        { weekId: WEEK, step: 'classify', message: result.record.error?.message },
       ]);
     }
   });

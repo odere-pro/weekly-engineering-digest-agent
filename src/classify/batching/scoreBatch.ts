@@ -8,7 +8,8 @@ import { generateStructured } from '../../models/structured';
 
 /**
  * Scores one batch with a single generate call. The reply must be JSON that names only items of
- * the batch and areas of the focus list; `generateStructured` repairs it once, then throws.
+ * the batch and areas of the focus list; `generateStructured` repairs it once, then throws. A
+ * fired `deps.signal` stops it before the call, and an aborted call rejects.
  */
 export async function scoreBatch(
   batch: readonly Item[],
@@ -18,6 +19,7 @@ export async function scoreBatch(
     batch.map((item) => item.id),
     areaOptions(deps.focusAreas),
   );
+  deps.signal?.throwIfAborted();
   const { value, repaired } = await generateStructured(
     deps.model,
     {
@@ -25,6 +27,7 @@ export async function scoreBatch(
       system: classifyBatchSystem(deps.focusAreas),
       prompt: classifyBatchPrompt(batch, deps.areaHints),
       temperature: GENERATE_TEMPERATURE,
+      signal: deps.signal,
     },
     schema,
     'classify',

@@ -21,7 +21,13 @@ export async function selectWinner(
       ? await selectStep(
           state.passed.map((entry) => entry.draft),
           state.selected,
-          { model, focusAreas: config.focusAreas, writerOrder: profile.writers, logger },
+          {
+            model,
+            focusAreas: config.focusAreas,
+            writerOrder: profile.writers,
+            logger,
+            signal: ctx.signal,
+          },
         )
       : { winner: first.draft, scores: [], judged: false };
   const winner = state.passed.find((entry) => entry.draft === selection.winner);

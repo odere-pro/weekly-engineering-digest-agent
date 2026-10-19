@@ -17,7 +17,8 @@ export interface Rescore {
 /**
  * Asks the writer model to rescore one batch. The first answer for an id wins. A batch that fails
  * (bad JSON after the repair, a model error) returns no answers, so its items keep the decider's
- * scores; only an abort propagates.
+ * scores; only an abort propagates: the run's signal firing, whatever the call threw, or an
+ * error named AbortError.
  */
 export async function rescoreBatch(
   batch: readonly ScoredItem[],
@@ -27,6 +28,7 @@ export async function rescoreBatch(
     batch.map((item) => item.id),
     areaOptions(deps.focusAreas),
   );
+  deps.signal?.throwIfAborted();
   try {
     const { value, repaired } = await generateStructured(
       deps.model,
@@ -35,6 +37,7 @@ export async function rescoreBatch(
         system: rescoreSystem(deps.focusAreas),
         prompt: rescorePrompt(batch, deps.areaHints),
         temperature: GENERATE_TEMPERATURE,
+        signal: deps.signal,
       },
       schema,
       'classify',
@@ -59,6 +62,7 @@ export async function rescoreBatch(
       });
     return answers;
   } catch (error) {
+    deps.signal?.throwIfAborted();
     if (error instanceof Error && error.name === 'AbortError') throw error;
     deps.logger.warn('Writer rescoring failed; keeping the classifier scores for this batch', {
       itemIds: batch.map((item) => item.id),

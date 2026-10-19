@@ -65,10 +65,12 @@ async function classifyEach(items: readonly Item[], deps: ClassifyDeps): Promise
   const areas = new Set(areaOptions(deps.focusAreas));
   const scored: ScoredItem[] = [];
   for (const item of items) {
+    deps.signal?.throwIfAborted();
     const { answers } = await deps.model.decide({
       role: 'classify',
       state: classifyState(item, deps.areaHints?.get(item.sourceId)),
       questions,
+      signal: deps.signal,
     });
     scored.push({ ...item, classification: fromAnswers(item.id, answers, areas) });
   }

@@ -33,7 +33,7 @@ sequenceDiagram
   os->>serve: first signal
   serve->>sched: stop(), then wait for whenIdle()
   os->>serve: second signal, a run in flight
-  serve->>run: quitNow.abort: the run stops after its current step
+  serve->>run: quitNow.abort: the run stops within its current call
   os-->>serve: third signal: no listener, the process ends as usual
   serve->>serve: closeApp, return 0
 ```
@@ -52,8 +52,8 @@ sequenceDiagram
 - `waitForShutdownSignal` removes its listeners once a signal arrives. That is why a third signal
   ends the process: nothing listens. `untilIdle` cancels its own listener when the run ends first.
 - The run's signal is `AbortSignal.any([limit, quitNow.signal])`: `limit` is the scheduler's time
-  limit (3 hours by default), `quitNow` the second signal. Collect and the guards stop within one
-  call; other steps finish before the run checks it.
+  limit (3 hours by default), `quitNow` the second signal. The fetchers, the guards and every model
+  call stop within one call; a delivery that has started finishes before the run checks it.
 - `notifyFailure` follows the scheduler's attempt: false on a failed attempt that will be retried
   (`failedRetry: DEFAULT_FAILED_RETRY`, two more tries 30 minutes apart; the scheduler has none by
   default), so a failed week sends one note. `onGiveUp` sends the held note with `sendHeldNote` when

@@ -19,6 +19,12 @@ export interface SelectDeps {
   /** Config order of writers; ties go to the first. */
   writerOrder: readonly string[];
   logger: Logger;
+  /**
+   * The run's abort signal: given to every judge call, and no new call starts once it fires. The
+   * step then rejects with the signal's reason; an abort is not a judge failure, so no writer
+   * wins by default.
+   */
+  signal?: AbortSignal;
 }
 
 export interface SelectOutput {
@@ -46,6 +52,7 @@ const SCORE_TIE_EPSILON = 1e-9;
 /**
  * Judge scores each passing draft separately; highest wins (W1-10). If the judge fails or gives
  * an unusable answer, the first draft in writer order wins, with a warning and no scores (F33).
+ * Unless the run's signal fired: then the step rejects, whatever the judge call threw.
  */
 export async function selectStep(
   drafts: readonly Draft[],
@@ -74,6 +81,7 @@ export async function selectStep(
       judged: true,
     };
   } catch (error) {
+    deps.signal?.throwIfAborted();
     return fallBackToWriterOrder(drafts, error, deps);
   }
 }
@@ -134,7 +142,13 @@ async function judgeOneByOne(
 ): Promise<JudgedDraft[]> {
   const judged: JudgedDraft[] = [];
   for (const { draft, state } of prepared) {
-    const result = await deps.model.decide({ role: 'judge', state, questions });
+    deps.signal?.throwIfAborted();
+    const result = await deps.model.decide({
+      role: 'judge',
+      state,
+      questions,
+      signal: deps.signal,
+    });
     const score = toJudgeScore(draft.writer, result.answers);
     deps.logger.info('draft scored', { writer: score.writer, score: score.score });
     judged.push({ draft, score });

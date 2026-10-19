@@ -44,7 +44,9 @@ All notable changes to this project are listed here. The format follows
 
 - The run's abort (the time limit, or stopping `digest serve`) now stops the collect step and the
   guards within one call. A step that was running fails as `Run aborted during the <step> step`
-  and is not retried. Classify, write and select still finish their call first.
+  and is not retried. Classify, write and select now stop within one model call too: no new call
+  or writer starts after the abort, and an aborted writer or judge is not a failed writer or a
+  fallback winner.
 - `evals/calibrate.ts --write` saves to `<dataDir>/eval/calibration/<profile>.json`, no longer
   into the code folder `evals/calibration/`.
 - The `commit-msg` hook rejects a subject over 72 characters.

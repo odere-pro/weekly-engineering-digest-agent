@@ -22,6 +22,7 @@ export async function classify(
     areaHints: areaHintsOf(config.sources),
     rescoreWithWriter: config.models.rescoreWithWriter,
     minRelevance: config.thresholds.minRelevance,
+    signal: ctx.signal,
   });
   const classifications = scored.map((item) => item.classification);
   const held = await keepArtifact(ctx, state, 'scores.json', toJson(classifications));

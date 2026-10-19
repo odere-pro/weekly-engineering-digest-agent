@@ -34,9 +34,12 @@ changes the collection window, not the week.
 
 ## Abort
 
-`digest serve` stops a run after its current step when a 3 hour time limit passes or a second
-stop signal arrives. The run ends `failed` and releases the lock. The signal is checked between
-steps, never inside one, so a hanging model call holds the run until its timeout.
+`digest serve` stops a run when a 3 hour time limit passes or a second stop signal arrives. The
+run ends `failed` and releases the lock. The signal reaches the feed fetches, the guards and every
+model call, so a hanging call no longer holds the run until its timeout; the run stops within one
+call and no new call or writer starts. A step that was running fails as
+`Run aborted during the <step> step` and is not retried. Between the other steps the signal is
+checked as before, and a delivery that has started finishes first.
 See [stopping and restarts](../operations/stopping-and-restarts.md).
 
 ## Statuses and exit codes

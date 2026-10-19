@@ -32,6 +32,7 @@ export async function write(
       collected: state.collected,
       disabledGuards: ctx.disabledGuards,
       topN: config.topN,
+      signal: ctx.signal,
     },
   );
   const written = checked.map((entry) => entry.draft);

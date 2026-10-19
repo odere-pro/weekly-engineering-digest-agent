@@ -47,9 +47,9 @@ The honest list. Each item says what happens and why.
 - One replica. The lock is a file on local disk. Two machines sharing `dist/` over a network file
   system are not supported, and `dist/` needs hard links (not FAT, exFAT or some SMB shares).
 - A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run.
-- The abort signal (the run time limit, or a stop of `digest serve`) stops the collect step and the
-  guards within one call, and is checked between the other steps. A classify, write or select model
-  call finishes first, so a hanging one holds an aborted run until its timeout.
+- The abort signal (the run time limit, or a stop of `digest serve`) stops the feed fetches, the
+  guards and every model call (classify, write, select) within one call, and is checked between the
+  other steps. A delivery that has started finishes first.
 - Delivery is at least once. A message can arrive twice when a server took it and then reported
   an error.
 

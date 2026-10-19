@@ -31,9 +31,10 @@ docker compose restart digest
 
 ## A run that hangs
 
-The abort signal is checked between steps only. A hanging model call holds a run until its
-timeout (per role, `models.timeoutsMs`). If a run stays alive but does nothing, kill the
-container, because `stop` and `restart` wait out the grace period:
+The abort signal (the run time limit, or the second stop signal of `digest serve`) stops the feed
+fetches, the guards and every model call within one call. A delivery that has started finishes
+first. If a run stays alive but does nothing, kill the container, because `stop` and `restart`
+wait out the grace period:
 
 ```bash
 docker compose kill digest

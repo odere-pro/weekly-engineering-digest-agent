@@ -160,15 +160,15 @@ describe('integration: an aborted run', () => {
       expect(record).toMatchObject({
         status: 'failed',
         error: {
-          step: 'process',
-          message: 'Run aborted before the process step: scheduler timeout after 2h',
+          step: 'classify',
+          message: 'Run aborted during the classify step: scheduler timeout after 2h',
         },
       });
       expect(await lockExists(dataDir())).toBe(false);
       expect(world.fake.generateCalls).toEqual([]);
       expect(digestsSent(world)).toEqual([0, 0, 0]);
       const error = await readTextIfExists(runFile(dataDir(), WEEK, 'error.json'));
-      expect(JSON.parse(error ?? '{}')).toMatchObject({ step: 'process' });
+      expect(JSON.parse(error ?? '{}')).toMatchObject({ step: 'classify' });
     },
     TEST_TIMEOUT_MS,
   );

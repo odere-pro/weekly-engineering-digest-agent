@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { classify } from './classify';
 import { QUESTION_IDS } from '../../classify/classifyPrompt';
 import type { DecisionAnswer } from '../../models/ModelProvider';
@@ -115,5 +115,52 @@ describe('classify', () => {
       expect(off.fake.generateCalls).toEqual([]);
       expect(unset.fake.generateCalls).toEqual([]);
     });
+  });
+});
+
+describe('classify when the run is told to stop', () => {
+  const reason = new Error('run timed out');
+
+  /** A decide call that ends only when the signal it is given fires. */
+  const hanging = () =>
+    new FakeModelProvider({
+      decide: (request) =>
+        new Promise((_resolve, reject) => {
+          request.signal?.addEventListener(
+            'abort',
+            () => {
+              reject(request.signal?.reason as Error);
+            },
+            { once: true },
+          );
+        }),
+    });
+
+  it('gives the model calls the run signal, and fails with its reason when one is aborted', async () => {
+    const controller = new AbortController();
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+    const pending = classify(h.ctx, stateOf({ kept: items }), h.logger);
+    await vi.waitFor(() => {
+      expect(fake.decideCalls).toHaveLength(1);
+    });
+    expect(fake.decideCalls[0]?.signal).toBe(controller.signal);
+
+    controller.abort(reason);
+
+    await expect(pending).rejects.toBe(reason);
+    expect(h.store.artifacts.size).toBe(0);
+  });
+
+  it('calls no model, and writes no scores, when the signal fired already', async () => {
+    const controller = new AbortController();
+    controller.abort(reason);
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+
+    await expect(classify(h.ctx, stateOf({ kept: items }), h.logger)).rejects.toBe(reason);
+
+    expect(fake.decideCalls).toEqual([]);
+    expect(h.store.artifacts.size).toBe(0);
   });
 });

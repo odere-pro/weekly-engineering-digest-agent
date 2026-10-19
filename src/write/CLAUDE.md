@@ -52,8 +52,13 @@ flowchart TD
   the source title; a summary or `action` is not repaired, and an `action` is not link-repaired.
 - Prompt limits come from `checks/formatCheck.ts`, so prompt and check cannot drift; the writer is
   asked for less (400 words, summary 30, action 15).
-- Writers run in turn (one model in memory); `draftWith` never rejects, so a failed writer never
-  stops the next. Under 3 items no writer runs (`tooFewItems`).
+- Writers run in turn (one model in memory); `draftWith` turns a model error into a failure, so a
+  failed writer never stops the next. Under 3 items no writer runs (`tooFewItems`).
+- `WriteDeps.signal` (the run's abort signal) goes to every writer call. `writeStep` and `retryStep`
+  call `signal?.throwIfAborted()` before each writer, and `draftWith` rethrows the signal's reason
+  when it fired: an aborted call is never `writeFailures` or `retryFailures`, no later writer
+  starts, no retry follows, and `drafts.json` is not written (the stage fails as
+  `Run aborted during the write step`).
 
 ## Files
 

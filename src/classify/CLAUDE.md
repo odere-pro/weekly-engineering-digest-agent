@@ -42,13 +42,17 @@ flowchart TD
 - `pairwiseRank` (`pairwise.ts`, experiment): a short Swiss tournament over the first
   `PAIRWISE_TOP` (20) items, at most `PAIRWISE_MAX_CALLS` (40) decide calls. Each game asks in both
   orders and averages, to cancel first-item bias. Its ids feed `process`'s `pairwiseOrder`; only
-  `evals/rescore/replay/replayWeek.ts` calls it.
+  `evals/rescore/replay/replayWeek.ts` calls it. It takes no abort signal: no run uses it.
 
 ## Rules
 
 - A missing or wrongly typed answer, or an area that is not an option, throws `DigestError` (step
   `classify`): a guessed score would ship a wrong digest. Values are validated, never clamped.
 - Decide calls run one at a time: the decision endpoint takes one state per call.
+- `ClassifierDeps.signal` (the run's abort signal) goes to every `decide` and `generate` call, and
+  each call is preceded by `signal?.throwIfAborted()`. An abort rejects the step with the signal's
+  reason: it is never a score, never an item the model "left out", and never a failed rescore
+  batch (`rescoreBatch` rethrows when the signal fired, whatever the call threw).
 - The area hint comes from config and sits outside the untrusted block. `tagText` flattens it to
   one line so it cannot add instructions. A blank hint means no hint.
 - `rescoreWithWriter` without `minRelevance` throws before any model call.

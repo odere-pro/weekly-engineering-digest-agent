@@ -53,6 +53,10 @@ flowchart TD
 - A judge failure never fails the run: one warning (writer, error cut to 300 characters), then the
   first writer in order wins. `prepareJudgeCalls` sits outside the `try` on purpose, so a code bug
   does not hide as an outage. Do not move it in.
+- An abort is not a judge failure. `SelectDeps.signal` (the run's abort signal) goes to every judge
+  call, `judgeOneByOne` checks it before each call, and the `catch` rethrows the signal's reason
+  when it fired: no fallback winner, no warning, no scores. The stage fails as
+  `Run aborted during the select step`.
 - `toJudgeScore` throws `DigestError` (step `select`) on a missing or non-`score` answer or a
   non-finite level. `evals/judge/evalJudge.ts` converts answers with it and reuses the questions,
   `buildJudgeState` and `resolveDraftSources`.

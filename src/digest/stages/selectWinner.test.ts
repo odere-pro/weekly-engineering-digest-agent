@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { selectWinner } from './selectWinner';
 import type { DecisionAnswer } from '../../models/ModelProvider';
 import { DigestError } from '../../shared/errors';
@@ -121,5 +121,52 @@ describe('selectWinner', () => {
 
     expect(h.store.artifacts.size).toBe(0);
     expect(next.held).toEqual([{ name: 'digest.md', content: first.markdown }]);
+  });
+});
+
+describe('selectWinner when the run is told to stop', () => {
+  const reason = new Error('run timed out');
+
+  /** A judge call that ends only when the signal it is given fires. */
+  const hanging = () =>
+    new FakeModelProvider({
+      decide: (request) =>
+        new Promise((_resolve, reject) => {
+          request.signal?.addEventListener(
+            'abort',
+            () => {
+              reject(request.signal?.reason as Error);
+            },
+            { once: true },
+          );
+        }),
+    });
+
+  it('gives the judge the run signal, and fails with its reason rather than naming a winner', async () => {
+    const controller = new AbortController();
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+    const pending = selectWinner(h.ctx, stateWith(first, second), h.logger);
+    await vi.waitFor(() => {
+      expect(fake.decideCalls).toHaveLength(1);
+    });
+    expect(fake.decideCalls[0]?.signal).toBe(controller.signal);
+
+    controller.abort(reason);
+
+    await expect(pending).rejects.toBe(reason);
+    expect(h.store.artifacts.size).toBe(0);
+  });
+
+  it('asks no judge, and writes no digest.md, when the signal fired already', async () => {
+    const controller = new AbortController();
+    controller.abort(reason);
+    const fake = hanging();
+    const h = contextFor({ model: fake, signal: controller.signal });
+
+    await expect(selectWinner(h.ctx, stateWith(first, second), h.logger)).rejects.toBe(reason);
+
+    expect(fake.decideCalls).toEqual([]);
+    expect(h.store.artifacts.size).toBe(0);
   });
 });
