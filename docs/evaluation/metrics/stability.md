@@ -25,7 +25,11 @@ eval keeps the ids of the items each run linked to.
 A run with no digest has no ids. One empty run next to two identical runs gives (5 + 0 + 0) / 3 =
 1.67, so an empty run pulls the value down hard. Read `emptyRuns` and `itemIdsByRun` to tell a
 blocked run from different picks. The value is the first week's. `byWeek` adds each week's own
-overlap. Full explanation: [stability runs](../sets/stability.md).
+overlap and, since wave 11, the cause of each empty run (`run 2: blocked by clefRubric`,
+`rejected by formatCheck`, or `run ended as "<status>"`). The replay has the template fallback off, so a
+blocked run really is empty. The same 18 replays feed
+[guard blocks on real weeks](guard-real-blocks.md). Full explanation:
+[stability runs](../sets/stability.md).
 
 ## The gate
 

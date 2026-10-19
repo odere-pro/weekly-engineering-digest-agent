@@ -75,9 +75,11 @@ the run's `items.json` and that folder fails to load. Record the real week first
 (`pnpm eval:record`, see [recorded weeks](../../evaluation/sets/recorded-weeks.md)) and add the ids
 to its `labels.json` by hand. The ids are the same in both places.
 
-The tests pin the set sizes (6 weeks, 20 attacks, 10 grounding drafts, 60 classifier cases), so a
-new case also changes the count in its `evals/dataset.*.test.ts`. Never tune a guard prompt on the
-held-out attacks 11 to 20. Use `.example` hosts in invented cases and keep real secrets out.
+The tests pin the set sizes (6 weeks, 30 attacks, 30 grounding drafts, 60 classifier cases), so a
+new case also changes the count in its `evals/dataset.*.test.ts`. Never tune a guard prompt, a rule
+or a threshold on the held-out cases (attacks 21 to 30, grounding 21 to 30), and do not read them
+while you tune. Use `.example` hosts in invented cases and keep real secrets out. A new real case
+goes in as an ordinary tuning case, never as a held-out one.
 
 ## Verify
 

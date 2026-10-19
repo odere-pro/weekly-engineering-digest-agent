@@ -74,17 +74,18 @@ Prints `Week`, `Status`, `Items` (`N collected → M in digest`), `Winner`, `Dur
 the digest files, each `Failed source:` and `Rejected draft:`, and a note for `dry-run` and
 `skipped`. Errors go to stderr. Writes the run folder, the digest files and, on `failed`,
 `blocked` or a `quiet` week with nothing collected, a failure note. Exit code follows the run
-status ([exit codes](exit-codes.md)). A held lock or a bad option exits 1.
+status ([exit codes](exit-codes.md)). A held lock or a bad option exits 1. When every draft is
+rejected, `Winner` reads `fallback`: a digest built from the items' own text was sent (exit 0),
+see [blocked run](../runbooks/debug/blocked-run.md).
 
 ## `eval [options]`
 
-| Option             | Default                | Meaning                             |
-| ------------------ | ---------------------- | ----------------------------------- |
-| `--profile <name>` | the configured profile | `quality`, `fast`, `light` or `all` |
-
-Replays the recorded weeks and cases, prints the scorecard and saves
-`evals/scorecards/<date>-<profile>.json` (a second run on the same day overwrites it). Exit 1
-when a hard gate fails, 0 when all pass. `EVAL_JUDGE` adds a judge for profiles without one.
+| Option                 | Default                | Meaning                                                                                                                   |
+| ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `--profile <name>`     | the configured profile | `quality`, `fast`, `light` or `all`. Saves `evals/scorecards/<date>-<profile>.json`; exit 1 if a hard gate fails          |
+| `--only <section>`     | every section          | `guards`, `classify`, `sources` or `weeks` alone; partial scorecard, exit 0; [details](../evaluation/running-sections.md) |
+| `--resume`             | off                    | Reuse the week replays a lost run saved                                                                                   |
+| `--compare <files...>` | none                   | Compare two saved scorecards; runs nothing, needs no Ollama                                                               |
 
 ## `fetch [options]`
 

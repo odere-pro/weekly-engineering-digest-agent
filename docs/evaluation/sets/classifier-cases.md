@@ -39,15 +39,16 @@ step alone, with no other step in the way.
 
 ## Metric it feeds
 
-[Classifier accuracy](../metrics/classifier-accuracy.md). A case is right when the area matches and
-the relevance is within 0.5 of the label. The thresholds (`minRelevance`, `maxHype`,
-`maxMinorRelease`) are also tuned on these cases; see below.
+[Classifier accuracy](../metrics/classifier-accuracy.md). Since wave 11 a case is right when the
+relevance is within one point of the label; the share with the right area and the Spearman rank
+correlation are reported next to it. The thresholds (`minRelevance`, `maxHype`, `maxMinorRelease`)
+are also tuned on these cases; see below.
 
 ## How the eval uses it
 
 `classifyStep` runs on all 60 items in one call with the focus areas and source area tags from
-**your** config. The labels use the default focus areas. If you changed `focusAreas`, areas will
-not match and accuracy drops for that reason alone. Run the eval with the default focus areas.
+**your** config. The labels use the default focus areas. If you changed `focusAreas`, the area
+labels no longer fit and the relevance scores shift too. Run the eval with the default focus areas.
 
 ## Rules the data must follow
 
@@ -81,5 +82,36 @@ pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json
 a train split and reports them on a holdout split (the two newest weeks and every third case).
 Values in use come from the `light` sweep of 2026-10-17: see [thresholds](../../configuration/thresholds.md).
 
-Note that the sweep's "filter accuracy" (keep an item when its label is 2 or 3) reached 0.867. The
-scorecard metric is stricter, area and relevance must both be right, and stood at 28.3%.
+The sweep's "filter accuracy" (keep an item when its label is 2 or 3) reached 0.867. The scorecard
+metric is a different number. The saved scorecard (2026-10-18) measured exact area and relevance
+within 0.5 and stood at 28.3%; the next one uses the within-one rule.
+
+## Calibrating the relevance
+
+Wave 11 (W11-06) added a way to correct the classifier's relevance after the fact. It lives in the
+**process step**, not in classify: `src/process/calibration.ts` holds `CalibrationSchema` and
+`calibrateClassification`, and `processStep` applies a calibration when it is given one. A
+calibration is a monotone map from the raw relevance to a calibrated one on the same 0 to 3 scale,
+plus a small bias per area.
+
+```bash
+pnpm tsx evals/calibrate.ts evals/thresholds/raw/<date>-light.json [--holdout 2026-W40,2026-W41] [--write [--out <file>]]
+```
+
+- It reads the same raw capture as the threshold sweep and makes no model call.
+- It fits on the train split only: the labeled classifier cases, and the labeled week items
+  (must-include counts as 3, must-exclude as 0). The map is an isotonic fit; the area bias is
+  shrunk toward zero and capped at 0.5.
+- It then measures the holdout split with the calibration off and on, and prints holdout recall (of
+  5), leaks and the within-one share. The verdict is `keep` only when holdout recall rises and
+  leaks do not.
+- With `--write` and a `keep` verdict it writes `evals/calibration/<profile>.json` (or `--out`).
+- `evals/rescoreReplay.ts --calibration <file>` replays classify and process with a file applied.
+
+On the light profile holdout recall did not rise (1.50 to 1.50), so **no calibration file is
+committed**. Nothing in the weekly run reads one: `src/digest` does not pass a calibration to the
+process step. This is tooling for a profile that needs it.
+
+A third experiment, a pairwise ranking of the best 20 candidates (W11-07, `evals/rescoreReplay.ts
+--pairwise on`), lowered holdout recall from 1.50 to 1.00, so it stays off. It is a replay flag, not
+a config key, and a real run never sets it.

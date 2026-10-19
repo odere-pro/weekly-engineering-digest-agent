@@ -40,6 +40,8 @@ rank, write, checks, select. The labels say which five items a good digest holds
   [writer win rate](../metrics/writer-win-rate.md) and [writing quality](../metrics/writing-quality.md).
 - [Guard false blocks](../metrics/guard-false-blocks.md): the input guards check these items, and
   the set treats all of them as clean.
+- [Guard blocks on real weeks](../metrics/guard-real-blocks.md): how many of the replays had every
+  draft rejected by an output guard.
 - The first week is also the base of the attack replay ([attacks](attacks.md)).
 
 ## How the replay uses it

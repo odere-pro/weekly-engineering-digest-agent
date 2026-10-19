@@ -16,6 +16,8 @@ temperature, so the picks should repeat. The stability runs prove it, or show wh
 - `STABILITY_RUNS` in `evals/runEval.ts` is 3. Each recorded week is replayed three times in total:
   the plain replay that feeds all other metrics, plus two repeats.
 - The repeats are dry runs with the same items, the same fixed clock, every guard on and `topN` 5.
+  The template fallback digest is off, so a week where every draft is rejected is an empty run.
+- All 18 replays also feed [guard blocks on real weeks](../metrics/guard-real-blocks.md).
 - For each run the eval keeps the ids of the collected items the digest links to. A run that
   produced no digest (blocked, quiet or failed) keeps an empty list.
 - Scorecards from 2026-10-17 repeated only the first week. The newest one repeats every week,
@@ -42,6 +44,7 @@ the mean of those counts. The most it can be is 5, when all runs picked the same
   value with empty runs means a blocked digest, not different picks. Read `itemIdsByRun` to tell.
 - `byWeek` has one line per week: `overlap 5.00 items over 3 runs, 0 empty`. A week with an empty
   run has status `no-digest`.
+- Each empty run now gets its cause in the week's line (`run 2: blocked by <guard>`).
 - The terminal prints the first eight characters of each run's ids under "Item ids by run".
 
 ## The gate

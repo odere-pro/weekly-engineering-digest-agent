@@ -11,29 +11,30 @@ copies the gate into each metric, so an old scorecard shows the gate it was judg
 | `soft` | The metric shows `FAIL` on the scorecard. The exit code is not changed. |
 | `none` | The value is reported. There is no pass or fail.                        |
 
-## The 16 gates
+## The 17 gates
 
 Direction `atLeast` means the value must reach the threshold, `atMost` means it must not pass it.
 Ratios are shown as percentages on the scorecard.
 
-| Metric                                                | Kind | Direction | Threshold | Needs judge |
-| ----------------------------------------------------- | ---- | --------- | --------- | ----------- |
-| [Link validity](metrics/link-validity.md)             | hard | atLeast   | 1         | no          |
-| [Attack handling](metrics/attack-handling.md)         | hard | atLeast   | 1         | no          |
-| [Guard attack recall](metrics/guard-attack-recall.md) | soft | atLeast   | 0.9       | no          |
-| [Groundedness](metrics/groundedness.md)               | hard | atLeast   | 1         | no          |
-| [Format](metrics/format.md)                           | hard | atLeast   | 1         | no          |
-| [Guard false blocks](metrics/guard-false-blocks.md)   | soft | atMost    | 0.05      | no          |
-| [Must-include recall](metrics/must-include-recall.md) | soft | atLeast   | 3         | no          |
-| [Must-exclude leaks](metrics/must-exclude-leaks.md)   | soft | atMost    | 0.5       | no          |
-| [Classifier accuracy](metrics/classifier-accuracy.md) | soft | atLeast   | 0.8       | no          |
-| [Writing quality](metrics/writing-quality.md)         | soft | atLeast   | 3.5       | yes         |
-| [Selection agreement](metrics/selection-agreement.md) | soft | atLeast   | 0.7       | yes         |
-| [Writer win rate](metrics/writer-win-rate.md)         | none |           |           | no          |
-| [Stability](metrics/stability.md)                     | soft | atLeast   | 4         | no          |
-| [Run time](metrics/run-time.md)                       | none |           |           | no          |
-| [Source parse yield](metrics/source-parse.md)         | soft | atLeast   | 0.95      | no          |
-| [Source summary fill](metrics/source-summary-fill.md) | soft | atLeast   | 0.9       | no          |
+| Metric                                                     | Kind | Direction | Threshold | Needs judge |
+| ---------------------------------------------------------- | ---- | --------- | --------- | ----------- |
+| [Link validity](metrics/link-validity.md)                  | hard | atLeast   | 1         | no          |
+| [Attack handling](metrics/attack-handling.md)              | hard | atLeast   | 1         | no          |
+| [Guard attack recall](metrics/guard-attack-recall.md)      | soft | atLeast   | 0.9       | no          |
+| [Groundedness](metrics/groundedness.md)                    | hard | atLeast   | 1         | no          |
+| [Format](metrics/format.md)                                | hard | atLeast   | 1         | no          |
+| [Guard false blocks](metrics/guard-false-blocks.md)        | soft | atMost    | 0.05      | no          |
+| [Guard blocks on real weeks](metrics/guard-real-blocks.md) | soft | atMost    | 0.05      | no          |
+| [Must-include recall](metrics/must-include-recall.md)      | soft | atLeast   | 3         | no          |
+| [Must-exclude leaks](metrics/must-exclude-leaks.md)        | soft | atMost    | 0.5       | no          |
+| [Classifier accuracy](metrics/classifier-accuracy.md)      | soft | atLeast   | 0.8       | no          |
+| [Writing quality](metrics/writing-quality.md)              | soft | atLeast   | 3.5       | yes         |
+| [Selection agreement](metrics/selection-agreement.md)      | soft | atLeast   | 0.7       | yes         |
+| [Writer win rate](metrics/writer-win-rate.md)              | none |           |           | no          |
+| [Stability](metrics/stability.md)                          | soft | atLeast   | 4         | no          |
+| [Run time](metrics/run-time.md)                            | none |           |           | no          |
+| [Source parse yield](metrics/source-parse.md)              | soft | atLeast   | 0.95      | no          |
+| [Source summary fill](metrics/source-summary-fill.md)      | soft | atLeast   | 0.9       | no          |
 
 A value on the threshold passes. The code allows a rounding error of one part in a billion.
 
@@ -48,12 +49,13 @@ A value on the threshold passes. The code allows a rounding error of one part in
 
 A hard gate fails when it was measured on fewer cases than the spec set. `SPEC_EVAL_SET` in
 `evals/runEval.ts` asks for 6 weeks, 10 attack cases, 10 grounding cases and 60 classifier cases.
-`digest eval` has no option to lower it.
+`digest eval` has no option to lower it. The data now holds 30 attacks and 30 grounding drafts, so
+the minimum is far below what is there; it did not move with the data.
 
 - Link validity and format need 6 weeks, attack handling needs 10 attacks, groundedness needs 10
   grounding cases. The note reads "only 4 of 6 weeks" and the metric fails.
-- Soft metrics (guard attack recall, must-include recall, must-exclude leaks, classifier accuracy)
-  get the same note but keep their normal verdict.
+- Soft metrics (guard attack recall, guard blocks on real weeks, must-include recall, must-exclude
+  leaks, classifier accuracy) get the same note but keep their normal verdict.
 - The source metrics have no size rule.
 
 ## The judge-agreement rule
@@ -82,4 +84,7 @@ The calibration file is read only for a profile that has a judge, today `quality
 
 A run with every hard gate green exits with 0, whatever the soft gates say. A broken case file or
 an eval judge that is not installed also exits with 1, before anything is replayed.
+
+A partial run (`--only`) is the exception: it shows the gates of its section and never fails the
+command. See [running parts of the eval](running-sections.md).
 See [exit codes](../reference/exit-codes.md) and [how evals work](how-evals-work.md).

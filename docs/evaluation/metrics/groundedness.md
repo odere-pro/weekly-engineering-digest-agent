@@ -15,7 +15,7 @@ The output guards are the defence, so the eval plants known errors and checks th
 
 `groundedness` in `evals/metrics.ts`, fed by `checkGrounding` in `evals/runEval.ts`.
 
-1. For each grounding case, the draft with the planted claim and its clean control (the draft
+1. For each of the 30 grounding cases (the saved scorecard has 10), the draft with the planted claim and its clean control (the draft
    without the planted item) go through `guardOutputStep` together. All output checks are on,
    mode `any`, with the case's source items.
 2. The case is **caught** when the planted draft is among the rejected drafts.
@@ -35,12 +35,14 @@ If an output check was switched off, the value is not measured and the note says
 
 ## Data it uses
 
-The [grounding cases](../sets/grounding.md).
+The [grounding cases](../sets/grounding.md): 30 drafts. Cases 01 to 10 are the original set, 11 to 20
+plant subtler claims (a version one minor higher, a date a week off) and 21 to 30 are held out. The
+gate stays at 100%, so the harder cases make it harder to pass.
 
 ## How to add a case
 
 Write a draft with one planted false claim and its sources, add the row to the README and the
-pattern to the test. See [grounding cases](../sets/grounding.md#how-to-extend-it) and
+pattern to the test. Never tune a guard question on cases 21 to 30. See [grounding cases](../sets/grounding.md#how-to-extend-it) and
 [adding cases](../adding-cases.md).
 
 ## Current result

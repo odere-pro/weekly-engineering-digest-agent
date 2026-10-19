@@ -27,7 +27,11 @@ failure too.
    layout prints neither, so a digest read back from it cannot show them.
 4. The value is weeks that passed divided by all weeks, including weeks with no digest.
 
-`byWeek` keeps the first 5 problems per week. A week with no digest shows as `no-digest`.
+`byWeek` keeps the first 5 problems per week. A week with no digest shows as `no-digest` and, since
+wave 11, its line names the cause, read from the replay's record: `blocked by <guard>`,
+`rejected by <check>` or `run ended as "<status>"`. The replay has the template fallback digest
+off, so a week where every draft is rejected has no digest and fails here. The saved scorecard
+(2026-10-18) was written before the cause was recorded.
 
 ## The gate
 
