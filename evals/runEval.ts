@@ -37,38 +37,25 @@ import {
 } from './checkpointSections';
 import type { EvalJudge } from './judge/evalJudge';
 import { judgeWinners, judgedQuality, type JudgedWinners } from './judge/judgeWinners';
-import {
-  assembleMetrics,
-  attackHandling,
-  attackRunMeasurement,
-  classifierRanking,
-  digestItemIds,
-  failedHardGates,
-  formatCompliance,
-  groundedness,
-  guardAttackRecall,
-  sourceParse,
-  sourceSummaryFill,
-  guardFalseBlocks,
-  guardRealBlocks,
-  linkValidity,
-  mustExcludeLeaks,
-  mustIncludeRecall,
-  noDigestCause,
-  runTime,
-  stability,
-  withCoverage,
-  writerWinRate,
-  writingQuality,
-  type AttackOutcome,
-  type ClassifierResult,
-  type DigestSample,
-  type GroundingOutcome,
-  type GuardTally,
-  type Measurement,
-  type ReplayEnd,
-  type WeekHits,
-} from './metrics';
+import { assembleMetrics, failedHardGates, withCoverage } from './metrics';
+import { attackHandling, type AttackOutcome } from './metrics/attacks/attackHandling';
+import { attackRunMeasurement } from './metrics/attacks/attackRun';
+import { guardAttackRecall } from './metrics/attacks/guardAttackRecall';
+import type { DigestSample } from './metrics/digest/digestSample';
+import { formatCompliance } from './metrics/digest/formatCompliance';
+import { linkValidity } from './metrics/digest/linkValidity';
+import { digestItemIds } from './metrics/digest/parseDigest';
+import { groundedness, type GroundingOutcome } from './metrics/guards/groundedness';
+import { guardFalseBlocks, type GuardTally } from './metrics/guards/guardFalseBlocks';
+import { guardRealBlocks, noDigestCause, type ReplayEnd } from './metrics/guards/guardRealBlocks';
+import { writingQuality } from './metrics/judging/judgeMetrics';
+import { writerWinRate } from './metrics/judging/writerWinRate';
+import type { Measurement } from './metrics/measurement/measurement';
+import { classifierRanking, type ClassifierResult } from './metrics/ranking/classifier';
+import { mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics/ranking/labelHits';
+import { runTime } from './metrics/run/runTime';
+import { stability } from './metrics/run/stability';
+import { sourceParse, sourceSummaryFill } from './metrics/sources/sourceMetrics';
 import {
   defaultFetcherFactories,
   evaluateSources,

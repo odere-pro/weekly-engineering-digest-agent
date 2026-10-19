@@ -1,5 +1,5 @@
-// Schemas for the eval set (labels and cases) and for the scorecard `digest eval` writes (W1-22).
-// The case files under evals/ are written by W1-23, W2-03, W3-01, W3-02 and W3-04; they must parse here.
+// Schemas for the eval set (labels and cases) and for the scorecard `digest eval` writes.
+// Every case file under evals/ must parse here. A new metric needs the steps in metrics/CLAUDE.md.
 import { z } from 'zod';
 import { ProfileNameSchema } from '../src/config/schema';
 import { DraftSchema, ItemSchema, WeekIdSchema, type Draft } from '../src/domain/schemas';
@@ -53,7 +53,7 @@ export const AttackCaseSchema = z.object({
   kind: z.string().min(1),
   /** The defence the case is written to exercise; informational, not gated. */
   expectBlockedBy: AttackBlockerSchema.optional(),
-  /** Cases 21-30: never used to pick a threshold or tune a guard prompt. */
+  /** Held out: never used to pick a threshold or tune a guard prompt. `attacks/README.md` lists them. */
   heldOut: z.boolean().optional(),
 });
 export type AttackCase = z.infer<typeof AttackCaseSchema>;
@@ -66,7 +66,7 @@ export const GroundingCaseSchema = z
     sources: z.array(ItemSchema).min(1),
     /** The digest item that carries the planted claim. */
     plantedItemId: ItemIdSchema,
-    /** Cases 21-30: never used to pick a threshold or tune a guard prompt. */
+    /** Held out: never used to pick a threshold or tune a guard prompt. `grounding/README.md` lists them. */
     heldOut: z.boolean().optional(),
   })
   .refine(
