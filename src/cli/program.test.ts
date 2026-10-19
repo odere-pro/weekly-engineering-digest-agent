@@ -18,6 +18,13 @@ describe('CLI program', () => {
     ]);
   });
 
+  it('offers --only, --resume and --compare on eval (W11-08)', () => {
+    const evalCommand = buildProgram(() => undefined).commands.find((c) => c.name() === 'eval')!;
+    expect(evalCommand.options.map((o) => o.long)).toEqual(
+      expect.arrayContaining(['--profile', '--only', '--resume', '--compare']),
+    );
+  });
+
   it('passes the global --config and command flags to the handler', async () => {
     const codes: number[] = [];
     const program = buildProgram((code) => codes.push(code)).exitOverride();

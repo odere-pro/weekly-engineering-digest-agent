@@ -668,6 +668,14 @@ describe('doctorCommand', () => {
         expect(resultFor(text, '!', 'guards:')).toContain('graniteRisk');
       });
 
+      it('lists the rule guard when it is switched off (W11-04)', async () => {
+        const { text } = await runDoctor({
+          config: { guards: { input: { checks: { ruleInjection: false } } } },
+        });
+
+        expect(resultFor(text, '!', 'guards:')).toContain('ruleInjection');
+      });
+
       it('still requires it when only one of its two guards is off', async () => {
         const { code, text } = await runDoctor({
           config: { guards: { input: { checks: { graniteRisk: false } } } },

@@ -15,7 +15,11 @@ describe('config schema', () => {
       schedule: { cron: '45 7 * * 1', timeZone: 'Europe/Berlin' },
       delivery: { markdown: { dir: 'dist/digests' } },
       guards: {
-        input: { enabled: true, mode: 'any', checks: { clefPolicy: true, graniteRisk: true } },
+        input: {
+          enabled: true,
+          mode: 'any',
+          checks: { ruleInjection: true, clefPolicy: true, graniteRisk: true },
+        },
         output: {
           enabled: true,
           mode: 'any',

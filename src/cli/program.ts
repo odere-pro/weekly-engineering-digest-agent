@@ -77,9 +77,19 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
     .command('eval')
     .description('run the eval set and print the scorecard')
     .option('--profile <name>', 'profile name, or "all"')
-    .action(async (options: { profile?: string }) => {
-      setExitCode(await evalCommand(withConfig(options)));
-    });
+    .option('--only <section>', 'run one section: guards, classify, sources or weeks')
+    .option('--resume', 'reuse the week replays a lost run saved')
+    .option('--compare <files...>', 'compare two saved scorecards; runs nothing')
+    .action(
+      async (options: {
+        profile?: string;
+        only?: string;
+        resume?: boolean;
+        compare?: string[];
+      }) => {
+        setExitCode(await evalCommand(withConfig(options)));
+      },
+    );
 
   program
     .command('fetch')

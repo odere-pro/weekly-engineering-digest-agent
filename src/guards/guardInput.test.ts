@@ -15,7 +15,10 @@ function inputConfig(
     checks?: Partial<InputConfig['checks']>;
   } = {},
 ): InputConfig {
-  const base = makeConfig().guards.input;
+  // These tests cover the two model guards. The rule guard (W11-04) has its own tests, so its
+  // check is left out here instead of being reported as a missing guard in every case.
+  const { ruleInjection: _ruleInjection, ...modelChecks } = makeConfig().guards.input.checks;
+  const base = { ...makeConfig().guards.input, checks: modelChecks as InputConfig['checks'] };
   return { ...base, ...overrides, checks: { ...base.checks, ...overrides.checks } };
 }
 

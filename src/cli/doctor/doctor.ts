@@ -100,7 +100,11 @@ const SYMBOLS: Readonly<Record<Severity, string>> = { ok: '✓', warn: '!', erro
 /** node:util parseEnv reads an unquoted value up to its first "#". */
 const ENV_ASSIGNMENT = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_.-]*)\s*=(.*)$/;
 const ENV_QUOTES: ReadonlySet<string> = new Set(['"', "'", '`']);
-const INPUT_CHECKS = ['clefPolicy', 'graniteRisk'] as const satisfies readonly GuardCheckId[];
+const INPUT_CHECKS = [
+  'ruleInjection',
+  'clefPolicy',
+  'graniteRisk',
+] as const satisfies readonly GuardCheckId[];
 const OUTPUT_CHECKS = [
   'graniteGroundedness',
   'clefRubric',

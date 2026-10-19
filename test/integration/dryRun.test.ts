@@ -146,7 +146,11 @@ function setup(now: string) {
       }),
       github: new FakeSourceFetcher('github', { runner: githubItems }),
     },
-    inputGuards: [new FakeInputGuard('clefPolicy'), new FakeInputGuard('graniteRisk')],
+    inputGuards: [
+      new FakeInputGuard('ruleInjection'),
+      new FakeInputGuard('clefPolicy'),
+      new FakeInputGuard('graniteRisk'),
+    ],
     outputGuards: [new FakeOutputGuard('graniteGroundedness'), new FakeOutputGuard('clefRubric')],
     deliveries,
     store,

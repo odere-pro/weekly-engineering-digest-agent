@@ -14,7 +14,12 @@ export const InputGuardsSchema = z.object({
   /** any: block on the first flag. all: block only when every enabled guard flags. */
   mode: GuardModeSchema.default('any'),
   checks: z
-    .object({ clefPolicy: z.boolean().default(true), graniteRisk: z.boolean().default(true) })
+    .object({
+      /** Deterministic injection patterns, no model call; runs first (W11-04). */
+      ruleInjection: z.boolean().default(true),
+      clefPolicy: z.boolean().default(true),
+      graniteRisk: z.boolean().default(true),
+    })
     .prefault({}),
 });
 

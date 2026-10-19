@@ -198,6 +198,7 @@ function setup(scenario: Scenario = {}) {
     model,
     fetchers: { rss: fetcher },
     inputGuards: keep([
+      new FakeInputGuard('ruleInjection'),
       new FakeInputGuard('clefPolicy', guardFlag('clefPolicy')),
       new FakeInputGuard('graniteRisk', guardFlag('graniteRisk')),
     ]),

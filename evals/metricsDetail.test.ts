@@ -386,8 +386,8 @@ describe('guardAttackRecall', () => {
 });
 
 describe('the input guards a scorecard names', () => {
-  it('are the two input checks of the guard config', () => {
-    expect(INPUT_GUARD_IDS).toEqual(['clefPolicy', 'graniteRisk']);
+  it('are the three input checks of the guard config, the rule guard first', () => {
+    expect(INPUT_GUARD_IDS).toEqual(['ruleInjection', 'clefPolicy', 'graniteRisk']);
   });
 
   it('are the guards listed when none is given', () => {
@@ -396,7 +396,7 @@ describe('the input guards a scorecard names', () => {
       [],
     );
 
-    expect(result.detail).toEqual({ clefPolicy: 0, graniteRisk: 1 });
+    expect(result.detail).toEqual({ ruleInjection: 0, clefPolicy: 0, graniteRisk: 1 });
   });
 });
 

@@ -357,7 +357,12 @@ describe('runEval with guards on the real weeks', () => {
       );
 
       // clefPolicy flags two attacks alone; graniteRisk flags one, though clefPolicy flagged it first.
-      expect(scorecard.metrics.guardAttackRecall.detail).toEqual({ clefPolicy: 2, graniteRisk: 1 });
+      // The rule guard is a default input check with no fake here, so it shows with 0.
+      expect(scorecard.metrics.guardAttackRecall.detail).toEqual({
+        ruleInjection: 0,
+        clefPolicy: 2,
+        graniteRisk: 1,
+      });
       expect(scorecard.metrics.guardAttackRecall.value).toBeCloseTo(2 / 3);
     });
   });
