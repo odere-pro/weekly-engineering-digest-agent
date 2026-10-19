@@ -1,95 +1,80 @@
 # Guards
 
-## Intent
+> Safety checks on untrusted text: input guards judge each collected item, output guards each draft.
+> Entries: `guardInputStep(items, deps)`, `guardOutputStep(drafts, sources, deps)`. Port: `Guard`
+> (`InputGuard`, `OutputGuard`). The link and format checks are not guards: they live in `src/checks`.
 
-Collected text and model drafts are untrusted. Guards are the safety checks: one rule layer in
-code and several model-based ones. Input
-guards look at each collected item before any other model sees it. Output guards look at each
-draft. They catch prompt injection, harmful content, claims not found in the sources, off-task
-text and hype. Config can switch a guard off. The link check and format check are not guards.
-They live in `src/checks`, run in code, and cannot be switched off.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  collect -->|"Item[]"| guardInput:::focus -->|"Item[]"| classify
+  write -->|"Draft[]"| guardOutput:::focus -->|"Draft[]"| select
+  cfg[("config: guards, thresholds.guardFlag")] -.-> guardInput & guardOutput
+  guardInput & guardOutput -.-> gp[[Guard]]
+  gp -.-> adapters["adapters: ruleInjection, clefPolicy, graniteRisk, graniteGroundedness, clefRubric"]
+  adapters -.->|"decide guardPolicy, generate guardRisk"| mp[[ModelProvider]]
+  classDef focus stroke-width:3px
+```
 
-1. The port (`Guard.ts`): `InputGuard.checkItem(item)` and `OutputGuard.checkDraft(draft, sources)`
-   each return a `GuardVerdict` (`check`, `flagged`, optional `probability` and `reason`). The
-   ids are `ruleInjection`, `clefPolicy` and `graniteRisk` (input), `graniteGroundedness` and `clefRubric` (output).
-2. `guardInputStep(items, deps)` and `guardOutputStep(drafts, sources, deps)` call
-   `planGuards` (`guardRun.ts`). A check runs when its section and the check are on in config and
-   a guard with that id was supplied. The order is the config order.
-3. `applyGuards` runs the checks guard by guard: all subjects through guard A, then guard B, so
-   only one guard model is loaded at a time. Mode `any`: a flag drops the subject at once and the
-   next guard sees only unflagged ones. Mode `all`: only flagged subjects go on, and a subject is
-   dropped only if the last guard flags it too. No active check keeps everything.
-4. The steps return `kept`/`dropped` (input) or `passed`/`rejected` (output), with the verdicts of
-   every guard that looked at the subject, plus `disabledChecks`. Both lists keep input order.
-5. `createClefPolicyGuard` (input) and `createClefRubricGuard` (output, `adapters/clefPolicy.ts`)
-   make one `decide` call with role `guardPolicy` and several yes/no questions from
-   `guardQuestions.ts`. They flag when any P(yes) is above `flagThreshold` (`thresholds.guardFlag`,
-   default 0.35). A value equal to the threshold does not flag.
-6. `createGraniteRiskGuard` (input) asks `granite4.1-guardian` about `jailbreak`, then `harm`, and
-   stops at the first yes. `createGraniteGroundednessGuard` (output) checks each digest item
-   against its own source item, then the headline and intro against all cited sources.
-   Both use `generate` (role `guardRisk`, temperature 0).
+## Flow
 
-## Rule layer
+```mermaid
+flowchart TD
+  plan{"planGuards: checks in config order. Any active? None keeps every subject"}
+  plan -->|yes| guard["next guard: whole pool, one call at a time"]
+  guard --> verdict{"flagged? rule match, P(yes) above guardFlag, Granite yes or unparsable"}
+  verdict -->|"mode any: flagged are dropped now"| more{"another guard?"}
+  verdict -->|"mode all: unflagged are kept now"| more
+  more -->|yes| guard
+  more -->|no| split["any: survivors kept. all: survivors dropped. Input order."]
+```
 
-`ruleInjection` (`adapters/ruleInjection.ts`) is the first input guard. It makes no model call and
-keeps no state. `adapters/ruleInjectionRules.ts` holds one table, `RULES`: each entry has an `id`, a
-`catches` comment naming the attack, and `matches(context)`. The reason is `ruleInjection: id1, id2`
-(ids only, never item text). Rules cover instruction markers, role lines, chat tokens, encoded
-blobs, zero-width and bidi characters, `javascript:`/`data:` URLs, and off-host links. A link
-counts as off-host only if its sentence also gives an order ("add", "use that URL instead",
-"send"), or it points at a raw IP or punycode host: plain "see https://other.org" in real
-release notes must pass. To add a rule: append an entry, then add a bad and a clean example to
-`CASES` in `ruleInjection.test.ts`. The sweep test runs every recorded week and source
-recording and must flag none. The container passes the feed hosts as `allowedHosts`.
+- `ruleInjection` (input, no model call): flags when a rule in `RULES` matches the title, summary
+  or URL; the reason is `ruleInjection: id1, id2`. A link is off-host only if its sentence also
+  gives a link order (`LINK_DIRECTIVE`) or it is a public raw IP or punycode host.
+- `clefPolicy` (input) and `clefRubric` (output): one `decide` call, role `guardPolicy`, several
+  yes/no questions. Flag when any P(yes) is above `thresholds.guardFlag` (0.35, strict, both).
+- `graniteRisk` asks `jailbreak`, then `harm`, stopping at the first yes. `graniteGroundedness`
+  checks each digest item against its source item, then headline and intro against all cited
+  sources. Both are `generate` calls at temperature 0.
 
-## Design
+## Rules
 
-- Fail closed. Granite must answer exactly `<score>yes</score>` or `<score>no</score>` after the
-  last `</think>` (`parseGraniteScore`). Anything else flags as `unparsable guard output`. A
-  missing or malformed decide answer throws `DigestError`. A digest item with no source item flags.
-- Guard errors propagate and fail the run. `mapBounded` starts no new call after a failure and
-  throws the error of the earliest input.
-- Prompts use `wrapUntrusted()` and `UNTRUSTED_DATA_RULE` (`guardState`, or the Granite system
-  prompt). The item URL is shown to the guard, so a hidden instruction in it is judged too. The
-  writer's name is never sent. States stay short because `strands-decider` has a 4K context.
-- `GUARD_CONCURRENCY` is 1 on purpose. On 2026-10-17 limits 1, 2 and 4 all took about 112 s with
-  the same verdicts. Raise it only after timing a server that runs requests in parallel.
-- Granite criteria, except `headline`, are copied from the model's chat template. Do not reword
-  them. `headline` is our own wording, because the generic one flagged editorial framing.
-- Questions say that reporting on a security fix or vulnerability is not harmful. A test pins it.
-- Logs hold ids, the writer and flagging check ids only, never item or digest text.
-- A disabled or missing guard is not silent: it is in `disabledChecks`, the run record and the
-  digest footer. A missing guard also logs a warning.
+- Fail closed. Granite's reply must be only `<score>yes|no</score>` after the last `</think>`
+  (`parseGraniteScore`), else it flags as `unparsable guard output`. A missing or malformed `decide`
+  answer throws `DigestError`; a digest item with no source item flags. A guard error fails the run.
+- `GUARD_CONCURRENCY` is 1 on purpose: on 2026-10-17 limits 1, 2 and 4 all took about 112 s with the
+  same verdicts. Raise it only after timing a server that runs requests in parallel.
+- A disabled or missing guard is never silent: it is in `disabledChecks`, `run.json`
+  (`disabledGuards`) and the digest footer; a missing one also logs a warning.
+- Granite criteria, except `headline`, are copied from its chat template: do not reword them.
+  `headline` is our own wording, because the generic one flagged editorial framing.
+- Logs and reasons hold ids and check ids only, never item, draft or model text.
 
 ## Files
 
-| File                                                 | Role                                                                    |
-| ---------------------------------------------------- | ----------------------------------------------------------------------- |
-| `Guard.ts`                                           | The port: `InputGuard`, `OutputGuard`, `GuardCallOptions`               |
-| `guardRun.ts`                                        | `planGuards`, `applyGuards`, `flaggedBy`, `GUARD_CONCURRENCY`           |
-| `guardInput.ts`, `guardOutput.ts`                    | `guardInputStep`, `guardOutputStep`                                     |
-| `guardQuestions.ts`                                  | Policy and rubric questions; `policyState`, `rubricState`, `guardState` |
-| `adapters/ruleInjection.ts`, `ruleInjectionRules.ts` | The rule guard and its rule table                                       |
-| `adapters/clefPolicy.ts`                             | The two decision-model guards                                           |
-| `adapters/granite.ts`                                | The two Granite guards, `GRANITE_CRITERIA`, `parseGraniteScore`         |
-| `*.test.ts`, `adapters/__fixtures__/granite/`        | Tests; 7 fixtures of replies recorded from `granite4.1-guardian:8b`     |
+| File                                                 | Role                                                                                                            |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Guard.ts`, `guardVerdict.ts`                        | The port; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own                                          |
+| `guardRun.ts`, `guardInput.ts`, `guardOutput.ts`     | `planGuards`, `applyGuards`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                                   |
+| `guardQuestions.ts`                                  | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
+| `adapters/ruleInjection.ts`, `ruleInjectionRules.ts` | The rule guard and its `RULES` table                                                                            |
+| `adapters/clefPolicy.ts`, `granite.ts`               | The decision-model guards; the Granite guards, `GRANITE_CRITERIA`                                               |
 
-## Depends on, used by
+Tests sit next to the code; `adapters/__fixtures__/granite/` holds 7 replies recorded live.
 
-Depends on: `domain`, `config/schema` (types), `models/ModelProvider` (types), `render/canonical`,
-`shared`. Used by: `digest/runDigest.ts` (both steps, `planGuards`, `flaggedBy`),
-`app/container.ts` (builds the adapters), `evals/` (`runEval`, thresholds), `test/fakes/FakeGuards`.
+## Gotchas
 
-## Change it safely
-
-- Tests: `guardRun.test.ts` (engine), `guardInput.test.ts` and `guardOutput.test.ts` (modes,
-  disabled checks, logging), `guardQuestions.test.ts` (wording pinned), `adapters/*.test.ts`.
-- `graniteRecorded.test.ts` replays the fixtures, which also store the prompts. If a prompt
-  changes, the test fails until the replies are recorded again (live Ollama, one at a time).
-- Changing a question or criterion changes verdicts. Re-check the thresholds with `evals/`.
-- The steps do not pass an abort signal to the guards, though `GuardCallOptions.signal` exists.
-- Never log or return model text, item text or draft text in a reason.
-- The top-level files must not import `adapters/`, `node:fs` or `ollama`.
+- A guard runs only if its id is a key of `guards.input|output.checks`: `planGuards` walks those
+  keys in order, not the guards built. `ruleInjection` is first, so it runs before the model
+  guards. A new guard needs a key in frozen `config/schema.ts`.
+- `ruleInjection.test.ts` pins `evals/weeks` (6 weeks, 369 items) and `evals/sources` as clean and
+  needs 8 of the first 10 `evals/attacks` flagged: recording a new week changes the count.
+- `graniteRecorded.test.ts` replays fixtures that store the prompts: a prompt change fails it until
+  they are recorded again (live Ollama, one at a time). `guardQuestions.test.ts` pins the wording,
+  e.g. that reporting a security fix is not harmful. Any question change moves verdicts: re-check
+  the thresholds in `evals/`.
+- Callers: `runDigest`, `digest/fallback.ts` (runs `guardOutputStep` on the template digest,
+  advisory only) and `evals/runEval.ts`. Check ids are stored in `run.json`: renaming breaks them.
+- The steps do not pass an abort signal, though `GuardCallOptions.signal` exists.

@@ -1,73 +1,80 @@
 # Config
 
-## Intent
+> Everything the user can tune: reads and checks `digest.config.json` and `.env`, keeps secrets apart
+> from settings, and turns a profile name into model tags for the machine at hand.
+> Entry: `loadConfig(options) → Promise<LoadedConfig>` (`load.ts`). It owns no port.
 
-Everything the user can tune lives here: what to watch, how many items to keep, which guards run,
-where the digest goes, and which Ollama models do each job. This feature reads and checks
-`digest.config.json` and `.env`, keeps secrets apart from settings, and turns a profile name
-(`quality`, `fast`, `light`) into concrete model tags for the machine at hand.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  file[("digest.config.json")] -.-> load:::focus
+  env[(".env and process env")] -.-> load
+  load -.->|"parse"| schema:::focus
+  load -.->|"resolveProfile"| profiles:::focus
+  dom["domain/schemas, models/roles"] -->|"SourceSchema, RoleSchema"| schema
+  load -->|"LoadedConfig"| callers["cli, evals"] -->|"LoadedConfig"| app["app/container"]
+  schema -->|"Config, GuardsConfig, Thresholds"| core["digest, guards, process"]
+  profiles -->|"ModelProfile, modelsInUse"| digest["digest: runDigest"]
+  profiles -->|"ModelProfile, modelsForRole"| ollama["models/adapters/ollama"]
+  classDef focus stroke-width:3px
+```
 
-1. `loadConfig(options)` resolves `digest.config.json` and `.env` (paths can be overridden).
-2. `readConfig` reads the JSON and parses it with `ConfigSchema`. A missing file says to run
-   `digest init`; bad JSON or a schema problem gives a readable list of fields.
-3. `readEnvironment` overlays the process environment on the optional `.env` file. Empty values
-   count as unset. `SecretsSchema` and `EnvSchema` then parse the result.
-4. `resolveHostPlatform(env)` gives the machine the models run on. `DIGEST_HOST_OS` and
-   `DIGEST_HOST_ARCH` override the process, for Docker on a Mac.
-5. `resolveProfile(name, platform, writersOverride)` picks the profile, or `NON_MAC_FALLBACK` when
-   the platform is not Apple silicon, and applies `models.writers` if set.
-6. It returns `LoadedConfig`: `config`, `env`, `secrets`, `profile`, `configPath`, `platform`.
-7. Callers use `modelsForRole`, `requiredModels`, `modelsInUse` and `modelsByRole` for model tags.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  read["loadConfig: readConfig, JSON then ConfigSchema"] -->|"no file, bad JSON, bad schema"| err["DigestError: field names and rules, never values"]
+  read --> envs["readEnvironment: .env, process env on top, empty means unset"]
+  envs -->|"SecretsSchema or EnvSchema fails"| err
+  envs --> plat["platform: option, else DIGEST_HOST_OS and DIGEST_HOST_ARCH, else process"]
+  plat -->|"invalid host value"| err
+  plat --> prof{"Apple silicon?"}
+  prof -->|"no"| fb["NON_MAC_FALLBACK"]
+  prof -->|"yes"| pick["PROFILES[config.profile]"]
+  fb --> out["LoadedConfig, with models.writers replacing the writer panel"]
+  pick --> out
+```
 
-- A profile maps each role to a tag (`MODEL_TAGS`). Code asks for roles only. The writer panel is
-  `profile.writers`; one writer means no judge and no select step.
-- Secrets (`SMTP_PASSWORD`, `SLACK_WEBHOOK_URL`, `GITHUB_TOKEN`) come from `.env` or the process
-  environment only. `SLACK_WEBHOOK_URL` must be https. A source URL with `user:pass@` is refused.
-- Error messages name fields and rules, never the rejected values.
-- There is no setting for the link check or the format check; they cannot be turned off. Guards
-  can (`guards.input` and `guards.output`: `enabled`, `mode` any or all, one flag per check).
-- Defaults and limits worth knowing: `topN` 3 to 5 (default 5), `windowDays` 1 to 31 (7),
-  `focusAreas` 1 to 25 and unique, `dedupeWeeks` 0 to 12 (4), `keepWeeks` at least 1 (12) and not
-  below `dedupeWeeks`, `models.retries` 0 to 5 (2), `models.seed` 42, per-role timeout at least
-  1,000 ms, thresholds `minRelevance` 1.5, `maxHype` 0.6, `maxMinorRelease` 0.75, `guardFlag` 0.35.
-- `modelsInUse` drops the model of a guard role whose checks are all off, so doctor does not ask
-  for a model nobody will call.
-- `load.ts` also writes `.env` for `digest init`: `mergeEnvText` changes only the keys asked for,
-  keeps comments and line endings, and re-reads its own result with the loader's parser. If that
-  does not match, it throws and nothing is written. `formatEnvValue` refuses values it cannot quote.
-- `redactSecrets(text, secrets)` uses the same redactor as the logger, so both clean text alike.
-- `load.ts` is the only file here that reads the disk. Core never imports it.
+- Writers override: more than one writer gets the profile's judge, else `EVAL_JUDGE` (`clef`); one
+  writer means no judge and no select step. The profile table is in `docs/configuration/profiles.md`.
+- Tags per role: `modelsForRole` (`write` returns the panel), `requiredModels`, `modelsByRole`.
+  `modelsInUse` drops a guard role whose checks are all off, so doctor does not ask for its model.
+- Limits (default): `topN` 3-5 (5), `windowDays` 1-31 (7), `maxItemsPerSource` 1-100 (20), `dedupeWeeks`
+  0-12 (4), `keepWeeks` at least 1 (12), `models.retries` 0-5 (2), `models.seed` 42, role timeout at
+  least 1,000 ms, `profile` `quality`, `schedule.cron` `45 7 * * 1`, thresholds `minRelevance` 1.5,
+  `maxHype` 0.6, `maxMinorRelease` 0.75, `guardFlag` 0.35.
+
+## Rules
+
+- Secrets come from `.env` or the process environment only, never `digest.config.json`.
+  `SLACK_WEBHOOK_URL` must be https (its secret path must not travel in clear). A source URL with
+  `user:pass@` is refused: `fetch` echoes the whole URL into errors, logs and run records.
+- Error messages name fields and rules, never the rejected values (`z.prettifyError`).
+- A new setting needs a default, so existing `digest.config.json` files still load.
+- `keepWeeks >= dedupeWeeks`: a pruned week drops out of cross-week dedupe. `writers` are unique:
+  outcomes and scores are keyed by tag. `focusAreas` are unique, 1-25: decision models take 26 options.
+- `mergeEnvText` (for `digest init`) changes only the keys asked for, keeps comments and line endings,
+  and re-reads its result with the loader's parser (`node:util` `parseEnv`). If that differs it throws
+  and nothing is written. `formatEnvValue` refuses a value it cannot quote.
 
 ## Files
 
-| File          | Role                                                                                   |
-| ------------- | -------------------------------------------------------------------------------------- |
-| `schema.ts`   | Zod schemas and types: `ConfigSchema`, `SecretsSchema` (`SECRET_KEYS`), `EnvSchema`    |
-| `profiles.ts` | `PROFILES`, `MODEL_TAGS`, `NON_MAC_FALLBACK`, `resolveProfile`, role and model helpers |
-| `load.ts`     | `loadConfig`, `resolveHostPlatform`, `redactSecrets`, `.env` writing helpers           |
-| `*.test.ts`   | `schema.test.ts`, `profiles.test.ts`, `load.test.ts`                                   |
+| File          | Role                                                                                                 |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| `schema.ts`   | `ConfigSchema`, `SecretsSchema` (`SECRET_KEYS`), `EnvSchema` and their types                         |
+| `profiles.ts` | `PROFILES`, `MODEL_TAGS`, `NON_MAC_FALLBACK`, `resolveProfile`, `EVAL_JUDGE`, role helpers           |
+| `load.ts`     | `loadConfig`, `platformOf`, `resolveHostPlatform`, `redactSecrets`, `mergeEnvText`, `formatEnvValue` |
 
-There is no `__fixtures__/` here. The test files live in `test/fixtures/config/`.
+Tests sit next to each file. `load.test.ts` reads `test/fixtures/config/` and pins the error texts.
 
-## Depends on, used by
+## Gotchas
 
-Depends on: `domain/schemas` (`RoleSchema`, `SourceSchema`), `shared/errors`, and
-`observability/redact` (`load.ts` only).
-Used by: `app/container` (builds every adapter from it), `digest`, `cli` (most commands),
-`guards`, `process`, `sources`, `models/adapters/ollama` (profiles), `evals/`, `test/builders.ts`.
-
-## Change it safely
-
-- Run `pnpm vitest run src/config`. `load.test.ts` reads files from `test/fixtures/config/`
-  (`valid.config.json`, `writers.config.json`, `bad-schema.config.json`, `secrets.env`, ...).
-- `schema.ts` and `profiles.ts` are frozen on issue branches. Change them on `main` only.
-- A new setting needs a default, so existing `digest.config.json` files still load. Update
-  `docs/configuration/` and `docs/reference/config-keys.md` when users should know.
-- Changing a tag in `MODEL_TAGS` changes what `digest doctor` asks users to pull.
-- `EVAL_JUDGE` in `profiles.ts` is a model tag (clef). The env variable `EVAL_JUDGE` in
-  `EnvSchema` is a different thing: the tag `digest eval` uses to score digests.
-- Keep secrets out of `Config`. Never log or echo a secret value in an error.
+- `schema.ts` and `profiles.ts` are frozen (`.claude/rules/parallel-work.md`): change them on `main`.
+  A `MODEL_TAGS` change alters what `digest doctor` asks users to pull. A setting users should know
+  about goes in `docs/configuration/` and `docs/reference/config-keys.md`.
+- The keys of `guards.input|output.checks` decide which guards the guard step runs (`planGuards`).
+- `EVAL_JUDGE` in `profiles.ts` is a model tag; the env variable `EVAL_JUDGE` (`EnvSchema`) is the tag
+  `digest eval` uses to score digests.
+- `redactSecrets` here takes the `Secrets` object and does not add the Slack webhook path
+  (`app/knownSecrets` does); `delivery/adapters/redact.ts` has another one over `string[]`.

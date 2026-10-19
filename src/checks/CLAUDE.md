@@ -1,72 +1,80 @@
-# Link check and format check
+# Checks
 
-## Intent
+> Two code checks every draft must pass: the link check (only collected URLs) and the format check
+> (shape and length). A model, or a prompt injected through a feed item, can break both.
+> Entry: `linkCheck(digest, markdown, items)` and `formatCheck(digest, markdown)`, each returning
+> `CheckResult { ok, problems }`. Not a chain step: `write` calls them.
 
-Two checks in plain code that every draft must pass. The link check makes sure a digest holds only
-URLs that were collected, so a model (or a prompt injected through a feed item) cannot add a link
-of its own. The format check makes sure the digest has the right shape and length. A model can
-break both, so neither is left to a prompt. They are always on and no config can turn them off.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  process -->|"ScoredItem[]"| write -->|"CodeChecked[]"| guardOutput
+  write -->|"Digest, Markdown, Item[]"| checks:::focus
+  fallback["digest: buildFallback"] -->|"via checkedFallback"| write
+  digest["digest: runDigest"] -.->|"DIGEST_MIN_ITEMS"| checks
+  evals["evals: metrics"] -->|"Digest, Markdown, Item[]"| checks
+  classDef focus stroke-width:3px
+```
 
-1. The write step renders a draft with `renderDigest`, then calls both checks on the digest and the
-   exact Markdown. Each returns a `CheckResult` (`{ ok, problems }`, from `types.ts`).
-2. `linkCheck(digest, markdown, items)` builds a set of normalized collected URLs. Then it:
-   - requires every `digest.items[].url` to be a collected URL as a whole string;
-   - reads the headline, intro, each item's title, area, summary, why-it-matters, action, and the
-     Markdown. `linkCandidates` first decodes entities and backslash escapes the way a Markdown
-     renderer does, then collects Markdown link destinations, `href` and `src` values and bare URLs;
-   - reports `Unknown URL not in collected items: <url>`, `Malformed or scheme-less link: <text>`
-     (`www.`, `//host`, `http:` without `//`) and `Invalid character reference: <ref>`.
-3. `formatCheck(digest, markdown)` reports missing sections, urgency and action problems
-   (`urgencyProblems`), a wrong item count (listed first), an em dash in the Markdown and a word
-   count at or over the limit.
-4. The caller maps a failing check to the id `linkCheck` or `formatCheck` in `rejectedBy`. The
-   problems go to the log, to `drafts.json` and to the retry prompt.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  link[linkCheck] --> decode["decode entities and backslashes in each text and the Markdown"]
+  decode --> urls{"each URL in the collected set?"}
+  urls -->|no| p1["Unknown URL not in collected items"]
+  decode --> odd{"www., http: without //, or //host?"}
+  odd -->|yes| p2["Malformed or scheme-less link"]
+  decode --> ref{"reference past U+10FFFF?"}
+  ref -->|yes| p3["Invalid character reference"]
+  fmt[formatCheck] --> p4["item count, missing fields, urgency and action limits, em dash, word count"]
+  p1 & p2 & p3 & p4 --> result["CheckResult: ok when no problems"]
+```
 
-- Always on. `CLAUDE.md` and the security rules forbid a switch. Both are pure functions with no
-  I/O, no model and no logging.
-- The link check decodes before it looks, so `&#104;ttp`, `&colon;` and `\` tricks cannot hide a
-  URL. Item URLs must match whole after `normalizeUrl`, so nothing can follow a known prefix.
-  `normalizeUrl` ignores `utm_*` and tracking params, fragments, host case and a trailing slash.
-- A collected `https://www.host` URL is valid. It is removed from the text before the malformed
-  link search, so its own `www.` is not flagged. Any other `www.` is rejected.
-- Limits are exported constants: `DIGEST_MIN_ITEMS` 3, `DIGEST_MAX_ITEMS` 5, `DIGEST_WORD_LIMIT`
-  500 (500 words or more fails), `DIGEST_MAX_ACT_NOW` 3, `DIGEST_ACTION_WORD_LIMIT` 20,
-  `DIGEST_SUMMARY_WORD_LIMIT` 40. The write prompt imports them, so prompt and check cannot drift.
-  The prompt aims lower (15 and 30 words, about 400 in total) to leave room.
-- A word is a token with a letter or digit. Pipes, `---` rows and bullets are layout. Link
-  targets `](...)` do not count. The limit holds for any table layout the renderer uses.
-- The urgency rules apply only to items that have an `urgency`. A draft from before W8 passes as
-  it always did. An action may never hold link-like text (`LINK_IN_TEXT`), even a collected URL.
-- Missing actions are one problem for all items, so five bare items cannot fill the retry prompt.
-- Regexes must stay linear on hostile text: lookbehinds for trailing punctuation, a bounded scheme
-  length. Tests check run time.
-- Problems quote model text. Do not put them in a prompt unmasked (`write/writePrompt.ts` does).
+- `write.ts` `codeCheck` renders the draft with `renderDigest`, runs both checks and names a failing
+  one in `rejectedBy` (`linkCheck`, `formatCheck`). Format problems come first, link problems after.
+- Limits (`DIGEST_*` in `formatCheck.ts`, imported by the write prompt): 3-5 items, under 500 words
+  (500 fails), at most 3 `act-now`, action at most 20 words, summary at most 40. The prompt aims
+  lower (400, 15, 30).
+- Required: headline, intro, each item's summary and why-it-matters; an action on `act-now` and
+  `worth-a-look` items (one problem for all, so bare items cannot crowd out the retry prompt).
+- A word is a whitespace token with a letter or digit. `|` splits words; link targets `](...)`,
+  `---` rows and bullets do not count, so the limit holds for any table layout.
+
+## Rules
+
+- Always on and pure: no config, env switch or `skip` argument; no I/O, model or logging. A looser
+  rule is a security change: add a test that shows the bypass stays closed.
+- Decode before looking, so `&#104;ttp`, `&colon;` and `\` tricks cannot hide a URL.
+- A URL must match a collected one whole after `normalizeUrl` (drops `utm_*` and tracking params,
+  fragment, host case, trailing slash): nothing may ride after a known prefix.
+- A collected `https://www.host` URL is judged whole and cut out before the malformed-link search.
+  Any other `www.`, `http:` without `//` or `//host` is rejected.
+- An action is one plain line: link-like text (`LINK_IN_TEXT`) fails it, even a collected URL.
+  Action and summary limits apply only to items with an `urgency`, so old digests still pass.
+- Regexes stay linear on hostile text (lookbehinds, bounded scheme length); tests time them (1 s).
+- Problems quote model text. Never put one in a prompt unmasked; `writePrompt.ts` masks links.
 
 ## Files
 
-| File             | Role                                                                                                                           |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `linkCheck.ts`   | `linkCheck`: every URL in the digest and Markdown must be collected                                                            |
-| `formatCheck.ts` | `formatCheck` and the exported limit constants                                                                                 |
-| `types.ts`       | `CheckResult`                                                                                                                  |
-| `*.test.ts`      | `linkCheck.test.ts`, `linkCheck.www.test.ts`, `linkCheck.action.test.ts`, `formatCheck.test.ts`, `formatCheck.urgency.test.ts` |
+| File             | Role                                                                        |
+| ---------------- | --------------------------------------------------------------------------- |
+| `linkCheck.ts`   | `linkCheck`: finds URL-like text in the digest fields and Markdown          |
+| `formatCheck.ts` | `formatCheck`, `LINK_IN_TEXT` and the exported limit constants (`DIGEST_*`) |
+| `types.ts`       | `CheckResult`                                                               |
 
-## Depends on, used by
+Tests sit next to each file (`linkCheck`, `.www`, `.action`, `formatCheck`, `.urgency`).
 
-Depends on: `domain` (types), `shared/url` (`normalizeUrl`), `shared/text` (`truncate`).
-Used by: `write` (both checks and the limits), `digest/runDigest.ts` (`DIGEST_MIN_ITEMS`),
-`evals/metrics.ts` (both checks, `CheckResult`).
+## Gotchas
 
-## Change it safely
-
-- Run the five test files above, then `src/render/markdown.fixtures.test.ts` (it runs both checks
-  on rendered goldens) and `src/write/writePrompt.retry.test.ts`.
-- The problem prefixes `Unknown URL not in collected items: ` and `Malformed or scheme-less link: `
-  are matched by `LINK_PROBLEM_KINDS` in `write/writePrompt.ts`. If you reword them, change both.
-- A change to the renderer can change the word count or add link-like text. Re-run the checks.
-- Do not add a config flag, an environment switch or a "skip" argument.
-- A looser rule is a security change. Add a test that shows the bypass is still closed.
+- `LINK_PROBLEM_KINDS` in `write/writePrompt.ts` matches the start of the first two problem texts in
+  the Flow. Reword both together; `writePrompt.retry.test.ts` runs the real check.
+- `linkCheck` and `formatCheck` are plain strings in `rejectedBy` (saved in `drafts.json` and
+  `run.json`). `evals/metrics.ts` (`CONTENT_REJECTIONS`) and `evals/schema.ts` match them.
+- The checks read the rendered Markdown. A template change in `src/render/` can move the word count
+  or add link-like text; `render/markdown.fixtures.test.ts` runs both checks on its goldens.
+- Bare URLs in text are found for `http(s)` only: a bare `ftp://host/x` passes the link check (known
+  limit, `docs/operations/known-limits.md`). Markdown destinations of any scheme are checked.
+- Tests elsewhere use the limits: `write/write.prompts.test.ts`, `write/fallbackDigest.test.ts`,
+  `write/writePrompt.urgency.test.ts`, `evals/metrics.test.ts`.

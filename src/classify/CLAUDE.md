@@ -1,75 +1,76 @@
 # Classify
 
-## Intent
+> Scores every item that passed the input guards, so `process` can keep the 3-5 that matter.
+> Entry: `classifyStep(items, deps) → ScoredItem[]` (`classify.ts`). It drops nothing: the
+> thresholds are applied in `process`.
 
-The digest can only carry 3-5 items, so every item that passed the input guards needs a score.
-This step gives each item four numbers: how relevant it is (0 to 3), which focus area it
-belongs to, how likely it is hype, and how likely it is a minor release. It drops nothing. The
-process step applies the thresholds later.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  guardInput -->|"Item[]"| classify:::focus -->|"ScoredItem[]"| process
+  cfg[("config: focusAreas, source area")] -.-> classify
+  classify -.->|"decide, role classify"| mp[[ModelProvider]]
+  mp -.-> ollama[(Ollama)]
+  evals["evals: runEval, rescoreReplay"] -.-> classify
+  classDef focus stroke-width:3px
+```
 
-1. `classifyStep(items, deps)` (`classify.ts`) returns `[]` for no items, with no model call.
-2. In the default decide mode, `classifyEach` makes one `model.decide` call per item, one at a
-   time, with role `classify`. The state comes from `classifyState(item, areaHint)`: the data
-   rule, an optional `Source tag:` line, then the item as an untrusted block.
-3. The four questions come from `classifyQuestions(focusAreas)`: `relevance` (score, the four
-   `RELEVANCE_LEVELS`), `area` (choice: the focus areas plus `other`), `hype` and `minorRelease`
-   (yes/no). The ids are in `QUESTION_IDS`.
-4. `fromAnswers` maps the answers to a `Classification`: relevance is the expected level,
-   `areaConfidence` is the choice confidence, hype and minorRelease are the yes probabilities.
-   `ClassificationSchema` validates it.
-5. Generate mode (`deps.mode = 'generate'`) is a fallback. `classifyInBatches` asks for JSON in
-   batches of 10 through `generateStructured` (role `classify`, temperature 0), with ids and
-   areas as enums. Items the model left out are retried once in their own batches. Items still
-   missing become `notRelevant` (relevance 0, area `other`) and log a warning.
-6. Optional rescoring (`rescoreWithWriter` with `minRelevance`): items at or above `minRelevance`
-   go to the writer model (role `write`) in batches of 10. Its relevance replaces the decider's.
-   Its area replaces the decider's only when it answers confidence `high`. Hype and minorRelease
-   stay. A failed batch keeps the decider's scores.
-7. The result is `ScoredItem[]` in input order. `areaHintsOf(sources)` builds the hints.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  items[items] --> empty{none?}
+  empty -->|yes| none["return [], no model call"]
+  empty -->|no| mode{deps.mode}
+  mode -->|"decide (default)"| each["classifyEach: one decide call per item, in order"]
+  mode -->|generate| batch["classifyInBatches: JSON, 10 per call, generateStructured"]
+  batch --> missing["missing ids: one retry, then notRelevant and a warning"]
+  each --> rescore{rescoreWithWriter?}
+  missing --> rescore
+  rescore -->|no| out["ScoredItem[] in input order"]
+  rescore -->|yes| writer["items ≥ minRelevance rescored by role write, 10 per call"] --> out
+```
 
-- In decide mode a missing, wrongly typed or out-of-range answer, or an area that is not an
-  option, throws a `DigestError` for step `classify`. It never defaults silently.
-- Every prompt that embeds item text uses `wrapUntrusted()` and `UNTRUSTED_DATA_RULE`. The area
-  hint comes from config, not from the web. `tagText` still flattens it to one line, so line
-  breaks cannot add instructions. It sits outside the data block. A blank hint means no hint.
-- Ask for a role, never a model tag. Decide calls run one at a time because the endpoint takes
-  one state per call.
-- `areaOptions` removes duplicate focus areas and adds `other` unless a focus area already
-  uses that name.
-- Wiring today: `runDigest` passes only `model`, `focusAreas`, `logger` and `areaHints`. So a
-  real run always uses decide mode and never rescores, even though `config.models.rescoreWithWriter`
-  exists. Only `evals/rescoreReplay.ts` turns rescoring on. Generate mode runs in tests only.
-- Inputs are not mutated. Results are new objects.
+- Four questions per item (`classifyQuestions`, ids in `QUESTION_IDS`): `relevance` 0-3
+  (`RELEVANCE_LEVELS`), `area` (the focus areas plus `other`), `hype` and `minorRelease` (yes/no).
+- `fromAnswers` turns them into a `Classification`: the expected level, the area's confidence, and
+  the two yes probabilities.
+- A real run uses decide mode and never rescores: `runDigest` passes only `model`, `focusAreas`,
+  `logger` and `areaHints`. Generate mode runs in tests; rescoring only in `evals/rescoreReplay.ts`.
+- `pairwiseRank` (`pairwise.ts`, experiment): a short Swiss tournament over the first
+  `PAIRWISE_TOP` (20) items, at most `PAIRWISE_MAX_CALLS` (40) decide calls. Each game asks in both
+  orders and averages, to cancel first-item bias. Its ids feed `process`'s `pairwiseOrder`; only
+  `evals/rescoreReplay.ts` calls it.
+
+## Rules
+
+- A missing or wrongly typed answer, or an area that is not an option, throws `DigestError` (step
+  `classify`): a guessed score would ship a wrong digest.
+- Decide calls run one at a time: the decision endpoint takes one state per call.
+- The area hint comes from config and sits outside the untrusted block. `tagText` flattens it to
+  one line so it cannot add instructions. A blank hint means no hint.
+- Rescoring: the writer's relevance replaces the decider's; its area only when it answers
+  confidence `high`; hype and minorRelease stay. A failed batch keeps the decider's scores.
+- `areaOptions` removes duplicate focus areas and adds `other`, unless a focus area already has
+  that name.
 
 ## Files
 
-| File                     | Role                                                                                           |
-| ------------------------ | ---------------------------------------------------------------------------------------------- |
-| `classify.ts`            | `classifyStep`, `areaHintsOf`, decide mode, generate mode, rescoring                           |
-| `classifyPrompt.ts`      | Questions, states and prompts; `OTHER_AREA`, `RELEVANCE_LEVELS`, `QUESTION_IDS`, `areaOptions` |
-| `classify.test.ts`       | Decide mode, generate mode, area hints, rescoring                                              |
-| `classifyPrompt.test.ts` | State and prompt layout, hints, rescore prompts                                                |
+| File                | Role                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `classify.ts`       | `classifyStep`, `ClassifyDeps`, `areaHintsOf`; the decide, generate and rescore paths  |
+| `classifyPrompt.ts` | Questions, decide state, batch and rescore prompts; `QUESTION_IDS`, `RELEVANCE_LEVELS` |
+| `classification.ts` | `ClassificationSchema`, `ScoredItemSchema`: the types this feature owns                |
+| `pairwise.ts`       | `pairwiseRank`, `pairwiseState`, `PAIRWISE_TOP`, `PAIRWISE_MAX_CALLS`: the experiment  |
 
-There is no `__fixtures__/` here. Tests use `FakeModelProvider` from `test/fakes`.
+Tests sit next to each file and script `FakeModelProvider` (`test/fakes`). No fixtures.
 
-## Depends on, used by
+## Gotchas
 
-Depends on: `domain` (schemas), `models` (`ModelProvider`, `generateStructured`), `shared`
-(`untrusted`, `errors`, `telemetry`).
-Used by: `digest/runDigest.ts` (`classifyStep`, `areaHintsOf`); `evals/` (`runEval`,
-`rescoreReplay`, `thresholds/capture`, the classifier cases); `QUESTION_IDS` is also used by
-the digest and integration tests to script a fake model.
-
-## Change it safely
-
-- Run `pnpm vitest run src/classify`. Coverage:
-  `pnpm vitest run --coverage --coverage.include='src/classify/classify.ts'`.
-- Do not rename `QUESTION_IDS`. The digest and `test/integration` tests build fake answers with them.
-- Changing a question, level text or prompt changes what the classifier scores. Check the
-  classifier cases in `evals/` before and after.
-- Keep the no-hint prompt byte-identical to the old one. A test checks it.
-- This step must not import adapters or `node:fs`. Do not call `fetch` for a model.
+- Do not rename `QUESTION_IDS`: the digest and `test/integration` tests build fake answers with them.
+- The no-hint prompt must stay byte-identical to the old one. `classifyPrompt.test.ts` pins it.
+- A change to a question, a level text or a prompt moves the scores. Run the classifier cases in
+  `evals/` before and after.
+- `classify.ts` is 343 lines, over the 300 cap. Split the generate and rescore paths into
+  subfolders before adding to it.

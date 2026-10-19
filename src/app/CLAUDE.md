@@ -1,82 +1,80 @@
 # App
 
-## Intent
+> The composition root: turns a `LoadedConfig` into real adapters and a ready `DigestDeps`, and keeps
+> secrets out of everything it builds. Entry: `buildApp(loaded) → Promise<AppHandle>` (`container.ts`),
+> `AppHandle = { deps, close() }`. It owns no port; it plugs in all five.
 
-The pipeline knows only ports. Something has to pick the real adapters, hand them their config and
-secrets, and make sure no secret leaks on the way. That is this feature: the composition root. The
-CLI, the scheduler and the evals call it once and get a ready `DigestDeps`.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  callers["cli: run, serve, eval, doctor. evals"] -->|"LoadedConfig"| app["app/container"]:::focus
+  app -->|"DigestDeps, via the caller"| digest["digest: runDigest"]
+  obs["observability: logger, redactor, tracer"] --> app
+  app -->|"builds and wraps"| adapters["*/adapters"]
+  adapters -.->|"implement"| ports[["ModelProvider, Guard, SourceFetcher, Delivery, RunStore"]]
+  digest -.->|"calls"| ports
+  adapters -->|"HTTP, SMTP, files"| world[("Ollama, feeds, GitHub, SMTP, Slack, disk")]
+  classDef focus stroke-width:3px
+```
 
-1. `buildApp(loaded)` takes the `LoadedConfig` and resolves to `{ deps, close }`. Every failure
-   is a rejection, so callers handle one failure path.
-2. `buildDeliveries` makes the channels: the Markdown file always, SMTP when `delivery.email` is
-   set, Slack when `delivery.slack.enabled`. A missing `SMTP_PASSWORD` or `SLACK_WEBHOOK_URL` is a
-   `DigestError` that names the variable. This runs first, before anything starts.
-3. `knownSecrets(secrets)` feeds one `Redactor` and the logger.
-4. The model is `traceModel(createModelProvider(...))`. RSS and GitHub fetchers, two input guards
-   and two output guards are built on it.
-5. Each channel becomes `redactDelivery(withDeliveryRetry(channel))`. The store becomes
-   `redactStore(createFsRunStore(...))`.
-6. The real tracer is built last and bound into the deferred tracer. `deps.tracer` is wrapped by
-   `scopeRuns`. `close()` shuts the tracer down and only logs a failure.
-7. `createModelProvider` (also used by `digest doctor`) and `samplingOf` (seed and temperature
-   per role, for the run record) are exported helpers.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  loaded["LoadedConfig: config, env, secrets, profile"] --> channels["buildDeliveries: markdown, SMTP, Slack"]
+  channels -->|"channel lacks its secret"| fail["DigestError names the variable, nothing started"]
+  channels --> redactor["knownSecrets: one Redactor, the logger"]
+  redactor --> model["traceModel(createModelProvider), run-aware logger"]
+  model --> build["fetchers rss, github. Input guards ruleInjection (feed hosts), clefPolicy, graniteRisk. Output guards graniteGroundedness, clefRubric"]
+  build --> wrap["redactDelivery(withDeliveryRetry(channel)), redactStore(fsRunStore)"]
+  wrap --> tracer["createTracer last, bound into deferTracer"]
+  tracer --> handle["AppHandle: deps.tracer = scopeRuns(tracer), close() shuts the tracer down, failure only logged"]
+```
 
-- This is the only place that turns config into adapters. Core never imports `app`.
-- Secrets are guarded in layers. Adapters keep them out of errors. The logger and tracer redact
-  what they write. `redactStore` and `redactDelivery` redact everything that reaches disk or a
-  channel, so one leaky adapter ends up in none of them.
-- `redactStore` removes secrets from artifacts and the run record, then checks the record against
-  `RunRecordSchema`. A record that no longer fits is not saved (safer than saved wrong).
-- `knownSecrets` adds the Slack webhook path, because the path is the secret part of that URL.
-- Redaction wraps the retry, so every retry sends the same redacted message.
-- Retry (`withDeliveryRetry`): 2 retries, 5 s then 10 s (base 5 s, cap 30 s). It retries only when
-  sending again cannot double the message: connect-phase codes (`ECONNREFUSED`, `ENOTFOUND`,
-  `EAI_AGAIN`, `EHOSTUNREACH`, `ENETUNREACH`, `EDNS`, `UND_ERR_CONNECT_TIMEOUT`), SMTP connect,
-  greeting and upgrade timeouts, HTTP 429 and 5xx, SMTP 421, 450 and 451. A reset or socket timeout
-  after the body went out is not retried. The decision reads `DeliveryError` facts, never text.
-- Model, fetchers and guards are built once, but `digest serve` runs many weeks. `perRunLogger`
-  looks up the logger of the run in flight (AsyncLocalStorage), so lines carry the right `runId`
-  and `step`. `scopeRuns` sets that scope from the span attributes core passes.
-- `traceModel` puts the role and model on `model.generate` or `model.decide` spans and the token
-  counts on an inner `model.usage` span. Never a prompt, a text or an answer.
-- The tracer is built last, so a failure earlier never leaves a tracer registered process-wide.
+- Redaction is layered, so one leaky adapter ends up in none: adapters keep secrets out of errors; the
+  logger and tracer redact their output (`redactValues`); `redactStore` covers artifact text and the run
+  record, `redactDelivery` the subject, Markdown, every `DigestView` text and the failure `message`. It
+  wraps the retry, so every attempt sends the same message. Reads are untouched.
+
+## Rules
+
+- Secrets are checked first; errors name the variable, not its value. `buildApp` rejects, never throws.
+- `knownSecrets` adds the Slack webhook path: it is the secret part, and a message can carry it alone.
+- `redactStore` does not save a record that no longer fits `RunRecordSchema` after redaction (a secret
+  equal to `"sent"` would rewrite the status): unsaved beats saved wrong.
+- Retry only when sending again cannot double the message: 2 retries, 5 s then 10 s (cap 30 s), for
+  connect-phase failures (`CONNECT_PHASE_CODES`, `CONNECT_PHASE_TIMEOUTS`), HTTP 429 and 5xx, SMTP 421,
+  450, 451. Not after the body went out (reset, socket timeout). Reads `DeliveryError` facts, not text.
+- Model, fetchers and guards are built once, but `digest serve` runs many weeks. `perRunLogger` looks up
+  the logger of the run in flight (AsyncLocalStorage); `scopeRuns` sets it from the `runId` and `step`
+  span attributes core passes. A callback started outside the run (an abort listener) sees no run.
+- The tracer registers process-wide, so it is built last: a failure earlier leaves none registered.
+  `traceModel` puts role, model and token counts on spans, never a prompt, text or answer.
 
 ## Files
 
-| File                                                 | Role                                                                           |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `container.ts`                                       | `buildApp`, `createModelProvider`, `samplingOf`, per-run logger and span scope |
-| `redacting.ts`                                       | `knownSecrets`, `redactStore`, `redactDelivery`                                |
-| `retryingDelivery.ts`                                | `withDeliveryRetry`, `isTransientDeliveryError`                                |
-| `tracedModel.ts`                                     | `traceModel`, `deferTracer`                                                    |
-| `container*.test.ts`                                 | Wiring, secrets, model, run logging (two files), local output, Docker paths    |
-| `redacting`, `retryingDelivery`, `tracedModel` tests | One test file each                                                             |
-| `scheduler*.test.ts`                                 | Tests for `src/scheduler/scheduler`, kept here (see below)                     |
+| File                  | Role                                                                                                      |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `container.ts`        | `buildApp`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns` |
+| `redacting.ts`        | `knownSecrets`, `redactStore`, `redactDelivery`                                                           |
+| `retryingDelivery.ts` | `withDeliveryRetry`, `isTransientDeliveryError`                                                           |
+| `tracedModel.ts`      | `traceModel`, `deferTracer`                                                                               |
 
-There is no `__fixtures__/`. `container.docker.test.ts` reads `Dockerfile` and `docker-compose.yml`.
+Tests: `container*.test.ts` (wiring, secrets, model, run logging, local output, Docker), one file for
+each other file, and `scheduler*.test.ts`, which test `src/scheduler/scheduler.ts` (misplaced).
 
-## Depends on, used by
+## Gotchas
 
-Depends on: the adapters of `delivery`, `guards`, `models`, `sources` and `store`; `config` (types
-and profiles); `digest` (`DigestDeps` type); `domain`; `observability` (logger, redact, tracing);
-`shared`.
-Used by: `cli` (`run`, `serve`, `doctor`, `eval`, `preview`, `show`), `evals/`,
-`test/integration/harness.ts`, `test/live/smoke.live.test.ts`.
-
-## Change it safely
-
-- Run `pnpm vitest run src/app`. The container tests wrap each factory with a spy that still
-  builds the real adapter, then check the options it got. No network.
-- A new channel in `buildDeliveries` gets retry and redaction for free through `guardChannels`.
-- `redactStore`, `redactDelivery`, `redactedView`, `traceModel` and `withDeliveryRetry` list their
-  methods and fields by hand. A new port method, `DigestView` field or `DigestMessage` field must
-  be added there, or it is dropped or skipped silently.
-- Never log or trace secret values or prompts. `container.secrets.test.ts` guards this.
-- `scheduler*.test.ts` sit here because an earlier issue owned this folder. They test
-  `src/scheduler/scheduler.ts`: `schedulerRetry` with fakes, `schedulerRunDigest` with the real
-  `runDigest` and run store.
-- Keep `createModelProvider` free of per-run state; doctor calls it with only `health()` in mind.
+- `redactStore` (all 9 `RunStore` methods), `redactDelivery`, `redactedView`, `traceModel` and
+  `withDeliveryRetry` list members by hand. A new required member fails the typecheck; a new optional
+  `DigestView` field is dropped; a new text field on `DigestMessage` or `FailureNote` passes unredacted.
+- Container tests `vi.mock` each adapter module and wrap its factory in a spy that still builds the real
+  one: moving a factory breaks them. `container.secrets.test.ts` guards that no secret reaches a log,
+  trace, channel or the store; extend it with a new secret or channel.
+- A guard built here runs only if `guards.input|output.checks` has a key for its id (`planGuards`): a new
+  guard needs a line here and a key in `config/schema.ts`.
+- `cli/show`, `cli/preview`, `cli/eval` call `knownSecrets`; `cli/doctor` and `cli/eval` call
+  `createModelProvider` (doctor only `health()`, with its own `fetch`): keep it free of per-run state.
+- `container.docker.test.ts` ties the default `delivery.markdown.dir` (`dist/digests`) to the
+  `Dockerfile` WORKDIR, the `docker-compose.yml` mounts and `docker/validate.sh`.

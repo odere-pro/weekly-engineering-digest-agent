@@ -1,87 +1,80 @@
 # Sources
 
-## Intent
+> Fetches the allowlisted RSS/Atom feeds and GitHub releases and turns each entry into one `Item`.
+> Entry: `collectStep(input, deps) → { items, failedSources }` (`collect.ts`). Port:
+> `SourceFetcher`. All item text is untrusted; these URLs are the only links a digest may contain.
 
-This feature gets the raw material for the week. It fetches the allowlisted RSS/Atom feeds and
-GitHub releases and turns every entry into one `Item` shape: id, source, url, title, plain-text
-summary and date. All of that text is untrusted. The URLs collected here are the only links a
-digest may contain. A broken feed must never stop the week.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  cfg[("config: sources, windowDays, maxItemsPerSource")] -.-> collect:::focus
+  collect -.->|"fetch, per source"| sf[[SourceFetcher]]
+  sf -.-> adapters["adapters: rss, github"]
+  adapters -.-> feeds[("feed hosts, api.github.com")]
+  collect -->|"Item[]"| guardInput
+  classDef focus stroke-width:3px
+```
 
-1. `collectStep(input, deps)` (`collect.ts`) takes the sources, the window and
-   `maxItemsPerSource`. It works on up to 4 sources at once (`mapWithConcurrency`).
-2. `collectSource` picks the `SourceFetcher` (port, `SourceFetcher.ts`) by `source.kind`
-   (`rss` or `github`). No fetcher for the kind fails that source.
-3. `fetchWithRetry` calls `fetcher.fetch(source, window, signal)` with `withTimeout` (10 s per
-   attempt) and `withRetry` (2 retries, 500 ms then 1 s). `isRetryableFetchError` decides.
-4. The real fetchers come from `createFetcher(adapter, options)` (`adapters/pipeline.ts`). The
-   adapter's `request` does the GETs through `getText` (`adapters/http.ts`). Its `parse` returns
-   raw entries. `normalizeEntry` builds each `Item`: http(s) link and valid date only, summary
-   through `toPlainText` and `truncate` (600 chars), id from `itemIdFor(url)`.
-5. The pipeline gives entries that share a link a `?entry=<id>` parameter, keeps only the
-   window, sorts newest first, caps at `window.maxItems`, and fills empty summaries with
-   `enrichEntries` (`adapters/enrich.ts`), which reads the entry's own page.
-6. Adapters: `rssAdapter` (RSS 2.0 and Atom, `@extractus/feed-extractor`), `githubAtomAdapter`
-   (`releases.atom`, no token), `createGithubRestAdapter(token)` (REST, 20 per page, no drafts
-   or prereleases). `createRssFetcher` and `createGithubReleasesFetcher` are what
-   `app/container.ts` wires. A GitHub token picks the REST adapter.
-7. Back in `collect.ts`, `acceptItems` re-checks each item with `ItemSchema` and the window.
-   `mergeOutcomes` removes duplicate ids (the earlier source in config order wins) and caps each
-   source at `source.maxItems ?? maxItemsPerSource`. The result is `{ items, failedSources }`.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  kind{"fetcher for source.kind? (4 sources at once)"}
+  kind -->|no| failed
+  kind -->|yes| fetch["fetcher.fetch: 10 s per attempt, 2 retries (0.5 s, 1 s)"]
+  fetch -->|"gave up"| failed["failedSources: error cut to 300 chars"]
+  fetch --> adapter["adapter request and parse, then normalizeEntry: http(s) link, valid date, 600-char summary"]
+  adapter --> trim["window, newest first, cap, fill empty summaries from the page"]
+  trim --> merge["acceptItems (ItemSchema, window), then mergeOutcomes: drop duplicate ids, cap per source"]
+  merge --> out["Item[] newest first"]
+```
 
-- Feed problems never make `collectStep` throw. A failed source goes to `failedSources`. Its error
-  text is capped at 300 chars because fetcher errors are untrusted.
-- Retry rule: `FetchError.retryable` is final. Timeouts, 5xx, 408 and 429 retry. Other 4xx, a
-  GitHub rate limit, a bad URL, a refused redirect and an unparseable feed do not. Otherwise only
-  `TimeoutError` and bare network failures retry. Anything else fails fast.
-- Network allowlist (security invariant 4). `getText` follows redirects by hand, at most 5, and
-  only to the source's own host (`www.` counts as the same) or the adapter's `redirectHosts`
-  (`api.github.com`). It refuses https to http, another port, credentials in a URL and non-http(s)
-  targets. A body over 5 MiB (`MAX_BODY_BYTES`) fails the source. Caller headers, such as the
-  GitHub token, go only to the start origin (`accept` and `x-github-api-version` may travel).
-- The GitHub token must not leak. The REST adapter rebuilds network errors from their message
-  with the token redacted. A rate limit is not retried. Release links must stay on github.com.
-- Page enrichment runs only for entries with no text, and not for GitHub (`enrichable: false`).
-  The page must be on the feed's host, protocol and port. A redirect may go to a collected host.
-  Limits: 2 MiB per page, 3 s per page, 4 s in total, 4 at once. A page problem is only
-  debug-logged and never fails the source.
-- `parseFeedDate` reads a date with no zone as UTC, so the digest does not depend on the machine.
-- The pipeline logs one line per feed, not one per entry, for entries it could not read.
-- `DEFAULT_SOURCES` (24 feeds) must match `digest.config.example.json` and the table in
-  `docs/sources.md`. `defaultSources.test.ts` fails when they drift.
+- Retry: `FetchError.retryable` is final. Timeouts, 5xx, 408, 429 retry; other 4xx, a GitHub rate
+  limit, a bad URL, a refused redirect and an unparseable feed do not. Else only `TimeoutError` and
+  bare transport failures retry.
+- The 10 s covers page enrichment too, so pages get 4 s in all (3 s each, 4 at once, 2 MiB each).
+  Only entries with no text are enriched, never GitHub (`enrichable: false`). The page must be on
+  the feed's host, protocol and port. A page problem is debug-logged and never fails the source.
+- Entries of one feed that share a link (Google Cloud release notes) get `?entry=<id>`. The whole
+  feed decides, not the window, so an entry keeps its URL from week to week.
+
+## Rules
+
+- A broken feed never stops the week. A source that returns nothing usable logs a warning: a quiet
+  week and a silently broken feed look alike.
+- `normalizeEntry` is the only place an `Item` is built: http(s) links only (the link check trusts
+  what is collected), and a date with no zone is read as UTC (`parseFeedDate`).
+- Every fetch goes through `getText`: at most 5 redirects, by hand, only to the source's own host
+  (`www.` is the same) or the adapter's `redirectHosts` (`api.github.com`); no https to http,
+  other port, credentials in a URL or non-http(s) target. A body over 5 MiB fails the source.
+- The GitHub token goes only to the start origin (`accept` and `x-github-api-version` may travel);
+  the REST adapter redacts it from network errors. A rate limit is not retried (asking again can
+  lengthen the penalty). Release links stay on github.com. Errors name the source id and a refused
+  host, never the URL: config values may carry secrets.
+- Sources merge in config order, so the earlier source wins a duplicate id. Duplicates go before
+  the per-source cap (`source.maxItems ?? maxItemsPerSource`), so they cannot crowd out real items.
 
 ## Files
 
-| File                                                                       | Role                                                                              |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `SourceFetcher.ts`                                                         | The port: `SourceFetcher`, `FetchWindow`                                          |
-| `collect.ts`                                                               | `collectStep`: timeout, retry, validation, merge, cap, order                      |
-| `defaultSources.ts`                                                        | `DEFAULT_SOURCES` and `DEFAULT_FOCUS_AREAS`                                       |
-| `adapters/pipeline.ts`                                                     | `createFetcher`, `normalizeEntry`, `SourceAdapter`, `RawEntry`, debug `SourceTap` |
-| `adapters/http.ts`                                                         | `getText`, `sameSiteAs`, `statusFailure`, `permanentFailure`, size cap            |
-| `adapters/enrich.ts`                                                       | `enrichEntries`, `articleText`: page text for entries with no summary             |
-| `adapters/feedFields.ts`                                                   | Raw feed field choices: alternate link, dates, markup, `parseFeedDate`            |
-| `adapters/rss.ts`, `rssAdapter.ts`                                         | `createRssFetcher`; the RSS and Atom adapter                                      |
-| `adapters/githubReleases.ts`                                               | `createGithubReleasesFetcher`: picks the Atom or REST adapter                     |
-| `adapters/githubAtomAdapter.ts`, `githubRestAdapter.ts`, `githubShared.ts` | The two GitHub transports and what they share                                     |
-| `*.test.ts`, `adapters/__fixtures__/`                                      | Tests next to the code; feed XML, GitHub JSON and Atom, article HTML              |
+| File                                    | Role                                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                                  |
+| `collect.ts`                            | `collectStep`: concurrency, timeout, retry, validation, merge, cap, order                                         |
+| `adapters/pipeline.ts`                  | `createFetcher`, `normalizeEntry`, `SourceAdapter`, `RawEntry`, `SourceTap`                                       |
+| `adapters/http.ts`, `enrich.ts`         | `getText`, `sameSiteAs`; `enrichEntries` (page text for empty summaries)                                          |
+| `adapters/feedFields.ts`                | Raw feed fields and `parseFeedDate`; its `RawEntry` is not the pipeline's                                         |
+| `adapters/rss.ts`, `rssAdapter.ts`      | `createRssFetcher`; the RSS 2.0 and Atom adapter                                                                  |
+| `adapters/github*.ts`                   | `githubReleases` picks REST with a token (20 per page, no drafts or prereleases), else `releases.atom` (about 10) |
 
-## Depends on, used by
+Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and article samples.
 
-Depends on: `domain` (schemas), `shared` (`retry`, `errors`, `text`, `url`, `telemetry`, `clock`).
-Used by: `digest/runDigest.ts` (`collectStep`), `app/container.ts` (the two fetchers),
-`cli` (`doctor`, `fetch`, `init`), `evals/` (record and replay), `test/fakes/FakeSourceFetcher`.
+## Gotchas
 
-## Change it safely
-
-- Tests: `collect.test.ts` (retries, caps, order), `adapters/pipeline.test.ts`, `http.test.ts`,
-  `rss.test.ts`, `githubReleases.test.ts`, `enrich.test.ts`, `feedFields.test.ts`. No network:
-  pass a fake `fetch` that serves `__fixtures__`.
-- Two types are called `RawEntry`: the parser's entry in `feedFields.ts` and the adapter's
-  entry in `pipeline.ts`. Do not mix them up.
-- Every new fetch path must go through `getText`, so redirects, size and credentials stay checked.
-- Never put a secret, a feed body or a full URL with credentials into an error or a log line.
-- `collect.ts` must not import `adapters/`. The container builds the adapters.
+- `defaultSources.test.ts` fails when `DEFAULT_SOURCES` drifts from `digest.config.example.json` or
+  from the table and the "Only these hosts" paragraph in `docs/sources.md`.
+- Renames break `cli/fetch` (`createFetcher`, the three adapters, `SourceTap`) and
+  `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
+- Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`,
+  so the hosts of configured sources are not used.
+- `pipeline.ts` is 338 lines, over the 300 cap. Split it before adding to it.

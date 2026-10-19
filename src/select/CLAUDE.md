@@ -1,71 +1,80 @@
-# Select the winning draft
+# Select
 
-## Intent
+> Picks the one draft that goes out when more than one passed the checks and the output guards. A
+> judge model scores each draft against its own sources; the best mean wins.
+> Entry: `selectStep(drafts, sources, deps) → { winner, scores, judged }` (`select.ts`). Uses
+> `ModelProvider.decide` with role `judge`.
 
-Each writer in the panel produces one draft. After the checks and the output guards, more than one
-draft can be left. This step picks the one that goes out. A judge model scores each passing draft
-against its own source items, and the best mean score wins. If the judge cannot decide, the run
-still goes on with a fixed, predictable choice.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  process -->|"ScoredItem[], the sources"| select
+  guardOutput -->|"Draft[]"| select:::focus -->|"winner Draft"| deliver
+  cfg[("config: focusAreas, profile writers")] -.-> select
+  render -->|"canonicalDigestText"| select
+  select -.->|"decide, role judge"| mp[[ModelProvider]]
+  mp -.-> ollama[(Ollama)]
+  select -->|"JudgeScore[]"| record[("run.json")]
+  select -->|"rubric, toJudgeScore"| evals["evals: evalJudge"]
+  classDef focus stroke-width:3px
+```
 
-1. `selectStep(drafts, sources, deps)` gets the drafts that passed and the collected items. No
-   draft: it throws a `DigestError` (exit code Blocked, step `select`). One draft: it returns it
-   with `judged: false` and makes no judge call.
-2. `prepareJudgeCalls` finds the sources each draft cites with `resolveDraftSources` (each once,
-   in digest order) and logs a warning for cited ids that were not collected. `buildJudgeState`
-   writes the judge's input: `UNTRUSTED_DATA_RULE`, one instruction line, the draft as
-   `canonicalDigestText` in a `draft` data block, and each source in its own `source:<id>` block.
-3. `buildJudgeQuestions(focusAreas)` makes four 5-level score questions: `accuracy`, `clarity`,
-   `whyItMatters`, `focusFit`. Every draft gets the same words.
-4. `judgeOneByOne` calls `model.decide({ role: 'judge', state, questions })` once per draft, in
-   turn. `toJudgeScore` turns each answer (a 0-based level) into a 1-5 rating and takes the mean.
-5. `pickWinner` takes the highest overall score. A tie goes to the writer listed first in
-   `writerOrder`. Writers missing from that list rank last, in arrival order.
-6. Output is `{ winner, scores, judged }`. If the judge throws or gives an unusable answer,
-   `fallBackToWriterOrder` returns the first draft in writer order, with no scores, `judged: false`
-   and a warning.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  gate{"profile has a judge and 2+ drafts passed?"}
+  gate -->|no| first["first passing draft wins, judged false"]
+  gate -->|yes| prep["prepareJudgeCalls: per draft, canonical text and only its own sources"]
+  prep --> ask["per draft, in turn: decide with role judge, then toJudgeScore"]
+  ask -->|"call throws or answer unusable"| fb["fallBackToWriterOrder: no scores, judged false"]
+  ask --> best["pickWinner: highest mean, tie to the earlier writer"]
+  best --> out["SelectOutput: winner, scores, judged true"]
+```
 
-- One call per draft. The judge sees one draft and only its own sources, never another draft and
-  never the writer's name. No score can leak from, or be pulled by, a neighbour.
-- Draft and sources are untrusted. They are wrapped with `wrapUntrusted`, and the data rule is in
-  the input. The `decide` role is `judge`; architecture rules allow `decide` for the judge.
-- The judge reads canonical plain text (`render/canonical.ts`), not Markdown. A new layout does
-  not move scores, so eval baselines stay comparable.
-- A judge failure never fails the run (F33). A bug while building the judge input (before the
-  `try`) does fail loudly, so it is not hidden as an outage.
-- `toJudgeScore` throws a `DigestError` for step `select` when a criterion has no `score` answer
-  or a non-finite level. A level outside the rubric is clamped to 1-5. It is exported so
-  `evals/judge/evalJudge.ts` converts answers in exactly the same way.
-- Scores within `SCORE_TIE_EPSILON` (1e-9) are a tie. This absorbs floating-point noise.
-- Logs hold the writer tag and the score, never draft text. A judge error is cut to 300 characters.
-- Inputs are not changed. `runDigest` finds the winner by object identity, so `winner` must be
-  one of the `Draft` objects it was given, not a copy.
+- The gate is in `runDigest.ts`. `quality` has a judge (`clef`), as does any profile with a
+  `models.writers` override of 2+ writers; `fast` and `light` have none, so
+  `evals/judge/evalJudge.ts` judges their winner. `selectStep` also takes one draft (returned
+  unjudged) and none (`DigestError`, Blocked).
+- Four `JUDGE_CRITERIA` (`accuracy`, `clarity`, `whyItMatters`, `focusFit` with the focus areas),
+  each a 5-level question (`JUDGE_LEVELS`, 1 poor to 5 excellent). The answer is a 0-based expected
+  level, clamped to 0-4, plus 1; `score` is the mean of the four.
+- Scores within `SCORE_TIE_EPSILON` (1e-9) tie. A tie, and the fallback, go to the writer earlier in
+  `writerOrder`; unlisted writers rank last, in arrival order.
+
+## Rules
+
+- One call per draft, in turn, never `Promise.all`: one model runs at a time. The judge sees one
+  draft and only its own sources, each in its own `wrapUntrusted` block, never another draft or a
+  writer's name: no score can leak from or be pulled by a neighbour.
+- The judge reads canonical text (`render/canonical.ts`), not Markdown: a new layout does not move
+  scores, so eval baselines stay comparable.
+- A judge failure never fails the run: one warning (writer, error cut to 300 characters), then the
+  first writer in order wins. `prepareJudgeCalls` sits outside the `try` on purpose, so a code bug
+  does not hide as an outage. Do not move it in.
+- `toJudgeScore` throws `DigestError` (step `select`) on a missing or non-`score` answer or a
+  non-finite level. `evals/judge/evalJudge.ts` converts answers with it and reuses the questions,
+  `buildJudgeState` and `resolveDraftSources`.
+- `winner` is one of the `Draft` objects passed in, never a copy: `runDigest` finds it by identity
+  and throws otherwise. Inputs are not changed.
+- Cited ids that were not collected are skipped with a warning. Logs never hold draft text.
 
 ## Files
 
-| File             | Role                                                                                                                         |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `select.ts`      | `selectStep`, `toJudgeScore`, tie-break and fallback, `SelectDeps`, `SelectOutput`                                           |
-| `judgePrompt.ts` | `JUDGE_CRITERIA`, `JUDGE_LEVELS`, `buildJudgeQuestions`, `buildJudgeState`, `resolveDraftSources`                            |
-| `*.test.ts`      | `select.test.ts` (counts, one call per draft, scoring, ties, fallback), `select.toJudgeScore.test.ts`, `judgePrompt.test.ts` |
+| File             | Role                                                              |
+| ---------------- | ----------------------------------------------------------------- |
+| `select.ts`      | `selectStep`, `toJudgeScore`, tie-break, fallback                 |
+| `judgePrompt.ts` | `JUDGE_CRITERIA`, `JUDGE_LEVELS`, the question and state builders |
+| `judgeScore.ts`  | `JudgeScoreSchema`, `JudgeScore`: the type this feature owns      |
 
-## Depends on, used by
+Tests sit next to each file and script `decide` answers on `FakeModelProvider`. No fixtures.
 
-Depends on: `domain` (types, `ExitCode`), `models` (`ModelProvider` types), `render/canonical`,
-`shared` (errors, telemetry, text, untrusted).
-Used by: `digest/runDigest.ts` (`selectStep`, only when the profile has a judge and two or more
-drafts passed), `evals/judge/evalJudge.ts` (`toJudgeScore`), `test/integration/harness.ts`
-(`JUDGE_CRITERIA`).
+## Gotchas
 
-## Change it safely
-
-- Tests use `FakeModelProvider` from `test/fakes` with scripted `decide` answers. Run
-  `src/select/` first, then `evals/judge/evalJudge.test.ts`.
-- `JUDGE_CRITERIA` are the keys of `JudgeScore.byCriterion`. Changing a name, a question or a
-  level moves every score. Re-check the eval judge (`evals/judge/calibrate.ts`) afterwards.
-- Never put two drafts, a writer tag or a raw source outside `wrapUntrusted` into the judge input.
-- Keep the judge calls in turn. Do not use `Promise.all` over drafts.
-- Do not move `prepareJudgeCalls` inside the `try`. It would turn a code bug into a quiet fallback.
+- Names cross over: in `runDigest.ts` stage `select` runs a function called `pickWinner`, and stage
+  `process` runs `selectItems`. Here `pickWinner` is the private highest-mean pick.
+- `JUDGE_CRITERIA` are the keys of `JudgeScore.byCriterion` (saved in `run.json`) and drive the fake
+  answers in `test/integration/harness.ts`. A renamed criterion, question or level moves every
+  score: re-check `evals/judge/calibrate.ts` and run `evals/judge/evalJudge.test.ts` and
+  `evals/judgeInHarness.test.ts`.

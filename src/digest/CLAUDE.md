@@ -1,96 +1,90 @@
 # Digest run
 
-## Intent
+> Runs one weekly digest end to end and decides how the week ends: sent, dry-run, skipped, quiet,
+> blocked or failed. Entry: `runDigest(deps, options) → RunResult` (`runDigest.ts`). Ports:
+> `RunStore`, `Delivery`, and `ModelProvider` for the health check only.
 
-This feature runs one weekly digest from start to end. It chains the steps and decides how the
-week ends: sent, dry-run, skipped, quiet, blocked or failed. It saves the run record and files,
-sends failure notes, and finishes a week that was only partly delivered, with no model call.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  cliRun["cli run"] & sched["scheduler (cli serve)"] & evals["evals (cli eval)"] -->|"DigestDeps, RunOptions"| runDigest:::focus
+  runDigest --> collect["collect (sources/)"] -->|"Item[]"| guardInput["guardInput (guards/)"]
+  guardInput -->|"Item[]"| classify["classify (classify/)"] -->|"ScoredItem[]"| process["process (process/)"]
+  process -->|"ScoredItem[]"| write["write (write/)"] -->|"CodeChecked[]"| guardOutput["guardOutput (guards/)"]
+  guardOutput -->|"CheckedDraft[]"| select["select (select/)"] -->|"CheckedDraft"| deliver["deliver (this folder)"]
+  runDigest -.->|"lock, record, files, prune"| store[[RunStore]]
+  runDigest -.->|"health()"| mp[[ModelProvider]]
+  runDigest -.->|"failure notes"| delivery[[Delivery]]
+  deliver -.->|"sendDigest"| delivery
+  classDef focus stroke-width:3px
+```
 
-1. `runDigest(deps, options)` (`runDigest.ts`) resolves the week id, the window in days, the
-   dry-run flag and the abort signal. A bad week id or a window under 1 day throws `DigestError`.
-2. It returns `skipped` when the store already has a sent digest for the week (unless `force`).
-   It then takes the run lock and reads the week's record again under the lock.
-3. Unless `force` or `dryRun`, `loadPartDelivery` (`runResume.ts`) looks for a failed record that
-   already reached some channel. If found, `resumeDelivery` sends the saved digest.md to the
-   missing channels only, and the run ends there.
-4. Otherwise `runChain` checks the signal and `assertModelsReady` (Ollama reachable, every model
-   in use pulled). `runWorkflow` (`workflow.ts`) then runs the stages in order: collect,
-   guardInput, classify, process, write, guardOutput, select, deliver. A dry run has no deliver.
-5. A stage can settle the run early. `quiet`: no items collected, or fewer than
-   `DIGEST_MIN_ITEMS` (3) left after process. `blocked`: every draft was rejected and the fallback is off (`noFallback`) or failed its checks.
-6. `finish` builds the `RunRecord` and calls `endRun` (`runEnding.ts`): save the record, write
-   held files, `review.md`, `error.json`, send or hold the failure note, prune old runs.
-7. It returns `RunResult` (`record`, `exitCode`, `markdown`, `message`, `kept`) and releases the
-   lock in `finally`.
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  start["runDigest(deps, options)"] --> seen{"week already sent?"}
+  seen -->|"yes, no force"| skipped["skipped: exit 0, record not saved"]
+  seen -->|no| lock["acquireLock, read the record again: sent meanwhile also skips"]
+  lock --> part{"failed record that reached a channel? (not force, not dry run)"}
+  part -->|yes| resume["resumeDelivery: saved digest.md to missing channels, no health check or model call"]
+  part -->|no| chain["runChain: signal check, assertModelsReady (Ollama up, models pulled), stages"]
+  chain -->|"a stage threw: failed, exit 1"| endRun
+  chain -->|"no items, or under 3 after process: quiet, exit 3"| endRun
+  chain -->|"a draft won: sent, or dry-run, exit 0"| endRun
+  chain -->|"every draft rejected"| fb{"fallback on and passes its checks?"}
+  fb -->|"no: blocked, exit 2"| endRun
+  fb -->|"yes: sent or dry-run, record.fallback"| endRun
+  resume -->|"sent, or failed at deliver"| endRun
+  endRun["finish, endRun: record, files, note, prune; then release the lock"]
+```
 
-- This folder only wires steps. The steps live in their own features. `workflow.ts` runs them
-  in order with a plain loop, so a step's own error propagates unchanged and a `DigestError`
-  keeps its exit code and step. No framework: ADR 0001 removed Mastra
-  (`docs/architecture/decisions/0001-mastra.md`), and ESLint blocks `@mastra/*` imports.
-- State is immutable. Each stage returns a new `ChainState`. A failing stage throws `StepFailure`
-  (or `PartialFailure` after partial work) with the state so far, so the record keeps what ran.
-- The abort signal is checked before each stage and before a resume's delivery, never inside
-  one. A running stage finishes first.
-- A run never replaces a record that got further (`keepReason`). A sent record stays unless the
-  new run is sent too. A partly delivered record stays unless the new run also reached a channel.
-  While the earlier record has reached a channel (`holdArtifacts`), this run's files wait in
-  `ChainState.held` and `endRun` writes them only if its own record is saved.
-- Resume refuses, with a message that contains `--force`, when digest.md is gone or its links
-  differ from `previous.sentUrls`. `needsForce` and `isUnretriable` read that text.
-- Failure notes: `notifyFailure` defaults to true. False holds the note for a caller that will
-  retry (the scheduler); `sendHeldNote` sends it later. The note is sent anyway for an aborted
-  run or a `--force`-only failure. A dry run sends none. If the record cannot be saved, `endRun`
-  sends a note and throws `RecordNotSavedError`.
-- No model or feed text in notes, records or errors. A write failure names writers only. A
-  blocked note names writers and check ids.
-- `shipDigest` tries every channel and never throws. Once any channel took the digest, its URLs
-  count as sent for cross-week dedupe.
-- Fallback floor (W11-02): when no draft passes the checks and the output guards, `buildFallback`
-  (`fallback.ts`) makes a digest from the selected items' own text, no model call. It passes the
-  same link and format checks (a failure is logged as an error and the week stays `blocked`). The
-  output guards run on it once and only advise: a flag is logged and kept in `record.drafts` (writer
-  `fallback`), never blocking. The run ends `sent` or `dry-run` with `record.fallback: true`, and the
-  footer says "Written from the sources' own words." A real run always has it (no config switch);
-  `RunOptions.noFallback` turns it off for tests and for the eval replay to set (the replay is W11-01's file). A write step where every
-  writer produced no draft at all still ends `failed`: that is a model fault, not a rejected draft.
-- The judge runs only when the profile has one and 2 or more drafts passed. Otherwise the first
-  passing draft in writer order wins.
-- Best effort, logged and never fatal: `review.md`, `error.json`, held-file writes, pruning.
-- Exit codes come from `exitCodeFor`: sent, dry-run and skipped 0; failed 1; blocked 2; quiet 3.
+- Quiet after `collect` (no items) alerts every channel and names the failed sources; after
+  `process` (under `DIGEST_MIN_ITEMS`, 3) it sends no note. `runDigest` throws, not returns, for a
+  bad week id, a window under 1 day or not whole, a held lock and `RecordNotSavedError`.
+- Stage functions: `process` runs `selectItems`, `guardOutput` `checkDrafts`, `select`
+  `pickWinner` (judge only with 2+ passing drafts and a profile judge). Files per stage: items.json
+  (collect), scores.json (classify), drafts.json (write, fallback), digest.md (select).
+- A failing stage throws `StepFailure` (`PartialFailure` after partial work) with the state so far.
+
+## Rules
+
+- The abort signal is checked at chain start, before each stage and before a resume's delivery,
+  never inside a stage. The failure text starts `Run aborted` (`isUnretriable` reads it).
+- `keepReason`: a run never replaces a record that got further (sent, or reached a channel), else
+  a sent week goes out twice. Meanwhile (`holdArtifacts`) this run's files wait in
+  `ChainState.held` and are written only if its record is saved; a kept run still sends its note.
+- Resume refuses (fails at `deliver`, message has `--force`) when digest.md is gone or its links
+  differ from `previous.sentUrls`. Its record changes only status, times, `deliveredTo`, error.
+- `notifyFailure` false holds a `failed` run's note for a retrying caller (the scheduler);
+  `sendHeldNote` sends it later. Sent anyway: quiet and blocked notes, `Run aborted` and `--force`
+  failures, "record not saved". A dry run sends none.
+- Notes, records and errors name writers and check ids, never model or feed text.
+- Fallback floor: with no passing draft, `buildFallback` builds a digest from the items' own text,
+  no model call. It must pass the link and format checks, or the week stays `blocked`; output
+  guards only advise. No config switch (`noFallback` is for tests and the eval replay).
+- `shipDigest` tries every channel and never throws; once any took the digest, its URLs count as
+  sent for dedupe. `review.md`, `error.json`, held files and pruning are best effort.
 
 ## Files
 
-| File           | Role                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------ |
-| `runDigest.ts` | `runDigest`, `DigestDeps`, `RunOptions`, `RunResult`, the stages and the record            |
-| `runEnding.ts` | `endRun`, `shipDigest`, `digestMessage`, `toJson`, `abortedError`, failure notes           |
-| `runResume.ts` | `loadPartDelivery`, `resumeDelivery`: finish a partly delivered week                       |
-| `fallback.ts`  | `buildFallback`: the template-only digest, its checks and guard verdict                    |
-| `workflow.ts`  | `runWorkflow`: runs the plain step functions in order, a loop                              |
-| `*.test.ts`    | One file per area, see below. No `__fixtures__/` here: tests use `test/fakes` and builders |
+| File           | Role                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| `runDigest.ts` | `runDigest`, `DigestDeps`, `RunOptions`, `RunResult`, one function per stage             |
+| `runEnding.ts` | `endRun`, `keepReason`, `shipDigest`, `digestMessage`, `abortedError`, note helpers      |
+| `runResume.ts` | `loadPartDelivery`, `resumeDelivery`: finish a part-delivered week                       |
+| `fallback.ts`  | `buildFallback`: the template digest from `write/fallbackDigest`, plus its guard verdict |
+| `workflow.ts`  | `runWorkflow`: a plain loop over the stages; a step's error propagates unchanged         |
 
-## Depends on, used by
+Tests sit next to each file and use `test/fakes`; no fixtures.
 
-Depends on: `domain`, `config`, `shared`, `models`, `store`, `delivery`, `sources`, `guards`,
-`classify`, `process`, `write`, `select`, `checks`, `render`.
-Used by: `app/container` (the `DigestDeps` type), `scheduler`, `cli` (run, serve, eval, show,
-preview, fetch), `evals/`, `test/integration`, `test/live`.
+## Gotchas
 
-## Change it safely
-
-- Tests: `runDigest.test.ts` (dry run, sent, skipped, quiet, failures), `runDigest.semantics.test.ts`
-  (resume, per-channel delivery, held files), `runDigest.run.test.ts` (health check, abort),
-  `runDigest.notify.test.ts`, `runEnding*.test.ts`, `runResume*.test.ts`, `workflow.test.ts`.
-  Cross-feature runs are in `test/integration/`.
-- Stage `process` runs `selectItems`, and stage `select` runs `pickWinner`. The names differ.
-- `skipped` returns a record that is not saved. `markdown` is set only when this run wrote
-  digest.md. `message` is set whenever a draft won, a dry run too.
-- The writer retry, and the calls to the link and format checks (`src/checks`), live in
-  `src/write`. `runDigest.retry.test.ts` only tests them through a run.
-- Do not import adapters, `node:fs` or network code here (ESLint fails the build).
-- `runDigest.ts` is about 700 lines. Split it before it grows past 800.
-- A new step needs a name in `StepNameSchema` (`src/domain/schemas.ts`) and a stage in `chainSteps`.
+- `runDigest.ts` is 769 lines and `runEnding.ts` 408, both over the 300 cap. Split before adding.
+- Renames break: `KEPT_SENT_REASON` and `KEPT_PARTLY_REASON` (`RunResult.kept`, shown by the run
+  command); `--force` and `Run aborted` in a message, read by `needsForce` and `isUnretriable` and
+  by `scheduler.ts` with `RecordNotSavedError`; `DraftsFileSchema` and `toJson` (`cli` show,
+  preview, fetch). `DigestDeps` is built in `app/container.ts` and `test/integration/harness.ts`.
+- `RunResult.markdown` is set only when this run wrote digest.md; `message` when a draft won here.
+- Model call order is pinned (`runDigest.test.ts`). The writer retry and checks live in `write/`.

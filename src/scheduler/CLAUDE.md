@@ -1,84 +1,80 @@
 # Scheduler
 
-## Intent
+> Runs the digest every week with no person: the cron loop behind `digest serve`, plus the OS
+> schedule text `digest init` prints. Entry: `startScheduler(options) → SchedulerHandle` and
+> `renderOsSchedule(os, options) → OsSchedule`. No port: `cli/serve` hands the scheduler `run`,
+> `runStatus` and `onGiveUp` as closures.
 
-Runs the digest every week without a person. `digest serve` (the Docker Compose service) keeps one
-process alive and calls `startScheduler`, which fires `runDigest` on a cron, in a time zone, one
-week at a time. It also covers what breaks a weekly job: a run missed while the machine was off,
-a run lock held by a manual run, and a run that fails or hangs. For people who do not use `serve`,
-`renderOsSchedule` writes a launchd, systemd or Task Scheduler entry that runs `digest run`.
+## Context
 
-## How it works
+```mermaid
+flowchart LR
+  compose[("Docker Compose")] --> serve["cli/serve"]
+  serve <-->|"buildApp, DigestDeps"| container["app/container"]
+  serve -->|"SchedulerOptions"| sched["startScheduler"]:::focus
+  cron[("croner")] -->|"tick"| sched
+  sched -.->|"run(weekId, signal, attempt)"| runDigest["digest/runDigest"]
+  sched -.->|"runStatus(weekId)"| store[[RunStore]]
+  sched -.->|"onGiveUp(weekId, RunResult)"| held["runEnding: sendHeldNote"] -.-> delivery[[Delivery]]
+  init["cli/init"] -->|"cron, command, workingDir"| os["renderOsSchedule"]:::focus
+  os -->|"OsSchedule"| host[("launchd, systemd, Task Scheduler")]
+  classDef focus stroke-width:3px
+```
 
-1. `cli/serve` calls `startScheduler(options)`. It builds a retry executor and a cron job
-   (croner with `protect: true`; tests inject `cronFactory`).
-2. Each tick calls the executor with `isoWeekId(clock.now(), timeZone)`. If a run is still going,
-   the tick is logged as skipped.
-3. Before it waits, `catchUp` finds the first cron slot inside the current ISO week. If that slot
-   is past and `runStatus(weekId)` is not `sent`, `quiet` or `blocked`, the week runs now.
-4. `attemptRun` calls `run(weekId, signal, { notifyFailure })` under a time limit. At the limit
-   the signal aborts, so the run ends `failed` and frees its lock.
-5. `runWithRetries` reads how the attempt ended. An error starting "Another run is in progress"
-   is a lock miss: retry every 5 minutes for up to 2 hours (`lockRetry`). A result with status
-   `failed` is retried as `failedRetry` says. A time-limit hit, a failure only `--force` can clear
-   (`needsForce`) and any other thrown error are not retried.
-6. With `onGiveUp` set, an attempt that will be retried is told `notifyFailure: false`. If the
-   retry does not come (`stop()`, budget spent, lock never freed, retry threw), the scheduler
-   calls `onGiveUp(weekId, lastResult)`. It sends the one note that was held back.
-7. The `SchedulerHandle` has `nextRun()`, `stop()` (stops ticks, cancels a pending retry, lets a
-   running digest finish) and `whenIdle()`.
-8. `cli/init` calls `renderOsSchedule(os, { cron, command, workingDir })`. It parses the cron with
-   `parseSimpleCron` and returns `{ path, content, installHint }` for `darwin` (launchd plist),
-   `linux` (systemd service and timer) or `win32` (a `schtasks` line).
+## Flow
 
-## Design
+```mermaid
+flowchart TD
+  start["startScheduler"] --> catchUp{"first slot of this week passed, status not sent, quiet or blocked?"}
+  catchUp -->|yes| exec{"run in flight? (yes: warn, skip the tick)"}
+  catchUp -->|no| tick["croner tick"] --> exec
+  exec -->|no| attempt["attemptRun: run(weekId, signal, notifyFailure) under runTimeoutMs"]
+  attempt --> outcome{"how it ended"}
+  outcome -->|"not failed, or only force can clear it"| done[done]
+  outcome -->|"time limit hit, or another error thrown"| giveUp["handOver: onGiveUp sends the held note, if any"]
+  outcome -->|"lock held (message 'Another run is in progress'), or failed"| retry{"budget left, not stopped?"}
+  retry -->|yes| wait["sleep: lock 5 min up to 2 h, failed 30 min twice"] --> attempt
+  retry -->|no| giveUp
+  wait -.->|"stop() cancels"| giveUp
+```
 
-- One run at a time per process. Retries wait inside the same tick, so `whenIdle()` covers them.
-- Defaults: lock retry every 5 minutes for 2 hours, run limit 3 hours (zero or less means none).
-  `failedRetry` is off unless given; `digest serve` passes `DEFAULT_FAILED_RETRY` (2 more tries,
-  30 minutes apart). A wait above 2^31-1 ms counts as off, because a timer would fire at once.
-- A tick never throws. Failures are logged and the service stays up. A failing `onGiveUp` is logged.
-- One failure note per failed week. A run that sends its own note at once (time limit, `--force`
-  case, `RecordNotSavedError`) is never noted a second time.
-- The week is read in `schedule.timeZone`. Catch-up searches from Monday 00:00 UTC minus 14 hours,
-  so a zone as far ahead as UTC+14 still finds its Monday slot.
-- The lock miss is found by the message text from `store/adapters/runLock.ts`. Keep both strings
-  in step.
-- OS schedules take only `m h * * dow`: one minute, one hour, day of month and month as `*`, and a
-  weekday as `*`, number (0 and 7 are Sunday), name, list or range. Anything else gives a
-  `DigestError` that points to running `digest run` from your own scheduler.
-- OS schedules fire in the machine's local time zone, not `schedule.timeZone`. The hint says so.
-- Output is escaped for its format: XML for launchd, doubled `%` and `$` for systemd, and for
-  Windows a refusal of `"`, `&`, `|`, `<`, `>`, `^` and `%`. The command and folder must be one
-  line, not empty, and not end with a backslash. The systemd timer sets `Persistent=true`.
+- Held note: with `onGiveUp` set, an attempt that will be retried gets `notifyFailure: false`. If
+  the retry never comes, `onGiveUp(weekId, lastResult)` sends the one note that was held back.
+
+## Rules
+
+- One run at a time per process. Retries wait in the same tick, so `whenIdle()` covers them.
+- A tick never throws: failures are logged and the service stays up, a failing `onGiveUp` too.
+  A bad cron or time zone throws `DigestError` from `startScheduler`.
+- One failure note per failed week: a run that sends its own note at once (time limit, `--force` case,
+  `RecordNotSavedError`) is never noted twice. Those and any other thrown error are not retried;
+  after a time limit, another try takes as long and a hung model is no blip.
+- Run limit 3 h (zero or less: none). `failedRetry` is off unless given (`serve` passes
+  `DEFAULT_FAILED_RETRY`): a retry keeps `whenIdle()` waiting. A wait or limit above 2^31-1 ms counts
+  as off, since `setTimeout` would fire at once.
+- Catch-up covers the current ISO week in `schedule.timeZone`; `failed` and `dry-run` weeks run
+  again. It searches from Monday 00:00 UTC minus 14 h so a UTC+14 zone finds its slot. An
+  unreadable run store skips it. The run is not awaited: the caller needs the handle to stop.
+- OS schedules take only `m h * * dow` (weekday: `*`, number with 0 and 7 as Sunday, name, list or
+  range), else `DigestError`; a new shape needs all three renderers and tests. They fire in the
+  machine's time zone, not `schedule.timeZone`. Values are escaped per format; Windows refuses
+  `" & | < > ^ %`. The systemd timer is `Persistent`.
 
 ## Files
 
-| File            | Role                                                                                     |
-| --------------- | ---------------------------------------------------------------------------------------- |
-| `scheduler.ts`  | `startScheduler`, `DEFAULT_FAILED_RETRY`, `SchedulerOptions`, `SchedulerHandle`          |
-| `simpleCron.ts` | `parseSimpleCron`: the `m h * * dow` subset the OS schedulers can express                |
-| `osSchedule.ts` | `renderOsSchedule`: launchd, systemd and Task Scheduler text                             |
-| `*.test.ts`     | `scheduler` (tick, handle), `.catchUp`, `.lockRetry`, `.notify`, `.giveUp`, `osSchedule` |
-| `__fixtures__/` | None. Tests inject `cronFactory`, `fixedClock` and fake timers.                          |
+| File            | Role                                                                                |
+| --------------- | ----------------------------------------------------------------------------------- |
+| `scheduler.ts`  | `startScheduler`, `DEFAULT_FAILED_RETRY`, option types; executor, retries, catch-up |
+| `simpleCron.ts` | `parseSimpleCron`: the cron subset; `osSchedule.test.ts` covers it, no test file    |
+| `osSchedule.ts` | `renderOsSchedule`: launchd (`darwin`), systemd (`linux`), `schtasks` (`win32`)     |
 
-## Depends on, used by
+## Gotchas
 
-Depends on: `digest/runDigest` (the `RunResult` type), `digest/runEnding` (`isUnretriable`,
-`needsForce`, `RecordNotSavedError`), `domain/schemas`, `shared` (`clock`, `errors`, `isoWeek`,
-`telemetry`) and `croner`.
-Used by: `cli/serve` (`startScheduler`, `DEFAULT_FAILED_RETRY`) and `cli/init` (`renderOsSchedule`).
-Pipeline features must not import it.
-
-## Change it safely
-
-- Run `pnpm vitest run src/scheduler src/app/scheduler src/cli/serve test/integration/schedulerRestart`.
-  Tests use `vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })` and
-  `advanceTimersByTimeAsync`. Fire ticks by hand through an injected `cronFactory`.
-- Read `scheduler.giveUp.test.ts` and `scheduler.notify.test.ts` before you touch the retry loop.
-  The held-note rule is easy to break and a failed week must never end without one note.
-- `stop()` must not abort a run in flight. `serve` does that itself on a second signal.
-- Other folders change retries too: the `RunResult` shape, `isUnretriable` and `needsForce` in
-  `digest/runEnding`, and the lock message in `store/adapters/runLock.ts`.
-- `simpleCron.ts` has no test file of its own. `osSchedule.test.ts` covers it. A new cron shape
-  needs all three renderers and tests for each.
+- `scheduler.ts` is 582 lines, over the 300 cap. Split the retry loop and catch-up out first.
+- Read `scheduler.giveUp.test.ts` and `scheduler.notify.test.ts` before touching the retry loop (a
+  failed week must never end without one note). Tests inject `cronFactory`, `fixedClock` and fake
+  `setTimeout`. More sit in `src/app/scheduler{Retry,RunDigest}.test.ts` (they pin
+  `DEFAULT_FAILED_RETRY`) and `test/integration/schedulerRestart.test.ts`.
+- `stop()` must not abort a run in flight; `serve` does that on a second signal. Retries also hang on
+  `RunResult`, `isUnretriable`, `needsForce` and `sendHeldNote` in `digest/runEnding`, and on the
+  lock message in `store/adapters/runLock.ts`: keep both strings in step.
