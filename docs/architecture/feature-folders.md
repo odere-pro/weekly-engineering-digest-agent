@@ -10,7 +10,7 @@ design. To change a feature you open one folder.
 
 | Folder               | What                                                                                | Wiki page                                     |
 | -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------- |
-| `src/digest/`        | The weekly run: `runDigest`, run ending, resume, the Mastra workflow                | [digest](../features/digest.md)               |
+| `src/digest/`        | The weekly run: `runDigest`, run ending, resume, the step loop                      | [digest](../features/digest.md)               |
 | `src/sources/`       | `SourceFetcher` port, the collect step, default sources, `adapters/`                | [sources](../features/sources.md)             |
 | `src/guards/`        | `Guard` port, the input and output guard steps, guard questions, `adapters/`        | [guards](../features/guards.md)               |
 | `src/classify/`      | Classify step and prompt                                                            | [classify](../features/classify.md)           |

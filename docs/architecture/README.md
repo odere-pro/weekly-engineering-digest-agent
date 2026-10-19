@@ -16,8 +16,9 @@ number of interfaces called ports.
 | [Safety](safety.md)                         | The rules that keep untrusted feed text from doing harm                 |
 | [Deployment](deployment.md)                 | Docker services, the Node setup and the host scheduler                  |
 
-Decisions that were weighed and settled live in [decisions/](decisions/) (architecture decision
-records, written by a separate effort). Each feature's own design notes are in
+Decisions that were weighed and settled live in [decisions](decisions/README.md) (architecture
+decision records). The first, [ADR 0001](decisions/0001-mastra.md), removed the Mastra framework:
+a plain loop now runs the steps. Each feature's own design notes are in
 [features](../features/README.md), one page per feature, each linking its `CLAUDE.md`.
 
 ## The picture in one paragraph

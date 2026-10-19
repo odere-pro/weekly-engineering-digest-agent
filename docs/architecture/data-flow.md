@@ -11,8 +11,8 @@ collect -> guardInput -> classify -> process -> write -> guardOutput -> select -
 ```
 
 A step is a plain function `(input, deps) => output` that lives in its own
-[feature folder](feature-folders.md). `src/digest/workflow.ts` wraps them in a Mastra workflow,
-and `src/digest/runDigest.ts` owns the order, the timings and the run ending. Only one model is
+[feature folder](feature-folders.md). `src/digest/workflow.ts` runs them in order with a plain loop
+(Mastra was removed: [ADR 0001](decisions/0001-mastra.md)), and `src/digest/runDigest.ts` owns the order, the timings and the run ending. Only one model is
 loaded at a time, so model calls run strictly one after another.
 
 ## The steps

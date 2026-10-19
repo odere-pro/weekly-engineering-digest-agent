@@ -73,7 +73,8 @@ in [data flow](../architecture/data-flow.md).
 ## Code and tests
 
 - Folder: [src/digest/](../../src/digest/). Maintainer notes: [CLAUDE.md](../../src/digest/CLAUDE.md).
-- No port and no adapters. Only `workflow.ts` imports Mastra, which chains the plain step functions.
+- No port and no adapters. `workflow.ts` is a plain loop that runs the step functions in order.
+  The Mastra framework was removed: [ADR 0001](../architecture/decisions/0001-mastra.md) (accepted).
 - Tests sit next to the code. They use the fakes in [test/fakes](../../test/fakes/); cross-feature
   runs are in [test/integration](../../test/integration/).
 
