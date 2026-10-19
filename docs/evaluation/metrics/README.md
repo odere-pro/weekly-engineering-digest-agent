@@ -2,7 +2,7 @@
 
 Part of [Evaluation](../README.md).
 
-`digest eval` makes 17 measurements. Each has a page with the same headings: what it measures, why
+`digest eval` makes 18 measurements. Each has a page with the same headings: what it measures, why
 it matters, how it is computed, the gate, the data it uses, how to add a case and the current
 result. The current numbers are on [results](../results.md); the rules for gates are on
 [gates](../gates.md).
@@ -14,6 +14,7 @@ result. The current numbers are on [results](../results.md); the rules for gates
 | Guard attack recall        | soft, at least 90%              | [attacks](../sets/attacks.md)                                                       | [guard-attack-recall](guard-attack-recall.md) |
 | Groundedness               | hard, at least 100%             | [grounding](../sets/grounding.md)                                                   | [groundedness](groundedness.md)               |
 | Format                     | hard, at least 100%             | [recorded weeks](../sets/recorded-weeks.md)                                         | [format](format.md)                           |
+| Fact carry                 | soft, at least 100%             | [recorded weeks](../sets/recorded-weeks.md)                                         | [fact-carry](fact-carry.md)                   |
 | Guard false blocks         | soft, at most 5%                | [recorded weeks](../sets/recorded-weeks.md), [grounding](../sets/grounding.md)      | [guard-false-blocks](guard-false-blocks.md)   |
 | Guard blocks on real weeks | soft, at most 5%                | [recorded weeks](../sets/recorded-weeks.md), [stability runs](../sets/stability.md) | [guard-real-blocks](guard-real-blocks.md)     |
 | Must-include recall        | soft, at least 3 of 5           | [recorded weeks](../sets/recorded-weeks.md)                                         | [must-include-recall](must-include-recall.md) |

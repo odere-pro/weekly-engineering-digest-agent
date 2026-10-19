@@ -23,7 +23,7 @@ flowchart LR
 ```mermaid
 flowchart TD
   tag["evalJudgeTag: the EVAL_JUDGE variable, trimmed"] --> installed["assertJudgeInstalled: reachable, installed, decision model"] --> create[createEvalJudge]
-  create --> winners["judgeWinners: each week's winner, one at a time"] --> quality["judgedQuality: mean score and a note"]
+  create --> winners["judgeWinners: each week's winner, one at a time"] --> quality["judgedQuality: mean score, a note, mean accuracy"]
   sheet[readSheet] --> few{"fewer than minDigests?"}
   few -->|yes| refuse[DigestError]
   few -->|no| complete["selection/ completeDigests"] --> agree["judgeAgreement, selectionAgreement (metrics/judging)"]
@@ -45,6 +45,9 @@ flowchart TD
   once, after every replay (`runEval` orders it).
 - A `DigestError` on one week is listed and logged and the other weeks keep their scores. Any other
   error propagates: a bug in the judge must not pass as a missing week.
+- `JudgedWinners.accuracies` keeps the judge's accuracy rating of each scored winner;
+  `judgedQuality` reports the mean as `detail.meanAccuracy`. It is reported next to writing quality
+  and gates nothing. A reply without an accuracy rating adds none.
 - `assertJudgeInstalled` reads the model list and never pulls a model. It fails before the replay,
   and strips `user:pass@` from the reason, which can name the Ollama URL.
 - A half-filled sheet never yields a number, and a sheet under `minDigests` (`GRADED_DIGESTS`, 10)

@@ -1,4 +1,5 @@
 import type { Item } from '../../../src/domain/schemas';
+import type { GuardCheckId } from '../../../src/guards/guardVerdict';
 import type { WeekDetail } from '../../schema';
 import type { CheckedWeek } from '../measurement/measurement';
 import { noDigest, uniqueLabels } from '../measurement/weekDetail';
@@ -13,14 +14,20 @@ export interface DigestSample {
   items: readonly Item[];
   /** Why there is no digest (`noDigestCause`); shown in the week's detail. */
   cause?: string;
+  /** Guards the run had switched off (`record.disabledGuards`); absent means none. */
+  disabledGuards?: readonly GuardCheckId[];
 }
+
+/** What names each sample in `byWeek`: its label or its week id, a repeat numbered. */
+export const sampleLabels = (samples: readonly DigestSample[]): string[] =>
+  uniqueLabels(samples.map((sample) => sample.label ?? sample.weekId));
 
 /** Runs a check on every sample; a sample without a digest has nothing to check. */
 export function checkedSamples(
   samples: readonly DigestSample[],
   check: (sample: DigestSample & { markdown: string }) => WeekDetail,
 ): CheckedWeek[] {
-  const labels = uniqueLabels(samples.map((sample) => sample.label ?? sample.weekId));
+  const labels = sampleLabels(samples);
   return samples.map((sample, index) => ({
     label: labels[index] ?? sample.weekId,
     detail:

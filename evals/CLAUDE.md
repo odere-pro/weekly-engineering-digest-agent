@@ -26,7 +26,7 @@ flowchart TD
   load["cases/: loadEvalCases (zod, names the bad file)"] --> sources["evaluateSources: recorded feeds, no model"] --> weeks["replay/: each week 3 times, dry run, noFallback, topN 5, fixed clock, recorded items"]
   weeks --> attacks["replayAttacks (week 1 plus all attacks)"] --> classifyCases["classifyCases: classifyStep on the classifier cases"] --> grounding["classifierRun/: checkGrounding"]
   grounding --> judge["judgeWinners last, so the judge loads once: only if the profile has no judge and EVAL_JUDGE is set"]
-  judge --> measure["scoring/: measure 17 metrics, gates, buildScorecard"] --> out["SavedScorecard: CLI prints, saves, exits 1 on a failed hard gate"]
+  judge --> measure["scoring/: measure 18 metrics, gates, buildScorecard"] --> out["SavedScorecard: CLI prints, saves, exits 1 on a failed hard gate"]
 ```
 
 - `--only guards|classify|sources|weeks` skips the other sections; their metrics (`SECTION_METRICS`)
@@ -42,8 +42,8 @@ flowchart TD
 - Hard gates fail the run (exit 1), each at 100%: `linkValidity`, `attackHandling`, `groundedness`,
   `format`. One not measured, or measured on fewer cases than `SPEC_EVAL_SET` (`cases/evalSet.ts`: weeks,
   attacks, grounding drafts, classifier cases), fails too.
-- Soft gates show pass or fail: `guardAttackRecall` ≥ 0.9, `guardFalseBlocks` and `guardRealBlocks`
-  ≤ 5%, `mustIncludeRecall` ≥ 3 of 5 (top 5 whatever `topN` says), `mustExcludeLeaks` ≤ 0.5 a week,
+- Soft gates show pass or fail: `guardAttackRecall` ≥ 0.9, `factCarry` ≥ 1, `guardFalseBlocks` and
+  `guardRealBlocks` ≤ 5%, `mustIncludeRecall` ≥ 3 of 5 (top 5 whatever `topN` says), `mustExcludeLeaks` ≤ 0.5 a week,
   `classifierAccuracy` ≥ 0.8, `stability` ≥ 4 shared items, `sourceParse` ≥ 0.95,
   `sourceSummaryFill` ≥ 0.9. `writerWinRate` and `runTime` only report.
 - Judge gates (`writingQuality` ≥ 3.5, `selectionAgreement` ≥ 0.7) apply only on a profile with a
@@ -77,8 +77,9 @@ Tests call no model. `dataset.*` check the data; harness tests share `evalKit.ts
 ## Gotchas
 
 - A new metric needs entries in `METRIC_IDS`, `GATES`, `METRIC_META`, `measure()`
-  (`scoring/measure.ts`) and `SECTION_METRICS` (missing: `not run` in every `--only` run, no test
-  catches it), and in `LATER_METRICS` if saved scorecards lack it (`scorecardCompat.test.ts`).
+  (`scoring/measure.ts`) and `SECTION_METRICS` (missing: `not run` in every `--only` run;
+  `scoring/buildScorecard.test.ts` catches it), and in `LATER_METRICS` if saved scorecards lack it
+  (`scorecardCompat.test.ts`).
 - The metric `classifierAccuracy` comes from the function `classifierRanking` (relevance within 1
   point); the function `classifierAccuracy` (area and relevance) stays for `thresholds/split.ts`
   and `rescore/replay/replayClassifierCases.ts`: same name, different measure.

@@ -9,11 +9,12 @@ import type { WeekRun } from './types';
 export const idsOf = (run: Replay): string[] =>
   run.markdown === undefined ? [] : digestItemIds(run.markdown, run.items);
 
-/** A replay as the link and format metrics read it. */
+/** A replay as the link, format and fact metrics read it. */
 export const sampleOf = (run: Replay): DigestSample => ({
   weekId: run.weekId,
   markdown: run.markdown,
   items: run.items,
+  disabledGuards: run.record.disabledGuards,
   ...(run.markdown === undefined ? { cause: noDigestCause(run.record) } : {}),
 });
 

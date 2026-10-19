@@ -86,7 +86,7 @@ so no threshold is picked on them.
 
 Write a new file, add the row to the README and add the claim's pattern to `PLANTED_CLAIMS` in the
 test. The test expects exactly 30 cases, so a maintainer updates the count with the new case. The
-hard gate needs at least 10. See [adding cases](../adding-cases.md).
+hard gate needs at least 30. See [adding cases](../adding-cases.md).
 
 ## Notes
 

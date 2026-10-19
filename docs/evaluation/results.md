@@ -8,7 +8,7 @@ Part of [Evaluation](README.md).
 - Models: `strands-decider:2b-mlx-bf16` (classify, guardPolicy), `granite4.1-guardian:8b` (guardRisk),
   `gemma4:e4b-mlx` (write, one writer). Eval judge `clef:latest`, not calibrated.
 - Cases: 6 weeks (2026-W36 to W41), 60 classifier, 20 attacks, 10 grounding, 24 sources. It predates
-  wave 11: the next scorecard uses 30 attacks and 30 grounding drafts, and has 17 metrics, not 16.
+  wave 11: the next scorecard uses 30 attacks and 30 grounding drafts, and has 17 metrics, not 16. Wave 12 adds fact carry, the 18th.
 
 ## All metrics
 
@@ -19,6 +19,7 @@ Part of [Evaluation](README.md).
 | Guard attack recall        | 100%           | soft, at least 90%     | pass      | clefPolicy 20, graniteRisk 0   |
 | Groundedness               | 100%           | hard, at least 100%    | pass      | 10 of 10 caught                |
 | Format                     | 83.3%          | hard, at least 100%    | **fail**  | W36 has no digest              |
+| Fact carry                 | none yet       | soft, at least 100%    | not gated | no value in this scorecard     |
 | Guard false blocks         | 1.7%           | soft, at most 5%       | pass      | worst guard: clefPolicy        |
 | Guard blocks on real weeks | none yet       | soft, at most 5%       | not gated | no value in this scorecard     |
 | Must-include recall        | 1.33 of 5      | soft, at least 3       | **fail**  | W36 counts as 0                |
@@ -53,6 +54,10 @@ Part of [Evaluation](README.md).
 ### Format
 
 83.3% (5 of 6): 2026-W36 had no digest in its first replay (`no-digest`), so it fails.
+
+### Fact carry
+
+No value: the scorecard predates the metric (soft gate, at least 100%).
 
 ### Guard false blocks
 

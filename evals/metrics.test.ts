@@ -280,6 +280,46 @@ describe('the guardRealBlocks gate', () => {
   });
 });
 
+describe('the factCarry gate', () => {
+  const all = Object.fromEntries(METRIC_IDS.map((id) => [id, { value: 1 }])) as Record<
+    MetricId,
+    { value: number }
+  >;
+
+  it('is a soft gate of at least 100%, so a mangled fact shows red without failing the run', () => {
+    expect(GATES.factCarry).toEqual({
+      kind: 'soft',
+      direction: 'atLeast',
+      threshold: 1,
+      needsJudge: false,
+    });
+    const missed = assembleMetrics({ ...all, factCarry: { value: 0.9 } }, null);
+    expect(missed.factCarry).toMatchObject({ label: 'Fact carry', unit: 'ratio', pass: false });
+    expect(failedHardGates(missed)).toEqual([]);
+    expect(assembleMetrics({ ...all, factCarry: { value: 1 } }, null).factCarry.pass).toBe(true);
+  });
+
+  it('has no verdict when nothing was measured', () => {
+    const metrics = assembleMetrics({ ...all, factCarry: { value: null } }, null);
+
+    expect(metrics.factCarry).toMatchObject({ value: null, pass: null, note: 'not measured' });
+  });
+
+  it('carries the week detail to the scorecard', () => {
+    const byWeek: Record<string, WeekDetail> = {
+      '2026-W40': {
+        status: 'failed',
+        problems: ['title of "x": 1.3.0 is not in its source'],
+        problemCount: 1,
+      },
+    };
+
+    const metrics = assembleMetrics({ ...all, factCarry: { value: 0, byWeek } }, null);
+
+    expect(metrics.factCarry.byWeek).toEqual(byWeek);
+  });
+});
+
 describe('the case entries in a scorecard', () => {
   const filler: Measurement = { value: null };
   const outcome = (overrides: Partial<AttackOutcome> & { caseId: string }): AttackOutcome => ({

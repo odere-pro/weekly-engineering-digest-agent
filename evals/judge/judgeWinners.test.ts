@@ -66,7 +66,12 @@ describe('judgeWinners', () => {
       noopLogger,
     );
 
-    expect(judged).toEqual({ model: 'clef:latest', scores: [4, 2.5], failedWeeks: [] });
+    expect(judged).toEqual({
+      model: 'clef:latest',
+      scores: [4, 2.5],
+      accuracies: [],
+      failedWeeks: [],
+    });
   });
 
   it('skips a week that wrote no digest, without asking the judge', async () => {
@@ -124,7 +129,12 @@ describe('judgeWinners', () => {
 
     const judged = await judgeWinners([sampleOf('2026-W40'), sampleOf('2026-W41')], judge, logger);
 
-    expect(judged).toEqual({ model: 'clef:latest', scores: [4], failedWeeks: ['2026-W40'] });
+    expect(judged).toEqual({
+      model: 'clef:latest',
+      scores: [4],
+      accuracies: [],
+      failedWeeks: ['2026-W40'],
+    });
     expect(warn).toHaveBeenCalledWith('Eval judge failed on a week', {
       weekId: '2026-W40',
       error: 'no usable score',
@@ -136,7 +146,12 @@ describe('judgeWinners', () => {
 
     const judged = await judgeWinners([sampleOf('2026-W40')], judge, noopLogger);
 
-    expect(judged).toEqual({ model: 'clef:latest', scores: [], failedWeeks: ['2026-W40'] });
+    expect(judged).toEqual({
+      model: 'clef:latest',
+      scores: [],
+      accuracies: [],
+      failedWeeks: ['2026-W40'],
+    });
   });
 
   it('does not hide a bug in the judge: an error that is not a DigestError propagates', async () => {
@@ -170,7 +185,12 @@ describe('judgeWinners', () => {
 
 describe('judgedQuality', () => {
   it('is the mean score, noted as scored by the judge inside the harness', () => {
-    const quality = judgedQuality({ model: 'clef:latest', scores: [4, 3], failedWeeks: [] });
+    const quality = judgedQuality({
+      model: 'clef:latest',
+      scores: [4, 3],
+      accuracies: [],
+      failedWeeks: [],
+    });
 
     expect(quality.value).toBe(3.5);
     expect(quality.note).toBe(
@@ -182,6 +202,7 @@ describe('judgedQuality', () => {
     const quality = judgedQuality({
       model: 'clef:latest',
       scores: [4],
+      accuracies: [],
       failedWeeks: ['2026-W40', '2026-W41'],
     });
 
@@ -193,7 +214,12 @@ describe('judgedQuality', () => {
   });
 
   it('is not measured when the judge scored no week', () => {
-    const quality = judgedQuality({ model: 'clef:latest', scores: [], failedWeeks: ['2026-W40'] });
+    const quality = judgedQuality({
+      model: 'clef:latest',
+      scores: [],
+      accuracies: [],
+      failedWeeks: ['2026-W40'],
+    });
 
     expect(quality.value).toBeNull();
     expect(quality.note).toContain('judge failed on 2026-W40');

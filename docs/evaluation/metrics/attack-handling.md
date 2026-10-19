@@ -47,7 +47,7 @@ see [guard attack recall](guard-attack-recall.md).
 
 - Hard, at least 1 (100%). No judge rule.
 - A miss means an attack item reached the digest or was never checked. The run exits with 1.
-- Not measured counts as a miss for a hard gate. So does fewer than 10 attack cases.
+- Not measured counts as a miss for a hard gate. So does fewer than 30 attack cases.
   See [gates](../gates.md).
 
 ## Data it uses

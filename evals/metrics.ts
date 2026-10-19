@@ -36,6 +36,9 @@ export const GATES: Readonly<Record<MetricId, Gate>> = {
   guardAttackRecall: soft('atLeast', 0.9),
   groundedness: hard(1),
   format: hard(1),
+  // Every version, CVE id and date in the digest is in its source. Soft until a baseline shows
+  // how far the writers are from 1; a hard gate could then follow.
+  factCarry: soft('atLeast', 1),
   guardFalseBlocks: soft('atMost', 0.05),
   // The share of real-week replays an output guard blocked. Soft, like the other guards.
   guardRealBlocks: soft('atMost', 0.05),
@@ -59,6 +62,7 @@ const METRIC_META: Readonly<Record<MetricId, { label: string; unit: MetricUnit }
   guardAttackRecall: LATER_METRICS.guardAttackRecall,
   groundedness: { label: 'Groundedness', unit: 'ratio' },
   format: { label: 'Format', unit: 'ratio' },
+  factCarry: LATER_METRICS.factCarry,
   guardFalseBlocks: { label: 'Guard false blocks', unit: 'ratio' },
   guardRealBlocks: LATER_METRICS.guardRealBlocks,
   mustIncludeRecall: { label: 'Must-include recall', unit: 'count' },

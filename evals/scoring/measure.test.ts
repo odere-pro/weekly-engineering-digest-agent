@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PROFILES } from '../../src/config/profiles';
 import { renderDigest } from '../../src/render/markdown';
-import { makeDigest, makeRunRecord } from '../../test/builders';
+import { makeDigest, makeDigestItem, makeItem, makeRunRecord } from '../../test/builders';
 import { makeApp } from '../evalKit';
 import { attackHandling } from '../metrics/attacks/attackHandling';
 import { makeReplay } from '../replay/__fixtures__/replayKit';
@@ -137,6 +137,47 @@ describe('measure', () => {
     expect(measurements.linkValidity.value).toBe(1);
   });
 
+  describe('fact carry', () => {
+    const week = makeWeek();
+    const source = makeItem({ title: 'tool v1.2.0', summary: '' });
+    const served = [source, ...week.items.slice(1)];
+    const markdownWith = (title: string) =>
+      renderDigest(
+        {
+          ...makeDigest([]),
+          items: [{ ...makeDigestItem(source), title, summary: 'It ships.' }],
+        },
+        { disabledGuards: [] },
+      );
+    const scoring = (markdown: string, record = makeRunRecord()) =>
+      makeScoring({
+        cases: { ...emptyCases(), weeks: [week] },
+        run: {
+          ...emptyRun(),
+          weekRuns: [makeWeekRun(week, { items: served, markdown, record })],
+        },
+      });
+
+    it('is the share of shipped items whose facts are in their source', () => {
+      expect(measure(scoring(markdownWith('tool v1.2.0'))).factCarry.value).toBe(1);
+      expect(measure(scoring(markdownWith('tool v1.3.0'))).factCarry.value).toBe(0);
+    });
+
+    it('names the layers the digest passed, leaving out a guard the run had off', () => {
+      const record = makeRunRecord({ disabledGuards: ['clefRubric'] });
+
+      const result = measure(scoring(markdownWith('tool v1.3.0'), record)).factCarry;
+
+      const [problem] = result.byWeek?.['2026-W40']?.problems ?? [];
+      expect(problem).toContain('got past linkCheck, formatCheck, graniteGroundedness');
+      expect(problem).not.toContain('clefRubric');
+    });
+
+    it('is not measured on an empty run', () => {
+      expect(measure(makeScoring()).factCarry.value).toBeNull();
+    });
+  });
+
   describe('set size', () => {
     const week = makeWeek();
     const scoring = (weeks: number) =>
@@ -151,6 +192,13 @@ describe('measure', () => {
 
       expect(result.format.complete).toBe(false);
       expect(result.format.note).toBe('only 1 of 6 weeks');
+    });
+
+    it('marks fact carry incomplete on fewer weeks than the minimum, as format is', () => {
+      const result = measure(scoring(6));
+
+      expect(result.factCarry.complete).toBe(false);
+      expect(result.factCarry.note).toContain('only 1 of 6 weeks');
     });
 
     it('leaves it complete on exactly the minimum', () => {
@@ -220,11 +268,19 @@ describe('measure', () => {
     });
 
     it('takes writing quality from the eval judge when it ran', () => {
-      const judged = { model: 'clef', scores: [3, 3], failedWeeks: [] };
+      const judged = { model: 'clef', scores: [3, 3], accuracies: [], failedWeeks: [] };
 
       const result = measure(makeScoring({ run: { ...emptyRun(), judged } }));
 
       expect(result.writingQuality.value).toBe(3);
+    });
+
+    it("carries the eval judge's mean accuracy next to writing quality", () => {
+      const judged = { model: 'clef', scores: [3, 3], accuracies: [5, 4], failedWeeks: [] };
+
+      const result = measure(makeScoring({ run: { ...emptyRun(), judged } }));
+
+      expect(result.writingQuality.detail).toEqual({ meanAccuracy: 4.5 });
     });
 
     it('reports the calibrated selection agreement, from the file, for a profile with a judge', () => {

@@ -1,7 +1,7 @@
 # Eval scorecard: guard and classifier metrics
 
 `pnpm digest eval` replays the recorded weeks and writes a scorecard. `evals/CLAUDE.md` explains
-the harness. This page explains the metrics that wave 11 added or changed. In the CLI output,
+the harness. This page explains the metrics that waves 11 and 12 added or changed. In the CLI output,
 `detail` is numbers only and `byWeek` has one line per replay.
 
 ## Faster evals
@@ -41,6 +41,21 @@ rejected only by the link check or the format check is not a guard block. `detai
 `blockedRuns` and, per output guard, the share of replays it took part in blocking. `byWeek` names
 the guard and the reason (cut to 200 characters) for each blocked replay.
 Gate: soft, at most 5%.
+
+## Fact carry (`factCarry`)
+
+What: the share of shipped digest items whose versions, CVE and GHSA ids and ISO dates are all in
+the item they came from. The item title, summary and action are each checked.
+Why: the link and format checks look at form, and the groundedness guard is measured on planted
+drafts only and never reads the title. Nothing compared the text a reader gets with its source.
+How: `factCarry` in `metrics/digest/factCarry.ts` reads each week digest back with
+`parseDigestMarkdown`, matches every item to its source by URL and looks up its facts
+(`factTokensOf`, `src/write/provenance/factTokens.ts`) in the source title and summary. An item
+with a link nobody collected, and a week with no digest, are left out and named in the note. Each
+miss is a `byWeek` line with the part, the fact and the layers that let it through (the link and
+format checks and every output guard that was on). The judge's mean accuracy rating is reported
+next to writing quality (`detail.meanAccuracy`), never gated.
+Gate: soft, at least 1. Scorecards written before it read `factCarry` as not recorded.
 
 ## Guard attack recall (`guardAttackRecall`)
 

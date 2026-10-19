@@ -13,6 +13,7 @@ export const SECTION_METRICS: Readonly<Record<EvalSection, readonly MetricId[]>>
   weeks: [
     'linkValidity',
     'format',
+    'factCarry',
     'guardRealBlocks',
     'mustIncludeRecall',
     'mustExcludeLeaks',

@@ -3,11 +3,16 @@
 import { parseDigestMarkdown } from '../metrics/digest/parseDigest';
 import { writingQuality } from '../metrics/judging/judgeMetrics';
 import type { Measurement } from '../metrics/measurement/measurement';
+import { mean } from '../metrics/measurement/numbers';
 import type { Draft, Item } from '../../src/domain/schemas';
 import type { RunRecord } from '../../src/store/runRecord';
 import { DigestError, errorMessage } from '../../src/shared/errors';
 import type { Logger } from '../../src/shared/telemetry';
+import type { JudgeCriterion } from '../../src/select/judgePrompt';
 import type { EvalJudge } from './evalJudge';
+
+/** The criterion `accuracy` reports; typed, so renaming it in the rubric breaks this file. */
+const ACCURACY: JudgeCriterion = 'accuracy';
 
 /** One replayed week as far as judging it is concerned. */
 export interface WinnerSample {
@@ -24,6 +29,12 @@ export interface JudgedWinners {
   /** The judge model. */
   model: string;
   scores: number[];
+  /**
+   * The judge's accuracy rating (1-5, `byCriterion.accuracy`) of the scored winners, in week
+   * order. A week whose reply has none adds nothing, so this can be shorter than `scores`.
+   * Reported, never gated.
+   */
+  accuracies: number[];
   /** Weeks whose winner the judge could not score. */
   failedWeeks: string[];
 }
@@ -46,12 +57,16 @@ export async function judgeWinners(
   logger: Logger,
 ): Promise<JudgedWinners | undefined> {
   const scores: number[] = [];
+  const accuracies: number[] = [];
   const failedWeeks: string[] = [];
   for (const sample of samples) {
     const draft = winningDraft(sample);
     if (!draft) continue;
     try {
-      scores.push((await judge.score(draft, sample.items)).score);
+      const judgement = await judge.score(draft, sample.items);
+      scores.push(judgement.score);
+      const accuracy = judgement.byCriterion[ACCURACY];
+      if (accuracy !== undefined && Number.isFinite(accuracy)) accuracies.push(accuracy);
     } catch (error) {
       if (!(error instanceof DigestError)) throw error;
       failedWeeks.push(sample.weekId);
@@ -63,16 +78,22 @@ export async function judgeWinners(
   }
   return scores.length + failedWeeks.length === 0
     ? undefined
-    : { model: judge.model, scores, failedWeeks };
+    : { model: judge.model, scores, accuracies, failedWeeks };
 }
 
-/** Writing quality from the eval judge's scores; the note says who scored and what failed. */
+/**
+ * Writing quality from the eval judge's scores; the note says who scored and what failed. The
+ * detail holds the mean of the judge's accuracy ratings: reported next to the score, never gated.
+ */
 export function judgedQuality(judged: JudgedWinners): Measurement {
+  const accuracy = mean(judged.accuracies);
   const failed =
     judged.failedWeeks.length > 0 ? [`judge failed on ${judged.failedWeeks.join(', ')}`] : [];
   const note = [
     `scored by ${judged.model} inside the harness (the profile has no judge)`,
     ...failed,
   ].join('; ');
-  return { ...writingQuality(judged.scores), note };
+  const quality = writingQuality(judged.scores);
+  const detail = accuracy === null ? {} : { detail: { ...quality.detail, meanAccuracy: accuracy } };
+  return { ...quality, ...detail, note };
 }

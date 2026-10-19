@@ -56,7 +56,7 @@ flowchart TD
 | --------------- | -------------------------------------------------------------------------------------------- |
 | `../metrics.ts` | `GATES`, `METRIC_META`, `withCoverage`, `evaluateGate`, `assembleMetrics`, `failedHardGates` |
 | `measurement/`  | `Measurement`, `share`, `mean`, `countBy`, week detail; see `measurement/CLAUDE.md`          |
-| `digest/`       | Link validity and format on the Markdown read back; see `digest/CLAUDE.md`                   |
+| `digest/`       | Link validity, format and fact carry on the Markdown read back; see `digest/CLAUDE.md`       |
 | `attacks/`      | Attack handling, the attack replay, guard attack recall; see `attacks/CLAUDE.md`             |
 | `guards/`       | Groundedness, false blocks, blocks on the real weeks; see `guards/CLAUDE.md`                 |
 | `ranking/`      | Must-include recall, must-exclude leaks, the classifier; see `ranking/CLAUDE.md`             |
@@ -70,7 +70,8 @@ Tests sit next to each file. `../metrics.test.ts` covers the gate table and the 
 
 - A new metric needs: an id in `METRIC_IDS` (`../schema.ts`); a gate in `GATES`, a label in
   `METRIC_META`; a line in `measure()` (`../scoring/measure.ts`); an entry in `SECTION_METRICS`
-  (`../checkpointSections.ts`: missing means `not run` in every `--only` run, no test catches it);
+  (`../checkpointSections.ts`: missing means `not run` in every `--only` run;
+  `scoring/buildScorecard.test.ts` checks that every id is in a section);
   an entry in `LATER_METRICS` if saved scorecards lack it (`../scorecardCompat.test.ts`).
 - Saved scorecards in `../scorecards/` must keep parsing: never rename an id or change a shape
   without a default in `schema.ts`.

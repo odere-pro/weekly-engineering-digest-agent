@@ -34,6 +34,8 @@ rank, write, checks, select. The labels say which five items a good digest holds
 
 - [Link validity](../metrics/link-validity.md) and [format](../metrics/format.md): the digest of
   each week is checked.
+- [Fact carry](../metrics/fact-carry.md): every version, CVE id and date in the digest is looked
+  up in the item it came from.
 - [Must-include recall](../metrics/must-include-recall.md) and
   [must-exclude leaks](../metrics/must-exclude-leaks.md): the digest is compared with the labels.
 - [Stability](../metrics/stability.md), [run time](../metrics/run-time.md),

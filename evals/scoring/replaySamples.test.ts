@@ -27,7 +27,15 @@ describe('sampleOf', () => {
 
     const sample = sampleOf(makeReplay({ items, markdown }));
 
-    expect(sample).toEqual({ weekId: '2026-W40', markdown, items });
+    expect(sample).toEqual({ weekId: '2026-W40', markdown, items, disabledGuards: [] });
+  });
+
+  it('carries the guards the run had switched off', () => {
+    const record = makeRunRecord({ disabledGuards: ['graniteGroundedness'] });
+
+    const sample = sampleOf(makeReplay({ items, markdown: markdownOf(items), record }));
+
+    expect(sample.disabledGuards).toEqual(['graniteGroundedness']);
   });
 
   it('says why a run wrote no digest', () => {

@@ -14,12 +14,12 @@ pnpm digest eval --profile light --only guards
 
 A section runs only its own part of the eval and leaves the other metrics unmeasured.
 
-| Section    | Runs                                                                 | Metrics measured                                                                                                                                                       |
-| ---------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `guards`   | The attack replay (plus a plain replay of the first week), grounding | attack handling, guard attack recall, groundedness, guard false blocks                                                                                                 |
-| `classify` | The classifier cases                                                 | classifier accuracy                                                                                                                                                    |
-| `sources`  | The source recordings, with no model                                 | source parse yield, source summary fill                                                                                                                                |
-| `weeks`    | The recorded weeks, three replays each, and the judge                | link validity, format, guard blocks on real weeks, must-include recall, must-exclude leaks, writing quality, selection agreement, writer win rate, stability, run time |
+| Section    | Runs                                                                 | Metrics measured                                                                                                                                                                   |
+| ---------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `guards`   | The attack replay (plus a plain replay of the first week), grounding | attack handling, guard attack recall, groundedness, guard false blocks                                                                                                             |
+| `classify` | The classifier cases                                                 | classifier accuracy                                                                                                                                                                |
+| `sources`  | The source recordings, with no model                                 | source parse yield, source summary fill                                                                                                                                            |
+| `weeks`    | The recorded weeks, three replays each, and the judge                | link validity, format, fact carry, guard blocks on real weeks, must-include recall, must-exclude leaks, writing quality, selection agreement, writer win rate, stability, run time |
 
 - Any other name stops with `Unknown section "x". Use guards, classify, sources, weeks.`
 - In a `guards` run, guard false blocks has only the output-guard controls. The input guards' clean
@@ -62,7 +62,7 @@ pnpm digest eval --compare evals/scorecards/2026-10-17-light.json evals/scorecar
 ```
 
 It runs nothing, reads no config and needs no Ollama. It prints the two files, the profile and
-date of each, a note when either is partial, and a table of all 17 metrics:
+date of each, a note when either is partial, and a table of all 18 metrics:
 
 | Column          | Meaning                                                               |
 | --------------- | --------------------------------------------------------------------- |

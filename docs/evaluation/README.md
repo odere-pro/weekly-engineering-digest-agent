@@ -4,7 +4,7 @@ Part of the [documentation home](../README.md).
 
 The evaluation answers one question: is the digest good, and is it still as good as last time?
 `digest eval` replays frozen test data through the real pipeline and models, with no network for
-feeds and nothing delivered. It scores the result with 17 measurements and saves a scorecard. If a
+feeds and nothing delivered. It scores the result with 18 measurements and saves a scorecard. If a
 hard gate fails, the command exits with 1.
 
 Start here:
@@ -12,7 +12,7 @@ Start here:
 | Page                                             | What you get                                                                       |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | [How evals work](how-evals-work.md)              | What `digest eval` does from start to end, and what it costs in time               |
-| [Gates](gates.md)                                | Hard, soft and no gate, the 17 thresholds, the judge rule, the exit code           |
+| [Gates](gates.md)                                | Hard, soft and no gate, the 18 thresholds, the judge rule, the exit code           |
 | [Running parts of the eval](running-sections.md) | `--only` a section, `--resume` a lost run, `--compare` two scorecards, checkpoints |
 | [Current results](results.md)                    | The newest scorecard, row by row, and how to update the page                       |
 | [Adding cases](adding-cases.md)                  | How to add data to each set and which rules the tests enforce                      |
@@ -42,7 +42,7 @@ The [metrics index](metrics/README.md) has a table with the gate and the data of
 | Group     | Metrics                                                                                                                                                                                                                                                                                                   |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Safety    | [link validity](metrics/link-validity.md), [attack handling](metrics/attack-handling.md), [guard attack recall](metrics/guard-attack-recall.md), [groundedness](metrics/groundedness.md), [guard false blocks](metrics/guard-false-blocks.md), [guard blocks on real weeks](metrics/guard-real-blocks.md) |
-| Shape     | [format](metrics/format.md), [stability](metrics/stability.md), [run time](metrics/run-time.md)                                                                                                                                                                                                           |
+| Shape     | [format](metrics/format.md), [fact carry](metrics/fact-carry.md), [stability](metrics/stability.md), [run time](metrics/run-time.md)                                                                                                                                                                      |
 | Selection | [must-include recall](metrics/must-include-recall.md), [must-exclude leaks](metrics/must-exclude-leaks.md), [classifier accuracy](metrics/classifier-accuracy.md)                                                                                                                                         |
 | Writing   | [writing quality](metrics/writing-quality.md), [selection agreement](metrics/selection-agreement.md), [writer win rate](metrics/writer-win-rate.md)                                                                                                                                                       |
 | Sources   | [source parse yield](metrics/source-parse.md), [source summary fill](metrics/source-summary-fill.md)                                                                                                                                                                                                      |
@@ -54,7 +54,7 @@ The [metrics index](metrics/README.md) has a table with the gate and the data of
 - **Soft gates** show pass or fail only. **Judge gates** (writing quality, selection agreement)
   apply only when the judge agrees with the maintainer at least 80% of the time.
 - On the newest scorecard (`light`, 2026-10-18) three of four hard gates pass. Format is at 83%.
-  That scorecard predates wave 11: it has no value for guard blocks on real weeks and used 20
-  attacks and 10 grounding drafts. See [results](results.md).
+  That scorecard predates wave 11: it has no value for guard blocks on real weeks (nor for fact
+  carry, added in wave 12) and used 20 attacks and 10 grounding drafts. See [results](results.md).
 
 For maintainers: [evals/CLAUDE.md](../../evals/CLAUDE.md).

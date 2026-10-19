@@ -26,7 +26,7 @@ load and check every file (a bad file stops the run, exit 1)
    '-> optional: a judge model scores each week's winning digest (EVAL_JUDGE)
    |
    v
-evals/scoring/: 17 measurements -> gates (evals/metrics.ts) -> scorecard
+evals/scoring/: 18 measurements -> gates (evals/metrics.ts) -> scorecard
    |
    +-> printed on the terminal, saved to evals/scorecards/<date>-<profile>.json
    '-> exit code 1 when a hard gate failed
@@ -62,7 +62,7 @@ evals/scoring/: 17 measurements -> gates (evals/metrics.ts) -> scorecard
    scores each week's winning digest. It runs last so the judge model loads once. A model that is
    not installed, or has no decision capability, stops the run before anything is replayed.
    See [judge](sets/judge.md).
-9. **Score.** `evals/scoring/measure.ts` turns the results into 17 measurements (the metric functions are in
+9. **Score.** `evals/scoring/measure.ts` turns the results into 18 measurements (the metric functions are in
    `evals/metrics/`) and `evals/metrics.ts` adds the gates. The
    digest is read back from the Markdown that was written, so the real link check and format
    check judge what a reader would get. The classifier is scored on ranking: see

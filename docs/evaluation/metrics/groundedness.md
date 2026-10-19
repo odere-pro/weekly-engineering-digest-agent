@@ -31,7 +31,7 @@ If an output check was switched off, the value is not measured and the note says
 
 - Hard, at least 1 (100%). No judge rule.
 - A miss means a false claim passed the guards. The run exits with 1.
-- Not measured fails too, and so does a set of fewer than 10 grounding cases.
+- Not measured fails too, and so does a set of fewer than 30 grounding cases.
   See [gates](../gates.md).
 
 ## Data it uses

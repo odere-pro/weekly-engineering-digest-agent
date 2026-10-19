@@ -5,6 +5,7 @@ import { withCoverage } from '../metrics';
 import { attackHandling } from '../metrics/attacks/attackHandling';
 import { attackRunMeasurement } from '../metrics/attacks/attackRun';
 import { guardAttackRecall } from '../metrics/attacks/guardAttackRecall';
+import { factCarry } from '../metrics/digest/factCarry';
 import { formatCompliance } from '../metrics/digest/formatCompliance';
 import { linkValidity } from '../metrics/digest/linkValidity';
 import { groundedness } from '../metrics/guards/groundedness';
@@ -101,6 +102,7 @@ export function measure(scoring: Scoring): Record<MetricId, Measurement> {
     ),
     groundedness: covered.grounding(groundingMeasurement(run.grounding)),
     format: covered.weeks(formatCompliance(weekSamples)),
+    factCarry: covered.weeks(factCarry(weekSamples)),
     guardFalseBlocks: guardFalseBlocks({ ...inputTallies, ...run.grounding.tallies }),
     guardRealBlocks: covered.weeks(
       guardRealBlocks(run.stabilityIds.flatMap((w) => w.replays).map(replayEndOf)),

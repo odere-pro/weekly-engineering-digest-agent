@@ -95,6 +95,44 @@ describe('a scorecard written before guardAttackRecall existed', () => {
   });
 });
 
+describe('a scorecard written before factCarry existed', () => {
+  const older = Object.fromEntries(
+    METRIC_IDS.filter((id) => id !== 'factCarry').map((id) => metric(id)),
+  );
+
+  it('parses, with factCarry read as not recorded', () => {
+    const card = ScorecardSchema.parse({ ...base, metrics: older });
+
+    expect(card.metrics.factCarry).toMatchObject({
+      id: 'factCarry',
+      label: 'Fact carry',
+      unit: 'ratio',
+      value: null,
+      gate: { kind: 'none' },
+      pass: null,
+      note: 'not recorded in this scorecard',
+    });
+  });
+
+  it('keeps a factCarry result it does carry', () => {
+    const metrics = {
+      ...older,
+      factCarry: {
+        id: 'factCarry',
+        label: 'Fact carry',
+        unit: 'ratio',
+        value: 0.8,
+        gate: { kind: 'soft', direction: 'atLeast', threshold: 1, needsJudge: false },
+        pass: false,
+      },
+    };
+
+    const card = ScorecardSchema.parse({ ...base, metrics });
+
+    expect(card.metrics.factCarry.value).toBe(0.8);
+  });
+});
+
 describe('MetricResultSchema extras', () => {
   const plain = {
     id: 'format',

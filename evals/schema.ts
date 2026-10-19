@@ -135,6 +135,7 @@ export const METRIC_IDS = [
   'guardAttackRecall',
   'groundedness',
   'format',
+  'factCarry',
   'guardFalseBlocks',
   'guardRealBlocks',
   'mustIncludeRecall',
@@ -210,6 +211,7 @@ export const LATER_METRICS = {
   guardRealBlocks: { label: 'Guard blocks on real weeks', unit: 'ratio' },
   sourceParse: { label: 'Source parse yield', unit: 'ratio' },
   sourceSummaryFill: { label: 'Source summary fill', unit: 'ratio' },
+  factCarry: { label: 'Fact carry', unit: 'ratio' },
 } as const satisfies Partial<Record<MetricId, { label: string; unit: MetricUnit }>>;
 const NOT_RECORDED = 'not recorded in this scorecard';
 

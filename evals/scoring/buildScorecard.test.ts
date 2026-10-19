@@ -32,6 +32,12 @@ describe('withSectionOnly', () => {
     }
   });
 
+  it('puts every metric in exactly one section, so --only never leaves one unmeasured', () => {
+    const listed = Object.values(SECTION_METRICS).flat();
+
+    expect([...listed].sort()).toEqual([...METRIC_IDS].sort());
+  });
+
   it('does not change the metrics it was given', () => {
     const before = JSON.stringify(metrics);
 
@@ -67,7 +73,7 @@ describe('buildScorecard', () => {
   it('records the models of the profile, and the eval judge when one scored the winners', () => {
     expect(buildScorecard(full()).models).toEqual(modelsByRole(PROFILES.quality));
 
-    const judged = { model: 'clef:latest', scores: [4], failedWeeks: [] };
+    const judged = { model: 'clef:latest', scores: [4], accuracies: [], failedWeeks: [] };
     const withJudge = makeScoring({ ...full(), run: { ...full().run, judged } });
     expect(buildScorecard(withJudge).models).toEqual({
       ...modelsByRole(PROFILES.quality),
@@ -117,6 +123,7 @@ describe('buildScorecard', () => {
     expect(card.partial).toEqual(['weeks']);
     expect(card.metrics.sourceParse.note).toContain('not run');
     expect(card.metrics.format.note ?? '').not.toContain('not run');
+    expect(card.metrics.factCarry.note ?? '').not.toContain('not run');
   });
 
   it('matches the scorecard schema', () => {

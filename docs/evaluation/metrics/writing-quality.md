@@ -20,7 +20,9 @@ depends on the profile.
   replayed week.
 - **A profile without one** (`fast`, `light`): when `EVAL_JUDGE` names a model, `judgeWinners`
   scores the winning digest of each week after all replays. `judgedQuality` adds a note that names
-  the judge and any week it could not score.
+  the judge and any week it could not score. It also reports the mean of the judge's accuracy
+  ratings as `meanAccuracy` in the details of the scorecard: it is not gated and does not change
+  the value.
 
 The score is the mean of four criteria, each 1 to 5: accuracy, clarity, why it matters and focus fit
 ([judge](../sets/judge.md)). A week with no digest or no winner has no score and is skipped. With

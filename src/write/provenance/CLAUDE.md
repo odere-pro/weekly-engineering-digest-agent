@@ -31,11 +31,12 @@ flowchart TD
 
 ## Files
 
-| File                   | Role                                                                |
-| ---------------------- | ------------------------------------------------------------------- |
-| `enforceProvenance.ts` | `enforceProvenance`, `withSourceUrl` (an empty action is left out)  |
-| `securityFloor.ts`     | `raiseSecurityItems`, `namesSecurityIssue`, `SECURITY_FLOOR_ACTION` |
-| `loggedId.ts`          | `loggedId`: an item id cut to 80 characters for logs (model output) |
+| File                   | Role                                                                      |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `enforceProvenance.ts` | `enforceProvenance`, `withSourceUrl` (an empty action is left out)        |
+| `securityFloor.ts`     | `raiseSecurityItems`, `namesSecurityIssue`, `SECURITY_FLOOR_ACTION`       |
+| `loggedId.ts`          | `loggedId`: an item id cut to 80 characters for logs (model output)       |
+| `factTokens.ts`        | `factTokensOf`, `missingFacts`: the versions, CVE ids and dates of a text |
 
 One test file per code file.
 
@@ -43,3 +44,6 @@ One test file per code file.
 
 - Changing the floor words is a security change: add a case for the new word and one that must
   stay untouched. `write.urgency.test.ts` runs the same rules through `writeStep`.
+- `factTokens.ts` changes nothing in a draft: the eval metric `factCarry`
+  (`evals/metrics/digest/factCarry.ts`) reads it. It reads model output, so every pattern must stay
+  linear; `factTokens.test.ts` times strings of 100,000 characters.
