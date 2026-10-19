@@ -10,20 +10,13 @@ import { type DeliveryId } from '../../src/delivery/deliveryId';
 import { type RunRecord } from '../../src/store/runRecord';
 import type { CapturingDelivery } from '../fakes';
 import { connectionRefused } from './fakeOllama';
-import {
-  TEST_TIMEOUT_MS,
-  FRIDAY,
-  WEEK,
-  createOllamaWorld,
-  createWorld,
-  lockExists,
-  readRunJson,
-  readTextIfExists,
-  runCli,
-  runFile,
-  useDataDir,
-  type World,
-} from './harness';
+import { TEST_TIMEOUT_MS, FRIDAY, WEEK } from './harness/constants';
+import { createWorld, type World } from './harness/world';
+import { createOllamaWorld } from './harness/ollamaWorld';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { lockExists } from './harness/lock';
+import { runCli } from './harness/runCli';
 
 const dataDir = useDataDir();
 

@@ -11,20 +11,17 @@ import {
   TEST_TIMEOUT_MS,
   FIRST_WRITER,
   FRIDAY,
-  IRRELEVANT_ANSWER,
   OLLAMA_URL,
   PROFILE,
   SECOND_WRITER,
   WEEK,
-  createOllamaWorld,
-  createWorld,
-  lockExists,
-  readRunJson,
-  readTextIfExists,
-  runFile,
-  useDataDir,
-  type World,
-} from './harness';
+} from './harness/constants';
+import { IRRELEVANT_ANSWER } from './harness/answers';
+import { createWorld, type World } from './harness/world';
+import { createOllamaWorld } from './harness/ollamaWorld';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { lockExists } from './harness/lock';
 
 const dataDir = useDataDir();
 

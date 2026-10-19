@@ -5,21 +5,12 @@ import { z } from 'zod';
 import { runDigest } from '../../src/digest/runDigest';
 import { ExitCode } from '../../src/domain/schemas';
 import { chatReply, hangUntilAborted } from './fakeOllama';
-import {
-  TEST_TIMEOUT_MS,
-  FIRST_WRITER,
-  FRIDAY,
-  SECOND_WRITER,
-  WEEK,
-  createOllamaWorld,
-  createWorld,
-  lockExists,
-  readRunJson,
-  readTextIfExists,
-  runFile,
-  useDataDir,
-  type World,
-} from './harness';
+import { TEST_TIMEOUT_MS, FIRST_WRITER, FRIDAY, SECOND_WRITER, WEEK } from './harness/constants';
+import { createWorld, type World } from './harness/world';
+import { createOllamaWorld } from './harness/ollamaWorld';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { lockExists } from './harness/lock';
 
 const dataDir = useDataDir();
 

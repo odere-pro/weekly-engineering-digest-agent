@@ -6,20 +6,11 @@ import { runDigest } from '../../src/digest/runDigest';
 import { type DigestDeps } from '../../src/digest/types';
 import { ExitCode } from '../../src/domain/schemas';
 import { DATA_OPEN } from '../../src/shared/untrusted';
-import {
-  FIRST_WRITER,
-  FRIDAY,
-  PROFILE,
-  TEST_TIMEOUT_MS,
-  WEEK,
-  createWorld,
-  lockExists,
-  readRunJson,
-  readTextIfExists,
-  runFile,
-  useDataDir,
-  type World,
-} from './harness';
+import { FIRST_WRITER, FRIDAY, PROFILE, TEST_TIMEOUT_MS, WEEK } from './harness/constants';
+import { createWorld, type World } from './harness/world';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { lockExists } from './harness/lock';
 
 const dataDir = useDataDir();
 

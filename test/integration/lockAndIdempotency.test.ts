@@ -7,24 +7,12 @@ import { runDigest } from '../../src/digest/runDigest';
 import { KEPT_SENT_REASON } from '../../src/digest/ending/keepReason';
 import { ExitCode } from '../../src/domain/schemas';
 import type { ModelProvider } from '../../src/models/ModelProvider';
-import {
-  TEST_TIMEOUT_MS,
-  FRIDAY,
-  LOCK_FILE,
-  WEEK,
-  createWorld,
-  deadPid,
-  lockExists,
-  readRunJson,
-  readTextIfExists,
-  runCli,
-  runFile,
-  useDataDir,
-  withModel,
-  writeLock,
-  type LockContents,
-  type World,
-} from './harness';
+import { TEST_TIMEOUT_MS, FRIDAY, WEEK } from './harness/constants';
+import { createWorld, withModel, type World } from './harness/world';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { LOCK_FILE, deadPid, lockExists, writeLock, type LockContents } from './harness/lock';
+import { runCli } from './harness/runCli';
 
 const dataDir = useDataDir();
 

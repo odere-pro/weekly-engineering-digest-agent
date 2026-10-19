@@ -15,19 +15,13 @@ import {
   type SchedulerHandle,
 } from '../../src/scheduler/scheduler';
 import { FakeOutputGuard } from '../fakes';
-import {
-  TEST_TIMEOUT_MS,
-  FRIDAY,
-  IRRELEVANT_ANSWER,
-  WEEK,
-  createWorld,
-  lockExists,
-  readRunJson,
-  runCli,
-  useDataDir,
-  type World,
-  type WorldOptions,
-} from './harness';
+import { TEST_TIMEOUT_MS, FRIDAY, WEEK } from './harness/constants';
+import { IRRELEVANT_ANSWER } from './harness/answers';
+import { createWorld, type World, type WorldOptions } from './harness/world';
+import { useDataDir } from './harness/dataDir';
+import { readRunJson } from './harness/runFiles';
+import { lockExists } from './harness/lock';
+import { runCli } from './harness/runCli';
 
 const dataDir = useDataDir();
 
