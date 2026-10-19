@@ -23,36 +23,31 @@ flowchart LR
 flowchart TD
   input["items: ScoredItem[]"] --> cal{"calibration given?"}
   cal -->|"yes (evals only)"| calibrate["calibrateClassification"] --> rank
-  cal -->|no| rank["rank once: byRank"]
-  rank --> sent["sent-before: normalizeUrl is in sentUrls"]
-  sent --> dup["duplicate: repeats a better-ranked story"]
-  dup --> low["low-relevance: below minRelevance (1.5)"]
-  low --> hype["hype: above maxHype (0.6)"]
-  hype --> minor["minor-release: above maxMinorRelease (0.75)"]
-  minor --> pick["pickWithAreaSpread: up to topN (5)"]
+  cal -->|no| rank["rank/ rankBy: rank once"]
+  rank --> sent["filter/ sent-before: normalizeUrl is in sentUrls"]
+  sent --> dup["filter/ duplicate: repeats a better-ranked story"]
+  dup --> low["filter/ low-relevance: below minRelevance (1.5)"]
+  low --> hype["filter/ hype: above maxHype (0.6)"]
+  hype --> minor["filter/ minor-release: above maxMinorRelease (0.75)"]
+  minor --> pick["rank/ pickWithAreaSpread: up to topN (5)"]
   pick --> out["selected in rank order; the rest drop as below-top-n"]
 ```
 
 - An item gets the first reason that fits. `dropped` lists reasons in stage order, then
   `below-top-n`. A value equal to a threshold is kept.
-- `byRank`: relevance, `areaConfidence`, newest `publishedAt` (unparseable is oldest), then id.
-  Items listed in `pairwiseOrder` rank first, by position; the rest by `byRank`.
-- Area spread: an area gets at most 2 slots (`MAX_SLOTS_PER_AREA`) while another area still has an
-  item; once every area is full, the least-filled area goes first, then rank. Areas compare after
-  `normalizeText`, so case, spacing and punctuation do not split one.
+- Rank order (`byRank`, `pairwiseOrder`) and the area spread are in `rank/CLAUDE.md`.
 
 ## Rules
 
 - Pure and deterministic: no model, `node:fs`, clock or network. Input order and the machine's
   locale do not matter (`compareStrings` compares by code unit, never `localeCompare`).
-- Drop order is a contract (`process.test.ts` pins it). `sent-before` runs first so a sent copy
-  cannot hide a fresh one; `duplicate` runs before the thresholds so a filtered winner takes its
-  story with it. `sent-before` normalizes both sides, so a tracked URL in an old record matches.
+- Drop order is a contract (`process.test.ts` and `filter/filterStages.test.ts` pin it). `sent-before`
+  runs first so a sent copy cannot hide a fresh one; `duplicate` runs before the thresholds so a
+  filtered winner takes its story with it.
 - `duplicate`: same id, or from a different source the same normalized title or release key. Items
-  of one source never merge. A blank key never matches.
-- The release key (`releaseKeyOf`) is `product@version` from the title (a blog post and a GitHub
-  release of one tag), only when the rest of the title announces the release and names no other
-  version. Narrow on purpose: a missed merge is left to the writer, a wrong merge drops real news.
+  of one source never merge. A blank key never matches. The key is narrow on purpose (see
+  `dedupe/CLAUDE.md`): a missed merge is left to the writer, a wrong merge drops real news.
+- The score thresholds live once, in `filter/thresholds.ts` (`passesThresholds`).
 - `topN` must be a whole number of 0 or more, else `DigestError` (step `process`).
 - Calibration (`calibration.ts`: a monotone map plus a per-area bias, clamped to 0-3, fitted by
   `evals/calibrate.ts`) and `pairwiseOrder` (`rescoreReplay.ts --pairwise on`, failed its keep
@@ -60,12 +55,18 @@ flowchart TD
 
 ## Files
 
-| File             | Role                                                                                      |
-| ---------------- | ----------------------------------------------------------------------------------------- |
-| `process.ts`     | `processStep`, `ProcessInput`, `ProcessOutput`; ranking, drop stages, release key, spread |
-| `calibration.ts` | `CalibrationSchema`, `calibrateClassification`, `areaKey`                                 |
+| File               | Role                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `process.ts`       | `processStep`, `ProcessInput`, `ProcessOutput`, `assertTopN`: the orchestrator |
+| `types.ts`         | `Entry`, `Dropped`, `DropReason`: what the three folders share                 |
+| `normalizeText.ts` | `normalizeText`: the comparison key for titles, product names and areas        |
+| `calibration.ts`   | `CalibrationSchema`, `calibrateClassification`, `areaKey`                      |
+| `filter/`          | The drop stages and the score thresholds. See `filter/CLAUDE.md`               |
+| `dedupe/`          | Sent-URL test, duplicate detection, the release key. See `dedupe/CLAUDE.md`    |
+| `rank/`            | Ranking, the pairwise order, the area-spread pick. See `rank/CLAUDE.md`        |
 
-Tests sit next to each file and build items with `makeScoredItem` (`test/builders.ts`). No fixtures.
+Tests sit next to each file; `__fixtures__/processKit.ts` has `scored`, `story` and the entry helpers.
+`process.test.ts` pins how the three folders work together.
 
 ## Gotchas
 
@@ -73,8 +74,7 @@ Tests sit next to each file and build items with `makeScoredItem` (`test/builder
   fewer than `DIGEST_MIN_ITEMS` (3, `checks/formatCheck.ts`) are selected, and sets
   `counts.afterProcess` to `selected` plus the `below-top-n` drops, matched by that name.
 - `evals/thresholds/sweep/keepsItem.ts` repeats the three threshold rules; its test runs it against
-  `processStep` on a grid and fails when they drift: change both.
+  `processStep` on a grid and fails when they drift. Until it calls `passesThresholds`, change both.
 - `areaKey` (trim, lowercase) keys `areaBias`; the spread uses `normalizeText`: not the same grouping.
-- Before touching `releaseKeyOf`, write a failing test for the new duplicate case. Keep
-  `VERSION_TOKEN` linear on hostile titles: `stays fast on hostile titles` times it.
-- `process.ts` is 348 lines (cap 300): move the duplicate and release-key code out before adding.
+- Evals call `processStep` too (`calibrate.ts`, `rescoreReplay.ts`, `keepsItem.test.ts`): keep its
+  path and signature.
