@@ -33,6 +33,12 @@ It is the fourth step, after classify and before write. See
   `below-top-n`.
 - Returning fewer than `topN` items is fine. When fewer than 3 are selected, the digest run ends
   the week as `quiet` (exit 3).
+- Can apply a relevance calibration when it is given one: a fitted map from the classifier's
+  relevance to a corrected value, plus a bias per area, applied before the filters and the ranking.
+  A real run never gives it one (no config key, no calibration file committed), so this is idle.
+  It was fitted and measured offline by the evals tooling, and holdout recall did not rise.
+- Can also take a model-chosen item order (the W11-07 pairwise experiment). Only the eval replay
+  sets it, behind a flag; a real run never does, and the experiment stays off.
 - The run saves the scores, not the drop reason of each item. In
   `pnpm digest show <week> --part scores` an item is marked "in digest" or "scored, not picked".
   The logs record how many items were selected and dropped.
@@ -44,7 +50,8 @@ It is the fourth step, after classify and before write. See
 - `thresholds.minRelevance`, `thresholds.maxHype` and `thresholds.maxMinorRelease`. See
   [thresholds](../configuration/thresholds.md) and the runbook
   [change thresholds](../runbooks/configure/change-thresholds.md).
-- The ranking, the duplicate rules and the 2-slot area spread are fixed in code.
+- The ranking, the duplicate rules and the 2-slot area spread are fixed in code. Relevance
+  calibration is not configurable: nothing in config or on disk switches it on.
 - All keys: [config keys](../reference/config-keys.md).
 
 ## What can go wrong

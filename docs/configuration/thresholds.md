@@ -39,7 +39,13 @@ The process step drops an item for the first reason that fits, in this order: se
 duplicate, low relevance, hype, minor release. Then it keeps the top `topN`.
 
 `guardFlag` is a different kind of threshold. It belongs to the two `clef` guards,
-`clefPolicy` and `clefRubric` (see [guards](guards.md)). The Granite guards ignore it.
+`clefPolicy` and `clefRubric` (see [guards](guards.md)). The Granite guards and the rule guard
+`ruleInjection` ignore it.
+
+The process step can also replace each item's relevance with a calibrated value before it applies
+`minRelevance` and ranks the items. That code exists, but nothing feeds it: there is no config key
+and no calibration file is committed, so a real run uses the classifier's relevance as it is. The
+fitting tool is for maintainers, and the last trial did not raise recall on held-out weeks.
 
 ## Which way to move them
 

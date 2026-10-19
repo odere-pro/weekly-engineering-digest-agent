@@ -45,8 +45,10 @@ They run inside the write step, on every draft, before the output guards. See
 
 ## What can go wrong
 
-- Every draft fails a check, even after the retry: the week is `blocked` (exit 2). The note and
-  `run.json` name each writer and the check ids. See
+- Every draft fails a check, even after the retry: the run sends the
+  [fallback digest](digest.md#fallback-digest) instead (`fallback: true` in `run.json`). The
+  fallback passes these same two checks. If it fails them too, the week is `blocked` (exit 2) and
+  the note and `run.json` name each writer and the check ids. See
   [blocked run](../runbooks/debug/blocked-run.md).
 - A repeating `formatCheck` rejection usually means a writer that runs long or adds an em dash.
   Read the problems under `rejections` in `drafts.json`. A repeating `linkCheck` rejection means
@@ -66,5 +68,5 @@ They run inside the write step, on every draft, before the output guards. See
 
 - [write](write.md) calls the checks and retries once. [render](render.md) produces the Markdown
   they read.
-- [guards](guards.md) are the model-based checks that can be switched off. These two cannot.
+- [guards](guards.md) are the safety checks (mostly model-based) that can be switched off. These two cannot.
 - The same checks judge digests in [evals](evals.md).

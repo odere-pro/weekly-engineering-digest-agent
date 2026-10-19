@@ -28,13 +28,13 @@ Why bother:
 
 ## The five ports
 
-| Port            | Lives in        | What it does                                  | Real adapters                                    |
-| --------------- | --------------- | --------------------------------------------- | ------------------------------------------------ |
-| `ModelProvider` | `src/models/`   | `generate` (text) and `decide` (class odds)   | Ollama chat, decision endpoint (`/v1/systemone`) |
-| `Guard`         | `src/guards/`   | Input and output checks, one verdict per call | clef policy and rubric, Granite Guardian         |
-| `SourceFetcher` | `src/sources/`  | Items from one kind of source                 | RSS and Atom, GitHub releases (Atom and REST)    |
-| `Delivery`      | `src/delivery/` | Send a digest or a failure note               | Markdown file, SMTP, Slack                       |
-| `RunStore`      | `src/store/`    | Run folders, history, the run lock            | Files on a local disk                            |
+| Port            | Lives in        | What it does                                  | Real adapters                                                      |
+| --------------- | --------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `ModelProvider` | `src/models/`   | `generate` (text) and `decide` (class odds)   | Ollama chat, decision endpoint (`/v1/systemone`)                   |
+| `Guard`         | `src/guards/`   | Input and output checks, one verdict per call | the injection rule guard, clef policy and rubric, Granite Guardian |
+| `SourceFetcher` | `src/sources/`  | Items from one kind of source                 | RSS and Atom, GitHub releases (Atom and REST)                      |
+| `Delivery`      | `src/delivery/` | Send a digest or a failure note               | Markdown file, SMTP, Slack                                         |
+| `RunStore`      | `src/store/`    | Run folders, history, the run lock            | Files on a local disk                                              |
 
 Each port is one file at the top of its feature folder (for example `src/models/ModelProvider.ts`).
 Its adapters live in the `adapters/` folder next to it.

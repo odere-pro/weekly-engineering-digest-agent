@@ -41,7 +41,9 @@ digest. You can do this at any time, with no Ollama and no network.
    ```
 
    Failed weeks add `Error:` with the step, rejected drafts add `Rejected:` lines and failed
-   feeds add `Source failed:` lines.
+   feeds add `Source failed:` lines. A week sent as the fallback digest (no model wrote it) shows
+   `Winner:     fallback`. The summary has no separate fallback line: `--part run` shows
+   `"fallback": true`, and `--part drafts` lists the writer `fallback` after the rejected writers.
 
 2. Open one part with `--part`.
 

@@ -59,13 +59,13 @@ folder) if you do not want the files. The next real run replaces the `dry-run` r
 
 ## Troubleshooting
 
-| Symptom                                                             | Cause                             | Fix                                                              |
-| ------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------- |
-| `This week already has a sent digest. Use --force to run it again.` | The week is `sent`                | Use `--dry-run --force`, or [Preview a week](preview-a-week.md). |
-| `Error: could not write the dry-run digest to <dir>: ...`           | The digest folder is not writable | Fix permissions or use `--out <dir>`. Exit is 1.                 |
-| Exit 3, `quiet`                                                     | Fewer than 3 items qualified      | [Quiet week](../debug/quiet-week.md).                            |
-| Exit 2, `blocked`                                                   | Every draft was rejected          | [Blocked run](../debug/blocked-run.md).                          |
-| `Another run is in progress`                                        | The lock is held                  | [Stuck lock](../debug/stuck-lock.md).                            |
+| Symptom                                                             | Cause                                                          | Fix                                                              |
+| ------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `This week already has a sent digest. Use --force to run it again.` | The week is `sent`                                             | Use `--dry-run --force`, or [Preview a week](preview-a-week.md). |
+| `Error: could not write the dry-run digest to <dir>: ...`           | The digest folder is not writable                              | Fix permissions or use `--out <dir>`. Exit is 1.                 |
+| Exit 3, `quiet`                                                     | Fewer than 3 items qualified                                   | [Quiet week](../debug/quiet-week.md).                            |
+| Exit 2, `blocked`                                                   | Every draft was rejected, and no fallback digest could be made | [Blocked run](../debug/blocked-run.md).                          |
+| `Another run is in progress`                                        | The lock is held                                               | [Stuck lock](../debug/stuck-lock.md).                            |
 
 ## Related
 

@@ -10,6 +10,8 @@ channel. Use it when the week already has a sent digest, or when a resume is ref
 ## When to use
 
 - The digest was sent but is wrong, and you have fixed the cause (config, thresholds, models).
+- The digest was sent as a fallback digest (`Winner:     fallback`, no model wrote it) and you want a
+  model-written one. See [Debug a blocked run or a fallback digest](../debug/blocked-run.md).
 - A resume refused with a message that contains `--force`.
 - Not needed when the week is `failed`, `blocked` or `quiet` and nothing was sent: a plain
   `pnpm digest run` runs it again. Not needed when only a channel missed the digest: use
@@ -55,7 +57,8 @@ channel. Use it when the week already has a sent digest, or when a resume is ref
      stays if the new run delivers nothing.
    - Any other earlier record (`quiet`, `blocked`, `failed`, `dry-run`): it is replaced.
 
-   A forced run that fails or is blocked still sends its failure note.
+   A fallback digest is a `sent` record, so a forced run replaces it only if the new run ends
+   `sent`. A forced run that fails or is blocked still sends its failure note.
 
 5. Know the repeat behaviour. The seed (`models.seed`, default 42) goes with every generate
    call, and `write` uses temperature 0.2, so a repeat is likely but not guaranteed to match.

@@ -56,7 +56,9 @@ new digest. The channels that already have it get nothing more.
 pnpm digest show 2026-W41
 ```
 
-The status is `sent` and `Delivered:` lists every configured channel. `<week>.md` is in the
+The status is `sent` and `Delivered:` lists every configured channel. A resume keeps what the
+saved record says: for a fallback digest it rebuilds the view with the fallback footer line, so the
+channels that missed it get the same text. `<week>.md` is in the
 digest folder, and `pnpm digest history -n 1` shows `sent`.
 
 ## Roll back

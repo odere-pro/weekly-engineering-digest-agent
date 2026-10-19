@@ -66,19 +66,21 @@ dropped item.
    The level is read when the app starts, so restart `serve` after a change.
 8. Know the lines that matter.
 
-   | `msg`                                    | Level       | Fields to read                             |
-   | ---------------------------------------- | ----------- | ------------------------------------------ |
-   | `Models ready`                           | info        | `profile`, `models`                        |
-   | `Collected items`                        | info        | `items`, `failedSources`                   |
-   | `Source failed`                          | warn        | `sourceId`, `error`                        |
-   | `Source returned no usable items`        | warn        | `sourceId`, `fetched`                      |
-   | `ollama call`                            | info        | `role`, `model`, `op`, `latencyMs`, tokens |
-   | `ollama call failed, retrying`           | warn        | `op`, `attempt`, `error`                   |
-   | `Draft failed the checks`                | warn        | `writer`, `attempt`, `rejectedBy`          |
-   | `Step finished` / `Step failed`          | info, error | `step`, `ms` (and `error` on failure)      |
-   | `Winner chosen`                          | info        | `writer`, `judged`                         |
-   | `Run finished`                           | info        | `status`, `winner`, `counts`               |
-   | `input guards dropped item` (debug only) | debug       | `itemId`, `flaggedBy`                      |
+   | `msg`                                                               | Level       | Fields to read                             |
+   | ------------------------------------------------------------------- | ----------- | ------------------------------------------ |
+   | `Models ready`                                                      | info        | `profile`, `models`                        |
+   | `Collected items`                                                   | info        | `items`, `failedSources`                   |
+   | `Source failed`                                                     | warn        | `sourceId`, `error`                        |
+   | `Source returned no usable items`                                   | warn        | `sourceId`, `fetched`                      |
+   | `ollama call`                                                       | info        | `role`, `model`, `op`, `latencyMs`, tokens |
+   | `ollama call failed, retrying`                                      | warn        | `op`, `attempt`, `error`                   |
+   | `Draft failed the checks`                                           | warn        | `writer`, `attempt`, `rejectedBy`          |
+   | `No draft survived; sending the fallback`                           | warn        | `drafts`, `fallbackFlaggedBy`              |
+   | `The fallback digest failed its own checks; the week stays blocked` | error       | `rejectedBy`                               |
+   | `Step finished` / `Step failed`                                     | info, error | `step`, `ms` (and `error` on failure)      |
+   | `Winner chosen`                                                     | info        | `writer`, `judged`                         |
+   | `Run finished`                                                      | info        | `status`, `winner`, `counts`               |
+   | `input guards dropped item` (debug only)                            | debug       | `itemId`, `flaggedBy`                      |
 
    A model-call line (`ollama call`) holds the role, the model tag, the operation (`generate`
    or `decide`), `latencyMs`, `attempts`, `inputTokens` and `outputTokens`. It never holds a

@@ -60,6 +60,7 @@ name. Run commands as `pnpm digest <command>`. In Docker the prefix is
   part is missing. See [show a week](../runbooks/observe/show-a-week.md).
 - `run` exits 1, 2 or 3: see [failed run](../runbooks/debug/failed-run.md),
   [blocked run](../runbooks/debug/blocked-run.md) and [quiet week](../runbooks/debug/quiet-week.md).
+  Exit 0 can hide a fallback digest (no model wrote it): look for `Winner:     fallback`.
 - `serve` does not see config changes after it starts. Restart it. See
   [stopping and restarts](../operations/stopping-and-restarts.md).
 - Common tasks: [run now](../runbooks/run/run-now.md), [dry run](../runbooks/run/dry-run.md),

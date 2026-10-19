@@ -4,10 +4,11 @@ Part of [Features](README.md).
 
 ## What it is for
 
-One file holds the schemas and the types that every step, port and adapter share: sources, items,
-classifications, digests, drafts, judge scores, guard verdicts and the run record. A single
-definition keeps parallel work from drifting apart. It also holds the run status and the exit
-codes, so the CLI and the scheduler agree on what a run result means.
+`src/domain/schemas.ts` holds the schemas and the types that several features share: sources,
+items, digests, drafts, the week id, the step names, the run status and the exit codes. A single
+definition keeps parallel work from drifting apart, and the CLI and the scheduler agree on what a
+run result means. A type that only one feature owns lives in that feature, next to the code that
+produces it (see the table below).
 
 ## Where it sits
 
@@ -27,14 +28,27 @@ It has no flow of its own. It describes the data that moves through the pipeline
 - The run ends as a **run record**, which is `run.json`. Its status is one of `sent`, `dry-run`,
   `skipped`, `quiet`, `blocked` or `failed`, and the status maps to the exit code: 0 for sent,
   dry-run and skipped, 1 for failed, 2 for blocked, 3 for quiet.
-- Defines the five model roles (`classify`, `guardPolicy`, `guardRisk`, `write`, `judge`), the
-  three urgency levels (act now, worth a look, good to know) and the week id pattern
+- Defines the three urgency levels (act now, worth a look, good to know) and the week id pattern
   (`2026-W43`, weeks 01 to 53).
 - Old data stays readable. A new field on a stored shape is optional, so saved `run.json` files,
-  recorded eval weeks and drafts from before the urgency groups still parse.
-- The schema already names a `ruleInjection` guard check and a `fallback` flag on the run record.
-  They are prepared for a later change; the current pipeline does not produce either.
+  recorded eval weeks and drafts from before the urgency groups still parse. `fallback` on the run
+  record is one such optional field.
 - Item text is untrusted web content. Parsing it does not make it safe.
+
+Types that moved into the feature that owns them:
+
+| Types                          | Now in                           |
+| ------------------------------ | -------------------------------- |
+| `Role` (the five model roles)  | `src/models/roles.ts`            |
+| `Classification`, `ScoredItem` | `src/classify/classification.ts` |
+| `GuardCheckId`, `GuardVerdict` | `src/guards/guardVerdict.ts`     |
+| `JudgeScore`                   | `src/select/judgeScore.ts`       |
+| `DeliveryId`                   | `src/delivery/deliveryId.ts`     |
+| `RunRecord`, `DraftOutcome`    | `src/store/runRecord.ts`         |
+
+The shared file keeps `Source`, `Item`, `Digest`, `DigestItem`, `Draft`, `Urgency`, `WeekId`,
+`StepName`, `RunStatus`, `ExitCode` and `exitCodeFor`. The five roles are `classify`,
+`guardPolicy`, `guardRisk`, `write` and `judge`.
 
 ## What you can configure
 
@@ -58,12 +72,13 @@ It has no flow of its own. It describes the data that moves through the pipeline
 
 - Folder: [src/domain/](../../src/domain/). Maintainer notes: [CLAUDE.md](../../src/domain/CLAUDE.md).
 - No port and no adapters. The file imports `zod` and nothing else.
-- Tests sit next to the code: the exit code mapping, the shared test builders, and old records
-  without the newer fields.
+- Tests sit next to the code: the exit code mapping and the shared test builders. The run-record
+  parse cases (old records without `sampling`, `afterProcess` or `fallback`) are in
+  `src/store/runRecord.test.ts`.
 
 ## Related
 
-- [config](config.md) builds on the source and role types. [store](store.md) validates the run
-  record before it saves it.
+- [config](config.md) builds on the source type and the role type from `models/roles.ts`.
+  [store](store.md) owns the run record schema and validates the record before it saves it.
 - [shared](shared.md) uses the exit codes and the week id pattern.
 - Almost every other feature page uses these types; start with [digest](digest.md).

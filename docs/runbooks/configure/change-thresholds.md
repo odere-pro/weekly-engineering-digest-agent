@@ -34,8 +34,11 @@ Do it when the digest is too thin, too noisy, or blocks good content.
 
    Raise `minRelevance` for fewer, stronger items. Lower `maxHype` or `maxMinorRelease` to drop
    more. Lower `guardFlag` to flag more; raise it to flag less. A value equal to `guardFlag`
-   does not flag. The Granite checks give a verdict, not a probability, so `guardFlag` never
-   changes them.
+   does not flag. The Granite checks and the rule guard `ruleInjection` give a verdict, not a
+   probability, so `guardFlag` never changes them.
+
+   `minRelevance` compares with the classifier's relevance as it is. A relevance calibration
+   exists in the process step, but no key or file turns it on, so there is nothing to set.
 
    The defaults come from a sweep on the `light` profile only (2026-10-17). `quality` and `fast`
    have no tuning. Change one value at a time, by a small step.

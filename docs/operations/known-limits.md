@@ -9,11 +9,26 @@ The honest list. Each item says what happens and why.
 - Only the `light` profile is measured. Format is at 83% on its baseline (one recorded week
   produced no digest on its first replay). See [results](../evaluation/results.md).
 - The thresholds were tuned on `light` only.
-- The groundedness guard can block good drafts, in particular on the headline and intro.
+- The groundedness guard can reject good drafts, in particular on the headline and intro. When
+  every draft is rejected the week goes out as a fallback digest (see below), not as a failure.
 - Same-release dedupe is narrow on purpose. The same story from two feeds can get through when
   one title has no version.
 - The link check ignores autolinks with a scheme other than `http(s)`, and accepts a collected
   URL with extra tracking parameters or a fragment.
+
+## Fallback digest, guards and calibration
+
+- A fallback digest is the sources' own words, not a written summary: every item is "good to know",
+  with no action line. It sends no failure note and exits 0, so only the footer line, `fallback` in
+  `digest history` and `"fallback": true` in `run.json` tell you. There is no setting to turn it off.
+- `digest preview` leaves out the fallback footer line. The sent message and `digest.md` have it.
+- The rule guard `ruleInjection` is a fixed table of patterns. It flagged none of the 369 recorded
+  items, but a new wording of an attack can slip past it, and a real item that quotes an attack
+  string would match. In guard mode `all` it also means the input side drops an item only when
+  the rule guard flags it. See
+  [guards configuration](../configuration/guards.md#the-rule-guard-ruleinjection).
+- The process step can apply a relevance calibration, but no config key or file feeds one in, and
+  none is committed. Real runs use the classifier's relevance as it is.
 
 ## Running
 

@@ -29,9 +29,28 @@ follow. See [data flow](../architecture/data-flow.md).
 - Runs the [link check and format check](checks.md) on every draft. If every draft is rejected,
   each writer that produced a draft gets one retry, with the problems listed and every link masked.
   There is no second retry.
+- Can build a draft without any model: the fallback digest (`fallbackDigest.ts`). The digest run
+  uses it when no writer draft survives the checks and the output guards. See
+  [Fallback digest](#fallback-digest).
 - A writer that errors, or ends with fewer than 3 items, is recorded as a failure and the next
   writer still runs. If every writer fails, the run fails at step `write`.
 - Saves `drafts.json`: every draft, the writer failures and the rejections with their problems.
+
+## Fallback digest
+
+The fallback digest is a draft by the writer named `fallback`, made by code from the selected items.
+No model writes it, so treat it as a plain list of releases, not as a written summary.
+
+- Each item keeps its own title (cut to 120 characters) and its own URL. The summary is the first
+  whole sentences of the item's collected summary that fit in 40 words, or a cut at a word ending in
+  `...`. An item with no summary reads "No summary in the source."
+- Links, other URLs, em dashes, pipes and character references are dropped from that text, so the
+  link check and format check pass.
+- Every item is "good to know" and has no action line. The headline is "Releases this week:" and up
+  to three areas. It keeps at most `topN` items in rank order.
+- It is rendered with the footer line "Written from the sources' own words." and run through the
+  same link check and format check as a writer draft. The digest run decides when to use it. See
+  [digest](digest.md#fallback-digest).
 
 ## What you can configure
 
@@ -55,8 +74,8 @@ follow. See [data flow](../architecture/data-flow.md).
   [failed run](../runbooks/debug/failed-run.md).
 - A writer is too slow or the machine runs out of memory. See
   [slow model or out of memory](../runbooks/debug/slow-model-or-out-of-memory.md).
-- Every draft fails the checks even after the retry: the week is `blocked`. See
-  [blocked run](../runbooks/debug/blocked-run.md).
+- Every draft fails the checks even after the retry: the week is sent as the fallback digest
+  (`fallback: true` in `run.json`), not `blocked`. See [blocked run](../runbooks/debug/blocked-run.md).
 - The digest misses an item you expected, or names the wrong one. See
   [missing or wrong item](../runbooks/debug/missing-or-wrong-item.md).
 - `pnpm digest show <week> --part drafts` shows each writer's draft and why it was rejected.

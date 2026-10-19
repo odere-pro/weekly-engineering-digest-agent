@@ -65,6 +65,8 @@ It is a supporting layer used at the start and the end of every run, as shown in
 ## Code and tests
 
 - Folder: [src/store/](../../src/store/). Maintainer notes: [CLAUDE.md](../../src/store/CLAUDE.md).
+- The run record schema (`RunRecordSchema`, `DraftOutcome`) lives here, in
+  [runRecord.ts](../../src/store/runRecord.ts). It moved from the shared domain file.
 - Port: [RunStore.ts](../../src/store/RunStore.ts). Adapters:
   [src/store/adapters/](../../src/store/adapters/) (run folders, the lock, atomic file writes).
 - Tests sit next to the code and use temporary folders and a fake clock. The lock contention test
@@ -74,5 +76,5 @@ It is a supporting layer used at the start and the end of every run, as shown in
 
 - [digest](digest.md) takes the lock, saves the files and the record. [scheduler](scheduler.md)
   retries when the lock is held.
-- [app](app.md) wraps the store so secrets never reach disk. [domain](domain.md) defines the run
-  record. [run record reference](../reference/run-record.md).
+- [app](app.md) wraps the store so secrets never reach disk. [domain](domain.md) keeps the shared
+  types. [run record reference](../reference/run-record.md).

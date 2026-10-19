@@ -12,14 +12,14 @@ key and no cost per run.
 
 ## The promises
 
-| Promise    | What it means in practice                                                                                  |
-| ---------- | ---------------------------------------------------------------------------------------------------------- |
-| Free       | The models run locally. A run costs electricity, nothing else.                                             |
-| Private    | Only feed requests and the delivery channels you turn on leave the machine.                                |
-| Guarded    | Feed text is untrusted. Models check it before and after writing. See [safety](../architecture/safety.md). |
-| Honest     | Every link in a digest comes from a collected item. Code checks this, not a prompt.                        |
-| Short      | Each item says what changed and what to do. Items are grouped by urgency.                                  |
-| Repeatable | A fixed seed and low temperature let a rerun of a week repeat itself.                                      |
+| Promise    | What it means in practice                                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Free       | The models run locally. A run costs electricity, nothing else.                                                                                 |
+| Private    | Only feed requests and the delivery channels you turn on leave the machine.                                                                    |
+| Guarded    | Feed text is untrusted. Fixed rules and models screen it before writing, and models check the drafts. See [safety](../architecture/safety.md). |
+| Honest     | Every link in a digest comes from a collected item. Code checks this, not a prompt.                                                            |
+| Short      | Each item says what changed and what to do. Items are grouped by urgency.                                                                      |
+| Repeatable | A fixed seed and low temperature let a rerun of a week repeat itself.                                                                          |
 
 ## An example
 

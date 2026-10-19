@@ -22,7 +22,8 @@ pipeline uses them through ports. See [ports and adapters](../architecture/ports
   true. A missing `SMTP_PASSWORD` or `SLACK_WEBHOOK_URL` stops the start with an error that names
   the variable.
 - Builds the Ollama model provider, the RSS and GitHub fetchers (a `GITHUB_TOKEN` switches GitHub
-  sources to the REST API), the four guards and the file run store.
+  sources to the REST API), the five guards and the file run store. The rule guard gets the hosts
+  of your configured feeds, so a link to one of them is never off-host.
 - Wraps every delivery channel with retry (2 retries, after 5 s then 10 s, only when sending again
   cannot double the message) and with secret redaction. Redaction wraps the retry, so each retry
   sends the same cleaned message.

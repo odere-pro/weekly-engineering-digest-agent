@@ -31,8 +31,11 @@ every active guard flags the same item or draft (`all`).
 
    With one active check in a section the two modes act the same. In `all`, an item goes to the
    next guard only if the previous one flagged it, so the later (often slower) guard sees fewer
-   items. The order is `clefPolicy` then `graniteRisk` for input, `graniteGroundedness` then
-   `clefRubric` for output.
+   items. The order is `ruleInjection`, `clefPolicy`, then `graniteRisk` for input, and
+   `graniteGroundedness` then `clefRubric` for output. The rule guard runs first, so in `all` an
+   input item is dropped only if `ruleInjection` flags it too. It flags rarely, so `all` on the
+   input side drops very little unless you also turn `ruleInjection` off (see
+   [Turn a guard on or off](turn-a-guard-on-or-off.md)).
 
 2. Edit `digest.config.json`. This loosens output only:
 
@@ -71,7 +74,7 @@ Set the mode back to `"any"` (or delete the key) and restart as in step 3.
 | Symptom                                        | Cause                                                                        | Fix                                                              |
 | ---------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `Invalid option: expected one of "any"\|"all"` | A typo, or a capital letter                                                  | Use lowercase `any` or `all`                                     |
-| Still blocked in `all` mode                    | Every active guard flagged it, or the link check or format check rejected it | Read `pnpm digest show <week> --part drafts`                     |
+| Still no model-written digest in `all` mode    | Every active guard flagged it, or the link check or format check rejected it | Read `pnpm digest show <week> --part drafts`                     |
 | No difference after the change                 | Only one check is active in that section, or `serve` was not restarted       | See [Turn a guard on or off](turn-a-guard-on-or-off.md); restart |
 | Mode seems ignored                             | The key sits in the wrong section                                            | Use `guards.input.mode` or `guards.output.mode`                  |
 

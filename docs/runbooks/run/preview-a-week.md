@@ -49,7 +49,10 @@ files you can open. It sends nothing and calls no model.
    inside the container, so add `--out data/preview` to land the files in the mounted folder.
 
 The files are built from `drafts.json` with today's templates, so they can differ from what was
-sent if the layout changed since. Secrets are removed and control characters stripped.
+sent if the layout changed since. Secrets are removed and control characters stripped. For a week
+sent as the fallback digest, the preview leaves out the footer line "Written from the sources' own
+words.", because `preview` does not read the record's `fallback` flag. The sent message and
+`digest.md` have the line.
 
 ## Verify
 

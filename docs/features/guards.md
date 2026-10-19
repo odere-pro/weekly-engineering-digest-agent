@@ -4,11 +4,11 @@ Part of [Features](README.md).
 
 ## What it is for
 
-Collected text and model drafts are untrusted. Guards are the model-based safety checks. Input
-guards look at each collected item before any other model sees it. Output guards look at each
-draft. They catch prompt injection, harmful content, claims the sources do not support, off-task
-text and hype. Config can switch a guard off. The link check and format check are not guards: see
-[checks](checks.md).
+Collected text and model drafts are untrusted. Guards are the safety checks: four ask a model and
+one is a table of fixed rules in code. Input guards look at each collected item before any other
+model sees it. Output guards look at each draft. They catch prompt injection, harmful content,
+claims the sources do not support, off-task text and hype. Config can switch a guard off. The link
+check and format check are not guards: see [checks](checks.md).
 
 ## Where it sits
 
@@ -17,30 +17,37 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 
 ## What it does
 
-- Four checks. Input: `clefPolicy` (is the item aimed at an AI system, or harmful?) and
+- Four model checks. Input: `clefPolicy` (is the item aimed at an AI system, or harmful?) and
   `graniteRisk` (Granite Guardian is asked about jailbreak, then harm). Output:
   `graniteGroundedness` (each digest item against its own source, then the headline and intro
   against the cited sources) and `clefRubric` (is the draft off-task, hype or harmful?).
+- One rule check, `ruleInjection` (input). It runs first and makes no model call: fixed rules flag
+  orders to the AI, fake role lines, chat tokens, hidden characters, script URLs and off-host links
+  that give an order. Its verdict reason lists rule ids only, for example `ruleInjection: ignorePrevious`.
+  An item it flags in mode `any` never reaches the model guards. See
+  [the rule guard](../configuration/guards.md#the-rule-guard-ruleinjection).
 - A check runs only when its section and the check are on in config and a guard with that id was
   built. With nothing active, everything is kept.
 - Guards run one after another over all items or drafts, so only one guard model is loaded at a
   time. Calls are made one at a time on purpose.
 - Mode `any` (default): the first flag drops the item or rejects the draft. Mode `all`: only
-  subjects flagged by every active guard are dropped.
+  subjects flagged by every active guard are dropped. Input guards run in the order `ruleInjection`,
+  `clefPolicy`, `graniteRisk`, so in `all` the rule guard must flag an item too.
 - The two `clef` checks flag when the probability of "yes" on any question is above
   `thresholds.guardFlag` (default 0.35). A value equal to the threshold does not flag.
 - Guards fail closed. Granite must answer exactly yes or no; anything else flags the subject as
   "unparsable guard output". A digest item with no source item is flagged.
 - A guard error fails the run at that step. It is never treated as a pass.
-- A guard that is off or missing is never silent. It is listed as `disabledGuards` in `run.json`
-  and named in the digest footer, and `digest doctor` warns about it.
+- A guard that is off or missing is never silent. It is listed as `disabledGuards` in
+  `run.json` and named in the digest footer, and `digest doctor` warns about it.
 - Dropped items vanish from the week. `run.json` counts show how many passed. Rejected drafts keep
   their check ids in `drafts.json`. Logs hold ids and check ids, never item or draft text.
 
 ## What you can configure
 
-- `guards.input.enabled`, `guards.input.mode`, `guards.input.checks.clefPolicy` and
-  `guards.input.checks.graniteRisk`. See [guards](../configuration/guards.md).
+- `guards.input.enabled`, `guards.input.mode`, `guards.input.checks.ruleInjection`,
+  `guards.input.checks.clefPolicy` and `guards.input.checks.graniteRisk`. See
+  [guards](../configuration/guards.md).
 - `guards.output.enabled`, `guards.output.mode`, `guards.output.checks.graniteGroundedness` and
   `guards.output.checks.clefRubric`.
 - `thresholds.guardFlag`. See [thresholds](../configuration/thresholds.md).
@@ -53,8 +60,10 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 
 ## What can go wrong
 
-- A guard rejects good drafts, so every draft is rejected and the week is `blocked` (exit 2). See
-  [blocked run](../runbooks/debug/blocked-run.md). Read the draft before you switch a guard off.
+- A guard rejects good drafts, so every draft is rejected. The week is then sent as the
+  [fallback digest](digest.md#fallback-digest), which no model wrote (`fallback: true` in
+  `run.json`). See [blocked run](../runbooks/debug/blocked-run.md). Read the draft before you
+  switch a guard off.
 - A good item never reaches the digest. See
   [missing or wrong item](../runbooks/debug/missing-or-wrong-item.md).
 - A guard model call times out or the model is missing: the run is `failed` with step `guardInput`
@@ -66,7 +75,8 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 
 - Folder: [src/guards/](../../src/guards/). Maintainer notes: [CLAUDE.md](../../src/guards/CLAUDE.md).
 - Port: [Guard.ts](../../src/guards/Guard.ts). Adapters:
-  [src/guards/adapters/](../../src/guards/adapters/) (decision-model guards and Granite Guardian).
+  [src/guards/adapters/](../../src/guards/adapters/) (the rule guard, the decision-model guards and
+  Granite Guardian). The guard check ids live in `src/guards/guardVerdict.ts`.
 - Tests sit next to the code. Granite replies recorded from the real model are replayed in a test.
 
 ## Related

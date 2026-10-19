@@ -15,6 +15,7 @@ link or harmful content. These rules hold in every part of the code.
 | A digest may only contain collected URLs                         | the [link check](../features/checks.md), plus URL replacement in `write` |
 | Format limits hold (3 to 5 items, under 500 words, no em dash)   | the format check                                                         |
 | The link check and format check cannot be switched off           | no config key exists                                                     |
+| Fixed injection rules read every item before any model does      | `src/guards/adapters/ruleInjection.ts`: no model call, first input check |
 | Guards fail closed on unparsable output                          | `src/guards/guardRun.ts`                                                 |
 | Recipients, webhook and folders come from config and `.env` only | the config loader; models never supply them                              |
 | Secrets never reach logs, run records, traces or messages        | redaction in the logger, tracer, store and delivery decorators           |
@@ -23,12 +24,23 @@ link or harmful content. These rules hold in every part of the code.
 
 ## Guards are switchable, checks are not
 
-Guards are models that look at text before and after writing. Config can switch each one off
-(see [guards configuration](../configuration/guards.md)). A guard that is off is recorded in
-`run.json` and named in the digest footer, and `digest doctor` warns about it.
+Guards look at text before and after writing. Four ask a model; `ruleInjection` is fixed rules in
+code. Config can switch each one off (see [guards configuration](../configuration/guards.md)). A
+guard that is off is recorded in `run.json` and named in the digest footer, and `digest doctor`
+warns about it.
 
 The link check and the format check are plain code. They run on every draft and no setting can
 turn them off.
+
+## The fallback digest
+
+If every writer draft is rejected, the run sends a fallback digest instead: the selected items'
+own titles and first sentences, with links and other URLs taken out of the text, built by code
+with no model. It passes the same link check and format check. The output guards only advise on
+it, because the text is source text and there is nothing for them to ground. The input guards
+(including `ruleInjection`) already filtered the items. Its footer says it was written from the
+sources' own words, so a reader knows no model wrote or checked it. See
+[digest run](../features/digest.md#fallback-digest).
 
 ## Layers of secret protection
 

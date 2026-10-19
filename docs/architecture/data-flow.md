@@ -17,25 +17,26 @@ loaded at a time, so model calls run strictly one after another.
 
 ## The steps
 
-| Step          | In             | Out                          | Model role                 | Safety net                                      |
-| ------------- | -------------- | ---------------------------- | -------------------------- | ----------------------------------------------- |
-| `collect`     | config sources | items in the window          | none                       | Host rules, size and redirect limits            |
-| `guardInput`  | items          | items no guard flagged       | `guardPolicy`, `guardRisk` | `clefPolicy`, `graniteRisk`; unparsable = flag  |
-| `classify`    | items          | relevance, area, hype, minor | `classify`                 | Every answer is type-checked                    |
-| `process`     | scored items   | top N items (3 to 5)         | none                       | Thresholds, dedupe, area spread                 |
-| `write`       | selected items | one draft per writer         | `write`                    | Provenance, link check, format check, one retry |
-| `guardOutput` | drafts         | drafts that passed           | `guardRisk`, `guardPolicy` | `graniteGroundedness`, `clefRubric`             |
-| `select`      | passing drafts | the winner                   | `judge` (if any)           | First passing draft wins without a judge        |
-| `deliver`     | the winner     | files, email, Slack          | none                       | Redaction before every channel                  |
+| Step          | In             | Out                          | Model role                 | Safety net                                                                 |
+| ------------- | -------------- | ---------------------------- | -------------------------- | -------------------------------------------------------------------------- |
+| `collect`     | config sources | items in the window          | none                       | Host rules, size and redirect limits                                       |
+| `guardInput`  | items          | items no guard flagged       | `guardPolicy`, `guardRisk` | `ruleInjection` (no model), `clefPolicy`, `graniteRisk`; unparsable = flag |
+| `classify`    | items          | relevance, area, hype, minor | `classify`                 | Every answer is type-checked                                               |
+| `process`     | scored items   | top N items (3 to 5)         | none                       | Thresholds, dedupe, area spread                                            |
+| `write`       | selected items | one draft per writer         | `write`                    | Provenance, link check, format check, one retry                            |
+| `guardOutput` | drafts         | drafts that passed           | `guardRisk`, `guardPolicy` | `graniteGroundedness`, `clefRubric`; fallback digest if none pass          |
+| `select`      | passing drafts | the winner                   | `judge` (if any)           | First passing draft wins without a judge                                   |
+| `deliver`     | the winner     | files, email, Slack          | none                       | Redaction before every channel                                             |
 
 ## What each step does
 
 - **collect.** Fetches every source (4 at a time, 10 s per attempt, 2 retries), keeps items inside
   `windowDays`, caps each source at `maxItemsPerSource` and drops duplicate ids. A failed source is
   listed in `failedSources` and skipped. See [sources](../features/sources.md).
-- **guardInput.** One call per item per input guard. Items flagged above `thresholds.guardFlag`
-  are dropped (mode `any`), or only when every guard flags (mode `all`).
-  See [guards](../features/guards.md).
+- **guardInput.** `ruleInjection` reads every item first against fixed rules, with no model call.
+  Then `clefPolicy` and `graniteRisk` make one call per item each. Flagged items are dropped
+  (mode `any`), or only when every guard flags (mode `all`). `clefPolicy` flags above
+  `thresholds.guardFlag`. See [guards](../features/guards.md).
 - **classify.** One `decide` call per item with four questions: relevance (0 to 3), area (one of
   your `focusAreas` or `other`), hype (yes/no) and minor release (yes/no). It drops nothing.
   See [classify](../features/classify.md).
@@ -47,8 +48,9 @@ loaded at a time, so model calls run strictly one after another.
   link. Then the [link check and format check](../features/checks.md) run, and each writer gets
   one retry if no draft passes. See [write](../features/write.md).
 - **guardOutput.** `graniteGroundedness` checks each summary, the headline and the intro against
-  their sources. `clefRubric` flags off-task, hype or harmful drafts. If every draft is rejected,
-  the run ends `blocked`.
+  their sources. `clefRubric` flags off-task, hype or harmful drafts. If no draft passes, the run
+  builds the fallback digest from the selected items' own text (no model call) and sends that. The
+  guards only advise on it. See [digest run](../features/digest.md#fallback-digest).
 - **select.** With a judge and two or more passing drafts, one call per draft scores accuracy,
   clarity, why it matters and focus fit (1 to 5). The best mean wins. A judge failure falls back
   to the first passing draft. See [select](../features/select.md).
@@ -58,21 +60,22 @@ loaded at a time, so model calls run strictly one after another.
 
 ## How a run can end early
 
-| Where                        | Result    | Why                                                      |
-| ---------------------------- | --------- | -------------------------------------------------------- |
-| Before `collect`             | `skipped` | The week already has a sent digest (and no `--force`)    |
-| Before `collect`             | `failed`  | Ollama unreachable, a model missing, or the lock is held |
-| After `collect` or `process` | `quiet`   | Nothing collected, or fewer than 3 items worth sending   |
-| After `guardOutput`          | `blocked` | Drafts exist and every one was rejected                  |
-| Any step                     | `failed`  | A step threw, or no writer made a draft                  |
+| Where                        | Result    | Why                                                                           |
+| ---------------------------- | --------- | ----------------------------------------------------------------------------- |
+| Before `collect`             | `skipped` | The week already has a sent digest (and no `--force`)                         |
+| Before `collect`             | `failed`  | Ollama unreachable, a model missing, or the lock is held                      |
+| After `collect` or `process` | `quiet`   | Nothing collected, or fewer than 3 items worth sending                        |
+| After `guardOutput`          | `blocked` | Every draft was rejected and the fallback digest failed its own checks (rare) |
+| Any step                     | `failed`  | A step threw, or no writer made a draft                                       |
 
 The statuses and what each one means are on [run semantics](run-semantics.md).
 
 ## Data that moves
 
-Each stage returns a new immutable state. The shapes are the zod schemas in `src/domain/`:
-`Item`, `Classification`, `ScoredItem`, `Digest`, `Draft`, `GuardVerdict`, `JudgeScore` and
-finally `RunRecord`. What lands on disk is on [data layout](data-layout.md). Field by field:
+Each stage returns a new immutable state. The shapes are zod schemas. The shared ones are in
+`src/domain/` (`Item`, `Digest`, `Draft`). The others sit in the feature that owns them:
+`Classification` and `ScoredItem` in `classify`, `GuardVerdict` in `guards`, `JudgeScore` in
+`select`, and finally `RunRecord` in `store`. What lands on disk is on [data layout](data-layout.md). Field by field:
 [run record](../reference/run-record.md).
 
 ## Prompts

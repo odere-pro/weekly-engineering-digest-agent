@@ -40,18 +40,19 @@ This is the first command to run after any week that did not end well.
    2026-W40  blocked  30 → 0  13m 8s    -
    ```
 
-   `Items` is items collected, then items in the digest. `Winner` is the writer model tag, or
-   `-` when no draft won.
+   `Items` is items collected, then items in the digest. `Winner` is the writer model tag, the word
+   `fallback` when no model-written draft survived and a template digest was sent, or `-` when no
+   draft won.
 
 3. Act on the status.
 
-   | Status    | Exit code | Next runbook                           |
-   | --------- | --------- | -------------------------------------- |
-   | `sent`    | 0         | None                                   |
-   | `dry-run` | 0         | None; nothing was sent                 |
-   | `quiet`   | 3         | [Quiet week](../debug/quiet-week.md)   |
-   | `blocked` | 2         | [Blocked run](../debug/blocked-run.md) |
-   | `failed`  | 1         | [Failed run](../debug/failed-run.md)   |
+   | Status    | Exit code | Next runbook                                                                  |
+   | --------- | --------- | ----------------------------------------------------------------------------- |
+   | `sent`    | 0         | None, unless `Winner` says `fallback`: [Blocked run](../debug/blocked-run.md) |
+   | `dry-run` | 0         | None; nothing was sent                                                        |
+   | `quiet`   | 3         | [Quiet week](../debug/quiet-week.md)                                          |
+   | `blocked` | 2         | [Blocked run](../debug/blocked-run.md)                                        |
+   | `failed`  | 1         | [Failed run](../debug/failed-run.md)                                          |
 
    A `skipped` run (the week was already sent) is never saved, so it does not appear.
 

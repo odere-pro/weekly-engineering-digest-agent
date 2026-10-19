@@ -21,8 +21,11 @@ on the [results page](../evaluation/results.md).
 
 ## What to expect
 
-- The guards can block good drafts. A blocked week sends a failure note, not a digest.
-  See [blocked run](../runbooks/debug/blocked-run.md).
+- The guards can reject good drafts. When every draft is rejected, the run sends a fallback digest
+  made from the sources' own words instead of a failure note. No model wrote it: items are not
+  ranked by urgency and have no action line, and the footer says so. `digest run` still exits 0,
+  so look for `fallback` in `digest history`. Only if the fallback itself fails its checks does the
+  week end `blocked` with a note. See [blocked run](../runbooks/debug/blocked-run.md).
 - Feeds are an allowlist of 24 default sources ([list](../sources.md)). GitHub keeps only the
   latest 10 releases per repository, so a busy week can lose some.
 - One machine, one run at a time. There is no multi-user setup.

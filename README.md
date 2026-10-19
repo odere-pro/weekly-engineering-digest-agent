@@ -11,8 +11,8 @@ no cost per run.
 
 - **Free.** $0 a month. The models run locally.
 - **Private.** Nothing leaves the machine except the feed requests and the delivery you turn on.
-- **Guarded.** Feed text is untrusted. Models check it before and after writing. Every link in
-  the digest must come from a collected item.
+- **Guarded.** Feed text is untrusted. Fixed rules and models screen it before writing, and models
+  check the drafts. Every link in the digest must come from a collected item.
 - **Short.** Each item says what changed and what to do. Items are sorted by urgency.
 
 ## Example
@@ -47,7 +47,8 @@ a clone.
 
 - Only `light` has a measured baseline. Three of the four hard quality gates pass; **format is
   at 83%** because one recorded week produced no digest. See [results](docs/evaluation/results.md).
-- The guards can block good drafts. A blocked week sends a failure note, not a digest.
+- The guards can reject good drafts. When every draft is rejected, the week is sent as a fallback
+  digest made from the sources' own words (no model wrote it), not as a failure note.
 - Feeds are an allowlist of 24 sources ([list](docs/sources.md)).
 - One machine, one run at a time. The cloud is a [proposal](docs/operations/cloud-proposal.md) only.
 

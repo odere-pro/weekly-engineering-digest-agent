@@ -19,7 +19,8 @@ canonical text, and delivery sends the view. See [data flow](../architecture/dat
 - Builds one digest view from the winning draft. The title is computed in code, for example
   "Week 2026-W42: 5 releases, 1 needs action". Items are grouped as act now, worth a look and
   good to know, and empty groups are dropped. An item with no urgency counts as "worth a look".
-- Adds a footer that names any guard that was off for the run.
+- Adds a footer that names any guard that was off for the run. For the fallback digest (a digest
+  made without a model) the footer also says "Written from the sources' own words."
 - Writes the Markdown: the title, the headline, then per group a heading and a table, then the
   footer. The intro is not shown. Every channel renders the same view, so they agree.
 - Keeps model text from breaking the layout. Text is put on one line, table pipes are escaped, and

@@ -4,8 +4,8 @@ Part of [Runbooks](../README.md) / [Configure](README.md).
 
 ## Purpose
 
-Switch one model-based safety check on or off, or a whole group of them. Every switch is
-recorded, so a digest never goes out with a hidden gap.
+Switch one safety check on or off, or a whole group of them. Every switch is recorded, so a
+digest never goes out with a hidden gap.
 
 ## When to use
 
@@ -17,8 +17,8 @@ recorded, so a digest never goes out with a hidden gap.
 
 ## Prerequisites
 
-- You have read why the run was blocked ([Blocked run](../debug/blocked-run.md)). Guards are the
-  defence against hostile text in feeds, so switching one off is a risk decision.
+- You have read why the drafts were rejected ([Blocked run](../debug/blocked-run.md)). Guards are
+  the defence against hostile text in feeds, so switching one off is a risk decision.
 - Write access to `digest.config.json`.
 
 ## Steps
@@ -27,14 +27,17 @@ recorded, so a digest never goes out with a hidden gap.
 
    | Key                                        | Check                 | What it looks at                             |
    | ------------------------------------------ | --------------------- | -------------------------------------------- |
-   | `guards.input.enabled`                     | both input checks     | Each collected item, before other models     |
+   | `guards.input.enabled`                     | all input checks      | Each collected item, before other models     |
+   | `guards.input.checks.ruleInjection`        | `ruleInjection`       | Fixed injection rules, no model call         |
    | `guards.input.checks.clefPolicy`           | `clefPolicy`          | Is the item aimed at an AI system or harmful |
    | `guards.input.checks.graniteRisk`          | `graniteRisk`         | Jailbreak and harm, by Granite Guardian      |
    | `guards.output.enabled`                    | both output checks    | Each draft                                   |
    | `guards.output.checks.graniteGroundedness` | `graniteGroundedness` | Claims not backed by the cited sources       |
    | `guards.output.checks.clefRubric`          | `clefRubric`          | Off-task, hype or harmful drafts             |
 
-   The link check and the format check have no switch. They always run.
+   The link check and the format check have no switch. They always run. Turning off
+   `ruleInjection` frees no model, because it makes no model call; do it only if it drops real
+   items (see [The rule guard](../../configuration/guards.md#the-rule-guard-ruleinjection)).
 
 2. Edit `digest.config.json`. This turns off one output check and leaves the rest on:
 
@@ -81,9 +84,9 @@ while, run `pnpm digest doctor` and pull what it lists, for example `ollama pull
 
 | Symptom                                                             | Cause                                                                         | Fix                                                                     |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Doctor still says `guards: all guards on`                           | Key misspelled, such as `enable` (unknown keys are dropped without a message) | Use `enabled` and the exact check ids                                   |
+| Doctor still says `guards: all guards on`                           | Key misspelled, such as `enable` (unknown keys are dropped without a message) | Use `enabled` and the exact check ids, such as `ruleInjection`          |
 | `Ollama is missing models for profile ...` after turning a guard on | The guard's model was never pulled                                            | `ollama pull <tag>` as doctor prints                                    |
-| Runs are still `blocked`                                            | The link check or the format check rejected it                                | They cannot be switched off; see [Blocked run](../debug/blocked-run.md) |
+| Weeks are still sent as the fallback digest, or `blocked`           | The link check or the format check rejected the drafts too                    | They cannot be switched off; see [Blocked run](../debug/blocked-run.md) |
 | The footer was not in the digest                                    | The digest was written before the change                                      | The next run carries it                                                 |
 
 ## Related

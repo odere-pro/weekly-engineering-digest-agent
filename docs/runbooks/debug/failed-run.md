@@ -11,8 +11,10 @@ week to `sent`.
 
 - `pnpm digest history` shows `failed`, `digest run` exited 1, or a note arrived with the title
   `Weekly digest <week> failed at <step>`.
-- For other endings use the matching page: [blocked](blocked-run.md), [quiet](quiet-week.md),
-  [lock held](stuck-lock.md), [one channel missed](failed-delivery.md).
+- For other endings use the matching page: [blocked or fallback](blocked-run.md),
+  [quiet](quiet-week.md), [lock held](stuck-lock.md), [one channel missed](failed-delivery.md).
+- `Every writer failed` stays a `failed` run: no writer made a draft. The fallback digest only
+  covers drafts that were made and then rejected.
 
 ## Prerequisites
 

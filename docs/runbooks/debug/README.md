@@ -9,7 +9,7 @@ status or the symptom.
 | Runbook                                                       | Use it to                                                      |
 | ------------------------------------------------------------- | -------------------------------------------------------------- |
 | [Failed run](failed-run.md)                                   | Find the step and cause of a `failed` run (exit code 1)        |
-| [Blocked run](blocked-run.md)                                 | See why every draft was rejected (exit code 2)                 |
+| [Blocked run](blocked-run.md)                                 | See why every draft was rejected: fallback digest, or exit 2   |
 | [Quiet week](quiet-week.md)                                   | Find where the items went in a `quiet` week (exit code 3)      |
 | [Failing feed](failing-feed.md)                               | Fix a source that fails or returns nothing                     |
 | [Slow model or out-of-memory](slow-model-or-out-of-memory.md) | Fix model timeouts, long runs and Ollama running out of memory |

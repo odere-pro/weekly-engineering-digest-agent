@@ -60,7 +60,7 @@ Change what it watches, how it checks, which models it uses, where it delivers. 
 | [Set the judge](configure/set-the-judge.md)                                         | Turn the judge on or off.                                                                                                                             |
 | [Set up email](configure/set-up-email.md)                                           | Send the weekly digest, and failure notes, by email through your own SMTP server.                                                                     |
 | [Set up Slack](configure/set-up-slack.md)                                           | Post the weekly digest, and failure notes, to a Slack channel through an incoming webhook.                                                            |
-| [Turn a guard on or off](configure/turn-a-guard-on-or-off.md)                       | Switch one model-based safety check on or off, or a whole group of them.                                                                              |
+| [Turn a guard on or off](configure/turn-a-guard-on-or-off.md)                       | Switch one safety check on or off, or a whole group of them.                                                                                          |
 | [Update a source](configure/update-a-source.md)                                     | Change one entry of `sources` in `digest.config.json`: its URL, id, kind, `area` hint or `maxItems` cap, without losing the rest of the setup.        |
 
 ### Run
@@ -73,7 +73,7 @@ Start a run, rehearse one, replay a week, measure quality. [Folder index](run/RE
 | [Fetch sources only](run/fetch-sources-only.md) | Fetch the configured feeds the way a run does, with no models, and save the raw responses and the parsed items.                                                         |
 | [Force a week](run/force-a-week.md)             | Run a week again from scratch with `digest run --force`, even though it already has a sent digest.                                                                      |
 | [Preview a week](run/preview-a-week.md)         | Render a saved run's winning draft the way each channel shows it (Markdown, email, Slack) into files you can open.                                                      |
-| [Run evals](run/run-evals.md)                   | Replay the recorded weeks and the labeled cases through the real pipeline and models, and print a scorecard with 16 measurements and a pass or fail for the hard gates. |
+| [Run evals](run/run-evals.md)                   | Replay the recorded weeks and the labeled cases through the real pipeline and models, and print a scorecard with 17 measurements and a pass or fail for the hard gates. |
 | [Run now](run/run-now.md)                       | Produce this week's digest and deliver it to every configured channel right away, instead of waiting for the schedule.                                                  |
 
 ### Observe
@@ -94,7 +94,7 @@ Find out why a run failed, was blocked, was quiet or lost an item. [Folder index
 
 | Runbook                                                                     | Use it to                                                                                                                                    |
 | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Debug a blocked run](debug/blocked-run.md)                                 | Find out why every draft was rejected (status `blocked`, exit code 2), and get a digest out without weakening the checks.                    |
+| [Debug a blocked run or a fallback digest](debug/blocked-run.md)            | Find out why every writer draft was rejected, and get a model-written digest out without weakening the checks.                               |
 | [Debug a failed delivery](debug/failed-delivery.md)                         | Find out why the digest did not reach one channel (email or Slack), fix the cause, and send the saved digest to the channels that missed it. |
 | [Debug a failed run](debug/failed-run.md)                                   | Find the step and the cause of a run that ended `failed` (exit code 1), fix it, and get the week to `sent`.                                  |
 | [Debug a failing feed](debug/failing-feed.md)                               | Find out why one source fails or returns nothing, and fix the source or take it out.                                                         |

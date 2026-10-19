@@ -53,7 +53,8 @@ Work through these with the user. Stop at the first red line and use the linked 
 | `init [-y]`                                                               | Write the config and `.env`                        |
 | `doctor [--readiness]`                                                    | Check everything; `--readiness` rates each profile |
 | `run [--since <window>] [--dry-run] [--force] [--seed <n>] [--out <dir>]` | One full run                                       |
-| `eval [--profile <name>]`                                                 | Replay the eval set, print and save a scorecard    |
+| `eval [--profile <name>] [--only <section>] [--resume]`                   | Replay the eval set, print and save a scorecard    |
+| `eval --compare <a.json> <b.json>`                                        | Compare two saved scorecards; runs nothing         |
 | `fetch [--source <id...>] [--since <window>] [--out <dir>]`               | Fetch feeds only, no models                        |
 | `show <week> [--part <name>] [--json]`                                    | Print a saved run                                  |
 | `preview <week> [--channel <name>] [--out <dir>]`                         | Render a week for each channel, send nothing       |
@@ -65,46 +66,48 @@ Full detail: `docs/reference/cli-commands.md`. Week ids look like `2026-W43`.
 
 ## Exit codes and statuses
 
-`0` sent, dry-run or skipped. `1` failed. `2` blocked (every draft rejected). `3` quiet
-(nothing worth sending). Start any non-`sent` run at `docs/operations/triage.md`.
+`0` sent, dry-run or skipped. `1` failed. `2` blocked (every draft rejected and no fallback
+digest could be made, rare). `3` quiet (nothing worth sending). When every draft is rejected the
+run sends a fallback digest instead and exits 0: look for `fallback` in `digest history`. Start any
+non-`sent` run at `docs/operations/triage.md`.
 
 ## Route the question
 
 Find the user's intent, open the runbook, follow its steps, and quote its verify step.
 
-| The user asks how to...                           | Runbook (in `docs/runbooks/`)                                                      |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| install with Docker or Node                       | `set-up/install-with-compose.md`, `set-up/install-with-node.md`                    |
-| pick a profile, pull models                       | `set-up/choose-profile-and-pull-models.md`                                         |
-| schedule weekly runs                              | `set-up/schedule-weekly-runs.md`                                                   |
-| add, change or remove a feed                      | `configure/add-a-source.md`, `update-a-source.md`, `remove-or-disable-a-source.md` |
-| change the topics                                 | `configure/change-focus-areas.md`                                                  |
-| turn a guard on or off, change its mode           | `configure/turn-a-guard-on-or-off.md`, `change-guard-mode.md`                      |
-| change models or writers, set the judge           | `configure/change-models-or-writers.md`, `set-the-judge.md`                        |
-| change thresholds                                 | `configure/change-thresholds.md`                                                   |
-| set up email or Slack                             | `configure/set-up-email.md`, `set-up-slack.md`                                     |
-| change the output folder                          | `configure/change-the-output-folder.md`                                            |
-| change the schedule or time zone                  | `configure/change-the-schedule-and-time-zone.md`                                   |
-| set the seed or temperature                       | `configure/set-seed-and-temperature.md`                                            |
-| change timeouts and retries                       | `configure/change-timeouts-and-retries.md`                                         |
-| run now, dry run, force a week                    | `run/run-now.md`, `run/dry-run.md`, `run/force-a-week.md`                          |
-| run the evals                                     | `run/run-evals.md`                                                                 |
-| preview a week, fetch feeds only                  | `run/preview-a-week.md`, `run/fetch-sources-only.md`                               |
-| read logs, follow a run, see traces               | `observe/read-logs.md`, `follow-one-run.md`, `view-traces-in-jaeger.md`            |
-| see history or one week                           | `observe/view-run-history.md`, `observe/show-a-week.md`                            |
-| a run failed                                      | `debug/failed-run.md`                                                              |
-| every draft was rejected (exit 2)                 | `debug/blocked-run.md`                                                             |
-| the week was quiet (exit 3)                       | `debug/quiet-week.md`                                                              |
-| a feed fails                                      | `debug/failing-feed.md`                                                            |
-| the model is slow or memory runs out              | `debug/slow-model-or-out-of-memory.md`                                             |
-| "Another run is in progress"                      | `debug/stuck-lock.md`                                                              |
-| email or Slack did not arrive                     | `debug/failed-delivery.md`                                                         |
-| an item is missing or wrong                       | `debug/missing-or-wrong-item.md`                                                   |
-| finish a partly delivered week                    | `recover/resume-partial-delivery.md`                                               |
-| run a week again                                  | `recover/re-run-a-week.md`                                                         |
-| upgrade models, free disk, rotate secrets         | `maintain/upgrade-models.md`, `prune-disk.md`, `rotate-secrets.md`                 |
-| re-baseline the evals, add a case from a bad week | `maintain/re-baseline-evals.md`, `add-eval-case-from-a-bad-week.md`                |
-| cut a release                                     | `release/cut-a-release.md`                                                         |
+| The user asks how to...                               | Runbook (in `docs/runbooks/`)                                                      |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| install with Docker or Node                           | `set-up/install-with-compose.md`, `set-up/install-with-node.md`                    |
+| pick a profile, pull models                           | `set-up/choose-profile-and-pull-models.md`                                         |
+| schedule weekly runs                                  | `set-up/schedule-weekly-runs.md`                                                   |
+| add, change or remove a feed                          | `configure/add-a-source.md`, `update-a-source.md`, `remove-or-disable-a-source.md` |
+| change the topics                                     | `configure/change-focus-areas.md`                                                  |
+| turn a guard on or off, change its mode               | `configure/turn-a-guard-on-or-off.md`, `change-guard-mode.md`                      |
+| change models or writers, set the judge               | `configure/change-models-or-writers.md`, `set-the-judge.md`                        |
+| change thresholds                                     | `configure/change-thresholds.md`                                                   |
+| set up email or Slack                                 | `configure/set-up-email.md`, `set-up-slack.md`                                     |
+| change the output folder                              | `configure/change-the-output-folder.md`                                            |
+| change the schedule or time zone                      | `configure/change-the-schedule-and-time-zone.md`                                   |
+| set the seed or temperature                           | `configure/set-seed-and-temperature.md`                                            |
+| change timeouts and retries                           | `configure/change-timeouts-and-retries.md`                                         |
+| run now, dry run, force a week                        | `run/run-now.md`, `run/dry-run.md`, `run/force-a-week.md`                          |
+| run the evals                                         | `run/run-evals.md`                                                                 |
+| preview a week, fetch feeds only                      | `run/preview-a-week.md`, `run/fetch-sources-only.md`                               |
+| read logs, follow a run, see traces                   | `observe/read-logs.md`, `follow-one-run.md`, `view-traces-in-jaeger.md`            |
+| see history or one week                               | `observe/view-run-history.md`, `observe/show-a-week.md`                            |
+| a run failed                                          | `debug/failed-run.md`                                                              |
+| every draft was rejected (fallback digest, or exit 2) | `debug/blocked-run.md`                                                             |
+| the week was quiet (exit 3)                           | `debug/quiet-week.md`                                                              |
+| a feed fails                                          | `debug/failing-feed.md`                                                            |
+| the model is slow or memory runs out                  | `debug/slow-model-or-out-of-memory.md`                                             |
+| "Another run is in progress"                          | `debug/stuck-lock.md`                                                              |
+| email or Slack did not arrive                         | `debug/failed-delivery.md`                                                         |
+| an item is missing or wrong                           | `debug/missing-or-wrong-item.md`                                                   |
+| finish a partly delivered week                        | `recover/resume-partial-delivery.md`                                               |
+| run a week again                                      | `recover/re-run-a-week.md`                                                         |
+| upgrade models, free disk, rotate secrets             | `maintain/upgrade-models.md`, `prune-disk.md`, `rotate-secrets.md`                 |
+| re-baseline the evals, add a case from a bad week     | `maintain/re-baseline-evals.md`, `add-eval-case-from-a-bad-week.md`                |
+| cut a release                                         | `release/cut-a-release.md`                                                         |
 
 Questions about meaning, not tasks:
 

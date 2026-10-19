@@ -46,12 +46,22 @@ See [stopping and restarts](../operations/stopping-and-restarts.md).
 | `dry-run` | A winner was written to disk, nothing was sent           | 0    | no                            |
 | `skipped` | The week already has a sent digest                       | 0    | no                            |
 | `quiet`   | Nothing collected, or fewer than 3 items worth sending   | 3    | only if nothing was collected |
-| `blocked` | Drafts exist and every one was rejected                  | 2    | yes                           |
+| `blocked` | Every draft was rejected and the fallback digest failed  | 2    | yes                           |
 | `failed`  | A health check, a step or a delivery failed, or no draft | 1    | yes                           |
 
 A failure note is a short plain-text message on every channel, plus `<week>.failed.md`. A dry
-run sends none. In `serve`, a failed week is retried at most twice, 30 minutes apart, and sends
-one note, from its last attempt. All exit codes: [exit codes](../reference/exit-codes.md).
+run sends none.
+
+`blocked` is rare. When every writer draft is rejected by the checks or the output guards, the run
+builds a fallback digest from the selected items' own text and sends it, so the status is `sent`
+(or `dry-run`), the exit code is 0 and no failure note goes out. The record has `fallback: true`,
+the winner is `fallback`, and the digest footer says it was written from the sources' own words.
+`blocked` remains for a fallback that fails its own link or format check, and for tests and the
+eval replay, which switch the fallback off. A write step where every writer produced no draft at
+all still ends `failed`. See [digest run](../features/digest.md#fallback-digest).
+
+In `serve`, a failed week is retried at most twice, 30 minutes apart, and sends one note, from its
+last attempt. All exit codes: [exit codes](../reference/exit-codes.md).
 
 ## Delivery guarantees
 

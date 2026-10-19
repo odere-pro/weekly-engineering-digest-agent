@@ -2,7 +2,8 @@
 
 Part of [Operations](README.md).
 
-Start here after any run that did not end `sent`.
+Start here after any run that did not end `sent`, and after a `sent` week whose digest says
+"Written from the sources' own words." (a fallback digest).
 
 ## The first four steps
 
@@ -14,16 +15,19 @@ Start here after any run that did not end `sent`.
    week and `step` for one step. `LOG_LEVEL=debug` adds detail.
 
 Failed and blocked runs send a short failure note on every channel and write `<week>.failed.md`.
-A dry run sends none.
+A dry run sends none. A fallback digest sends no note: it ends `sent` with exit 0, so the footer
+line, `"fallback": true` in `run.json` and `Winner: fallback` in `digest history` are the only
+signs.
 
 ## Status to action
 
-| Status    | Do this                                                                     | Runbook                                         |
-| --------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
-| `failed`  | Read the step in the note or `error.json`. Fix the cause, run again         | [Failed run](../runbooks/debug/failed-run.md)   |
-| `blocked` | Read `digest show <week> --part drafts`. See the check ids below. Run again | [Blocked run](../runbooks/debug/blocked-run.md) |
-| `quiet`   | Often normal. Check `counts` in `run.json`                                  | [Quiet week](../runbooks/debug/quiet-week.md)   |
-| `skipped` | The week already has a sent digest. `digest run --force` sends again        | [Force a week](../runbooks/run/force-a-week.md) |
+| Status                        | Do this                                                                                                                          | Runbook                                         |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `failed`                      | Read the step in the note or `error.json`. Fix the cause, run again                                                              | [Failed run](../runbooks/debug/failed-run.md)   |
+| `sent` with `fallback` winner | No model wrote this digest. Read `digest show <week> --part drafts`. Run again with `--force` if you want a model-written one    | [Blocked run](../runbooks/debug/blocked-run.md) |
+| `blocked`                     | Rare: every draft was rejected and the fallback digest failed its own checks. Read `digest show <week> --part drafts`. Run again | [Blocked run](../runbooks/debug/blocked-run.md) |
+| `quiet`                       | Often normal. Check `counts` in `run.json`                                                                                       | [Quiet week](../runbooks/debug/quiet-week.md)   |
+| `skipped`                     | The week already has a sent digest. `digest run --force` sends again                                                             | [Force a week](../runbooks/run/force-a-week.md) |
 
 ## Failure causes, by step
 
@@ -37,9 +41,10 @@ A dry run sends none.
 | Invalid config or `Invalid --since`                        | A field is wrong; the message names it                          | [Config file](../configuration/config-file.md)                                  |
 | `Could not save the run record`                            | `data/` is not writable or the disk is full                     | [Prune disk](../runbooks/maintain/prune-disk.md)                                |
 
-## Check ids on a blocked run
+## Check ids on a blocked or fallback run
 
-A blocked run names each writer and the ids that rejected its draft.
+A blocked run names each writer and the ids that rejected its draft. A fallback week keeps the same
+ids in `run.json` and `digest show`, next to the `fallback` entry.
 
 | Check id              | Meaning                                                            |
 | --------------------- | ------------------------------------------------------------------ |
@@ -49,8 +54,8 @@ A blocked run names each writer and the ids that rejected its draft.
 | `graniteGroundedness` | A summary, headline or intro is not backed by its sources          |
 | `clefRubric`          | The draft was off-task, hype or harmful                            |
 
-Never switch the link or format check off (you cannot). If a guard blocks good drafts week after
-week, read the draft before you switch the guard off. Mode `all` blocks less and protects less.
+Never switch the link or format check off (you cannot). If a guard rejects good drafts week after
+week, read the draft before you switch the guard off. Mode `all` rejects less and protects less.
 
 ## Keep the evidence
 

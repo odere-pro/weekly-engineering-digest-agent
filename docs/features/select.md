@@ -55,8 +55,9 @@ It is the seventh step, after guardOutput and before deliver. See
   [writing quality](../evaluation/metrics/writing-quality.md).
 - A missing judge model also stops the run at the start, with "missing models". See
   [failed run](../runbooks/debug/failed-run.md).
-- If no draft passed, the week is `blocked` before this step. See
-  [blocked run](../runbooks/debug/blocked-run.md).
+- If no draft passed, the fallback digest is the only passing draft, so it wins with no judge call
+  (the winner is `fallback` in `run.json`). If it cannot be made, the week is `blocked` before this
+  step. See [blocked run](../runbooks/debug/blocked-run.md).
 
 ## Code and tests
 

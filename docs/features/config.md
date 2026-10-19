@@ -77,7 +77,8 @@ This feature is where every setting is defined. The pages for each group:
 
 ## Related
 
-- [domain](domain.md) defines the shared types the config refers to. [app](app.md) builds the
+- [domain](domain.md) defines the shared types the config refers to (the model roles
+  are in `src/models/roles.ts`). [app](app.md) builds the
   adapters from the loaded config. [cli](cli.md) loads it for each command.
 - [models](models.md) and [guards](guards.md) are the biggest users of the profile and the guard
   settings.

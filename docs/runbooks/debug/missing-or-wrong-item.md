@@ -33,8 +33,11 @@ turn a real miss into an eval case.
    ([Failing feed](failing-feed.md)).
 
 2. Did it get scored? Open the scores. A row with `dropped before scoring (input guard)`
-   was flagged by an input guard. Set `LOG_LEVEL=debug` before the next run to log which check
-   (`flaggedBy`).
+   was flagged by an input guard: `ruleInjection` (fixed rules, no model), `clefPolicy` or
+   `graniteRisk`. Set `LOG_LEVEL=debug` before the next run to log which check (`flaggedBy`) in
+   the `input guards dropped item` line. The log names the check, not the rule. An item that
+   quotes an attack string would trip `ruleInjection`; see
+   [Turn a guard on or off](../configure/turn-a-guard-on-or-off.md) if it keeps dropping real news.
 
    ```bash
    pnpm digest show 2026-W42 --part scores

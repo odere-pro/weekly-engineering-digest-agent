@@ -29,7 +29,9 @@ in [data flow](../architecture/data-flow.md).
 - Runs collect, guardInput, classify, process, write, guardOutput, select and deliver in order.
   A dry run stops before deliver. Models run strictly one after another.
 - A step can end the week early. `quiet`: nothing was collected, or fewer than 3 items are left
-  after process. `blocked`: every draft was rejected by the checks or the output guards.
+  after process. If every draft is rejected by the checks or the output guards, the run builds a
+  fallback digest from the selected items' own text (no model) and sends that. Only when the
+  fallback itself cannot be built does the week end `blocked`. See [Fallback digest](#fallback-digest).
 - At the end it saves `run.json`, the held files, `review.md` and `error.json` (failure only),
   sends a failure note when one is due, and prunes run folders older than `keepWeeks`.
 - It never replaces a record that got further. A `sent` week stays `sent`, and a partly
@@ -41,8 +43,27 @@ in [data flow](../architecture/data-flow.md).
 | `dry-run` | 0         | A winner was written to disk, nothing was sent                   |
 | `skipped` | 0         | The week already has a sent digest                               |
 | `failed`  | 1         | A health check, a step or a delivery failed, or no writer worked |
-| `blocked` | 2         | Drafts exist and every one was rejected                          |
+| `blocked` | 2         | Every draft was rejected and no fallback digest could be made    |
 | `quiet`   | 3         | Nothing collected, or fewer than 3 items worth sending           |
+
+## Fallback digest
+
+When no writer draft passes the link check, the format check and the output guards, the run does
+not give up. It builds a digest from the selected items' own title, URL and first sentences of
+their summary, with no model call. This is the fallback digest. It is not written by a model: every
+item is "good to know", there are no action lines, and the headline only names the areas.
+
+- It passes the same link check and format check as any draft. The output guards look at it once
+  and only advise: a flag is logged and kept in `run.json`, it never blocks the digest.
+- The run then ends `sent` (or `dry-run`) and exits 0. No failure note is sent, so look for these
+  signs: `"fallback": true` in `run.json`, a `drafts` entry with writer `fallback`, the footer line
+  "Written from the sources' own words." in the digest, and a log warning
+  `No draft survived; sending the fallback`.
+- There is no config key or CLI flag to switch it off. `RunOptions.noFallback` exists for tests and
+  the eval replay only. A week where every writer produced no draft at all (a model fault) still
+  ends `failed`: the fallback covers rejected drafts, not missing ones.
+- `blocked` is still possible if the fallback fails its own checks. The log then says
+  `The fallback digest failed its own checks; the week stays blocked`, which is a bug to report.
 
 ## What you can configure
 
@@ -60,7 +81,9 @@ in [data flow](../architecture/data-flow.md).
 - `failed`: a step error, Ollama down or a model missing, a held lock, or a delivery error. The
   failure note and `error.json` name the step. See
   [failed run](../runbooks/debug/failed-run.md).
-- `blocked`: see [blocked run](../runbooks/debug/blocked-run.md).
+- `sent` with `fallback: true`: the writers' drafts were all rejected. See
+  [blocked run](../runbooks/debug/blocked-run.md), which now covers this case too.
+- `blocked`: rare now; see [blocked run](../runbooks/debug/blocked-run.md).
 - `quiet`: often normal. See [quiet week](../runbooks/debug/quiet-week.md).
 - "Another run is in progress": see [stuck lock](../runbooks/debug/stuck-lock.md).
 - Only some channels got the digest: see
