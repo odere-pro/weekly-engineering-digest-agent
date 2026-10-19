@@ -1,13 +1,13 @@
-// Run-level behavior W5-06 adds to runDigest: the model health check follows the guards in use
-// (F30), the after-process count (F35), the judge outcome in the log (W5-03 follow-up), and the
-// abort signal (F46).
+// Run-level behavior W5-06 adds to runDigest: the after-process count (F35), the judge outcome in
+// the log (W5-03 follow-up), and the abort signal (F46). The health check follows the guards in
+// use (F30): see health/assertModelsReady.test.ts.
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
 import { ExitCode, type Digest, type Item } from '../domain/schemas';
 import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import { QUESTION_IDS } from '../classify/classifyPrompt';
 import { JUDGE_CRITERIA } from '../select/judgePrompt';
-import { modelsInUse, requiredModels, type ModelProfile } from '../config/profiles';
+import { requiredModels, type ModelProfile } from '../config/profiles';
 import type { ConfigInput } from '../config/schema';
 import type { DecisionAnswer, ModelHealth } from '../models/ModelProvider';
 import type { ArtifactName } from '../store/RunStore';
@@ -178,58 +178,6 @@ const logged = (h: Harness, message: string): LogLine[] =>
 const sentNotes = (h: Harness) => h.deliveries.flatMap((delivery) => delivery.failures);
 const modelCalls = (h: Harness): number =>
   h.model.decideCalls.length + h.model.generateCalls.length;
-
-describe('runDigest: the health check follows the guards in use (F30)', () => {
-  const guardRiskOff: Partial<ConfigInput> = {
-    guards: {
-      input: { checks: { graniteRisk: false } },
-      output: { checks: { graniteGroundedness: false } },
-    },
-  };
-  const withoutRisk = requiredModels(PROFILE).filter((tag) => tag !== PROFILE.guardRisk);
-
-  it('does not require the model of a guard role whose checks are all off', async () => {
-    const h = setup({ config: guardRiskOff, models: withoutRisk });
-
-    const result = await h.run({ dryRun: true });
-
-    expect(result.record.status).toBe('dry-run');
-  });
-
-  it('still requires the model of a role that an enabled check uses', async () => {
-    const h = setup({ models: withoutRisk });
-
-    const result = await h.run({ dryRun: true });
-
-    expect(result.record.status).toBe('failed');
-    expect(result.record.error?.message).toContain(PROFILE.guardRisk);
-    expect(h.fetcher.calls).toEqual([]);
-  });
-
-  it('always requires the classifier, the writers and the judge', async () => {
-    const h = setup({
-      config: { guards: { input: { enabled: false }, output: { enabled: false } } },
-      models: [PROFILE.classify, WRITER_A, PROFILE.judge ?? ''],
-    });
-
-    const result = await h.run({ dryRun: true });
-
-    expect(result.record.status).toBe('failed');
-    expect(result.record.error?.message).toContain(WRITER_B);
-    expect(result.record.error?.message).not.toContain(PROFILE.guardPolicy);
-    expect(result.record.error?.message).not.toContain(PROFILE.guardRisk);
-  });
-
-  it('lists the models in use when it logs that they are ready', async () => {
-    const h = setup({ config: guardRiskOff, models: withoutRisk });
-
-    await h.run({ dryRun: true });
-
-    const [ready] = logged(h, 'Models ready');
-    expect(ready?.fields.models).toEqual(modelsInUse(PROFILE, h.deps.config.guards));
-    expect(ready?.fields.models).not.toContain(PROFILE.guardRisk);
-  });
-});
 
 describe('runDigest: counts.afterProcess (F35)', () => {
   it('counts the items that passed the process filters, before the top N cut', async () => {

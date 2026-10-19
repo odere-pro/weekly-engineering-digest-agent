@@ -2,7 +2,7 @@
 // channel, and a rerun of a partly delivered week only finishes the delivery.
 import { describe, expect, it, vi } from 'vitest';
 import { runDigest, type DigestDeps, type RunOptions } from './runDigest';
-import { KEPT_PARTLY_REASON, KEPT_SENT_REASON } from './runEnding';
+import { KEPT_PARTLY_REASON, KEPT_SENT_REASON } from './ending/keepReason';
 import { ExitCode, type Digest, type Draft, type Item } from '../domain/schemas';
 import { RunRecordSchema, type RunRecord } from '../store/runRecord';
 import { type DeliveryId } from '../delivery/deliveryId';

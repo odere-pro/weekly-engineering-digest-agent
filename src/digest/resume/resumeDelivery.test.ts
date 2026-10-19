@@ -5,20 +5,20 @@ import {
   resumeDelivery,
   type PartDelivery,
   type ResumeContext,
-} from './runResume';
-import { RunRecordSchema, type RunRecord } from '../store/runRecord';
-import { type DeliveryId } from '../delivery/deliveryId';
-import type { Clock } from '../shared/clock';
-import type { LogFields, Logger, Tracer } from '../shared/telemetry';
-import { makeConfig, makeRunRecord } from '../../test/builders';
-import { CapturingDelivery, MemoryRunStore, fixedClock } from '../../test/fakes';
+} from './resumeDelivery';
+import { RunRecordSchema, type RunRecord } from '../../store/runRecord';
+import { type DeliveryId } from '../../delivery/deliveryId';
+import type { Clock } from '../../shared/clock';
+import type { LogFields, Logger, Tracer } from '../../shared/telemetry';
+import { makeConfig, makeRunRecord } from '../../../test/builders';
+import { CapturingDelivery, MemoryRunStore, fixedClock } from '../../../test/fakes';
 
 const WEEK = '2026-W42';
 const NOW = '2026-10-16T08:00:00Z';
 const HEADLINE = 'Runners and gateways moved this week';
 const URLS = ['https://example.com/runner-1', 'https://example.com/runner-2'];
 const SOURCES = URLS.map((url) => `[Source](${url})`).join('\n\n');
-// The layout a run saved before W8-02; runResume.view.test.ts covers the current one.
+// The layout a run saved before W8-02; resumeDelivery.view.test.ts covers the current one.
 const SAVED = `# ${HEADLINE}\n\n_Week ${WEEK}_\n\n## 1. Runner\n\n${SOURCES}\n`;
 const REFUSAL = 'run with --force to send a new digest to every channel';
 

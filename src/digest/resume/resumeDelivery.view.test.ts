@@ -1,21 +1,21 @@
 // A resume sends the saved digest with its view when drafts.json can rebuild it (W8-02).
 import { describe, expect, it } from 'vitest';
-import { buildDigestView } from '../render/layout';
-import { renderDigest } from '../render/markdown';
-import { loadPartDelivery, resumeDelivery, type ResumeContext } from './runResume';
-import type { Digest } from '../domain/schemas';
-import type { DeliveryId } from '../delivery/deliveryId';
-import type { GuardCheckId } from '../guards/guardVerdict';
-import type { RunRecord } from '../store/runRecord';
-import type { LogFields, Logger } from '../shared/telemetry';
+import { buildDigestView } from '../../render/layout';
+import { renderDigest } from '../../render/markdown';
+import { loadPartDelivery, resumeDelivery, type ResumeContext } from './resumeDelivery';
+import type { Digest } from '../../domain/schemas';
+import type { DeliveryId } from '../../delivery/deliveryId';
+import type { GuardCheckId } from '../../guards/guardVerdict';
+import type { RunRecord } from '../../store/runRecord';
+import type { LogFields, Logger } from '../../shared/telemetry';
 import {
   makeConfig,
   makeDigest,
   makeDigestItem,
   makeItem,
   makeRunRecord,
-} from '../../test/builders';
-import { CapturingDelivery, MemoryRunStore, fixedClock, noopTracer } from '../../test/fakes';
+} from '../../../test/builders';
+import { CapturingDelivery, MemoryRunStore, fixedClock, noopTracer } from '../../../test/fakes';
 
 const WEEK = '2026-W42';
 const NOW = '2026-10-16T08:00:00Z';

@@ -1,25 +1,21 @@
 // Resuming a partly delivered week (W2-08). Moved out of runDigest.ts by W5-06 (F58).
-import type { Delivery, DigestView } from '../delivery/Delivery';
-import type { Clock } from '../shared/clock';
-import { DigestError, errorMessage } from '../shared/errors';
-import type { Tracer } from '../shared/telemetry';
-import { truncate } from '../shared/text';
-import { buildDigestView } from '../render/layout';
-import { readSavedDigest, renderView } from '../render/markdown';
-import {
-  DraftsFileSchema,
-  abortedError,
-  digestMessage,
-  endRun,
-  failureNote,
-  recordError,
-  shipDigest,
-  type EndingContext,
-  type Failure,
-  type Shipped,
-} from './runEnding';
-import type { DeliveryId } from '../delivery/deliveryId';
-import type { RunRecord } from '../store/runRecord';
+import type { Delivery, DigestView } from '../../delivery/Delivery';
+import type { DeliveryId } from '../../delivery/deliveryId';
+import { buildDigestView } from '../../render/layout';
+import { readSavedDigest, renderView } from '../../render/markdown';
+import type { Clock } from '../../shared/clock';
+import { DigestError, errorMessage } from '../../shared/errors';
+import type { Tracer } from '../../shared/telemetry';
+import { truncate } from '../../shared/text';
+import type { RunRecord } from '../../store/runRecord';
+import { endRun } from '../ending/endRun';
+import { failureNote } from '../ending/notes/failureNotes';
+import { abortedError } from '../ending/notes/unretriable';
+import { recordError } from '../ending/runFiles/errorFile';
+import { DraftsFileSchema } from '../ending/runFiles/runFiles';
+import { digestMessage } from '../ending/shipping/digestMessage';
+import { shipDigest, type Shipped } from '../ending/shipping/shipping';
+import type { EndingContext, Failure } from '../ending/types';
 
 /** What a resume needs from the run: the ending context, plus the clock and the tracer. */
 export interface ResumeContext extends EndingContext {
