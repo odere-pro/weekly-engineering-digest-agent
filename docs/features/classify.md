@@ -27,6 +27,8 @@ It is the third step, after guardInput and before process. See
   orders. A source's `area` goes in as a one-line hint outside that block.
 - Fails loudly on a bad answer. A missing, wrongly typed or out-of-range answer, or an area that
   is not one of the options, fails the run at step `classify`. It never falls back to a default.
+- Logs a `Progress` line every 25 items or minute (items done, total, time left), so a slow model
+  is not an hour of silence. See [observability](../operations/observability.md).
 - Returns the scored items in input order. The scores are saved as `scores.json` in the run folder.
   `pnpm digest show <week> --part scores` prints them as a table.
 - A "generate" mode for models without decision support exists in the code but does not run in a

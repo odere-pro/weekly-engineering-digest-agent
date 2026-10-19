@@ -6,6 +6,8 @@ import { areaOptions, classifyQuestions, classifyState } from './classifyPrompt'
 import { rescoreFiltered } from './rescore/rescoreFiltered';
 import type { ClassifierDeps } from './types';
 import { type Item, type Source } from '../domain/schemas';
+import { startProgress } from '../progress/progress';
+import type { Clock } from '../shared/clock';
 
 export interface ClassifyDeps extends ClassifierDeps {
   /**
@@ -21,6 +23,8 @@ export interface ClassifyDeps extends ClassifierDeps {
   rescoreWithWriter?: boolean;
   /** The relevance floor of the process step; required when `rescoreWithWriter` is on. */
   minRelevance?: number;
+  /** Times the `Progress` lines of decide mode; the system clock when absent. */
+  clock?: Clock;
 }
 
 /** Builds `areaHints` from the configured sources; sources without an `area` are skipped. */
@@ -64,6 +68,12 @@ async function classifyEach(items: readonly Item[], deps: ClassifyDeps): Promise
   const questions = classifyQuestions(deps.focusAreas);
   const areas = new Set(areaOptions(deps.focusAreas));
   const scored: ScoredItem[] = [];
+  const progress = startProgress({
+    label: 'classify',
+    total: items.length,
+    logger: deps.logger,
+    clock: deps.clock,
+  });
   for (const item of items) {
     deps.signal?.throwIfAborted();
     const { answers } = await deps.model.decide({
@@ -73,6 +83,7 @@ async function classifyEach(items: readonly Item[], deps: ClassifyDeps): Promise
       signal: deps.signal,
     });
     scored.push({ ...item, classification: fromAnswers(item.id, answers, areas) });
+    progress.tick();
   }
   return scored;
 }

@@ -23,6 +23,7 @@ export async function classify(
     rescoreWithWriter: config.models.rescoreWithWriter,
     minRelevance: config.thresholds.minRelevance,
     signal: ctx.signal,
+    clock: ctx.deps.clock,
   });
   const classifications = scored.map((item) => item.classification);
   const held = await keepArtifact(ctx, state, 'scores.json', toJson(classifications));

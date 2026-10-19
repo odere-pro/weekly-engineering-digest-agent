@@ -52,13 +52,17 @@ flowchart TD
   them. Those two are our own wording (`GRANITE_CRITERIA.item` for each digest item): the generic
   headline one flagged editorial framing, the generic item one flagged a plain why-it-matters line.
 - Logs and reasons hold ids and check ids only, never item, draft or model text.
+- Each model guard logs a `Progress` line (`src/progress/`) every 25 subjects or minute, labelled
+  with its check id, counted over the subjects that reached it (the second guard of mode `any` sees
+  only what the first kept). `applyGuards` takes it as `PassProgress` (`passProgress` builds it);
+  the rule guard, which makes no model call, logs none. The steps take an optional `clock`.
 
 ## Files
 
 | File                                             | Role                                                                                                            |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
 | `Guard.ts`, `guardVerdict.ts`                    | The port; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own                                          |
-| `guardRun.ts`, `guardInput.ts`, `guardOutput.ts` | `planGuards`, `applyGuards`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                                   |
+| `guardRun.ts`, `guardInput.ts`, `guardOutput.ts` | `planGuards`, `applyGuards`, `passProgress`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                   |
 | `guardQuestions.ts`                              | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
 | `adapters/`                                      | The five guards (rule, Clef, Granite), `GRANITE_CRITERIA`, recorded fixtures: see `adapters/CLAUDE.md`          |
 

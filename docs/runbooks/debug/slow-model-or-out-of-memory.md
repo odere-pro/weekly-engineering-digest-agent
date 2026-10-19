@@ -31,6 +31,15 @@ finishes in a normal time.
 
    `pnpm digest show <week>` also lists the time of each step under `Timings:`.
 
+   A long step also logs its own progress, so you can see how far it is and how long is left:
+
+   ```bash
+   jq -R -c 'fromjson? | select(.msg=="Progress") | {time, step, label, done, total, eta}' run.log
+   ```
+
+   One line comes every 25 items or minute. `eta` is the median time per item so far times the
+   items left; it is an estimate, not a promise.
+
 2. Compare your machine with the profile.
 
    ```bash

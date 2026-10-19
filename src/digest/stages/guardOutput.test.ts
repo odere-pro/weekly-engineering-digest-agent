@@ -55,6 +55,18 @@ describe('guardOutput', () => {
     expect(next.settled).toBeUndefined();
   });
 
+  it('logs progress per output guard on the run clock', async () => {
+    const h = contextFor({ outputGuards: guards() });
+
+    await guardOutput(h.ctx, stateWith(checked(WRITER_A), checked(WRITER_B)), h.logger);
+
+    const progress = h.logs.filter((line) => line.message === 'Progress');
+    expect(progress.map((line) => line.fields)).toEqual([
+      expect.objectContaining({ label: 'graniteGroundedness', done: 2, total: 2, elapsedMs: 0 }),
+      expect.objectContaining({ label: 'clefRubric', done: 2, total: 2, elapsedMs: 0 }),
+    ]);
+  });
+
   it('shows the guards only the drafts that passed the link and format checks', async () => {
     const outputGuards = guards();
     const h = contextFor({ outputGuards });

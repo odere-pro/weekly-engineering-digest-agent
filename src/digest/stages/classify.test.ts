@@ -60,6 +60,17 @@ describe('classify', () => {
     expect(h.fake.generateCalls).toEqual([]);
   });
 
+  it('logs progress on the run clock', async () => {
+    const h = run();
+
+    await h.result;
+
+    const progress = h.logs.filter((line) => line.message === 'Progress');
+    expect(progress.map((line) => line.fields)).toEqual([
+      expect.objectContaining({ label: 'classify', done: 3, total: 3, elapsedMs: 0, etaMs: 0 }),
+    ]);
+  });
+
   it('holds scores.json when the earlier files of the week must stay', async () => {
     const h = run({}, { hold: true });
 

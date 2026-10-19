@@ -2,13 +2,16 @@ import type { Draft, Item } from '../domain/schemas';
 import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 import type { OutputGuard } from './Guard';
 import type { GuardsConfig } from '../config/schema';
+import type { Clock } from '../shared/clock';
 import type { Logger } from '../shared/telemetry';
-import { applyGuards, flaggedBy, planGuards } from './guardRun';
+import { applyGuards, flaggedBy, passProgress, planGuards } from './guardRun';
 
 export interface GuardOutputDeps {
   guards: readonly OutputGuard[];
   config: GuardsConfig['output'];
   logger: Logger;
+  /** Times the `Progress` lines; the system clock when absent. */
+  clock?: Clock;
   /** Most drafts one guard checks at once; GUARD_CONCURRENCY when absent. */
   concurrency?: number;
   /**
@@ -35,7 +38,18 @@ export async function guardOutputStep(
     deps.signal?.throwIfAborted();
     return guard.checkDraft(draft, sources, { signal: deps.signal });
   });
-  const { kept, dropped } = await applyGuards(drafts, checks, deps.config.mode, deps.concurrency);
+  const { kept, dropped } = await applyGuards(
+    drafts,
+    checks,
+    deps.config.mode,
+    deps.concurrency,
+    [],
+    passProgress(
+      active.map((guard) => guard.id),
+      deps.logger,
+      deps.clock,
+    ),
+  );
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('output guards rejected draft', {
       writer: subject.writer,

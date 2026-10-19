@@ -45,6 +45,18 @@ describe('guardInput', () => {
     );
   });
 
+  it('logs progress per model guard on the run clock: the item the rule guard dropped is not counted', async () => {
+    const h = contextFor({ inputGuards: guards() });
+
+    await guardInput(h.ctx, stateOf({ collected: items }), h.logger);
+
+    const progress = h.logs.filter((line) => line.message === 'Progress');
+    expect(progress.map((line) => line.fields)).toEqual([
+      expect.objectContaining({ label: 'clefPolicy', done: 2, total: 2, elapsedMs: 0 }),
+      expect.objectContaining({ label: 'graniteRisk', done: 2, total: 2, elapsedMs: 0 }),
+    ]);
+  });
+
   it('keeps every item when the guards are off in the config', async () => {
     const h = contextFor({
       inputGuards: guards(() => true),

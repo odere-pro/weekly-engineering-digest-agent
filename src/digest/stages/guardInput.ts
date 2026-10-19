@@ -15,6 +15,7 @@ export async function guardInput(
     config: config.guards.input,
     logger,
     signal: ctx.signal,
+    clock: ctx.deps.clock,
   });
   logger.info('Input guards done', { kept: kept.length, dropped: dropped.length });
   return { ...state, kept };

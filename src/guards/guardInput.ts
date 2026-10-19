@@ -2,8 +2,9 @@ import type { GuardCheckId, GuardVerdict } from './guardVerdict';
 import type { Item } from '../domain/schemas';
 import type { InputGuard } from './Guard';
 import type { GuardsConfig } from '../config/schema';
+import type { Clock } from '../shared/clock';
 import type { Logger } from '../shared/telemetry';
-import { applyGuards, flaggedBy, planGuards } from './guardRun';
+import { applyGuards, flaggedBy, passProgress, planGuards } from './guardRun';
 
 const ALWAYS_BLOCKING: GuardCheckId = 'ruleInjection';
 
@@ -12,6 +13,8 @@ export interface GuardInputDeps {
   guards: readonly InputGuard[];
   config: GuardsConfig['input'];
   logger: Logger;
+  /** Times the `Progress` lines; the system clock when absent. */
+  clock?: Clock;
   /** Most items one guard checks at once; GUARD_CONCURRENCY when absent. */
   concurrency?: number;
   /**
@@ -40,13 +43,18 @@ export async function guardInputStep(
     return guard.checkItem(item, { signal: deps.signal });
   };
   const blocking = active.filter((guard) => guard.id === ALWAYS_BLOCKING).map(toCheck);
-  const checks = active.filter((guard) => guard.id !== ALWAYS_BLOCKING).map(toCheck);
+  const modelGuards = active.filter((guard) => guard.id !== ALWAYS_BLOCKING);
   const { kept, dropped } = await applyGuards(
     items,
-    checks,
+    modelGuards.map(toCheck),
     deps.config.mode,
     deps.concurrency,
     blocking,
+    passProgress(
+      modelGuards.map((guard) => guard.id),
+      deps.logger,
+      deps.clock,
+    ),
   );
   for (const { subject, verdicts } of dropped) {
     deps.logger.debug('input guards dropped item', {

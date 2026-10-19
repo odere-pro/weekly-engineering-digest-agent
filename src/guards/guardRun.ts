@@ -1,5 +1,7 @@
 // The guard engine both guard steps share (W5-06, F36): which guards run, and how they run.
 import type { GuardMode } from '../config/schema';
+import { startProgress } from '../progress/progress';
+import type { Clock } from '../shared/clock';
 import { DigestError } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';
 import type { GuardCheckId, GuardVerdict } from './guardVerdict';
@@ -25,6 +27,31 @@ interface GuardSwitches<Check extends GuardCheckId> {
 
 /** One guard, bound to the kind of subject it checks. */
 export type GuardCheckFn<Subject> = (subject: Subject) => Promise<GuardVerdict>;
+
+/**
+ * Called when a guard starts its pass over `size` subjects (`index` is the guard's place among the
+ * checks); the function it returns is called once for each subject the guard has finished.
+ */
+export type PassProgress = (index: number, size: number) => () => void;
+
+/** A `PassProgress` that logs through `startProgress`, one label per check, in check order. */
+export function passProgress(
+  labels: readonly string[],
+  logger: Logger,
+  clock?: Clock,
+): PassProgress {
+  return (index, size) => {
+    const progress = startProgress({
+      label: labels[index] ?? `guard ${index + 1}`,
+      total: size,
+      logger,
+      clock,
+    });
+    return () => {
+      progress.tick();
+    };
+  };
+}
 
 export interface GuardSplit<Subject> {
   kept: Subject[];
@@ -79,7 +106,7 @@ interface Tracked<Subject> {
  *   guard flags it too.
  * Within a guard, at most `concurrency` subjects are checked at once. Both lists keep input
  * order, whatever order the calls finish in. Guard errors propagate (see `mapBounded`). No
- * checks keeps every subject.
+ * checks keeps every subject. `progress` hears of the main pass only, not the blocking one.
  */
 export async function applyGuards<Subject>(
   subjects: readonly Subject[],
@@ -87,6 +114,7 @@ export async function applyGuards<Subject>(
   mode: GuardMode,
   concurrency: number = GUARD_CONCURRENCY,
   blocking: readonly GuardCheckFn<Subject>[] = [],
+  progress?: PassProgress,
 ): Promise<GuardSplit<Subject>> {
   assertConcurrency(concurrency);
 
@@ -96,7 +124,7 @@ export async function applyGuards<Subject>(
     verdicts: [],
   }));
   const pre = await runPass(initial, blocking, 'any', concurrency);
-  const main = await runPass(pre.survivors, checks, mode, concurrency);
+  const main = await runPass(pre.survivors, checks, mode, concurrency, progress);
   const keptEntries = checks.length === 0 ? pre.survivors : main.kept;
   const droppedEntries = checks.length === 0 ? pre.exited : [...pre.exited, ...main.dropped];
   return {
@@ -114,6 +142,7 @@ async function runPass<Subject>(
   checks: readonly GuardCheckFn<Subject>[],
   mode: GuardMode,
   concurrency: number,
+  progress?: PassProgress,
 ): Promise<{
   survivors: Tracked<Subject>[];
   exited: Tracked<Subject>[];
@@ -124,8 +153,9 @@ async function runPass<Subject>(
     mode === 'any' ? !verdict.flagged : verdict.flagged;
   let survivors = [...pool];
   let exited: Tracked<Subject>[] = [];
-  for (const check of checks) {
-    const examined = await examineAll(survivors, check, concurrency);
+  for (const [index, check] of checks.entries()) {
+    const tick = progress?.(index, survivors.length);
+    const examined = await examineAll(survivors, check, concurrency, tick);
     survivors = examined
       .filter((result) => continues(result.verdict))
       .map((result) => result.entry);
@@ -150,9 +180,11 @@ async function examineAll<Subject>(
   pool: readonly Tracked<Subject>[],
   check: GuardCheckFn<Subject>,
   concurrency: number,
+  tick?: () => void,
 ): Promise<{ entry: Tracked<Subject>; verdict: GuardVerdict }[]> {
   return mapBounded(pool, concurrency, async (entry) => {
     const verdict = await check(entry.subject);
+    tick?.();
     return { entry: { ...entry, verdicts: [...entry.verdicts, verdict] }, verdict };
   });
 }

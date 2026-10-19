@@ -41,6 +41,9 @@ It runs twice: guardInput right after collect, and guardOutput after write and b
 - A guard error fails the run at that step. It is never treated as a pass.
 - A guard that is off or missing is never silent. It is listed as `disabledGuards` in
   `run.json` and named in the digest footer, and `digest doctor` warns about it.
+- A slow guard is not silent: each model guard logs a `Progress` line every 25 items or minute
+  with how many it has done, how many there are and the time left (see
+  [observability](../operations/observability.md)).
 - Dropped items vanish from the week. `run.json` counts show how many passed. Rejected drafts keep
   their check ids in `drafts.json`. Logs hold ids and check ids, never item or draft text.
 

@@ -12,8 +12,11 @@ Four ways to see what the agent did: logs, traces, history and health checks.
   instead of `dist` if you changed it). `<day>` is the date in `schedule.timeZone`, so there is
   one file per day. Logs of days older than the oldest kept week (`keepWeeks`) are deleted by pruning.
 - Lines of a run carry `runId` (the week id). Lines inside a step also carry `step`.
-- Each model call logs the role, the model, the latency, the attempts and the token counts.
-  Never a prompt or an answer.
+- Each model call logs the role, the model, the latency, the attempts and the token counts, and
+  `coldStart: true` when the model was not loaded yet. Never a prompt or an answer.
+- The input guard, the output guard and `classify` also log a `Progress` line every 25 items or
+  minute: `label` (the guard or `classify`), `done`, `total`, `elapsedMs`, `medianMs` and the time
+  left (`etaMs`, `eta`). The estimate is the median time per item so far times the items left.
 - Secrets are redacted by value before a line is written.
 
 In Docker: `docker compose logs digest`. See [read logs](../runbooks/observe/read-logs.md) and
