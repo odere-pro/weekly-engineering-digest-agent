@@ -27,7 +27,7 @@ sequenceDiagram
   participant lock as digest.lock
   run->>st: hasSentDigest(week): sent, no force: skip, no lock taken
   run->>st: acquireLock(week)
-  st->>lock: create it exclusively; an abandoned lock is taken over under the .takeover guard
+  st->>lock: create it exclusively, an abandoned lock is taken over under the .takeover guard
   st--x run: a live run holds it: DigestError "Another run is in progress"
   st->>lock: every 60 s while held: heartbeat, only if the file is still ours
   run->>st: getRunRecord again (a run that held the lock may have just sent), sentUrls
