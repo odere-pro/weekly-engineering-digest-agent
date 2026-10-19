@@ -14,19 +14,6 @@ import type { Measurement } from './metrics/measurement/measurement';
 import { EPSILON } from './metrics/measurement/numbers';
 import { SOURCE_PARSE_MIN, SOURCE_SUMMARY_FILL_MIN } from './metrics/sources/sourceMetrics';
 
-// Bridges for importers outside the metrics folders. Callers move to the defining file, then these go.
-export type { Measurement } from './metrics/measurement/measurement'; // compat (W10-B23): remove when callers move
-export { parseDigestMarkdown } from './metrics/digest/parseDigest'; // compat (W10-B23): remove when callers move
-export { classifierAccuracy } from './metrics/ranking/classifier'; // compat (W10-B23): remove when callers move
-export { mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics/ranking/labelHits'; // compat (W10-B23): remove when callers move
-export {
-  JUDGE_AGREEMENT_MIN,
-  judgeAgreement,
-  selectionAgreement,
-  writingQuality,
-} from './metrics/judging/judgeMetrics'; // compat (W10-B23): remove when callers move
-export { sourceParse, sourceSummaryFill } from './metrics/sources/sourceMetrics'; // compat (W10-B23): remove when callers move
-
 const hard = (threshold: number): Gate => ({
   kind: 'hard',
   direction: 'atLeast',

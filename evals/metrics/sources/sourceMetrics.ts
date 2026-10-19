@@ -1,4 +1,4 @@
-import type { SourceResult } from '../../sourceEval';
+import type { SourceResult } from '../../sourceConformance/conformance/types';
 import type { Measurement } from '../measurement/measurement';
 import { EPSILON } from '../measurement/numbers';
 

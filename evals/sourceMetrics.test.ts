@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { GATES, assembleMetrics, sourceParse, sourceSummaryFill } from './metrics';
+import { GATES, assembleMetrics } from './metrics';
+import { sourceParse, sourceSummaryFill } from './metrics/sources/sourceMetrics';
 import { METRIC_IDS, ScorecardSchema } from './schema';
 import type { SourceResult } from './sourceConformance/conformance/types';
 

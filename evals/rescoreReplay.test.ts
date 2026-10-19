@@ -7,7 +7,7 @@ import {
   type RescoreResult,
 } from './rescoreReplay';
 import type { Calibration } from '../src/process/calibration';
-import type { EvalCases } from './runEval';
+import type { EvalCases } from './cases/evalSet';
 import type { Clock } from '../src/shared/clock';
 import type { DecisionAnswer, GenerateRequest } from '../src/models/ModelProvider';
 import { makeConfig, makeItem } from '../test/builders';

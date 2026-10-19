@@ -1,7 +1,8 @@
 // `digest eval --only`, `--resume` and `--compare` (W11-08): what the command passes to the harness,
 // what it saves and what exit code it returns. No model, no network, no real files.
 import { describe, expect, it, vi } from 'vitest';
-import { assembleMetrics, failedHardGates, type Measurement } from '../../../evals/metrics';
+import { assembleMetrics, failedHardGates } from '../../../evals/metrics';
+import { type Measurement } from '../../../evals/metrics/measurement/measurement';
 import { METRIC_IDS, type MetricId } from '../../../evals/schema';
 import type { SavedScorecard } from '../../../evals/checkpointSections';
 import type { LoadedConfig } from '../../config/load';

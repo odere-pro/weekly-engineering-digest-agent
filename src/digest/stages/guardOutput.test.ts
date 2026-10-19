@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { guardOutput } from './guardOutput';
 import { FALLBACK_WRITER } from '../../write/fallbackDigest';
-import type { CodeChecked } from '../../write/write';
+import type { CodeChecked } from '../../write/checkedStep/types';
 import type { Draft } from '../../domain/schemas';
 import { FakeOutputGuard } from '../../../test/fakes';
 import {

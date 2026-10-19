@@ -3,7 +3,8 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { SPEC_EVAL_SET, loadEvalCases } from './runEval';
+import { SPEC_EVAL_SET } from './cases/evalSet';
+import { loadEvalCases } from './cases/loadEvalCases';
 import { MUST_INCLUDE_COUNT, WeekLabelsSchema, type WeekLabels } from './schema';
 import { ItemSchema, type Item } from '../src/domain/schemas';
 

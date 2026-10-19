@@ -12,8 +12,8 @@ import {
 } from './calibrate';
 import { CalibrationSchema, calibrateClassification } from '../src/process/calibration';
 import { makeClassification, makeItem } from '../test/builders';
-import type { RawCapture } from './thresholds/capture';
-import type { EvalCases } from './runEval';
+import type { RawCapture } from './thresholds/capture/schemas';
+import type { EvalCases } from './cases/evalSet';
 
 const sample = (raw: number, target: number, area = 'a'): Sample => ({ raw, target, area });
 

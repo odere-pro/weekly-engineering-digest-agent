@@ -1,7 +1,7 @@
 // What a capture asks the models about: the items the input guards check and the grounding
 // drafts the output guard checks, in the order they are asked.
 import type { Draft, Item } from '../../../src/domain/schemas';
-import type { EvalCases } from '../../runEval';
+import type { EvalCases } from '../../cases/evalSet';
 import { withoutItem, type WeekLabels } from '../../schema';
 import type { InputGuardRecord, OutputGuardRecord, WeekItemRecord } from './schemas';
 

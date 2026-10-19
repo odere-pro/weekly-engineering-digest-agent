@@ -8,7 +8,7 @@ import type { Item } from '../domain/schemas';
 import type { ScoredItem } from '../classify/classification';
 import type { Logger } from '../shared/telemetry';
 import { FALLBACK_WRITER, checkedFallback } from '../write/fallbackDigest';
-import type { CheckedDraft } from '../write/write';
+import type { CheckedDraft } from '../write/checkedStep/types';
 
 export interface FallbackInput {
   readonly selected: readonly ScoredItem[];

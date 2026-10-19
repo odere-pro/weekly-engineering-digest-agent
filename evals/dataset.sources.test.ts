@@ -2,12 +2,10 @@
 // yield. Every adapter keeps this test green; W6-02 removes `knownGaps` as it fixes parsing.
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import {
-  conformanceProblems,
-  defaultFetcherFactories,
-  fetchFromRecording,
-  loadSourceRecordings,
-} from './sourceEval';
+import { conformanceProblems } from './sourceConformance/conformance/conformanceProblems';
+import { defaultFetcherFactories } from './sourceConformance/replayFetch/fetcherFactories';
+import { fetchFromRecording } from './sourceConformance/replayFetch/fetchFromRecording';
+import { loadSourceRecordings } from './sourceConformance/recordings/loadSourceRecordings';
 import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
 
 const recordings = await loadSourceRecordings(join(import.meta.dirname, 'sources'));

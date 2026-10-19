@@ -4,9 +4,6 @@ import { decide } from './decide/decide';
 import { health } from './health/health';
 import { createOllamaHttp } from './ollamaHttp';
 
-export { effectiveTemperature, effectiveThink } from './chat/chatSettings'; // compat (W10-B23): remove when callers move
-export type { ThinkSetting } from './chat/chatSettings'; // compat (W10-B23): remove when callers move
-
 /** What `createOllamaProvider` takes: the server, then the options the three calls read. */
 export interface OllamaProviderOptions extends ChatOptions {
   baseUrl: string;

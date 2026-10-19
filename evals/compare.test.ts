@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compareScorecards, parseScorecard } from './compare';
-import { assembleMetrics, failedHardGates, type Measurement } from './metrics';
+import { assembleMetrics, failedHardGates } from './metrics';
+import { type Measurement } from './metrics/measurement/measurement';
 import { METRIC_IDS, type MetricId } from './schema';
 import type { SavedScorecard } from './checkpointSections';
 import { DigestError } from '../src/shared/errors';

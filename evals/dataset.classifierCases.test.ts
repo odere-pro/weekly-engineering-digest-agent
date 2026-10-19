@@ -3,7 +3,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { SPEC_EVAL_SET } from './runEval';
+import { SPEC_EVAL_SET } from './cases/evalSet';
 import { ClassifierCasesFileSchema } from './schema';
 import { DEFAULT_FOCUS_AREAS } from '../src/sources/defaultSources';
 import { OTHER_AREA, areaOptions } from '../src/classify/classifyPrompt';

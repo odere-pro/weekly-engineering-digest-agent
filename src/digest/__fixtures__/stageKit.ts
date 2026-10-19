@@ -10,7 +10,7 @@ import type { InputGuard, OutputGuard } from '../../guards/Guard';
 import type { ModelProvider } from '../../models/ModelProvider';
 import type { SourceFetcher } from '../../sources/SourceFetcher';
 import type { LogFields, Logger } from '../../shared/telemetry';
-import type { CheckedDraft } from '../../write/write';
+import type { CheckedDraft } from '../../write/checkedStep/types';
 import { makeConfig, makeDraft, makeItem, makeScoredItem } from '../../../test/builders';
 import {
   CapturingDelivery,

@@ -12,7 +12,7 @@ import { buildApp } from '../src/app/container';
 import { loadConfig } from '../src/config/load';
 import { systemClock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
-import { loadEvalCases } from './runEval';
+import { loadEvalCases } from './cases/loadEvalCases';
 import { captureCommand, type CaptureOptions } from './thresholds/cli/captureCommand';
 import { EXIT_FAILED, EXIT_USAGE, type CaptureSession, type CliIo } from './thresholds/cli/io';
 import { captureSession } from './thresholds/cli/session';

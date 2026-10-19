@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { modelsInUse, PROFILES } from '../../../config/profiles';
-import { effectiveThink } from '../../../models/adapters/ollama';
+import { effectiveThink } from '../../../models/adapters/chat/chatSettings';
 import { makeConfig } from '../../../../test/builders';
 import { installedFor, loadedFor, resultFor, runDoctor } from '../__fixtures__/doctorHarness';
 import { checkModels, checkThink, describeThink } from './models';

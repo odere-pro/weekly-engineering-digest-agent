@@ -2,7 +2,7 @@ import type { LoadedConfig } from '../../../config/load';
 import { modelsInUse, type ModelProfile } from '../../../config/profiles';
 import type { GuardsConfig } from '../../../config/schema';
 import type { ModelHealth } from '../../../models/ModelProvider';
-import { effectiveThink, type ThinkSetting } from '../../../models/adapters/ollama';
+import { effectiveThink, type ThinkSetting } from '../../../models/adapters/chat/chatSettings';
 import type { Role } from '../../../models/roles';
 import { normalizeTag } from '../readiness/version';
 import { fail, ok, warn, type CheckResult } from '../report/checkResult';

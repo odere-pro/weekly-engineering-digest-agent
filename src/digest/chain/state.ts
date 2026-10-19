@@ -2,7 +2,7 @@ import type { DeliveryId } from '../../delivery/deliveryId';
 import type { Draft, Item, StepName } from '../../domain/schemas';
 import type { ScoredItem } from '../../classify/classification';
 import type { RunRecord, DraftOutcome } from '../../store/runRecord';
-import type { CheckedDraft, CodeChecked } from '../../write/write';
+import type { CheckedDraft, CodeChecked } from '../../write/checkedStep/types';
 import type { Failure, HeldArtifact } from '../ending/types';
 
 /** Ends the run early with this status; the remaining steps are skipped. */

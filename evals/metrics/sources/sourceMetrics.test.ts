@@ -5,7 +5,7 @@ import {
   sourceParse,
   sourceSummaryFill,
 } from './sourceMetrics';
-import type { SourceResult } from '../../sourceEval';
+import type { SourceResult } from '../../sourceConformance/conformance/types';
 
 function result(sourceId: string, overrides: Partial<SourceResult> = {}): SourceResult {
   return {

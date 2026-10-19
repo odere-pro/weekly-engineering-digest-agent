@@ -12,9 +12,10 @@ import type { ScoredItem } from '../src/classify/classification';
 import { areaKey, calibrateClassification, type Calibration } from '../src/process/calibration';
 import { processStep } from '../src/process/process';
 import { DigestError, errorMessage } from '../src/shared/errors';
-import { mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics';
-import { loadEvalCases, type EvalCases } from './runEval';
-import { isFailed, RawCaptureSchema, type RawCapture } from './thresholds/capture';
+import { mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics/ranking/labelHits';
+import { loadEvalCases } from './cases/loadEvalCases';
+import { type EvalCases } from './cases/evalSet';
+import { isFailed, RawCaptureSchema, type RawCapture } from './thresholds/capture/schemas';
 import {
   defaultSplit,
   parseHoldoutWeeks,

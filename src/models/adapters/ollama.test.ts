@@ -18,12 +18,8 @@ import {
   type Handler,
   type Line,
 } from './__fixtures__/ollamaHarness';
-import {
-  createOllamaProvider,
-  effectiveTemperature,
-  effectiveThink,
-  type OllamaProviderOptions,
-} from './ollama';
+import { createOllamaProvider, type OllamaProviderOptions } from './ollama';
+import { effectiveTemperature, effectiveThink } from './chat/chatSettings';
 
 // The three calls are tested one by one in call/, chat/, decide/ and health/. These cases check
 // that the provider wires them: options reach the right call, and the port behaves as a whole.

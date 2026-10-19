@@ -23,14 +23,9 @@ import { idsOf } from './scoring/replaySamples';
 import type { EvalRun, StabilityWeek, WeekRun } from './scoring/types';
 import {
   defaultFetcherFactories,
-  evaluateSources,
   type SourceFetcherFactories,
-} from './sourceEval';
-
-export { SPEC_EVAL_SET } from './cases/evalSet'; // compat (W10-B23): remove when callers move
-export type { EvalCases } from './cases/evalSet'; // compat (W10-B23): remove when callers move
-export { loadEvalCases } from './cases/loadEvalCases'; // compat (W10-B23): remove when callers move
-export type { Replay } from './replay/replay'; // compat (W10-B23): remove when callers move
+} from './sourceConformance/replayFetch/fetcherFactories';
+import { evaluateSources } from './sourceConformance/conformance/evaluateSources';
 
 /** Spec: the same week is run 3 times to measure stability. */
 const STABILITY_RUNS = 3;

@@ -2,7 +2,7 @@ import type { DigestMessage, DigestView } from '../../../delivery/Delivery';
 import type { GuardCheckId } from '../../../guards/guardVerdict';
 import { buildDigestView } from '../../../render/layout';
 import { truncate } from '../../../shared/text';
-import type { CheckedDraft } from '../../../write/write';
+import type { CheckedDraft } from '../../../write/checkedStep/types';
 
 const SUBJECT_MAX_CHARS = 120;
 

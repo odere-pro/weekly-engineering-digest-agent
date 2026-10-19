@@ -15,9 +15,6 @@ import type { ModelProvider } from '../models/ModelProvider';
 import { errorMessage } from '../shared/errors';
 import type { Logger } from '../shared/telemetry';
 
-// Compat (W10-B23): `digest` imports these from here. Remove when callers move to checkedStep/types.
-export type { CheckedDraft, CodeChecked } from './checkedStep/types';
-
 export interface WriteDeps {
   model: ModelProvider;
   /** Writer model tags in config order; drafted one after another. */

@@ -1,7 +1,8 @@
 // `digest eval` measures the two source metrics from evals/sources, before any model call.
 import { describe, expect, it } from 'vitest';
-import { loadEvalCases, runEval } from './runEval';
-import type { SourceFetcherFactories } from './sourceEval';
+import { loadEvalCases } from './cases/loadEvalCases';
+import { runEval } from './runEval';
+import type { SourceFetcherFactories } from './sourceConformance/replayFetch/fetcherFactories';
 import { itemIdFor } from '../src/shared/url';
 import { makeItem } from '../test/builders';
 import { FakeSourceFetcher } from '../test/fakes/FakeSourceFetcher';

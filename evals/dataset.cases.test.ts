@@ -3,7 +3,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { z } from 'zod';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { SPEC_EVAL_SET, loadEvalCases } from './runEval';
+import { SPEC_EVAL_SET } from './cases/evalSet';
+import { loadEvalCases } from './cases/loadEvalCases';
 import {
   AttackCaseSchema,
   GroundingCaseSchema,

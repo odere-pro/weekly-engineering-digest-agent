@@ -6,7 +6,7 @@ import type {
   JudgeCalibration,
   WeekLabels,
 } from '../schema';
-import type { SourceRecording } from '../sourceEval';
+import type { SourceRecording } from '../sourceConformance/recordings/types';
 
 /** One recorded ISO week: the items the feeds served and the maintainer's labels. */
 export interface EvalWeek {

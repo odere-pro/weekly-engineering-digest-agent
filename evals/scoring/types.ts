@@ -7,7 +7,7 @@ import type { JudgedWinners } from '../judge/judgeWinners';
 import type { AttackOutcome } from '../metrics/attacks/attackHandling';
 import type { ClassifierResult } from '../metrics/ranking/classifier';
 import type { Replay } from '../replay/replay';
-import type { SourceResult } from '../sourceEval';
+import type { SourceResult } from '../sourceConformance/conformance/types';
 
 export interface WeekRun {
   week: EvalWeek;

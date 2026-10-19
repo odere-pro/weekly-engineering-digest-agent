@@ -1,26 +1,12 @@
 // The gate table and the assembly: how a Measurement becomes a MetricResult with a gate verdict.
 // Each measurement function is tested in its own folder under metrics/.
 import { describe, expect, it } from 'vitest';
-import * as bridge from './metrics';
 import { GATES, assembleMetrics, evaluateGate, failedHardGates, withCoverage } from './metrics';
-import {
-  JUDGE_AGREEMENT_MIN,
-  judgeAgreement,
-  selectionAgreement,
-  writingQuality,
-} from './metrics/judging/judgeMetrics';
+import { JUDGE_AGREEMENT_MIN } from './metrics/judging/judgeMetrics';
 import { attackHandling, type AttackOutcome } from './metrics/attacks/attackHandling';
-import { parseDigestMarkdown } from './metrics/digest/parseDigest';
 import { guardFalseBlocks } from './metrics/guards/guardFalseBlocks';
 import type { Measurement } from './metrics/measurement/measurement';
-import { classifierAccuracy } from './metrics/ranking/classifier';
-import { mustExcludeLeaks, mustIncludeRecall } from './metrics/ranking/labelHits';
-import {
-  SOURCE_PARSE_MIN,
-  SOURCE_SUMMARY_FILL_MIN,
-  sourceParse,
-  sourceSummaryFill,
-} from './metrics/sources/sourceMetrics';
+import { SOURCE_PARSE_MIN, SOURCE_SUMMARY_FILL_MIN } from './metrics/sources/sourceMetrics';
 import {
   METRIC_IDS,
   MetricResultSchema,
@@ -355,21 +341,5 @@ describe('the metric table', () => {
       kind: 'soft',
       threshold: SOURCE_SUMMARY_FILL_MIN,
     });
-  });
-});
-
-// Callers outside the metrics folders still import these from './metrics'. Delete with the bridges.
-describe('the bridges for callers that have not moved', () => {
-  it('re-export the functions their folders define', () => {
-    expect(bridge.parseDigestMarkdown).toBe(parseDigestMarkdown);
-    expect(bridge.classifierAccuracy).toBe(classifierAccuracy);
-    expect(bridge.mustIncludeRecall).toBe(mustIncludeRecall);
-    expect(bridge.mustExcludeLeaks).toBe(mustExcludeLeaks);
-    expect(bridge.writingQuality).toBe(writingQuality);
-    expect(bridge.selectionAgreement).toBe(selectionAgreement);
-    expect(bridge.judgeAgreement).toBe(judgeAgreement);
-    expect(bridge.JUDGE_AGREEMENT_MIN).toBe(JUDGE_AGREEMENT_MIN);
-    expect(bridge.sourceParse).toBe(sourceParse);
-    expect(bridge.sourceSummaryFill).toBe(sourceSummaryFill);
   });
 });

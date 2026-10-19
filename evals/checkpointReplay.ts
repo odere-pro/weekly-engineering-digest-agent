@@ -4,7 +4,7 @@ import { DraftSchema, ItemSchema } from '../src/domain/schemas';
 import { GuardCheckIdSchema, GuardVerdictSchema } from '../src/guards/guardVerdict';
 import { RunRecordSchema } from '../src/store/runRecord';
 import type { CheckpointCodec } from './checkpoint';
-import type { Replay } from './runEval';
+import type { Replay } from './replay/replay';
 
 const SavedReplaySchema = z.object({
   weekId: z.string(),

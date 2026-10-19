@@ -26,8 +26,10 @@ import { systemClock, type Clock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
 import type { ModelProvider } from '../src/models/ModelProvider';
 import type { Logger } from '../src/shared/telemetry';
-import { classifierAccuracy, mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics';
-import { loadEvalCases, type EvalCases } from './runEval';
+import { classifierAccuracy } from './metrics/ranking/classifier';
+import { mustExcludeLeaks, mustIncludeRecall, type WeekHits } from './metrics/ranking/labelHits';
+import { loadEvalCases } from './cases/loadEvalCases';
+import { type EvalCases } from './cases/evalSet';
 import { CASE_STRIDE, parseHoldoutWeeks } from './thresholds/split';
 
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */

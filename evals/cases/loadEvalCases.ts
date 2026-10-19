@@ -5,7 +5,7 @@ import {
   GroundingCaseSchema,
   JudgeCalibrationSchema,
 } from '../schema';
-import { loadSourceRecordings } from '../sourceEval';
+import { loadSourceRecordings } from '../sourceConformance/recordings/loadSourceRecordings';
 import { assertAttacksAreDistinct, loadCaseDir } from './caseFiles';
 import type { EvalCases } from './evalSet';
 import { readJson, requireFolder } from './jsonFiles';

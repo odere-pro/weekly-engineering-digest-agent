@@ -3,7 +3,7 @@
 import type { Thresholds } from '../../src/config/schema';
 import { WeekIdSchema } from '../../src/domain/schemas';
 import { DigestError } from '../../src/shared/errors';
-import { classifierAccuracy } from '../metrics';
+import { classifierAccuracy } from '../metrics/ranking/classifier';
 import { isFailed, type ClassifierRecord, type RawCapture } from './capture/schemas';
 import { filterOutcome, filterSamples } from './sweep/filter';
 import { graniteResult, guardFlagPoint, guardSamples } from './sweep/guardFlag';
