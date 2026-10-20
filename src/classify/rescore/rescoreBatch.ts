@@ -34,7 +34,7 @@ export async function rescoreBatch(
       deps.model,
       {
         role: 'write',
-        system: rescoreSystem(deps.focusAreas),
+        system: rescoreSystem(deps.focusAreas, deps.perspective),
         prompt: rescorePrompt(batch, deps.areaHints),
         temperature: GENERATE_TEMPERATURE,
         signal: deps.signal,

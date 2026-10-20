@@ -52,6 +52,9 @@ flowchart TD
   the source title; a summary or `action` is not repaired, and an `action` is not link-repaired.
 - Prompt limits come from `checks/formatCheck.ts`, so prompt and check cannot drift; the writer is
   asked for less (400 words, summary 30, action 15).
+- `WriteDeps.perspective` adds `This week's perspective: <topic>; favour what speaks to it.` after the
+  focus areas in the first and the retry prompt (`cleanPerspective` from classify); absent means the
+  prompts are unchanged. `write.perspective.test.ts` pins it.
 - Writers run in turn (one model in memory); `draftWith` turns a model error into a failure, so a
   failed writer never stops the next. Under 3 items no writer runs (`tooFewItems`).
 - `WriteDeps.signal` (the run's abort signal) goes to every writer call. `writeStep` and `retryStep`

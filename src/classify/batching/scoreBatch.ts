@@ -24,7 +24,7 @@ export async function scoreBatch(
     deps.model,
     {
       role: 'classify',
-      system: classifyBatchSystem(deps.focusAreas),
+      system: classifyBatchSystem(deps.focusAreas, deps.perspective),
       prompt: classifyBatchPrompt(batch, deps.areaHints),
       temperature: GENERATE_TEMPERATURE,
       signal: deps.signal,

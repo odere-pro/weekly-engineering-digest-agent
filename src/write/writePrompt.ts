@@ -7,6 +7,7 @@ import {
 } from '../checks/formatCheck';
 import { MALFORMED_LINK_PROBLEM, UNKNOWN_URL_PROBLEM } from '../checks/linkCheck';
 import type { ScoredItem } from '../classify/classification';
+import { cleanPerspective } from '../classify/classifyPrompt';
 import { truncate } from '../shared/text';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted';
 
@@ -83,9 +84,17 @@ function describeItem(item: ScoredItem): string {
 }
 
 /** Focus areas and the wrapped items: what every attempt shows the writer first. */
-function inputParts(items: readonly ScoredItem[], focusAreas: readonly string[]): string[] {
+function inputParts(
+  items: readonly ScoredItem[],
+  focusAreas: readonly string[],
+  perspective: string | undefined,
+): string[] {
+  const topic = cleanPerspective(perspective);
   return [
     `Focus areas:\n${focusAreas.map((area) => `- ${area}`).join('\n')}`,
+    ...(topic === undefined
+      ? []
+      : [`This week's perspective: ${topic}; favour what speaks to it.`]),
     `This week's top items (${items.length}):`,
     ...items.map((item) => wrapUntrusted(item.id, describeItem(item))),
   ];
@@ -97,8 +106,12 @@ const WRITE_NOW = 'Write the digest as JSON now.';
 export function buildWritePrompt(
   items: readonly ScoredItem[],
   focusAreas: readonly string[],
+  perspective?: string,
 ): WritePrompt {
-  return { system: SYSTEM, prompt: [...inputParts(items, focusAreas), WRITE_NOW].join('\n\n') };
+  return {
+    system: SYSTEM,
+    prompt: [...inputParts(items, focusAreas, perspective), WRITE_NOW].join('\n\n'),
+  };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -169,6 +182,7 @@ export function buildRetryPrompt(
   items: readonly ScoredItem[],
   focusAreas: readonly string[],
   problems: readonly string[],
+  perspective?: string,
 ): WritePrompt {
   // The same fault in several links is one line: five bad links must not push a different
   // problem out of the bound.
@@ -177,7 +191,7 @@ export function buildRetryPrompt(
     .map((problem) => `- ${problem}`)
     .join('\n');
   const prompt = [
-    ...inputParts(items, focusAreas),
+    ...inputParts(items, focusAreas, perspective),
     RETRY_NOTICE,
     wrapUntrusted('check-problems', listed),
     RETRY_INSTRUCTION,

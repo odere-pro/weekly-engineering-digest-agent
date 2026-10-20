@@ -46,6 +46,11 @@ flowchart TD
 
 ## Rules
 
+- `ClassifierDeps.perspective` (a "run again" topic) reaches every prompt that judges relevance: the
+  relevance question (decide), `classifyBatchSystem` and `rescoreSystem` (a `This week's perspective:`
+  line). Area, hype and minorRelease questions are unchanged; without a perspective every prompt is
+  byte-identical. `cleanPerspective` makes it one printable line without `"`. `pairwiseRank` does not
+  take it (experiment only). `classify.perspective.test.ts` checks each path's request.
 - A missing or wrongly typed answer, or an area that is not an option, throws `DigestError` (step
   `classify`): a guessed score would ship a wrong digest. Values are validated, never clamped.
 - Decide calls run one at a time: the decision endpoint takes one state per call.

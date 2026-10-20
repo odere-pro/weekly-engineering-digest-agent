@@ -65,7 +65,7 @@ function rescoreFloorOf(deps: ClassifyDeps): number | undefined {
 
 /** Decide mode: one decision call per item, one at a time (the endpoint takes one state). */
 async function classifyEach(items: readonly Item[], deps: ClassifyDeps): Promise<ScoredItem[]> {
-  const questions = classifyQuestions(deps.focusAreas);
+  const questions = classifyQuestions(deps.focusAreas, deps.perspective);
   const areas = new Set(areaOptions(deps.focusAreas));
   const scored: ScoredItem[] = [];
   const progress = startProgress({

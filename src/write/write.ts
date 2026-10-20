@@ -28,6 +28,8 @@ export interface WriteDeps {
    * step then rejects with the signal's reason; an aborted writer is never listed as failed.
    */
   signal?: AbortSignal;
+  /** This week's extra topic from a "run again"; the writers are asked to favour it. */
+  perspective?: string;
 }
 
 export interface WriteOutput {
@@ -55,7 +57,7 @@ export async function writeStep(
   deps: WriteDeps,
 ): Promise<WriteOutput> {
   if (items.length < DIGEST_MIN_ITEMS) return tooFewItems(items.length, deps);
-  const prompt = buildWritePrompt(items, deps.focusAreas);
+  const prompt = buildWritePrompt(items, deps.focusAreas, deps.perspective);
   const sources = new Map(items.map((item) => [item.id, item]));
   const outcomes: WriterOutcome[] = [];
   // Sequential on purpose: one model in memory at a time (OLLAMA_MAX_LOADED_MODELS=1).
@@ -82,7 +84,7 @@ export async function retryStep(
   const outcomes: WriterOutcome[] = [];
   for (const { writer, problems } of requests) {
     deps.signal?.throwIfAborted();
-    const prompt = buildRetryPrompt(items, deps.focusAreas, problems);
+    const prompt = buildRetryPrompt(items, deps.focusAreas, problems, deps.perspective);
     outcomes.push(await draftWith(writer, prompt, sources, retryDeps));
   }
   return summarize(outcomes);

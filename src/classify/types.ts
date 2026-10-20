@@ -17,4 +17,6 @@ export interface ClassifierDeps {
    * the writer rescore (otherwise lenient) takes it for a failed batch.
    */
   signal?: AbortSignal;
+  /** This week's extra topic ("run again" with a new perspective); absent means the prompts are unchanged. */
+  perspective?: string;
 }
