@@ -24,11 +24,11 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  start["runCommand: deps over defaults"] --> args["parseSince, parseSeed, parseOut: a bad value is a DigestError"]
-  args --> load["loadConfig, withSeed, withOut: a new LoadedConfig"] --> app["buildApp"]
+  start["runCommand: deps over defaults"] --> args["parseSince, parseSeed, parseOut (flags/): a bad value is a DigestError"]
+  args --> load["loadConfig, withSeed, withOut (flags/): a new LoadedConfig"] --> app["buildApp"]
   app --> go["runDigest(app.deps, sinceDays, dryRun, force)"]
-  go --> copy["dry run with a digest: saveDryRunCopy, the markdown channel's sendDigest"]
-  copy --> print["localFilesOf, printSummary: stdout; the run's own error on stderr"]
+  go --> copy["dry run with a digest: dryRunCopy → saveLocalCopy, the markdown channel's sendDigest"]
+  copy --> print["localFilesOf, printSummary (summary/): stdout; the run's own error on stderr"]
   print --> code["result.exitCode, or 1 when the dry-run copy failed"]
   app & go -.->|"always"| close["closeApp in finally"]
   start -.->|"error escapes"| err["stderr: DigestError code, else 1"]
@@ -44,7 +44,7 @@ flowchart TD
 - Everything printed passes a redactor built from `knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL)`:
   the secret values, the Slack webhook path and the `OLLAMA_URL` password. Until the config loads the
   list is empty, so an error from the loader is printed as it is (the loader never quotes a value).
-- A dry run still writes the digest: `saveDryRunCopy` gives the message to the `markdown` channel
+- A dry run still writes the digest: `saveLocalCopy` (`summary/`) gives the message to the `markdown` channel
   only (found by `id`), so email and Slack get nothing; a file is not a send. It writes nothing when
   the run kept the week's earlier files or there is no markdown channel, and it never throws. A
   failed write prints `Error: could not write the dry-run digest to <dir>` after the summary and
@@ -60,9 +60,13 @@ flowchart TD
 
 ## Files
 
-| File     | Role                                                                                   |
-| -------- | -------------------------------------------------------------------------------------- |
-| `run.ts` | `runCommand`, `RunCommandOptions`, `RunCommandDeps`, flag checks, dry-run copy, report |
+| File                    | Role                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `run.ts`                | `runCommand`, `RunCommandOptions`, `RunCommandDeps`, `closeApp`, dry-run condition |
+| `flags/flags.ts`        | `parseSeed`, `withSeed`, `parseOut`, `withOut` (see `flags/CLAUDE.md`)             |
+| `summary/summary.ts`    | `printSummary`, `statusNote`, `keptNote`, `Reporter`                               |
+| `summary/localFiles.ts` | `localFilesOf`: which local digest files exist                                     |
+| `summary/localCopy.ts`  | `saveLocalCopy`: the Markdown channel's write (see `summary/CLAUDE.md`)            |
 
 Tests are split by case: `run.test.ts` (wiring, `--since`, exit codes, closing, default deps),
 `run.summary.test.ts` (summary, rejected drafts, secrets), `run.out.test.ts` (`--out`, local files),
@@ -71,8 +75,8 @@ channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured o
 
 ## Gotchas
 
-- `run.ts` is 278 lines; the cap is 300. Extract a subfolder (the summary, the dry-run copy) before
-  adding code.
+- `run.ts` is about 117 lines; the cap is 300. Flags and the summary live in `flags/` and `summary/`:
+  add code there, not here.
 - Two adapter imports are on purpose: `markdownFileOptions`, `markdownFolder` and `digestFilePaths`
   (`delivery/adapters/markdownFile`) give the paths the channel writes to, and `DIGEST_FILE`
   (`store/adapters/runFolders`) names the run folder's `digest.md`. The `RunStore` port returns file
