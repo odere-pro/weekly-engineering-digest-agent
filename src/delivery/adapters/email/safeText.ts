@@ -16,7 +16,7 @@ export function oneLine(text: string): string {
 }
 
 /** A release title on one line, or a placeholder when nothing is left of it. */
-export function titleOf(item: DigestViewItem): string {
+export function titleOf(item: Pick<DigestViewItem, 'title'>): string {
   return oneLine(item.title) || UNTITLED;
 }
 

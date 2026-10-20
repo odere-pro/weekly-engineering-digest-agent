@@ -26,6 +26,8 @@ flowchart TD
 - The HTML has inline styles only (no script, style block, form, remote image or font). The page,
   the card and every table cell set their own background and text colour: a client that darkens
   the mail cannot show light text on a light page.
+- `view.variant` adds ` (<label>)` to the title (`variantTitle.ts`); `view.appendix` follows the
+  footer: one heading, then a heading and a list per area, escaped like item text.
 - A group without items is skipped. A footer shows only when text is left after `oneLine`.
 
 ## Files

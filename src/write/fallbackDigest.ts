@@ -3,22 +3,15 @@ import type { Digest, DigestItem, Draft, Item } from '../domain/schemas';
 import type { ScoredItem } from '../classify/classification';
 import type { GuardCheckId } from '../guards/guardVerdict';
 import type { RenderOptions } from '../render/markdown';
-import { truncate } from '../shared/text';
+import { cutSummary, plain, titleOf } from '../render/sourceLine';
 import { codeCheck } from './checkedStep/codeCheck';
 import type { CodeChecked } from './checkedStep/types';
-import { SOURCE_TITLE_MAX_CHARS, safeSourceText } from './tidy/sourceText';
 
 /** The `writer` of the fallback draft in the run record. */
 export const FALLBACK_WRITER = 'fallback';
 
-const NO_SUMMARY = 'No summary in the source.';
 const INTRO = "These are the selected releases, in the sources' own words.";
 const MAX_AREAS = 3;
-const ELLIPSIS = '...';
-const EM_DASH = /(?:(?<!\s)\s+)?—+\s*/g;
-const WORD = /[\p{L}\p{N}]/u;
-/** A sentence ends at ., ! or ? followed by a space, so "1.0" and "v2.1.3" do not end one. */
-const SENTENCE_END = /(?<=[.!?])\s+/;
 
 export interface FallbackOptions {
   readonly weekId: string;
@@ -27,44 +20,6 @@ export interface FallbackOptions {
   /** Every collected item: the link check accepts only their URLs. */
   readonly collected: readonly Item[];
   readonly disabledGuards: readonly GuardCheckId[];
-}
-
-/**
- * Plain text from a source: one line, no link-like token and no `href=` or `src=` attribute
- * (`safeSourceText`), no em dash (the format check rejects it), no pipe (a table cell separator).
- * Backslashes go first, so `href\\=` cannot hide an attribute. Pure.
- */
-function plain(text: string): string {
-  return safeSourceText(text.replace(EM_DASH, ' - ').replaceAll('|', ' ').replaceAll('\\', ''));
-}
-
-const wordsOf = (text: string): string[] => text.split(' ').filter((t) => WORD.test(t));
-
-/**
- * The first whole sentences of the text that fit in `maxWords`. A first sentence that is longer
- * than that is cut at a word and ends in "...". An empty text gives a fixed line.
- */
-export function cutSummary(text: string, maxWords: number): string {
-  const clean = plain(text);
-  if (clean === '') return NO_SUMMARY;
-  const kept: string[] = [];
-  let count = 0;
-  for (const sentence of clean.split(SENTENCE_END)) {
-    const next = count + wordsOf(sentence.trim()).length;
-    if (next > maxWords) break;
-    kept.push(sentence.trim());
-    count = next;
-  }
-  if (kept.length > 0) return kept.join(' ');
-  return `${clean
-    .split(' ')
-    .slice(0, maxWords)
-    .join(' ')
-    .replace(/(?<![.,;:!?])[.,;:!?]+$/, '')}${ELLIPSIS}`;
-}
-
-function titleOf(item: Item): string {
-  return truncate(plain(item.title), SOURCE_TITLE_MAX_CHARS).trim() || item.url;
 }
 
 function headlineOf(items: readonly ScoredItem[]): string {

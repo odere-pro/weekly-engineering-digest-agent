@@ -46,10 +46,13 @@ function cell(text: string): string {
 }
 
 /** Text in `[...]` of a link: backslashes, brackets, pipes and angle brackets are escaped, as linkCheck decodes them. */
-const escapeLinkText = (text: string): string => text.replace(/[\\[\]|<>]/g, '\\$&');
+export const escapeLinkText = (text: string): string => text.replace(/[\\[\]|<>]/g, '\\$&');
 
 /** The destination in `(...)` of a link: backslashes, pipes and angle brackets are escaped the same way. */
-const escapeDestination = (url: string): string => url.replace(/[\\|<>]/g, '\\$&');
+export const escapeDestination = (url: string): string => url.replace(/[\\|<>]/g, '\\$&');
+
+/** One line of text with `<` and `>` escaped, for a heading or a list line outside a table. */
+export const escapeLine = (text: string): string => escapeBefore(visibleLine(text), ANGLES);
 
 /** The release cell: the title, linked to the item's page. A blank title shows the url. */
 function releaseCell({ title, url }: DigestViewItem): string {

@@ -2,7 +2,7 @@
 
 > Fixes the two text faults writers copy from feeds, em dashes and a title that says its release
 > tag twice, and cleans source text before the digest prints it. Entries: `withoutEmDashes(text)`
-> (`emDashes.ts`), `tidyTitle(item)` (`title.ts`), `safeSourceText(text)` (`sourceText.ts`).
+> (`emDashes.ts`), `tidyTitle(item)` (`title.ts`) (`safeSourceText` moved to `render/sourceText.ts`).
 
 ## Flow
 
@@ -37,14 +37,12 @@ flowchart TD
 
 ## Files
 
-| File                 | Role                                                                            |
-| -------------------- | ------------------------------------------------------------------------------- |
-| `emDashes.ts`        | `withoutEmDashes`                                                               |
-| `title.ts`           | `tidyTitle`, `collapseRestatedTag`, `comparableWords`, `withoutTrailingDots`    |
-| `sourceText.ts`      | `safeSourceText`, `SOURCE_TITLE_MAX_CHARS` (120, the cut of a source title)     |
-| `emDashes.test.ts`   | Runs, ends of the text, text that must stay as it is                            |
-| `title.test.ts`      | Collapsing and not collapsing, the words compared, dots, speed on hostile input |
-| `sourceText.test.ts` | Each link-like token, clean text left alone, speed on hostile input             |
+| File               | Role                                                                            |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `emDashes.ts`      | `withoutEmDashes`                                                               |
+| `title.ts`         | `tidyTitle`, `collapseRestatedTag`, `comparableWords`, `withoutTrailingDots`    |
+| `emDashes.test.ts` | Runs, ends of the text, text that must stay as it is                            |
+| `title.test.ts`    | Collapsing and not collapsing, the words compared, dots, speed on hostile input |
 
 ## Gotchas
 

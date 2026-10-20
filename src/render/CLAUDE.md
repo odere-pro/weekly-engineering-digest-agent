@@ -40,6 +40,13 @@ flowchart TD
 - `readSavedDigest` (`{ headline, urls }`) also reads the layout before urgency (`# headline`,
   `[Source](url)` lines), so a week part-delivered across an upgrade resumes.
 
+- A view may carry a `variant` label (`enriched`, `perspective: security`) and an `appendix` (every
+  release of the week by area). `buildAppendix(items)` takes title and line from the item's own text
+  (`sourceLine.ts`: `plain`, `cutSummary`, `titleOf`, moved from `write/fallbackDigest`; it uses
+  `sourceText.ts`, `safeSourceText`), never model text. `renderAppendix` writes `## Everything this
+week`, `### <area>` and `- [title](url): line`, escaped as a table item is. `renderView` does not
+  draw either: the Markdown caller appends the appendix, each channel renders its own.
+
 ## Rules
 
 - Pure: no I/O, no model call, inputs unchanged. Titles, labels and the footer come from code.

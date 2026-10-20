@@ -1,5 +1,12 @@
 import type { DigestMessage, FailureNote } from '../../delivery/Delivery';
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../render/digestView';
+import type {
+  DigestAppendix,
+  DigestAppendixGroup,
+  DigestAppendixItem,
+  DigestView,
+  DigestViewGroup,
+  DigestViewItem,
+} from '../../render/digestView';
 import type { Redactor } from '../../observability/redact';
 
 /**
@@ -27,12 +34,32 @@ const GROUP_RULES: FieldRules<DigestViewGroup> = {
   items: (items, redactor) => items.map((item) => redactFields(item, ITEM_RULES, redactor)),
 };
 
+const APPENDIX_ITEM_RULES: FieldRules<DigestAppendixItem> = {
+  title: text,
+  url: text,
+  line: text,
+};
+
+const APPENDIX_GROUP_RULES: FieldRules<DigestAppendixGroup> = {
+  area: text,
+  items: (items, redactor) =>
+    items.map((item) => redactFields(item, APPENDIX_ITEM_RULES, redactor)),
+};
+
+const APPENDIX_RULES: FieldRules<DigestAppendix> = {
+  title: text,
+  groups: (groups, redactor) =>
+    groups.map((group) => redactFields(group, APPENDIX_GROUP_RULES, redactor)),
+};
+
 const VIEW_RULES: FieldRules<DigestView> = {
   weekId: unchanged,
   title: text,
   headline: text,
   groups: (groups, redactor) => groups.map((group) => redactFields(group, GROUP_RULES, redactor)),
   footer: text,
+  variant: text,
+  appendix: (appendix, redactor) => redactFields(appendix, APPENDIX_RULES, redactor),
 };
 
 const MESSAGE_RULES: FieldRules<DigestMessage> = {

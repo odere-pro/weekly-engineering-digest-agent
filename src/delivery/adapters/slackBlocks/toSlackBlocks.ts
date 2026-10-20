@@ -1,4 +1,10 @@
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
+import type {
+  DigestAppendix,
+  DigestAppendixItem,
+  DigestView,
+  DigestViewGroup,
+  DigestViewItem,
+} from '../../../render/digestView';
 import { truncate } from '../../../shared/text';
 import { visibleLine } from '../../../render/visibleLine';
 import { escapeSlack } from './slackFormat';
@@ -27,6 +33,8 @@ const MAX_HEADER_CHARS = 150;
 const MAX_TITLE_CHARS = 200;
 const MAX_WHAT_CHANGED_CHARS = 1000;
 const MAX_ACTION_CHARS = 400;
+const MAX_APPENDIX_LINE_CHARS = 200;
+const MAX_VARIANT_CHARS = 60;
 const MAX_URL_CHARS = 1200;
 const MAX_LABEL_CHARS = 100;
 const MAX_HEADLINE_CHARS = 600;
@@ -99,6 +107,28 @@ function bulletOf(item: DigestViewItem): string {
   return action === '' ? first : `${first}\n${ARROW} ${action}`;
 }
 
+/** `• <url|title>: line` for one appendix release. */
+function appendixBullet(item: DigestAppendixItem): string {
+  const title = fitEscaped(oneLine(item.title), MAX_TITLE_CHARS);
+  const target = linkTarget(item.url);
+  const shownTitle = target === undefined ? title : `<${target}|${title}>`;
+  return `${BULLET} ${shownTitle}: ${fitEscaped(oneLine(item.line), MAX_APPENDIX_LINE_CHARS)}`;
+}
+
+/** The appendix heading, then one section per area (more when an area outgrows a section). */
+function appendixBlocks(appendix: DigestAppendix): SlackBlock[] {
+  const heading = contextBlock(`*${fitEscaped(oneLine(appendix.title), MAX_LABEL_CHARS)}*`);
+  const areas = appendix.groups
+    .filter((group) => group.items.length > 0)
+    .flatMap((group) =>
+      packSections(
+        `*${fitEscaped(oneLine(group.area), MAX_LABEL_CHARS)}*`,
+        group.items.map(appendixBullet),
+      ).map(sectionBlock),
+    );
+  return [divider(), heading, ...areas];
+}
+
 /** Fills sections in order: the label opens the first, and a bullet starts a new one when full. */
 function packSections(label: string, bullets: readonly string[]): string[] {
   const full: string[] = [];
@@ -148,7 +178,9 @@ function fitBlocks(body: readonly SlackBlock[], room: number): readonly SlackBlo
  */
 export function toSlackBlocks(view: DigestView): SlackMessage {
   // Slack rejects a header or context block with empty text, and with it the whole message.
-  const title = truncate(oneLine(view.title) || `Weekly digest ${view.weekId}`, MAX_HEADER_CHARS);
+  const base = oneLine(view.title) || `Weekly digest ${view.weekId}`;
+  const variant = truncate(oneLine(view.variant ?? ''), MAX_VARIANT_CHARS);
+  const title = truncate(variant === '' ? base : `${base} (${variant})`, MAX_HEADER_CHARS);
   const headline = fitEscaped(oneLine(view.headline), MAX_HEADLINE_CHARS);
   const footer = fitEscaped(oneLine(view.footer ?? ''), MAX_FOOTER_CHARS);
   const head: SlackBlock[] = [
@@ -157,8 +189,12 @@ export function toSlackBlocks(view: DigestView): SlackMessage {
   ];
   const tail = footer === '' ? [] : [contextBlock(footer)];
   const room = MAX_BLOCKS - head.length - tail.length;
+  const body = [
+    ...bodyBlocks(view.groups),
+    ...(view.appendix ? appendixBlocks(view.appendix) : []),
+  ];
   return {
     text: headline === '' ? escapeSlack(title) : `${escapeSlack(title)}\n${headline}`,
-    blocks: [...head, ...fitBlocks(bodyBlocks(view.groups), room), ...tail],
+    blocks: [...head, ...fitBlocks(body, room), ...tail],
   };
 }

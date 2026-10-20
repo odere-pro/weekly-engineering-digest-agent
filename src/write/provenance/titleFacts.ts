@@ -2,7 +2,7 @@ import type { ScoredItem } from '../../classify/classification';
 import type { DigestItem } from '../../domain/schemas';
 import type { Logger } from '../../shared/telemetry';
 import { printableLine, truncate } from '../../shared/text';
-import { SOURCE_TITLE_MAX_CHARS, safeSourceText } from '../tidy/sourceText';
+import { SOURCE_TITLE_MAX_CHARS, safeSourceText } from '../../render/sourceText';
 import { missingFacts } from './factTokens';
 import { loggedId } from './loggedId';
 

@@ -34,6 +34,9 @@ flowchart TD
   runs before the escaping, so the headings, bold and links are read from clean text.
 - Pure: the same view gives the same message, and each divider is a new object.
 
+- `view.variant` is a header suffix; `view.appendix` is a divider, a heading and one section per area
+  after the groups, all inside the same 50-block cap (`fitBlocks` cuts and says so).
+
 ## Files
 
 | File               | Role                                                                    |

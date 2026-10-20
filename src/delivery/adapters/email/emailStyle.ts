@@ -23,6 +23,8 @@ export const STYLE = {
   title: `margin:0 0 8px;font-size:22px;line-height:1.3;font-weight:700;color:${COLOR.text};`,
   headline: `margin:0 0 20px;font-size:16px;color:${COLOR.muted};`,
   group: `margin:24px 0 8px;font-size:17px;line-height:1.3;font-weight:700;color:${COLOR.text};`,
+  area: `margin:16px 0 4px;font-size:15px;line-height:1.3;font-weight:700;color:${COLOR.text};`,
+  list: `margin:0;padding-left:20px;font-size:14px;line-height:1.45;color:${COLOR.text};`,
   table: `width:100%;border-collapse:collapse;background-color:${COLOR.card};`,
   th: `padding:8px 10px;border-bottom:2px solid ${COLOR.border};background-color:${COLOR.head};color:${COLOR.text};font-size:13px;font-weight:700;text-align:left;vertical-align:bottom;`,
   td: `padding:10px;border-bottom:1px solid ${COLOR.border};background-color:${COLOR.card};color:${COLOR.text};font-size:14px;line-height:1.45;text-align:left;vertical-align:top;`,

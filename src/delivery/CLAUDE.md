@@ -83,7 +83,11 @@ flowchart TD
   `cli/run` uses `digestFilePaths`, `markdownFolder`.
 - A new channel needs its id in `Delivery.id` and `DeliveryIdSchema`, an entry in
   `DeliveryConfigSchema` (frozen `config/schema.ts`) and a branch in `app/container.ts`.
+- A message with `variant` (a `[a-z0-9-]` slug, at most 60) writes `<week>-<variant>.md/.html` beside
+  the week's own files and never removes `<week>.failed.md` or `<week>.md`. The email and Slack title
+  gets ` (<label>)` from `view.variant`, and `view.appendix` is shown after the footer.
 - `store` prune keeps the files named `<week>.*` in a week's `digest/` folder: keep that prefix on
-  every file this channel writes there.
+  every file this channel writes there. `<week>-<variant>.*` does not match `<week>.`: `pruneWeekFolder`
+  (`store/adapters/runFolders.ts`) needs a matching rule before variants survive a prune.
 - `deliveryRetry.test.ts` imports `app/retryingDelivery`: change the facts and the rule together.
   A send can still land twice if the server took it, then answered 429/5xx or SMTP 421/450/451.

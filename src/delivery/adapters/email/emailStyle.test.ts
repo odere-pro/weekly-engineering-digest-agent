@@ -39,6 +39,8 @@ describe('STYLE', () => {
     'title',
     'headline',
     'group',
+    'area',
+    'list',
     'th',
     'td',
     'mutedTd',

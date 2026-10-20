@@ -1,4 +1,10 @@
-import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../render/digestView';
+import type {
+  DigestAppendix,
+  DigestAppendixItem,
+  DigestView,
+  DigestViewGroup,
+  DigestViewItem,
+} from '../../../render/digestView';
 import {
   columnsOf,
   groupsWithItems,
@@ -9,6 +15,7 @@ import {
 } from './emailLayout';
 import { STYLE } from './emailStyle';
 import { escapeHtml, httpUrl, oneLine, titleOf } from './safeText';
+import { withVariant } from './variantTitle';
 
 /** A model string, cleaned to one line and escaped for element text. */
 function html(text: string): string {
@@ -57,6 +64,30 @@ function htmlGroup(group: DigestViewGroup): string {
   ].join('\n');
 }
 
+function htmlAppendixItem(item: DigestAppendixItem): string {
+  const title = escapeHtml(titleOf(item));
+  const url = httpUrl(item.url);
+  const link = url
+    ? `<a href="${escapeHtml(url)}" rel="noopener" style="${STYLE.link}">${title}</a>`
+    : title;
+  return `<li>${link}: ${html(item.line)}</li>`;
+}
+
+/** One heading, then a heading and a list per area. */
+function htmlAppendix(appendix: DigestAppendix): string {
+  const groups = appendix.groups
+    .filter((group) => group.items.length > 0)
+    .map((group) =>
+      [
+        `<h3 style="${STYLE.area}">${html(group.area)}</h3>`,
+        `<ul style="${STYLE.list}">`,
+        ...group.items.map(htmlAppendixItem),
+        '</ul>',
+      ].join('\n'),
+    );
+  return [`<h2 style="${STYLE.group}">${html(appendix.title)}</h2>`, ...groups].join('\n');
+}
+
 /**
  * The digest as a small, self-contained HTML document: title, headline, then one table per
  * urgency. Inline styles only: no script, style block, remote image or font. Every model string
@@ -64,11 +95,13 @@ function htmlGroup(group: DigestViewGroup): string {
  */
 export function renderEmailHtml(view: DigestView): string {
   const footer = html(view.footer ?? '');
+  const title = html(withVariant(view));
   const body = [
-    `<h1 style="${STYLE.title}">${html(view.title)}</h1>`,
+    `<h1 style="${STYLE.title}">${title}</h1>`,
     `<p style="${STYLE.headline}"><em>${html(view.headline)}</em></p>`,
     ...groupsWithItems(view).map(htmlGroup),
     ...(footer ? [`<p style="${STYLE.footer}">${footer}</p>`] : []),
+    ...(view.appendix ? [htmlAppendix(view.appendix)] : []),
   ].join('\n');
   return [
     '<!doctype html>',
@@ -80,7 +113,7 @@ export function renderEmailHtml(view: DigestView): string {
     // text colour, and these tags tell clients not to invert them again.
     '<meta name="color-scheme" content="light dark">',
     '<meta name="supported-color-schemes" content="light dark">',
-    `<title>${html(view.title)}</title>`,
+    `<title>${title}</title>`,
     '</head>',
     `<body style="${STYLE.body}">`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="${STYLE.outer}">`,

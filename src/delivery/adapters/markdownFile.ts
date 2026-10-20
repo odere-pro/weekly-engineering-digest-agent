@@ -41,10 +41,24 @@ function assertWeekId(weekId: string): void {
   }
 }
 
-/** `<dir>/<weekId>.md` and `<dir>/<weekId>.html`; throws for anything but an ISO week id. */
-export function digestFilePaths(dir: string, weekId: string): DigestFilePaths {
+const VARIANT_PATTERN = /^[a-z0-9][a-z0-9-]{0,59}$/;
+
+/** A variant slug becomes part of a file name, so only `[a-z0-9-]` (at most 60) is allowed. */
+function assertVariant(variant: string): void {
+  if (!VARIANT_PATTERN.test(variant)) {
+    throw new Error(`Cannot deliver to a file: invalid variant ${JSON.stringify(variant)}`);
+  }
+}
+
+/**
+ * `<dir>/<weekId>.md` and `.html`, or `<dir>/<weekId>-<variant>.md` and `.html` for a variant
+ * digest; throws for anything but an ISO week id and a `[a-z0-9-]` slug.
+ */
+export function digestFilePaths(dir: string, weekId: string, variant?: string): DigestFilePaths {
   assertWeekId(weekId);
-  return { markdown: join(dir, `${weekId}.md`), html: join(dir, `${weekId}.html`) };
+  if (variant !== undefined) assertVariant(variant);
+  const base = variant === undefined ? weekId : `${weekId}-${variant}`;
+  return { markdown: join(dir, `${base}.md`), html: join(dir, `${base}.html`) };
 }
 
 /** `<dir>/<weekId>.failed.md`: where a failure note for the week is written. */
@@ -58,7 +72,7 @@ function failureMarkdown(note: FailureNote): string {
 }
 
 /**
- * Always-on delivery: writes <folder>/<weekId>.md (W1-12) and, when the message carries its view,
+ * Always-on delivery: writes <folder>/<weekId>.md (W1-12), or <weekId>-<variant>.md for a variant and, when the message carries its view,
  * <folder>/<weekId>.html (W8-05), the same page the email channel sends, so the digest opens in a
  * browser. A digest without a view removes the week's old .html: the two files never disagree.
  * Once the digest is written the week's failure note (<weekId>.failed.md) goes too: an earlier
@@ -75,7 +89,7 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
 
   async function sendDigest(message: DigestMessage): Promise<void> {
     const folder = markdownFolder(options, message.weekId);
-    const paths = digestFilePaths(folder, message.weekId);
+    const paths = digestFilePaths(folder, message.weekId, message.variant);
     // Rendered before anything is written, so a render failure leaves the folder as it was.
     const html = message.view === undefined ? undefined : renderEmailHtml(message.view);
     await ensureDir(message.weekId);
@@ -85,6 +99,8 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
     // Already clean when this build rendered it; a digest.md saved by an older build is cleaned here.
     await writeFileAtomic(paths.markdown, visibleText(message.markdown));
     if (html !== undefined) await writeFileAtomic(paths.html, html);
+    // A variant is an extra file beside the week's digest: the failure note is not its to clear.
+    if (message.variant !== undefined) return;
     // Last, so a failed write keeps the note: it is then the only record of what went wrong.
     await rm(failureFilePath(folder, message.weekId), { force: true });
   }

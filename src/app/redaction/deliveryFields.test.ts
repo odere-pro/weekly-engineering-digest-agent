@@ -123,6 +123,35 @@ describe('redactMessage', () => {
   });
 });
 
+describe('redactMessage: variant and appendix', () => {
+  it('redacts the label, and every text of the appendix, and keeps the slug', () => {
+    const view: DigestView = {
+      ...VIEW,
+      variant: `perspective ${SECRET}`,
+      appendix: {
+        title: `All ${SECRET}`,
+        groups: [
+          {
+            area: `Area ${SECRET}`,
+            items: [
+              { title: `T ${SECRET}`, url: `https://e.test/?k=${SECRET}`, line: `L ${SECRET}` },
+            ],
+          },
+        ],
+      },
+    };
+
+    const redacted = redactMessage(
+      { weekId: '2026-W42', subject: 's', markdown: 'm', view, variant: 'security' },
+      redactor,
+    );
+
+    expect(JSON.stringify(redacted.view)).not.toContain(SECRET);
+    expect(redacted.view?.appendix?.groups[0]?.items[0]?.line).toBe(`L ${REDACTED}`);
+    expect(redacted.variant).toBe('security');
+  });
+});
+
 describe('redactNote', () => {
   it('redacts the message and keeps the week and the step', () => {
     const note: FailureNote = { weekId: '2026-W42', step: 'deliver', message: `Refused ${SECRET}` };

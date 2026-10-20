@@ -24,6 +24,10 @@ flowchart TD
   `<week>.failed.md`: the title, the step and the error. `sendDigest` removes that week's
   `.failed.md` once the digest is written (a failed write keeps it), and `clearFailure` removes it
   when `endRun` saves a sent week a resume finished. `smtp` and `slack` make `clearFailure` a no-op.
+- A variant digest (`message.variant`) goes to `<week>-<variant>.md` and `.html` (`digestFilePaths`,
+  slug checked by `assertVariant`) and leaves the week's files and `.failed.md` alone. NOTE:
+  `store`'s `pruneWeekFolder` keeps names starting `<runId>.`, so `<week>-<variant>.*` is not kept
+  there yet; that rule is outside this folder.
 - `smtp`: config `delivery.email` (`host`, `port`, `secure`, `requireTLS`, `user`, `from`, `to`);
   `SMTP_PASSWORD` from `.env`. A failure note is a mail titled `failureTitle`, with the reason.
 - `slack`: config `delivery.slack.enabled`; `SLACK_WEBHOOK_URL` from `.env`, https only. A failure

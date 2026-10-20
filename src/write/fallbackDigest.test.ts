@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FALLBACK_NOTE } from '../render/layout';
-import {
-  FALLBACK_WRITER,
-  buildFallbackDigest,
-  checkedFallback,
-  cutSummary,
-} from './fallbackDigest';
+import { FALLBACK_WRITER, buildFallbackDigest, checkedFallback } from './fallbackDigest';
 import { DIGEST_SUMMARY_WORD_LIMIT } from '../checks/formatCheck';
 import { makeScoredItem } from '../../test/builders';
 
@@ -20,33 +15,14 @@ const options = (selected = items()) => ({
   disabledGuards: [],
 });
 
-describe('cutSummary', () => {
-  it('keeps whole sentences that fit under the word limit', () => {
-    const text = 'one two three four five. six seven eight nine ten.';
+describe('buildFallbackDigest without an area', () => {
+  it('uses a fixed headline and the area Releases when no area is usable', () => {
+    const selected = [makeScoredItem({ title: 'Runner' }, { area: ' | ' })];
 
-    expect(cutSummary(text, 6)).toBe('one two three four five.');
-    expect(cutSummary(text, 10)).toBe(text);
-  });
+    const digest = buildFallbackDigest(selected, { weekId: WEEK, topN: 5 });
 
-  it('leaves no href attribute, even one a backslash tried to hide', () => {
-    expect(cutSummary('See href\\=/x and src = "/y" now.', 30)).not.toMatch(/\b(?:href|src)\s*=/i);
-  });
-
-  it('cuts a first sentence that is too long at a word, with an ellipsis', () => {
-    const cut = cutSummary('word '.repeat(100).trim() + '.', 10);
-
-    expect(words(cut)).toBe(10);
-    expect(cut.endsWith('...')).toBe(true);
-  });
-
-  it('drops links, em dashes, pipes and character references from the text', () => {
-    const cut = cutSummary('See https://evil.example/x now — a|b www.evil.test &#99; done.', 40);
-
-    expect(cut).toBe('See now - a b done.');
-  });
-
-  it('gives a fixed line for an empty summary', () => {
-    expect(cutSummary('   ', 40)).toBe('No summary in the source.');
+    expect(digest.headline).toBe('Releases this week');
+    expect(digest.items[0]?.area).toBe('Releases');
   });
 });
 
