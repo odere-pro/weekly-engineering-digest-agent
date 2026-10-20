@@ -10,7 +10,7 @@
 ```mermaid
 flowchart LR
   program["cli/program.ts"] -->|"FetchCommandOptions"| fetch:::focus
-  fetch -.->|"loadConfig, redactSecrets"| cfg[("digest.config.json, .env")]
+  fetch -.->|"loadConfig, knownSecrets"| cfg[("digest.config.json, .env")]
   fetch -.->|"createFetcher, rssAdapter, github adapters, SourceTap"| adapters["sources/adapters"]
   adapters -.-> feeds[("feed hosts, api.github.com")]
   fetch -->|"createSourceArchive: raw, formatted"| archive["sources/adapters/archive"]
@@ -49,7 +49,8 @@ flowchart TD
   One try per source with a 10 s limit, no retry: it shows what a source does the first time.
   Sources run `MAX_CONCURRENT_SOURCES` at once (`sources/collect.ts`), as in a run's collect step.
 - The summary comes last, so a day folder with a summary is complete.
-- Texts the command wrote (table, errors, summary) are cleaned of every secret. Collected data
+- Texts the command wrote (table, errors, summary) are cleaned of every secret, the `OLLAMA_URL`
+  password included (`knownSecrets`). Collected data
   (bodies, items) is cleaned only of the GitHub token, the one secret sent: another secret that is
   a common word must not change what a feed said.
 - Exit code: 0 when every source worked, else 1 (also for any thrown error, printed to stderr).

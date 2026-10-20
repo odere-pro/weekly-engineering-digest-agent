@@ -43,7 +43,8 @@ Tests sit next to each file, no fixtures.
 
 ## Gotchas
 
-- `cli/show` and `cli/preview` import `knownSecrets` from `app/redaction/knownSecrets` and pass only the
-  secrets: they print stored records, which `container.ts` already redacted with the Ollama password.
+- `cli/run`, `cli/fetch`, `cli/doctor`, `cli/show` and `cli/preview` import `knownSecrets` and pass
+  `loaded.env.OLLAMA_URL` too: what they print before (or without) `container.ts`'s redactor, such as
+  an error from `buildApp`, must not show the password either. A new command that prints errors does the same.
 - A new `DigestMessage` or `DigestView` field reaches email, Slack and the file only after it has a rule here.
 - `app/redacting.test.ts` and `container.secrets.test.ts` pin the end result: no secret reaches a channel.

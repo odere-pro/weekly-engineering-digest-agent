@@ -1,6 +1,7 @@
+import { knownSecrets } from '../../app/redaction/knownSecrets';
 import { loadConfig, redactSecrets, type LoadedConfig } from '../../config/load';
-import type { Secrets } from '../../config/schema';
 import { ExitCode } from '../../domain/schemas';
+import { createRedactor, type Redactor } from '../../observability/redact';
 import { systemClock, type Clock } from '../../shared/clock';
 import { mapWithConcurrency } from '../../shared/concurrency';
 import { errorMessage } from '../../shared/errors';
@@ -64,12 +65,13 @@ export async function fetchCommand(
   deps: Partial<FetchCommandDeps> = {},
 ): Promise<number> {
   const io: FetchCommandDeps = { ...defaultDeps, ...deps };
-  let secrets: Secrets = {};
-  const redact = (text: string): string => redactSecrets(text, secrets);
+  // Until the config loads there is nothing to hide; then the secrets and the OLLAMA_URL password.
+  let redactor: Redactor = createRedactor();
+  const redact = (text: string): string => redactor.text(text);
   try {
     const days = parseSince(options.since);
     const loaded = await io.loadConfig({ configPath: options.config });
-    secrets = loaded.secrets;
+    redactor = createRedactor(knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL));
     const plan = planFetch(options, days, loaded, io, redact);
     const folder = await createRunFolder(plan);
     const reports = await mapWithConcurrency(plan.sources, MAX_CONCURRENT_SOURCES, (source) =>
@@ -79,7 +81,7 @@ export async function fetchCommand(
     io.stdout(redact(`${formatTable(reports)}\n\n${formatTotals(reports)}\n`));
     await saveRun(plan, reports, {
       generated: redact,
-      collected: (text) => redactSecrets(text, { GITHUB_TOKEN: secrets.GITHUB_TOKEN }),
+      collected: (text) => redactSecrets(text, { GITHUB_TOKEN: loaded.secrets.GITHUB_TOKEN }),
     });
     io.stdout(redact(`Saved to ${folder}\n`));
     return reports.every((report) => report.ok) ? ExitCode.Sent : ExitCode.Failed;

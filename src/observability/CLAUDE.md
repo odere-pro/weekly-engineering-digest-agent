@@ -72,7 +72,7 @@ Tests sit next to each file; they inject a stream as `destination` and an in-mem
 ## Gotchas
 
 - `Redactor` is also used by `app/redacting.ts` and `app/redaction/` (run store, deliveries),
-  `config/load` (`redactSecrets`), `cli/show`, `cli/preview` and `evals/record/report/reportLogger.ts`.
+  `config/load` (`redactSecrets`), `cli/run`, `cli/fetch`, `cli/doctor`, `cli/show`, `cli/preview` and `evals/record/report/reportLogger.ts`.
 - The span attributes `runId` and `step` also pick the per-run logger (`scopeRuns` in `app/container.ts`).
 - `logger.test.ts` pins the line shape (ISO `time`, `level` label, `service`, no `pid`) and that `%s` in
   a message stays verbatim: call pino with the message as its only string.

@@ -56,7 +56,7 @@ describe('report', () => {
   it('prints each result, a blank line and the summary, and returns 0 without errors', () => {
     const out = capture();
 
-    const code = report([ok('a', 'fine'), warn('b', 'hm', 'do x')], out.stdout, {});
+    const code = report([ok('a', 'fine'), warn('b', 'hm', 'do x')], out.stdout, []);
 
     expect(code).toBe(0);
     expect(out.text()).toBe('✓ a: fine\n! b: hm\n    fix: do x\n\nDoctor: 0 errors, 1 warning.\n');
@@ -65,7 +65,7 @@ describe('report', () => {
   it('returns 1 when any result is an error', () => {
     const out = capture();
 
-    const code = report([ok('a', 'fine'), fail('b', 'broken', 'do x')], out.stdout, {});
+    const code = report([ok('a', 'fine'), fail('b', 'broken', 'do x')], out.stdout, []);
 
     expect(code).toBe(1);
     expect(out.text()).toContain('Doctor: 1 error, 0 warnings.');
@@ -77,7 +77,7 @@ describe('report', () => {
     report(
       [warn('source', 'failed with ghp_supersecrettoken', 'rotate ghp_supersecrettoken')],
       out.stdout,
-      { GITHUB_TOKEN: 'ghp_supersecrettoken' },
+      ['ghp_supersecrettoken'],
     );
 
     expect(out.text()).not.toContain('ghp_supersecrettoken');
@@ -90,7 +90,7 @@ describe('report', () => {
     report(
       [fail('ollama', 'no answer from http://user:tok3n@gpu:11434', 'start it')],
       out.stdout,
-      {},
+      [],
     );
 
     expect(out.text()).toContain('http://gpu:11434');
@@ -144,5 +144,22 @@ describe('doctor report through doctorCommand', () => {
 
     expect(text).not.toContain('ghp_supersecrettoken');
     expect(resultFor(text, '!', 'source example-feed:')).toContain('[redacted]');
+  });
+
+  it('never prints the password of OLLAMA_URL, as written or decoded, nor its user', async () => {
+    const ollamaUrl = 'http://ollama-user:pa%40ss-ollama-9d2@ollama.test:11434';
+    const { text } = await runDoctor({
+      ollamaUrl,
+      health: {
+        reachable: false,
+        models: [],
+        error: `refused ${ollamaUrl}; echoed pa@ss-ollama-9d2`,
+      },
+    });
+
+    expect(text).not.toMatch(/pa@ss-ollama-9d2|pa%40ss-ollama-9d2|ollama-user/);
+    expect(resultFor(text, '✗', 'ollama:')).toContain(
+      'refused http://ollama.test:11434; echoed [redacted]',
+    );
   });
 });

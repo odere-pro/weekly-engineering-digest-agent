@@ -40,7 +40,8 @@ flowchart TD
 - Exit codes are public: 0 sent or ok, 1 failed, 2 blocked, 3 quiet (`run` alone). A `DigestError`
   brings its own code, else 1; `init`, `eval`, `serve` rethrow other errors. `fetch` exits 1 on any
   failure, `doctor` on any `✗`, `eval` on a failed hard gate (not on a partial run).
-- Output is cleaned. Secrets: `redactSecrets` (`run`, `fetch`), `createRedactor` (`show`, `preview`);
+- Output is cleaned. Secrets: `createRedactor(knownSecrets(secrets, env.OLLAMA_URL))` in `run`, `fetch`,
+  `doctor`, `show` and `preview` (the set values, the webhook path, the `OLLAMA_URL` password);
   `doctor` also strips `user:pass@` and names `.env` keys, never values. Feed and model text:
   `show`, `preview`, `fetch`, `eval` strip control, bidi and tag characters; tables cut long cells.
 - `show`, `preview`, `history`, `feedback`, `fetch` build no app, take no lock, call no model.

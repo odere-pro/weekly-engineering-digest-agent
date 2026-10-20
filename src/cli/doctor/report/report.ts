@@ -1,4 +1,4 @@
-import { redactSecrets, type LoadedConfig } from '../../../config/load';
+import { createRedactor } from '../../../observability/redact';
 import { EXIT_FAILED, EXIT_OK } from './exitCodes';
 import type { CheckResult, Severity } from './checkResult';
 import { withoutUrlCredentials } from './withoutUrlCredentials';
@@ -6,18 +6,19 @@ import { withoutUrlCredentials } from './withoutUrlCredentials';
 const SYMBOLS: Readonly<Record<Severity, string>> = { ok: '✓', warn: '!', error: '✗' };
 
 /**
- * Prints every result and a summary line, with secrets and URL credentials removed from the whole
- * text. Returns the exit code: 1 if any result is an error, else 0.
+ * Prints every result and a summary line, with the secret values and URL credentials removed from
+ * the whole text. `secretValues` is what `knownSecrets` returns, the `OLLAMA_URL` password included.
+ * Returns the exit code: 1 if any result is an error, else 0.
  */
 export function report(
   results: readonly CheckResult[],
   stdout: (text: string) => void,
-  secrets: LoadedConfig['secrets'],
+  secretValues: readonly string[],
 ): number {
   const errors = results.filter((r) => r.severity === 'error').length;
   const warnings = results.filter((r) => r.severity === 'warn').length;
   const text = [...results.map(formatResult), '', summary(errors, warnings)].join('\n');
-  stdout(`${withoutUrlCredentials(redactSecrets(text, secrets))}\n`);
+  stdout(`${withoutUrlCredentials(createRedactor(secretValues).text(text))}\n`);
   return errors > 0 ? EXIT_FAILED : EXIT_OK;
 }
 

@@ -2,6 +2,8 @@ import { homedir, totalmem } from 'node:os';
 import { resolve } from 'node:path';
 import { loadConfig } from '../../../config/load';
 import { ProfileNameSchema } from '../../../config/schema';
+import { urlCredentialSecrets } from '../../../models/adapters/endpoint';
+import { createRedactor } from '../../../observability/redact';
 import { EXIT_NONE_FIT, EXIT_OK } from '../report/exitCodes';
 import { withoutUrlCredentials } from '../report/withoutUrlCredentials';
 import type { RowName } from './memory';
@@ -56,6 +58,9 @@ export async function readinessCommand(
     data: await io.freeDiskBytes(resolve(target.dataDir)),
     models: modelsDir === undefined ? undefined : await io.freeDiskBytes(modelsDir),
   };
-  io.stdout(withoutUrlCredentials(render({ target, health, rows, io, modelsDir, disk })));
+  const text = render({ target, health, rows, io, modelsDir, disk });
+  // The URL's credentials are cut by their shape; the password alone, as an error may echo it, by value.
+  const redactor = createRedactor(urlCredentialSecrets(target.ollamaUrl));
+  io.stdout(withoutUrlCredentials(redactor.text(text)));
   return rows.some((row) => row.verdict !== 'not for this machine') ? EXIT_OK : EXIT_NONE_FIT;
 }

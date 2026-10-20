@@ -1,6 +1,7 @@
 import { constants, type Stats } from 'node:fs';
 import { access, lstat, readFile, stat } from 'node:fs/promises';
 import { createModelProvider } from '../../app/container';
+import { knownSecrets } from '../../app/redaction/knownSecrets';
 import { loadConfig, platformOf, type LoadedConfig } from '../../config/load';
 import type { Platform } from '../../config/profiles';
 import { systemClock } from '../../shared/clock';
@@ -60,7 +61,7 @@ export async function doctorCommand(
   const io: DoctorIo = { ...defaultIo, ...overrides };
   if (options.readiness) return runReadiness(options, io);
   const loaded = await tryLoadConfig(options, io);
-  if ('result' in loaded) return report([loaded.result], io.stdout, {});
+  if ('result' in loaded) return report([loaded.result], io.stdout, []);
 
   const { config, profile } = loaded.value;
   const health = await io.createProvider(loaded.value, io.fetch).health();
@@ -80,7 +81,8 @@ export async function doctorCommand(
     checkSchedule(config.schedule, io.clock),
     await checkWritableDir(dataDirCheck(config.dataDir), io),
   ];
-  return report(results, io.stdout, loaded.value.secrets);
+  const { secrets, env } = loaded.value;
+  return report(results, io.stdout, knownSecrets(secrets, env.OLLAMA_URL));
 }
 
 function runReadiness(options: DoctorCommandOptions, io: DoctorIo): Promise<number> {

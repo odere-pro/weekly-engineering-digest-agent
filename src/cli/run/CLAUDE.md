@@ -41,8 +41,9 @@ flowchart TD
 
 ## Rules
 
-- Everything printed passes `redactSecrets` with the secrets of the loaded config. Until the config
-  loads the list is empty, so an error from the loader is printed as it is.
+- Everything printed passes a redactor built from `knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL)`:
+  the secret values, the Slack webhook path and the `OLLAMA_URL` password. Until the config loads the
+  list is empty, so an error from the loader is printed as it is (the loader never quotes a value).
 - A dry run still writes the digest: `saveDryRunCopy` gives the message to the `markdown` channel
   only (found by `id`), so email and Slack get nothing; a file is not a send. It writes nothing when
   the run kept the week's earlier files or there is no markdown channel, and it never throws. A

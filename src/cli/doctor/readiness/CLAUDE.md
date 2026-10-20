@@ -27,6 +27,8 @@ flowchart TD
   the table a line says `quality is tight on 32.0 GiB of RAM:` and quotes `QUALITY_TIGHT_RAM`, the
   measured swap and time that init quotes. It exits 0 like `ready`: the profile runs, slowly.
   `fast` and `fallback` are not measured: they get the 16 GiB floor and print "yes (not measured)".
+- The text loses `user:pass@` from URLs and, by value, the password of `OLLAMA_URL` (as written and
+  decoded): the Ollama error and the config note can echo it alone.
 - A bad `DIGEST_HOST_OS` or `DIGEST_HOST_ARCH` is reported in the note, not thrown. The models folder
   is measured only for a local Ollama (`localhost`, `127.0.0.1`, `[::1]`).
 

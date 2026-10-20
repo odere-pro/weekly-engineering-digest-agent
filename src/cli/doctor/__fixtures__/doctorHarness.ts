@@ -74,6 +74,8 @@ type FsEntry =
 export interface Setup {
   config?: Partial<ConfigInput>;
   secrets?: Secrets;
+  /** OLLAMA_URL as the loader read it; default: http://localhost:11434. */
+  ollamaUrl?: string;
   /** Profile the loader resolved; defaults to the configured profile for `platform`. */
   profile?: ModelProfile;
   platform?: Platform;
@@ -172,7 +174,11 @@ export function loadedFor(setup: Setup = {}): LoadedConfig {
   const profile = setup.profile ?? resolveProfile(config.profile, platform, config.models.writers);
   return {
     config,
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...setup.hostEnv },
+    env: {
+      OLLAMA_URL: setup.ollamaUrl ?? 'http://localhost:11434',
+      LOG_LEVEL: 'info',
+      ...setup.hostEnv,
+    },
     secrets: setup.secrets ?? {},
     profile,
     configPath: CONFIG_PATH,

@@ -45,8 +45,9 @@ flowchart TD
 
 - All outside access goes through `DoctorIo` (`types.ts`): config loader, provider, `fetch`, clock,
   `stat`, `lstat`, `readFile`, `access`, stdout. Tests replace it with a fake machine.
-- Output never carries a secret: `report` redacts the whole text, and the `.env` checks name a key
-  and a line, never a value.
+- Output never carries a secret: `report` redacts the whole text with `knownSecrets(secrets,
+env.OLLAMA_URL)` (the `OLLAMA_URL` password too), and the `.env` checks name a key and a line,
+  never a value.
 - An error is a missing model, an old Ollama, a blocked folder, a missing secret or a schedule that
   `serve` would refuse; a warning (a feed that fails, a loose `.env`, a guard switched off, an
   unknown config key) never fails the exit code.

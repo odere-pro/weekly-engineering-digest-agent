@@ -197,4 +197,40 @@ describe('runCommand: secrets', () => {
     expect(text(h.err)).toContain('delivery failed: [redacted]');
     expect(text(h.out) + text(h.err)).not.toMatch(/hunter2-smtp|ghp_token123/);
   });
+
+  describe('a password inside OLLAMA_URL', () => {
+    const OLLAMA_URL = 'http://ollama-user:pa%40ss-ollama-9d2@ollama.test:11434';
+    const withOllamaUrl = (h: ReturnType<typeof harness>): void => {
+      h.loadConfig.mockResolvedValue({ ...h.loaded, env: { ...h.loaded.env, OLLAMA_URL } });
+    };
+
+    it('never reaches stderr from an error that buildApp throws', async () => {
+      const h = harness();
+      withOllamaUrl(h);
+      h.buildApp.mockRejectedValue(new Error('cannot reach ollama with pa@ss-ollama-9d2'));
+
+      const code = await runCommand({}, h.deps);
+
+      expect(code).toBe(1);
+      expect(text(h.err)).toBe('cannot reach ollama with [redacted]\n');
+      expect(text(h.out)).toBe('');
+    });
+
+    it('never reaches stdout or stderr from the summary and the run error, as written or decoded', async () => {
+      const h = harness(
+        sentResult({
+          status: 'failed',
+          failedSources: [{ sourceId: 'gh', error: 'proxy echoed pa@ss-ollama-9d2' }],
+          error: { message: `ollama failed at ${OLLAMA_URL}`, step: 'classify' },
+        }),
+      );
+      withOllamaUrl(h);
+
+      await runCommand({}, h.deps);
+
+      expect(text(h.out)).toContain('proxy echoed [redacted]');
+      expect(text(h.err)).toContain('ollama failed at http://ollama-user:[redacted]@ollama.test');
+      expect(text(h.out) + text(h.err)).not.toMatch(/pa@ss-ollama-9d2|pa%40ss-ollama-9d2/);
+    });
+  });
 });

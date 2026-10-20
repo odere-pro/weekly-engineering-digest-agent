@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { PROFILES } from '../../../config/profiles';
 import type { LoadedConfig } from '../../../config/load';
-import type { ConfigInput, Secrets } from '../../../config/schema';
+import type { ConfigInput, Env, Secrets } from '../../../config/schema';
 import type { Item, Source } from '../../../domain/schemas';
 import { makeConfig } from '../../../../test/builders';
 import { fixedClock } from '../../../../test/fakes';
@@ -114,6 +114,8 @@ export interface HarnessOptions {
   sources?: Source[];
   config?: Partial<ConfigInput>;
   secrets?: Secrets;
+  /** Settings from .env, over the defaults (OLLAMA_URL, LOG_LEVEL). */
+  env?: Partial<Env>;
   routes?: Record<string, Route>;
   clock?: FetchCommandDeps['clock'];
   sourceTimeoutMs?: number;
@@ -130,7 +132,7 @@ export async function harness(dir: string, options: HarnessOptions = {}): Promis
       dataDir: join(dir, 'data'),
       ...options.config,
     }),
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
+    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...options.env },
     secrets: options.secrets ?? {},
     profile: PROFILES.quality,
     platform: { os: 'darwin', arch: 'arm64' },

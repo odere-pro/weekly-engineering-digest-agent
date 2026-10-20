@@ -8,11 +8,12 @@ import {
 import { DIGEST_FILE } from '../../store/adapters/runFolders';
 import { weekDigestDir } from '../../store/layout';
 import { buildApp, type AppHandle } from '../../app/container';
-import { loadConfig, redactSecrets, type LoadedConfig } from '../../config/load';
-import type { Secrets } from '../../config/schema';
+import { knownSecrets } from '../../app/redaction/knownSecrets';
+import { loadConfig, type LoadedConfig } from '../../config/load';
 import { runDigest } from '../../digest/runDigest';
 import { type DigestDeps, type RunOptions, type RunResult } from '../../digest/types';
 import { ExitCode } from '../../domain/schemas';
+import { createRedactor, type Redactor } from '../../observability/redact';
 import { DigestError, errorMessage } from '../../shared/errors';
 import { parseSince } from '../fetch/plan/parseSince';
 import { formatRunDuration } from '../history/history';
@@ -72,13 +73,14 @@ export async function runCommand(
   deps: Partial<RunCommandDeps> = {},
 ): Promise<number> {
   const io: RunCommandDeps = { ...defaultDeps, ...deps };
-  let secrets: Secrets = {};
+  // Until the config loads there is nothing to hide; then the secrets and the OLLAMA_URL password.
+  let redactor: Redactor = createRedactor();
   const report: Reporter = {
     out: (text) => {
-      io.stdout(redactSecrets(text, secrets));
+      io.stdout(redactor.text(text));
     },
     err: (text) => {
-      io.stderr(redactSecrets(text, secrets));
+      io.stderr(redactor.text(text));
     },
   };
   try {
@@ -89,7 +91,7 @@ export async function runCommand(
       withSeed(await io.loadConfig({ configPath: options.config }), seed),
       out,
     );
-    secrets = loaded.secrets;
+    redactor = createRedactor(knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL));
     const app = await io.buildApp(loaded);
     try {
       const result = await io.runDigest(app.deps, {

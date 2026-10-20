@@ -366,6 +366,21 @@ describe('readinessCommand', () => {
     expect(h.out()).toContain('http://gpu:11434');
   });
 
+  it('removes the password of OLLAMA_URL, as written or decoded, wherever the text carries it', async () => {
+    const h = harness({
+      env: { OLLAMA_URL: 'http://user:pa%40ss-ollama-9d2@gpu:11434' },
+      health: {
+        reachable: false,
+        models: [],
+        error: 'refused, proxy echoed pa@ss-ollama-9d2 and pa%40ss-ollama-9d2',
+      },
+    });
+    await readinessCommand({}, h.io);
+    expect(h.out()).not.toMatch(/pa@ss-ollama-9d2|pa%40ss-ollama-9d2/);
+    expect(h.out()).toContain('proxy echoed [redacted] and [redacted]');
+    expect(h.out()).toContain('http://gpu:11434');
+  });
+
   it('reports a bad DIGEST_HOST_OS instead of throwing', async () => {
     const h = harness({ env: { DIGEST_HOST_OS: 'macos' } });
     delete h.io.platform;

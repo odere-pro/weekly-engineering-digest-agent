@@ -77,4 +77,4 @@ Tests sit next to each file. `load.test.ts` reads `test/fixtures/config/` and pi
 - Two judges, two names: the env variable `EVAL_JUDGE` (`EnvSchema`) is the tag `digest eval` scores
   digests with; `OVERRIDE_JUDGE` (`profiles.ts`) is the judge a multi-writer override gets.
 - `redactSecrets` here takes the `Secrets` object and does not add the Slack webhook path
-  or the `OLLAMA_URL` password (`app/redaction/knownSecrets` does); `delivery/adapters/errors/redact.ts` has another over `string[]`.
+  or the `OLLAMA_URL` password (`app/redaction/knownSecrets` does, and the commands use that); `delivery/adapters/errors/redact.ts` has another over `string[]`.
