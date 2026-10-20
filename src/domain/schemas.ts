@@ -75,6 +75,7 @@ export const StepNameSchema = z.enum([
   'guardInput',
   'classify',
   'process',
+  'guardCandidates',
   'write',
   'guardOutput',
   'select',

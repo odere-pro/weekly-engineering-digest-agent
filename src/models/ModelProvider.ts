@@ -87,7 +87,8 @@ export interface GenerateResult {
 export interface ModelHealth {
   reachable: boolean;
   version?: string;
-  models: readonly { name: string; capabilities: readonly string[] }[];
+  /** `digest`: the content hash Ollama lists for the tag, when it gives one. */
+  models: readonly { name: string; capabilities: readonly string[]; digest?: string }[];
   error?: string;
 }
 
