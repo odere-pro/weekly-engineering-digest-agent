@@ -1,4 +1,5 @@
 import type { LoadedConfig } from '../../../config/load';
+import type { Source } from '../../../domain/schemas';
 import { DigestError } from '../../../shared/errors';
 
 /** The seed is a whole number of 0 or more; commander checks it too, library callers may not. */
@@ -40,5 +41,14 @@ export function withOut(loaded: LoadedConfig, dir: string | undefined): LoadedCo
       ...loaded.config,
       delivery: { ...delivery, markdown: { ...delivery.markdown, dir } },
     },
+  };
+}
+
+/** A new LoadedConfig with `sources` added after the configured ones; the loaded one stays as it was. */
+export function withSources(loaded: LoadedConfig, sources: readonly Source[]): LoadedConfig {
+  if (sources.length === 0) return loaded;
+  return {
+    ...loaded,
+    config: { ...loaded.config, sources: [...loaded.config.sources, ...sources] },
   };
 }

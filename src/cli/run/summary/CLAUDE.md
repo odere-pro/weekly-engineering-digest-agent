@@ -23,7 +23,8 @@ flowchart LR
   throws: a failed write comes back as `error`.
 - `localFilesOf` lists what is on disk. A path it cannot check is left out, so the summary and the
   exit code stay: the listing is a courtesy.
-- The HTML line appears only when the page exists.
+- The HTML line appears only when the page exists. For a variant, `localFilesOf` takes the slug
+  and lists `<week>-<slug>.md/.html`; `printSummary` adds `Variant  <label>`.
 
 ## Files
 
@@ -32,6 +33,7 @@ flowchart LR
 | `summary.ts`    | `printSummary`, `statusNote`, `keptNote`, `Reporter`, `LABEL_WIDTH` |
 | `localFiles.ts` | `localFilesOf`, `LocalFiles`                                        |
 | `localCopy.ts`  | `saveLocalCopy`, `LocalCopy`                                        |
+| `report.ts`     | `reportRun`: `localFilesOf` + `printSummary` for a run or a variant |
 
 Tests sit next to each file; the folder cases are also covered by `../run.*.test.ts`.
 

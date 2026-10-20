@@ -7,12 +7,16 @@ import { ExitCode } from '../../../domain/schemas';
 import type { Delivery } from '../../../delivery/Delivery';
 import type { RunRecord } from '../../../store/runRecord';
 import { makeConfig, makeRunRecord } from '../../../../test/builders';
-import { CapturingDelivery } from '../../../../test/fakes';
+import { CapturingDelivery, MemoryRunStore, fixedClock } from '../../../../test/fakes';
+import { scriptedPrompts, type PromptCall, type Rule } from '../../init/__fixtures__/initHarness';
 import type { RunCommandDeps } from '../run';
 
 // The scripted app and captured output that the `digest run` tests share.
 
 export const DATA_DIR = '/work/data';
+export const CONFIG_PATH = '/work/digest.config.json';
+/** A Wednesday in ISO week 2026-W43. */
+const NOW = '2026-10-21T10:00:00Z';
 
 export interface Harness {
   deps: RunCommandDeps;
@@ -24,6 +28,12 @@ export interface Harness {
   close: Mock<AppHandle['close']>;
   appDeps: DigestDeps;
   loaded: LoadedConfig;
+  /** The run history `createStore` hands out; seed it with `store.records` and `store.artifacts`. */
+  store: MemoryRunStore;
+  /** The questions asked, in order. */
+  calls: PromptCall[];
+  /** The files `writeFile` wrote, by path. */
+  written: Map<string, string>;
 }
 
 export function sentResult(overrides: Partial<RunRecord> = {}, markdown?: string): RunResult {
@@ -55,6 +65,14 @@ export interface HarnessOptions {
   markdownDir?: string;
   /** dataDir in the loaded config; default: DATA_DIR. */
   dataDir?: string;
+  /** Whether a person can answer; default: false (no menu). */
+  interactive?: boolean;
+  /** The scripted user's answers, by prompt message; no rule means Enter. */
+  rules?: readonly Rule[];
+  /** The config file's text, for the save-sources step. */
+  configText?: string;
+  /** Replaces the scripted user, for a prompt that throws. */
+  prompts?: RunCommandDeps['prompts'];
 }
 
 export function harness(
@@ -73,10 +91,19 @@ export function harness(
     secrets: {},
     profile: PROFILES.quality,
     platform: { os: 'darwin', arch: 'arm64' },
-    configPath: '/work/digest.config.json',
+    configPath: CONFIG_PATH,
   };
+  const store = new MemoryRunStore();
+  const scripted = scriptedPrompts(options.rules);
+  const written = new Map<string, string>();
+  const configFile = options.configText;
   // The command hands the deps to runDigest and, for a dry run, writes through their channels.
-  const appDeps = { config: loaded.config, deliveries } as unknown as DigestDeps;
+  const appDeps = {
+    config: loaded.config,
+    deliveries,
+    store,
+    clock: fixedClock(NOW),
+  } as unknown as DigestDeps;
   const close = vi.fn<AppHandle['close']>(() => Promise.resolve());
   const loadConfig = vi.fn<RunCommandDeps['loadConfig']>(() => Promise.resolve(loaded));
   const buildApp = vi.fn<RunCommandDeps['buildApp']>(() =>
@@ -91,8 +118,63 @@ export function harness(
     runDigest,
     stdout: (text) => out.push(text),
     stderr: (text) => err.push(text),
+    prompts: options.prompts ?? scripted.prompts,
+    interactive: options.interactive ?? false,
+    createStore: () => store,
+    clock: fixedClock(NOW),
+    readFile: (path) => Promise.resolve(path === CONFIG_PATH ? configFile : undefined),
+    writeFile: (path, content) => {
+      written.set(path, content);
+      return Promise.resolve();
+    },
   };
-  return { deps, out, err, loadConfig, buildApp, runDigest, close, appDeps, loaded };
+  return {
+    deps,
+    out,
+    err,
+    loadConfig,
+    buildApp,
+    runDigest,
+    close,
+    appDeps,
+    loaded,
+    store,
+    calls: scripted.calls,
+    written,
+  };
 }
 
 export const text = (chunks: readonly string[]): string => chunks.join('');
+
+/** A digest a second run built: the message `runDigest` returns for a variant. */
+export function variantResult(
+  slug: string,
+  urls: readonly string[] = ['https://example.com/a'],
+  overrides: Partial<RunRecord> = {},
+): RunResult {
+  const base = sentResult({ status: 'dry-run', dryRun: true, ...overrides });
+  const markdown = `# Digest\n${urls.map((url) => `[item](${url})`).join('\n')}\n`;
+  return {
+    ...base,
+    exitCode: ExitCode.Sent,
+    markdown,
+    message: {
+      weekId: base.record.runId,
+      subject: `Engineering digest ${base.record.runId} (${slug})`,
+      markdown,
+      variant: slug,
+      view: {
+        weekId: base.record.runId,
+        title: 'Week',
+        headline: 'Headline',
+        groups: [
+          {
+            urgency: 'act-now',
+            label: 'Act now',
+            items: urls.map((url) => ({ title: 'item', url, whatChanged: 'It changed.' })),
+          },
+        ],
+      },
+    },
+  };
+}

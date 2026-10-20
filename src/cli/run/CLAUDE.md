@@ -2,8 +2,10 @@
 
 > `digest run`: one full digest run, then a short report and the run's exit code. Entry:
 > `runCommand(options, deps?) → exit code` (`run.ts`). It checks the flags, builds the app and calls
-> `runDigest` (`digest/`); the pipeline is not here. Tests replace `RunCommandDeps` (config loader,
-> `buildApp`, `runDigest`, stdout, stderr). No port. Reader page: `docs/features/cli.md`.
+> `runDigest` (`digest/`); the pipeline is not here. A second run of a week asks what to do
+> (`again/`). Tests replace `RunCommandDeps` (config loader, `buildApp`, `runDigest`, stdout,
+> stderr, prompts, `interactive`, `createStore`, `clock`, `readFile`, `writeFile`). No port.
+> Reader page: `docs/features/cli.md`.
 
 ## Context
 
@@ -15,6 +17,8 @@ flowchart LR
   app -->|"AppHandle: deps, close"| run
   run -->|"DigestDeps, RunOptions"| digest["digest/runDigest"]
   digest -->|"RunResult"| run
+  run -->|"options, LoadedConfig"| again["again/: menu, variant plan, send"]
+  again -.->|"getRunRecord, readArtifact"| store[[RunStore]]
   run -.->|"sendDigest, dry run only"| md[["Delivery: markdown"]] --> disk[("week.md, week.html")]
   run -->|"summary, errors"| term[("stdout, stderr")]
   classDef focus stroke-width:3px
@@ -25,8 +29,11 @@ flowchart LR
 ```mermaid
 flowchart TD
   start["runCommand: deps over defaults"] --> args["parseSince, parseSeed, parseOut (flags/): a bad value is a DigestError"]
-  args --> load["loadConfig, withSeed, withOut (flags/): a new LoadedConfig"] --> app["buildApp"]
-  app --> go["runDigest(app.deps, sinceDays, dryRun, force)"]
+  args --> load["loadConfig, withSeed, withOut (flags/): a new LoadedConfig"] --> prep["prepareAgain (again/): a plan, or undefined"]
+  prep --> app["buildApp"]
+  app --> plan{"plan?"}
+  plan -->|yes| ra["runAgain (again/): variant digest, summary, send"]
+  plan -->|no| go["runDigest(app.deps, sinceDays, dryRun, force)"]
   go --> copy["dry run with a digest: dryRunCopy → saveLocalCopy, the markdown channel's sendDigest"]
   copy --> print["localFilesOf, printSummary (summary/): stdout; the run's own error on stderr"]
   print --> code["result.exitCode, or 1 when the dry-run copy failed"]
@@ -37,6 +44,8 @@ flowchart TD
 - Summary lines: `Week`, `Status`, `Items`, `Winner`, `Duration`, then `Digest` (the run folder's
   `digest.md`, when the run has one), `Markdown` and `HTML` (only files that are there), a line
   per failed source and rejected draft, a dry-run or skipped note and the `kept` reason.
+- A variant run adds `Variant  <label>` and lists the postfixed `<week>-<slug>.md/.html`; it drops
+  the "nothing was sent" note, since the send is asked next. See `again/CLAUDE.md`.
 - The exit code is the run's own: sent, dry-run and skipped 0, quiet 3, blocked 2, failed 1.
 
 ## Rules
@@ -63,20 +72,26 @@ flowchart TD
 | File                    | Role                                                                               |
 | ----------------------- | ---------------------------------------------------------------------------------- |
 | `run.ts`                | `runCommand`, `RunCommandOptions`, `RunCommandDeps`, `closeApp`, dry-run condition |
-| `flags/flags.ts`        | `parseSeed`, `withSeed`, `parseOut`, `withOut` (see `flags/CLAUDE.md`)             |
+| `flags/flags.ts`        | `parseSeed`, `withSeed`, `parseOut`, `withOut`, `withSources` (`flags/CLAUDE.md`)  |
+| `again/`                | Second run of a week: menu, variant plan, send (see `again/CLAUDE.md`)             |
+| `summary/report.ts`     | `reportRun`: files and summary of a run or a variant                               |
 | `summary/summary.ts`    | `printSummary`, `statusNote`, `keptNote`, `Reporter`                               |
 | `summary/localFiles.ts` | `localFilesOf`: which local digest files exist                                     |
 | `summary/localCopy.ts`  | `saveLocalCopy`: the Markdown channel's write (see `summary/CLAUDE.md`)            |
 
 Tests are split by case: `run.test.ts` (wiring, `--since`, exit codes, closing, default deps),
 `run.summary.test.ts` (summary, rejected drafts, secrets), `run.out.test.ts` (`--out`, local files),
-`run.dryRun.test.ts` (the dry-run copy: temp folders, `CapturingDelivery`, the real markdown
+`run.again.test.ts` (the second-run menu, flags, send), `run.dryRun.test.ts` (the dry-run copy: temp folders, `CapturingDelivery`, the real markdown
 channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured output.
 
 ## Gotchas
 
-- `run.ts` is about 117 lines; the cap is 300. Flags and the summary live in `flags/` and `summary/`:
-  add code there, not here.
+- `run.ts` is about 140 lines; the cap is 300. Flags, the summary and the second run live in
+  `flags/`, `summary/` and `again/`: add code there, not here.
+- `RunCommandDeps` defaults keep `test/integration/harness/runCli.ts` working: not a terminal, so
+  no menu and no record lookup. `interactive` is read at call time.
+- `RunCommandOptions` gains `enrich`, `complete`, `perspective`, `addSource`; `cli/program.ts`
+  (frozen) registers the flags.
 - Two adapter imports are on purpose: `markdownFileOptions`, `markdownFolder` and `digestFilePaths`
   (`delivery/adapters/markdownFile`) give the paths the channel writes to, and `DIGEST_FILE`
   (`store/adapters/runFolders`) names the run folder's `digest.md`. The `RunStore` port returns file

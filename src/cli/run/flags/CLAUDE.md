@@ -1,7 +1,7 @@
 # Run flags
 
 > Checks the `--seed` and `--out` values of `digest run` and applies them to a loaded config.
-> Entry: `parseSeed`, `withSeed`, `parseOut`, `withOut` (`flags.ts`). No port. Parent: `../CLAUDE.md`.
+> Entry: `parseSeed`, `withSeed`, `parseOut`, `withOut`, `withSources` (`flags.ts`). No port. Parent: `../CLAUDE.md`.
 
 ## Flow
 
@@ -23,7 +23,7 @@ flowchart LR
 
 | File            | Role                                                                                    |
 | --------------- | --------------------------------------------------------------------------------------- |
-| `flags.ts`      | `parseSeed`, `withSeed`, `parseOut`, `withOut`                                          |
+| `flags.ts`      | `parseSeed`, `withSeed`, `parseOut`, `withOut`, `withSources` (sources added for a run) |
 | `flags.test.ts` | Unit cases; the end-to-end flag cases stay in `../run.test.ts` and `../run.out.test.ts` |
 
 ## Gotchas

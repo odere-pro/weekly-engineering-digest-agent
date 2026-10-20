@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DigestError } from '../../../shared/errors';
 import { harness } from '../__fixtures__/runHarness';
-import { parseOut, parseSeed, withOut, withSeed } from './flags';
+import { parseOut, parseSeed, withOut, withSeed, withSources } from './flags';
 
 describe('parseSeed', () => {
   it('passes a whole number of 0 or more and undefined through', () => {
@@ -60,5 +60,24 @@ describe('withOut', () => {
     const { loaded } = harness();
 
     expect(withOut(loaded, undefined)).toBe(loaded);
+  });
+});
+
+describe('withSources', () => {
+  const added = [{ id: 'new', kind: 'rss', url: 'https://new.example.com/feed' }] as const;
+
+  it('returns a new config with the sources after the configured ones, input untouched', () => {
+    const { loaded } = harness();
+
+    const next = withSources(loaded, added);
+
+    expect(next.config.sources.map((s) => s.id)).toEqual(['example-feed', 'new']);
+    expect(loaded.config.sources).toHaveLength(1);
+  });
+
+  it('returns the same object without sources', () => {
+    const { loaded } = harness();
+
+    expect(withSources(loaded, [])).toBe(loaded);
   });
 });

@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import type { LoadedConfig } from '../../../config/load';
 import type { RunResult } from '../../../digest/types';
+import { variantLabel, type RunVariant } from '../../../digest/variant';
 import { DIGEST_FILE } from '../../../store/adapters/runFolders';
 import { weekDigestDir } from '../../../store/layout';
 import { formatRunDuration } from '../../history/history';
@@ -19,11 +20,13 @@ export function printSummary(
   loaded: LoadedConfig,
   result: RunResult,
   files: LocalFiles | undefined,
+  variant?: RunVariant,
 ): void {
   const { record } = result;
   const fields: [string, string][] = [
     ['Week', record.runId],
     ['Status', record.status],
+    ...(variant ? [['Variant', variantLabel(variant)] as [string, string]] : []),
     ['Items', `${record.counts.collected} collected → ${record.counts.digestItems} in digest`],
     ['Winner', record.winner ?? '-'],
     ['Duration', formatRunDuration(record)],
@@ -43,7 +46,8 @@ export function printSummary(
     if (!draft.passed)
       lines.push(`Rejected draft: ${draft.writer} (${draft.rejectedBy.join(', ')})`);
   }
-  const note = statusNote(record.status);
+  // A variant is built as a dry run, then sent or not on request: "nothing was sent" would mislead.
+  const note = variant ? undefined : statusNote(record.status);
   if (note) lines.push(note);
   if (result.kept !== undefined) lines.push(keptNote(result.kept));
   report.out(`${lines.join('\n')}\n`);

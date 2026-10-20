@@ -31,4 +31,16 @@ describe('printSummary', () => {
     expect(text(out)).toContain('Markdown  /d/w.md\n');
     expect(text(out)).toContain('HTML      /d/w.html\n');
   });
+
+  it('adds a Variant line and drops the dry-run note for a variant', () => {
+    const h = harness();
+    const out: string[] = [];
+    const report: Reporter = { out: (t) => out.push(t), err: () => undefined };
+    const result = sentResult({ status: 'dry-run' });
+
+    printSummary(report, h.loaded, result, undefined, { kind: 'perspective', topic: 'security' });
+
+    expect(text(out)).toContain('Variant   perspective: security\n');
+    expect(text(out)).not.toContain('Dry run: nothing was sent.');
+  });
 });

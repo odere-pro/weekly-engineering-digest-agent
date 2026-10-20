@@ -17,11 +17,12 @@ export async function localFilesOf(
   dir: string,
   result: RunResult,
   wroteDryRunCopy: boolean,
+  variantSlug?: string,
 ): Promise<LocalFiles | undefined> {
   const { record } = result;
   const reached = wroteDryRunCopy || record.deliveredTo?.includes('markdown') === true;
   if (!reached) return undefined;
-  const paths = digestFilePaths(dir, record.runId);
+  const paths = digestFilePaths(dir, record.runId, variantSlug);
   const [hasMarkdown, hasHtml] = await Promise.all([
     isListable(paths.markdown),
     isListable(paths.html),
