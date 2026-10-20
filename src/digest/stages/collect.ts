@@ -1,4 +1,6 @@
+import type { Source } from '../../domain/schemas';
 import { collectStep } from '../../sources/collect';
+import { mergeByUrl } from '../../sources/mergeItems';
 import { DigestError } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { PartialFailure } from '../chain/failures';
@@ -10,6 +12,13 @@ import { keepArtifact } from './keepArtifact';
 const DAY_MS = 86_400_000;
 /** The longest window there is: `windowDays` and `--since` stop at 31 days too. */
 const MAX_WINDOW_DAYS = 31;
+
+/** Every source, or on a reuse run only the chosen ones (none for `[]`). */
+function sourcesToFetch(ctx: RunContext): readonly Source[] {
+  const { sources } = ctx.deps.config;
+  const ids = ctx.reuse?.fetchSourceIds;
+  return ids === undefined ? sources : sources.filter((source) => ids.includes(source.id));
+}
 
 /**
  * Reads the sources over the run's window. No items at all settles the run as quiet, unless every
@@ -24,15 +33,28 @@ export async function collect(
   const { config, fetchers, clock } = ctx.deps;
   const until = ctx.startedAt;
   const since = windowStart(ctx, logger);
-  const { items, failedSources } = await collectStep(
-    { sources: config.sources, since, until, maxItemsPerSource: config.maxItemsPerSource },
-    { fetchers, logger, clock, signal: ctx.signal },
-  );
+  const sources = sourcesToFetch(ctx);
+  const fetched =
+    sources.length > 0
+      ? await collectStep(
+          { sources, since, until, maxItemsPerSource: config.maxItemsPerSource },
+          { fetchers, logger, clock, signal: ctx.signal },
+        )
+      : { items: [], failedSources: [] };
+  const { failedSources } = fetched;
+  const items = ctx.reuse ? mergeByUrl(ctx.reuse.items, fetched.items) : fetched.items;
   const held = await keepArtifact(ctx, state, 'items.json', toJson(items));
   logger.info('Collected items', { items: items.length, failedSources: failedSources.length });
+  if (ctx.reuse) {
+    logger.info('Reused saved items', {
+      reused: ctx.reuse.items.length,
+      fetched: fetched.items.length,
+      merged: items.length,
+    });
+  }
   const next = { ...held, collected: items, failedSources };
   if (items.length > 0) return next;
-  const total = config.sources.length;
+  const total = sources.length;
   if (total > 0 && failedSources.length === total) {
     // Counts only: each feed's error text stays in the record's failedSources, never in the note.
     const cause = new DigestError(

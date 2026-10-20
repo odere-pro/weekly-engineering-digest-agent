@@ -47,6 +47,7 @@ flowchart TD
 | `types.ts`        | `EndingContext`, `Ending`, `Ended`, `Failure`, `HeldArtifact`                       |
 | `saveRecord.ts`   | `saveRecord`, `RecordNotSavedError`                                                 |
 | `saveProgress.ts` | `saveProgress`, `DELIVERY_CUT_OFF`: the record after each channel                   |
+| `markSent.ts`     | `markVariantSent`: the record after a variant digest went out                       |
 | `keepReason.ts`   | `keepReason`, `leftToLockHolder`, `reachedAChannel`, `deliveredMeanwhile`, `KEPT_*` |
 | `runFiles/`       | `toJson`, the file schemas, held files, `review.md`, `error.json`                   |
 | `notes/`          | Failure notes, held notes, `abortedError`, `supersededError`, `isUnretriable`       |

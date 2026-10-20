@@ -3,6 +3,7 @@ import type { Logger } from '../../shared/telemetry';
 import { writeCheckedStep } from '../../write/write';
 import { PartialFailure } from '../chain/failures';
 import type { RunContext } from '../chain/runContext';
+import { perspectiveOf } from '../variant';
 import type { ChainState, DraftsFile } from '../chain/state';
 import { toJson } from '../ending/runFiles/runFiles';
 import { rejected } from './draftOutcomes';
@@ -32,6 +33,7 @@ export async function write(
       collected: state.collected,
       disabledGuards: ctx.disabledGuards,
       topN: config.topN,
+      ...perspectiveOf(ctx),
       signal: ctx.signal,
     },
   );

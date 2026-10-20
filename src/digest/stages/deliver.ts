@@ -27,7 +27,7 @@ export async function deliver(
   const { winner } = state;
   if (!winner) throw new DigestError('Nothing to deliver: no winning draft', { step: 'deliver' });
   const urls = winner.draft.digest.items.map((item) => item.url);
-  const message = winnerMessage(ctx, winner, state.fallback === true);
+  const message = winnerMessage(ctx, winner, state.fallback === true, state.eligible);
   const stopped = await stopBeforeSending(ctx, ctx.previousRecord, logger);
   if (stopped) throw stopped;
   const progress = (soFar: readonly DeliveryId[]): Promise<void> =>

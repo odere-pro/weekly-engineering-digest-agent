@@ -29,6 +29,9 @@ flowchart TD
   (one line, no invisible characters) and the whole subject cut to 120 characters. A blank headline
   leaves it out. The view is added only when there is one, so a channel without a view shows the
   Markdown.
+- With a variant (`WinnerContext.variant`) the subject is `Engineering digest <week> (<label>): <headline>`,
+  `message.variant` is the slug and `view.variant` the label. `complete` also appends the
+  appendix of `eligible` to the message Markdown and the view; digest.md stays the checked Markdown.
 - `winnerMessage` marks a template-only fallback in the view footer and names the guards that were off.
 - `stopBeforeSending` runs last before a send: a fired signal (also a lost lock) or a record that
   another run delivered since the run began stops it with `Run aborted` (`isUnretriable`).

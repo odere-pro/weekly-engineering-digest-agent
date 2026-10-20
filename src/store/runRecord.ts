@@ -13,6 +13,10 @@ const DraftOutcomeSchema = z.object({
 });
 export type DraftOutcome = z.infer<typeof DraftOutcomeSchema>;
 
+/** The kind of a second run in a week that already has a digest. */
+const VariantKindSchema = z.enum(['enrich', 'add-sources', 'complete', 'perspective']);
+export type VariantKind = z.infer<typeof VariantKindSchema>;
+
 /** What one run saved as `run.json`. A new field must be optional so old records still parse. */
 export const RunRecordSchema = z.object({
   runId: WeekIdSchema,
@@ -55,5 +59,13 @@ export const RunRecordSchema = z.object({
    */
   deliveredTo: z.array(DeliveryIdSchema).optional(),
   error: z.object({ message: z.string(), step: StepNameSchema.optional() }).optional(),
+  /** Set on a second run of the week (`digest run` again). Absent in older records. */
+  variant: z
+    .object({
+      kind: VariantKindSchema,
+      topic: z.string().max(200).optional(),
+      addedSources: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 export type RunRecord = z.infer<typeof RunRecordSchema>;

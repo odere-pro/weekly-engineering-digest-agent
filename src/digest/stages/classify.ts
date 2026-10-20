@@ -1,6 +1,7 @@
 import { areaHintsOf, classifyStep } from '../../classify/classify';
 import type { Logger } from '../../shared/telemetry';
 import type { RunContext } from '../chain/runContext';
+import { perspectiveOf } from '../variant';
 import type { ChainState } from '../chain/state';
 import { toJson } from '../ending/runFiles/runFiles';
 import { keepArtifact } from './keepArtifact';
@@ -22,6 +23,7 @@ export async function classify(
     areaHints: areaHintsOf(config.sources),
     rescoreWithWriter: config.models.rescoreWithWriter,
     minRelevance: config.thresholds.minRelevance,
+    ...perspectiveOf(ctx),
     signal: ctx.signal,
     clock: ctx.deps.clock,
   });

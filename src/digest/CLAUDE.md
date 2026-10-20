@@ -66,19 +66,32 @@ flowchart TD
 
 ## Files
 
-| File / folder   | Role                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| `runDigest.ts`  | `runDigest`, `runChain`, lock handling                                                     |
-| `types.ts`      | `DigestDeps`, `RunOptions`, `RunResult`                                                    |
-| `fallback.ts`   | `buildFallback`: the template digest from `write/fallbackDigest`, plus its guard verdict   |
-| `workflow.ts`   | `runWorkflow`: a plain loop over the stages; a step's error propagates unchanged           |
-| `chain/`        | `RunContext`, `ChainState`, the stage wrapper, failure carriers: see `chain/CLAUDE.md`     |
-| `stages/`       | One file per stage and `chainSteps`: see `stages/CLAUDE.md`                                |
-| `health/`       | `assertModelsReady`: Ollama up, models pulled: see `health/CLAUDE.md`                      |
-| `record/`       | `finish`, `skipped`, `resumed`, `buildRecord`: see `record/CLAUDE.md`                      |
-| `ending/`       | `endRun` and its parts: record, files, notes, shipping: see `ending/CLAUDE.md`             |
-| `resume/`       | `loadPartDelivery`, `resumeDelivery`: finish a part-delivered week: see `resume/CLAUDE.md` |
-| `__fixtures__/` | Test kits: `runKit.ts` (whole runs), `stageKit.ts` (a context and chain state)             |
+| File / folder   | Role                                                                                           |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| `runDigest.ts`  | `runDigest`, `runChain`, lock handling                                                         |
+| `types.ts`      | `DigestDeps`, `RunOptions`, `RunResult`                                                        |
+| `variant.ts`    | `RunVariant`, `variantSlug`, `variantLabel`, `topicSlug`, `perspectiveOf`: a second run's kind |
+| `fallback.ts`   | `buildFallback`: the template digest from `write/fallbackDigest`, plus its guard verdict       |
+| `workflow.ts`   | `runWorkflow`: a plain loop over the stages; a step's error propagates unchanged               |
+| `chain/`        | `RunContext`, `ChainState`, the stage wrapper, failure carriers: see `chain/CLAUDE.md`         |
+| `stages/`       | One file per stage and `chainSteps`: see `stages/CLAUDE.md`                                    |
+| `health/`       | `assertModelsReady`: Ollama up, models pulled: see `health/CLAUDE.md`                          |
+| `record/`       | `finish`, `skipped`, `resumed`, `buildRecord`: see `record/CLAUDE.md`                          |
+| `ending/`       | `endRun` and its parts: record, files, notes, shipping: see `ending/CLAUDE.md`                 |
+| `resume/`       | `loadPartDelivery`, `resumeDelivery`: finish a part-delivered week: see `resume/CLAUDE.md`     |
+| `__fixtures__/` | Test kits: `runKit.ts` (whole runs), `stageKit.ts` (a context and chain state)                 |
+
+## Second run of a week (variant)
+
+- `RunOptions.reuse` starts `collect` from saved items (`fetchSourceIds`: undefined every source,
+  `[]` none, ids only those; new items merge by URL, saved wins). `RunOptions.variant` labels the
+  digest (`enriched`, `complete`, `perspective-<topic>`), sends the topic to classify and write
+  (`perspective` kind only), ranks `keepUrls` first on ties and, for `complete`, appends every
+  eligible release to the message (`ChainState.eligible`), never to digest.md.
+- The record keeps the variant's kind, topic and added sources, never `keepUrls`. After a variant
+  went out, the CLI calls `markVariantSent` (`ending/markSent.ts`): a `dry-run` week becomes `sent`,
+  a `sent` week gains channels and URLs; any other week throws.
+- A dry run over a `sent` week keeps the week's files and record (`keepReason`), as always.
 
 ## Gotchas
 

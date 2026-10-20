@@ -6,6 +6,7 @@ import { isoWeekId } from '../../shared/isoWeek';
 import { noopLogger, type Logger } from '../../shared/telemetry';
 import type { RunRecord } from '../../store/runRecord';
 import type { DigestDeps, RunOptions } from '../types';
+import type { RunVariant } from '../variant';
 
 /** One run's fixed inputs, resolved before anything runs. */
 export interface RunContext {
@@ -25,6 +26,10 @@ export interface RunContext {
   readonly notifyFailure: boolean;
   /** See `RunOptions.noFallback`. */
   readonly useFallback: boolean;
+  /** See `RunOptions.reuse`. */
+  readonly reuse?: RunOptions['reuse'];
+  /** See `RunOptions.variant`. */
+  readonly variant?: RunVariant;
   /** Bound to the run id. */
   readonly logger: Logger;
   /** Input then output checks that are off this run, in config order. */
@@ -69,6 +74,8 @@ export function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     signal: options.signal,
     notifyFailure: options.notifyFailure ?? true,
     useFallback: options.noFallback !== true,
+    ...(options.reuse && { reuse: options.reuse }),
+    ...(options.variant && { variant: options.variant }),
     logger: deps.logger.child({ runId: weekId }),
     disabledGuards: plannedDisabledGuards(deps),
     holdArtifacts: false,

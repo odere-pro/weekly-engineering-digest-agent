@@ -7,8 +7,9 @@ import type { RunStore } from '../store/RunStore';
 import type { SourceFetcher } from '../sources/SourceFetcher';
 import type { Clock } from '../shared/clock';
 import type { Logger, Tracer } from '../shared/telemetry';
-import type { ExitCode, SourceKind } from '../domain/schemas';
+import type { ExitCode, Item, SourceKind } from '../domain/schemas';
 import type { RunRecord } from '../store/runRecord';
+import type { RunVariant } from './variant';
 
 /** Everything the core needs; every entry point wires real or fake implementations. */
 export interface DigestDeps {
@@ -59,6 +60,14 @@ export interface RunOptions {
    * its own. A real run always has the fallback: the config schema has no switch for it.
    */
   noFallback?: boolean;
+  /**
+   * Items from an earlier run of the week to start from instead of fetching everything.
+   * `fetchSourceIds` undefined: fetch every source; `[]`: none; ids: only those. Fetched items
+   * are merged with `items` (`mergeByUrl`, the saved ones win).
+   */
+  reuse?: { items: readonly Item[]; fetchSourceIds?: readonly string[] };
+  /** A second run of a week that already has a digest: what it is for; see `variant.ts`. */
+  variant?: RunVariant;
 }
 
 export interface RunResult {

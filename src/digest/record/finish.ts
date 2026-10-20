@@ -28,7 +28,8 @@ export async function finish(
   // `digest run` prints digest.md's path whenever markdown is set: only for a file this run wrote.
   const digestWritten = !ctx.holdArtifacts || written.has('digest.md');
   const markdown = digestWritten ? state.winner?.markdown : undefined;
-  const message = state.winner && winnerMessage(ctx, state.winner, state.fallback === true);
+  const message =
+    state.winner && winnerMessage(ctx, state.winner, state.fallback === true, state.eligible);
   return {
     record,
     exitCode: exitCodeFor(record.status),

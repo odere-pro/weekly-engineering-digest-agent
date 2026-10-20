@@ -39,6 +39,11 @@ flowchart LR
   falls back to `withFallback` when no draft passed.
 - `collect` reads from `sinceDays` back, or from `RunContext.lastDelivered.startedAt` when that is
   earlier (a late run), never more than 31 days.
+- With `RunContext.reuse`, `collect` fetches only `fetchSourceIds` (none: `collectStep` is not
+  called), merges with `mergeByUrl` and logs `{ reused, fetched, merged }`; the quiet and
+  all-sources-failed rules apply to the merged set and the fetched sources. `processorFor` passes
+  `variant.keepUrls` as `boostUrls`; `process` stores `eligible`; `classify` and `write` pass
+  `perspectiveOf(ctx)`. `guardCandidates` needs nothing: it picks through `processorFor`.
 - `deliver` checks last before it sends (`stopBeforeSending`): it fails `Run aborted` when the signal
   fired (a lost lock too), or when another run reached a channel since `RunContext.previousRecord`.
   After each channel that takes the digest it saves a `failed` record with `DELIVERY_CUT_OFF`

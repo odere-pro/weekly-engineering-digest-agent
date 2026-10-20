@@ -69,7 +69,7 @@ sequenceDiagram
 | `RunStore.ts`  | The port, `RunLock`, `ArtifactName`                                                                                                      |
 | `lockHeld.ts`  | `LOCK_HELD_MESSAGE`, `isLockHeldError`: how a caller tells a held lock from a failure                                                    |
 | `lockLost.ts`  | `LOCK_LOST_MESSAGE`, `lockLostReason`: the reason `RunLock.lost` fires with, in every store                                              |
-| `runRecord.ts` | `RunRecordSchema`, `RunRecord`, `DraftOutcome`: what `run.json` holds                                                                    |
+| `runRecord.ts` | `RunRecordSchema`, `RunRecord`, `DraftOutcome`: what `run.json` holds (`variant`: kind, topic, added sources of a second run)            |
 | `layout.ts`    | The `dist/` layout: `weekDay`, `weekOfDay`, `weekDigestDir`, `weekAnswersFile`, `sourceDir`, `logsDir`, `dayOf`, `LOCK_FILE`. Paths only |
 | `adapters/`    | The file adapter: folders, the lock, temp-folder tests. See `adapters/CLAUDE.md`                                                         |
 

@@ -58,3 +58,21 @@ describe('RunRecordSchema', () => {
     });
   });
 });
+
+describe('variant', () => {
+  it('accepts an old record without it', () => {
+    expect(RunRecordSchema.parse(makeRunRecord()).variant).toBeUndefined();
+  });
+
+  it('keeps the kind, topic and added sources', () => {
+    const variant = { kind: 'perspective', topic: 'security', addedSources: ['a'] } as const;
+    expect(RunRecordSchema.parse({ ...makeRunRecord(), variant }).variant).toEqual(variant);
+  });
+
+  it('rejects an unknown kind and a topic over 200 characters', () => {
+    const bad = (variant: unknown) =>
+      RunRecordSchema.safeParse({ ...makeRunRecord(), variant }).success;
+    expect(bad({ kind: 'redo' })).toBe(false);
+    expect(bad({ kind: 'perspective', topic: 'x'.repeat(201) })).toBe(false);
+  });
+});

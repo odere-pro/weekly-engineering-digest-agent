@@ -4,7 +4,10 @@ import type { RunRecord } from '../../store/runRecord';
 import type { RunContext } from '../chain/runContext';
 import type { ChainOutcome, ChainState } from '../chain/state';
 import { recordError } from '../ending/runFiles/errorFile';
+import type { RunVariant } from '../variant';
 import { modelGuardsFirst } from '../stages/modelGuardsFirst';
+
+const MAX_TOPIC_CHARS = 200;
 
 /** How the run ended: failed, else what settled it, else sent (or dry-run). */
 export function statusOf(ctx: Pick<RunContext, 'dryRun'>, outcome: ChainOutcome): RunStatus {
@@ -24,6 +27,16 @@ function guardedCount(
 ): Pick<RunRecord['counts'], 'guardedCandidates'> {
   if (state.guardedCandidates !== undefined) return { guardedCandidates: state.guardedCandidates };
   return modelGuardsFirst(ctx.deps.config) ? {} : { guardedCandidates: 0 };
+}
+
+/** The variant as the record keeps it: never the kept URLs. */
+function recordVariant(variant: RunVariant): NonNullable<RunRecord['variant']> {
+  const { kind, topic, addedSources } = variant;
+  return {
+    kind,
+    ...(topic !== undefined && { topic: topic.slice(0, MAX_TOPIC_CHARS) }),
+    ...(addedSources && { addedSources: [...addedSources] }),
+  };
 }
 
 export function buildRecord(
@@ -61,5 +74,6 @@ export function buildRecord(
     ...(state.fallback === true && { fallback: true }),
     ...(state.deliveredTo.length > 0 && { deliveredTo: [...state.deliveredTo] }),
     ...(failure && { error: recordError(failure) }),
+    ...(ctx.variant && { variant: recordVariant(ctx.variant) }),
   };
 }

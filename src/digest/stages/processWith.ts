@@ -1,5 +1,6 @@
 import type { ScoredItem } from '../../classify/classification';
 import { processStep, type ProcessOutput } from '../../process/process';
+import { normalizeUrl } from '../../shared/url';
 import type { RunContext } from '../chain/runContext';
 
 /**
@@ -11,6 +12,8 @@ export async function processorFor(
 ): Promise<(items: readonly ScoredItem[]) => ProcessOutput> {
   const { config, store } = ctx.deps;
   const sentUrls = await store.sentUrls(ctx.weekId, config.dedupeWeeks);
+  const keep = ctx.variant?.keepUrls;
+  const boostUrls = keep && new Set(keep.map(normalizeUrl));
   return (items) =>
-    processStep({ items, sentUrls, thresholds: config.thresholds, topN: config.topN });
+    processStep({ items, sentUrls, thresholds: config.thresholds, topN: config.topN, boostUrls });
 }

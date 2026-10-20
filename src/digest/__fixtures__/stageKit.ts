@@ -85,6 +85,8 @@ export interface ContextOptions {
   /** The lock's `lost`; the run signal then fires with it, as it does under `runDigest`. */
   lockLost?: AbortSignal;
   sinceDays?: number;
+  reuse?: RunContext['reuse'];
+  variant?: RunContext['variant'];
   sampling?: DigestDeps['sampling'];
 }
 
@@ -142,6 +144,8 @@ export function contextFor(options: ContextOptions = {}) {
     holdArtifacts: options.holdArtifacts ?? false,
     previousRecord: options.previousRecord,
     lastDelivered: options.lastDelivered,
+    ...(options.reuse && { reuse: options.reuse }),
+    ...(options.variant && { variant: options.variant }),
   };
   const ctx = options.lockLost ? holdingLock(base, options.lockLost) : base;
   return { ctx, deps, store, deliveries, model, logs, spans, logger };

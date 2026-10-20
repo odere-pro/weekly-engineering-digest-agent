@@ -14,10 +14,10 @@ export async function processItems(
   logger: Logger,
 ): Promise<ChainState> {
   const process = await processorFor(ctx);
-  const { selected, dropped } = process(state.scored);
+  const { selected, dropped, eligible } = process(state.scored);
   logger.info('Selected items', { selected: selected.length, dropped: dropped.length });
   const cut = dropped.filter((item) => item.reason === 'below-top-n').length;
-  const next = { ...state, selected, afterProcess: selected.length + cut };
+  const next = { ...state, selected, eligible, afterProcess: selected.length + cut };
   if (selected.length >= DIGEST_MIN_ITEMS) return next;
   logger.info('Quiet week: too few items for a digest', { needed: DIGEST_MIN_ITEMS });
   return { ...next, settled: { status: 'quiet' } };

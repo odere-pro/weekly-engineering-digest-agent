@@ -62,6 +62,7 @@ flowchart TD
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                           |
 | `collect.ts`                            | `collectStep`, `MAX_CONCURRENT_SOURCES`: concurrency, timeout, retry, validation, merge, cap, order        |
+| `mergeItems.ts`                         | `mergeByUrl`: saved items plus new ones, same normalized URL → saved wins (a second run)                   |
 | `adapters/`                             | The adapters and the shared fetch pipeline: see `adapters/CLAUDE.md`                                       |
 | `adapters/entries/`                     | Entries to items: normalize, read, select, merge: see `adapters/entries/CLAUDE.md`                         |
 | `adapters/archive/`                     | Saves each source's raw answers and items per day (`raw/`, `formatted/`): see `adapters/archive/CLAUDE.md` |
