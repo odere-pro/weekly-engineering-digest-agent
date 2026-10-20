@@ -121,6 +121,19 @@ const FLAG_CASES: readonly (readonly [command: string, args: string[], options: 
     ['run', '--since', '3d', '--dry-run', '--force', '--seed', '9', '--out', 'out'],
     { since: '3d', dryRun: true, force: true, seed: 9, out: 'out' },
   ],
+  ['run', ['run', '--enrich'], { enrich: true }],
+  ['run', ['run', '--complete'], { complete: true }],
+  ['run', ['run', '--perspective', 'supply chain'], { perspective: 'supply chain' }],
+  [
+    'run',
+    ['run', '--add-source', 'https://a.example/feed.xml', 'https://github.com/o/r'],
+    { addSource: ['https://a.example/feed.xml', 'https://github.com/o/r'] },
+  ],
+  [
+    'run',
+    ['run', '--dry-run', '--perspective', 'security', '--since', '7d'],
+    { dryRun: true, perspective: 'security', since: '7d' },
+  ],
 
   ['eval', ['eval'], {}],
   ['eval', ['eval', '--profile', 'light'], { profile: 'light' }],

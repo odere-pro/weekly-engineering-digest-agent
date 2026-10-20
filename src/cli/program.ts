@@ -66,6 +66,10 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
       '--out <dir>',
       "folder for the Markdown digest (default: delivery.markdown.dir, else the week's digest folder)",
     )
+    .option('--enrich', 'rerun a week that has a digest: fetch again, merge with its saved items')
+    .option('--complete', 'rerun a week that has a digest, with every eligible item appended')
+    .option('--perspective <topic>', 'rerun a week that has a digest, favouring this topic')
+    .option('--add-source <url...>', 'rerun a week that has a digest with these extra feeds')
     .action(
       async (options: {
         since?: string;
@@ -73,6 +77,10 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
         force?: boolean;
         seed?: number;
         out?: string;
+        enrich?: boolean;
+        complete?: boolean;
+        perspective?: string;
+        addSource?: string[];
       }) => {
         setExitCode(await runCommand(withConfig(options)));
       },
