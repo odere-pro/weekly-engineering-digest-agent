@@ -35,9 +35,13 @@ swaps in the real Ollama adapter on a scripted `fetch`.
 | `harness/recordingLogger.ts`, `runCli.ts`      | `World.logs` lines; `runCli` (exit code, stdout, stderr)                     |
 | `fakeOllama.ts`                                | A scripted Ollama `fetch`: hang, refuse, or answer per call; opens no socket |
 
-Ten `*.test.ts` files sit beside the kit; `dryRun.test.ts` has its own wiring and a `MemoryRunStore`.
-`commitMsgHook.test.ts` and `mermaidCheck.test.ts` test repo tools (`.githooks/commit-msg`,
-`scripts/check-mermaid.mjs`) on temp files, not the chain.
+`*.test.ts` files sit beside the kit; `dryRun.test.ts` has its own wiring and a `MemoryRunStore`.
+`commitMsgHook.test.ts`, `mermaidCheck.test.ts` and `pullModels.test.ts` test repo tools
+(`.githooks/commit-msg`, `scripts/check-mermaid.mjs`, `docker/pull-models.sh`) on temp files, not
+the chain. `pullModels.test.ts` runs `sh docker/pull-models.sh --list` (a stand-in `ollama` on PATH
+proves it pulls nothing) and compares the tags with `profiles.ts` for a Linux host, the way
+`docker/printLinuxModels.mjs` does; it skips, with the reason in its name, without `sh`, `tr`, `sed`,
+`awk` and `grep`.
 
 ## Gotchas
 

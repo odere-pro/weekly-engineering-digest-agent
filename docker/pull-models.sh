@@ -4,7 +4,8 @@
 #
 # KEEP IN SYNC with NON_MAC_FALLBACK in src/config/profiles.ts. The container is Linux, so every
 # profile resolves to that fallback (see resolveProfile); only `models.writers` from the config
-# changes the set. docker/validate.sh compares this list with profiles.ts.
+# changes the set. test/integration/pullModels.test.ts (part of `pnpm check`) and, with docker,
+# docker/validate.sh compare this list with profiles.ts.
 #
 # Usage: pull-models.sh [--list]     (--list prints the tags instead of pulling)
 # Environment: DIGEST_CONFIG (default /app/digest.config.json), OLLAMA_HOST (read by the CLI),
