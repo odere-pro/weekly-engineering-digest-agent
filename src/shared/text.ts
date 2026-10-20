@@ -90,6 +90,7 @@ export function toPlainText(html: string): string {
  * misses them. The tag block is listed too because its unassigned code points (U+E0000,
  * U+E0002-E001F) are not `Cf`. Private to the module: a shared `/g` regex keeps `lastIndex` state.
  */
+// eslint-disable-next-line regexp/no-dupe-characters-character-class -- the tag block is listed whole on purpose: its unassigned code points are not Cf
 const UNPRINTABLE_RUN = /[\p{Cc}\p{Cf}\u2028\u2029\u{E0000}-\u{E007F}]+/gu;
 
 /**

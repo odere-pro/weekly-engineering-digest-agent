@@ -11,6 +11,7 @@
  * way into the digest (whitespace, control and format characters, line and paragraph
  * separators, the tag block).
  */
+// eslint-disable-next-line regexp/no-dupe-characters-character-class -- the tag block is listed whole on purpose: its unassigned code points are not Cf
 const STRUCTURAL = /[()[\]<>'"`|\\\s\p{Cc}\p{Cf}\u{E0000}-\u{E007F}]/gu;
 /** A feed that escaped its ampersand twice: the parsed link still holds the entity. */
 const DOUBLE_ENCODED_AMPERSAND = /&amp;/gi;

@@ -5,7 +5,7 @@
 /** `scheme://` (or `//`, or nothing), then everything up to the last `@` of the authority. */
 const USERINFO = /^((?:[a-z][a-z\d+.-]*:)?\/\/)?([^/?#]*)@/i;
 const HTTP_SCHEME = /^https?:\/\//i;
-const TRAILING_SLASHES = /\/+$/;
+const TRAILING_SLASHES = /(?<!\/)\/+$/;
 
 export interface Endpoint {
   /** The base URL requests are sent to: no credentials, no trailing slash. */

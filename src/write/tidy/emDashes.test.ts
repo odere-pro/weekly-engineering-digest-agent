@@ -24,6 +24,13 @@ describe('withoutEmDashes', () => {
     expect(withoutEmDashes(text)).toBe(expected);
   });
 
+  it('reads a very long run of spaces and commas with no dash in bounded time', () => {
+    const hostile = `a${' ,'.repeat(100_000)}b`;
+    const started = Date.now();
+    expect(withoutEmDashes(hostile)).toBe(hostile);
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
   it.each([
     ['text with no dash', 'Runners and gateways'],
     ['a hyphen', 'build-time'],

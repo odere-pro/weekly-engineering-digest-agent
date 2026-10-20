@@ -43,7 +43,9 @@ export interface RecordSourcesResult {
 
 /** The URL the fetcher requests: a feed as it is, a repository through its releases feed. */
 export function requestUrlFor(source: Source): string {
-  return source.kind === 'github' ? `${source.url.replace(/\/+$/, '')}/releases.atom` : source.url;
+  return source.kind === 'github'
+    ? `${source.url.replace(/(?<!\/)\/+$/, '')}/releases.atom`
+    : source.url;
 }
 
 const bodyFileFor = (contentType: string | null): string =>

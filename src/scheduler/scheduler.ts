@@ -12,7 +12,7 @@ import { DEFAULT_RUN_TIMEOUT_MS } from './runLimit/runLimit';
 import { HOUR_MS, MINUTE_MS } from './timing';
 
 /** The part of a cron job the scheduler uses; croner's `Cron` satisfies it. */
-export interface CronJob {
+interface CronJob {
   nextRun(from?: Date): Date | null;
   stop(): void;
 }

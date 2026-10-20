@@ -31,7 +31,7 @@ export const GradedDigestSchema = z.object({
 export type GradedDigest = z.infer<typeof GradedDigestSchema>;
 
 /** The maintainer's pick between the drafts of one week. */
-export const PickSchema = z.object({
+const PickSchema = z.object({
   week: WeekIdSchema,
   /** The writer tag of the draft the maintainer prefers. */
   better: z.string().min(1),

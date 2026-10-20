@@ -23,6 +23,10 @@ It is the lowest shared layer, next to [domain](domain.md). Almost every folder 
 - Retry and time limit: `withRetry` tries again with a doubling wait, and `withTimeout` gives the
   call an abort signal and fails with a timeout when time is up. Sleeping is passed in, so tests
   do not wait.
+- Concurrency: `mapWithConcurrency` runs a function over a list with at most N calls at once and
+  keeps the input order. The collect step and `digest fetch` fetch sources through it.
+- Error causes: `causeChain` lists an error and the `Error` causes below it, at most 5 deep. The
+  collect step and the Ollama adapter read network error codes from it.
 - Time: a `Clock` (the system clock, or a fixed one for tests) and ISO week helpers. A week id such
   as `2026-W43` follows ISO 8601, in the time zone you give. A week starts on Monday 00:00 UTC.
 - Links: `normalizeUrl` lowercases the host, drops the default port, fragments, `utm_*` and a few

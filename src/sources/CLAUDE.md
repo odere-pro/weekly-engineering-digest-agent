@@ -45,8 +45,8 @@ flowchart TD
 
 - A broken feed never stops the week. A source that returns nothing usable logs a warning: a quiet
   week and a silently broken feed look alike.
-- `normalizeEntry` is the only place an `Item` is built: http(s) links only (the link check trusts
-  what is collected), and a date with no zone is read as UTC (`parseFeedDate`).
+- `normalizeEntry` is the only place an `Item` is built: http(s) links only, made safe for the
+  markup by `canonicalLink` (the link check trusts them); a zoneless date is read as UTC (`parseFeedDate`).
 - Every fetch goes through `getText`: at most 5 redirects, by hand, only to the source's own host
   (`www.` is the same) or the adapter's `redirectHosts` (`api.github.com`); no https to http,
   other port, credentials in a URL or non-http(s) target. A body over 5 MiB fails the source.
@@ -61,7 +61,7 @@ flowchart TD
 | File                                    | Role                                                                                                       |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `SourceFetcher.ts`, `defaultSources.ts` | The port; `DEFAULT_SOURCES` (24 feeds) and `DEFAULT_FOCUS_AREAS`                                           |
-| `collect.ts`                            | `collectStep`: concurrency, timeout, retry, validation, merge, cap, order                                  |
+| `collect.ts`                            | `collectStep`, `MAX_CONCURRENT_SOURCES`: concurrency, timeout, retry, validation, merge, cap, order        |
 | `adapters/`                             | The adapters and the shared fetch pipeline: see `adapters/CLAUDE.md`                                       |
 | `adapters/entries/`                     | Entries to items: normalize, read, select, merge: see `adapters/entries/CLAUDE.md`                         |
 | `adapters/archive/`                     | Saves each source's raw answers and items per day (`raw/`, `formatted/`): see `adapters/archive/CLAUDE.md` |
@@ -74,7 +74,7 @@ Tests sit next to the code; `adapters/__fixtures__/` holds feed, GitHub and arti
   from the table and the "Only these hosts" paragraph in `docs/sources.md`.
 - Renames break `cli/fetch/sourceRun/{buildFetchers,recorder,types}.ts` (the tap owners: `createFetcher`,
   the adapters, `SourceTap`), `app/container.ts` (the run's fetchers get the archive's tap and `wrap`)
-  and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `withoutElements`, `hostsOf`); evals call `collectStep`.
+  and `evals/recordSources.ts` (`MAX_PAGE_BYTES`, `isOnFeedHost`, `withoutElements`, `hostsOf`); evals call `collectStep`.
 - Page redirects follow `hostsOf(DEFAULT_SOURCES)`: the fetcher options expose no `collectionHosts`.
 - The run's abort signal (`CollectDeps.signal`) is linked into each attempt's timeout signal and ends
   a retry back-off. `collectStep` then rejects: an abort is no broken feed, so no `failedSources`.

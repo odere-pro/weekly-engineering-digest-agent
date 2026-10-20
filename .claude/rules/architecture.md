@@ -41,9 +41,10 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
   The rule covers every subfolder of those features too, except their own `adapters/`.
 - Adapters implement a port and may import `shared`, `domain` and `config`, never `cli`.
 - Only `src/app/container.ts` turns config into adapters. CLI, scheduler and evals call it. A CLI
-  command may import an adapter file for two reasons only: the default dependency behind a port
-  (`createFsRunStore` as a `RunStore`), or a pure helper that must match the pipeline (`preview`
-  renders with the channels' own renderers). `src/cli/CLAUDE.md` says which.
+  command may import an adapter file for three reasons only: the default dependency behind a port
+  (`createFsRunStore` as a `RunStore`), a pure helper that must match the pipeline (`preview`
+  renders with the channels' own renderers), or a tool that looks outside (`doctor`, `fetch`).
+  `src/cli/CLAUDE.md` says which.
 
 ## Types and subfeatures
 

@@ -30,7 +30,7 @@ import { recordingLogger, type LogLine } from './recordingLogger';
 import { validDigest } from './validDigest';
 
 /** What a test can hand the model factory to build a provider around the fake one. */
-export interface ModelParts {
+interface ModelParts {
   readonly fake: FakeModelProvider;
   readonly logger: Logger;
   /** The valid digest JSON for a write prompt. */

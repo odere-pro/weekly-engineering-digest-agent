@@ -80,7 +80,7 @@ export function makeDraft(
  * The data folder of a config a test did not give one: outside the repo, so an app a test builds
  * never writes logs or fetched data into ./dist. The schema default (`dist`) is tested on its own.
  */
-export const TEST_DATA_DIR = join(tmpdir(), 'eng-digest-test-data');
+const TEST_DATA_DIR = join(tmpdir(), 'eng-digest-test-data');
 
 export function makeConfig(overrides: Partial<ConfigInput> = {}): Config {
   return ConfigSchema.parse({

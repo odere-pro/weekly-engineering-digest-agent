@@ -24,11 +24,17 @@ There is nothing to publish. The package is not on npm or GHCR; people install f
 ## Steps
 
 1. Run the same gates as CI (`.github/workflows/ci.yml`: `format:check`, `typecheck`, `lint`,
-   `docs:mermaid`, `coverage` with 80% thresholds, `build`, `pnpm audit`, an image scan).
+   `knip`, `dupes`, `docs:mermaid`, `coverage` with 80% thresholds on every file, `build`,
+   `pnpm audit`, a `zizmor` audit of the workflows, an image scan; CodeQL runs on its own).
 
    ```bash
-   pnpm install --frozen-lockfile && pnpm check && pnpm coverage && pnpm build
+   pnpm install --frozen-lockfile && pnpm check && pnpm coverage && pnpm analyze
+   pnpm lint:actions   # needs uv
    ```
+
+   `pnpm check` runs the typecheck, lint, knip, format check, tests, the Mermaid check and the
+   build. `pnpm analyze` adds the copy-paste check; `.claude/skills/static-analysis` says how to
+   read each tool.
 
    ```bash
    pnpm audit --prod --audit-level high && docker/validate.sh

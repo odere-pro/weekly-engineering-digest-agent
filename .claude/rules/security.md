@@ -15,9 +15,10 @@ Every collected item is untrusted web text. These hold in every change:
 3. **Fixed recipients.** Email addresses, Slack webhooks and file paths come from config and
    `.env` only, never from model output.
 4. **Network allowlist.** Contact only the configured feed hosts, the Ollama URL and the
-   configured delivery endpoint.
-5. **Secrets** (`SMTP_PASSWORD`, `SLACK_WEBHOOK_URL`, `GITHUB_TOKEN`) never appear in logs,
-   run records, traces, errors or test snapshots. Redact before logging.
+   configured delivery endpoint. Every `fetch` states `redirect` (lint rule `digest/fetch-redirect`).
+5. **Secrets** (`SMTP_PASSWORD`, `SLACK_WEBHOOK_URL`, `GITHUB_TOKEN`, the password in
+   `OLLAMA_URL`) never appear in
+   logs, run records, traces, errors or test snapshots. Redact before logging.
 6. **Guards are switchable, checks are not.** A disabled guard is recorded in `run.json` and
    named in the digest footer.
 7. **Supply chain.** No new dependencies on issue branches; versions are pinned in the lockfile.

@@ -12,8 +12,17 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "test", "evals", "scripts", "vitest.config.ts", "eslint.config.js"]
+  "include": [
+    "src",
+    "test",
+    "evals",
+    "scripts",
+    "eslint-rules",
+    "vitest.config.ts",
+    "eslint.config.js"
+  ]
 }

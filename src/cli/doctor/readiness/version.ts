@@ -1,6 +1,8 @@
 // Ollama versions and model tags, shared by the doctor checks and the readiness table.
 
-const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)(.*)$/;
+// `(?!\d)` ends the patch number at its last digit, so a failure at `$` (a line break in the rest)
+// does not retry `(.*)` from every shorter patch number.
+const VERSION_PATTERN = /^v?(\d+)\.(\d+)\.(\d+)(?!\d)(.*)$/;
 /** Ollama builds from source (and some test builds) report this. */
 export const DEVELOPMENT_VERSION = [0, 0, 0] as const;
 

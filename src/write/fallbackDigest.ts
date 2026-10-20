@@ -15,7 +15,7 @@ const NO_SUMMARY = 'No summary in the source.';
 const INTRO = "These are the selected releases, in the sources' own words.";
 const MAX_AREAS = 3;
 const ELLIPSIS = '...';
-const EM_DASH = /\s*—+\s*/g;
+const EM_DASH = /(?:(?<!\s)\s+)?—+\s*/g;
 const WORD = /[\p{L}\p{N}]/u;
 /** A sentence ends at ., ! or ? followed by a space, so "1.0" and "v2.1.3" do not end one. */
 const SENTENCE_END = /(?<=[.!?])\s+/;
@@ -60,7 +60,7 @@ export function cutSummary(text: string, maxWords: number): string {
     .split(' ')
     .slice(0, maxWords)
     .join(' ')
-    .replace(/[.,;:!?]+$/, '')}${ELLIPSIS}`;
+    .replace(/(?<![.,;:!?])[.,;:!?]+$/, '')}${ELLIPSIS}`;
 }
 
 function titleOf(item: Item): string {

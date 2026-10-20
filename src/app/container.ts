@@ -88,7 +88,7 @@ export function createAppLogger({
 }
 
 /** The seed and the temperature each role's calls send, as the run record keeps them. */
-export function samplingOf(
+function samplingOf(
   models: Pick<Config['models'], 'seed' | 'temperature'>,
 ): NonNullable<DigestDeps['sampling']> {
   const temperatureByRole = Object.fromEntries(

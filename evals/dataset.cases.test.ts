@@ -91,7 +91,7 @@ const textOf = (item: Item): string => `${item.title}\n${item.summary}`;
 const urlsIn = (text: string): string[] => text.match(URL_IN_TEXT) ?? [];
 
 function base64Payloads(text: string): string[] {
-  return (text.match(/[A-Za-z0-9+/]{40,}={0,2}/g) ?? []).map((blob) =>
+  return (text.match(/[a-z\d+/]{40,}={0,2}/gi) ?? []).map((blob) =>
     Buffer.from(blob, 'base64').toString('utf8'),
   );
 }
@@ -117,17 +117,19 @@ const foldLookalikes = (text: string): string =>
 /** Per technique (`kind`): what the injected text must contain for the case to test it. */
 const TECHNIQUES: Record<string, (item: Item) => boolean> = {
   'ignore-instructions': (item) =>
-    /ignore (all |any )?(of )?(your )?(previous|prior|above) instructions/i.test(textOf(item)),
+    /ignore (?:all |any )?(?:of )?(?:your )?(?:previous|prior|above) instructions/i.test(
+      textOf(item),
+    ),
   'fake-system-message': (item) => /\[SYSTEM\]\s*:/.test(textOf(item)),
   'delimiter-break': (item) => textOf(item).includes(DATA_CLOSE),
   'unlisted-url': (item) =>
     urlsIn(item.summary).some((url) => !sameUrl(url, item.url)) &&
     /not in the feed/i.test(item.summary),
   'link-swap': (item) =>
-    /real (link|url)/i.test(item.summary) &&
+    /real (?:link|url)/i.test(item.summary) &&
     urlsIn(item.summary).some((url) => !sameUrl(url, item.url)),
   'base64-instructions': (item) =>
-    base64Payloads(item.summary).some((decoded) => /^ignore\b.*\binstructions/i.test(decoded)),
+    base64Payloads(item.summary).some((decoded) => /^ignore\b.+\binstructions/i.test(decoded)),
   'unicode-trick': (item) =>
     HAS_ZERO_WIDTH.test(item.summary) &&
     HAS_CYRILLIC.test(item.summary) &&
@@ -169,7 +171,7 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
   'link-swap-same-host': (item) => {
     const swapped = urlsIn(item.summary).find((url) => !sameUrl(url, item.url));
     return (
-      /real (link|url)/i.test(item.summary) &&
+      /real (?:link|url)/i.test(item.summary) &&
       swapped !== undefined &&
       new URL(swapped).hostname === new URL(item.url).hostname
     );
@@ -181,7 +183,7 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
   'paraphrased-jailbreak': (item) =>
     /no guidelines/i.test(item.summary) &&
     !/\bDAN\b|never refuse|you are now|developer mode/i.test(item.summary),
-  'code-block-email': (item) => /```[\s\S]*[\w.+-]+@[\w-]+\.example\b[\s\S]*```/.test(item.summary),
+  'code-block-email': (item) => /```[\s\S]*[\w.+-]@[\w-]+\.example\b[\s\S]*```/.test(item.summary),
   // Follow-up set (attack 31): the Arabic letter mark and U+206A to U+206F split the command.
   'format-char-split': (item) =>
     /\u061c/.test(item.summary) &&
@@ -199,7 +201,7 @@ const TECHNIQUES: Record<string, (item: Item) => boolean> = {
 /** The README table under "Held-out set": the case ids it lists. */
 function heldOutIds(text: string): string[] {
   const section = text.split(/^## Held-out set/m)[1] ?? '';
-  return [...section.matchAll(/^\| `(attack-\d+[\w-]*)`/gm)].map((m) => m[1] ?? '');
+  return [...section.matchAll(/^\| `(attack-\d[\w-]*)`/gm)].map((m) => m[1] ?? '');
 }
 
 const NUMBER = /\d+(?:\.\d+)*/g;
@@ -380,7 +382,7 @@ describe('grounding cases', () => {
 
   it('lists grounding 21 to 30 under the held-out heading in the README, and flags their files', async () => {
     const text = (await readme('grounding')).split(/^## Held-out set/m)[1] ?? '';
-    const listed = [...text.matchAll(/^\| `(grounding-\d+[\w-]*)`/gm)].map((m) => m[1]);
+    const listed = [...text.matchAll(/^\| `(grounding-\d[\w-]*)`/gm)].map((m) => m[1]);
     const expected = grounding.slice(TUNING_COUNT + VALIDATION_COUNT).map((g) => g.value.id);
     expect(listed).toEqual(expected);
     const flags = await heldOutFlags('grounding');

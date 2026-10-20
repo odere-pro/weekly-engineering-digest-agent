@@ -7,7 +7,7 @@ import { canonicalDigestText } from '../render/canonical';
 import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted';
 
 /** What the digest is about when the guard is not told the focus areas. */
-export const DEFAULT_TASK = 'AI and platform engineering';
+const DEFAULT_TASK = 'AI and platform engineering';
 
 /** One yes/no question for a decision-model guard. "Yes" always means "flag". */
 export interface GuardQuestion {

@@ -30,9 +30,11 @@ const CONTAINERS = ['article', 'main'] as const;
 const CHROME = new Set(['script', 'style', 'nav', 'header', 'footer']);
 const RAW_TEXT = new Set(['script', 'style']);
 
-const ANY_TAG = /<(\/?)([a-zA-Z][a-zA-Z0-9]*)(?:[\s/][^<>]*)?>/g;
+const ANY_TAG = /<(\/?)([a-z][a-z\d]*)(?:[\s/][^<>]*)?>/gi;
 const META_TAG = /<meta\b[^<>]*>/gi;
-const ATTRIBUTE = /([a-zA-Z:_-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+// The lookbehind starts a name only where its run of name characters starts: without it, a long
+// run with no `=` after it is rescanned from every character (quadratic).
+const ATTRIBUTE = /(?<![a-z:_-])([a-z:_-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
 
 interface Span {
   /** Start of the content, just after the opening tag. */
@@ -69,7 +71,7 @@ function spanOf(html: string, name: string, innerStart: number): Span {
 export function withoutElements(html: string, names: ReadonlySet<string>): string {
   const kept: string[] = [];
   let from = 0;
-  const scan = new RegExp(ANY_TAG.source, 'g');
+  const scan = new RegExp(ANY_TAG);
   for (;;) {
     scan.lastIndex = from;
     let tag = scan.exec(html);

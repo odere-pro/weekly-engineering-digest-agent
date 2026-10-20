@@ -32,7 +32,7 @@ export const VALID_CONFIG = join(CONFIG_FIXTURES, 'valid.config.json');
 export const MISSING_ENV = join(CONFIG_FIXTURES, 'missing.env');
 export const DATA_DIR = '/srv/digest/data';
 export const ENV_PATH = '/srv/digest/.env';
-export const CONFIG_PATH = '/srv/digest/digest.config.json';
+const CONFIG_PATH = '/srv/digest/digest.config.json';
 export const FEED_URL = 'https://example.com/feed.xml';
 export const GITHUB_URL = 'https://github.com/acme/tool';
 export const ATOM_FEED =
@@ -66,7 +66,7 @@ export function errnoError(code: string): Error {
 }
 
 /** What is on the fake disk at a path. */
-export type FsEntry =
+type FsEntry =
   | { kind: 'dir'; writable?: boolean }
   | { kind: 'file'; mode?: number; writable?: boolean; content?: string }
   | { kind: 'symlink'; target: string };

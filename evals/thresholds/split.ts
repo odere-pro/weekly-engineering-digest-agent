@@ -12,7 +12,7 @@ import { EPSILON } from './sweep/measures';
 /** The holdout keeps every CASE_STRIDE-th classifier case, attack and grounding case (the 3rd, 6th, ...). */
 export const CASE_STRIDE = 3;
 /** The default holdout is the newest recorded weeks, as many as this (fewer if one must stay to train on). */
-export const DEFAULT_HOLDOUT_WEEKS = 2;
+const DEFAULT_HOLDOUT_WEEKS = 2;
 /** A train-to-holdout gap above this prints a warning. */
 export const GAP_WARNING = 0.1;
 
@@ -26,7 +26,7 @@ export interface Split {
 /** Every week and unmarked case on the train side. Cases marked `heldOut` still go to the holdout. */
 export const NO_SPLIT: Split = { holdoutWeeks: [], caseStride: 0 };
 
-export function recordedWeeks(raw: RawCapture): string[] {
+function recordedWeeks(raw: RawCapture): string[] {
   const weeks = new Set([
     ...raw.weekItems.map((r) => r.weekId),
     ...raw.inputGuards.filter((g) => g.kind === 'clean').map((g) => g.from),

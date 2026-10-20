@@ -1,14 +1,14 @@
 # Fetch source run
 
 > Fetches the sources: the fetchers of a run wired to a recorder, one source at a time with a time
-> limit, up to four at once. Entry: `fetchSource(source, run) → SourceReport` (`fetchSource.ts`),
-> `mapWithConcurrency(inputs, limit, fn)`. Port: `SourceFetcher`.
+> limit. Entry: `fetchSource(source, run) → SourceReport` (`fetchSource.ts`); `fetch.ts` runs it
+> through `mapWithConcurrency` (`shared/concurrency.ts`). Port: `SourceFetcher`.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  run["FetchRun: fetchers, recorder, window, limits"] --> pool["mapWithConcurrency: 4 at once, input order kept"]
+  run["FetchRun: fetchers, recorder, window, limits"] --> pool["mapWithConcurrency (shared): MAX_CONCURRENT_SOURCES at once, input order kept"]
   pool --> one["fetchSource: run.fetchers[source.kind].fetch, withTimeout"]
   one -.->|"fetch(source, window, signal)"| port[[SourceFetcher]]
   port -.->|"every answer, entry counts"| rec["recorder.tap"]
@@ -30,13 +30,12 @@ flowchart TD
 
 ## Files
 
-| File                    | Role                                                                    |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `fetchSource.ts`        | `fetchSource`, `errorText`; private `reportOf` and the `Outcome` type   |
-| `buildFetchers.ts`      | `buildFetchers`: the RSS and GitHub fetchers wired to the recorder      |
-| `recorder.ts`           | `createRecorder`: answers and entry counts by source id, kept in memory |
-| `mapWithConcurrency.ts` | `mapWithConcurrency`: a bounded pool that keeps the input order         |
-| `types.ts`              | `SourceReport`, `FetchRun`                                              |
+| File               | Role                                                                    |
+| ------------------ | ----------------------------------------------------------------------- |
+| `fetchSource.ts`   | `fetchSource`, `errorText`; private `reportOf` and the `Outcome` type   |
+| `buildFetchers.ts` | `buildFetchers`: the RSS and GitHub fetchers wired to the recorder      |
+| `recorder.ts`      | `createRecorder`: answers and entry counts by source id, kept in memory |
+| `types.ts`         | `SourceReport`, `FetchRun`                                              |
 
 ## Gotchas
 

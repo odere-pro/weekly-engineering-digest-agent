@@ -1,8 +1,8 @@
 # Shared
 
-> Small helpers many features need and none should own: errors with exit codes, clock, retry and
-> timeout, ISO weeks, URL and text cleaning, the untrusted-data wrapper, `Logger` and `Tracer`, the
-> atomic file writer, the progress log. Any layer may import them. No entry point, no port.
+> Small helpers many features need and none should own: errors with exit codes, clock, retry, timeout, a
+> bounded pool, ISO weeks, URL and text cleaning, the untrusted-data wrapper, `Logger` and `Tracer`,
+> atomic file writes, the progress log. Any layer may import them. No entry point, no port.
 
 ## Context
 
@@ -58,26 +58,27 @@ flowchart TD
 
 ## Files
 
-| File            | Role                                                                                                     |
-| --------------- | -------------------------------------------------------------------------------------------------------- |
-| `atomicFile.ts` | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`, `isErrnoException` |
-| `clock.ts`      | `Clock`, `systemClock`, `fixedClock` (a fresh `Date` per call)                                           |
-| `errors.ts`     | `DigestError`, `FetchError`, `errorMessage`                                                              |
-| `isoWeek.ts`    | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`                          |
-| `progress.ts`   | `startProgress`, `formatDuration`, `PROGRESS_EVERY_ITEMS`, `PROGRESS_EVERY_MS`                           |
-| `retry.ts`      | `withRetry`, `withTimeout`, `TimeoutError`                                                               |
-| `telemetry.ts`  | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                                              |
-| `text.ts`       | `toPlainText`, `truncate`, `wordCount`, `printableLine`                                                  |
-| `untrusted.ts`  | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`                          |
-| `url.ts`        | `normalizeUrl`, `itemIdFor`, `sameUrl`                                                                   |
+| File             | Role                                                                                                     |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `atomicFile.ts`  | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`, `isErrnoException` |
+| `causeChain.ts`  | `causeChain`, `MAX_CAUSE_DEPTH`: an error and its `Error` causes, at most 5 deep                         |
+| `clock.ts`       | `Clock`, `systemClock`, `fixedClock` (a fresh `Date` per call)                                           |
+| `concurrency.ts` | `mapWithConcurrency`: a bounded pool that keeps the input order                                          |
+| `errors.ts`      | `DigestError`, `FetchError`, `errorMessage`                                                              |
+| `isoWeek.ts`     | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`                          |
+| `progress.ts`    | `startProgress`, `formatDuration`, `PROGRESS_EVERY_ITEMS`, `PROGRESS_EVERY_MS`                           |
+| `retry.ts`       | `withRetry`, `withTimeout`, `TimeoutError`                                                               |
+| `telemetry.ts`   | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                                              |
+| `text.ts`        | `toPlainText`, `truncate`, `wordCount`, `printableLine`                                                  |
+| `untrusted.ts`   | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`                          |
+| `url.ts`         | `normalizeUrl`, `itemIdFor`, `sameUrl`                                                                   |
 
 Tests sit next to each file, except `clock.ts` and `telemetry.ts`. One fixture, `__fixtures__/steppedClock.ts`:
 a `fixedClock` a test moves by hand (`advance`), for the progress tests here, in `guards` and in `classify`.
 
 ## Gotchas
 
-- Frozen on issue branches (`.claude/rules/parallel-work.md`): set the issue to `blocked`, write the
-  change under `## Notes`, and let the coordinator make it on `main`.
+- Frozen on issue branches: `blocked` plus the change under `## Notes` (`.claude/rules/parallel-work.md`).
 - Do not change `normalizeUrl` or `itemIdFor` without re-recording: every id in `evals/weeks/`,
   `evals/classifier-cases.json` and `evals/sources/*/expected.json` is such a hash, and
   `evals/dataset.*.test.ts` fail. It also changes what `process` counts as already sent.

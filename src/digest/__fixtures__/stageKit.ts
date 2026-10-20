@@ -8,17 +8,15 @@ import type { Digest, Item } from '../../domain/schemas';
 import type { GuardCheckId } from '../../guards/guardVerdict';
 import type { InputGuard, OutputGuard } from '../../guards/Guard';
 import type { ModelProvider } from '../../models/ModelProvider';
-import type { SourceFetcher } from '../../sources/SourceFetcher';
 import type { RunRecord } from '../../store/runRecord';
 import type { LogFields, Logger } from '../../shared/telemetry';
 import type { CheckedDraft } from '../../write/checkedStep/types';
-import { makeConfig, makeDraft, makeItem, makeScoredItem } from '../../../test/builders';
+import { makeConfig, makeDraft, makeScoredItem } from '../../../test/builders';
 import {
   CapturingDelivery,
   FakeInputGuard,
   FakeModelProvider,
   FakeOutputGuard,
-  FakeSourceFetcher,
   MemoryRunStore,
   fixedClock,
 } from '../../../test/fakes';
@@ -43,14 +41,14 @@ export const PROFILE: ModelProfile = {
   minOllamaVersion: '0.0.0',
 };
 
-export interface LogLine {
+interface LogLine {
   level: 'debug' | 'info' | 'warn' | 'error';
   message: string;
   fields: LogFields;
 }
 
 /** Keeps every line; a child logger adds its fields to the lines it writes. */
-export function recordingLogger(lines: LogLine[], bound: LogFields = {}): Logger {
+function recordingLogger(lines: LogLine[], bound: LogFields = {}): Logger {
   const at =
     (level: LogLine['level']) =>
     (message: string, fields: LogFields = {}): void => {
@@ -147,10 +145,6 @@ export function scored(relevance: number, overrides: Partial<Item> = {}): Scored
   );
 }
 
-export function fetcherOf(items: readonly Item[] | Error, id = 'example-feed'): SourceFetcher {
-  return new FakeSourceFetcher('rss', { [id]: items instanceof Error ? items : [...items] });
-}
-
 /** A writer's draft over `items` with the Markdown that was checked. */
 export function checkedDraft(
   items: readonly Item[],
@@ -159,5 +153,3 @@ export function checkedDraft(
 ): CheckedDraft {
   return { draft: makeDraft(items, writer, overrides), markdown: `# ${writer} digest\n` };
 }
-
-export { makeItem };

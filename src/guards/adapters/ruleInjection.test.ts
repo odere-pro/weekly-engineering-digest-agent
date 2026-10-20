@@ -433,7 +433,7 @@ describe('follow-up attacks', () => {
 
 describe('original attacks', () => {
   const files = readdirSync(join(EVALS, 'attacks'))
-    .filter((name) => /^attack-(0[1-9]|10)-.*\.json$/.test(name))
+    .filter((name) => /^attack-(?:0[1-9]|10)-.*\.json$/.test(name))
     .sort();
 
   it('are ten files', () => {

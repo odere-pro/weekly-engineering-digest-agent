@@ -138,7 +138,7 @@ export const chatOk = (): Response =>
 
 export const WRITE = { role: 'write', system: 'You write digests.', prompt: 'Summarize.' } as const;
 
-export const QUESTIONS = {
+const QUESTIONS = {
   hype: {
     type: 'yesno',
     instructions: 'Is this release note mostly marketing hype with no concrete technical change?',

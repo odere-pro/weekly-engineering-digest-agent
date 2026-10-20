@@ -164,7 +164,7 @@ describe('resume and invisible characters', () => {
 
     for (const channel of [h.email, h.slack]) {
       expect(channel.digests[0]?.view).toEqual(buildDigestView(hostile, { disabledGuards: OFF }));
-      expect(channel.digests[0]?.markdown).not.toMatch(/[\p{Cf}]/u);
+      expect(channel.digests[0]?.markdown).not.toMatch(/\p{Cf}/u);
     }
     expect(h.warnings.map((w) => w.message)).not.toContain(
       'Sending the saved digest without its view',

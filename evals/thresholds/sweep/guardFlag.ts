@@ -20,7 +20,7 @@ export interface GuardFlagPoint {
   anyAttacksCaught: number;
 }
 
-export interface Blocked {
+interface Blocked {
   itemId: string;
   title: string;
   from: string;

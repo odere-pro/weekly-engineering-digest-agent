@@ -23,6 +23,26 @@ describe('generateStructured', () => {
     });
   });
 
+  it.each([
+    ['a plain fence', '```\n{"answer": 2}\n```'],
+    ['a fence with no line breaks', '```json{"answer": 2}```'],
+    ['a fence with spaces around the body', '  ```json   \n\n {"answer": 2} \n  ```  '],
+  ])('accepts JSON in %s', async (_name, reply) => {
+    const model = new FakeModelProvider({ generate: () => reply });
+    await expect(generateStructured(model, request, Schema, 'write')).resolves.toMatchObject({
+      value: { answer: 2 },
+      repaired: false,
+    });
+  });
+
+  it('gives up on an unclosed fence and a very long run of spaces in bounded time', async () => {
+    const hostile = `\`\`\`json${' '.repeat(100_000)}{"answer": 1}`;
+    const model = new FakeModelProvider({ generate: () => hostile });
+    const started = Date.now();
+    await expect(generateStructured(model, request, Schema, 'write')).rejects.toThrow(DigestError);
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
   it('repairs once with the validation problems in the prompt', async () => {
     const replies = ['{"answer": "x"}', '{"answer": 3}'];
     const model = new FakeModelProvider({ generate: () => replies.shift() ?? '' });

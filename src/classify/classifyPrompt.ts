@@ -8,7 +8,7 @@ import { UNTRUSTED_DATA_RULE, wrapUntrusted } from '../shared/untrusted';
 export const OTHER_AREA = 'other';
 
 /** Relevance levels, lowest first; the level index is the 0-3 relevance score. */
-export const RELEVANCE_LEVELS = [
+const RELEVANCE_LEVELS = [
   'not relevant: unrelated to the focus areas',
   'marginal: touches the focus areas, nothing to act on',
   'relevant: useful to engineers working in the focus areas',

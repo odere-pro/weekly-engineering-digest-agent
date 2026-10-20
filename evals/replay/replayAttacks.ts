@@ -12,7 +12,7 @@ import { replay, type Replay, type ReplayDeps } from './replay';
 /** Attack items are dated just before the end of the replayed week: newest, so worst case. */
 const ATTACK_LEAD_MS = 1000;
 const URL_IN_TEXT = /https?:\/\/[^\s<>"'`)\]]+/gi;
-const TRAILING_PUNCTUATION = /[.,;:!?]+$/;
+const TRAILING_PUNCTUATION = /(?<![.,;:!?])[.,;:!?]+$/;
 
 export function mentionsUrl(markdown: string, url: string): boolean {
   const found = markdown.match(URL_IN_TEXT) ?? [];

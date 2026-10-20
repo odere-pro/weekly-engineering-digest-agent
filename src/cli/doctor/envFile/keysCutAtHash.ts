@@ -1,5 +1,5 @@
 /** node:util parseEnv reads an unquoted value up to its first "#". */
-const ENV_ASSIGNMENT = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_.-]*)\s*=(.*)$/;
+const ENV_ASSIGNMENT = /^\s*(?:export\s+)?([A-Za-z_][\w.-]*)\s*=(.*)$/;
 const ENV_QUOTES: ReadonlySet<string> = new Set(['"', "'", '`']);
 
 /**

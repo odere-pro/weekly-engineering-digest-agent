@@ -117,9 +117,9 @@ export function redactSecrets(text: string, secrets: Secrets): string {
 // ---------------------------------------------------------------------------------------------
 // Writing .env: kept next to the reader (node:util parseEnv), so the two cannot disagree.
 
-const BARE_ENV_VALUE = /^[A-Za-z0-9_./:@%+,-]+$/;
+const BARE_ENV_VALUE = /^[\w./:@%+,-]+$/;
 /** Also what keeps a key safe to put in a pattern. */
-const ENV_KEY = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const ENV_KEY = /^[a-z_]\w*$/i;
 
 /** Quotes `value` so that `node:util` parseEnv (the loader's parser) reads it back unchanged. */
 export function formatEnvValue(key: string, value: string): string {

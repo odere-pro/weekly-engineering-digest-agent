@@ -1,6 +1,8 @@
 import { ItemSchema, type Item, type Source, type SourceKind } from '../domain/schemas';
 import type { FetchWindow, SourceFetcher } from './SourceFetcher';
+import { causeChain } from '../shared/causeChain';
 import type { Clock } from '../shared/clock';
+import { mapWithConcurrency } from '../shared/concurrency';
 import { errorMessage, FetchError } from '../shared/errors';
 import { TimeoutError, withRetry, withTimeout } from '../shared/retry';
 import type { Logger } from '../shared/telemetry';
@@ -46,8 +48,8 @@ interface SourceOutcome {
 const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 500;
-const MAX_CONCURRENT_SOURCES = 4;
-const MAX_CAUSE_DEPTH = 5;
+/** How many sources are fetched at once. `digest fetch` uses the same number. */
+export const MAX_CONCURRENT_SOURCES = 4;
 /** A fetcher's error text is untrusted and can be long: this much reaches logs and run records. */
 const MAX_ERROR_CHARS = 300;
 
@@ -168,15 +170,6 @@ function isNetworkFailure(error: unknown): boolean {
   return isFetchFailure || causeChain(error).some(hasNetworkCode);
 }
 
-function causeChain(error: unknown): Error[] {
-  const chain: Error[] = [];
-  for (let current = error; current instanceof Error && chain.length < MAX_CAUSE_DEPTH;) {
-    chain.push(current);
-    current = current.cause;
-  }
-  return chain;
-}
-
 function hasNetworkCode(error: Error): boolean {
   return 'code' in error && typeof error.code === 'string' && NETWORK_ERROR_CODES.has(error.code);
 }
@@ -244,22 +237,4 @@ function mergeOutcomes(outcomes: readonly SourceOutcome[]): Item[] {
 /** Stable: items with equal timestamps keep their collection order. */
 function sortNewestFirst(items: readonly Item[]): Item[] {
   return items.toSorted((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
-}
-
-/** Runs `fn` over `inputs` with at most `limit` in flight; results keep the input order. */
-async function mapWithConcurrency<T, R>(
-  inputs: readonly T[],
-  limit: number,
-  fn: (input: T) => Promise<R>,
-): Promise<R[]> {
-  const results = new Array<R>(inputs.length);
-  let nextIndex = 0;
-  const worker = async (): Promise<void> => {
-    while (nextIndex < inputs.length) {
-      const index = nextIndex++;
-      results[index] = await fn(inputs[index] as T);
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(limit, inputs.length) }, () => worker()));
-  return results;
 }

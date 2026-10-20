@@ -1,0 +1,30 @@
+{
+  // Unused dependencies, files and exports. `pnpm knip` is part of `pnpm check`. Fix a finding by
+  // removing the dead code or its `export`; a narrow exception needs a reason (JSDoc `@public`
+  // on the symbol, or an entry here with a comment). Do not widen `ignore` without the maintainer.
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    // `src/cli/index.ts`, the `bin` and the package scripts are found from package.json.
+    // A file run by hand (`pnpm tsx evals/<file>.ts`, named in docs/runbooks and evals/README.md):
+    "evals/{recordWeeks,recordSources,calibrate,tuneThresholds,rescoreReplay,feedbackToLabels}.ts",
+    "evals/judge/calibrate.ts",
+    "evals/judge/runDrafts/addRun.ts",
+    "evals/attacks/mutate.ts",
+    // Started as a child process by the lock tests.
+    "src/store/adapters/lockContender.ts",
+    // Tool scripts and the local ESLint plugin (eslint.config.js imports it).
+    "scripts/*.mjs",
+    "docker/*.mjs",
+    "eslint-rules/*.mjs"
+  ],
+  // `uvx` runs zizmor (`pnpm lint:actions`); uv is a system tool, not an npm package.
+  "ignoreBinaries": ["uvx"],
+  "project": [
+    "src/**/*.ts",
+    "evals/**/*.ts",
+    "test/**/*.ts",
+    "scripts/*.mjs",
+    "docker/*.mjs",
+    "eslint-rules/*.mjs"
+  ]
+}

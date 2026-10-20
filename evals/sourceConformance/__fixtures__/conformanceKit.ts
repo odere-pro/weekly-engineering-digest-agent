@@ -8,7 +8,7 @@ import type { SourceRecording } from '../recordings/types';
 import type { SourceFetcherFactories } from '../replayFetch/fetcherFactories';
 
 /** Longer than `MIN_SUMMARY_CHARS`, so an item with it counts as having a summary. */
-export const LONG_SUMMARY = 'A summary that is comfortably longer than forty characters.';
+const LONG_SUMMARY = 'A summary that is comfortably longer than forty characters.';
 
 export const feedA: Source = { id: 'feed-a', kind: 'rss', url: 'https://openai.com/news/rss.xml' };
 export const repoB: Source = {

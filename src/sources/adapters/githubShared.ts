@@ -8,8 +8,8 @@ import type { RawEntry } from './entries/types';
 export const GITHUB_HOST = 'github.com';
 export const GITHUB_API_HOST = 'api.github.com';
 
-const OWNER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9-]*$/;
-const REPO_PATTERN = /^(?!\.{1,2}$)(?!.*\.git$)[A-Za-z0-9._-]+$/;
+const OWNER_PATTERN = /^[a-z\d][a-z\d-]*$/i;
+const REPO_PATTERN = /^(?!\.{1,2}$)(?!.*\.git$)[\w.-]+$/;
 
 export interface Repo {
   owner: string;
@@ -33,7 +33,7 @@ export function parseRepo(source: Source): Repo {
   const hasExtras = url.username || url.password || url.port || url.search || url.hash;
   if (url.protocol !== 'https:' || url.hostname !== GITHUB_HOST || hasExtras) return invalid();
 
-  const [owner, name, ...rest] = url.pathname.replace(/^\/+|\/+$/g, '').split('/');
+  const [owner, name, ...rest] = url.pathname.replace(/^\/+|(?<!\/)\/+$/g, '').split('/');
   const isRepoPath =
     rest.length === 0 && OWNER_PATTERN.test(owner ?? '') && REPO_PATTERN.test(name ?? '');
   return isRepoPath ? { owner: owner as string, name: name as string } : invalid();
@@ -79,7 +79,7 @@ export function parseDate(raw: unknown): Date | undefined {
 const oneLine = (text: string): string => text.replace(/\s+/g, ' ').trim();
 
 /** `repo tag` or `repo tag: name`, on one line. */
-export function releaseTitle(repo: Repo, tag: string, name: string): string {
+function releaseTitle(repo: Repo, tag: string, name: string): string {
   const cleanTag = oneLine(tag);
   const cleanName = oneLine(name);
   return `${repo.name} ${cleanName && cleanName !== cleanTag ? `${cleanTag}: ${cleanName}` : cleanTag}`;

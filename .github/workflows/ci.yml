@@ -8,16 +8,35 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request replaces its running checks; main always runs to the end.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [24, 26]
+        # The second leg also runs the whole suite in a time zone far from UTC (UTC+14, a date
+        # ahead of most of the world): five tests once passed only because the runner's zone was UTC.
+        include:
+          - node: 24
+            tz: UTC
+          - node: 26
+            tz: Pacific/Kiritimati
+    env:
+      TZ: ${{ matrix.tz }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      # Every action is pinned to a commit SHA, with its release tag in the comment: a tag can be
+      # moved, a SHA cannot. To bump, resolve the new tag's commit with
+      # `gh api repos/<owner>/<repo>/git/ref/tags/<tag>` (an annotated tag needs one more step:
+      # `gh api repos/<owner>/<repo>/git/tags/<sha>`).
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -25,19 +44,39 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm lint
+      # Unused dependencies, files and exports (knip.json) and copy-paste growth (.jscpd.json).
+      - run: pnpm knip
+      - run: pnpm dupes
       - run: pnpm docs:mermaid
-      # Runs every test and fails under 80% lines, functions, branches or statements
-      # (thresholds in vitest.config.ts).
+      # Runs every test and fails when any file is under 80% lines, functions, branches or
+      # statements (thresholds in vitest.config.ts).
       - run: pnpm coverage
       - run: pnpm build
       - run: pnpm audit --prod --audit-level high
 
+  # Audits the workflows themselves (unpinned actions, persisted credentials, excessive
+  # permissions, template injection). Online, so it also checks that every pinned SHA belongs to its
+  # repository and that no action is a known-vulnerable version. Offline locally: `pnpm lint:actions`.
+  # pipx is on GitHub's ubuntu runners. To bump, pick a zizmor release at least two weeks old.
+  zizmor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - run: pipx run zizmor==1.30.1 .github/workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   image-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      # Builds the image the way docker/validate.sh does, then scans it. No third-party action:
-      # Trivy runs from its own pinned image, with the Docker socket mounted to read the local image.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      # Builds the image the way docker/validate.sh does, then scans it. No third-party action in
+      # this job (the check job has pnpm/action-setup, pinned by SHA): Trivy runs from its own
+      # pinned image, with the Docker socket mounted to read the local image.
       # To bump: pick a release at least two weeks old on Docker Hub (aquasec/trivy) and copy the
       # tag's manifest digest next to it.
       # --ignore-unfixed: fail only on what a rebuild can fix. A CVE Debian has no fix for yet

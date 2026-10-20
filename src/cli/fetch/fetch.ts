@@ -2,7 +2,9 @@ import { loadConfig, redactSecrets, type LoadedConfig } from '../../config/load'
 import type { Secrets } from '../../config/schema';
 import { ExitCode } from '../../domain/schemas';
 import { systemClock, type Clock } from '../../shared/clock';
+import { mapWithConcurrency } from '../../shared/concurrency';
 import { errorMessage } from '../../shared/errors';
+import { MAX_CONCURRENT_SOURCES } from '../../sources/collect';
 import { parseSince } from './plan/parseSince';
 import { planFetch } from './plan/planFetch';
 import { formatTable } from './report/formatTable';
@@ -10,7 +12,6 @@ import { formatTotals } from './report/totals';
 import { createRunFolder } from './saveRun/runFolder';
 import { saveRun } from './saveRun/saveRun';
 import { fetchSource } from './sourceRun/fetchSource';
-import { mapWithConcurrency } from './sourceRun/mapWithConcurrency';
 
 // `digest fetch` (W8-06): fetches the sources with the fetchers a run uses, and saves what came
 // back (raw bodies) and what it was read into (items), so a source can be looked at without a
@@ -42,8 +43,6 @@ export interface FetchCommandDeps {
 }
 
 const SOURCE_TIMEOUT_MS = 10_000;
-/** As many at once as a run's collect step. */
-const MAX_CONCURRENT_SOURCES = 4;
 
 const defaultDeps: FetchCommandDeps = {
   loadConfig: (options) => loadConfig(options),

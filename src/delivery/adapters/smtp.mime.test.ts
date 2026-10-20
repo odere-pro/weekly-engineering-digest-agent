@@ -97,6 +97,7 @@ describe('the digest email as nodemailer builds it', () => {
 
 describe('the Subject of the digest email as nodemailer builds it', () => {
   /** Characters a reader cannot see but that reorder, hide or forge what is shown around them. */
+  // eslint-disable-next-line regexp/no-dupe-characters-character-class -- the tag block is listed whole on purpose: its unassigned code points are not Cf
   const INVISIBLE = /[\p{Cc}\p{Cf}\u{E0000}-\u{E007F}]/u;
   const HOSTILE_HEADLINE =
     'Security fix \u202Egnirps\u202C \u2066x\u2069 \u200Bpatch\u0007 \u001B[31mRED';

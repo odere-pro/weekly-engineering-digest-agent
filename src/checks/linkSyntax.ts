@@ -4,7 +4,7 @@
 // not parse is reported, and the scan resumes after what it read, so hostile text costs one scan.
 
 /** At most this many unparsable destinations are reported: one is enough to reject the draft. */
-export const MAX_MALFORMED_DESTINATIONS = 20;
+const MAX_MALFORMED_DESTINATIONS = 20;
 /** A reported destination is a snippet: the model's text can be very long. */
 const SNIPPET_CHARS = 60;
 const SNIPPET_SOURCE_CHARS = SNIPPET_CHARS * 2;
@@ -141,7 +141,7 @@ const WRAPPER_CLOSER: Readonly<Record<string, string>> = { '<': '>', '`': '`' };
  * run to match, however often that repeats, nor the character that closes a wrapper the run
  * opened in (`closer`: the `>` of `<url>`). A balanced pair stays: `.../Foo_(bar)`. One pass.
  */
-export function trimUrlRun(run: string, closer?: string): string {
+function trimUrlRun(run: string, closer?: string): string {
   let open = 0;
   let close = 0;
   for (const char of run) {

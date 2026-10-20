@@ -33,7 +33,7 @@ export interface FilterOutcome {
   wronglyDropped: number;
 }
 
-export interface CurvePoint {
+interface CurvePoint {
   value: number;
   accuracy: number | null;
 }

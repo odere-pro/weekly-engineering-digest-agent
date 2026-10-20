@@ -25,7 +25,7 @@ describe('grounding controls restate their sources', () => {
 
   beforeAll(async () => {
     const files = (await readdir(GROUNDING_DIR)).filter((name) =>
-      /^grounding-\d+.*\.json$/.test(name),
+      /^grounding-\d.*\.json$/.test(name),
     );
     cases = await Promise.all(
       files.sort().map(async (file) => ({

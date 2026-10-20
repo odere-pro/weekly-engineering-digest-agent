@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { feedbackToLabels } from './feedbackToLabels';
 import { makeItem } from '../test/builders';
 import { weekDigestDir } from '../src/store/layout';
@@ -62,6 +62,21 @@ describe('feedbackToLabels', () => {
 
     expect(await labels()).toEqual({ mustInclude: ['a'], mustExclude: ['b'] });
     expect(result.added).toBe(0);
+  });
+
+  it('prints to the console when no log function is given', async () => {
+    const p = paths();
+    await put(p.feedback, { weekId: WEEK, wrongPicks: ['a'], missed: [] });
+    await put(p.labels, { mustInclude: ['a'], mustExclude: [] });
+    const printed = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    await feedbackToLabels({
+      week: WEEK,
+      dataDir: join(root, 'data'),
+      evalsDir: join(root, 'evals'),
+    });
+
+    expect(printed).toHaveBeenCalledWith(expect.stringContaining('CONFLICT a'));
   });
 
   it('refuses to overwrite a label and prints the conflict', async () => {

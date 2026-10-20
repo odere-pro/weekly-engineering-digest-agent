@@ -58,7 +58,7 @@ export function textOf(node: unknown): string {
  * An absolute http(s) URL without tracking parameters or a fragment, which is how the feed
  * library hands out the links it picks itself. Undefined for anything else.
  */
-export function cleanLink(href: string): string | undefined {
+function cleanLink(href: string): string | undefined {
   let url: URL;
   try {
     url = new URL(href.trim());

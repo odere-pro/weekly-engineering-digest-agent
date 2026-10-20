@@ -25,7 +25,7 @@ import {
   noopTracer,
 } from '../test/fakes';
 
-export const DAY_MS = 86_400_000;
+const DAY_MS = 86_400_000;
 /** The test sets are tiny; this lifts the spec's minimum set sizes. */
 export const NONE = { weeks: 0, attacks: 0, grounding: 0, classifier: 0 };
 export const WEEK_40 = '2026-W40';
@@ -237,7 +237,7 @@ export function makeApp(
 }
 
 /** A clock that moves `stepMs` on every reading. */
-export function tickingClock(stepMs: number): EvalDeps['clock'] {
+function tickingClock(stepMs: number): EvalDeps['clock'] {
   let t = Date.parse('2026-10-16T09:00:00Z');
   return {
     now: () => {

@@ -11,10 +11,10 @@ import { noDigest, weekDetail } from '../measurement/weekDetail';
 
 /** The parts of a shipped item the reader gets from the writer; the layout prints no other. */
 const FACT_FIELDS = ['title', 'summary', 'action'] as const;
-export type FactField = (typeof FACT_FIELDS)[number];
+type FactField = (typeof FACT_FIELDS)[number];
 
 /** One version, advisory id or date in the digest that its own source does not have. */
-export interface FactMiss {
+interface FactMiss {
   weekId: string;
   /** The title the digest gave the item. */
   itemTitle: string;

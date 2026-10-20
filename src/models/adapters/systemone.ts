@@ -13,7 +13,7 @@ const SCORE_LEVEL_LIMITS = { min: 2, max: 10 } as const;
  * strands-decider (any namespace) has a 4K context; every other decision model gets more. The
  * budgets are for the questions and the state together (see `stateBudgetFor`).
  */
-const SMALL_CONTEXT_MODEL = /(^|\/)strands-decider(:|$)/;
+const SMALL_CONTEXT_MODEL = /(?:^|\/)strands-decider(?::|$)/;
 const SMALL_CONTEXT_STATE_CHARS = 10_000;
 const DEFAULT_STATE_CHARS = 48_000;
 /** Least state a decide call keeps, however much room the questions take. */

@@ -30,7 +30,7 @@ export function normalizeUrl(raw: string): string {
     .sort(([a], [b]) => a.localeCompare(b));
   url.search = new URLSearchParams(params).toString();
   if (url.pathname.length > 1 && url.pathname.endsWith('/'))
-    url.pathname = url.pathname.replace(/\/+$/, '');
+    url.pathname = url.pathname.replace(/(?<!\/)\/+$/, '');
   return url.toString();
 }
 

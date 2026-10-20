@@ -33,7 +33,9 @@ const draftsJson = JSON.stringify({
   ],
 });
 
-function harness(options: { seed?: boolean; secrets?: LoadedConfig['secrets'] } = {}) {
+function harness(
+  options: { seed?: boolean; secrets?: LoadedConfig['secrets']; ollamaUrl?: string } = {},
+) {
   const store = new MemoryRunStore();
   if (options.seed !== false) {
     store.records.set(
@@ -66,7 +68,7 @@ function harness(options: { seed?: boolean; secrets?: LoadedConfig['secrets'] } 
   const err: string[] = [];
   const loaded: LoadedConfig = {
     config: makeConfig({ dataDir: '/work/data' }),
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
+    env: { OLLAMA_URL: options.ollamaUrl ?? 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: options.secrets ?? {},
     profile: PROFILES.quality,
     platform: { os: 'darwin', arch: 'arm64' },
@@ -210,6 +212,14 @@ describe('showCommand: parts', () => {
     const h = harness({ secrets: { SMTP_PASSWORD: SECRET } });
     h.store.artifacts.set(`${WEEK}/digest.md`, `leaked ${SECRET} here\n`);
     await showCommand({ week: WEEK, part: 'digest' }, h.deps);
+    expect(h.out()).not.toContain(SECRET);
+  });
+
+  it('redacts the password of OLLAMA_URL from the printed text', async () => {
+    const h = harness({ ollamaUrl: `http://ollama:${SECRET}@gpu-box:11434` });
+    h.store.artifacts.set(`${WEEK}/digest.md`, `leaked ${SECRET} here\n`);
+    await showCommand({ week: WEEK, part: 'digest' }, h.deps);
+    expect(h.out()).toContain('leaked');
     expect(h.out()).not.toContain(SECRET);
   });
 });

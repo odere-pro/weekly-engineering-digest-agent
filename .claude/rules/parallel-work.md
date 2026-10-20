@@ -18,6 +18,7 @@ if no two of them touch the same file.
   `pnpm-lock.yaml`, tool configs, `CLAUDE.md`, `.claude/**`, `.githooks/**`, `.github/**`,
   the five ports (`src/models/ModelProvider.ts`, `src/guards/Guard.ts`,
   `src/sources/SourceFetcher.ts`, `src/delivery/Delivery.ts`, `src/store/RunStore.ts`),
+  `eslint-rules/**`, `knip.json`, `.jscpd.json`, `pnpm-workspace.yaml`,
   `src/domain/schemas.ts`, `src/models/structured.ts`, `src/config/schema.ts`,
   `src/config/profiles.ts`, `src/shared/**`, `src/cli/program.ts`, `src/cli/index.ts`,
   `test/fakes/**`, `test/builders.ts`.

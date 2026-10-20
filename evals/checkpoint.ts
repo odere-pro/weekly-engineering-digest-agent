@@ -28,7 +28,7 @@ export interface CheckpointOptions {
   warn: (message: string) => void;
 }
 
-const UNSAFE_NAME_CHARS = /[^A-Za-z0-9._-]/g;
+const UNSAFE_NAME_CHARS = /[^\w.-]/g;
 
 /** A short, stable hash of anything JSON-like. Same parts in the same order give the same hash. */
 export function fingerprintOf(parts: unknown): string {

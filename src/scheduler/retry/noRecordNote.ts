@@ -1,7 +1,7 @@
 /** An errno-style code such as `EIO`, `EACCES` or `ERR_INVALID_ARG_TYPE`. */
 const CODE_PATTERN = /^[A-Z][A-Z0-9_]{1,31}$/;
 /** A class name such as `DigestError` or `ZodError`. */
-const NAME_PATTERN = /^[A-Za-z][A-Za-z0-9]{0,39}$/;
+const NAME_PATTERN = /^[a-z][a-z\d]{0,39}$/i;
 
 const UNKNOWN_ERROR = 'unknown error';
 

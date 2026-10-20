@@ -21,7 +21,7 @@ export interface Rule {
 }
 
 const LINK_PATTERN = /\b(?:https?:\/\/|www\.)[^\s<>()[\]"'`]+/gi;
-const TRAILING_PUNCTUATION = /[.,;:!?]+$/;
+const TRAILING_PUNCTUATION = /(?<![.,;:!?])[.,;:!?]+$/;
 
 /** Words that turn a link into an order. Common release-note words ("instead", "replaced") are left out. */
 const LINK_DIRECTIVE =
@@ -47,7 +47,7 @@ export const RULES: readonly Rule[] = [
     catches: 'attack-11: "disregard everything above" as a second wording of the same order.',
     matches: ({ prose }) =>
       new RegExp(
-        String.raw`\b${IGNORE_VERBS}\s+(?:everything|all|anything)\b[^.]{0,40}\b${PRIOR}\b`,
+        String.raw`\b${IGNORE_VERBS}\s+(?:everything|all|anything)\b[^.]{1,40}\b${PRIOR}\b`,
         'i',
       ).test(prose),
   },
@@ -105,7 +105,7 @@ export const RULES: readonly Rule[] = [
     catches:
       'attack-13: "Developer Mode ... no restrictions" and "DAN/jailbreak mode enabled". "Developer mode enabled in Chrome" is not matched.',
     matches: ({ prose }) =>
-      /\b(?:jailbreak|dan)\smode\s(?:enabled|activated)\b|\bdo anything now\b|\bdeveloper mode\b[^.]{0,30}\b(?:no restrictions|unrestricted|ignore)|\bin developer mode you\b/i.test(
+      /\b(?:jailbreak|dan)\smode\s(?:enabled|activated)\b|\bdo anything now\b|\bdeveloper mode\b[^.]{1,30}\b(?:no restrictions|unrestricted|ignore)|\bin developer mode you\b/i.test(
         prose,
       ),
   },
@@ -148,7 +148,7 @@ const INVISIBLE_IN_WORD = [
   '\\u200B',
   '\\u200C',
   '\\u200D',
-  '\\u200E-\\u200F',
+  '\\u200E\\u200F',
   '\\u2060-\\u2064',
   '\\uFEFF',
   '\\u00AD',
@@ -166,7 +166,7 @@ const HEX_RUN_LIMIT = 160;
 
 /** A long run counts when it is not plain hex, or is hex longer than any checksum. */
 function hasBlob(text: string): boolean {
-  return (text.match(/[A-Za-z0-9+/]{80,}/g) ?? []).some(
+  return (text.match(/[a-z\d+/]{80,}/gi) ?? []).some(
     (run) => !/^[0-9a-f]+$/i.test(run) || run.length >= HEX_RUN_LIMIT,
   );
 }

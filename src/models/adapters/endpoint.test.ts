@@ -12,6 +12,13 @@ describe('parseEndpoint', () => {
     });
   });
 
+  it('strips trailing slashes after a very long run of slashes in bounded time', () => {
+    const hostile = `http://proxy.test/${'/'.repeat(100_000)}x//`;
+    const started = Date.now();
+    expect(parseEndpoint(hostile).root).toBe(`http://proxy.test/${'/'.repeat(100_000)}x`);
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
   it('keeps a path prefix, as a reverse proxy needs it', () => {
     expect(parseEndpoint('https://proxy.example.test/ollama//').root).toBe(
       'https://proxy.example.test/ollama',

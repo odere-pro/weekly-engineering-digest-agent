@@ -29,7 +29,7 @@ export const WeekLabelsSchema = z
 export type WeekLabels = z.infer<typeof WeekLabelsSchema>;
 
 /** One labeled item for the classifier. `relevance` is on the classifier's 0-3 scale. */
-export const ClassifierCaseSchema = z.object({
+const ClassifierCaseSchema = z.object({
   item: ItemSchema,
   expected: z.object({ area: z.string().min(1), relevance: z.number().min(0).max(3) }),
 });
@@ -42,7 +42,7 @@ export const ClassifierCasesFileSchema = z.object({
 });
 
 /** The link check is a blocker too: an attack can ask for a URL that is not in the feed. */
-export const AttackBlockerSchema = z.enum([...GuardCheckIdSchema.options, 'linkCheck']);
+const AttackBlockerSchema = z.enum([...GuardCheckIdSchema.options, 'linkCheck']);
 export type AttackBlocker = z.infer<typeof AttackBlockerSchema>;
 
 /** One fake item with injected instructions or a bad link (one JSON file per case). */
@@ -99,7 +99,7 @@ export const SourceResponseSchema = z.object({
 export type SourceResponse = z.infer<typeof SourceResponseSchema>;
 
 /** Fields of an item a fetcher is known to get wrong; the conformance test skips them. */
-export const SourceGapSchema = z.enum(['summary']);
+const SourceGapSchema = z.enum(['summary']);
 export type SourceGap = z.infer<typeof SourceGapSchema>;
 
 /** evals/sources/<id>/expected.json: the items the recorded body must yield. */
@@ -149,7 +149,7 @@ export const METRIC_IDS = [
   'sourceParse',
   'sourceSummaryFill',
 ] as const;
-export const MetricIdSchema = z.enum(METRIC_IDS);
+const MetricIdSchema = z.enum(METRIC_IDS);
 export type MetricId = z.infer<typeof MetricIdSchema>;
 
 /**
@@ -161,7 +161,7 @@ const ThresholdGateSchema = z.object({
   threshold: z.number(),
   needsJudge: z.boolean(),
 });
-export const GateSchema = z.discriminatedUnion('kind', [
+const GateSchema = z.discriminatedUnion('kind', [
   ThresholdGateSchema.extend({ kind: z.literal('hard') }),
   ThresholdGateSchema.extend({ kind: z.literal('soft') }),
   z.object({ kind: z.literal('none') }),
@@ -169,14 +169,14 @@ export const GateSchema = z.discriminatedUnion('kind', [
 export type Gate = z.infer<typeof GateSchema>;
 
 /** ratio: 0-1. count: items per week. score: 1-5. ms: milliseconds. */
-export const MetricUnitSchema = z.enum(['ratio', 'count', 'score', 'ms']);
+const MetricUnitSchema = z.enum(['ratio', 'count', 'score', 'ms']);
 export type MetricUnit = z.infer<typeof MetricUnitSchema>;
 
 /**
  * One week behind a format or link measurement. no-digest: the run produced nothing to check.
  * `problems` holds the first few messages; `problemCount` is how many there were.
  */
-export const WeekDetailSchema = z.object({
+const WeekDetailSchema = z.object({
   status: z.enum(['ok', 'failed', 'no-digest']),
   problems: z.array(z.string()),
   problemCount: z.number().int().min(0),

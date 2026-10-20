@@ -1,6 +1,7 @@
 // HTTP transport for the Ollama adapter: JSON and NDJSON over the injected fetch, typed errors,
 // and the mapping from transport errors to the DigestError messages users see.
 import { z } from 'zod';
+import { causeChain } from '../../shared/causeChain';
 import { DigestError, errorMessage } from '../../shared/errors';
 import { TimeoutError } from '../../shared/retry';
 import { hasHttpScheme, parseEndpoint } from './endpoint';
@@ -14,14 +15,13 @@ const UNREACHABLE_CODES = new Set([
   'EAI_AGAIN',
 ]);
 const MAX_DETAIL_CHARS = 300;
-const MAX_CAUSE_DEPTH = 5;
 const NOT_FOUND = 404;
 const FIRST_REDIRECT = 300;
 const FIRST_CLIENT_ERROR = 400;
 const FIRST_SERVER_ERROR = 500;
 
 /** Ollama answered with a non-2xx status. */
-export class OllamaHttpError extends Error {
+class OllamaHttpError extends Error {
   readonly status: number;
 
   constructor(path: string, status: number, detail: string) {
@@ -32,20 +32,11 @@ export class OllamaHttpError extends Error {
 }
 
 /** Ollama reported an error inside a 200 stream (for example, the model runner stopped). */
-export class OllamaStreamError extends Error {
+class OllamaStreamError extends Error {
   constructor(path: string, detail: string) {
     super(`Ollama stream for ${path} failed: ${detail}`);
     this.name = 'OllamaStreamError';
   }
-}
-
-function causeChain(error: unknown): Error[] {
-  const chain: Error[] = [];
-  for (let current = error; current instanceof Error && chain.length < MAX_CAUSE_DEPTH;) {
-    chain.push(current);
-    current = current.cause;
-  }
-  return chain;
 }
 
 function errorCode(error: unknown): string | undefined {

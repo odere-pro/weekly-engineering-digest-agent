@@ -13,7 +13,7 @@ import {
 import { MAX_PROBLEM_CHARS, uniqueLabels } from '../measurement/weekDetail';
 
 /** What one output guard said about a draft; the harness keeps the reason text. */
-export interface OutputVerdictRecord {
+interface OutputVerdictRecord {
   check: GuardCheckId;
   flagged: boolean;
   reason?: string;

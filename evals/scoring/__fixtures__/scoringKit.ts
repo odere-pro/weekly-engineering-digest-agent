@@ -9,7 +9,7 @@ import type { Replay } from '../../replay/replay';
 import type { EvalRun, Scoring, WeekRun } from '../types';
 
 /** Lifts the spec's minimum set sizes: a hand-built run is tiny. */
-export const NO_MINIMUMS: EvalSetSize = { weeks: 0, attacks: 0, grounding: 0, classifier: 0 };
+const NO_MINIMUMS: EvalSetSize = { weeks: 0, attacks: 0, grounding: 0, classifier: 0 };
 
 export const emptyCases = (): EvalCases => ({
   weeks: [],

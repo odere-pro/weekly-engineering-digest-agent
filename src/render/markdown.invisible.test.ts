@@ -29,7 +29,9 @@ const BIDI_AND_HIDDEN = [
 
 /** A character that shows nothing or moves other text, as a class: control or format. */
 const INVISIBLE_CLASS = '[\\p{Cc}\\p{Cf}\\u{2028}\\u{2029}\\u{E0000}-\\u{E007F}]';
+// eslint-disable-next-line regexp/no-dupe-characters-character-class -- the tag block is listed whole on purpose: its unassigned code points are not Cf
 const INVISIBLE = new RegExp(INVISIBLE_CLASS, 'u');
+// eslint-disable-next-line regexp/no-dupe-characters-character-class -- the tag block is listed whole on purpose: its unassigned code points are not Cf
 const INVISIBLE_EVERYWHERE = new RegExp(INVISIBLE_CLASS, 'gu');
 
 /** Renders one act-now item with these overrides; returns its table row. */

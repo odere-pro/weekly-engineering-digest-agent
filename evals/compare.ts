@@ -5,7 +5,7 @@ import { DigestError } from '../src/shared/errors';
 import { SavedScorecardSchema, type SavedScorecard } from './checkpointSections';
 import { METRIC_IDS, type MetricId, type MetricResult } from './schema';
 
-export interface MetricComparison {
+interface MetricComparison {
   id: MetricId;
   before: MetricResult;
   after: MetricResult;

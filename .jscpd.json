@@ -1,0 +1,15 @@
+{
+  "path": ["src", "evals", "scripts"],
+  "format": ["typescript", "javascript"],
+  "ignore": [
+    "**/*.test.ts",
+    "**/__fixtures__/**",
+    "**/*.json",
+    "**/*.golden.*",
+    "**/node_modules/**"
+  ],
+  "minLines": 8,
+  "threshold": 0.4,
+  "reporters": ["console"],
+  "gitignore": true
+}

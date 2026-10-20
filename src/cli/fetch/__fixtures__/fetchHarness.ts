@@ -38,7 +38,7 @@ export const REPO_ATOM_URL = 'https://github.com/acme/widgets/releases.atom';
 export const REPO_API_URL = 'https://api.github.com/repos/acme/widgets/releases?per_page=20';
 export const TOKEN = 'ghp_TESTTOKEN0123456789';
 
-export interface Served {
+interface Served {
   status?: number;
   body?: string;
   type?: string;
@@ -211,7 +211,7 @@ export function tableRows(stdout: string): string[][] {
     .map((line) => line.trimEnd().split(/\s{2,}/));
 }
 
-export interface SummarySource {
+interface SummarySource {
   id: string;
   kind: string;
   status: string;

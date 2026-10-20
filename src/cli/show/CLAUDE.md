@@ -41,7 +41,7 @@ flowchart TD
 ## Rules
 
 - All output goes through `clean`, then the redactor, `--json` included: saved files hold feed text
-  and may hold a secret.
+  and may hold a secret. It knows the secrets and the password in `OLLAMA_URL` (`knownSecrets`).
 - `--json` makes `render` return the saved file as it is, and `toJson(record)` for no part or
   `run`: scripts parse it.
 - The week id must match `WEEK_ID_PATTERN` before it reaches the store, so a path like `../etc`

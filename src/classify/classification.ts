@@ -15,6 +15,9 @@ export const ClassificationSchema = z.object({
 });
 export type Classification = z.infer<typeof ClassificationSchema>;
 
-/** An item with its classification: what `process` and `write` read. */
+/**
+ * An item with its classification: what `process` and `write` read.
+ * @public The runtime schema of `ScoredItem`, exported beside its type though nothing parses one yet.
+ */
 export const ScoredItemSchema = ItemSchema.extend({ classification: ClassificationSchema });
 export type ScoredItem = z.infer<typeof ScoredItemSchema>;

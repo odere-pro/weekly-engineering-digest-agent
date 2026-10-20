@@ -55,7 +55,7 @@ flowchart TD
 | File / folder | Role                                                                                                                                                             |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `index.ts`    | Entry, bundled by `scripts/build.mjs` to `dist/artifacts/cli.js`. Frozen                                                                                         |
-| `program.ts`  | Registers the 10 commands and global `-c, --config`. Frozen                                                                                                      |
+| `program.ts`  | Registers the 10 commands and the global `-c, --config` and `-V, --version`. Frozen                                                                              |
 | `init/`       | `initCommand`: prompts or `--yes`; writes config and `.env`; OS schedule or Docker. `prompts/ configFile/ envFile/ schedule/ summary/ io/`. See `init/CLAUDE.md` |
 | `doctor/`     | `doctorCommand`: a line per check, `fix:` on `✗`/`!`. `report/ checks/ envFile/ folders/ readiness/`. See `doctor/CLAUDE.md`                                     |
 | `run/`        | `runCommand`: `buildApp`, `runDigest`, summary; a dry run still writes the Markdown file. See `run/CLAUDE.md`                                                    |

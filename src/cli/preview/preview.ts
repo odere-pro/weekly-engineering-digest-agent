@@ -75,7 +75,7 @@ export async function previewCommand(
     const channel = checkRequest(options);
     const loaded = await io.loadConfig({ configPath: options.config });
     const store = io.createFsRunStore({ dataDir: loaded.config.dataDir });
-    const redactor = createRedactor(knownSecrets(loaded.secrets));
+    const redactor = createRedactor(knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL));
     const view = await winningView(store, options.week, redactor);
     const files = filesFor(channel, view).map((file) => ({
       ...file,

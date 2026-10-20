@@ -1,10 +1,14 @@
 import { errorMessage } from '../../../shared/errors';
 
-/** An error and the causes below it are read or copied up to this many levels; the rest is cut. */
+/**
+ * An error and the causes below it are read or copied up to this many levels; the rest is cut.
+ * Delivery walks any value that has a `cause`, not only an `Error`, so it does not use
+ * `shared/causeChain`.
+ */
 export const MAX_CAUSE_DEPTH = 5;
 
 /** A code or timeout type is a short identifier; anything else is text that may carry a secret. */
-const IDENTIFIER = /^[A-Za-z0-9_]{1,64}$/;
+const IDENTIFIER = /^\w{1,64}$/;
 
 /**
  * What a retry decision needs from a failed delivery: plain values copied from the failed call,

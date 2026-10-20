@@ -47,9 +47,10 @@ flowchart TD
   the first write, so a failed request leaves no folder behind.
 - A run with no winner (`winner` is null, for example a blocked or quiet week) has nothing to
   preview; the message names the week and its status.
-- Secrets leave twice: `drafts.json` is redacted before it is parsed, and each file again before it
-  is written. Feed text is untrusted, so control characters (not newline, tab or CR) and format
-  characters (bidi overrides, tags, zero-width) are removed from every file.
+- Secrets (and the password in `OLLAMA_URL`, via `knownSecrets`) leave twice: `drafts.json` is
+  redacted before it is parsed, and each file again before it is written. Feed text is untrusted, so
+  control characters (not newline, tab or CR) and format characters (bidi overrides, tags,
+  zero-width) are removed from every file.
 - Each file is written with `writeFileAtomic`: a reader sees the old file or the new, never half.
   `--out` is resolved against `deps.cwd`, and the files go to `<out>/<week>/`.
 

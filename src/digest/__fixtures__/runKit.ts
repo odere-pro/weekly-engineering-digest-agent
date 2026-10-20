@@ -28,8 +28,8 @@ import {
 
 export const WEEK = '2026-W42';
 export const NOW = '2026-10-16T08:00:00Z';
-export const PUBLISHED = '2026-10-14T09:00:00Z';
-export const AREA = 'AI models and tooling';
+const PUBLISHED = '2026-10-14T09:00:00Z';
+const AREA = 'AI models and tooling';
 export const WRITER_A = 'writer-a:31b';
 export const WRITER_B = 'writer-b:30b';
 export const ALL_STEPS = [
@@ -73,13 +73,13 @@ export interface Scenario {
   outputGuards?: readonly OutputGuard[];
 }
 
-export interface LogLine {
+interface LogLine {
   level: 'debug' | 'info' | 'warn' | 'error';
   message: string;
   fields: LogFields;
 }
 
-export function recordingLogger(lines: LogLine[], bound: LogFields = {}): Logger {
+function recordingLogger(lines: LogLine[], bound: LogFields = {}): Logger {
   const at =
     (level: LogLine['level']) =>
     (message: string, fields: LogFields = {}): void => {
@@ -122,11 +122,11 @@ export function defaultBody(items: readonly Item[]): DigestBody {
   };
 }
 
-export function scoreAnswer(level: number, top: number): DecisionAnswer {
+function scoreAnswer(level: number, top: number): DecisionAnswer {
   return { type: 'score', level, score: level / top, probabilities: {}, confidence: 0.9 };
 }
 
-export function classifyAnswers(level: number): Record<string, DecisionAnswer> {
+function classifyAnswers(level: number): Record<string, DecisionAnswer> {
   return {
     [QUESTION_IDS.relevance]: scoreAnswer(level, 3),
     [QUESTION_IDS.area]: { type: 'choice', choice: AREA, probabilities: {}, confidence: 0.9 },
@@ -135,12 +135,12 @@ export function classifyAnswers(level: number): Record<string, DecisionAnswer> {
   };
 }
 
-export function judgeAnswers(level: number | undefined): Record<string, DecisionAnswer> {
+function judgeAnswers(level: number | undefined): Record<string, DecisionAnswer> {
   if (level === undefined) return {};
   return Object.fromEntries(JUDGE_CRITERIA.map((criterion) => [criterion, scoreAnswer(level, 4)]));
 }
 
-export const inPrompt = (text: string, items: readonly Item[]): Item[] =>
+const inPrompt = (text: string, items: readonly Item[]): Item[] =>
   items.filter((item) => text.includes(`${DATA_OPEN} ${item.id}>>>`));
 
 export function setup(scenario: Scenario = {}) {

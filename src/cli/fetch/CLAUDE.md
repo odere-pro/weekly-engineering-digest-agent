@@ -27,7 +27,7 @@ flowchart TD
   start["fetchCommand: deps over defaults"] --> since["parseSince: --since"]
   since --> load["loadConfig"] --> plan["planFetch: sources, root, day, window, run"]
   plan --> folder["createRunFolder: day folder"]
-  folder --> pool["mapWithConcurrency: 4 at once"]
+  folder --> pool["mapWithConcurrency (shared): MAX_CONCURRENT_SOURCES at once"]
   pool --> one["fetchSource: one try, 10 s, SourceReport"]
   one --> print["formatTable, formatTotals to stdout"]
   print --> save["saveRun: each source, then fetch-summary.json"]
@@ -46,8 +46,8 @@ flowchart TD
 - No run state: no lock, no digest folder, no model. It writes only `<out>/<day>/<source>/` and
   `<day>/fetch-summary.json`; a second fetch that day replaces them.
 - Same fetchers as a run (same adapters, same pipeline), plus a recorder that a run does not have.
-  One try per source with a 10 s limit, 4 sources at once, no retry: it shows what a source does
-  the first time.
+  One try per source with a 10 s limit, no retry: it shows what a source does the first time.
+  Sources run `MAX_CONCURRENT_SOURCES` at once (`sources/collect.ts`), as in a run's collect step.
 - The summary comes last, so a day folder with a summary is complete.
 - Texts the command wrote (table, errors, summary) are cleaned of every secret. Collected data
   (bodies, items) is cleaned only of the GitHub token, the one secret sent: another secret that is
@@ -60,7 +60,7 @@ flowchart TD
 | ------------- | -------------------------------------------------------------------------------- |
 | `fetch.ts`    | `fetchCommand`, `FetchCommandOptions`, `FetchCommandDeps`, the default deps      |
 | `plan/`       | `--since`, `--source`, the output root and day, the window. See `plan/CLAUDE.md` |
-| `sourceRun/`  | The recorder, the fetchers, one source, the pool. See `sourceRun/CLAUDE.md`      |
+| `sourceRun/`  | The recorder, the fetchers, one source. See `sourceRun/CLAUDE.md`                |
 | `report/`     | The table, the totals line, the summary object. See `report/CLAUDE.md`           |
 | `saveRun/`    | The day folder and the files written. See `saveRun/CLAUDE.md`                    |
 

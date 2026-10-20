@@ -41,7 +41,7 @@ const NO_ENTRIES = '_None._';
 /** Characters that start Markdown structure; a backslash in front keeps them literal. */
 const MARKDOWN_SPECIAL = /[\\`*_[\]<>#|~!&]/g;
 const URL_UNSAFE = /[<>|\s`]/g;
-const ITEM_LINE = /^- \[([ xX])\] `([^`\s]+)` \| rank (\d+|-) \| score (\d+\.\d{2}|-) \| .+$/;
+const ITEM_LINE = /^- \[([ xX])\] `([^`\s]+)` \| rank (?:\d+|-) \| score (?:\d+\.\d{2}|-) \| .+$/;
 /** Anything that looks like a checkbox line, so an edited one is reported rather than skipped. */
 const CHECKBOX_LIKE = /^\s*[-*+]\s*\[/;
 

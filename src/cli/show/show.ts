@@ -64,7 +64,7 @@ export async function showCommand(
     const part = checkRequest(options);
     const loaded = await io.loadConfig({ configPath: options.config });
     const store = io.createFsRunStore({ dataDir: loaded.config.dataDir });
-    const redactor = createRedactor(knownSecrets(loaded.secrets));
+    const redactor = createRedactor(knownSecrets(loaded.secrets, loaded.env.OLLAMA_URL));
     const text = await render(store, options, part);
     io.stdout(redactor.text(clean(text)));
     return ExitCode.Sent;

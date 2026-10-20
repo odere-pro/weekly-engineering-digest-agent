@@ -151,7 +151,7 @@ describe('parseReviewSheet', () => {
   it('names the line of a repeated item', () => {
     const edited = sheet.replace('`id2` | rank 2', '`id1` | rank 2');
 
-    expect(failure(edited)).toMatch(/line \d+.*id1.*twice/);
+    expect(failure(edited)).toMatch(/line \d.*id1.*twice/);
   });
 
   it('rejects an item line outside the two sections', () => {

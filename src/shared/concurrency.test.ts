@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mapWithConcurrency } from './mapWithConcurrency';
+import { mapWithConcurrency } from './concurrency';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 

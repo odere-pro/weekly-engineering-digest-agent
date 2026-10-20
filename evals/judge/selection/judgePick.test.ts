@@ -23,6 +23,10 @@ describe('judgePick', () => {
     expect(judgePick([draft('a', 2)])).toBe('a');
   });
 
+  it('is empty when there is no draft', () => {
+    expect(judgePick([])).toBe('');
+  });
+
   it('is empty on a tie at the top, as the judge then shows no preference', () => {
     expect(judgePick([draft('a', 4), draft('b', 4), draft('c', 2)])).toBe('');
   });

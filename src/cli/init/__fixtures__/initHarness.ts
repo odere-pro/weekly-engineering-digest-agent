@@ -9,14 +9,14 @@ export const GIB = 1024 ** 3;
 export const CONFIG_PATH = '/work/digest.config.json';
 export const ENV_PATH = '/work/.env';
 /** A Wednesday in ISO week 2026-W43, whose Monday is 2026-10-19. */
-export const NOW = '2026-10-21T10:00:00Z';
+const NOW = '2026-10-21T10:00:00Z';
 export const SCHEDULE = {
   path: '/etc/systemd/user/digest.timer',
   content: '[Timer]\nOnCalendar=Mon 07:45\n',
   installHint: 'systemctl --user enable --now digest.timer',
 };
 
-export type PromptKind = 'confirm' | 'checkbox' | 'input' | 'select' | 'password';
+type PromptKind = 'confirm' | 'checkbox' | 'input' | 'select' | 'password';
 export interface PromptCall {
   kind: PromptKind;
   message: string;

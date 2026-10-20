@@ -28,7 +28,12 @@ const winner = makeDraft([item], 'winner-model');
 const loser = makeDraft([makeItem({ title: 'Other' })], 'loser-model');
 
 function harness(
-  options: { secrets?: LoadedConfig['secrets']; seed?: boolean; fallback?: boolean } = {},
+  options: {
+    secrets?: LoadedConfig['secrets'];
+    ollamaUrl?: string;
+    seed?: boolean;
+    fallback?: boolean;
+  } = {},
 ) {
   const store = new MemoryRunStore();
   if (options.seed !== false) {
@@ -46,7 +51,7 @@ function harness(
   const err: string[] = [];
   const loaded: LoadedConfig = {
     config: makeConfig({ dataDir: 'dist' }),
-    env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info' },
+    env: { OLLAMA_URL: options.ollamaUrl ?? 'http://localhost:11434', LOG_LEVEL: 'info' },
     secrets: options.secrets ?? {},
     profile: PROFILES.quality,
     platform: { os: 'darwin', arch: 'arm64' },
@@ -146,6 +151,19 @@ describe('previewCommand', () => {
     await previewCommand({ week: WEEK }, h.deps);
     const dir = previewDir();
     for (const name of await readdir(dir)) {
+      expect(await readFile(join(dir, name), 'utf8')).not.toContain(SECRET);
+    }
+  });
+
+  it('redacts the password of OLLAMA_URL from every file', async () => {
+    const h = harness({ ollamaUrl: `http://ollama:${SECRET}@gpu-box:11434` });
+    const leaky = makeDraft([makeItem({ title: `Key ${SECRET}` })], 'winner-model');
+    h.store.artifacts.set(`${WEEK}/drafts.json`, JSON.stringify({ drafts: [leaky] }));
+    await previewCommand({ week: WEEK }, h.deps);
+    const dir = previewDir();
+    const names = await readdir(dir);
+    expect(names.length).toBeGreaterThan(0);
+    for (const name of names) {
       expect(await readFile(join(dir, name), 'utf8')).not.toContain(SECRET);
     }
   });

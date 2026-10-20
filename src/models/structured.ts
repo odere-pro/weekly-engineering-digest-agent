@@ -13,10 +13,26 @@ export interface StructuredResult<T> {
   repaired: boolean;
 }
 
+const FENCE = '```';
+const JSON_TAG = 'json';
+
+/**
+ * The text inside a Markdown code fence that opens and closes the whole `trimmed` text (an
+ * optional `json` after the opening fence), or undefined when it is not fenced. Plain string
+ * work: the regex form `^```(?:json)?\s*([\s\S]*?)\s*```$` backtracks without bound on a long
+ * run of whitespace, and a model can write one.
+ */
+function fencedBody(trimmed: string): string | undefined {
+  const isFenced =
+    trimmed.length >= 2 * FENCE.length && trimmed.startsWith(FENCE) && trimmed.endsWith(FENCE);
+  if (!isFenced) return undefined;
+  const inner = trimmed.slice(FENCE.length, -FENCE.length);
+  return (inner.startsWith(JSON_TAG) ? inner.slice(JSON_TAG.length) : inner).trim();
+}
+
 function parseJson(text: string): unknown {
   const trimmed = text.trim();
-  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/.exec(trimmed);
-  return JSON.parse(fenced?.[1] ?? trimmed) as unknown;
+  return JSON.parse(fencedBody(trimmed) ?? trimmed) as unknown;
 }
 
 function validate<T>(

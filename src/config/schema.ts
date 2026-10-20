@@ -7,7 +7,7 @@ import { isReservedSourceId } from '../store/layout';
 export const ProfileNameSchema = z.enum(['quality', 'fast', 'light']);
 export type ProfileName = z.infer<typeof ProfileNameSchema>;
 
-export const GuardModeSchema = z.enum(['any', 'all']);
+const GuardModeSchema = z.enum(['any', 'all']);
 export type GuardMode = z.infer<typeof GuardModeSchema>;
 
 export const InputGuardsSchema = z.object({
@@ -64,7 +64,7 @@ export const EmailDeliverySchema = z.object({
   to: z.array(z.email()).min(1),
 });
 
-export const DeliveryConfigSchema = z.object({
+const DeliveryConfigSchema = z.object({
   /**
    * Always on: the digest is written as <weekId>.md and .html, into `dir` when set, else into the
    * week's digest folder (`<dataDir>/<monday>/digest/`).
@@ -74,9 +74,8 @@ export const DeliveryConfigSchema = z.object({
   /** The webhook URL lives in .env (SLACK_WEBHOOK_URL). */
   slack: z.object({ enabled: z.boolean().default(false) }).optional(),
 });
-export type DeliveryConfig = z.infer<typeof DeliveryConfigSchema>;
 
-export const ModelOverridesSchema = z.object({
+const ModelOverridesSchema = z.object({
   /** Replace the profile's writer panel. One entry turns the panel off. */
   writers: z
     .array(z.string().min(1))
@@ -111,7 +110,7 @@ export const ModelOverridesSchema = z.object({
   temperature: z.partialRecord(RoleSchema, z.number().min(0).max(2)).optional(),
 });
 
-export const ScheduleSchema = z.object({
+const ScheduleSchema = z.object({
   /** Default: Mondays 07:45. */
   cron: z.string().min(1).default('45 7 * * 1'),
   timeZone: z

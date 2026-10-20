@@ -30,19 +30,27 @@ works), and its tests sit next to the code. Pipeline order:
 | `src/cli/`                                            | `program.ts` registers commands; one folder per command (`init/`, `doctor/`, `run/`, …)                        |
 | `src/scheduler/`, `src/observability/`, `src/shared/` | Weekly scheduler; pino logs and OTel; small utilities (errors, retry, text, `atomicFile`)                      |
 | `evals/`                                              | Eval data (recorded weeks, cases, scorecards) and the harness code with its tests                              |
+| `eslint-rules/`                                       | The local ESLint plugin `digest/*`: this project's own lint rules, with `RuleTester` tests                     |
 | `test/`                                               | Shared test kit (`fakes/`, `builders.ts`), cross-feature `integration/` and `live/` tests                      |
 
 ## Commands
 
 ```bash
 pnpm install
-pnpm check                 # typecheck + lint + unit tests: must be green before any commit
+pnpm check                 # typecheck, lint, knip, format check, tests, Mermaid check, build: green before any commit
 pnpm test:watch
+pnpm coverage              # 80% lines, functions, branches and statements on every file, not on average
 pnpm vitest run --coverage --coverage.include='src/path/file.ts'   # coverage of one file
+pnpm knip                  # unused dependencies, files and exports (also part of check)
+pnpm dupes                 # copy-paste growth (jscpd); `pnpm analyze` = knip + dupes
+pnpm lint:actions          # zizmor audit of .github/workflows (needs uv); CodeQL runs in CI only
 pnpm digest run --dry-run  # tsx, no build needed
 pnpm build                 # esbuild → dist/artifacts/cli.js
-pnpm docs:mermaid          # parse every Mermaid block in tracked Markdown
+pnpm docs:mermaid          # parse every Mermaid block in tracked and new (not ignored) Markdown
 ```
+
+CI runs the same checks plus `pnpm coverage`, `pnpm dupes`, `pnpm audit --prod --audit-level high`,
+a zizmor job and CodeQL.
 
 ## Hard rules
 
@@ -64,6 +72,10 @@ pnpm docs:mermaid          # parse every Mermaid block in tracked Markdown
   `src/store/layout.ts`: build output in `dist/artifacts/`, a week's run in `dist/<monday>/digest/`,
   each source's fetched data in `dist/<day>/<sourceId>/raw/` and `formatted/`, logs in
   `dist/logs/<day>/`. Never write anywhere else; tests get a temp data folder from `makeConfig`.
+- **Static analysis is part of done.** `pnpm check` runs type-aware ESLint (regexp ReDoS rules and
+  the `digest/*` rules) and knip. A suppression carries `-- reason`; no rule, threshold or ignore is
+  loosened without the maintainer. Skills: `static-analysis` (run and triage the tools),
+  `add-lint-rule` (turn a bug found in review into a check).
 - ESM, relative imports without extensions, named exports, no default exports, no barrels.
 - Immutable data: return new objects; do not mutate inputs.
 
@@ -80,3 +92,5 @@ pnpm docs:mermaid          # parse every Mermaid block in tracked Markdown
 - Read `.claude/rules/parallel-work.md` before editing anything on an issue branch.
 - Commits: conventional (`feat: …`), subject ≤ 72 chars, signed, authored by the maintainer.
   Never add Co-Authored-By or "Generated with" lines. Never push; the maintainer pushes.
+- The `commit-msg` hook in `.githooks/` is active only where `core.hooksPath` points at it;
+  `make install` sets that.

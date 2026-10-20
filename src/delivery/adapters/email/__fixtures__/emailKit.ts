@@ -5,7 +5,7 @@ import type { DigestView, DigestViewGroup, DigestViewItem } from '../../../../re
 // The view, builders and hostile strings the email tests share. The golden files sit beside it.
 const FIXTURES = new URL('./', import.meta.url);
 
-export function fixture(name: string): string {
+function fixture(name: string): string {
   return readFileSync(new URL(name, FIXTURES), 'utf8');
 }
 

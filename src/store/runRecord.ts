@@ -4,7 +4,7 @@ import { StepNameSchema, RunStatusSchema, WeekIdSchema } from '../domain/schemas
 import { GuardCheckIdSchema } from '../guards/guardVerdict';
 import { JudgeScoreSchema } from '../select/judgeScore';
 
-export const DraftOutcomeSchema = z.object({
+const DraftOutcomeSchema = z.object({
   writer: z.string().min(1),
   passed: z.boolean(),
   /** Check or guard ids that rejected the draft, e.g. "linkCheck", "graniteGroundedness". */

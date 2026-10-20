@@ -12,6 +12,13 @@ describe('normalizeUrl', () => {
     expect(normalizeUrl('http://example.com:80/')).toBe('http://example.com/');
   });
 
+  it('strips a very long run of slashes inside the path in bounded time', () => {
+    const hostile = `https://example.com/${'/'.repeat(100_000)}x/`;
+    const started = Date.now();
+    expect(normalizeUrl(hostile)).toBe(`https://example.com/${'/'.repeat(100_000)}x`);
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
   it('returns non-http input unchanged', () => {
     expect(normalizeUrl(' mailto:a@b.c ')).toBe('mailto:a@b.c');
     expect(normalizeUrl('not a url')).toBe('not a url');

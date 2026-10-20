@@ -16,7 +16,7 @@ import { getText, sameSiteAs, type Answer, type Reply } from './http';
 
 const DEFAULT_MAX_SUMMARY_CHARS = 600;
 
-export interface GetInit {
+interface GetInit {
   headers?: Record<string, string> | undefined;
   maxBytes?: number | undefined;
   signal?: AbortSignal | undefined;

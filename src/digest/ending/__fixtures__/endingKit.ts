@@ -8,13 +8,13 @@ import type { EndingContext } from '../types';
 
 export const WEEK = '2026-W42';
 
-export interface LogLine {
+interface LogLine {
   level: 'debug' | 'info' | 'warn' | 'error';
   message: string;
   fields: LogFields;
 }
 
-export function recordingLogger(lines: LogLine[]): Logger {
+function recordingLogger(lines: LogLine[]): Logger {
   const at =
     (level: LogLine['level']) =>
     (message: string, fields: LogFields = {}): void => {

@@ -6,7 +6,7 @@ import type { EvalCases } from '../../cases/evalSet';
 import type { RescoreReplayDeps } from '../replay/types';
 
 export const AREA = 'AI models and tooling';
-export const TICK_MS = 2000;
+const TICK_MS = 2000;
 
 /** A clock that advances two seconds on every reading. */
 export function tickingClock(): Clock {

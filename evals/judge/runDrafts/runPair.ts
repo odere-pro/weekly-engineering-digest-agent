@@ -10,7 +10,7 @@ import type { RunRecord } from '../../../src/store/runRecord';
 import type { GradedDigest, GradingSheet } from '../gradingSheet';
 
 /** Where the saved drafts live, as the sheet's `draft` paths name it (repo-relative). */
-export const DRAFT_FOLDER = 'evals/judge';
+const DRAFT_FOLDER = 'evals/judge';
 const SLUG_MAX_CHARS = 80;
 
 /** One scored draft, ready to save and to add to the sheet. */

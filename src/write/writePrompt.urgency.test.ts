@@ -26,7 +26,7 @@ const ruleLines = (text: string): string[] =>
   text
     .split('\n')
     .filter((line) =>
-      /^\s*(- (urgency|action|summary)\b|- At most \d+ items are act-now|act-now:|worth-a-look:|good-to-know:)/.test(
+      /^\s*(?:- (?:urgency|action|summary)\b|- At most \d+ items are act-now|act-now:|worth-a-look:|good-to-know:)/.test(
         line,
       ),
     );
