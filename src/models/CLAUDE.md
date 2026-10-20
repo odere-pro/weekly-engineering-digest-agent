@@ -62,16 +62,17 @@ sequenceDiagram
 
 ## Files
 
-| File / folder                            | Role                                                                                         |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `ModelProvider.ts`, `roles.ts`           | The port and its request, answer and health types; `Role`                                    |
-| `structured.ts`                          | `generateStructured`: schema in, validated object out, one repair                            |
-| `adapters/ollama.ts`                     | `createOllamaProvider`: wires the three calls. The folder: `adapters/CLAUDE.md`              |
-| `adapters/call/`                         | `callOllama`: timeout, retries, log, errors; `resolveModel`. See `adapters/call/CLAUDE.md`   |
-| `adapters/chat/`                         | `generate` on `/api/chat`: body, stream, `think`, temperature. See `adapters/chat/CLAUDE.md` |
-| `adapters/decide/`                       | `decide` on `/v1/systemone`: the call, the state fit. See `adapters/decide/CLAUDE.md`        |
-| `adapters/health/`                       | `health`: version and installed models. See `adapters/health/CLAUDE.md`                      |
-| `adapters/ollamaHttp.ts`, `systemone.ts` | The fetch transport and its errors; the `/v1/systemone` mapping                              |
+| File / folder                           | Role                                                                                         |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ModelProvider.ts`, `roles.ts`          | The port and its request, answer and health types; `Role`                                    |
+| `structured.ts`                         | `generateStructured`: schema in, validated object out, one repair                            |
+| `adapters/ollama.ts`                    | `createOllamaProvider`: wires the three calls. The folder: `adapters/CLAUDE.md`              |
+| `adapters/call/`                        | `callOllama`: timeout, retries, log, errors; `resolveModel`. See `adapters/call/CLAUDE.md`   |
+| `adapters/chat/`                        | `generate` on `/api/chat`: body, stream, `think`, temperature. See `adapters/chat/CLAUDE.md` |
+| `adapters/decide/`                      | `decide` on `/v1/systemone`: the call, the state fit. See `adapters/decide/CLAUDE.md`        |
+| `adapters/health/`                      | `health`: version and installed models. See `adapters/health/CLAUDE.md`                      |
+| `adapters/ollamaHttp.ts`, `endpoint.ts` | The fetch transport and its errors; the `OLLAMA_URL` parse (credentials to a header)         |
+| `adapters/systemone.ts`                 | The `/v1/systemone` mapping                                                                  |
 
 Tests sit next to the code; `adapters/__fixtures__/` holds the replies and the test kit.
 

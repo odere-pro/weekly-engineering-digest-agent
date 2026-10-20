@@ -97,6 +97,60 @@ describe('health', () => {
     expect(calls).toHaveLength(2);
   });
 
+  describe('when the Ollama URL carries a password', () => {
+    const PASSWORD = 'S3cretPw';
+    const WITH_PASSWORD = `http://user:${PASSWORD}@127.0.0.1:11434`;
+
+    it('names the address without it when Ollama is not reachable', async () => {
+      const { http } = fakeContext(refused, { baseUrl: WITH_PASSWORD });
+
+      const result = await health(http);
+
+      expect(result).toEqual({ reachable: false, models: [], error: UNREACHABLE });
+    });
+
+    it('leaves it out of an error that quotes the URL it was sent to', async () => {
+      const { http, calls } = fakeContext(
+        (call) => {
+          throw new TypeError(`fetch failed for ${call.url}`);
+        },
+        { baseUrl: WITH_PASSWORD },
+      );
+
+      const result = await health(http);
+
+      expect(calls.map((call) => call.url).sort()).toEqual([
+        `${BASE_URL}/api/tags`,
+        `${BASE_URL}/api/version`,
+      ]);
+      expect(result.error).toContain(`${BASE_URL}/api/version`);
+      expect(result.error).not.toContain(PASSWORD);
+    });
+
+    it('names a redirect, and the address without the password', async () => {
+      const { http } = fakeContext(
+        () => new Response(null, { status: 308, headers: { location: 'https://other.test/' } }),
+        { baseUrl: WITH_PASSWORD },
+      );
+
+      const result = await health(http);
+
+      expect(result.reachable).toBe(false);
+      expect(result.error).toContain(`Ollama at ${BASE_URL} answered /api/version with a redirect`);
+      expect(result.error).not.toContain(PASSWORD);
+    });
+  });
+
+  it('tells the user that OLLAMA_URL needs a scheme when it has none', async () => {
+    const { http, calls } = fakeContext(() => json(200, {}), { baseUrl: 'localhost:11434' });
+
+    const result = await health(http);
+
+    expect(result.reachable).toBe(false);
+    expect(result.error).toContain('OLLAMA_URL must start with http:// or https://');
+    expect(calls).toEqual([]);
+  });
+
   describe('with fake timers', () => {
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });

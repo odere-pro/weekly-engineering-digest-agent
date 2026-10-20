@@ -22,10 +22,13 @@ flowchart LR
 ```mermaid
 flowchart TD
   link[linkCheck] --> decode["decode entities and backslashes in each text and the Markdown"]
-  decode --> urls{"each URL in the collected set?"}
+  decode --> read["linkSyntax: link destinations, bare url runs and pieces, tag attributes"]
+  read --> urls{"each URL in the collected set?"}
   urls -->|no| p1["Unknown URL not in collected items"]
+  read --> clean{"does each ](...) parse as a link?"}
+  clean -->|no| p2["Malformed or scheme-less link"]
   decode --> odd{"www., http: without //, or //host?"}
-  odd -->|yes| p2["Malformed or scheme-less link"]
+  odd -->|yes| p2
   decode --> ref{"reference past U+10FFFF?"}
   ref -->|yes| p3["Invalid character reference"]
   fmt[formatCheck] --> p4["item count, missing fields, urgency and action limits, em dash, word count"]
@@ -48,23 +51,35 @@ flowchart TD
   rule is a security change: add a test that shows the bypass stays closed.
 - Decode before looking, so `&#104;ttp`, `&colon;` and `\` tricks cannot hide a URL.
 - A URL must match a collected one whole after `normalizeUrl` (drops `utm_*` and tracking params,
-  fragment, host case, trailing slash): nothing may ride after a known prefix.
-- A collected `https://www.host` URL is judged whole and cut out before the malformed-link search.
-  Any other `www.`, `http:` without `//` or `//host` is rejected.
+  fragment, host case, trailing slash): nothing may ride after a known prefix. So read at least as
+  much as a renderer does (`linkSyntax.ts`): a bare URL is the whole run to whitespace or `<`
+  (GFM), less trailing punctuation, a `)` without its `(`, and the `>` or backtick closing a
+  `<url>` or `` `url` ``; the shorter pieces older versions read are checked too. Then
+  `https://vendor.example)@evil.test/` is one unknown URL, not a known root plus text.
+- A Markdown destination is `](`, `<...>` or a run with balanced parentheses, an optional title,
+  `)`. Anything else, or a `](` that never closes, is malformed (at most 20 snippets are kept).
+  `href=` and `src=` count only inside an HTML tag, never in a query (`?src=rss`).
+- A URL that holds another URL passes only written as collected: a fragment or `utm_*` value that
+  normalizing drops could carry a second link, which a renderer cuts out.
+- A collected `https://www.host` URL, written as collected, is cut out before the malformed-link
+  search. Any other `www.` (even glued to a word), `http:` without `//` or `//host` is rejected.
 - An action is one plain line: link-like text (`LINK_IN_TEXT`) fails it, even a collected URL.
   Action and summary limits apply only to items with an `urgency`, so old digests still pass.
-- Regexes stay linear on hostile text (lookbehinds, bounded scheme length); tests time them (1 s).
-- Problems quote model text. Never put one in a prompt unmasked; `writePrompt.ts` masks links.
+- Scans stay linear on hostile text; tests time them (1 s). Destinations are read by a scanner that
+  resumes after what it read, not by a regex with a backtracking tail (`](  ` x 64 KB took 25 s).
+  Problems quote model text: never put one in a prompt unmasked; `writePrompt.ts` masks links.
 
 ## Files
 
-| File             | Role                                                                        |
-| ---------------- | --------------------------------------------------------------------------- |
-| `linkCheck.ts`   | `linkCheck`: finds URL-like text in the digest fields and Markdown          |
-| `formatCheck.ts` | `formatCheck`, `LINK_IN_TEXT` and the exported limit constants (`DIGEST_*`) |
-| `types.ts`       | `CheckResult`                                                               |
+| File             | Role                                                                            |
+| ---------------- | ------------------------------------------------------------------------------- |
+| `linkCheck.ts`   | `linkCheck`: decodes the text, judges every URL-like thing, builds the problems |
+| `linkSyntax.ts`  | How a renderer reads a link: destination scanner, bare url runs, tag attributes |
+| `formatCheck.ts` | `formatCheck`, `LINK_IN_TEXT` and the exported limit constants (`DIGEST_*`)     |
+| `types.ts`       | `CheckResult`                                                                   |
 
-Tests sit next to each file (`linkCheck`, `.www`, `.action`, `formatCheck`, `.urgency`).
+Tests sit next to each file (`linkCheck`, `.www`, `.action`, `.renderers`, `.attributes`,
+`.hostile`, `formatCheck`, `.urgency`).
 
 ## Gotchas
 
@@ -77,3 +92,7 @@ Tests sit next to each file (`linkCheck`, `.www`, `.action`, `formatCheck`, `.ur
   or add link-like text; `render/markdown.fixtures.test.ts` runs both checks on its goldens.
 - Bare URLs in text are found for `http(s)` only: a bare `ftp://host/x` passes the link check (known
   limit, `docs/operations/known-limits.md`). Markdown destinations of any scheme are checked.
+- Strict on purpose, so a few harmless forms fail and the writer retries: a URL in `[brackets]`,
+  one with `|` or `(` glued on, `<a href="known">x</a>`. The renderer never writes these.
+- `render/markdown.ts` backslash-escapes `<` and `>`; this check decodes backslashes first, so the
+  links it sees do not change (`render/markdown.html.test.ts` proves it).

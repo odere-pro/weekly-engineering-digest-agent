@@ -13,6 +13,11 @@ export interface CallOptions {
   /** Extra attempts after the first; unset means the adapter default. */
   retries?: number;
   /**
+   * The wait before the first retry, doubling for each one after it (capped at 10 s). Unset means
+   * 1 s. For tests, so a failing call does not spend seconds in a real backoff.
+   */
+  retryBaseDelayMs?: number;
+  /**
    * Time added to every attempt's timeout while the call's model is not the one the server ran
    * last: it may have to be loaded first, and a big model loads for longer than a role's timeout.
    * Unset means `DEFAULT_COLD_START_MS`; 0 turns it off.

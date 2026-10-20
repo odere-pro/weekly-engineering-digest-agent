@@ -21,7 +21,7 @@ export const DEFAULT_TIMEOUTS_MS: Readonly<Record<Role, number>> = {
 export const DEFAULT_COLD_START_MS = 300_000;
 /** Spec: 2 retries with backoff. */
 const DEFAULT_RETRIES = 2;
-const RETRY_BASE_DELAY_MS = 1_000;
+const DEFAULT_RETRY_BASE_DELAY_MS = 1_000;
 const RETRY_MAX_DELAY_MS = 10_000;
 
 /**
@@ -48,7 +48,7 @@ export async function callOllama<T extends { usage: Usage }>(
       },
       {
         retries: options.retries ?? DEFAULT_RETRIES,
-        baseDelayMs: RETRY_BASE_DELAY_MS,
+        baseDelayMs: options.retryBaseDelayMs ?? DEFAULT_RETRY_BASE_DELAY_MS,
         maxDelayMs: RETRY_MAX_DELAY_MS,
         shouldRetry: (error) => !spec.signal?.aborted && isRetryable(error),
         onRetry: (error, attempt) => {

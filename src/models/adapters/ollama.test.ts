@@ -115,6 +115,49 @@ describe('createOllamaProvider', () => {
     expect(calls).toHaveLength(2);
   });
 
+  it('waits retryBaseDelayMs, not the default second, between attempts', async () => {
+    const { provider, calls } = setup(
+      sequence(() => json(500, { error: 'boom' })),
+      { retries: 2, retryBaseDelayMs: 1 },
+    );
+    const started = performance.now();
+
+    await expect(provider.generate(WRITE)).rejects.toThrow(DigestError);
+
+    expect(calls).toHaveLength(3);
+    expect(performance.now() - started).toBeLessThan(900);
+  });
+
+  it('keeps the password of the server URL out of the request and out of a failure', async () => {
+    const password = 'S3cretPw';
+    const { provider, calls, lines } = setup(
+      (call) => {
+        throw new TypeError(`fetch failed for ${call.url}`);
+      },
+      { baseUrl: `http://user:${password}@127.0.0.1:11434`, retries: 0 },
+    );
+
+    const error = await provider.generate(WRITE).catch((e: unknown) => e);
+
+    expect(calls[0]!.url).toBe(`${BASE_URL}/api/chat`);
+    expect((error as DigestError).message).toContain(`${BASE_URL}/api/chat`);
+    expect(JSON.stringify([(error as DigestError).message, lines])).not.toContain(password);
+  });
+
+  it('does not follow a redirect, and does not ask again', async () => {
+    const { provider, calls } = setup(
+      () =>
+        new Response(null, { status: 307, headers: { location: 'https://other.test/api/chat' } }),
+    );
+
+    const error = await provider.generate(WRITE).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(DigestError);
+    expect((error as DigestError).message).toContain('answered /api/chat with a redirect');
+    expect((error as DigestError).message).toContain('set OLLAMA_URL');
+    expect(calls).toHaveLength(1);
+  });
+
   it('uses the global fetch when none is injected', async () => {
     const fake = fakeFetch(sequence(chatOk));
     vi.stubGlobal('fetch', fake.fetch);

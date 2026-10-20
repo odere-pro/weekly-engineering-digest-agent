@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart TD
-  secrets["Secrets from .env"] --> ks["knownSecrets: set values, plus the webhook path"]:::focus
+  secrets["Secrets from .env, OLLAMA_URL"] --> ks["knownSecrets: set values, the webhook path, the OLLAMA_URL password"]:::focus
   ks -->|"string[]"| redactor["createRedactor (observability)"]
   msg["DigestMessage"] --> rm["redactMessage: a rule per field"]:::focus
   note["FailureNote"] --> rn["redactNote: a rule per field"]:::focus
@@ -22,6 +22,9 @@ flowchart TD
 
 - `knownSecrets` adds the Slack webhook path: it is the secret part, and a message can carry it alone.
   Unset and empty secrets are left out: there is nothing to hide.
+- `knownSecrets(secrets, ollamaUrl?)` also adds the password of `OLLAMA_URL`, as written and
+  decoded (the user, when there is no password). `OLLAMA_URL` is a plain setting, not a `Secret`, so
+  the caller passes it. The Ollama adapter keeps the password out of its errors; this is the second layer.
 - Every field of a delivery type has a rule (`FieldRules<T>`, optional fields too): a field added later
   is a type error until it says `text` or `unchanged`.
 - Only the fields with a rule are sent. A field the type does not know (an object built with a cast)
@@ -33,13 +36,14 @@ flowchart TD
 
 | File                | Role                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------- |
-| `knownSecrets.ts`   | `knownSecrets`: every secret value that is set, plus the Slack webhook path                 |
+| `knownSecrets.ts`   | `knownSecrets`: every secret value that is set, the Slack webhook path, the Ollama password |
 | `deliveryFields.ts` | `redactMessage`, `redactNote`, `FieldRules`; the rule tables for message, view, group, item |
 
 Tests sit next to each file, no fixtures.
 
 ## Gotchas
 
-- `cli/show` and `cli/preview` import `knownSecrets` from `app/redaction/knownSecrets`.
+- `cli/show` and `cli/preview` import `knownSecrets` from `app/redaction/knownSecrets` and pass only the
+  secrets: they print stored records, which `container.ts` already redacted with the Ollama password.
 - A new `DigestMessage` or `DigestView` field reaches email, Slack and the file only after it has a rule here.
 - `app/redacting.test.ts` and `container.secrets.test.ts` pin the end result: no secret reaches a channel.

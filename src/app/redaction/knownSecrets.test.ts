@@ -35,6 +35,21 @@ describe('knownSecrets', () => {
     expect(knownSecrets({ SLACK_WEBHOOK_URL: '' })).toEqual([]);
   });
 
+  it('adds the password of the Ollama URL, as written and decoded', () => {
+    const secrets = knownSecrets({ GITHUB_TOKEN }, 'http://user:p%40ss%2Fword@ollama.test:11434');
+
+    expect(secrets).toEqual([GITHUB_TOKEN, 'p%40ss%2Fword', 'p@ss/word']);
+  });
+
+  it('adds the user of the Ollama URL when it has no password, because that is the token', () => {
+    expect(knownSecrets({}, 'https://token-abc@ollama.test')).toEqual(['token-abc']);
+  });
+
+  it('adds nothing for an Ollama URL without credentials, or none at all', () => {
+    expect(knownSecrets({}, 'http://localhost:11434')).toEqual([]);
+    expect(knownSecrets({}, undefined)).toEqual([]);
+  });
+
   it('does not change the secrets it was given', () => {
     const secrets = { SMTP_PASSWORD, SLACK_WEBHOOK_URL };
 

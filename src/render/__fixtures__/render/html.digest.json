@@ -1,0 +1,39 @@
+{
+  "disabledGuards": [],
+  "digest": {
+    "weekId": "2026-W45",
+    "headline": "Parsers <b>moved</b> and a <svg onload=alert(1)> note",
+    "intro": "Not shown.",
+    "items": [
+      {
+        "itemId": "a",
+        "title": "<svg onload=alert(1)> Release 1",
+        "url": "https://feed.example/p/1",
+        "area": "Developer tooling",
+        "summary": "Adds <img onerror=alert(1)> support.",
+        "whyItMatters": "Tags in text must stay text.",
+        "urgency": "act-now",
+        "action": "Replace <script>alert(1)</script> in your configs."
+      },
+      {
+        "itemId": "b",
+        "title": "Tool <2>",
+        "url": "https://feed.example/p/2",
+        "area": "Developer tooling",
+        "summary": "Mentions <javascript:alert(1)> and <mailto:a@evil.test> as text.",
+        "whyItMatters": "Autolinks must not start.",
+        "urgency": "worth-a-look",
+        "action": "Relevant if you write a<b>c."
+      },
+      {
+        "itemId": "c",
+        "title": "Path\\<tool>",
+        "url": "https://feed.example/p/3",
+        "area": "Developer tooling",
+        "summary": "Handles C:\\<dir> and a \\\\<dir> and a > b.",
+        "whyItMatters": "Backslashes before a bracket.",
+        "urgency": "good-to-know"
+      }
+    ]
+  }
+}

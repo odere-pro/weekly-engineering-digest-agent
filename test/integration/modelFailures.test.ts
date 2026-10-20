@@ -1,9 +1,11 @@
 // Spec phase 4 exit gate, part 2: a slow or sloppy model. Timeouts and retries are the real
 // Ollama adapter against a scripted fetch; repair is the real generateStructured in the write step.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { runDigest } from '../../src/digest/runDigest';
 import { ExitCode } from '../../src/domain/schemas';
+import type { ModelProvider } from '../../src/models/ModelProvider';
+import type { OllamaProviderOptions } from '../../src/models/adapters/ollama';
 import { chatReply, hangUntilAborted } from './fakeOllama';
 import { TEST_TIMEOUT_MS, FIRST_WRITER, FRIDAY, SECOND_WRITER, WEEK } from './harness/constants';
 import { createWorld, type World } from './harness/world';
@@ -11,6 +13,19 @@ import { createOllamaWorld } from './harness/ollamaWorld';
 import { useDataDir } from './harness/dataDir';
 import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
 import { lockExists } from './harness/lock';
+
+// The real adapter waits 1 s, then 2 s, between attempts: about 5 s in real time over this file.
+// These tests check that the retries happen, not how long they wait (`call/callOllama.test.ts`).
+vi.mock('../../src/models/adapters/ollama', async (load) => {
+  const actual = await load<{
+    createOllamaProvider: (options: OllamaProviderOptions) => ModelProvider;
+  }>();
+  return {
+    ...actual,
+    createOllamaProvider: (options: OllamaProviderOptions) =>
+      actual.createOllamaProvider({ retryBaseDelayMs: 1, ...options }),
+  };
+});
 
 const dataDir = useDataDir();
 

@@ -104,8 +104,12 @@ export function rawExtension({
   return start.startsWith('<') ? 'xml' : 'html';
 }
 
-/** Origin and path only: a source URL may carry a secret in its query (`sources/CLAUDE.md`). */
-function withoutQuery(url: string): string {
+/**
+ * Origin and path only: a source URL may carry a secret in its query (`sources/CLAUDE.md`).
+ * Anything that writes a URL a source answered from goes through it: `responses.json` and the
+ * `answeredBy` of `digest fetch`'s summary. An unreadable URL gives an empty text.
+ */
+export function withoutQuery(url: string): string {
   if (!URL.canParse(url)) return '';
   const { origin, pathname } = new URL(url);
   return `${origin}${pathname}`;

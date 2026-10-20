@@ -48,6 +48,20 @@ describe('readEntries', () => {
     expect(failures).toEqual([]);
   });
 
+  it('leaves out an entry whose link is over 2048 characters, and does not call it a failure', () => {
+    const padded = raw({ url: `https://example.com/${'a'.repeat(2_100)}` });
+
+    const { pairs, failures } = readEntries([padded, raw()], source, 600);
+
+    expect(pairs.map((pair) => pair.item.url)).toEqual(['https://example.com/a']);
+    expect(failures).toEqual([]);
+  });
+
+  it('cuts a padded title in the item it keeps', () => {
+    const { pairs } = readEntries([raw({ title: 'T '.repeat(5_000) })], source, 600);
+    expect(pairs[0]?.item.title.length).toBeLessThanOrEqual(300);
+  });
+
   it('leaves out an item that fails the item schema', () => {
     // Year 10000 prints as +010000-..., which is not an ISO date time the schema accepts.
     const beyondYear9999 = raw({ publishedAt: new Date(Date.UTC(10_000, 0, 1)) });
@@ -105,6 +119,19 @@ describe('reportUnusable', () => {
     expect(warn).toHaveBeenCalledWith('No feed entry had a usable link and date', {
       sourceId: 'blog',
       entries: 4,
+    });
+  });
+
+  it('warns for a feed whose every link was over 2048 characters', () => {
+    const warn = vi.fn();
+    const padded = raw({ url: `https://example.com/${'a'.repeat(2_100)}` });
+    const reading = readEntries([padded], source, 600);
+
+    reportUnusable({ ...noopLogger, warn }, source, 1, reading);
+
+    expect(warn).toHaveBeenCalledWith('No feed entry had a usable link and date', {
+      sourceId: 'blog',
+      entries: 1,
     });
   });
 

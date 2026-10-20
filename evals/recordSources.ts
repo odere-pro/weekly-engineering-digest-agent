@@ -6,7 +6,7 @@ import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { format, resolveConfig } from 'prettier';
-import { MAX_PAGE_BYTES, withoutElements } from '../src/sources/adapters/enrich';
+import { MAX_PAGE_BYTES, isOnFeedHost, withoutElements } from '../src/sources/adapters/enrich';
 import { getText, sameSiteAs, statusFailure, MAX_BODY_BYTES } from '../src/sources/adapters/http';
 import { createFetcher, hostsOf } from '../src/sources/adapters/pipeline';
 import { rssAdapter } from '../src/sources/adapters/rssAdapter';
@@ -217,7 +217,7 @@ export async function recordPages(
         const path = join(dir, `${page.id}.html.txt`);
         try {
           if (await pathExists(path)) continue;
-          if (!onSite(new URL(page.url).hostname)) throw new Error('not on the feed host');
+          if (!isOnFeedHost(page.url, source.url, onSite)) throw new Error('not on the feed host');
           const reply = await getText(page.url, {
             fetch: fetchImpl,
             label: source.id,

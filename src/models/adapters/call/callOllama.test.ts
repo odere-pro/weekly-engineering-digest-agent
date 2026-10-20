@@ -203,6 +203,26 @@ describe('callOllama reliability', () => {
     await pending;
   });
 
+  it('starts the backoff from retryBaseDelayMs when the options set one', async () => {
+    const fake = fakeContext(
+      sequence(() => json(503, { error: 'busy' })),
+      { retries: 3, retryBaseDelayMs: 10 },
+    );
+    const pending = expect(callWrite(fake)).rejects.toThrow(DigestError);
+    const callsAfter = async (ms: number): Promise<number> => {
+      await vi.advanceTimersByTimeAsync(ms);
+      return fake.calls.length;
+    };
+
+    expect(await callsAfter(9)).toBe(1);
+    expect(await callsAfter(1)).toBe(2); // 10 ms
+    expect(await callsAfter(19)).toBe(2);
+    expect(await callsAfter(1)).toBe(3); // 20 ms
+    expect(await callsAfter(39)).toBe(3);
+    expect(await callsAfter(1)).toBe(4); // 40 ms
+    await pending;
+  });
+
   it('does not retry a 400 and reports Ollama’s error', async () => {
     const fake = fakeContext(
       sequence(() => json(400, { error: 'question "a": criteria must contain 2–255 candidates' })),
@@ -314,7 +334,7 @@ describe('callOllama reliability', () => {
     const fake = fakeContext(reset, { retries: 1 });
 
     const pending = expect(callWrite(fake)).rejects.toThrow(
-      'Ollama generate call to gemma4:e4b-mlx failed: Ollama request to /api/chat failed: fetch failed: socket hang up (ECONNRESET)',
+      `Ollama generate call to gemma4:e4b-mlx failed: Ollama request to ${BASE_URL}/api/chat failed: fetch failed: socket hang up (ECONNRESET)`,
     );
     await vi.runAllTimersAsync();
     await pending;

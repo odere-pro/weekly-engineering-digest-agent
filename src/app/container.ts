@@ -49,8 +49,10 @@ export function buildApp(loaded: LoadedConfig): Promise<AppHandle> {
 }
 
 /**
- * The one place a model provider is built, for a run and for `digest doctor` alike. Doctor only
- * calls `health()`, which uses none of the per-role options, and passes its own `fetch`.
+ * The one place a model provider is built from a loaded config: for a run, for `digest eval` and
+ * for `digest doctor`. Doctor only calls `health()`, which uses none of the per-role options, and
+ * passes its own `fetch`. `digest doctor --readiness` runs without a usable config, so it builds
+ * its provider itself (`cli/doctor/readiness/target.ts`, `createOllamaProvider` with defaults).
  */
 export function createModelProvider(
   { config, env, profile }: LoadedConfig,
@@ -80,7 +82,7 @@ export function createAppLogger({
 }: Pick<LoadedConfig, 'config' | 'env' | 'secrets'>): Logger {
   return createLogger({
     level: env.LOG_LEVEL,
-    redactValues: knownSecrets(secrets),
+    redactValues: knownSecrets(secrets, env.OLLAMA_URL),
     file: { dataDir: config.dataDir, timeZone: config.schedule.timeZone },
   });
 }
@@ -98,7 +100,7 @@ export function samplingOf(
 function assemble(loaded: LoadedConfig): AppHandle {
   const { config, env, secrets, profile } = loaded;
   const channels = buildDeliveries(config, secrets);
-  const redactValues = knownSecrets(secrets);
+  const redactValues = knownSecrets(secrets, env.OLLAMA_URL);
   const redactor = createRedactor(redactValues);
   const logger = createAppLogger(loaded);
   // The model and the fetchers are built once, but a `serve` process runs many weeks: what they

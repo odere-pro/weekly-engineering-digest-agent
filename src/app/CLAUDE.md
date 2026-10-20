@@ -53,15 +53,15 @@ flowchart TD
 
 ## Files
 
-| File                  | Role                                                                                                                         |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `container.ts`        | `buildApp`, `createAppLogger`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns` |
-| `decorate.ts`         | `decorate`, `MemberRules`: a port decorator from one rule per member                                                         |
-| `redacting.ts`        | `redactStore`, `redactDelivery` (their rule tables)                                                                          |
-| `redaction/`          | `knownSecrets`; the field rules of a delivery message and note. See `redaction/CLAUDE.md`                                    |
-| `retryingDelivery.ts` | `withDeliveryRetry`, `DeliveryRetryOptions`: 2 retries, 5 s then 10 s (cap 30 s)                                             |
-| `deliveryRetry/`      | `isTransientDeliveryError`: which failures are safe to send again. See `deliveryRetry/CLAUDE.md`                             |
-| `tracedModel.ts`      | `traceModel`, `deferTracer`; under 100 lines, so it has no folder                                                            |
+| File                  | Role                                                                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `container.ts`        | `buildApp`, `createAppLogger`, `createModelProvider`, `samplingOf` (seed, temperature per role), `perRunLogger`, `scopeRuns`           |
+| `decorate.ts`         | `decorate`, `MemberRules`: a port decorator from one rule per member                                                                   |
+| `redacting.ts`        | `redactStore`, `redactDelivery` (their rule tables)                                                                                    |
+| `redaction/`          | `knownSecrets` (secrets, webhook path, Ollama URL password); the field rules of a delivery message and note. See `redaction/CLAUDE.md` |
+| `retryingDelivery.ts` | `withDeliveryRetry`, `DeliveryRetryOptions`: 2 retries, 5 s then 10 s (cap 30 s)                                                       |
+| `deliveryRetry/`      | `isTransientDeliveryError`: which failures are safe to send again. See `deliveryRetry/CLAUDE.md`                                       |
+| `tracedModel.ts`      | `traceModel`, `deferTracer`; under 100 lines, so it has no folder                                                                      |
 
 Tests: `container*.test.ts` (wiring, secrets, model, run logging, local output, Docker) and one file
 for each other file; the decorator tests call every port member from a `Record<keyof Port, …>`.
@@ -75,6 +75,7 @@ for each other file; the decorator tests call every port member from a `Record<k
   line here and a key in `config/schema.ts`.
 - `cli/show` and `cli/preview` call `knownSecrets` (`redaction/`); `cli/eval` calls `createAppLogger` and
   `createModelProvider`; `cli/doctor` calls `createModelProvider` for `health()` only: keep it free of
-  per-run state.
+  per-run state. `doctor --readiness` may run with no loadable config, so it builds its own provider
+  (`cli/doctor/readiness/target.ts`); `createModelProvider` is the one for a loaded config.
 - `container.docker.test.ts` ties the default `dataDir` (`dist`) to the `Dockerfile` WORKDIR and CLI
   path, the `docker-compose.yml` mount and `docker/validate.sh`.

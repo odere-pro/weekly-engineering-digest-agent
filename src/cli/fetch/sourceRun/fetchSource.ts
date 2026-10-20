@@ -3,6 +3,7 @@ import { errorMessage } from '../../../shared/errors';
 import { withTimeout } from '../../../shared/retry';
 import { truncate } from '../../../shared/text';
 import type { FetchWindow } from '../../../sources/SourceFetcher';
+import { withoutQuery } from '../../../sources/adapters/archive/sourceArchive';
 import type { FetchRun, SourceReport } from './types';
 
 /** What summary.json keeps of an error text, as the run record does. */
@@ -48,7 +49,7 @@ function reportOf(
     ok: outcome.ok,
     items: outcome.ok ? outcome.items : [],
     httpStatus: last?.status,
-    answeredBy: last?.url,
+    answeredBy: last === undefined ? undefined : withoutQuery(last.url),
     entries: run.recorder.entries(source.id),
     durationMs,
     error: outcome.ok ? undefined : errorText(outcome.error, run.redact),

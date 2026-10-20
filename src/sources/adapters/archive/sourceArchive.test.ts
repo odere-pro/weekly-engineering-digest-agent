@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { createSourceArchive, rawExtension } from './sourceArchive';
+import { createSourceArchive, rawExtension, withoutQuery } from './sourceArchive';
 import type { Answer } from '../http';
 import { makeItem } from '../../../../test/builders';
 
@@ -134,6 +134,18 @@ describe('createSourceArchive', () => {
     await createSourceArchive({ dataDir }).save(DAY, 'openai-news', { answers: [feed], items: [] });
 
     await expect(readdir(sourceDir('other', 'raw'))).resolves.toEqual(['keep.xml']);
+  });
+});
+
+describe('withoutQuery', () => {
+  it.each([
+    ['https://feeds.example/rss?key=abc123', 'https://feeds.example/rss'],
+    ['https://feeds.example/a/b.xml?x=1#top', 'https://feeds.example/a/b.xml'],
+    ['https://user:pass@feeds.example/rss', 'https://feeds.example/rss'],
+    ['https://feeds.example:8443/rss', 'https://feeds.example:8443/rss'],
+    ['not a url', ''],
+  ])('keeps only origin and path of %s', (url, expected) => {
+    expect(withoutQuery(url)).toBe(expected);
   });
 });
 

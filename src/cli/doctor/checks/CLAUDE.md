@@ -22,6 +22,8 @@ flowchart TD
 - A check takes only what it needs (a `Pick` of the config, a slice of `DoctorIo`), so a test calls it
   with a few fields. A slow or broken feed is a warning, because a run skips that source.
 - Nothing is sent. Delivery looks at whether a secret is set, never at its value.
+- `checkOllama` gives an `OLLAMA_URL` with no `http://` or `https://` its own fix line: starting
+  Ollama would not help (`hasHttpScheme` from `models/adapters/endpoint`).
 - `checkThink` mirrors `effectiveThink` (`models/adapters/chat/chatSettings.ts`), so the two cannot
   drift.
 - `INPUT_CHECKS` and `OUTPUT_CHECKS` repeat the guard checks in the order they run (`ruleInjection`

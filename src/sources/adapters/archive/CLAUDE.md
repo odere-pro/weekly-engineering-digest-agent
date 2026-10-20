@@ -28,14 +28,15 @@ flowchart TD
   overtaken attempt's save is skipped. The attempt counter never resets, so a number never repeats.
 - Each fetch has its own `AsyncLocalStorage` context, so sources fetched at once never share answers.
 - Every text written goes through `redact` (a run: all known secrets; `digest fetch`: the GitHub
-  token). `responses.json` keeps a URL as origin and path only: its query may carry a secret.
+  token). `responses.json` keeps a URL as origin and path only (`withoutQuery`): its query may
+  carry a secret. `digest fetch` writes the answering URL into its summary the same way.
 
 ## Files
 
-| File                  | Role                                                                                      |
-| --------------------- | ----------------------------------------------------------------------------------------- |
-| `sourceArchive.ts`    | `createSourceArchive`: `raw/response-<n>.<ext>`, `responses.json`, `formatted/items.json` |
-| `archivingFetcher.ts` | `createSourceArchiving`: the tap, `wrap`, the queues, `flush`                             |
+| File                  | Role                                                                                                      |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `sourceArchive.ts`    | `createSourceArchive`: `raw/response-<n>.<ext>`, `responses.json`, `formatted/items.json`; `withoutQuery` |
+| `archivingFetcher.ts` | `createSourceArchiving`: the tap, `wrap`, the queues, `flush`                                             |
 
 ## Gotchas
 

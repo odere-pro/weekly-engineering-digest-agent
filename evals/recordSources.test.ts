@@ -286,6 +286,30 @@ describe('recordPages', () => {
     expect(names).toEqual([`${idOf(URLS[0]!)}.html.txt`]);
   });
 
+  it('refuses a page of the feed host on another port or over plain http', async () => {
+    const feed = `<?xml version="1.0"?><rss version="2.0"><channel><title>t</title>
+      <item><title>Plain</title><link>http://a.example.com/plain</link><pubDate>Mon, 12 Oct 2026 09:00:00 GMT</pubDate></item>
+      <item><title>Port</title><link>https://a.example.com:8443/port</link><pubDate>Sun, 11 Oct 2026 09:00:00 GMT</pubDate></item>
+      <item><title>Same</title><link>https://a.example.com/same</link><pubDate>Sat, 10 Oct 2026 09:00:00 GMT</pubDate></item>
+      </channel></rss>`;
+    const urls = [
+      'http://a.example.com/plain',
+      'https://a.example.com:8443/port',
+      'https://a.example.com/same',
+    ];
+    await seed(rss, feed, expectedFor(urls));
+    const { fetchImpl, requested } = fetching();
+
+    const result = await recordPages({ outDir }, deps(fetchImpl, [rss]));
+
+    expect(requested).toEqual(['https://a.example.com/same']);
+    expect(result.failed.map((f) => f.url).sort()).toEqual([
+      'http://a.example.com/plain',
+      'https://a.example.com:8443/port',
+    ]);
+    expect(result.failed.every((f) => f.error === 'not on the feed host')).toBe(true);
+  });
+
   it('does not fetch a page it already has', async () => {
     await seed(rss, FEED, expectedFor(URLS));
     const first = fetching();

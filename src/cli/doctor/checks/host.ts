@@ -6,6 +6,7 @@ import {
   type Platform,
 } from '../../../config/profiles';
 import type { ModelHealth } from '../../../models/ModelProvider';
+import { hasHttpScheme } from '../../../models/adapters/endpoint';
 import { compareCore, DEVELOPMENT_VERSION, parseVersion } from '../readiness/version';
 import { fail, ok, warn, type CheckResult } from '../report/checkResult';
 
@@ -16,8 +17,7 @@ export function checkOllama(
   { env, profile }: Pick<LoadedConfig, 'env' | 'profile'>,
 ): CheckResult[] {
   if (!health.reachable) {
-    const fix = 'start Ollama ("ollama serve") or point OLLAMA_URL in .env at the right host';
-    return [fail('ollama', health.error ?? 'no answer', fix)];
+    return [fail('ollama', health.error ?? 'no answer', unreachableFix(env.OLLAMA_URL))];
   }
   if (health.error) {
     const message = `answered, but listing the models failed: ${health.error}`;
@@ -28,6 +28,13 @@ export function checkOllama(
     ok('ollama', health.version ? `${where}, version ${health.version}` : where),
     checkVersion(health.version, profile),
   ];
+}
+
+/** An address without http(s):// can never reach a running Ollama, so starting it would not help. */
+function unreachableFix(ollamaUrl: string): string {
+  if (!hasHttpScheme(ollamaUrl.trim()))
+    return 'set OLLAMA_URL in .env to the full address, which starts with http:// or https:// (for example http://localhost:11434)';
+  return 'start Ollama ("ollama serve") or point OLLAMA_URL in .env at the right host';
 }
 
 export function checkVersion(version: string | undefined, profile: ModelProfile): CheckResult {

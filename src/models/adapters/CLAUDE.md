@@ -48,19 +48,27 @@ flowchart TD
 - `chat/` and `decide/` import `call/`; `call/` and `health/` import neither. No folder imports
   `ollama.ts`. Only `ollamaHttp.ts` calls `fetch`.
 - Logs carry role, model, op, latency, attempts, tokens and `think`, never a prompt or an answer.
+- A password in `OLLAMA_URL` never travels in a URL: `endpoint.ts` cuts `user:password@` out and
+  `ollamaHttp.ts` sends it as a Basic `authorization` header. Node's `fetch` refuses such a URL and
+  quotes it whole in its error, which would reach the log and `run.json`.
+- Redirects are never followed (`redirect: 'manual'`): a 307 or 308 would re-send the prompts, which
+  hold feed text, to another host. Any 3xx is a `DigestError` that says to set `OLLAMA_URL`; no retry.
+- An `OLLAMA_URL` without `http://` or `https://` fails each request at once with a `DigestError`, no
+  retry. Other network errors name the full request URL.
 
 ## Files
 
-| File / folder   | Role                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| `ollama.ts`     | `createOllamaProvider`, `OllamaProviderOptions`                                             |
-| `ollamaHttp.ts` | fetch transport (JSON, NDJSON), typed errors, `isRetryable`, `toDigestError`                |
-| `systemone.ts`  | Port questions and answers to and from `/v1/systemone`, limits, state trim                  |
-| `call/`         | One model call: timeout, retries, log, errors; `resolveModel`. See `call/CLAUDE.md`         |
-| `chat/`         | `generate`: the streamed chat call, `think` and sampling. See `chat/CLAUDE.md`              |
-| `decide/`       | `decide`: the questions call and the state fit. See `decide/CLAUDE.md`                      |
-| `health/`       | `health`: version and installed models, never throws. See `health/CLAUDE.md`                |
-| `__fixtures__/` | `ollama/`: replies recorded from Ollama; `ollamaHarness.ts`: fake fetch, logger and context |
+| File / folder   | Role                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `ollama.ts`     | `createOllamaProvider`, `OllamaProviderOptions`                                              |
+| `ollamaHttp.ts` | fetch transport (JSON, NDJSON), typed errors, `isRetryable`, `toDigestError`                 |
+| `endpoint.ts`   | `parseEndpoint` (root and Basic header from `OLLAMA_URL`), `hasHttpScheme`, secrets of a URL |
+| `systemone.ts`  | Port questions and answers to and from `/v1/systemone`, limits, state trim                   |
+| `call/`         | One model call: timeout, retries, log, errors; `resolveModel`. See `call/CLAUDE.md`          |
+| `chat/`         | `generate`: the streamed chat call, `think` and sampling. See `chat/CLAUDE.md`               |
+| `decide/`       | `decide`: the questions call and the state fit. See `decide/CLAUDE.md`                       |
+| `health/`       | `health`: version and installed models, never throws. See `health/CLAUDE.md`                 |
+| `__fixtures__/` | `ollama/`: replies recorded from Ollama; `ollamaHarness.ts`: fake fetch, logger and context  |
 
 `ollama.test.ts` checks the wiring: options reach the right call, the port works as a whole.
 
@@ -70,5 +78,7 @@ flowchart TD
   from `chat/chatSettings.ts`: keep them there.
 - `src/app/container*.test.ts` mock `../models/adapters/ollama` and wrap `createOllamaProvider`: keep
   that name and place.
+- `app/redaction` and `cli/doctor/checks/host.ts` import `urlCredentialSecrets` and `hasHttpScheme`
+  from `endpoint.ts`.
 - Changing a mapping means re-recording the fixture in `__fixtures__/ollama/` and its test together.
   Live checks: `test/live/`, `LIVE_OLLAMA=1`.

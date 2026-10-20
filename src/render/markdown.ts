@@ -19,22 +19,37 @@ const ACTION_HEADING: Readonly<Record<Urgency, string | undefined>> = {
 };
 
 /**
- * Plain text in a table cell: one line without invisible characters (`visibleLine`, so no bidi
- * override or zero-width character in a model's text reaches the file or a plain-text mail), and a
- * pipe that cannot end the cell. A table reads `\\` as one escaped backslash, so a backslash run
- * right before a pipe is doubled to keep the pipe's own escape. Other backslashes stay as the
- * writer wrote them.
+ * Puts a backslash before each character `characters` finds, so Markdown shows it as text. A
+ * backslash escapes only when the run before the character is odd, so the run is doubled and one
+ * more is added: `\\<` becomes `\\\\\<`, which shows a backslash and a `<` as written. The
+ * lookbehind starts a match at the beginning of a backslash run, so a long run is scanned once.
  */
-function cell(text: string): string {
-  // The lookbehind starts a match at the beginning of a backslash run, so a long run is scanned once.
-  return visibleLine(text).replace(/(?<!\\)(\\*)\|/g, '$1$1\\|');
+function escapeBefore(text: string, characters: RegExp): string {
+  return text.replace(characters, (_match, run: string, character: string) => {
+    return `${run}${run}\\${character}`;
+  });
 }
 
-/** Text in `[...]` of a link: backslashes, brackets and pipes are escaped, as linkCheck decodes them. */
-const escapeLinkText = (text: string): string => text.replace(/[\\[\]|]/g, '\\$&');
+const PIPE_AND_ANGLES = /(?<!\\)(\\*)([|<>])/g;
+const ANGLES = /(?<!\\)(\\*)([<>])/g;
 
-/** The destination in `(...)` of a link: backslashes and pipes are escaped the same way. */
-const escapeDestination = (url: string): string => url.replace(/[\\|]/g, '\\$&');
+/**
+ * Plain text in a table cell: one line without invisible characters (`visibleLine`, so no bidi
+ * override or zero-width character in a model's text reaches the file or a plain-text mail), a
+ * pipe that cannot end the cell, and `<` and `>` that cannot start an HTML tag or an autolink in
+ * a viewer that lets HTML through (`<svg onload=...>` stays text). A table reads `\\` as one
+ * escaped backslash, so a backslash run right before such a character is doubled to keep its own
+ * escape. Other backslashes stay as the writer wrote them.
+ */
+function cell(text: string): string {
+  return escapeBefore(visibleLine(text), PIPE_AND_ANGLES);
+}
+
+/** Text in `[...]` of a link: backslashes, brackets, pipes and angle brackets are escaped, as linkCheck decodes them. */
+const escapeLinkText = (text: string): string => text.replace(/[\\[\]|<>]/g, '\\$&');
+
+/** The destination in `(...)` of a link: backslashes, pipes and angle brackets are escaped the same way. */
+const escapeDestination = (url: string): string => url.replace(/[\\|<>]/g, '\\$&');
 
 /** The release cell: the title, linked to the item's page. A blank title shows the url. */
 function releaseCell({ title, url }: DigestViewItem): string {
@@ -88,7 +103,7 @@ function renderGroup(group: DigestViewGroup): string {
 
 /** A laid-out digest -> Markdown: a title, the headline, then one table per urgency. */
 export function renderView(view: DigestView): string {
-  const headline = visibleLine(view.headline);
+  const headline = escapeBefore(visibleLine(view.headline), ANGLES);
   const blocks = [
     `# ${view.title}`,
     ...(headline === '' ? [] : [`_${headline}_`]),
@@ -127,17 +142,24 @@ const URGENCY_OF_EMOJI: ReadonlyMap<string, Urgency> = new Map(
 );
 
 /**
- * Undoes `cell`: an odd run of backslashes before a pipe held half as many, plus the pipe's own.
- * The lookbehind starts a match at the beginning of a run, so a long run is scanned once.
+ * Undoes `escapeBefore`: an odd run of backslashes before a character that was escaped held half
+ * as many, plus its own. An even run was not written by it (a file of an earlier layout), so it
+ * stays. The lookbehind starts a match at the beginning of a run, so a long run is scanned once.
  */
-const unescapeCell = (text: string): string =>
-  text.replace(
-    /(?<!\\)(\\+)\|/g,
-    (_run, slashes: string) => `${'\\'.repeat((slashes.length - 1) / 2)}|`,
+function unescapeBefore(text: string, characters: RegExp): string {
+  return text.replace(characters, (match, run: string, character: string) =>
+    run.length % 2 === 0 ? match : `${'\\'.repeat((run.length - 1) / 2)}${character}`,
   );
+}
+
+const ESCAPED_PIPE_OR_ANGLE = /(?<!\\)(\\+)([|<>])/g;
+const ESCAPED_ANGLE = /(?<!\\)(\\+)([<>])/g;
+
+/** Undoes `cell`. */
+const unescapeCell = (text: string): string => unescapeBefore(text, ESCAPED_PIPE_OR_ANGLE);
 
 /** Undoes `escapeLinkText` and `escapeDestination`. */
-const unescapeLink = (text: string): string => text.replace(/\\([\\[\]|])/g, '$1');
+const unescapeLink = (text: string): string => text.replace(/\\([\\[\]|<>])/g, '$1');
 
 function readRow(row: string, urgency: Urgency): DigestViewItem {
   const [release = '', changed = '', action = ''] = Array.from(row.matchAll(TABLE_CELL), (match) =>
@@ -188,7 +210,7 @@ export function readSavedView(markdown: string): DigestView | undefined {
   return {
     weekId: title[2] ?? '',
     title: title[1] ?? '',
-    headline: HEADLINE_LINE.exec(lines[2] ?? '')?.[1] ?? '',
+    headline: unescapeBefore(HEADLINE_LINE.exec(lines[2] ?? '')?.[1] ?? '', ESCAPED_ANGLE),
     groups: readGroups(lines),
     ...(footer === undefined ? {} : { footer }),
   };

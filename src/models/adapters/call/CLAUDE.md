@@ -32,7 +32,8 @@ flowchart TD
   Chosen over a load request before the first call: no new request type to get wrong (a decision
   model may not answer `/api/generate`), and no extra call in every test and run.
 - Retries: `options.retries`, else 2, only for `isRetryable` errors (`ollamaHttp.ts`) and never once
-  the caller has aborted: a cancelled run must stop at once.
+  the caller has aborted: a cancelled run must stop at once. The back-off starts at
+  `options.retryBaseDelayMs` (default 1 s): integration tests set 1 ms instead of waiting seconds.
 - `parse` runs outside the retry loop: a payload that does not parse is not asked for again.
 - A caller abort is rethrown as it is, not wrapped in a `DigestError`.
 - One log line per call (role, model, op, latency, attempts, tokens, `coldStart` on a cold call, the

@@ -16,7 +16,7 @@ const FixtureSchema = z.object({
   digest: DigestSchema,
 });
 
-const NAMES = ['mixed', 'old-draft', 'quiet-week', 'escaping'] as const;
+const NAMES = ['mixed', 'old-draft', 'quiet-week', 'escaping', 'html'] as const;
 
 const read = (file: string): string =>
   readFileSync(new URL(`./__fixtures__/render/${file}`, import.meta.url), 'utf8');
@@ -53,6 +53,11 @@ describe.each(NAMES)('render fixture %s', (name) => {
       expect(cellCount(row)).toBe(width);
     }
     expect(rows.length).toBeGreaterThan(0);
+  });
+
+  it('writes no angle bracket that a viewer could read as markup', () => {
+    // A `<` or `>` after an even run of backslashes (none included) is not escaped.
+    expect(markdown).not.toMatch(/(?<!\\)(?:\\\\)*[<>]/);
   });
 
   it('has one table row per item', () => {

@@ -1,6 +1,12 @@
 import type { Digest, Item } from '../domain/schemas';
 import { truncate } from '../shared/text';
 import { normalizeUrl } from '../shared/url';
+import {
+  bareUrls,
+  htmlAttributeUrls,
+  scanLinkDestinations,
+  withoutCollectedRuns,
+} from './linkSyntax';
 import type { CheckResult } from './types';
 
 /**
@@ -12,19 +18,14 @@ export const UNKNOWN_URL_PROBLEM = 'Unknown URL not in collected items: ';
 export const MALFORMED_LINK_PROBLEM = 'Malformed or scheme-less link: ';
 export const INVALID_REFERENCE_PROBLEM = 'Invalid character reference: ';
 
-/** Bare http(s) URL; allows one level of balanced parentheses. */
-const BARE_URL = /https?:\/\/(?:[^\s<>"'`()[\]]|\([^\s()]*\))+/gi;
-/** Markdown link destination `](dest)`; allows one level of balanced parentheses. */
-const MD_DESTINATION = /\]\(\s*<?((?:[^\s()<>]|\([^\s()]*\))*)>?[^)]*\)/g;
-const HTML_DESTINATION = /\b(?:href|src)\s*=\s*["']?([^\s"'>]+)/gi;
+/** Trailing punctuation is trimmed from a text that is not a url (`www.host.`) one attempt per run. */
+const TRAILING_PUNCTUATION = /(?<![.,;:!?])[.,;:!?]+$/;
 /**
  * Forms that browsers or renderers resolve as links but that are not `scheme://`. The `www.` of
- * a full `http(s)://www.host` url is not one of them: BARE_URL reads that url whole and it must
- * be a collected one. Any other `www.` is, `ftp://www.host` and `https:/www.host` included.
+ * a full `http(s)://www.host` url is not one of them: it is read whole as a bare url and it
+ * must be a collected one. Any other `www.` is, `ftp://www.host` and `https:/www.host` included.
  */
-const MALFORMED_LINK = /(?:\bhttps?:(?!\/\/)|(?<!\bhttps?:\/\/)\bwww\.|(?<![:/\w])\/\/[^\s/])\S*/gi;
-/** The lookbehind makes each run of punctuation one attempt; `/[.,;:!?]+$/` is quadratic on a long run. */
-const TRAILING_PUNCTUATION = /(?<![.,;:!?])[.,;:!?]+$/;
+const MALFORMED_LINK = /(?:\bhttps?:(?!\/\/)|(?<!\bhttps?:\/\/)www\.|(?<![:/\w])\/\/[^\s/])\S*/gi;
 
 const NAMED_ENTITIES: Readonly<Record<string, string>> = {
   amp: '&',
@@ -84,52 +85,56 @@ function digestTexts(digest: Digest): string[] {
   ];
 }
 
-function captures(text: string, pattern: RegExp): string[] {
-  return [...text.matchAll(pattern)].map((m) => m[1] ?? '');
-}
-
 /**
  * Every URL-like thing in `text`; a non-empty `rejected` or `invalid` entry is never acceptable.
  * `invalid` lists numeric character references outside the Unicode range. A full url that is
- * collected is judged as a whole and left out of the malformed-link search: a `www.` in its host,
- * path or query is part of that url (W5-11).
+ * collected, written as collected, is judged as a whole and left out of the malformed-link search:
+ * a `www.` in its host, path or query is part of that url (W5-11). One that only matches after
+ * normalizing is not left out: what normalizing drops (a fragment, `utm_*`) could hide a link.
  */
 function linkCandidates(
   text: string,
-  isKnown: (url: string) => boolean,
+  isCollected: (url: string) => boolean,
 ): {
   urls: string[];
   rejected: string[];
   invalid: string[];
 } {
   const decoded = decodeLikeMarkdown(text);
-  const destinations = [
-    ...captures(decoded, MD_DESTINATION),
-    ...captures(decoded, HTML_DESTINATION),
+  const { destinations, malformed } = scanLinkDestinations(decoded);
+  const outsideKnown = withoutCollectedRuns(decoded, isCollected);
+  const rejected = [
+    ...(outsideKnown.match(MALFORMED_LINK) ?? []).map((u) => u.replace(TRAILING_PUNCTUATION, '')),
+    ...malformed,
   ];
-  const bare = (decoded.match(BARE_URL) ?? []).map((u) => u.replace(TRAILING_PUNCTUATION, ''));
-  const outsideKnown = decoded.replace(BARE_URL, (url) =>
-    isKnown(url.replace(TRAILING_PUNCTUATION, '')) ? ' ' : url,
-  );
-  const rejected = (outsideKnown.match(MALFORMED_LINK) ?? []).map((u) =>
-    u.replace(TRAILING_PUNCTUATION, ''),
-  );
-  return { urls: [...destinations, ...bare], rejected, invalid: invalidReferences(text) };
+  return {
+    urls: [...destinations, ...htmlAttributeUrls(decoded), ...bareUrls(decoded)],
+    rejected,
+    invalid: invalidReferences(text),
+  };
 }
+
+/** A url that holds another url (`.../web/2020/https://x`), after its first character. */
+const HOLDS_URL = /.https?:\/\//is;
 
 /** Every URL in the digest (fields and rendered markdown) must exist in the collected items. Always on. */
 export function linkCheck(digest: Digest, markdown: string, items: readonly Item[]): CheckResult {
+  const written = new Set(items.map((item) => item.url.trim()));
   const known = new Set(items.map((item) => normalizeUrl(item.url)));
-  const isKnown = (url: string): boolean => known.has(normalizeUrl(url));
+  const isCollected = (url: string): boolean => written.has(url);
+  // Normalizing drops a fragment and tracking parameters, which can hold anything: a url that
+  // holds another url is accepted only as collected, as a renderer may cut it in two.
+  const isAccepted = (url: string): boolean =>
+    known.has(normalizeUrl(url)) && (isCollected(url) || !HOLDS_URL.test(url));
   const problems = new Set<string>();
 
   // Item URLs must match as whole strings, so nothing can ride along after a known prefix.
   for (const item of digest.items) {
-    if (!isKnown(item.url)) problems.add(`${UNKNOWN_URL_PROBLEM}${item.url}`);
+    if (!isAccepted(item.url)) problems.add(`${UNKNOWN_URL_PROBLEM}${item.url}`);
   }
   for (const text of [...digestTexts(digest), markdown]) {
-    const { urls, rejected, invalid } = linkCandidates(text, isKnown);
-    for (const url of urls.filter((u) => !isKnown(u))) {
+    const { urls, rejected, invalid } = linkCandidates(text, isCollected);
+    for (const url of urls.filter((u) => !isAccepted(u))) {
       problems.add(`${UNKNOWN_URL_PROBLEM}${url}`);
     }
     for (const url of rejected) problems.add(`${MALFORMED_LINK_PROBLEM}${url}`);

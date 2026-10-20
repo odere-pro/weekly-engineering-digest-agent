@@ -56,6 +56,31 @@ describe('checkOllama', () => {
     expect(results[0]?.fix).toContain('ollama serve');
   });
 
+  it.each(['localhost:11434', '127.0.0.1:11434', 'ftp://localhost:11434'])(
+    'tells the user that OLLAMA_URL needs http:// or https:// when it is %s and Ollama does not answer',
+    (url) => {
+      const results = checkOllama(
+        { reachable: false, models: [], error: 'OLLAMA_URL must start with http:// or https://' },
+        { ...loaded, env: { ...loaded.env, OLLAMA_URL: url } },
+      );
+
+      expect(results).toHaveLength(1);
+      expect(results[0]?.fix).toBe(
+        'set OLLAMA_URL in .env to the full address, which starts with http:// or https:// (for example http://localhost:11434)',
+      );
+      expect(results[0]?.fix).not.toContain('ollama serve');
+    },
+  );
+
+  it('keeps the start-Ollama fix when the URL has a scheme, in any letter case', () => {
+    const results = checkOllama(
+      { reachable: false, models: [], error: 'connection refused' },
+      { ...loaded, env: { ...loaded.env, OLLAMA_URL: 'HTTP://localhost:11434' } },
+    );
+
+    expect(results[0]?.fix).toContain('ollama serve');
+  });
+
   it('shows the reason the server gave when it does not answer', () => {
     const results = checkOllama(
       { reachable: false, models: [], error: 'connection refused' },

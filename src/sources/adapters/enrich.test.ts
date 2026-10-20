@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
-import { articleText, enrichEntries } from './enrich';
+import { articleText, enrichEntries, isOnFeedHost } from './enrich';
+import { sameSiteAs } from './http';
 import type { RawEntry } from './entries/types';
 import type { Get } from './pipeline';
 import type { Reply } from './http';
@@ -229,5 +230,21 @@ describe('enrichEntries origin and hostile pages', () => {
     expect(seen?.aborted).toBe(false);
     await new Promise((resolve) => setTimeout(resolve, 80));
     expect(seen?.aborted).toBe(true);
+  });
+});
+
+describe('isOnFeedHost', () => {
+  const feed = 'https://example.com/feed.xml';
+  const onSite = sameSiteAs(feed);
+
+  it.each([
+    ['the feed host', 'https://example.com/a', true],
+    ['the feed host with www.', 'https://www.example.com/a', true],
+    ['plain http on the feed host', 'http://example.com/a', false],
+    ['another port on the feed host', 'https://example.com:8443/a', false],
+    ['another host', 'https://other.example.org/a', false],
+    ['text that is not a url', 'not a url', false],
+  ])('answers for %s', (_name, pageUrl, expected) => {
+    expect(isOnFeedHost(pageUrl, feed, onSite)).toBe(expected);
   });
 });

@@ -53,18 +53,18 @@ flowchart TD
 
 ## Files
 
-| File                                   | Role                                                                                |
-| -------------------------------------- | ----------------------------------------------------------------------------------- |
-| `pipeline.ts`                          | `createFetcher`, `hostsOf`, `SourceAdapter`, `Get`, `SourceTap` and its event types |
-| `entries/`                             | Entries to items: normalize, read, select, merge. See `entries/CLAUDE.md`           |
-| `http.ts`                              | `getText`, `sameSiteAs`, `statusFailure`, `permanentFailure`, size caps             |
-| `enrich.ts`                            | `enrichEntries`: article text for entries with none; `MAX_PAGE_BYTES`               |
-| `feedFields.ts`                        | Raw feed fields the feed library flattens; `parseFeedDate`; `XmlEntry`              |
-| `rssAdapter.ts`, `rss.ts`              | The RSS and Atom adapter; `createRssFetcher`                                        |
-| `githubAtomAdapter.ts`                 | The `releases.atom` adapter (about 10 releases, prereleases not flagged)            |
-| `githubRestAdapter.ts`                 | The REST adapter (20 per page, no drafts or prereleases)                            |
-| `githubShared.ts`, `githubReleases.ts` | `parseRepo`, `httpError`, `releaseEntry`; `createGithubReleasesFetcher`             |
-| `archive/`                             | Saves each source's raw answers and items per day. See `archive/CLAUDE.md`          |
+| File                                   | Role                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------- |
+| `pipeline.ts`                          | `createFetcher`, `hostsOf`, `SourceAdapter`, `Get`, `SourceTap` and its event types   |
+| `entries/`                             | Entries to items: normalize, read, select, merge. See `entries/CLAUDE.md`             |
+| `http.ts`                              | `getText`, `sameSiteAs`, `statusFailure`, `permanentFailure`, size caps               |
+| `enrich.ts`                            | `enrichEntries`: article text for entries with none; `MAX_PAGE_BYTES`, `isOnFeedHost` |
+| `feedFields.ts`                        | Raw feed fields the feed library flattens; `parseFeedDate`; `XmlEntry`                |
+| `rssAdapter.ts`, `rss.ts`              | The RSS and Atom adapter; `createRssFetcher`                                          |
+| `githubAtomAdapter.ts`                 | The `releases.atom` adapter (about 10 releases, prereleases not flagged)              |
+| `githubRestAdapter.ts`                 | The REST adapter (20 per page, no drafts or prereleases)                              |
+| `githubShared.ts`, `githubReleases.ts` | `parseRepo`, `httpError`, `releaseEntry`; `createGithubReleasesFetcher`               |
+| `archive/`                             | Saves each source's raw answers and items per day. See `archive/CLAUDE.md`            |
 
 Tests sit next to the code. `__fixtures__/` holds recorded feeds, GitHub answers and article pages.
 

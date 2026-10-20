@@ -47,9 +47,16 @@ flowchart TD
   with `visibleLine` (invisible characters become a space) and escapes pipes; link text and
   destination get the same and are escaped so `linkCheck` decodes the same URL. A hidden character
   in a destination breaks its link, so the draft is rejected. A blank title shows the URL.
-- Reading back undoes exactly what rendering escapes and never throws. A group's urgency comes from
-  its marker, the label as written; an unknown heading is skipped. `withoutHeading` drops an
-  action's repeat of its column heading; it is not restored.
+- Model and feed text must not be markup either (CON-3): `<` and `>` get a backslash in a cell, the
+  link text, the destination and the headline line, so `<svg onload=...>`, `<img ...>` and
+  `<javascript:...>` stay text in a viewer that lets HTML through (CommonMark shows `\<` as `<`).
+  A backslash run before such a character (or a pipe) is doubled and one added, so the count is
+  odd and the text shows as written. Title, group labels and footer come from code, unescaped.
+- Reading back undoes exactly what rendering escapes and never throws: an odd run before `|`, `<`
+  or `>` loses half its length and the character's own backslash; an even run (not written by the
+  renderer) and a raw bracket from a file saved before the escapes read as they stand. A group's
+  urgency comes from its marker, the label as written; an unknown heading is skipped.
+  `withoutHeading` drops an action's repeat of its column heading; it is not restored.
 - Canonical text takes no options: scoring and guard input stay the same whatever the template.
 - Review sheet: no model call. Titles are cut to 120 characters, Markdown specials escaped, unsafe
   URL characters percent-encoded. The parser rejects an edited line, a duplicate id or a missing
@@ -66,16 +73,16 @@ flowchart TD
 | `canonical.ts`   | `canonicalDigestText`, `canonicalClaimText`, `canonicalHeadlineText`            |
 | `reviewSheet.ts` | `buildReviewSheet`, `parseReviewSheet`, `MAX_CANDIDATES`                        |
 
-Tests sit next to each file; `__fixtures__/render/` holds four digests with `.golden.txt` goldens
-(Prettier rewrites table pipes in `.md`).
+Tests sit next to each file; `__fixtures__/render/` holds five digests with `.golden.txt` goldens
+(Prettier rewrites table pipes in `.md`). `html` is the one with `<` and `>` in every field.
 
 ## Gotchas
 
 - The marker, the title shape and the table layout are the saved-file format: `TITLE_LINE` (`markdown.ts`)
   must match `titleOf` (`layout.ts`), and resume must find the item URLs in `digest.md` (rows start
   `| [`) or it refuses until `--force`. If the rebuilt view no longer renders to the file (a `digest.md`
-  saved with hidden characters before `visibleLine`), channels get the Markdown without the view and
-  their adapters clean it. Change writer and reader as one.
+  saved with hidden characters before `visibleLine`, or with a raw `<` before the escapes), channels
+  get the Markdown without the view and their adapters clean it. Change writer and reader as one.
 - `checks/` counts the Markdown (under 500 words) and reads its links, so template words, links or
   an em dash can fail every draft. `markdown.fixtures.test.ts` runs both checks on the goldens.
 - Changing canonical text changes judge and guard input; eval baselines stop comparing. It keeps the

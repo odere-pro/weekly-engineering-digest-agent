@@ -178,14 +178,17 @@ async function pageText(entry: RawEntry, deps: EnrichDeps, timeoutMs: number): P
   return articleText(reply.body);
 }
 
-/** The feed's host, protocol and port: a page on another port or over plain http is not read. */
-function isOnFeedHost(
-  entry: RawEntry,
+/**
+ * The feed's host, protocol and port: a page on another port or over plain http is not read.
+ * The eval page recorder asks the same question, so it gets the same answer.
+ */
+export function isOnFeedHost(
+  pageUrl: string,
   feedUrl: string,
   onSite: (hostname: string) => boolean,
 ): boolean {
   try {
-    const page = new URL(entry.url);
+    const page = new URL(pageUrl);
     const feed = new URL(feedUrl);
     return onSite(page.hostname) && page.protocol === feed.protocol && page.port === feed.port;
   } catch {
@@ -219,7 +222,7 @@ export async function enrichEntries(
   const enrichOne = async (index: number): Promise<void> => {
     const entry = entries[index];
     if (!entry) return;
-    if (!isOnFeedHost(entry, source.url, onSite)) {
+    if (!isOnFeedHost(entry.url, source.url, onSite)) {
       deps.logger.debug('Entry page is not on the feed host; not fetched', { sourceId: source.id });
       return;
     }

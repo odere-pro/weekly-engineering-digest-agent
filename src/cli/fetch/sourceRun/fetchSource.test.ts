@@ -84,6 +84,22 @@ describe('fetchSource', () => {
     expect(report.entries).toEqual({ sourceId: 'feed-a', parsed: 5, skipped: 2 });
   });
 
+  it('reports the answering URL without its query, which may carry a secret', async () => {
+    const run = runWith(new FakeSourceFetcher('rss', { 'feed-a': [] }));
+    run.recorder.tap.answer({
+      sourceId: 'feed-a',
+      url: 'https://feeds.example/rss?key=abc123',
+      status: 200,
+      contentType: 'application/rss+xml',
+      body: '<rss/>',
+    });
+
+    const report = await fetchSource(SOURCE, run);
+
+    expect(report.answeredBy).toBe('https://feeds.example/rss');
+    expect(JSON.stringify(report)).not.toContain('abc123');
+  });
+
   it('does not take the answers of another source', async () => {
     const run = runWith(new FakeSourceFetcher('rss', { 'feed-a': [] }));
     run.recorder.tap.answer({

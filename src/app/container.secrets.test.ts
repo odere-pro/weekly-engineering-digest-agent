@@ -164,6 +164,22 @@ describe('buildApp secrets', () => {
     expect([...tracerValues].sort()).toEqual(expected);
   });
 
+  it('redacts the password of OLLAMA_URL, as written and decoded, in the logger and the tracer', async () => {
+    const loaded = loadedConfig({
+      env: { OLLAMA_URL: 'http://user:p%40ss%2Fword@ollama.test:11434' },
+    });
+
+    await buildApp(loaded);
+
+    const expected = ['p%40ss%2Fword', 'p@ss/word'];
+    expect([...(firstCallOptions(createLogger).redactValues ?? [])].sort()).toEqual(
+      expected.sort(),
+    );
+    expect([...(firstCallOptions(createTracer).redactValues ?? [])].sort()).toEqual(
+      expected.sort(),
+    );
+  });
+
   it('redacts nothing extra when no secret is set', async () => {
     await buildApp(loadedConfig());
 
@@ -217,6 +233,37 @@ describe('buildApp secrets', () => {
     for (const factory of others) {
       for (const value of SECRET_VALUES) expect(seen(factory)).not.toContain(value);
     }
+  });
+});
+
+describe('buildApp with a password in OLLAMA_URL', () => {
+  const OLLAMA_PASSWORD = 'S3cretPw';
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('keeps the password out of what the model reports when Ollama does not answer', async () => {
+    // Node's fetch quotes the whole URL it is given in some errors.
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', (input: string) => {
+      urls.push(input);
+      return Promise.reject(new TypeError(`fetch failed for ${input}`));
+    });
+    const loaded = loadedConfig({
+      env: { OLLAMA_URL: `http://user:${OLLAMA_PASSWORD}@ollama.test:11434` },
+    });
+    const { deps } = await buildApp(loaded);
+
+    const health = await deps.model.health();
+
+    expect(urls.sort()).toEqual([
+      'http://ollama.test:11434/api/tags',
+      'http://ollama.test:11434/api/version',
+    ]);
+    expect(health.reachable).toBe(false);
+    expect(health.error).toContain('http://ollama.test:11434/api/version');
+    expect(JSON.stringify(health)).not.toContain(OLLAMA_PASSWORD);
   });
 });
 
