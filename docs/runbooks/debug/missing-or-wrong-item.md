@@ -35,9 +35,10 @@ turn a real miss into an eval case.
    ([Failing feed](failing-feed.md)).
 
 2. Did it get scored? Open the scores. A row with `dropped before scoring (input guard)`
-   was flagged by an input guard: `ruleInjection` (fixed rules, no model), `clefPolicy` or
-   `graniteRisk`. Set `LOG_LEVEL=debug` before the next run to log which check (`flaggedBy`) in
-   the `input guards dropped item` line. The log names the check, not the rule. An item that
+   was flagged by the rule guard `ruleInjection` (fixed rules, no model). With
+   `models.rescoreWithWriter` on, it can also be `clefPolicy` or `graniteRisk`. Set
+   `LOG_LEVEL=debug` before the next run to log which check (`flaggedBy`) in the
+   `input guards dropped item` line. The log names the check, not the rule. An item that
    quotes an attack string would trip `ruleInjection`; see
    [Turn a guard on or off](../configure/turn-a-guard-on-or-off.md) if it keeps dropping real news.
 
@@ -61,6 +62,11 @@ turn a real miss into an eval case.
    places while another area still has an item, so a third item of a busy area can lose to a
    weaker item of a quiet one. Only a run that reached a channel counts as sent: items from a
    dry run can come back.
+
+   One more reason has no row: `process` picked the item, then a model input guard
+   (`clefPolicy` or `graniteRisk`) flagged it in `guardCandidates`, and the next eligible item
+   took its place. Its scores look like a pick's. With `LOG_LEVEL=debug` the
+   `candidate guards dropped item` line names the item and the check (`flaggedBy`).
 
 4. For a repeated story, note the match is narrow on purpose. Two items merge only when they
    come from different sources and share a title, or announce the same `product@version`

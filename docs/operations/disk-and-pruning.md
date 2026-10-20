@@ -8,6 +8,7 @@ Part of [Operations](README.md).
 | ------------------------ | --------------------------------------------------- | ---------------------------------------------------------- |
 | Models                   | Ollama store, or the `ollama-models` volume         | 20 to 66 GB (see [cost](../overview/cost-and-hardware.md)) |
 | Run folders              | `dist/<monday>/digest/`                             | small, one per week                                        |
+| Saved model answers      | `dist/<monday>/digest/answers.jsonl`                | about 250 KB for a week of 150 items                       |
 | Source data of a run     | `dist/<monday>/<source>/raw`, `formatted`           | the feed answers as served (up to 5 MiB each), per week    |
 | Digest files             | `dist/<monday>/digest/`, or `delivery.markdown.dir` | a few KB per week                                          |
 | Logs                     | `dist/logs/<day>/digest.log`                        | one file per day, pruned with the old weeks                |
@@ -31,6 +32,8 @@ cross-week dedupe and the digest could repeat items.
 ## What you may delete by hand
 
 - Old `dist/<monday>/` folders, but keep at least `dedupeWeeks` recent weeks.
+- A week's `dist/<monday>/digest/answers.jsonl`. Always safe: the next run of that week asks every
+  model again instead of reusing the answers saved there.
 - Logs and `digest fetch` folders you want gone sooner than pruning removes them: `dist/logs/<day>/`,
   the `dist/<day>/` folders of days that are not a run's Monday, and any `digest/preview/`. Always
   safe.

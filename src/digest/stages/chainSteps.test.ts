@@ -3,7 +3,16 @@ import { chainSteps } from './chainSteps';
 import { runWorkflow } from '../workflow';
 import { contextFor, stateOf } from '../__fixtures__/stageKit';
 
-const ALL = ['collect', 'guardInput', 'classify', 'process', 'write', 'guardOutput', 'select'];
+const ALL = [
+  'collect',
+  'guardInput',
+  'classify',
+  'process',
+  'guardCandidates',
+  'write',
+  'guardOutput',
+  'select',
+];
 
 describe('chainSteps', () => {
   it('lists the stages in pipeline order, ending with deliver', () => {

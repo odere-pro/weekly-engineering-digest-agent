@@ -53,7 +53,7 @@ summaries and the action lines. See [render](../features/render.md).
 ## The shape of a run
 
 ```text
-collect -> guardInput -> classify -> process -> write -> guardOutput -> select -> deliver
+collect -> guardInput -> classify -> process -> guardCandidates -> write -> guardOutput -> select -> deliver
 ```
 
 Feeds go in on the left, one digest comes out on the right, and models do the judging while code

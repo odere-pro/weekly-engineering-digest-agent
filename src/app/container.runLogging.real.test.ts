@@ -219,7 +219,7 @@ describe('the real runDigest', () => {
     expect(calls.every((line) => line.runId === WEEK_A)).toBe(true);
     // Each call was made by a step, and says which; the readiness probe before the steps did not.
     expect(calls.every((line) => typeof line.step === 'string')).toBe(true);
-    expect(calls.map((line) => line.step)).toContain('guardInput');
+    expect(calls.map((line) => line.step)).toContain('classify');
     const [probe] = logLines(HEALTH_CALL);
     expect(probe?.runId).toBe(WEEK_A);
     expect(probe).not.toHaveProperty('step');

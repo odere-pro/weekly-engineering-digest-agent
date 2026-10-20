@@ -34,12 +34,22 @@ digest. You can do this at any time, with no Ollama and no network.
    Week 2026-W43: quiet
    Profile:    light
    Started:    2026-10-19T07:45:03Z (4m 38s)
-   Items:      3 collected, 3 after guards, 3 classified, 1 selected, 0 in the digest
+   Items:      3 collected, 3 after the rule guard, 3 classified, 1 selected (model guards checked 0), 0 in the digest
    Winner:     none
    Delivered:  none
    Guards off: none
-   Timings:    collect 6.2s, guardInput 41.0s, classify 38.0s, process 0.0s
+   Timings:    collect 6.2s, guardInput 0.0s, classify 38.0s, process 0.0s
    ```
+
+   This week ended at `process`, before the model input guards ran, so they checked 0 items. When
+   `guardCandidates` ran, the line says how many items the model guards checked:
+
+   ```text
+   Items:      147 collected, 147 after the rule guard, 147 classified, 5 selected (model guards checked 5), 5 in the digest
+   ```
+
+   Older records, and runs with `models.rescoreWithWriter` on, still print `after guards`: there
+   it counts what every input guard kept.
 
    Failed weeks add `Error:` with the step, rejected drafts add `Rejected:` lines and failed
    feeds add `Source failed:` lines. A week sent as the fallback digest (no model wrote it) shows
@@ -68,7 +78,8 @@ digest. You can do this at any time, with no Ollama and no network.
    ```
 
    `Status` is `in digest`, `scored, not picked`, or `dropped before scoring (input guard)`.
-   It does not give the reason an item was left out. Read the numbers against the
+   A pick the model input guards flagged after scoring shows as `scored, not picked`. The table
+   does not give the reason an item was left out. Read the numbers against the
    [thresholds](../../configuration/thresholds.md).
 
 3. Print the saved JSON as it is with `--json`, for a script.
@@ -83,7 +94,8 @@ digest. You can do this at any time, with no Ollama and no network.
 ## Verify
 
 The summary shows the week, status and counts you expect. `Items` reads left to right as the
-pipeline does: collected, after the input guards, classified, selected, in the digest.
+pipeline does: collected, after the rule guard (or after guards), classified, selected (and how
+many items the model guards checked), in the digest.
 
 ## Roll back
 

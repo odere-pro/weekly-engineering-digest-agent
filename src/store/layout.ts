@@ -4,6 +4,7 @@
 //   <dataDir>/artifacts/                       the built CLI (scripts/build.mjs)
 //   <dataDir>/logs/<day>/digest.log            log lines of that day
 //   <dataDir>/<day>/digest/                    the week's run: run.json, digest.md, ...
+//   <dataDir>/<day>/digest/answers.jsonl       model answers the week's reruns reuse (app/answerCache)
 //   <dataDir>/<day>/<sourceId>/raw/            what a source answered, as fetched
 //   <dataDir>/<day>/<sourceId>/formatted/      the items it was read into
 //
@@ -18,6 +19,7 @@ export const DIGEST_DIR = 'digest';
 export const LOGS_DIR = 'logs';
 export const LOG_FILE = 'digest.log';
 export const LOCK_FILE = 'digest.lock';
+const ANSWERS_FILE = 'answers.jsonl';
 
 export type SourcePart = 'raw' | 'formatted';
 
@@ -72,6 +74,14 @@ export function weekOfDay(name: string): string | undefined {
 /** `<dataDir>/<monday>/digest`: the files of one week's run. */
 export function weekDigestDir(dataDir: string, weekId: string): string {
   return join(dataDir, weekDay(weekId), DIGEST_DIR);
+}
+
+/**
+ * `<dataDir>/<monday>/digest/answers.jsonl`: the week's saved model answers. It sits with the run
+ * files, so pruning the week removes it.
+ */
+export function weekAnswersFile(dataDir: string, weekId: string): string {
+  return join(weekDigestDir(dataDir, weekId), ANSWERS_FILE);
 }
 
 /** `<dataDir>/<day>/<sourceId>/<part>`: one source's raw answers or formatted items. */

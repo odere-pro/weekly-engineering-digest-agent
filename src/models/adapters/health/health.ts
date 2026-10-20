@@ -15,7 +15,14 @@ const TAGS_PATH = '/api/tags';
 
 const VersionSchema = z.object({ version: z.string() });
 const TagsSchema = z.object({
-  models: z.array(z.object({ name: z.string(), capabilities: z.array(z.string()).optional() })),
+  models: z.array(
+    z.object({
+      name: z.string(),
+      capabilities: z.array(z.string()).optional(),
+      // Only the answer cache reads it: a blank one must not fail the whole model list.
+      digest: z.string().optional(),
+    }),
+  ),
 });
 
 async function getParsed<T>(http: OllamaHttp, path: string, schema: z.ZodType<T>): Promise<T> {
@@ -48,6 +55,10 @@ export async function health(http: OllamaHttp): Promise<ModelHealth> {
   return {
     reachable: true,
     version: version.value.version,
-    models: tags.value.models.map((m) => ({ name: m.name, capabilities: m.capabilities ?? [] })),
+    models: tags.value.models.map((m) => ({
+      name: m.name,
+      capabilities: m.capabilities ?? [],
+      ...(m.digest ? { digest: m.digest } : {}),
+    })),
   };
 }

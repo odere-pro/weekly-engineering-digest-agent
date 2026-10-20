@@ -16,6 +16,7 @@ link or harmful content. These rules hold in every part of the code.
 | Format limits hold (3 to 5 items, under 500 words, no em dash)               | the format check                                                          |
 | The link check and format check cannot be switched off                       | no config key exists                                                      |
 | Fixed injection rules read every item before any model does                  | `src/guards/adapters/ruleInjection.ts`: no model call, first input check  |
+| A model that writes text reads only items every input guard passed           | `src/digest/stages/guardCandidates.ts`, before `write`: see below         |
 | Guards fail closed on unparsable output                                      | `src/guards/guardRun.ts`                                                  |
 | Recipients, webhook and folders come from config and `.env` only             | the config loader; models never supply them                               |
 | Delivered text and the saved Markdown have no invisible reordering character | `src/render/visibleLine.ts`, `visibleText.ts`: format characters out      |
@@ -61,6 +62,24 @@ text, so a command split with one still matches. Real Hebrew or Arabic text keep
 sit next to non-Latin letters, digits, spaces and punctuation. See
 [guards](../configuration/guards.md).
 
+## Which models read an unchecked item
+
+The input guards run in two places. The rule guard `ruleInjection` checks every collected item in
+`guardInput`, before any model reads it. The model input guards (`clefPolicy`, `graniteRisk`) are
+slow, so they check only the items `process` picked, in `guardCandidates`, before `write`. A
+flagged pick is replaced by the next eligible item, which is checked in turn.
+
+Every model that writes text (the writers, and Granite in the output guards) still sees only items
+that passed every model guard. So do the clef rubric, the judge and the fallback digest. The
+only model that reads an item the model guards have not checked is the classifier. It is a decision
+model: it reads one item per call, answers only fixed choices and probabilities, and writes no
+text. The most a crafted item can do there is raise its own score. That makes it a pick, and then
+the model guards check it. The rule guard still checks every item before any model.
+
+`models.rescoreWithWriter` (off by default) sends items to a writer model during classify. With it
+on, the model guards run on every item in `guardInput`, before classify, and `guardCandidates` does
+nothing (`src/digest/stages/modelGuardsFirst.ts`). See [data flow](data-flow.md).
+
 ## Guards are switchable, checks are not
 
 Guards look at text before and after writing. Four ask a model; `ruleInjection` is fixed rules in
@@ -76,9 +95,9 @@ turn them off.
 If every writer draft is rejected, the run sends a fallback digest instead: the selected items'
 own titles and first sentences, with links and other URLs taken out of the text, built by code
 with no model. It passes the same link check and format check. The output guards only advise on
-it, because the text is source text and there is nothing for them to ground. The input guards
-(including `ruleInjection`) already filtered the items. Its footer says it was written from the
-sources' own words, so a reader knows no model wrote or checked it. See
+it, because the text is source text and there is nothing for them to ground. Every selected item
+already passed every input guard: the rule guard and the model guards. Its footer says it was
+written from the sources' own words, so a reader knows no model wrote or checked it. See
 [digest run](../features/digest.md#fallback-digest).
 
 ## Layers of secret protection

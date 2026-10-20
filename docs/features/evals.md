@@ -22,6 +22,8 @@ is not in the data flow of a normal run. See [feature folders](../architecture/f
   every guard on, nothing delivered, `topN` 5, and the template fallback digest off so a rejected
   week stays visible. Every week runs 3 times to measure stability (the gate uses the first
   week), and the first week runs once more with all the attack items mixed in.
+- After each week replay, asks the model input guards about every collected item the run did not
+  show them (`sweepInputGuards`), so guard false blocks is still measured on every item of a week.
 - Asks every input guard about every attack item on its own (independent recall), so the order of
   the guards no longer hides one of them.
 - Runs the classifier cases (60 labelled items) and the grounding drafts (30, each with one planted

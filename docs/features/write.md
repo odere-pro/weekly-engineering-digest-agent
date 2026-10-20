@@ -11,8 +11,8 @@ and gives each writer one retry when no draft passes.
 
 ## Where it sits
 
-It is the fifth step, after process. The checks run inside it, and the output guards and the judge
-follow. See [data flow](../architecture/data-flow.md).
+It is the sixth step, after guardCandidates. The checks run inside it, and the output guards and
+the judge follow. See [data flow](../architecture/data-flow.md).
 
 ## What it does
 

@@ -17,7 +17,7 @@ function healthy(call: Call): Response {
 }
 
 describe('health', () => {
-  it('maps the version and each model’s capabilities', async () => {
+  it('maps the version and each model’s capabilities and digest', async () => {
     const { http, calls } = fakeContext(healthy);
 
     const result = await health(http);
@@ -26,12 +26,21 @@ describe('health', () => {
       reachable: true,
       version: '0.40.4',
       models: [
-        { name: 'clef:latest', capabilities: ['decision', 'vision'] },
+        {
+          name: 'clef:latest',
+          capabilities: ['decision', 'vision'],
+          digest: '039c167bd0ec3719dd055f448dd55ea2365330bc05f2737e042ea0d23659756b',
+        },
         {
           name: 'gemma4:e4b-mlx',
           capabilities: ['completion', 'vision', 'audio', 'tools', 'thinking'],
+          digest: '5a08735df03c348ab10d56e8ad758098ff1960ab6030605c95fde7d90fc9de18',
         },
-        { name: 'strands-decider:2b-mlx-bf16', capabilities: ['decision'] },
+        {
+          name: 'strands-decider:2b-mlx-bf16',
+          capabilities: ['decision'],
+          digest: 'd7afa63135f68f27fb25ca97dad22b6434ad927aaa491985e2845813b4fbffb4',
+        },
       ],
     });
     expect(calls.map((c) => [c.method, c.url]).sort()).toEqual([
@@ -40,7 +49,28 @@ describe('health', () => {
     ]);
   });
 
-  it('gives a model without capabilities an empty list', async () => {
+  it('keeps every model when one lists an empty digest, and leaves that digest out', async () => {
+    const { http } = fakeContext((call) =>
+      call.url.endsWith('/api/version')
+        ? json(200, { version: '0.40.5' })
+        : json(200, {
+            models: [
+              { name: 'clef:latest', digest: '' },
+              { name: 'granite4.1-guardian:8b', digest: 'f82c0882' },
+            ],
+          }),
+    );
+
+    const result = await health(http);
+
+    expect(result.error).toBeUndefined();
+    expect(result.models).toEqual([
+      { name: 'clef:latest', capabilities: [] },
+      { name: 'granite4.1-guardian:8b', capabilities: [], digest: 'f82c0882' },
+    ]);
+  });
+
+  it('gives a model without capabilities an empty list, and no digest when none is listed', async () => {
     const { http } = fakeContext((call) =>
       call.url.endsWith('/api/version')
         ? json(200, { version: '0.30.0' })

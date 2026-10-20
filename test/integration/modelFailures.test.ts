@@ -44,7 +44,7 @@ const callsFor = (world: World, writer: string) =>
 
 describe('integration: a model call that times out', () => {
   it(
-    'retries a writer call that timed out and still sends the digest',
+    'does not retry a writer call that timed out, and sends the other writer',
     async () => {
       const { world, ollama } = createOllamaWorld({
         now: FRIDAY,
@@ -62,15 +62,14 @@ describe('integration: a model call that times out', () => {
       const chats = ollama.calls.filter((call) => call.path === '/api/chat');
       expect(chats.map((call) => [call.model, call.nth])).toEqual([
         [FIRST_WRITER, 1],
-        [FIRST_WRITER, 2],
         [SECOND_WRITER, 1],
       ]);
-      const retry = world.logs.find((line) => line.message === 'ollama call failed, retrying');
-      expect(retry?.fields).toMatchObject({ role: 'write', model: FIRST_WRITER, attempt: 1 });
-      expect(String(retry?.fields.error)).toContain('Timed out after 250 ms');
+      expect(world.logs.some((line) => line.message === 'ollama call failed, retrying')).toBe(
+        false,
+      );
       const record = await readRunJson(dataDir(), WEEK);
       expect(record.status).toBe('sent');
-      expect(record.drafts.map((draft) => draft.passed)).toEqual([true, true]);
+      expect(record.drafts.map((draft) => draft.passed)).toEqual([false, true]);
       expect(digestsSent(world)).toEqual([1, 1, 1]);
     },
     TEST_TIMEOUT_MS,
@@ -115,7 +114,7 @@ describe('integration: a model call that times out', () => {
 describe('integration: writers that keep timing out', () => {
   // D3 (decided 2026-10-17): a write step that yields no draft at all fails the run.
   it(
-    'fails the run with exit 1 at write when every writer times out on every retry (D3)',
+    'fails the run with exit 1 at write when every writer times out (D3), with no retry',
     async () => {
       const { world, ollama } = createOllamaWorld({
         now: FRIDAY,
@@ -131,9 +130,7 @@ describe('integration: writers that keep timing out', () => {
       const chats = ollama.calls.filter((call) => call.path === '/api/chat');
       expect(chats.map((call) => [call.model, call.nth])).toEqual([
         [FIRST_WRITER, 1],
-        [FIRST_WRITER, 2],
         [SECOND_WRITER, 1],
-        [SECOND_WRITER, 2],
       ]);
       const record = await readRunJson(dataDir(), WEEK);
       expect(record.status).toBe('failed');

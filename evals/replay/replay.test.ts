@@ -94,6 +94,29 @@ describe('replay', () => {
     expect(flagged.map(({ guardId }) => guardId)).toEqual(['clefPolicy']);
   });
 
+  it('asks the model guards about every collected item the run did not show them', async () => {
+    const rule = new FakeInputGuard('ruleInjection');
+    const clef = new FakeInputGuard('clefPolicy');
+    const app = makeApp({ inputGuards: [rule, clef] });
+    const onlyRule = makeDeps(
+      app,
+      [],
+      {},
+      {
+        runDigest: async (deps, options) => {
+          for (const item of items) await deps.inputGuards[0]!.checkItem(item);
+          return { exitCode: 0, record: makeRunRecord({ runId: options.weekId ?? WEEK_40 }) };
+        },
+      },
+    );
+
+    const run = await replay(app.deps, onlyRule, WEEK_40, items);
+
+    expect(rule.calls).toHaveLength(items.length);
+    expect(clef.calls).toHaveLength(items.length);
+    expect(run.inputVerdicts).toHaveLength(items.length * 2);
+  });
+
   it('records what the output guards said about each draft', async () => {
     const app = makeApp({ outputGuards: [new FakeOutputGuard('clefRubric', () => true)] });
     const draft = makeDraft([items[0]!]);

@@ -57,12 +57,13 @@ finishes in a normal time.
    The Compose `ollama` service already sets it. `ollama ps` lists what is loaded.
 4. Pick the fix that matches the symptom.
 
-   | Symptom                                | Fix                                                          |
-   | -------------------------------------- | ------------------------------------------------------------ |
-   | `timed out after 600000 ms` on `write` | Raise the limit for that role (below)                        |
-   | Guard calls take about a minute each   | Do not turn `think` on for `guardRisk`; it is off by default |
-   | Swapping, or Ollama killed             | Use a smaller profile, or set one writer in `models.writers` |
-   | Whole run passes 3 hours               | Same as above; one writer also removes the judge step        |
+   | Symptom                                | Fix                                                                           |
+   | -------------------------------------- | ----------------------------------------------------------------------------- |
+   | `timed out after 600000 ms` on `write` | Raise the limit for that role (below)                                         |
+   | Guard calls take about a minute each   | Do not turn `think` on for `guardRisk`; it is off by default                  |
+   | Swapping, or Ollama killed             | Use a smaller profile, or set one writer in `models.writers`                  |
+   | Whole run passes 3 hours               | Same as above; one writer also removes the judge step                         |
+   | `guardInput` takes most of the run     | Check `models.rescoreWithWriter`: on, the model input guards check every item |
 
    Raise a limit in `digest.config.json`. The default per attempt is 60 s for `classify` and
    `guardPolicy`, 120 s for `guardRisk` and `judge`, and 600 s for `write`. The least you can

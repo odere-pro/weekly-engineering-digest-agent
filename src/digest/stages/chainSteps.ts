@@ -5,6 +5,7 @@ import type { WorkflowStep } from '../workflow';
 import { classify } from './classify';
 import { collect } from './collect';
 import { deliver } from './deliver';
+import { guardCandidates } from './guardCandidates';
 import { guardInput } from './guardInput';
 import { guardOutput } from './guardOutput';
 import { processItems } from './processItems';
@@ -18,6 +19,7 @@ export function chainSteps(ctx: RunContext): WorkflowStep<ChainState>[] {
     stage(ctx, 'guardInput', guardInput),
     stage(ctx, 'classify', classify),
     stage(ctx, 'process', processItems),
+    stage(ctx, 'guardCandidates', guardCandidates),
     stage(ctx, 'write', write),
     stage(ctx, 'guardOutput', guardOutput),
     stage(ctx, 'select', selectWinner),

@@ -10,37 +10,38 @@ what the other files hold. The folder layout is in
 
 ## `run.json`
 
-| Field            | Type                 | Meaning                                                                                                                                      |
-| ---------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `runId`          | string               | The ISO week id, for example `2026-W42`                                                                                                      |
-| `status`         | string               | `sent`, `dry-run`, `skipped`, `quiet`, `blocked` or `failed`                                                                                 |
-| `dryRun`         | boolean              | True when the run was started with `--dry-run`                                                                                               |
-| `startedAt`      | ISO date with offset | When the run began                                                                                                                           |
-| `finishedAt`     | ISO date with offset | When it ended                                                                                                                                |
-| `profile`        | string               | The configured profile name. On a non-Apple machine the tags below differ                                                                    |
-| `modelsByRole`   | map                  | Role to tag: `classify`, `guardPolicy`, `guardRisk`, `judge` (a tag or `null`), `write` (a list)                                             |
-| `sampling`       | object, optional     | `seed` and `temperatureByRole` the model calls used. Absent in older records                                                                 |
-| `fallback`       | boolean, optional    | `true` when no writer draft survived and the digest was built from the items' own text, with no model. Absent otherwise and in older records |
-| `timings`        | list                 | `{ step, ms }` for each step that ran. Steps: `collect`, `guardInput`, `classify`, `process`, `write`, `guardOutput`, `select`, `deliver`    |
-| `counts`         | object               | Item counts, see below                                                                                                                       |
-| `failedSources`  | list                 | `{ sourceId, error }` for each feed that failed. The error is cut to 300 characters                                                          |
-| `disabledGuards` | list                 | Guard check ids that did not run: `ruleInjection`, `clefPolicy`, `graniteRisk`, `graniteGroundedness`, `clefRubric`                          |
-| `drafts`         | list                 | One outcome per writer, see below                                                                                                            |
-| `winner`         | string or `null`     | The writer tag whose draft won. `null` when no draft won                                                                                     |
-| `sentUrls`       | list of URLs         | URLs delivered in this run. They feed the cross-week dedupe                                                                                  |
-| `deliveredTo`    | list, optional       | Channels that took the digest: `markdown`, `email`, `slack`. A partly delivered `failed` week lists the ones that did                        |
-| `error`          | object, optional     | `{ message, step }` when the run failed. `step` is optional                                                                                  |
+| Field            | Type                 | Meaning                                                                                                                                                      |
+| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `runId`          | string               | The ISO week id, for example `2026-W42`                                                                                                                      |
+| `status`         | string               | `sent`, `dry-run`, `skipped`, `quiet`, `blocked` or `failed`                                                                                                 |
+| `dryRun`         | boolean              | True when the run was started with `--dry-run`                                                                                                               |
+| `startedAt`      | ISO date with offset | When the run began                                                                                                                                           |
+| `finishedAt`     | ISO date with offset | When it ended                                                                                                                                                |
+| `profile`        | string               | The configured profile name. On a non-Apple machine the tags below differ                                                                                    |
+| `modelsByRole`   | map                  | Role to tag: `classify`, `guardPolicy`, `guardRisk`, `judge` (a tag or `null`), `write` (a list)                                                             |
+| `sampling`       | object, optional     | `seed` and `temperatureByRole` the model calls used. Absent in older records                                                                                 |
+| `fallback`       | boolean, optional    | `true` when no writer draft survived and the digest was built from the items' own text, with no model. Absent otherwise and in older records                 |
+| `timings`        | list                 | `{ step, ms }` for each step that ran. Steps: `collect`, `guardInput`, `classify`, `process`, `guardCandidates`, `write`, `guardOutput`, `select`, `deliver` |
+| `counts`         | object               | Item counts, see below                                                                                                                                       |
+| `failedSources`  | list                 | `{ sourceId, error }` for each feed that failed. The error is cut to 300 characters                                                                          |
+| `disabledGuards` | list                 | Guard check ids that did not run: `ruleInjection`, `clefPolicy`, `graniteRisk`, `graniteGroundedness`, `clefRubric`                                          |
+| `drafts`         | list                 | One outcome per writer, see below                                                                                                                            |
+| `winner`         | string or `null`     | The writer tag whose draft won. `null` when no draft won                                                                                                     |
+| `sentUrls`       | list of URLs         | URLs delivered in this run. They feed the cross-week dedupe                                                                                                  |
+| `deliveredTo`    | list, optional       | Channels that took the digest: `markdown`, `email`, `slack`. A partly delivered `failed` week lists the ones that did                                        |
+| `error`          | object, optional     | `{ message, step }` when the run failed. `step` is optional                                                                                                  |
 
 `counts`:
 
-| Field             | Meaning                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| `collected`       | Items collected from all sources                                                     |
-| `afterGuardInput` | Items left after the input guards                                                    |
-| `classified`      | Items the classifier scored                                                          |
-| `afterProcess`    | Items that survived the process filters, before the top-N cut. Older records omit it |
-| `selected`        | Items sent to the writers (at most `topN`)                                           |
-| `digestItems`     | Items in the winning digest, `0` when there is none                                  |
+| Field               | Meaning                                                                                                                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `collected`         | Items collected from all sources                                                                                                                                                                |
+| `afterGuardInput`   | Items left after `guardInput`: what the rule guard kept. Older records, and runs with `models.rescoreWithWriter` on, count what every input guard kept                                          |
+| `classified`        | Items the classifier scored                                                                                                                                                                     |
+| `afterProcess`      | Items that survived the process filters, before the top-N cut. Older records omit it                                                                                                            |
+| `selected`          | Items sent to the writers (at most `topN`)                                                                                                                                                      |
+| `guardedCandidates` | Items the model input guards checked after `process`, over all their batches. `0` in a week that ended before `guardCandidates`. Absent in older records and with `models.rescoreWithWriter` on |
+| `digestItems`       | Items in the winning digest, `0` when there is none                                                                                                                                             |
 
 A `drafts` outcome is `{ writer, passed, rejectedBy, score? }`. `rejectedBy` lists the check or
 guard ids that rejected the draft: `write` (the writer produced nothing), `linkCheck`,
@@ -66,7 +67,7 @@ pnpm digest show 2026-W42 --part run
 | File          | Written when                                     | Holds                                                                                                                                                                                                         |
 | ------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `items.json`  | After `collect`                                  | The collected items: `id`, `sourceId`, `kind`, `url`, `title`, `summary`, `publishedAt`. `[]` for a week with none                                                                                            |
-| `scores.json` | After `classify`                                 | One classification per item that passed the input guards: `itemId`, `relevance`, `area`, `areaConfidence`, `hype`, `minorRelease`. No drop reasons                                                            |
+| `scores.json` | After `classify`                                 | One classification per item `guardInput` kept: `itemId`, `relevance`, `area`, `areaConfidence`, `hype`, `minorRelease`. No drop reasons                                                                       |
 | `drafts.json` | After `write` (and `guardOutput` for a fallback) | `drafts` (each writer's digest, plus the `fallback` draft when one was used), `failures` (`writer`, `error`, and `retry` for a failed retry) and `rejections` (`writer`, `attempt`, `rejectedBy`, `problems`) |
 | `digest.md`   | After `select`                                   | The winning digest as Markdown. It is the only file kept after pruning                                                                                                                                        |
 | `review.md`   | At the end, best effort                          | A tick sheet of picked items and up to 20 candidates, for `digest feedback`                                                                                                                                   |

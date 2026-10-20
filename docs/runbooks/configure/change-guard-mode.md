@@ -24,18 +24,18 @@ every active guard flags the same item or draft (`all`).
 
 1. Pick the mode for each section. Input and output are set apart.
 
-   | Key                  | `any` (default)                                    | `all`                                                 |
-   | -------------------- | -------------------------------------------------- | ----------------------------------------------------- |
-   | `guards.input.mode`  | An item is dropped when any input guard flags it   | Dropped only when every active input guard flags it   |
-   | `guards.output.mode` | A draft is rejected when any output guard flags it | Rejected only when every active output guard flags it |
+   | Key                  | `any` (default)                                        | `all`                                                     |
+   | -------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+   | `guards.input.mode`  | An item is dropped when any model input guard flags it | Dropped only when every active model input guard flags it |
+   | `guards.output.mode` | A draft is rejected when any output guard flags it     | Rejected only when every active output guard flags it     |
 
    With one active check in a section the two modes act the same. In `all`, an item goes to the
    next guard only if the previous one flagged it, so the later (often slower) guard sees fewer
-   items. The order is `ruleInjection`, `clefPolicy`, then `graniteRisk` for input, and
-   `graniteGroundedness` then `clefRubric` for output. The rule guard runs first, so in `all` an
-   input item is dropped only if `ruleInjection` flags it too. It flags rarely, so `all` on the
-   input side drops very little unless you also turn `ruleInjection` off (see
-   [Turn a guard on or off](turn-a-guard-on-or-off.md)).
+   items. The order is `clefPolicy` then `graniteRisk` for input, and `graniteGroundedness` then
+   `clefRubric` for output. The input rule guard `ruleInjection` is outside the mode: it runs
+   first, in `guardInput`, on every collected item, and a hit always drops the item. The input
+   mode applies to `clefPolicy` and `graniteRisk`, which check the items `process` picked
+   (`guardCandidates`). See [Guards](../../configuration/guards.md#when-the-input-guards-run).
 
 2. Edit `digest.config.json`. This loosens output only:
 
@@ -62,8 +62,8 @@ every active guard flags the same item or draft (`all`).
 - Doctor shows no `✗ config` line. A wrong value gives `Invalid option: expected one of "any"|"all"`.
   Doctor does not print the mode, so open the file and read it back.
 - After the next run, compare with an earlier week: `pnpm digest show <week>` lists fewer
-  `Rejected:` lines, and `Items:` shows more left "after guards". Judge the winning digest by
-  eye. Weaker guards are only safe if you keep reading what gets through.
+  `Rejected:` lines, and the `Candidate guards done` log line shows fewer `dropped` picks. Judge
+  the winning digest by eye. Weaker guards are only safe if you keep reading what gets through.
 
 ## Roll back
 

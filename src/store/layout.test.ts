@@ -5,6 +5,7 @@ import {
   isReservedSourceId,
   logsDir,
   sourceDir,
+  weekAnswersFile,
   weekDay,
   weekDigestDir,
   weekOfDay,
@@ -59,6 +60,13 @@ describe('weekOfDay', () => {
 describe('folders', () => {
   it('puts a week run in <dataDir>/<monday>/digest', () => {
     expect(weekDigestDir('dist', '2026-W43')).toBe(join('dist', '2026-10-19', 'digest'));
+  });
+
+  it('puts the week answer cache next to its run files, where prune clears it', () => {
+    expect(weekAnswersFile('dist', '2026-W43')).toBe(
+      join('dist', '2026-10-19', 'digest', 'answers.jsonl'),
+    );
+    expect(() => weekAnswersFile('dist', '../2026-W43')).toThrow(/Invalid run id/);
   });
 
   it('puts a source raw and formatted data in <dataDir>/<day>/<sourceId>/<part>', () => {

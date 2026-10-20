@@ -27,6 +27,12 @@ pipeline uses them through ports. See [ports and adapters](../architecture/ports
   Monday folder). The saves run in the background and `close()` waits for them; a failed save is
   only a warning, and nothing is saved outside a run. The rule guard gets the hosts of your
   configured feeds, so a link to one of them is never off-host.
+- Wraps the model provider with the week's answer cache. A rerun of a week (a dry run and then the
+  real one, a scheduler retry, `--force`) reuses what the same model answered to the very same call
+  in an earlier run of that week, and asks the model only for what changed. The writers are always
+  asked. A new pull of a model or an Ollama upgrade starts over. The answers sit in
+  `<dataDir>/<monday>/digest/answers.jsonl` and are pruned with the week; delete that file to make
+  a rerun ask every model again. `digest eval` never reuses answers: it measures the models.
 - Wraps every delivery channel with retry (2 retries, after 5 s then 10 s, only when sending again
   cannot double the message) and with secret redaction. Redaction wraps the retry, so each retry
   sends the same cleaned message.

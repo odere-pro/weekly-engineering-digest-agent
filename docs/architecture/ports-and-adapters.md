@@ -39,8 +39,10 @@ Why bother:
 
 Each port file sits at the top of its feature folder, and its adapters live in the `adapters/`
 folder next to it. There are five port files and six interfaces: the guard port is a pair in one
-file, `Guard.ts`, and there is no type named `Guard`. An input guard judges each collected item
-before any other model sees it; an output guard judges each draft against the items it cites.
+file, `Guard.ts`, and there is no type named `Guard`. An input guard judges one collected item:
+the rule guard checks every item before any model sees it, and the model guards check the items
+`process` picked before any writer sees them. An output guard judges each draft against the items
+it cites.
 
 `ModelProvider` has one adapter, `createOllamaProvider` in `src/models/adapters/ollama.ts`.
 `adapters/systemone.ts` is not a second adapter: it holds the helpers the Ollama adapter uses to

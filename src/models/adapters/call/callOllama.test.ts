@@ -297,9 +297,34 @@ describe('callOllama reliability', () => {
   });
 
   it('retries a timed-out call', async () => {
+    const fake = fakeContext(
+      (call, index) => (index === 0 ? hang(call.signal) : json(200, { ok: true })),
+      { timeoutsMs: { classify: 5_000 } },
+    );
+
+    const pending = callDecide(fake);
+    await vi.runAllTimersAsync();
+
+    await expect(pending).resolves.toMatchObject({ usage: { inputTokens: 0 } });
+    expect(fake.calls).toHaveLength(2);
+  });
+
+  it('does not retry a timed-out writer call: the same seed would repeat the same work', async () => {
     const fake = fakeContext((call, index) => (index === 0 ? hang(call.signal) : chatOk()), {
       timeoutsMs: { write: 5_000 },
     });
+
+    const pending = callWrite(fake);
+    const assertion = expect(pending).rejects.toThrow('timed out after 5000 ms');
+    await vi.runAllTimersAsync();
+
+    await assertion;
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.lines.some((l) => l.message === 'ollama call failed, retrying')).toBe(false);
+  });
+
+  it('still retries a writer call that failed with a 5xx', async () => {
+    const fake = fakeContext(sequence(() => json(503, { error: 'server busy' }), chatOk));
 
     const pending = callWrite(fake);
     await vi.runAllTimersAsync();

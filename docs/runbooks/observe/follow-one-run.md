@@ -31,8 +31,8 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
    in `schedule.timeZone`), so `tail -f` on it works for a run started in any way.
 
 2. Show only the step lines. Each step logs `Step finished` with its time in `ms` when it ends.
-   The order is `collect`, `guardInput`, `classify`, `process`, `write`, `guardOutput`,
-   `select`, `deliver`. A dry run has no `deliver`.
+   The order is `collect`, `guardInput`, `classify`, `process`, `guardCandidates`, `write`,
+   `guardOutput`, `select`, `deliver`. A dry run has no `deliver`.
 
    ```bash
    docker compose logs -f digest | grep --line-buffered '"msg":"Step finished"'
@@ -41,16 +41,19 @@ Watch a run while it works, see which step it is in, and tell a slow step from a
 3. Read the wait inside the current step. A model call logs `ollama call` when it ends, so a
    quiet stretch is a call in flight. Expect these gaps:
 
-   | Step          | What takes time                                  | Time limit per attempt            |
-   | ------------- | ------------------------------------------------ | --------------------------------- |
-   | `collect`     | Feeds, 4 at a time                               | 10 s per source, 2 retries        |
-   | `guardInput`  | One call per item per model guard, one at a time | 60 s (`clefPolicy`), 120 s (risk) |
-   | `classify`    | One `decide` call per item, one at a time        | 60 s                              |
-   | `write`       | One long call per writer, one after another      | 600 s                             |
-   | `guardOutput` | One call per draft per guard                     | 60 s and 120 s                    |
-   | `select`      | One judge call per passing draft (only with 2+)  | 120 s                             |
+   | Step              | What takes time                                  | Time limit per attempt            |
+   | ----------------- | ------------------------------------------------ | --------------------------------- |
+   | `collect`         | Feeds, 4 at a time                               | 10 s per source, 2 retries        |
+   | `guardInput`      | The rule guard only, no model call               | none                              |
+   | `classify`        | One `decide` call per item, one at a time        | 60 s                              |
+   | `guardCandidates` | One call per pick per model guard, one at a time | 60 s (`clefPolicy`), 120 s (risk) |
+   | `write`           | One long call per writer, one after another      | 600 s                             |
+   | `guardOutput`     | One call per draft per guard                     | 60 s and 120 s                    |
+   | `select`          | One judge call per passing draft (only with 2+)  | 120 s                             |
 
-   A model call that passes its time limit is retried twice, then the step fails. See
+   With `models.rescoreWithWriter` on, the model guards run in `guardInput` on every item
+   instead, and `guardCandidates` makes no call. A model call that passes its time limit is
+   retried twice, then the step fails. See
    [Slow model or out of memory](../debug/slow-model-or-out-of-memory.md).
 
 4. Check that the run is alive from another terminal. The lock file names the run and the

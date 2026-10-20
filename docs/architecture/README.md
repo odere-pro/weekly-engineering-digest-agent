@@ -23,7 +23,7 @@ a plain loop now runs the steps. Each feature's own design notes are in
 
 ## The picture in one paragraph
 
-`runDigest` (in `src/digest/`) takes the lock, runs eight steps in order, saves a run record and
+`runDigest` (in `src/digest/`) takes the lock, runs nine steps in order, saves a run record and
 delivers the winner. Each step is a plain function in its own feature folder. The model, the
 feeds, the guards, the delivery channels and the run store are reached only through ports. One
 file, `src/app/container.ts`, turns the config into real adapters, so swapping Ollama for another

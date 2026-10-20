@@ -3,14 +3,15 @@
 > Picks the 3-5 items for the writers: drops what was sent, repeated or weak, then ranks the rest
 > and spreads them across areas. Plain code, no model: the same input gives the same output.
 > Entry: `processStep({ items, sentUrls, thresholds, topN, calibration?, pairwiseOrder? })` →
-> `{ selected, dropped }`
+> `{ selected, dropped, belowTopN }`
 > (`process.ts`). The chain step is `process`; `src/select/` is the judge, a different feature.
 
 ## Context
 
 ```mermaid
 flowchart LR
-  classify -->|"ScoredItem[]"| process:::focus -->|"selected ScoredItem[]"| write
+  classify -->|"ScoredItem[]"| process:::focus -->|"selected ScoredItem[]"| guardCandidates
+  guardCandidates -.->|"processStep again without a flagged pick"| process
   store[[RunStore]] -.->|"sentUrls, read by processItems"| process
   cfg[("config: thresholds, topN")] -.-> process
   evals["evals: calibration, rescore, thresholds sweep"] -.-> process
@@ -30,7 +31,7 @@ flowchart TD
   low --> hype["filter/ hype: above maxHype (0.6)"]
   hype --> minor["filter/ minor-release: above maxMinorRelease (0.75)"]
   minor --> pick["rank/ pickWithAreaSpread: up to topN (5)"]
-  pick --> out["selected in rank order; the rest drop as below-top-n"]
+  pick --> out["selected in rank order; the rest drop as below-top-n and come back as belowTopN"]
 ```
 
 - An item gets the first reason that fits. `dropped` lists reasons in stage order, then
@@ -76,5 +77,8 @@ Tests sit next to each file; `__fixtures__/processKit.ts` has `scored`, `story` 
 - `evals/thresholds/sweep/keepsItem.ts` calls `passesThresholds`, so the sweep and this step share
   one rule; its test still runs `processStep` on a table of items to pin that.
 - `areaKey` (trim, lowercase) keys `areaBias`; the spread uses `normalizeText`: not the same grouping.
+- `digest/stages/guardCandidates.ts` calls `processStep` once per batch of guard flags, with the
+  flagged items left out, and takes `selected` and `belowTopN` as they are: the step tells items
+  apart by identity, so both must stay the very objects it was given.
 - Evals call `processStep` too (`calibration/measure/`, `rescore/replay/`, `keepsItem.test.ts`): keep its
   path and signature.

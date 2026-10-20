@@ -24,7 +24,15 @@ const CLEANUP_TIMEOUT_MS = 60_000;
 const DIGEST_MIN_ITEMS = 3;
 const EM_DASH = '—';
 const URGENCIES_WITH_ACTION: readonly Urgency[] = ['act-now', 'worth-a-look'];
-const PIPELINE_STEPS = ['collect', 'guardInput', 'classify', 'process', 'write', 'guardOutput'];
+const PIPELINE_STEPS = [
+  'collect',
+  'guardInput',
+  'classify',
+  'process',
+  'guardCandidates',
+  'write',
+  'guardOutput',
+];
 
 interface SmokeRun {
   loaded: LoadedConfig;

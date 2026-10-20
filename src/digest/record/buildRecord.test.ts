@@ -56,7 +56,14 @@ describe('buildRecord', () => {
       profile: 'quality',
       modelsByRole: modelsByRole(PROFILE),
       timings: [],
-      counts: { collected: 0, afterGuardInput: 0, classified: 0, selected: 0, digestItems: 0 },
+      counts: {
+        collected: 0,
+        afterGuardInput: 0,
+        classified: 0,
+        selected: 0,
+        guardedCandidates: 0,
+        digestItems: 0,
+      },
       failedSources: [],
       disabledGuards: [],
       drafts: [],
@@ -89,6 +96,7 @@ describe('buildRecord', () => {
       classified: 3,
       afterProcess: 3,
       selected: 3,
+      guardedCandidates: 0,
       digestItems: 3,
     });
     expect(record).toMatchObject({
@@ -99,6 +107,24 @@ describe('buildRecord', () => {
       failedSources: [{ sourceId: 'feed', error: 'timed out' }],
     });
     expect(RunRecordSchema.parse(record)).toEqual(record);
+  });
+
+  it('counts the items the model guards checked after process, 0 when that step never ran', () => {
+    const { ctx } = contextFor();
+
+    const ran = buildRecord(ctx, { state: stateOf({ guardedCandidates: 7 }) }, 'sent', FINISHED);
+    const quiet = buildRecord(ctx, { state: EMPTY_STATE }, 'quiet', FINISHED);
+
+    expect(ran.counts.guardedCandidates).toBe(7);
+    expect(quiet.counts.guardedCandidates).toBe(0);
+  });
+
+  it('leaves guardedCandidates out when the model guards ran before classify (rescoreWithWriter)', () => {
+    const { ctx } = contextFor({ config: { models: { rescoreWithWriter: true } } });
+
+    const record = buildRecord(ctx, { state: EMPTY_STATE }, 'quiet', FINISHED);
+
+    expect(record.counts).not.toHaveProperty('guardedCandidates');
   });
 
   it('leaves afterProcess out until the process step ran', () => {

@@ -43,7 +43,7 @@ folder: 20-45 lines, `## Context` optional.
 
 ```mermaid
 flowchart LR
-  collect --> guardInput --> classify --> process --> write --> guardOutput --> select --> deliver
+  collect --> guardInput --> classify --> process --> guardCandidates --> write --> guardOutput --> select --> deliver
 ```
 
 ## Cut

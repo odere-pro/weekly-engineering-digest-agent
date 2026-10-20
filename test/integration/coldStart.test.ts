@@ -82,15 +82,16 @@ describe('integration: a model that loads on its first call', () => {
     });
   });
 
-  it('burns a timeout and a retry on the same load without the allowance (the old behaviour)', async () => {
+  it('loses the writer to its timeout on a slow load without the allowance: a write is not retried', async () => {
     const { provider, ollama, lines } = setup(LOAD_MS, 0);
 
     const pending = provider.generate(ask(FIRST_WRITER));
+    const failed = expect(pending).rejects.toThrow(/timed out after/);
     await vi.advanceTimersByTimeAsync(WRITE_TIMEOUT_MS + 1_000);
-    await pending;
+    await failed;
 
-    expect(chats(ollama).map((call) => call.nth)).toEqual([1, 2]);
-    expect(lines.some((line) => line.message === 'ollama call failed, retrying')).toBe(true);
+    expect(chats(ollama).map((call) => call.nth)).toEqual([1]);
+    expect(lines.some((line) => line.message === 'ollama call failed, retrying')).toBe(false);
   });
 
   it('asks again with the plain timeout once the model is loaded', async () => {
@@ -132,11 +133,12 @@ describe('integration: a model that loads on its first call', () => {
 
     await vi.advanceTimersByTimeAsync(WRITE_TIMEOUT_MS + COLD_START_MS - 1);
     expect(chats(ollama)[0]?.signal.aborted).toBe(false);
+    const failed = expect(pending).rejects.toThrow(/timed out after/);
     await vi.advanceTimersByTimeAsync(1);
     expect(chats(ollama)[0]?.signal.aborted).toBe(true);
     await vi.advanceTimersByTimeAsync(1_000);
-    await pending;
+    await failed;
 
-    expect(chats(ollama).map((call) => call.nth)).toEqual([1, 2]);
+    expect(chats(ollama).map((call) => call.nth)).toEqual([1]);
   });
 });

@@ -10,7 +10,7 @@
 flowchart TD
   co["callOllama"]:::focus --> attempt["withTimeout(spec.send, timeoutMs, spec.signal)"]
   attempt -->|ok| parse["parse(raw)"] --> info["log 'ollama call': attempts, tokens"] --> result["value and latencyMs"]
-  attempt -->|error| retry{"isRetryable, caller not aborted, tries left?"}
+  attempt -->|error| retry{"isRetryable, not a write timeout, caller not aborted, tries left?"}
   retry -->|yes| wait["warn 'retrying', sleep 1 s doubling to 10 s"] --> attempt
   retry -->|no| aborted{"caller aborted?"}
   aborted -->|yes| pass["warn 'aborted', rethrow the error as it is"]
@@ -21,8 +21,8 @@ flowchart TD
 ## Rules
 
 - The timeout is per attempt and per role: `options.timeoutsMs[role]`, else `DEFAULT_TIMEOUTS_MS`
-  (classify and guardPolicy 60 s, guardRisk and judge 120 s, write 600 s). A timeout is retried, so
-  a `write` call can take 3 x 600 s.
+  (classify and guardPolicy 60 s, guardRisk and judge 120 s, write 600 s). A timeout is retried,
+  except for `write` (`repeatsSameWork`): its seed is fixed, so a retry repeats the same work.
 - A cold call gets more time. `loads` (`loadTracker.ts`) remembers the model the server answered
   last; a call to any other model (the first call of the run, or after a model swap) adds
   `options.coldStartMs` (`DEFAULT_COLD_START_MS`, 5 min; 0 turns it off) to every attempt's

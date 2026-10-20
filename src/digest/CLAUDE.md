@@ -11,7 +11,7 @@ flowchart LR
   cliRun["cli run"] & sched["scheduler (cli serve)"] & evals["evals (cli eval)"] -->|"DigestDeps, RunOptions"| runDigest:::focus
   runDigest --> collect["collect (sources/)"] -->|"Item[]"| guardInput["guardInput (guards/)"]
   guardInput -->|"Item[]"| classify["classify (classify/)"] -->|"ScoredItem[]"| process["process (process/)"]
-  process -->|"ScoredItem[]"| write["write (write/)"] -->|"CodeChecked[]"| guardOutput["guardOutput (guards/)"]
+  process -->|"picks"| guardCandidates["guardCandidates (guards/)"] -->|"ScoredItem[]"| write["write (write/)"] -->|"CodeChecked[]"| guardOutput["guardOutput (guards/)"]
   guardOutput -->|"CheckedDraft[]"| select["select (select/)"] -->|"CheckedDraft"| deliver["deliver (this folder)"]
   runDigest -.->|"lock, record, files, prune"| store[[RunStore]]
   runDigest -.->|"health()"| mp[[ModelProvider]]
@@ -31,7 +31,7 @@ flowchart TD
   part -->|yes| resume["resumeDelivery: saved digest.md to missing channels, no health check or model call"]
   part -->|"no: lastDelivered (no --since) widens collect"| chain["runChain: signal check, assertModelsReady (Ollama up, models pulled), stages"]
   chain -->|"a stage threw (collect: every source failed): failed, exit 1"| endRun
-  chain -->|"no items, or under 3 after process: quiet, exit 3"| endRun
+  chain -->|"no items, or under 3 after process or guardCandidates: quiet, exit 3"| endRun
   chain -->|"a draft won: sent, or dry-run, exit 0"| endRun
   chain -->|"every draft rejected"| fb{"fallback on and passes its checks?"}
   fb -->|"no: blocked, exit 2"| endRun
@@ -40,7 +40,7 @@ flowchart TD
   endRun["finish, endRun: record, files, note, prune; then release the lock"]
 ```
 
-- Quiet after `collect` (sources answered, no items) alerts every channel; after `process` (under
+- Quiet after `collect` (no items) alerts every channel; after `process` or `guardCandidates` (under
   `DIGEST_MIN_ITEMS`, 3) it sends no note. All sources failing is `failed`. `runDigest` throws, not
   returns, for a bad week id, a window under 1 day or not whole, a held lock, `RecordNotSavedError`.
 - A stage function in `stages/` takes the name of its stage, except `process` (`processItems`) and

@@ -25,15 +25,15 @@ digest never goes out with a hidden gap.
 
 1. Pick the switch. All default to `true`.
 
-   | Key                                        | Check                 | What it looks at                             |
-   | ------------------------------------------ | --------------------- | -------------------------------------------- |
-   | `guards.input.enabled`                     | all input checks      | Each collected item, before other models     |
-   | `guards.input.checks.ruleInjection`        | `ruleInjection`       | Fixed injection rules, no model call         |
-   | `guards.input.checks.clefPolicy`           | `clefPolicy`          | Is the item aimed at an AI system or harmful |
-   | `guards.input.checks.graniteRisk`          | `graniteRisk`         | Jailbreak and harm, by Granite Guardian      |
-   | `guards.output.enabled`                    | both output checks    | Each draft                                   |
-   | `guards.output.checks.graniteGroundedness` | `graniteGroundedness` | Claims not backed by the cited sources       |
-   | `guards.output.checks.clefRubric`          | `clefRubric`          | Off-task, hype or harmful drafts             |
+   | Key                                        | Check                 | What it looks at                                                              |
+   | ------------------------------------------ | --------------------- | ----------------------------------------------------------------------------- |
+   | `guards.input.enabled`                     | all input checks      | Every collected item (rule guard), then the picks of `process` (model guards) |
+   | `guards.input.checks.ruleInjection`        | `ruleInjection`       | Fixed injection rules, no model call                                          |
+   | `guards.input.checks.clefPolicy`           | `clefPolicy`          | Is the item aimed at an AI system or harmful                                  |
+   | `guards.input.checks.graniteRisk`          | `graniteRisk`         | Jailbreak and harm, by Granite Guardian                                       |
+   | `guards.output.enabled`                    | both output checks    | Each draft                                                                    |
+   | `guards.output.checks.graniteGroundedness` | `graniteGroundedness` | Claims not backed by the cited sources                                        |
+   | `guards.output.checks.clefRubric`          | `clefRubric`          | Off-task, hype or harmful drafts                                              |
 
    The link check and the format check have no switch. They always run. Turning off
    `ruleInjection` frees no model, because it makes no model call; do it only if it drops real

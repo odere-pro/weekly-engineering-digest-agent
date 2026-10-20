@@ -44,6 +44,25 @@ describe('summary', () => {
     );
   });
 
+  it('names the rule guard, and what the model guards checked, for a run that guarded candidates', () => {
+    const record = makeRunRecord({
+      counts: {
+        collected: 147,
+        afterGuardInput: 147,
+        classified: 147,
+        afterProcess: 58,
+        selected: 5,
+        guardedCandidates: 5,
+        digestItems: 5,
+      },
+    });
+
+    expect(summary(record).split('\n')).toContain(
+      'Items:      147 collected, 147 after the rule guard, 147 classified, 5 selected ' +
+        '(model guards checked 5), 5 in the digest',
+    );
+  });
+
   it('marks a dry run', () => {
     expect(summary(makeRunRecord({ dryRun: true })).split('\n')[0]).toBe(
       'Week 2026-W42: sent (dry run)',

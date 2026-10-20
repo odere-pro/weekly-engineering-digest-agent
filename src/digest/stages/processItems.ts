@@ -1,8 +1,8 @@
 import { DIGEST_MIN_ITEMS } from '../../checks/formatCheck';
-import { processStep } from '../../process/process';
 import type { Logger } from '../../shared/telemetry';
 import type { RunContext } from '../chain/runContext';
 import type { ChainState } from '../chain/state';
+import { processorFor } from './processWith';
 
 /**
  * Filters by the thresholds, drops what earlier weeks sent, ranks and cuts to the top N. Fewer
@@ -13,14 +13,8 @@ export async function processItems(
   state: ChainState,
   logger: Logger,
 ): Promise<ChainState> {
-  const { config, store } = ctx.deps;
-  const sentUrls = await store.sentUrls(ctx.weekId, config.dedupeWeeks);
-  const { selected, dropped } = processStep({
-    items: state.scored,
-    sentUrls,
-    thresholds: config.thresholds,
-    topN: config.topN,
-  });
+  const process = await processorFor(ctx);
+  const { selected, dropped } = process(state.scored);
   logger.info('Selected items', { selected: selected.length, dropped: dropped.length });
   const cut = dropped.filter((item) => item.reason === 'below-top-n').length;
   const next = { ...state, selected, afterProcess: selected.length + cut };

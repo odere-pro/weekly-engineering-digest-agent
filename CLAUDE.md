@@ -1,7 +1,8 @@
 # Engineering Digest Agent
 
 Local-first CLI agent: collects allowlisted RSS/Atom feeds and GitHub releases, then runs
-guard-input → classify → process → write (writer panel) → guard-output → select → deliver,
+guard-input (rule guard) → classify → process → guard-candidates (model guards) → write (writer
+panel) → guard-output → select → deliver,
 all on Ollama. Output: a weekly Markdown digest of the 3-5 releases that matter, in `dist/`.
 Full spec (private, main checkout only): `docs/plan/spec.md`.
 

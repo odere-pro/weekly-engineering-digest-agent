@@ -22,7 +22,8 @@ calls to Ollama are configurable.
 ## Steps
 
 1. Know the keys. A timeout is per attempt, so one call can take up to
-   `(retries + 1) x timeout` plus the waits between attempts.
+   `(retries + 1) x timeout` plus the waits between attempts. A `write` call that times out is
+   not tried again (its fixed seed would repeat the same work), so it takes at most one timeout.
 
    | Key                        | Rule                       | Default                                                                         |
    | -------------------------- | -------------------------- | ------------------------------------------------------------------------------- |

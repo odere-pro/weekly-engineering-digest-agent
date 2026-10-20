@@ -58,6 +58,10 @@ flowchart TD
 - The area hint comes from config and sits outside the untrusted block. `tagText` flattens it to
   one line so it cannot add instructions. A blank hint means no hint.
 - `rescoreWithWriter` without `minRelevance` throws before any model call.
+- Classify reads items only the rule guard checked (PERF-2): the model input guards check the picks
+  after `process`. That is safe because a decide call reads one item and answers fixed choices; it
+  writes no text. The writer rescore does write, so with it on the model guards run first
+  (`digest/stages/modelGuardsFirst.ts`).
 - `areaOptions` removes duplicate focus areas and adds `other`, unless one already has that name.
 - Subfolders take `ClassifierDeps` and never import `classify.ts`; `ClassifyDeps` adds the entry options.
 

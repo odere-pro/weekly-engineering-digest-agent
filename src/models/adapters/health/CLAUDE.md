@@ -15,7 +15,7 @@ flowchart TD
   vok -->|yes| tok{"tags answered?"}
   tags --> tok
   tok -->|no| part["reachable true, version, no models, error text"]
-  tok -->|yes| full["reachable true, version, models with capabilities"]
+  tok -->|yes| full["reachable true, version, models with capabilities and digest"]
   classDef focus stroke-width:3px
 ```
 
@@ -27,6 +27,8 @@ flowchart TD
 - The error text names the cause: a refused connection gets the "Start the Ollama app" message,
   a timeout says it did not answer within 5000 ms, anything else keeps its own message.
 - A model without `capabilities` gets `[]`. `cli/doctor` checks for `decision` in it.
+- `digest` is the content hash `/api/tags` lists, left out when it lists none. `app/answerCache`
+  keys saved answers on it, so a new pull of a tag never reuses an old answer.
 
 ## Files
 

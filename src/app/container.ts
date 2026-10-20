@@ -26,6 +26,7 @@ import { createTracer } from '../observability/tracing';
 import { systemClock } from '../shared/clock';
 import { DigestError, errorMessage } from '../shared/errors';
 import type { LogFields, Logger, Tracer } from '../shared/telemetry';
+import { withAnswerCache } from './answerCache/withAnswerCache';
 import { redactDelivery, redactStore } from './redacting';
 import { knownSecrets } from './redaction/knownSecrets';
 import { withDeliveryRetry } from './retryingDelivery';
@@ -37,14 +38,19 @@ export interface AppHandle {
   close(): Promise<void>;
 }
 
+export interface AppOptions {
+  /** Reuse a week's saved model answers (`answerCache/`); default true. The eval turns it off. */
+  reuseAnswers?: boolean;
+}
+
 /**
  * Builds DigestDeps from the loaded config (W2-02). Rejects with a DigestError naming the
  * variable when a configured channel lacks its secret; nothing is started before that check.
  */
-export function buildApp(loaded: LoadedConfig): Promise<AppHandle> {
+export function buildApp(loaded: LoadedConfig, options: AppOptions = {}): Promise<AppHandle> {
   // A throw inside the executor rejects the promise, so callers always get a rejection.
   return new Promise((resolve) => {
-    resolve(assemble(loaded));
+    resolve(assemble(loaded, options));
   });
 }
 
@@ -97,7 +103,7 @@ function samplingOf(
   return { seed: models.seed, temperatureByRole };
 }
 
-function assemble(loaded: LoadedConfig): AppHandle {
+function assemble(loaded: LoadedConfig, options: AppOptions): AppHandle {
   const { config, env, secrets, profile } = loaded;
   const channels = buildDeliveries(config, secrets);
   const redactValues = knownSecrets(secrets, env.OLLAMA_URL);
@@ -120,7 +126,15 @@ function assemble(loaded: LoadedConfig): AppHandle {
     logger: runLogger,
   });
   const tracing = deferTracer();
-  const model = traceModel(createModelProvider(loaded, { logger: runLogger }), tracing.tracer);
+  const model = traceModel(
+    withAnswerCache(createModelProvider(loaded, { logger: runLogger }), loaded, {
+      enabled: options.reuseAnswers !== false,
+      week: () => runs.getStore()?.runId,
+      redactor,
+      logger: runLogger,
+    }),
+    tracing.tracer,
+  );
   const decision = {
     model,
     flagThreshold: config.thresholds.guardFlag,

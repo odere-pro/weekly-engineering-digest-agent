@@ -304,6 +304,19 @@ describe('evalCommand', () => {
     ]);
   });
 
+  it('builds the app without the answer cache: replays measure the models and write nothing', async () => {
+    const h = harness();
+    h.buildApp.mockResolvedValue({ deps: {} as DigestDeps, close: () => Promise.resolve() });
+    h.runEval.mockImplementation(async (options, deps) => {
+      await deps.buildApp(options.profile);
+      return makeScorecard(options.profile);
+    });
+
+    await evalCommand({}, h.io);
+
+    expect(h.buildApp.mock.calls.map(([, options]) => options)).toEqual([{ reuseAnswers: false }]);
+  });
+
   describe('host platform from the environment', () => {
     /** The profile each `--profile all` run was built with, as the loader would hand it to buildApp. */
     async function builtProfiles(h: Harness): Promise<LoadedConfig['profile'][]> {

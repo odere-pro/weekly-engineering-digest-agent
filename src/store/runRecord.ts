@@ -39,6 +39,8 @@ export const RunRecordSchema = z.object({
     /** Items left after the process step. Absent in older records. */
     afterProcess: z.number().int().min(0).optional(),
     selected: z.number().int().min(0),
+    /** Items the model input guards checked after process (PERF-2). Absent in older records. */
+    guardedCandidates: z.number().int().min(0).optional(),
     digestItems: z.number().int().min(0),
   }),
   failedSources: z.array(z.object({ sourceId: z.string(), error: z.string() })),

@@ -87,6 +87,7 @@ describe('integration: a run aborted while the first writer is drafting', () => 
         'guardInput',
         'classify',
         'process',
+        'guardCandidates',
         'write',
       ]);
       expect(record.drafts).toEqual([]);

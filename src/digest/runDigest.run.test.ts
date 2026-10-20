@@ -192,6 +192,7 @@ describe('runDigest: counts.afterProcess (F35)', () => {
       classified: 5,
       afterProcess: 5,
       selected: 3,
+      guardedCandidates: 3,
       digestItems: 3,
     });
     expectValidRecord(result.record);

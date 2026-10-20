@@ -4,6 +4,24 @@ import type { RunRecord } from '../../../store/runRecord';
 
 const MAX_ERROR_CHARS = 200;
 
+type Counts = RunRecord['counts'];
+
+/**
+ * What the input guards kept. A record with `guardedCandidates` ran the model guards after
+ * `process`, so `afterGuardInput` counts what the rule guard kept.
+ */
+function guardedItems(counts: Counts): string {
+  const after = counts.guardedCandidates === undefined ? 'after guards' : 'after the rule guard';
+  return `${String(counts.afterGuardInput)} ${after}`;
+}
+
+function selectedItems(counts: Counts): string {
+  const selected = `${String(counts.selected)} selected`;
+  return counts.guardedCandidates === undefined
+    ? selected
+    : `${selected} (model guards checked ${String(counts.guardedCandidates)})`;
+}
+
 /** The default `digest show` text: one line per fact of the run, problems last. */
 export function summary(record: RunRecord): string {
   const { counts } = record;
@@ -11,8 +29,8 @@ export function summary(record: RunRecord): string {
     `Week ${record.runId}: ${record.status}${record.dryRun ? ' (dry run)' : ''}`,
     `Profile:    ${record.profile}`,
     `Started:    ${record.startedAt} (${formatRunDuration(record)})`,
-    `Items:      ${String(counts.collected)} collected, ${String(counts.afterGuardInput)} after guards, ` +
-      `${String(counts.classified)} classified, ${String(counts.selected)} selected, ` +
+    `Items:      ${String(counts.collected)} collected, ${guardedItems(counts)}, ` +
+      `${String(counts.classified)} classified, ${selectedItems(counts)}, ` +
       `${String(counts.digestItems)} in the digest`,
     `Winner:     ${record.winner ?? 'none'}`,
     `Delivered:  ${record.deliveredTo?.join(', ') ?? 'none'}`,

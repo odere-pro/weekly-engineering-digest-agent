@@ -5,7 +5,10 @@ export interface GuardCallOptions {
   signal?: AbortSignal;
 }
 
-/** Checks one collected item before any other model sees it. */
+/**
+ * Checks one collected item. The rule guard checks every item before any model sees it; the
+ * model guards check the items `process` picked, before any model that writes text sees them.
+ */
 export interface InputGuard {
   readonly id: GuardCheckId;
   checkItem(item: Item, options?: GuardCallOptions): Promise<GuardVerdict>;

@@ -32,15 +32,15 @@ signs.
 
 ## Failure causes, by step
 
-| Message or step                                            | Cause                                                           | Runbook                                                                         |
-| ---------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `Ollama is not reachable`, `missing models`                | Ollama is down, `OLLAMA_URL` is wrong, or a model is not pulled | [Failed run](../runbooks/debug/failed-run.md)                                   |
-| `guardInput`, `classify`, `write`, `guardOutput`, `select` | A model call failed after its retries (timeout, memory)         | [Slow model or out of memory](../runbooks/debug/slow-model-or-out-of-memory.md) |
-| `deliver`                                                  | At least one channel failed                                     | [Failed delivery](../runbooks/debug/failed-delivery.md)                         |
-| `Another run is in progress`                               | The lock is held                                                | [Stuck lock](../runbooks/debug/stuck-lock.md)                                   |
-| `Run aborted before the <step> step`                       | `serve` hit its 3 hour limit or got a second stop signal        | [Scheduler](scheduler.md)                                                       |
-| Invalid config or `Invalid --since`                        | A field is wrong; the message names it                          | [Config file](../configuration/config-file.md)                                  |
-| `Could not save the run record`                            | `dist/` is not writable or the disk is full                     | [Prune disk](../runbooks/maintain/prune-disk.md)                                |
+| Message or step                                                               | Cause                                                           | Runbook                                                                         |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `Ollama is not reachable`, `missing models`                                   | Ollama is down, `OLLAMA_URL` is wrong, or a model is not pulled | [Failed run](../runbooks/debug/failed-run.md)                                   |
+| `guardInput`, `classify`, `guardCandidates`, `write`, `guardOutput`, `select` | A model call failed after its retries (timeout, memory)         | [Slow model or out of memory](../runbooks/debug/slow-model-or-out-of-memory.md) |
+| `deliver`                                                                     | At least one channel failed                                     | [Failed delivery](../runbooks/debug/failed-delivery.md)                         |
+| `Another run is in progress`                                                  | The lock is held                                                | [Stuck lock](../runbooks/debug/stuck-lock.md)                                   |
+| `Run aborted before the <step> step`                                          | `serve` hit its 3 hour limit or got a second stop signal        | [Scheduler](scheduler.md)                                                       |
+| Invalid config or `Invalid --since`                                           | A field is wrong; the message names it                          | [Config file](../configuration/config-file.md)                                  |
+| `Could not save the run record`                                               | `dist/` is not writable or the disk is full                     | [Prune disk](../runbooks/maintain/prune-disk.md)                                |
 
 ## Check ids on a blocked or fallback run
 

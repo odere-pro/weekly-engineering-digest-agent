@@ -4,13 +4,17 @@ import type { InputGuard } from './Guard';
 import type { GuardsConfig } from '../config/schema';
 import type { Clock } from '../shared/clock';
 import type { Logger } from '../shared/telemetry';
-import { applyGuards, flaggedBy, passProgress, planGuards } from './guardRun';
-
-const ALWAYS_BLOCKING: GuardCheckId = 'ruleInjection';
+import { applyGuards, flaggedBy, passProgress } from './guardRun';
+import { checkWith, planInputGuards } from './inputGuardPlan';
 
 export interface GuardInputDeps {
   /** All available input guards; config decides which run. */
   guards: readonly InputGuard[];
+  /**
+   * Whether the model guards run here too. false: only the rule guard runs, and the model guards
+   * check the ranked candidates after `process` (`guardCandidatesStep`). true when absent.
+   */
+  modelGuards?: boolean;
   config: GuardsConfig['input'];
   logger: Logger;
   /** Times the `Progress` lines; the system clock when absent. */
@@ -31,19 +35,17 @@ export interface GuardInputOutput {
   disabledChecks: GuardCheckId[];
 }
 
-/** Runs the input guards on every item (W1-06). */
+/** Runs the input guards on every item (W1-06); with `modelGuards: false`, the rule guard only. */
 export async function guardInputStep(
   items: readonly Item[],
   deps: GuardInputDeps,
 ): Promise<GuardInputOutput> {
-  const { active, disabledChecks } = planGuards(deps.config, deps.guards, deps.logger);
+  const planned = planInputGuards(deps);
+  const { disabledChecks } = planned;
   // The rule guard is deterministic, so a hit always blocks, also in mode `all`.
-  const toCheck = (guard: InputGuard) => (item: Item) => {
-    deps.signal?.throwIfAborted();
-    return guard.checkItem(item, { signal: deps.signal });
-  };
-  const blocking = active.filter((guard) => guard.id === ALWAYS_BLOCKING).map(toCheck);
-  const modelGuards = active.filter((guard) => guard.id !== ALWAYS_BLOCKING);
+  const toCheck = (guard: InputGuard) => checkWith(guard, deps.signal);
+  const blocking = planned.blocking.map(toCheck);
+  const modelGuards = deps.modelGuards === false ? [] : planned.models;
   const { kept, dropped } = await applyGuards(
     items,
     modelGuards.map(toCheck),

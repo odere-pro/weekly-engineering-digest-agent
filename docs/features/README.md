@@ -17,23 +17,25 @@ See
 
 ## The pipeline, in run order
 
-The `digest` feature chains these steps. The order is collect, guardInput, classify, process, write,
-guardOutput, select, deliver. The checks run inside the write step, and render turns the winner into
-text for every channel. How data moves between them is in [data flow](../architecture/data-flow.md).
+The `digest` feature chains these steps. The order is collect, guardInput, classify, process,
+guardCandidates, write, guardOutput, select, deliver. The checks run inside the write step, and
+render turns the winner into text for every channel. How data moves between them is in
+[data flow](../architecture/data-flow.md).
 
-| Feature              | What it does                                                               | Folder                               | Page                    |
-| -------------------- | -------------------------------------------------------------------------- | ------------------------------------ | ----------------------- |
-| Digest (the run)     | Chains all steps, decides how the week ends, saves the record              | [src/digest/](../../src/digest/)     | [digest](digest.md)     |
-| Sources (collect)    | Fetches the allowlisted feeds and turns entries into items                 | [src/sources/](../../src/sources/)   | [sources](sources.md)   |
-| Guards (guardInput)  | Drops collected items that look like attacks                               | [src/guards/](../../src/guards/)     | [guards](guards.md)     |
-| Classify             | Scores each item: relevance, area, hype, minor release                     | [src/classify/](../../src/classify/) | [classify](classify.md) |
-| Process              | Drops sent, duplicate and weak items, picks the top N                      | [src/process/](../../src/process/)   | [process](process.md)   |
-| Write                | A panel of writers drafts the digest; one retry; a fallback draft          | [src/write/](../../src/write/)       | [write](write.md)       |
-| Checks               | Link check and format check on every draft, always on                      | [src/checks/](../../src/checks/)     | [checks](checks.md)     |
-| Guards (guardOutput) | Rejects drafts with false claims or off-task text; advises on the fallback | [src/guards/](../../src/guards/)     | [guards](guards.md)     |
-| Select               | A judge picks the best passing draft                                       | [src/select/](../../src/select/)     | [select](select.md)     |
-| Render               | Builds the Markdown, the plain scoring text and the review sheet           | [src/render/](../../src/render/)     | [render](render.md)     |
-| Delivery (deliver)   | Sends the digest to a file, email and Slack                                | [src/delivery/](../../src/delivery/) | [delivery](delivery.md) |
+| Feature                  | What it does                                                                  | Folder                               | Page                    |
+| ------------------------ | ----------------------------------------------------------------------------- | ------------------------------------ | ----------------------- |
+| Digest (the run)         | Chains all steps, decides how the week ends, saves the record                 | [src/digest/](../../src/digest/)     | [digest](digest.md)     |
+| Sources (collect)        | Fetches the allowlisted feeds and turns entries into items                    | [src/sources/](../../src/sources/)   | [sources](sources.md)   |
+| Guards (guardInput)      | The rule guard drops collected items that look like attacks                   | [src/guards/](../../src/guards/)     | [guards](guards.md)     |
+| Classify                 | Scores each item: relevance, area, hype, minor release                        | [src/classify/](../../src/classify/) | [classify](classify.md) |
+| Process                  | Drops sent, duplicate and weak items, picks the top N                         | [src/process/](../../src/process/)   | [process](process.md)   |
+| Guards (guardCandidates) | The model input guards check the picks; a flagged pick makes way for the next | [src/guards/](../../src/guards/)     | [guards](guards.md)     |
+| Write                    | A panel of writers drafts the digest; one retry; a fallback draft             | [src/write/](../../src/write/)       | [write](write.md)       |
+| Checks                   | Link check and format check on every draft, always on                         | [src/checks/](../../src/checks/)     | [checks](checks.md)     |
+| Guards (guardOutput)     | Rejects drafts with false claims or off-task text; advises on the fallback    | [src/guards/](../../src/guards/)     | [guards](guards.md)     |
+| Select                   | A judge picks the best passing draft                                          | [src/select/](../../src/select/)     | [select](select.md)     |
+| Render                   | Builds the Markdown, the plain scoring text and the review sheet              | [src/render/](../../src/render/)     | [render](render.md)     |
+| Delivery (deliver)       | Sends the digest to a file, email and Slack                                   | [src/delivery/](../../src/delivery/) | [delivery](delivery.md) |
 
 ## Supporting features
 

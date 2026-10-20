@@ -29,10 +29,12 @@ It is a supporting layer used by classify, guards, write and select, as shown in
   A call to a model the server has not answered with last gets 5 minutes more per attempt (it may
   have to load first); its log line has `coldStart: true`.
 - Retries: 2 by default (0 to 5 allowed), with backoff from 1 s up to 10 s. Retried: timeouts,
-  network and stream errors and HTTP 5xx. Not retried: 4xx, a bad payload, or a call you aborted.
+  network and stream errors and HTTP 5xx. Not retried: 4xx, a bad payload, a call you aborted, or a
+  `write` call that timed out (its seed is fixed, so a second try would do the same work again).
 - Thinking and sampling: `guardRisk` runs with thinking off by default (Granite otherwise spends
   about a minute per call). Temperature is 0.2 for `write` and 0 for every other role. The seed
-  (default 42) goes with every generate call, so a re-run of a week repeats itself.
+  (default 42) goes with every generate call, so a re-run of a week repeats itself. A re-run also
+  reuses the saved answers of the guards, classify and the judge (see [App](app.md)).
 - A reply cut at the token limit is returned with a warning, and `generateStructured` repairs it.
 - Asking for the `judge` role on a profile with no judge is an error by design.
 - Health: reads Ollama's version and model list and never throws. `digest doctor` and the run's
@@ -49,7 +51,8 @@ It is a supporting layer used by classify, guards, write and select, as shown in
 - `OLLAMA_URL` in `.env`. See [environment](../configuration/environment.md). In Docker it must not
   be `localhost`.
 - `models.rescoreWithWriter` is off by default; on, the classify step re-scores the shortlist with
-  the writer model, in `digest run` and `digest eval`.
+  the writer model, in `digest run` and `digest eval`, and the model input guards then check every
+  item before classify instead of only the picks.
 - All keys: [config keys](../reference/config-keys.md).
 
 ## What can go wrong

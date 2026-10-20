@@ -11,7 +11,7 @@ model call, so the same input always gives the same answer.
 
 ## Where it sits
 
-It is the fourth step, after classify and before write. See
+It is the fourth step, after classify and before guardCandidates. See
 [data flow](../architecture/data-flow.md).
 
 ## What it does
@@ -33,6 +33,9 @@ It is the fourth step, after classify and before write. See
   `below-top-n`.
 - Returning fewer than `topN` items is fine. When fewer than 3 are selected, the digest run ends
   the week as `quiet` (exit 3).
+- Also returns the eligible items the top N cut left out, best first. `guardCandidates` runs this
+  step again without the picks the model input guards flagged, and uses those items to fill its
+  next batch. See [guards](guards.md).
 - Can apply a relevance calibration when it is given one: a fitted map from the classifier's
   relevance to a corrected value, plus a bias per area, applied before the filters and the ranking.
   A real run never gives it one (no config key, no calibration file committed), so this is idle.
@@ -75,7 +78,8 @@ It is the fourth step, after classify and before write. See
 
 ## Related
 
-- Before: [classify](classify.md). After: [write](write.md).
+- Before: [classify](classify.md). After: [guards](guards.md) (guardCandidates), then
+  [write](write.md).
 - [store](store.md) supplies the URLs sent in earlier weeks.
 - [digest](digest.md) turns a short list into a `quiet` week.
 - The threshold sweep that tunes these values lives in [evals](evals.md).

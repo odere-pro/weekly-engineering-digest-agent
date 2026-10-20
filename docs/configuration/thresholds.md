@@ -26,7 +26,7 @@ with the `light` profile. They are not tuned for `quality` or `fast`.
 
 ## What the numbers mean
 
-The classifier answers four questions for every item that passed the input guards:
+The classifier answers four questions for every item the rule guard kept:
 
 | Question       | Answer                                    | Compared with                  |
 | -------------- | ----------------------------------------- | ------------------------------ |

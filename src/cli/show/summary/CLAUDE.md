@@ -22,6 +22,9 @@ flowchart TD
 - `Started:` shows the saved start time and the run's length from `formatRunDuration`, the same
   figure `digest history` prints.
 - A failed source's error is cut at 200 characters (`MAX_ERROR_CHARS`).
+- A record with `counts.guardedCandidates` (0 when the run ended before that step) ran the model
+  guards after `process`: `Items:` says `after the rule guard` and `N selected (model guards checked
+M)`. Older records, and runs with `models.rescoreWithWriter`, say `after guards`.
 - The summary redacts nothing: `show.ts` cleans and redacts the whole text.
 
 ## Files

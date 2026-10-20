@@ -27,11 +27,12 @@ in [data flow](../architecture/data-flow.md).
   It refuses, with a message that mentions `--force`, when `digest.md` is gone or its links differ.
 - Checks that Ollama is reachable and every model in use is pulled, before it collects anything.
   A guard role whose checks are all off does not need its model.
-- Runs collect, guardInput, classify, process, write, guardOutput, select and deliver in order.
-  A dry run stops before deliver. Models run strictly one after another.
+- Runs collect, guardInput, classify, process, guardCandidates, write, guardOutput, select and
+  deliver in order. A dry run stops before deliver. Models run strictly one after another.
 - A step can end the week early. `quiet`: the sources answered but nothing was collected (or some
-  failed and the rest had nothing), or fewer than 3 items are left after process. When every
-  configured source failed, `collect` fails the run instead: that is a broken network, not a quiet
+  failed and the rest had nothing), or fewer than 3 items are left after process or
+  guardCandidates. When every configured source failed, `collect` fails the run instead: that is a
+  broken network, not a quiet
   week, so the week is `failed` and the scheduler retries it. If every draft is rejected by the checks or the output guards, the run builds a
   fallback digest from the selected items' own text (no model) and sends that. Only when the
   fallback itself cannot be built does the week end `blocked`. See [Fallback digest](#fallback-digest).

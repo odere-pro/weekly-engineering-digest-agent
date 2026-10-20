@@ -4,7 +4,7 @@ Part of [Features](README.md).
 
 ## What it is for
 
-The digest can carry only 3 to 5 items, so every item that passed the input guards needs a score.
+The digest can carry only 3 to 5 items, so every item the rule guard kept needs a score.
 This step gives each item four judgements: how relevant it is (0 to 3), which focus area it
 belongs to, how likely it is hype, and how likely it is a minor release. It drops nothing. The
 process step applies the thresholds later.
@@ -25,6 +25,11 @@ It is the third step, after guardInput and before process. See
   - `minorRelease`: the probability that it is a small release with only fixes.
 - Shows the model the item only inside an untrusted-data block, so text in a feed cannot give it
   orders. A source's `area` goes in as a one-line hint outside that block.
+- By default it reads items that only the rule guard has checked: the model input guards run
+  later, on the picks (`guardCandidates`). The classifier is the one model that does this. It
+  reads one item per call, answers only fixed choices and probabilities, and writes no text. A
+  crafted item can at most raise its own score, which makes it a pick, and then the model guards
+  check it. See [safety](../architecture/safety.md#which-models-read-an-unchecked-item).
 - Fails loudly on a bad answer. A missing, wrongly typed or out-of-range answer, or an area that
   is not one of the options, fails the run at step `classify`. It never falls back to a default.
 - Logs a `Progress` line every 25 items or minute (items done, total, time left), so a slow model
@@ -34,7 +39,8 @@ It is the third step, after guardInput and before process. See
 - A "generate" mode for models without decision support exists in the code but does not run in a
   real week. Re-scoring with the writer model runs only when `models.rescoreWithWriter` is `true`
   (off by default), in `digest run` and `digest eval`: the writer model scores the items at or
-  above `thresholds.minRelevance` a second time.
+  above `thresholds.minRelevance` a second time. With it on, the model input guards run in
+  `guardInput` on every item, so the writer model never reads an item they did not check.
 
 ## What you can configure
 
@@ -69,6 +75,6 @@ It is the third step, after guardInput and before process. See
 
 ## Related
 
-- Before: [guards](guards.md). After: [process](process.md).
+- Before: [guards](guards.md) (guardInput). After: [process](process.md).
 - The decision calls run through [models](models.md).
 - Focus areas come from [config](config.md).

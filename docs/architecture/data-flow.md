@@ -6,8 +6,9 @@ A run turns feeds into one digest. Plain async steps run in a fixed order, one a
 Models do the judging. Code does the checking.
 
 ```text
-collect -> guardInput -> classify -> process -> write -> guardOutput -> select -> deliver
- feeds      drop attacks   score items   pick top N   draft panel   drop bad drafts  pick best   channels
+collect -> guardInput -> classify -> process -> guardCandidates -> write -> guardOutput -> select -> deliver
+feeds      rule guard    score       pick       model guards       draft    drop bad       pick      channels
+           every item    items       top N      on the picks       panel    drafts         best
 ```
 
 A step is a plain function `(input, deps) => output` that lives in its own
@@ -19,32 +20,44 @@ one after another.
 
 ## The steps
 
-| Step          | In             | Out                          | Model role                 | Safety net                                                                 |
-| ------------- | -------------- | ---------------------------- | -------------------------- | -------------------------------------------------------------------------- |
-| `collect`     | config sources | items in the window          | none                       | Host rules, size and redirect limits                                       |
-| `guardInput`  | items          | items no guard flagged       | `guardPolicy`, `guardRisk` | `ruleInjection` (no model), `clefPolicy`, `graniteRisk`; unparsable = flag |
-| `classify`    | items          | relevance, area, hype, minor | `classify`                 | Every answer is type-checked                                               |
-| `process`     | scored items   | top N items (3 to 5)         | none                       | Thresholds, dedupe, area spread                                            |
-| `write`       | selected items | one draft per writer         | `write`                    | Provenance, link check, format check, one retry                            |
-| `guardOutput` | drafts         | drafts that passed           | `guardRisk`, `guardPolicy` | `graniteGroundedness`, `clefRubric`; fallback digest if none pass          |
-| `select`      | passing drafts | the winner                   | `judge` (if any)           | First passing draft wins without a judge                                   |
-| `deliver`     | the winner     | files, email, Slack          | none                       | Redaction before every channel                                             |
+| Step              | In             | Out                          | Model role                 | Safety net                                                                              |
+| ----------------- | -------------- | ---------------------------- | -------------------------- | --------------------------------------------------------------------------------------- |
+| `collect`         | config sources | items in the window          | none                       | Host rules, size and redirect limits                                                    |
+| `guardInput`      | items          | items the rule guard kept    | none                       | `ruleInjection` (no model) on every item                                                |
+| `classify`        | items          | relevance, area, hype, minor | `classify`                 | Every answer is type-checked                                                            |
+| `process`         | scored items   | top N items (3 to 5)         | none                       | Thresholds, dedupe, area spread                                                         |
+| `guardCandidates` | top N items    | top N items no guard flagged | `guardPolicy`, `guardRisk` | `clefPolicy`, `graniteRisk` on the picks; a flagged pick is replaced; unparsable = flag |
+| `write`           | selected items | one draft per writer         | `write`                    | Provenance, link check, format check, one retry                                         |
+| `guardOutput`     | drafts         | drafts that passed           | `guardRisk`, `guardPolicy` | `graniteGroundedness`, `clefRubric`; fallback digest if none pass                       |
+| `select`          | passing drafts | the winner                   | `judge` (if any)           | First passing draft wins without a judge                                                |
+| `deliver`         | the winner     | files, email, Slack          | none                       | Redaction before every channel                                                          |
 
 ## What each step does
 
 - **collect.** Fetches every source (4 at a time, 10 s per attempt, 2 retries), keeps items inside
   `windowDays`, caps each source at `maxItemsPerSource` and drops duplicate ids. A failed source is
   listed in `failedSources` and skipped. See [sources](../features/sources.md).
-- **guardInput.** `ruleInjection` reads every item first against fixed rules, with no model call.
-  Then `clefPolicy` and `graniteRisk` make one call per item each. Flagged items are dropped
-  (mode `any`), or only when every guard flags (mode `all`). `clefPolicy` flags above
-  `thresholds.guardFlag`. See [guards](../features/guards.md).
+- **guardInput.** `ruleInjection` reads every item against fixed rules, with no model call. A
+  flagged item is dropped, in either mode. The model guards wait for `guardCandidates`. With
+  `models.rescoreWithWriter` on, `clefPolicy` and `graniteRisk` also run here on every item, as
+  before, and `guardCandidates` does nothing. See [guards](../features/guards.md).
 - **classify.** One `decide` call per item with four questions: relevance (0 to 3), area (one of
-  your `focusAreas` or `other`), hype (yes/no) and minor release (yes/no). It drops nothing.
-  See [classify](../features/classify.md).
+  your `focusAreas` or `other`), hype (yes/no) and minor release (yes/no). It drops nothing. It is
+  the only model that reads an item the model guards have not checked: see
+  [safety](safety.md#which-models-read-an-unchecked-item) and
+  [classify](../features/classify.md).
 - **process.** Code only. Ranks items, then drops them in a fixed order: `sent-before`,
   `duplicate`, `low-relevance`, `hype`, `minor-release`. Keeps the top `topN` with a spread across
   areas. Fewer than 3 items left ends the run `quiet`. See [process](../features/process.md).
+- **guardCandidates.** `clefPolicy`, then `graniteRisk`, check the items `process` picked. Each
+  guard runs over the whole batch before the next starts, in the configured mode (`any` or `all`).
+  A flagged pick is removed, `process` runs again without it, and the items it now picks are
+  checked. After a flag, the batch is topped up to N items with the next-ranked eligible items, so
+  several replacements cost one more batch. This repeats until every pick has passed or no
+  eligible item is left. Fewer than 3 items left ends the run `quiet`, with no note. `clefPolicy`
+  flags above `thresholds.guardFlag`. Running the slow model guards on the picks only, not on
+  every item, is what keeps a large week inside the 3 h run limit: see
+  [cost and hardware](../overview/cost-and-hardware.md). See [guards](../features/guards.md).
 - **write.** Each writer in the panel gets the same prompt and returns a structured digest. The
   step sets every URL from the collected item, so a model can name an item but never choose its
   link. Then the [link check and format check](../features/checks.md) run, and each writer gets
@@ -62,13 +75,13 @@ one after another.
 
 ## How a run can end early
 
-| Where                        | Result    | Why                                                                           |
-| ---------------------------- | --------- | ----------------------------------------------------------------------------- |
-| Before `collect`             | `skipped` | The week already has a sent digest (and no `--force`)                         |
-| Before `collect`             | `failed`  | Ollama unreachable, a model missing, or the lock is held                      |
-| After `collect` or `process` | `quiet`   | Nothing collected, or fewer than 3 items worth sending                        |
-| After `guardOutput`          | `blocked` | Every draft was rejected and the fallback digest failed its own checks (rare) |
-| Any step                     | `failed`  | A step threw, or no writer made a draft                                       |
+| Where                                           | Result    | Why                                                                           |
+| ----------------------------------------------- | --------- | ----------------------------------------------------------------------------- |
+| Before `collect`                                | `skipped` | The week already has a sent digest (and no `--force`)                         |
+| Before `collect`                                | `failed`  | Ollama unreachable, a model missing, or the lock is held                      |
+| After `collect`, `process` or `guardCandidates` | `quiet`   | Nothing collected, or fewer than 3 items worth sending                        |
+| After `guardOutput`                             | `blocked` | Every draft was rejected and the fallback digest failed its own checks (rare) |
+| Any step                                        | `failed`  | A step threw, or no writer made a draft                                       |
 
 The statuses and what each one means are on [run semantics](run-semantics.md).
 

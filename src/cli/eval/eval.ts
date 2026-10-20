@@ -20,6 +20,7 @@ import {
   createAppLogger,
   createModelProvider,
   type AppHandle,
+  type AppOptions,
 } from '../../app/container';
 import { loadConfig, platformOf, type LoadedConfig } from '../../config/load';
 import { resolveProfile, type Platform } from '../../config/profiles';
@@ -55,7 +56,7 @@ export interface EvalCommandIo {
   /** Builds the eval judge's model provider: the container's one place for model providers. */
   createProvider: (loaded: LoadedConfig, extras: { logger: Logger }) => ModelProvider;
   loadConfig: (options: { configPath?: string }) => Promise<LoadedConfig>;
-  buildApp: (loaded: LoadedConfig) => Promise<AppHandle>;
+  buildApp: (loaded: LoadedConfig, options?: AppOptions) => Promise<AppHandle>;
   runDigest: EvalDeps['runDigest'];
   runEval: (options: EvalOptions, deps: EvalDeps) => Promise<SavedScorecard>;
   /** The git commit the code is at; part of what a checkpoint is valid for. */
@@ -180,7 +181,9 @@ async function runProfiles(options: EvalCommandOptions, io: EvalCommandIo): Prom
   const platform = platformOf(loaded);
   const judge = await prepareEvalJudge(loaded, io);
   const deps: EvalDeps = {
-    buildApp: (profile) => io.buildApp(withProfile(loaded, profile, platform)),
+    // No answer cache: replays measure the models and must write nothing into the data folder.
+    buildApp: (profile) =>
+      io.buildApp(withProfile(loaded, profile, platform), { reuseAnswers: false }),
     runDigest: io.runDigest,
     clock: io.clock,
     ...(judge ? { judge } : {}),

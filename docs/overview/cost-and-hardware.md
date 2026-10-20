@@ -7,11 +7,11 @@ that fits the machine.
 
 ## Profiles at a glance
 
-| Profile   | RAM                                                       | Disk for models | Run time per week                                          | Measured |
-| --------- | --------------------------------------------------------- | --------------- | ---------------------------------------------------------- | -------- |
-| `light`   | 16 GB, Apple silicon only                                 | about 20 GB     | about 6 min (340 s on average)                             | yes      |
-| `fast`    | not measured, Apple silicon only                          | about 33 GB     | not measured                                               | no       |
-| `quality` | 32 GB is tight (it swapped), 48 GB or more is an estimate | about 66 GB     | not measured end to end; the input guard alone took 65 min | partly   |
+| Profile   | RAM                                                       | Disk for models | Run time per week                                                                | Measured |
+| --------- | --------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------- | -------- |
+| `light`   | 16 GB, Apple silicon only                                 | about 20 GB     | about 6 min (340 s on average)                                                   | yes      |
+| `fast`    | not measured, Apple silicon only                          | about 33 GB     | not measured                                                                     | no       |
+| `quality` | 32 GB is tight (it swapped), 48 GB or more is an estimate | about 66 GB     | not measured end to end; the input guard alone took 65 min in the old step order | partly   |
 
 Other machines (not Apple silicon) run an untuned fallback set of about 45 GB of models, far more
 than 16 GB of RAM. `digest doctor` says so, and `digest doctor --readiness` prints a verdict per
@@ -24,7 +24,9 @@ Measured numbers and how they were taken are on the [results page](../evaluation
 
 One `pnpm digest run --dry-run` of week 2026-W43 on `quality`, read from the run log
 (`dist/logs/2026-10-19/digest.log` and `2026-10-20/`, the day files of one run, which was still
-going when these numbers were taken).
+going when these numbers were taken). This run used the old step order, in which `guardInput` ran
+the model guards on every item. They now check only the picks: see
+[Since the model guards check only the picks](#since-the-model-guards-check-only-the-picks).
 
 - Machine: Apple M1 Pro, 32 GB of RAM, 8 of 9 GB of swap in use while it ran (reported by the
   maintainer, not in the log). `clef:latest` held 18 to 26 GB resident with a 16k context.
@@ -59,6 +61,21 @@ How to read it:
 
 Until a whole `quality` week is measured, treat `light` as the profile that fits a 32 GB laptop.
 `digest init` says so, and warns when the RAM it sees is 32 GB, not only when it is less.
+
+## Since the model guards check only the picks
+
+On the real 2026-W43 run (`quality`, 147 items) the input guards took 2,732 s and 3,897 s on two
+runs: 147 clef calls with a median of about 15 s, plus 294 Granite calls. They dropped nothing.
+`process` then kept 58 items and picked 5.
+
+So the chain now runs only the rule guard (no model) on every item in `guardInput`. The model
+guards, `clefPolicy` and `graniteRisk`, run in `guardCandidates` on the items `process` picked,
+and on a replacement when they flag one. That is about 5 items, which take about 100 s. By the
+same figures a week of about 500 items (25 sources × 20 items) now fits the 3 h run limit. See
+[guards](../configuration/guards.md#when-the-input-guards-run).
+
+`models.rescoreWithWriter` (off by default) brings the old cost back: with it on, the model guards
+check every item before classify. See [models](../configuration/models.md#modelsrescorewithwriter).
 
 ## Software
 

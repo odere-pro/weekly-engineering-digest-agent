@@ -12,7 +12,7 @@ flowchart LR
   cfg[("digest.config.json, .env")] -.->|"loadConfig"| eval
   eval -->|"EvalOptions, EvalDeps"| harness["evals/runEval"]
   harness -->|"SavedScorecard"| eval
-  eval -.->|"buildApp, once per profile"| app["app/container"]
+  eval -.->|"buildApp per profile, reuseAnswers false"| app["app/container"]
   eval -.->|"the judge: createProvider"| mp[[ModelProvider]] -.-> ollama[(Ollama)]
   eval -->|"printed scorecard, exit code"| term[("terminal")]
   eval -->|"scorecards/*.json"| disk[("evals/scorecards")]

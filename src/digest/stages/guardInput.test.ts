@@ -45,8 +45,22 @@ describe('guardInput', () => {
     );
   });
 
-  it('logs progress per model guard on the run clock: the item the rule guard dropped is not counted', async () => {
-    const h = contextFor({ inputGuards: guards() });
+  it('runs the rule guard only: the model guards wait for the candidates after process', async () => {
+    const [rule, clef, granite] = guards() as [FakeInputGuard, FakeInputGuard, FakeInputGuard];
+    const h = contextFor({ inputGuards: [rule, clef, granite] });
+
+    await guardInput(h.ctx, stateOf({ collected: items }), h.logger);
+
+    expect(rule.calls).toHaveLength(3);
+    expect(clef.calls).toEqual([]);
+    expect(granite.calls).toEqual([]);
+  });
+
+  it('runs the model guards here too with rescoreWithWriter, logging progress on the run clock', async () => {
+    const h = contextFor({
+      inputGuards: guards(),
+      config: { models: { rescoreWithWriter: true } },
+    });
 
     await guardInput(h.ctx, stateOf({ collected: items }), h.logger);
 
@@ -79,10 +93,10 @@ describe('guardInput', () => {
 });
 
 describe('guardInput when the run is told to stop', () => {
-  /** Remembers the options of each call. */
+  /** Remembers the options of each call. The rule guard: the one this stage runs. */
   class SignalGuard implements InputGuard {
     readonly options: (GuardCallOptions | undefined)[] = [];
-    readonly id = 'clefPolicy' as const;
+    readonly id = 'ruleInjection' as const;
     checkItem(_item: Item, options?: GuardCallOptions): Promise<GuardVerdict> {
       this.options.push(options);
       return Promise.resolve({ check: this.id, flagged: false });

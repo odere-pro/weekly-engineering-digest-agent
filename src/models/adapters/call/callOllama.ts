@@ -1,5 +1,5 @@
 import { errorMessage } from '../../../shared/errors';
-import { withRetry, withTimeout } from '../../../shared/retry';
+import { TimeoutError, withRetry, withTimeout } from '../../../shared/retry';
 import type { Usage } from '../../ModelProvider';
 import type { Role } from '../../roles';
 import { isRetryable, toDigestError } from '../ollamaHttp';
@@ -23,6 +23,15 @@ export const DEFAULT_COLD_START_MS = 300_000;
 const DEFAULT_RETRIES = 2;
 const DEFAULT_RETRY_BASE_DELAY_MS = 1_000;
 const RETRY_MAX_DELAY_MS = 10_000;
+
+/**
+ * A writer call that timed out is not sent again. Its seed is fixed, so a retry repeats the same
+ * work and runs as long: on 2026-10-19 a nemotron call ran 600 s, timed out and took 449 s more.
+ * The cold-start allowance already covers the model load. A 5xx or network error is still retried.
+ */
+function repeatsSameWork(role: CallSpec['role'], error: unknown): boolean {
+  return role === 'write' && error instanceof TimeoutError;
+}
 
 /**
  * One model call: per-role timeout per attempt (longer while the model is cold), retries with
@@ -50,7 +59,8 @@ export async function callOllama<T extends { usage: Usage }>(
         retries: options.retries ?? DEFAULT_RETRIES,
         baseDelayMs: options.retryBaseDelayMs ?? DEFAULT_RETRY_BASE_DELAY_MS,
         maxDelayMs: RETRY_MAX_DELAY_MS,
-        shouldRetry: (error) => !spec.signal?.aborted && isRetryable(error),
+        shouldRetry: (error) =>
+          !spec.signal?.aborted && isRetryable(error) && !repeatsSameWork(spec.role, error),
         onRetry: (error, attempt) => {
           log.warn('ollama call failed, retrying', {
             op: spec.op,

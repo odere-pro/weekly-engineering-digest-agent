@@ -188,9 +188,9 @@ describe('runDigest: housekeeping and model use', () => {
 
     const blocks = h.timeline.filter((key, index) => key !== h.timeline[index - 1]);
     expect(blocks).toEqual([
+      'classify',
       'guard:clefPolicy',
       'guard:graniteRisk',
-      'classify',
       `write:${WRITER_A}`,
       `write:${WRITER_B}`,
       'guard:graniteGroundedness',

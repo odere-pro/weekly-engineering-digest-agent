@@ -17,6 +17,8 @@ Four ways to see what the agent did: logs, traces, history and health checks.
 - The input guard, the output guard and `classify` also log a `Progress` line every 25 items or
   minute: `label` (the guard or `classify`), `done`, `total`, `elapsedMs`, `medianMs` and the time
   left (`etaMs`, `eta`). The estimate is the median time per item so far times the items left.
+  The lines labelled `clefPolicy` and `graniteRisk` come from the `guardCandidates` step, which
+  checks the picks after `process` (from `guardInput` when `models.rescoreWithWriter` is on).
 - Secrets are redacted by value before a line is written.
 
 In Docker: `docker compose logs digest`. See [read logs](../runbooks/observe/read-logs.md) and

@@ -1,3 +1,6 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { createGraniteRiskGuard } from '../guards/adapters/granite';
 import { createOllamaProvider } from '../models/adapters/ollama';
@@ -15,7 +18,8 @@ import {
 import { createTracer, type TracingHandle } from '../observability/tracing';
 import { noopLogger, type Tracer } from '../shared/telemetry';
 import { makeConfig } from '../../test/builders';
-import { FakeModelProvider } from '../../test/fakes';
+import { FakeModelProvider, yesNoAnswers } from '../../test/fakes';
+import { weekAnswersFile } from '../store/layout';
 
 // Each factory below still builds the real adapter; the spy only records how it was called.
 const wrapFactories = vi.hoisted(
@@ -132,6 +136,86 @@ describe('buildApp model', () => {
     const { deps } = await buildApp(loadedConfig());
 
     await expect(deps.model.generate(request)).resolves.toMatchObject({ text: 'draft' });
+  });
+
+  it('reuses an answer the week already got, inside a run only, and saves it with the week', async () => {
+    const dataDir = await mkdtemp(join(tmpdir(), 'container-answers-'));
+    const provider = new FakeModelProvider({
+      decide: (asked) => yesNoAnswers(asked, 0.1),
+      generate: () => '<score>no</score>',
+      health: {
+        reachable: true,
+        version: '0.40.5',
+        models: [
+          { name: 'clef:latest', capabilities: ['decision'], digest: 'c1' },
+          { name: 'granite4.1-guardian:8b', capabilities: ['completion'], digest: 'g1' },
+        ],
+      },
+    });
+    vi.mocked(createOllamaProvider).mockReturnValueOnce(provider);
+    const { deps } = await buildApp(loadedConfig({ config: { dataDir } }));
+    const ask = {
+      role: 'classify',
+      state: 'state',
+      questions: { hype: { type: 'yesno', instructions: 'Is it hype?' } },
+    } as const;
+
+    try {
+      await deps.model.health();
+      await deps.model.decide(ask);
+      const granite = { role: 'guardRisk', system: 'Judge harm.', prompt: 'item' } as const;
+      await deps.tracer.span('runDigest', { runId: '2026-W43' }, async () => {
+        await deps.model.decide(ask);
+        await deps.model.decide(ask);
+        await deps.model.generate(granite);
+        await deps.model.generate(granite);
+      });
+
+      expect(provider.decideCalls).toHaveLength(2);
+      expect(provider.generateCalls).toHaveLength(1);
+      const saved = await readFile(weekAnswersFile(dataDir, '2026-W43'), 'utf8');
+      expect(saved).toContain('"op":"decide"');
+      expect(saved).toContain('"text":"<score>no</score>"');
+      expect(saved).not.toContain('Judge harm.');
+    } finally {
+      await rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
+  it('reuses no answer when built with reuseAnswers false, as the eval builds it', async () => {
+    const dataDir = await mkdtemp(join(tmpdir(), 'container-answers-'));
+    const provider = new FakeModelProvider({
+      decide: (asked) => yesNoAnswers(asked, 0.1),
+      health: {
+        reachable: true,
+        version: '0.40.5',
+        models: [{ name: 'clef:latest', capabilities: ['decision'], digest: 'c1' }],
+      },
+    });
+    vi.mocked(createOllamaProvider).mockReturnValueOnce(provider);
+    const { deps } = await buildApp(loadedConfig({ config: { dataDir } }), {
+      reuseAnswers: false,
+    });
+    const ask = {
+      role: 'classify',
+      state: 'state',
+      questions: { hype: { type: 'yesno', instructions: 'Is it hype?' } },
+    } as const;
+
+    try {
+      await deps.model.health();
+      await deps.tracer.span('runDigest', { runId: '2026-W43' }, async () => {
+        await deps.model.decide(ask);
+        await deps.model.decide(ask);
+      });
+
+      expect(provider.decideCalls).toHaveLength(2);
+      await expect(readFile(weekAnswersFile(dataDir, '2026-W43'), 'utf8')).rejects.toThrow(
+        /ENOENT/,
+      );
+    } finally {
+      await rm(dataDir, { recursive: true, force: true });
+    }
   });
 
   it('reports the health of the provider untouched', async () => {

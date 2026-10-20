@@ -282,9 +282,19 @@ describe('processStep top N', () => {
     ]);
   });
 
+  it('hands back the items below the cut, best first, as the very objects it was given', () => {
+    const items = many();
+
+    const out = run(items, { topN: 3 });
+
+    expect(ids(out.belowTopN)).toEqual(['d', 'e']);
+    expect(out.belowTopN[0]).toBe(items[3]);
+    expect(out.selected[0]).toBe(items[0]);
+  });
+
   it('allows fewer than topN, and an empty result', () => {
     expect(run([scored('only')], { topN: 5 }).selected).toHaveLength(1);
-    expect(run([], { topN: 5 })).toEqual({ selected: [], dropped: [] });
+    expect(run([], { topN: 5 })).toEqual({ selected: [], dropped: [], belowTopN: [] });
   });
 
   it('selects nothing when topN is 0', () => {

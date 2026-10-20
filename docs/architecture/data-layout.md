@@ -12,7 +12,7 @@ dist/                                     dataDir (default "dist")
   <monday>/digest/                        a week's run, for example 2026-10-19/digest/ for 2026-W43
     run.json                              status, timings, models, counts, failed sources, drafts, deliveredTo
     items.json                            collected items
-    scores.json                           classifications of the items that passed the input guards
+    scores.json                           classifications of the items guardInput kept
     drafts.json                           drafts, failed writers, rejections with problems
     digest.md                             the winning digest (kept after pruning)
     review.md                             tick sheet for `digest feedback`

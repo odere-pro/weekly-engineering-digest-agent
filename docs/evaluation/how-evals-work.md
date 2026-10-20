@@ -46,6 +46,10 @@ evals/scoring/: 18 measurements -> gates (evals/metrics.ts) -> scorecard
    and `graniteRisk` on input; `graniteGroundedness` and `clefRubric` on output) and `topN` is 5. Focus areas, thresholds
    and models come from your config and profile. The template fallback digest is off (`noFallback`),
    so a week where every draft is rejected stays `blocked` and shows up as a week with no digest.
+   A run shows the model input guards only the items `process` picked. So after each replay,
+   `sweepInputGuards` asks them about every other collected item, in the configured mode, and
+   [guard false blocks](metrics/guard-false-blocks.md) still covers every item of a week. The
+   sweep runs after the replay's timing, so [run time](metrics/run-time.md) does not include it.
 4. **Repeat for stability.** Every week runs three times in total. The gate uses the first week's
    overlap. The 18 replays also feed [guard blocks on real weeks](metrics/guard-real-blocks.md).
    See [stability](sets/stability.md).

@@ -37,6 +37,7 @@ export const ALL_STEPS = [
   'guardInput',
   'classify',
   'process',
+  'guardCandidates',
   'write',
   'guardOutput',
   'select',

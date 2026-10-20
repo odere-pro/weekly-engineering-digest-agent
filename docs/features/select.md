@@ -11,7 +11,7 @@ still goes on with a fixed, predictable choice.
 
 ## Where it sits
 
-It is the seventh step, after guardOutput and before deliver. See
+It is the eighth step, after guardOutput and before deliver. See
 [data flow](../architecture/data-flow.md).
 
 ## What it does

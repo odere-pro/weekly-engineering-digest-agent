@@ -12,7 +12,8 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
 - `pnpm digest history` shows `quiet`, `digest run` exited 3, or a note said
   `no items collected`.
 - A week is quiet when nothing was collected, or when fewer than 3 items are left after the
-  `process` step. Often that is a valid result. Check it only when it repeats.
+  `process` step or after the model input guards (`guardCandidates`). Often that is a valid
+  result. Check it only when it repeats.
 - A week where every source failed is not quiet: it ends `failed` at `collect` with
   `every source failed (24 of 24 sources)`, and the scheduler retries it. Go to
   [Failing feed](failing-feed.md).
@@ -33,20 +34,24 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
    ```
 
    ```text
-   Items:      3 collected, 3 after guards, 3 classified, 1 selected, 0 in the digest
+   Items:      3 collected, 3 after the rule guard, 3 classified, 1 selected (model guards checked 0), 0 in the digest
    ```
 
    The same numbers are `counts` in `dist/<monday>/digest/run.json`: `collected`,
-   `afterGuardInput`, `classified`, `afterProcess`, `selected`, `digestItems`.
+   `afterGuardInput`, `classified`, `afterProcess`, `selected`, `guardedCandidates`,
+   `digestItems`. This week ended at `process`, before the model input guards ran, so
+   `guardedCandidates` is 0. Older records, and runs with `models.rescoreWithWriter` on, have no
+   `guardedCandidates` and read `after guards`.
 
 2. Find the first count that falls.
 
-   | Where the count falls            | Meaning                                         | Next                                 |
-   | -------------------------------- | ----------------------------------------------- | ------------------------------------ |
-   | `collected` is 0                 | Feeds empty in the window, or some feeds failed | Read `Source failed:` lines; step 5  |
-   | `after guards` below `collected` | Input guards dropped items                      | `show --part scores`; guard settings |
-   | `selected` below `classified`    | `process` dropped items (step 3)                | Step 3                               |
-   | `selected` is 1 or 2             | Fewer than 3 survived, so the week is quiet     | Step 4                               |
+   | Where the count falls                                      | Meaning                                                                                             | Next                                                 |
+   | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+   | `collected` is 0                                           | Feeds empty in the window, or some feeds failed                                                     | Read `Source failed:` lines; step 5                  |
+   | `after the rule guard` or `after guards` below `collected` | The rule guard dropped items (in older records or with `models.rescoreWithWriter`, any input guard) | `show --part scores`; guard settings                 |
+   | `selected` below `classified`                              | `process` dropped items (step 3)                                                                    | Step 3                                               |
+   | `selected` is 1 or 2                                       | Fewer than 3 survived, so the week is quiet                                                         | Step 4                                               |
+   | `selected` below 3, with `model guards checked`            | The model input guards flagged picks and too few eligible items were left                           | The `Candidate guards done` log line; guard settings |
 
    When nothing was collected, a failure note is sent, although the status is `quiet`. A quiet
    week with items collected sends no note.
@@ -114,12 +119,12 @@ key you changed.
 
 ## Troubleshooting
 
-| Symptom                                    | Cause                               | Fix                                                       |
-| ------------------------------------------ | ----------------------------------- | --------------------------------------------------------- |
-| `collected` 0 and no `Source failed:` line | The window held no entries          | Step 4, or raise `windowDays`                             |
-| `classified` far below `collected`         | The input guards flagged many items | [Guard settings](../../configuration/guards.md); `doctor` |
-| Quiet every week, no note                  | Items are collected, then filtered  | Step 3                                                    |
-| The dry run wrote `<week>.md`              | It found 3 or more items            | Run for real                                              |
+| Symptom                                    | Cause                              | Fix                                                       |
+| ------------------------------------------ | ---------------------------------- | --------------------------------------------------------- |
+| `collected` 0 and no `Source failed:` line | The window held no entries         | Step 4, or raise `windowDays`                             |
+| `classified` far below `collected`         | The rule guard flagged many items  | [Guard settings](../../configuration/guards.md); `doctor` |
+| Quiet every week, no note                  | Items are collected, then filtered | Step 3                                                    |
+| The dry run wrote `<week>.md`              | It found 3 or more items           | Run for real                                              |
 
 ## Related
 

@@ -28,8 +28,10 @@ flowchart TD
   goes through `recordError`: message and step, never the stack.
 - `markdown` is returned only for a file this run wrote: with `holdArtifacts` on, only when
   `digest.md` was among the held files `endRun` wrote. `message` does not depend on that.
-- `afterProcess` is left out until the process stage ran; `fallback`, `deliveredTo` and `error`
-  appear only when set. The lists are copies of the state's.
+- `afterProcess` is left out until the process stage ran; `guardedCandidates` is 0 until
+  `guardCandidates` ran, and left out when the model guards ran before classify
+  (`modelGuardsFirst`). `fallback`, `deliveredTo` and `error` appear only when set. The lists are
+  copies of the state's.
 
 ## Files
 

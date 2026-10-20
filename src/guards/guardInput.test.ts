@@ -611,4 +611,26 @@ describe('guardInputStep', () => {
       expect(out.kept).not.toBe(list);
     });
   });
+
+  describe('modelGuards: false', () => {
+    it('runs the rule guard only, and leaves the model guards for the candidates', async () => {
+      const [a, b] = items(2) as [Item, Item];
+      const rule = new FakeInputGuard('ruleInjection', flagging(a));
+      const clef = new FakeInputGuard('clefPolicy', () => true);
+      const granite = new FakeInputGuard('graniteRisk', () => true);
+      const config = makeConfig().guards.input;
+
+      const out = await guardInputStep([a, b], {
+        ...makeDeps([rule, clef, granite], config),
+        modelGuards: false,
+      });
+
+      expect(ids(out.kept)).toEqual([b.id]);
+      expect(ids(out.dropped.map((entry) => entry.item))).toEqual([a.id]);
+      expect(rule.calls).toHaveLength(2);
+      expect(clef.calls).toEqual([]);
+      expect(granite.calls).toEqual([]);
+      expect(out.disabledChecks).toEqual([]);
+    });
+  });
 });

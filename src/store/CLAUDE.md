@@ -53,7 +53,8 @@ sequenceDiagram
   Both read a `run.json` that fails `RunRecordSchema` (a newer build's channel id after a rollback) by
   its `status`, `deliveredTo` and `sentUrls` alone, so a sent week is not taken for an unsent one.
 - `prune(week, keepWeeks)` empties the weeks older than the `keepWeeks` before `week`: source folders and
-  all of `digest/` except `digest.md` and the delivered `<week>.md`, `.html`, `.failed.md`. It deletes
+  all of `digest/` (also `answers.jsonl`, `app/answerCache`) except `digest.md` and the delivered
+  `<week>.md`, `.html`, `.failed.md`. It deletes
   `run.json`, so config requires `keepWeeks >= dedupeWeeks`. `pruneOldDays` removes older days' source
   folders and `logs/<day>/`.
 - A missing `run.json` reads as `undefined`; so does a corrupt, wrong-week or schema-failing one, with
@@ -63,14 +64,14 @@ sequenceDiagram
 
 ## Files
 
-| File           | Role                                                                                                                  |
-| -------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `RunStore.ts`  | The port, `RunLock`, `ArtifactName`                                                                                   |
-| `lockHeld.ts`  | `LOCK_HELD_MESSAGE`, `isLockHeldError`: how a caller tells a held lock from a failure                                 |
-| `lockLost.ts`  | `LOCK_LOST_MESSAGE`, `lockLostReason`: the reason `RunLock.lost` fires with, in every store                           |
-| `runRecord.ts` | `RunRecordSchema`, `RunRecord`, `DraftOutcome`: what `run.json` holds                                                 |
-| `layout.ts`    | The `dist/` layout: `weekDay`, `weekOfDay`, `weekDigestDir`, `sourceDir`, `logsDir`, `dayOf`, `LOCK_FILE`. Paths only |
-| `adapters/`    | The file adapter: folders, the lock, temp-folder tests. See `adapters/CLAUDE.md`                                      |
+| File           | Role                                                                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `RunStore.ts`  | The port, `RunLock`, `ArtifactName`                                                                                                      |
+| `lockHeld.ts`  | `LOCK_HELD_MESSAGE`, `isLockHeldError`: how a caller tells a held lock from a failure                                                    |
+| `lockLost.ts`  | `LOCK_LOST_MESSAGE`, `lockLostReason`: the reason `RunLock.lost` fires with, in every store                                              |
+| `runRecord.ts` | `RunRecordSchema`, `RunRecord`, `DraftOutcome`: what `run.json` holds                                                                    |
+| `layout.ts`    | The `dist/` layout: `weekDay`, `weekOfDay`, `weekDigestDir`, `weekAnswersFile`, `sourceDir`, `logsDir`, `dayOf`, `LOCK_FILE`. Paths only |
+| `adapters/`    | The file adapter: folders, the lock, temp-folder tests. See `adapters/CLAUDE.md`                                                         |
 
 ## Gotchas
 

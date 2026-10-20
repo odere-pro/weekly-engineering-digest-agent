@@ -1,7 +1,7 @@
 # App
 
 > The composition root: turns a `LoadedConfig` into real adapters and a ready `DigestDeps`, and keeps
-> secrets out of everything it builds. Entry: `buildApp(loaded) → Promise<AppHandle>` (`container.ts`),
+> secrets out of everything it builds. Entry: `buildApp(loaded, options?) → Promise<AppHandle>` (`container.ts`),
 > `AppHandle = { deps, close() }`. It owns no port; it plugs in all five and wraps four of them.
 
 ## Context
@@ -24,7 +24,7 @@ flowchart TD
   loaded["LoadedConfig: config, env, secrets, profile"] --> channels["buildDeliveries: markdown, SMTP, Slack"]
   channels -->|"channel lacks its secret"| fail["buildApp rejects with a DigestError that names the variable, never its value; nothing started"]
   channels --> redactor["knownSecrets: one Redactor, createAppLogger (stdout and the day's log file)"]
-  redactor --> model["traceModel(createModelProvider), run-aware logger"]
+  redactor --> model["traceModel(withAnswerCache(createModelProvider)), run-aware logger"]
   model --> build["fetchers rss, github, each wrapped by archiving.wrap. Input guards ruleInjection (feed hosts), clefPolicy, graniteRisk. Output guards graniteGroundedness, clefRubric"]
   build --> wrap["redactDelivery(withDeliveryRetry(channel)), redactStore(fsRunStore)"]
   wrap --> handle["createTracer last (deferTracer). AppHandle: deps.tracer = scopeRuns(tracer); close() flushes the archive, then shuts the tracer down"]
@@ -48,6 +48,9 @@ flowchart TD
 - A run archives what each source answered: `createSourceArchiving` gives the rss and github fetchers
   its `tap` and wraps them. The day folder is `weekDay(runId)` of the run in flight; a fetch outside a
   run saves nothing. Saves run in the background, so `close()` flushes the archive before the tracer.
+- A rerun of a week reuses the model answers its earlier runs saved (`answerCache/`), found through
+  the same run lookup. Outside a run the cache passes every call through; `digest eval` builds the
+  app with `reuseAnswers: false`.
 - The tracer registers process-wide, so it is built last. `traceModel` puts role, model and token
   counts on spans, never a prompt, text or answer.
 
@@ -62,6 +65,7 @@ flowchart TD
 | `retryingDelivery.ts` | `withDeliveryRetry`, `DeliveryRetryOptions`: 2 retries, 5 s then 10 s (cap 30 s)                                                       |
 | `deliveryRetry/`      | `isTransientDeliveryError`: which failures are safe to send again. See `deliveryRetry/CLAUDE.md`                                       |
 | `tracedModel.ts`      | `traceModel`, `deferTracer`; under 100 lines, so it has no folder                                                                      |
+| `answerCache/`        | `withAnswerCache`: reuse a week's model answers on a rerun. See `answerCache/CLAUDE.md`                                                |
 
 Tests: `container*.test.ts` (wiring, secrets, model, run logging, local output, Docker) and one file
 for each other file; the decorator tests call every port member from a `Record<keyof Port, …>`.

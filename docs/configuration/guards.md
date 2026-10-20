@@ -2,11 +2,12 @@
 
 Part of [Configuration](README.md).
 
-Guards are safety checks. Input guards look at each collected item before any other model sees
-it. Output guards look at each draft the writers produce. Four guards ask a model. A fifth,
-`ruleInjection`, is fixed rules in code (see [The rule guard](#the-rule-guard-ruleinjection)). You
-can switch each guard off or change how strict each side is. You cannot switch off the link check
-or the format check.
+Guards are safety checks. Input guards look at collected items: the rule guard reads every item
+before any model does, and the model input guards check the items `process` picked before any
+writer sees them (see [When the input guards run](#when-the-input-guards-run)). Output guards look
+at each draft the writers produce. Four guards ask a model. A fifth, `ruleInjection`, is fixed
+rules in code (see [The rule guard](#the-rule-guard-ruleinjection)). You can switch each guard off
+or change how strict each side is. You cannot switch off the link check or the format check.
 
 ## Keys
 
@@ -55,8 +56,9 @@ Guards run one call at a time, guard by guard, so only one guard model is loaded
 
 `ruleInjection` is a check on the input side that reads each item's title, summary and URL against a
 fixed table of rules. It makes no model call, so it needs no model, no `guardPolicy` or `guardRisk`
-role and no time. It is the first input check, before `clefPolicy` and `graniteRisk`, so in mode
-`any` an item it flags never reaches the model guards.
+role and no time. It is the first input check: it reads every collected item in `guardInput`,
+before `classify`, `clefPolicy` and `graniteRisk`. An item it flags never reaches any model, in
+either mode.
 
 - It flags an item when any rule matches. The verdict reason is `ruleInjection:` and the matching
   rule ids, for example `ruleInjection: ignorePrevious, offHostLink`, never item text. A run logs
@@ -86,6 +88,24 @@ Subjects are items (input) or drafts (output). With only one check on, both mode
 The rule guard is the exception. It is fixed rules in code, so a hit always drops the item, in
 mode `any` and in mode `all`. It runs first. Only the items it passes go on to the model guards,
 and mode `all` applies to those. So `all` on the input side still drops every rule hit.
+
+## When the input guards run
+
+| Step              | Input checks                     | Items checked                              |
+| ----------------- | -------------------------------- | ------------------------------------------ |
+| `guardInput`      | `ruleInjection`                  | Every collected item, before `classify`    |
+| `guardCandidates` | `clefPolicy`, then `graniteRisk` | The items `process` picked, before `write` |
+
+A pick the model guards flag is removed and `process` picks again without it. After a flag, the
+next batch is topped up to the number of picks with the next-ranked eligible items. This repeats
+until every pick has passed or no eligible item is left. Fewer than 3 items left ends the week
+`quiet`.
+
+With `models.rescoreWithWriter` on (off by default), all three input checks run in `guardInput` on
+every item, as before, and `guardCandidates` does nothing. That option sends items to a writer
+model during classify, and a model that writes text must never read an item the model guards did
+not check. See [models](models.md#modelsrescorewithwriter) and
+[safety](../architecture/safety.md#which-models-read-an-unchecked-item).
 
 ## What is recorded when a guard is off
 

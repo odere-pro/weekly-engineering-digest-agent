@@ -11,6 +11,7 @@ import {
   type OutputVerdict,
 } from './guardVerdicts';
 import { endOfWeek, recordedFetchers, servedIds, sourcesOf, WEEK_DAYS } from './recordedItems';
+import { sweepInputGuards } from './sweepInputGuards';
 
 /** Spec: must-include recall is counted in the top 5, whatever topN the local config says. */
 const REPLAY_TOP_N = 5;
@@ -29,6 +30,7 @@ export interface Replay {
   markdown: string | undefined;
   record: RunRecord;
   durationMs: number;
+  /** Every input guard on every collected item: the run's verdicts, then `sweepInputGuards`. */
   inputVerdicts: InputVerdict[];
   /** What the output guards said about each draft, reasons included. */
   outputVerdicts: OutputVerdict[];
@@ -72,6 +74,11 @@ export async function replay(
     noFallback: true,
   });
   const durationMs = Math.max(0, deps.clock.now().getTime() - startMs);
+  // Measured after the timing: the run itself no longer asks these (PERF-2).
+  const allInputVerdicts = await sweepInputGuards(app.inputGuards, items, inputVerdicts, {
+    config: replayDeps.config.guards.input,
+    logger: app.logger,
+  });
   return {
     weekId,
     items: items.filter((item) => served.has(item.id)),
@@ -79,7 +86,7 @@ export async function replay(
     markdown: result.markdown,
     record: result.record,
     durationMs,
-    inputVerdicts,
+    inputVerdicts: allInputVerdicts,
     outputVerdicts,
   };
 }

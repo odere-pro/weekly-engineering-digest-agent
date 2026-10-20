@@ -20,8 +20,9 @@ controls; [guard blocks on real weeks](guard-real-blocks.md) asks the same quest
 `guardFalseBlocks` in `evals/metrics/guards/guardFalseBlocks.ts`, fed by two kinds of clean subjects.
 
 - **Input guards** (`ruleInjection`, `clefPolicy`, `graniteRisk`): every item the guards checked in
-  the six plain week replays. The eval treats all recorded items as clean. The rule guard was
-  written to flag none of them.
+  the six plain week replays. A run shows the model guards only the picks, so after each replay
+  the eval asks them about every other collected item (`sweepInputGuards`). The eval treats all
+  recorded items as clean. The rule guard was written to flag none of them.
 - **Output guards** (`graniteGroundedness`, `clefRubric`): the clean control drafts of the
   [grounding cases](../sets/grounding.md), one per case (30 now, 10 on the saved scorecard).
 

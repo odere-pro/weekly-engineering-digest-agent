@@ -30,6 +30,8 @@ export interface ChainState {
   /** Items that passed the process filters, before the top N cut. Unset until that step ran. */
   readonly afterProcess?: number;
   readonly selected: readonly ScoredItem[];
+  /** Items the model input guards checked after `process`. Unset until that step ran. */
+  readonly guardedCandidates?: number;
   /** The drafts after the writers' retry, each with its link and format check. */
   readonly checked: readonly CodeChecked[];
   readonly drafts: readonly DraftOutcome[];

@@ -75,6 +75,13 @@ with the writer model, and the writer's relevance replaces the first score. It t
 (recall fell and a week took about two minutes longer). The eval replay (`evals/rescoreReplay.ts`)
 can turn it on for one run to compare.
 
+It also moves the model input guards. A model that writes text must never read an item the model
+guards did not check, so with this option on, `clefPolicy` and `graniteRisk` check every collected
+item in `guardInput`, before classify, and `guardCandidates` does nothing. Off, they check only the
+items `process` picked. On the 147 items of 2026-W43 (`quality`) that is about 100 s instead of
+2,732 s to 3,897 s: see [cost and hardware](../overview/cost-and-hardware.md) and
+[guards](guards.md#when-the-input-guards-run).
+
 ## Change it
 
 - [Change models or writers](../runbooks/configure/change-models-or-writers.md)

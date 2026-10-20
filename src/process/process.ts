@@ -26,6 +26,8 @@ export interface ProcessInput {
 export interface ProcessOutput {
   selected: ScoredItem[];
   dropped: Dropped[];
+  /** The eligible items the top N cut left out, best first: the next picks (PERF-2 backfill). */
+  belowTopN: ScoredItem[];
 }
 
 /** Pure ranking and filtering in code, no model calls (W1-08). */
@@ -53,6 +55,7 @@ export function processStep(input: ProcessInput): ProcessOutput {
   return {
     selected: selected.map(({ item }) => item),
     dropped: [...dropped, ...belowTopN.map(({ item }) => drop(item, 'below-top-n'))],
+    belowTopN: belowTopN.map(({ item }) => item),
   };
 }
 

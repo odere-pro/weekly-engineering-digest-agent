@@ -1,7 +1,7 @@
 # Guards
 
-> Safety checks on untrusted text: input guards judge each collected item, output guards each draft.
-> Entries: `guardInputStep(items, deps)`, `guardOutputStep(drafts, sources, deps)`. Ports:
+> Safety checks on untrusted text: input guards judge collected items, output guards each draft.
+> Entries: `guardInputStep`, `guardCandidatesStep(pick, deps)`, `guardOutputStep`. Ports:
 > `InputGuard`, `OutputGuard` in `Guard.ts` (no `Guard` type). The link and format checks are not
 > guards: they live in `src/checks`.
 
@@ -9,10 +9,11 @@
 
 ```mermaid
 flowchart LR
-  collect -->|"Item[]"| guardInput:::focus -->|"Item[]"| classify
+  collect -->|"Item[]"| guardInput:::focus -->|"Item[], rule guard only"| classify
+  process -->|"picks, re-picked on a flag"| guardCandidates:::focus -->|"ScoredItem[]"| write
   write -->|"Draft[]"| guardOutput:::focus -->|"Draft[]"| select
-  cfg[("config: guards, thresholds.guardFlag")] -.-> guardInput & guardOutput
-  guardInput & guardOutput -.-> gp[["InputGuard, OutputGuard"]]
+  cfg[("config: guards, thresholds.guardFlag")] -.-> guardInput & guardCandidates & guardOutput
+  guardInput & guardCandidates & guardOutput -.-> gp[["InputGuard, OutputGuard"]]
   gp -.-> adapters["adapters: ruleInjection, clefPolicy, graniteRisk, graniteGroundedness, clefRubric"]
   adapters -.->|"decide guardPolicy, generate guardRisk"| mp[[ModelProvider]]
   classDef focus stroke-width:3px
@@ -33,7 +34,10 @@ flowchart TD
 
 - `ruleInjection` (input, no model call): flags when a rule in `RULES` matches the title, summary
   or URL; the reason is `ruleInjection: id1, id2`. A hit drops the item in mode `all` too:
-  `guardInputStep` runs it first as `ALWAYS_BLOCKING`.
+  `guardInputStep` runs it first as `ALWAYS_BLOCKING` (`inputGuardPlan.ts`).
+- PERF-2: `guardInputStep` (`modelGuards: false`) runs the rule guard alone; `guardCandidatesStep`
+  runs the model guards on `process`'s picks, re-picking without each flag and topping a batch up
+  from `next`. `rescoreWithWriter` keeps the old order (`digest/stages/modelGuardsFirst.ts`).
 - `clefPolicy` (input) and `clefRubric` (output): one `decide` call, role `guardPolicy`, several
   yes/no questions. Flag when any P(yes) is above `thresholds.guardFlag` (0.35, strict, both).
 - `graniteRisk` asks `jailbreak`, then `harm`, stopping at the first yes. `graniteGroundedness`
@@ -64,6 +68,7 @@ flowchart TD
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
 | `Guard.ts`, `guardVerdict.ts`                    | The ports `InputGuard`, `OutputGuard`; `GuardCheckIdSchema`, `GuardVerdictSchema`: the types we own             |
 | `guardRun.ts`, `guardInput.ts`, `guardOutput.ts` | `planGuards`, `applyGuards`, `passProgress`, `flaggedBy`; `guardInputStep`, `guardOutputStep`                   |
+| `guardCandidates.ts`, `inputGuardPlan.ts`        | `guardCandidatesStep` (model guards over the picks, backfill); `planInputGuards`, `checkWith`                   |
 | `guardQuestions.ts`                              | Questions and states: the item URL is shown, the writer's name is not; short for `strands-decider`'s 4K context |
 | `adapters/`                                      | The five guards (rule, Clef, Granite), `GRANITE_CRITERIA`, recorded fixtures: see `adapters/CLAUDE.md`          |
 
@@ -82,6 +87,6 @@ Tests sit next to the code; `adapters/__fixtures__/granite/` holds 9 recordings 
   they are recorded again (live Ollama, one at a time). `guardQuestions.test.ts` pins the wording,
   e.g. that reporting a security fix is not harmful. Any question change moves verdicts: re-check
   the thresholds in `evals/`.
-- Callers: `digest/stages/guardInput.ts` and `guardOutput.ts`, `digest/fallback.ts` (runs
-  `guardOutputStep` on the template digest, advisory only) and `evals/classifierRun/checkGrounding.ts`.
-  Check ids are stored in `run.json`: renaming breaks them. `deps.signal` stops a step within one call.
+- Callers: the `guardInput`, `guardCandidates` and `guardOutput` stages, `digest/fallback.ts`
+  (advisory), `evals/replay/sweepInputGuards.ts` and `evals/classifierRun/checkGrounding.ts`. Check
+  ids are stored in `run.json`: renaming breaks them. `deps.signal` stops a step within one call.
