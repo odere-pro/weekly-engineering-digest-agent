@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { abortedDuring, abortedError, isUnretriable, needsForce } from './unretriable';
+import {
+  abortedDuring,
+  abortedError,
+  isUnretriable,
+  needsForce,
+  supersededError,
+} from './unretriable';
 import { DigestError } from '../../../shared/errors';
 
 describe('abortedError', () => {
@@ -108,5 +114,25 @@ describe('isUnretriable', () => {
     ['nothing', undefined],
   ])('does not take %s for one', (_name, message) => {
     expect(isUnretriable(message)).toBe(false);
+  });
+});
+
+describe('supersededError', () => {
+  it('names the week and the step the run was about to start, and nothing else', () => {
+    const error = supersededError('2026-W42', 'deliver');
+
+    expect(error).toBeInstanceOf(DigestError);
+    expect(error.message).toBe(
+      'Run aborted before the deliver step: another run delivered 2026-W42 while this one worked',
+    );
+    expect(error.step).toBe('deliver');
+    expect(error.exitCode).toBe(1);
+  });
+
+  it('writes a message that isUnretriable knows, and that needsForce does not', () => {
+    const { message } = supersededError('2026-W42', 'deliver');
+
+    expect(isUnretriable(message)).toBe(true);
+    expect(needsForce(message)).toBe(false);
   });
 });

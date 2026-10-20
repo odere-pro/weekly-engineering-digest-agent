@@ -27,21 +27,31 @@ export type RunWeek = (
 /** Sends the failure note of a week that failed and will not be tried again. */
 export type GiveUp = (weekId: string, lastResult: RunResult) => Promise<void>;
 
-/** Why another attempt may help: another process holds the lock, or the run ended `failed`. */
+/**
+ * Sends a failure note the scheduler composed itself, for a week that ended with no run record to
+ * report: its run threw, or another run held the lock for the whole budget. `message` names the
+ * week and a code or class name, never the text of an error.
+ */
+export type SendNote = (weekId: string, message: string) => Promise<void>;
+
+/** The budgets that pay for a retry: another process holds the lock, or the run did not finish. */
 export type RetryKind = 'lock-held' | 'failed';
 
 /**
  * How one attempt ended, with `owed` the failed result whose note the attempt held back:
  * `finished` needs nothing more; `timed-out` hit its time limit, which nobody retries, and owes
- * its note if it held it; `threw` with an error that no retry fixes (`noted`: the run had already
- * sent a note saying why); or a reason to try again, a failed run carrying what it owes.
+ * its note if it held it, or `note` when it threw after the limit fired; `noted` threw because it
+ * could not save its record, and had already sent a note saying so; or a reason to try again:
+ * `lock-held`, a `failed` run carrying what it owes, or a run that `threw`, with the `note` that
+ * says so should no attempt be left (it spends the `failed` budget).
  */
 export type Attempt =
   | { kind: 'finished' }
-  | { kind: 'timed-out'; owed?: RunResult }
-  | { kind: 'threw'; noted: boolean }
+  | { kind: 'timed-out'; owed?: RunResult; note?: string }
+  | { kind: 'noted' }
   | { kind: 'lock-held'; error: string }
-  | { kind: 'failed'; error: string; owed?: RunResult };
+  | { kind: 'failed'; error: string; owed?: RunResult }
+  | { kind: 'threw'; error: string; note: string };
 
 /** The week and the trigger that every log line of a tick names. */
 export interface RetryWhere {
@@ -55,6 +65,7 @@ export interface AttemptSettings {
   logger: Logger;
   runTimeoutMs: number;
   onGiveUp?: GiveUp;
+  onNoRecord?: SendNote;
 }
 
 /** What the retry loop reads: how an attempt runs, how long each reason may retry, the timer. */

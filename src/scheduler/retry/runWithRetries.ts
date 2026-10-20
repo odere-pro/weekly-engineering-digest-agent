@@ -23,15 +23,13 @@ export async function runWithRetries(
     const attempt = await attemptRun(settings, weekId, trigger, { notifyFailure: !holds });
     if (attempt.kind === 'finished') return;
     if (attempt.kind === 'timed-out') {
-      await handOver(settings, attempt.owed, where, 'the run hit its time limit');
+      await handOver(settings, attempt.owed, where, 'the run hit its time limit', attempt.note);
       return;
     }
-    if (attempt.kind === 'threw') {
-      // A run that could not save its record sent a note for that, which replaces the held one.
-      if (!attempt.noted) await handOver(settings, owed, where, 'the retry threw an error');
-      return;
-    }
-    // A run that met the lock sent no note and leaves the earlier one owed; a failed run decides anew.
+    // A run that could not save its record sent a note for that, which replaces the held one.
+    if (attempt.kind === 'noted') return;
+    // A run that met the lock or threw sent no note and leaves the earlier one owed; a failed run
+    // decides anew.
     if (attempt.kind === 'failed') owed = attempt.owed;
     if (!(await waitToRetry(context, attempt, used, owed, where))) {
       return;

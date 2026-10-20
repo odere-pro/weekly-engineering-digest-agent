@@ -5,6 +5,7 @@ import { requiredModels } from '../../src/config/profiles';
 import { QUESTION_IDS } from '../../src/classify/classifyPrompt';
 import { runDigest } from '../../src/digest/runDigest';
 import { ExitCode } from '../../src/domain/schemas';
+import { SETTLED } from '../../src/scheduler/catchUp/catchUp';
 import { FakeOutputGuard } from '../fakes';
 import { connectionRefused } from './fakeOllama';
 import {
@@ -91,7 +92,7 @@ describe('integration: a quiet week', () => {
   );
 
   it(
-    'ends as quiet and names the failed feeds when every feed fails',
+    'ends as failed, not quiet, and names the failed feeds when every feed fails',
     async () => {
       const world = createWorld({
         now: FRIDAY,
@@ -105,20 +106,22 @@ describe('integration: a quiet week', () => {
 
       const result = await runDigest(world.deps);
 
-      expect(result.exitCode).toBe(ExitCode.Quiet);
+      expect(result.exitCode).toBe(ExitCode.Failed);
       const record = await readRunJson(dataDir(), WEEK);
-      expect(record.status).toBe('quiet');
+      expect(record.status).toBe('failed');
       expect(record.failedSources.map((failed) => failed.sourceId).sort()).toEqual([
         'broken-feed',
         'model-blog',
         'runner',
       ]);
       expect(digestsSent(world)).toEqual([0, 0, 0]);
+      const message = 'every source failed (3 of 3 sources), so no items were collected';
       for (const delivery of world.deliveries) {
-        expect(delivery.failures).toEqual([
-          { weekId: WEEK, step: 'collect', message: 'no items collected (3 of 3 sources failed)' },
-        ]);
+        expect(delivery.failures).toEqual([{ weekId: WEEK, step: 'collect', message }]);
       }
+      expect(await world.store.hasSentDigest(WEEK)).toBe(false);
+      // The scheduler retries a failed week and catch-up runs it again; a quiet one is left alone.
+      expect(SETTLED.has(record.status)).toBe(false);
       expect(world.fake.decideCalls).toEqual([]);
     },
     TEST_TIMEOUT_MS,

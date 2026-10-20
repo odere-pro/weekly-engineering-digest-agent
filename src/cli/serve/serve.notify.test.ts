@@ -1,5 +1,6 @@
 // W5-12: `digest serve` passes the scheduler's attempt on to the run, and sends the failure note a
-// failed week held back when no retry will run.
+// failed week held back when no retry will run. COR-4: and the note the scheduler composes for a
+// week whose run left no record (it threw, or never got the lock).
 import { describe, expect, it, vi, type Mock } from 'vitest';
 import type { AppHandle } from '../../app/container';
 import type { LoadedConfig } from '../../config/load';
@@ -176,6 +177,42 @@ describe('serve: the held failure note', () => {
       message: 'Could not send the failure note',
       fields: { delivery: 'markdown', error: 'mail server is down' },
     });
+    await finish();
+  });
+});
+
+describe('serve: the note of a week with no run record', () => {
+  const MESSAGE = 'The run for 2026-W42 stopped before it saved a record (EIO).';
+
+  it('gives the scheduler a way to send it', async () => {
+    const h = setup();
+    const { options, finish } = await serving(h);
+
+    expect(options.onNoRecord).toBeTypeOf('function');
+    await finish();
+  });
+
+  it("sends the scheduler's own text to every channel, once, with no step", async () => {
+    const h = setup();
+    const { options, finish } = await serving(h);
+
+    await options.onNoRecord?.(WEEK, MESSAGE);
+
+    for (const delivery of h.deliveries) {
+      expect(delivery.failures).toEqual([{ weekId: WEEK, message: MESSAGE }]);
+    }
+    await finish();
+  });
+
+  it('does not reject when a channel cannot take it, and still tries the others', async () => {
+    const h = setup();
+    const [first] = h.deliveries;
+    if (first) first.sendFailure = () => Promise.reject(new Error('mail server is down'));
+    const { options, finish } = await serving(h);
+
+    await expect(options.onNoRecord?.(WEEK, MESSAGE)).resolves.toBeUndefined();
+
+    expect(h.deliveries[1]?.failures).toHaveLength(1);
     await finish();
   });
 });

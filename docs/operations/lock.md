@@ -40,7 +40,11 @@ contenders cannot both remove the stale lock. Acquire tries 3 times, then fails.
 
 ## Limits
 
-- A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run.
+- A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run. It
+  does not stop when it wakes. Before it sends, it reads the week's record: if the other run
+  delivered the week meanwhile, it fails with `Run aborted before the deliver step: another run
+delivered ...`, sends no digest, and leaves the other run's record in place. A run that wakes
+  after that check has passed can still send a second copy.
 - The lock is plain files, with no operating-system lock. It needs a file system with hard
   links. Do not share the data folder between machines.
 - `release()` never removes a lock that another run took over.

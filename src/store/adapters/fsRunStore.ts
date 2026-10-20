@@ -13,9 +13,11 @@ import {
   listWeekFolders,
   pruneOldDays,
   pruneWeekFolder,
+  readDeliveryFacts,
   readRunRecord,
   RUN_RECORD_FILE,
   runDir,
+  type DeliveryFacts,
   type RunFolders,
 } from './runFolders';
 import { acquireRunLock } from './runLock';
@@ -29,8 +31,8 @@ export interface FsRunStoreOptions {
 }
 
 /** A sent week, or a failed one that some channels already got: its URLs must not repeat. */
-function reachedAChannel(record: RunRecord): boolean {
-  return record.status === 'sent' || (record.deliveredTo?.length ?? 0) > 0;
+function reachedAChannel(facts: DeliveryFacts): boolean {
+  return facts.status === 'sent' || (facts.deliveredTo?.length ?? 0) > 0;
 }
 
 /** Run history on disk (W1-13). */
@@ -40,6 +42,9 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
   const folders: RunFolders = { dataDir: options.dataDir, logger };
   const getRunRecord = (runId: string): Promise<RunRecord | undefined> =>
     readRunRecord(folders, runId);
+  // A run.json this build's schema refuses still tells whether the week went out (see `readDeliveryFacts`).
+  const getFacts = (runId: string): Promise<DeliveryFacts | undefined> =>
+    readDeliveryFacts(folders, runId);
 
   return {
     async acquireLock(runId: string): Promise<RunLock> {
@@ -49,7 +54,7 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
     },
 
     async hasSentDigest(runId: string): Promise<boolean> {
-      return (await getRunRecord(runId))?.status === 'sent';
+      return (await getFacts(runId))?.status === 'sent';
     },
 
     async saveArtifact(runId: string, name: ArtifactName, content: string): Promise<void> {
@@ -75,10 +80,10 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
 
     async sentUrls(runId: string, weeks: number): Promise<Set<string>> {
       assertRunId(runId);
-      const records = await Promise.all(previousWeekIds(runId, weeks).map(getRunRecord));
+      const weekFacts = await Promise.all(previousWeekIds(runId, weeks).map(getFacts));
       const urls = new Set<string>();
-      for (const record of records) {
-        if (record && reachedAChannel(record)) record.sentUrls.forEach((url) => urls.add(url));
+      for (const facts of weekFacts) {
+        if (facts && reachedAChannel(facts)) facts.sentUrls.forEach((url) => urls.add(url));
       }
       return urls;
     },

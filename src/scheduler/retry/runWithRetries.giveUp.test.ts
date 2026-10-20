@@ -55,11 +55,13 @@ const failed = (message = 'Ollama is not reachable'): RunResult => resultWith('f
 const lockHeld = (): DigestError => new DigestError('Another run is in progress (pid 4242)');
 
 type GiveUp = NonNullable<SchedulerOptions['onGiveUp']>;
+type SendNote = NonNullable<SchedulerOptions['onNoRecord']>;
 
 interface Harness {
   options: SchedulerOptions;
   run: Mock<SchedulerOptions['run']>;
   onGiveUp: Mock<GiveUp>;
+  onNoRecord: Mock<SendNote>;
   logger: MockLogger;
   tick: () => Promise<void> | undefined;
 }
@@ -74,6 +76,7 @@ function harness(overrides: Partial<SchedulerOptions> = {}): Harness {
   };
   const run = vi.fn<SchedulerOptions['run']>(() => Promise.resolve(sent));
   const onGiveUp = vi.fn<GiveUp>(() => Promise.resolve());
+  const onNoRecord = vi.fn<SendNote>(() => Promise.resolve());
   const logger = mockLogger();
   const options: SchedulerOptions = {
     cron: '45 7 * * 1',
@@ -85,9 +88,10 @@ function harness(overrides: Partial<SchedulerOptions> = {}): Harness {
     cronFactory,
     failedRetry: DEFAULT_FAILED_RETRY,
     onGiveUp,
+    onNoRecord,
     ...overrides,
   };
-  return { options, run, onGiveUp, logger, tick: () => handlers[0]?.() };
+  return { options, run, onGiveUp, onNoRecord, logger, tick: () => handlers[0]?.() };
 }
 
 const handles: SchedulerHandle[] = [];
@@ -189,23 +193,24 @@ describe('onGiveUp: the held note goes out once when the retry does not run', ()
     );
   });
 
-  it('when the retry throws outside the run', async () => {
+  it('when every retry throws outside the run', async () => {
     const h = harness();
     const first = failed();
-    h.run.mockResolvedValueOnce(first).mockRejectedValueOnce(new Error('disk gone'));
+    h.run.mockResolvedValueOnce(first).mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);
 
-    expect(h.run).toHaveBeenCalledTimes(2);
+    expect(h.run).toHaveBeenCalledTimes(3);
     expect(h.logger.error).toHaveBeenCalledWith(
       'Scheduled run failed',
       expect.objectContaining({ error: 'disk gone' }),
     );
     expect(h.onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', first);
+    expect(h.onNoRecord).not.toHaveBeenCalled();
     expect(h.logger.warn).toHaveBeenCalledWith(
       SENDING,
-      expect.objectContaining({ reason: 'the retry threw an error' }),
+      expect.objectContaining({ reason: 'the run kept throwing' }),
     );
   });
 
@@ -403,17 +408,19 @@ describe('onGiveUp: nothing is owed, so nothing is sent', () => {
     expect(h.onGiveUp).not.toHaveBeenCalled();
   });
 
-  it('when the first attempt itself throws: no note was held', async () => {
+  it('when the first attempt itself throws: no failed result was held, onNoRecord has the note', async () => {
     const h = harness();
-    h.run.mockRejectedValueOnce(new Error('disk gone'));
+    h.run.mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);
 
     expect(h.onGiveUp).not.toHaveBeenCalled();
-    expect(h.logger.error).toHaveBeenCalledExactlyOnceWith(
-      'Scheduled run failed',
-      expect.any(Object),
+    expect(h.run).toHaveBeenCalledTimes(3);
+    expect(h.logger.error).toHaveBeenCalledWith('Scheduled run failed', expect.any(Object));
+    expect(h.onNoRecord).toHaveBeenCalledExactlyOnceWith(
+      '2026-W42',
+      'The run for 2026-W42 stopped before it saved a record (Error).',
     );
   });
 
@@ -450,11 +457,14 @@ describe('onGiveUp: once per week, whatever happens', () => {
     const h = harness();
     const monday = failed('monday');
     const tuesday = failed('tuesday');
+    const gone = new Error('disk gone');
     h.run
       .mockResolvedValueOnce(monday)
-      .mockRejectedValueOnce(new Error('disk gone'))
+      .mockRejectedValueOnce(gone)
+      .mockRejectedValueOnce(gone)
       .mockResolvedValueOnce(tuesday)
-      .mockRejectedValueOnce(new Error('disk gone'));
+      .mockRejectedValueOnce(gone)
+      .mockRejectedValueOnce(gone);
     await start(h.options);
 
     await settle(h);
@@ -473,18 +483,19 @@ describe('onGiveUp: once per week, whatever happens', () => {
       .mockRejectedValueOnce(lockHeld())
       .mockResolvedValueOnce(only)
       .mockRejectedValueOnce(lockHeld())
-      .mockRejectedValueOnce(new Error('disk gone'));
+      .mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);
 
     expect(h.onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', only);
+    expect(h.onNoRecord).not.toHaveBeenCalled();
   });
 
   it('a note that cannot be handed over is logged, and the service goes on', async () => {
     const h = harness();
     h.onGiveUp.mockRejectedValue(new Error('every channel is down'));
-    h.run.mockResolvedValueOnce(failed()).mockRejectedValueOnce(new Error('disk gone'));
+    h.run.mockResolvedValueOnce(failed()).mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);
@@ -496,7 +507,7 @@ describe('onGiveUp: once per week, whatever happens', () => {
     // The next tick still runs.
     h.run.mockResolvedValue(sent);
     await settle(h);
-    expect(h.run).toHaveBeenCalledTimes(3);
+    expect(h.run).toHaveBeenCalledTimes(4);
   });
 
   it('a hook that throws before it returns a promise is logged the same way', async () => {
@@ -504,7 +515,7 @@ describe('onGiveUp: once per week, whatever happens', () => {
     h.onGiveUp.mockImplementation(() => {
       throw new Error('no deliveries configured');
     });
-    h.run.mockResolvedValueOnce(failed()).mockRejectedValueOnce(new Error('disk gone'));
+    h.run.mockResolvedValueOnce(failed()).mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);
@@ -518,7 +529,7 @@ describe('onGiveUp: once per week, whatever happens', () => {
   it('a failing hand-over is not tried twice', async () => {
     const h = harness();
     h.onGiveUp.mockRejectedValue(new Error('every channel is down'));
-    h.run.mockResolvedValueOnce(failed()).mockRejectedValueOnce(new Error('disk gone'));
+    h.run.mockResolvedValueOnce(failed()).mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 
     await settle(h);

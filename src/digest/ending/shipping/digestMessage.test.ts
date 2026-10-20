@@ -34,6 +34,34 @@ describe('digestMessage', () => {
     expect(digestMessage(WEEK, ' \n ', '#').subject).toBe(`Engineering digest ${WEEK}`);
   });
 
+  it('drops bidi, zero-width and control characters from the headline, as the body does', () => {
+    const headline = 'Security fix ‮gnirps‬ ​patch\u0007 \u001B[31mRED';
+
+    expect(digestMessage(WEEK, headline, '#').subject).toBe(
+      `Engineering digest ${WEEK}: Security fix gnirps patch [31mRED`,
+    );
+  });
+
+  it('drops isolates, tag characters and the byte order mark from the headline', () => {
+    const headline = '⁦Runners⁩ moved\u{E0041}\u{E0042}﻿ today';
+
+    expect(digestMessage(WEEK, headline, '#').subject).toBe(
+      `Engineering digest ${WEEK}: Runners moved today`,
+    );
+  });
+
+  it('leaves the headline out when nothing but invisible characters is in it', () => {
+    expect(digestMessage(WEEK, '​‮\u0007', '#').subject).toBe(`Engineering digest ${WEEK}`);
+  });
+
+  it('keeps a joined emoji in the headline whole, as the other channels do', () => {
+    const headline = 'Shipped by \u{1F469}\u{200D}\u{1F4BB} today';
+
+    expect(digestMessage(WEEK, headline, '#').subject).toBe(
+      `Engineering digest ${WEEK}: ${headline}`,
+    );
+  });
+
   it('cuts a long subject, ending it with an ellipsis', () => {
     const { subject } = digestMessage(WEEK, 'word '.repeat(100), '#');
 

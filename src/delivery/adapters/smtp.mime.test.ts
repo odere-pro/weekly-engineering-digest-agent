@@ -5,6 +5,7 @@ import { renderEmailText } from './email/emailText';
 import { createSmtpDelivery, type MailMessage } from './smtp';
 import type { DigestMessage } from '../Delivery';
 import type { DigestView } from '../../render/digestView';
+import { digestMessage } from '../../digest/ending/shipping/digestMessage';
 
 // nodemailer's own stream transport builds the real MIME message in memory. No socket is opened.
 const mimeBuilder = createTransport({ streamTransport: true, buffer: true, newline: 'unix' });
@@ -93,6 +94,55 @@ describe('the digest email as nodemailer builds it', () => {
     expect(mime).toMatch(/^Content-Type: text\/plain; charset=utf-8$/m);
   });
 });
+
+describe('the Subject of the digest email as nodemailer builds it', () => {
+  /** Characters a reader cannot see but that reorder, hide or forge what is shown around them. */
+  const INVISIBLE = /[\p{Cc}\p{Cf}\u{E0000}-\u{E007F}]/u;
+  const HOSTILE_HEADLINE =
+    'Security fix \u202Egnirps\u202C \u2066x\u2069 \u200Bpatch\u0007 \u001B[31mRED';
+
+  it('shows no invisible or control character of a hostile headline, in the header or decoded', async () => {
+    const mime = await buildMime(digestMessage('2026-W42', HOSTILE_HEADLINE, '# Digest\n'));
+
+    const subject = decodedSubject(mime);
+    expect(subject).toBe('Engineering digest 2026-W42: Security fix gnirps x patch [31mRED');
+    expect(INVISIBLE.test(subject)).toBe(false);
+    expect(INVISIBLE.test(rawSubject(mime).replaceAll('\n', ''))).toBe(false);
+  });
+
+  it('keeps a plain ASCII headline readable in the header', async () => {
+    const mime = await buildMime(digestMessage('2026-W42', 'Runners moved', '# Digest\n'));
+
+    expect(decodedSubject(mime)).toBe('Engineering digest 2026-W42: Runners moved');
+  });
+});
+
+/** The Subject header as written, unfolded: continuation lines start with whitespace. */
+function rawSubject(mime: string): string {
+  const header = mime.split('\n\n', 1)[0] ?? '';
+  const lines = header.split('\n');
+  const start = lines.findIndex((line) => line.startsWith('Subject:'));
+  if (start < 0) return '';
+  const folded = [lines[start] ?? ''];
+  for (const line of lines.slice(start + 1)) {
+    if (!/^[ \t]/.test(line)) break;
+    folded.push(line);
+  }
+  return folded.join('\n').slice('Subject:'.length).trim();
+}
+
+/** The Subject a mail client shows: RFC 2047 encoded words (B or Q) decoded, parts joined. */
+function decodedSubject(mime: string): string {
+  const raw = rawSubject(mime).replaceAll(/\n[ \t]+/g, ' ');
+  const joined = raw.replaceAll(/(\?=)\s+(=\?)/g, '$1$2');
+  return joined.replaceAll(
+    /=\?UTF-8\?([BQ])\?([^?]*)\?=/gi,
+    (_word, encoding: string, text: string) =>
+      encoding.toUpperCase() === 'B'
+        ? Buffer.from(text, 'base64').toString('utf8')
+        : decodeQuotedPrintable(text.replaceAll('_', ' ')),
+  );
+}
 
 /** Decodes the quoted-printable body of each text part of a MIME message, by content type. */
 function decodeParts(mime: string): Map<string, string> {

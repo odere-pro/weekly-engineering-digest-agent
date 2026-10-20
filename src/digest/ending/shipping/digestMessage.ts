@@ -2,6 +2,7 @@ import type { DigestMessage } from '../../../delivery/Delivery';
 import type { DigestView } from '../../../render/digestView';
 import type { GuardCheckId } from '../../../guards/guardVerdict';
 import { buildDigestView } from '../../../render/layout';
+import { visibleLine } from '../../../render/visibleLine';
 import { truncate } from '../../../shared/text';
 import type { CheckedDraft } from '../../../write/checkedStep/types';
 
@@ -9,7 +10,9 @@ const SUBJECT_MAX_CHARS = 120;
 
 /**
  * The message every channel gets: a one-line subject over the digest's Markdown, and the laid-out
- * `view` when there is one (W8-02). A channel without a view shows the Markdown.
+ * `view` when there is one (W8-02). A channel without a view shows the Markdown. The headline is
+ * model text, so it goes through `visibleLine` like the body: no bidi, zero-width, tag or control
+ * character reaches the mail Subject.
  */
 export function digestMessage(
   weekId: string,
@@ -17,7 +20,7 @@ export function digestMessage(
   markdown: string,
   view?: DigestView,
 ): DigestMessage {
-  const oneLine = headline.replace(/\s+/g, ' ').trim();
+  const oneLine = visibleLine(headline);
   const subject = oneLine
     ? `Engineering digest ${weekId}: ${oneLine}`
     : `Engineering digest ${weekId}`;

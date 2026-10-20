@@ -9,10 +9,13 @@ lock safely. One run at a time may use a data folder.
 
 ## When to use
 
-- A run stops at once with `Another run is in progress (pid 4321, host 1a2b3c, week 2026-W43)`
-  and exit code 1. No run record and no failure note are written for this.
+- A run by hand stops at once with
+  `Another run is in progress (pid 4321, host 1a2b3c, week 2026-W43)` and exit code 1. No run
+  record and no failure note are written for this.
 - The scheduler logs `Another run holds the lock; will retry`, or gave up with
-  `Scheduled run gave up: another run kept the lock`.
+  `Scheduled run gave up: another run kept the lock`. Giving up sends one failure note,
+  `The run for 2026-W43 did not start: another run held the run lock for the whole retry budget.`
+  (If an earlier attempt of the week had failed, its held note goes out instead.)
 - The week simply did not run, and the logs show the lock.
 
 ## Prerequisites
@@ -83,13 +86,14 @@ heartbeat stops` and carries on. Stop one of the two runs yourself, or both may 
 
 ## Troubleshooting
 
-| Symptom                                                | Cause                                               | Fix                                             |
-| ------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------- |
-| `Could not take the run lock: another run is starting` | Two runs started at the same moment                 | Run again after a minute                        |
-| `EPERM` or `ENOTSUP` when the lock is created          | The folder has no hard links (FAT, exFAT, some SMB) | Put `dataDir` on a local disk                   |
-| The lock returns after you delete it                   | A second scheduler (host timer and `serve`)         | Keep one scheduler                              |
-| The scheduler gave up and sent no note                 | A lock miss has no failed run to report             | Run by hand, or restart `serve` (it catches up) |
-| A laptop slept longer than 5 minutes mid-run           | Its lock went stale and was taken over              | Check `history`; run the week again if needed   |
+| Symptom                                                | Cause                                               | Fix                                                                            |
+| ------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `Could not take the run lock: another run is starting` | Two runs started at the same moment                 | `serve` retries it like a held lock; by hand, run again after a minute         |
+| `EPERM` or `ENOTSUP` when the lock is created          | The folder has no hard links (FAT, exFAT, some SMB) | Put `dataDir` on a local disk                                                  |
+| The lock returns after you delete it                   | A second scheduler (host timer and `serve`)         | Keep one scheduler                                                             |
+| The scheduler gave up on the lock and sent its note    | A live run kept the lock for the whole 2 hours      | Steps 1 and 2; then run by hand, or restart `serve` (it catches up)            |
+| A note says the run stopped before it saved a record   | The store failed (`EIO`, `EACCES`), retried twice   | Read `Scheduled run failed` in the log for the cause; fix it, then run by hand |
+| A laptop slept longer than 5 minutes mid-run           | Its lock went stale and was taken over              | Check `history`; run the week again if needed                                  |
 
 ## Related
 

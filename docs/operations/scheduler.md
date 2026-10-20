@@ -19,17 +19,40 @@ with no run, or whose last run `failed` or was a `dry-run`, runs.
 
 ## Retries
 
-| Situation                          | What the scheduler does                 |
-| ---------------------------------- | --------------------------------------- |
-| The lock is held                   | Retry every 5 minutes for up to 2 hours |
-| The run ended `failed`             | Retry at most twice, 30 minutes apart   |
-| The run hit its 3 hour limit       | No retry                                |
-| A failure only `--force` can clear | No retry (for example resume refused)   |
-| Any other thrown error             | No retry                                |
+| Situation                              | What the scheduler does                         |
+| -------------------------------------- | ----------------------------------------------- |
+| The lock is held, or being taken       | Retry every 5 minutes for up to 2 hours         |
+| The run ended `failed`                 | Retry at most twice, 30 minutes apart           |
+| The run threw before it saved a record | Same two retries as a failed run, then one note |
+| The run hit its 3 hour limit           | No retry                                        |
+| A failure only `--force` can clear     | No retry (for example resume refused)           |
+| The run could not save its record      | No retry (the run already sent its note)        |
+
+"Being taken" is `Could not take the run lock: another run is starting`. A run that throws is
+one where the store fails before the run has a record: a read of the run folder that fails with
+`EIO` or `EACCES`, or a lock file on a file system without hard links (`EPERM`, `ENOTSUP`).
 
 A week sends **one** failure note, from its last attempt. While a retry is pending the note is
 held back. If you stop `serve` while a failed week waits for its retry, the held note is sent at
 once and the next start runs the week again.
+
+When a week ends with no run record to report, the scheduler writes the note itself, once:
+
+- The run threw on every attempt:
+
+  > The run for 2026-W43 stopped before it saved a record (EIO).
+
+  It names an error code or class (`EIO`, `DigestError`), never the error message, which can hold
+  paths. The message is in the log line `Scheduled run failed`.
+
+- Another run held the lock for the whole 2 hours:
+
+  > The run for 2026-W43 did not start: another run held the run lock for the whole retry budget.
+
+  See [stuck lock](../runbooks/debug/stuck-lock.md).
+
+If an earlier attempt of the week failed and held its note back, that note goes out instead, so
+the week still gets one. A stop sends neither note: the next start runs the week again.
 
 ## Run limit
 

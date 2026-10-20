@@ -281,13 +281,53 @@ describe('runDigest: quiet', () => {
     expect(result.record.timings.map((timing) => timing.step)).toEqual(['collect']);
   });
 
-  it('lists failed sources in the record and the alert', async () => {
+  it('lists the failed sources in the record and the alert when the others had nothing', async () => {
+    const h = setup({
+      failSource: new Error('HTTP 503'),
+      config: {
+        sources: [
+          { id: 'example-feed', kind: 'rss', url: 'https://example.com/feed.xml' },
+          { id: 'quiet-feed', kind: 'rss', url: 'https://example.org/feed.xml' },
+        ],
+      },
+    });
+
+    const result = await h.run();
+
+    expect(result.exitCode).toBe(ExitCode.Quiet);
+    expect(result.record.status).toBe('quiet');
+    expect(result.record.failedSources).toEqual([{ sourceId: 'example-feed', error: 'HTTP 503' }]);
+    expect(sentNotes(h)[0]?.message).toContain('1 of 2 sources failed');
+  });
+
+  it('fails the week, not quiet, when every source failed, so a retry can follow', async () => {
     const h = setup({ failSource: new Error('HTTP 503') });
 
     const result = await h.run();
 
+    expect(result.exitCode).toBe(ExitCode.Failed);
+    expect(result.record).toMatchObject({
+      status: 'failed',
+      winner: null,
+      error: {
+        step: 'collect',
+        message: 'every source failed (1 of 1 sources), so no items were collected',
+      },
+    });
+    expectValidRecord(result.record);
     expect(result.record.failedSources).toEqual([{ sourceId: 'example-feed', error: 'HTTP 503' }]);
-    expect(sentNotes(h)[0]?.message).toContain('1 of 1 sources failed');
+    expect(result.record.timings.map((timing) => timing.step)).toEqual(['collect']);
+    expect(h.model.decideCalls).toEqual([]);
+    expect(sentNotes(h).map((note) => note.step)).toEqual(['collect', 'collect']);
+  });
+
+  it('holds the note of an all-sources-failed week for a retrying caller', async () => {
+    const h = setup({ failSource: new Error('HTTP 503') });
+
+    const result = await h.run({ notifyFailure: false });
+
+    expect(result.record.status).toBe('failed');
+    expect(sentNotes(h)).toEqual([]);
   });
 
   it('reports a quiet week without writing when fewer than 3 items are selected', async () => {

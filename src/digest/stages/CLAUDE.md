@@ -10,6 +10,7 @@
 flowchart LR
   collect --> guardInput --> classify --> process --> write --> guardOutput --> select --> deliver
   collect & process -.->|"no items, under 3: quiet"| settled(("settled"))
+  collect -.->|"every source failed: throws"| failed(("failed"))
   guardOutput -.->|"nothing passed, no fallback: blocked"| settled
 ```
 
@@ -26,8 +27,13 @@ flowchart LR
 
 ## Rules
 
+- `collect` throws `PartialFailure` when every configured source failed (network or DNS down), with
+  the counts only: the run ends `failed`, so the scheduler retries it. Sources that answered with
+  nothing, or some failed and none had items, still settle `quiet`.
 - `write` throws `PartialFailure` when every writer failed, naming writers, never model text; `guardOutput`
   falls back to `withFallback` when no draft passed.
+- `deliver` reads the week's record before it sends and fails `Run aborted` (`supersededError`) when
+  another run reached a channel since `RunContext.previousRecord`: this run lost its lock to a takeover.
 
 ## Files
 

@@ -4,7 +4,7 @@ import { ExitCode } from '../../domain/schemas';
 import type { Logger } from '../../shared/telemetry';
 import { makeRunRecord } from '../../../test/builders';
 import { handOver } from './handOver';
-import type { GiveUp, RetryWhere } from './types';
+import type { GiveUp, RetryWhere, SendNote } from './types';
 
 interface MockLogger extends Logger {
   warn: Mock<Logger['warn']>;
@@ -100,6 +100,81 @@ describe('handOver', () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       'Could not send the failure note held back',
+      expect.objectContaining({ error: 'bad hook' }),
+    );
+  });
+});
+
+describe('handOver with a note the scheduler composed', () => {
+  const note = 'The run for 2026-W42 stopped before it saved a record (EIO).';
+
+  it('sends it through onNoRecord, once, when no failed result was held back', async () => {
+    const logger = mockLogger();
+    const onNoRecord = vi.fn<SendNote>(() => Promise.resolve());
+
+    await handOver({ onNoRecord, logger }, undefined, where, 'the run kept throwing', note);
+
+    expect(onNoRecord).toHaveBeenCalledExactlyOnceWith('2026-W42', note);
+    expect(logger.warn).toHaveBeenCalledExactlyOnceWith(
+      'Sending the failure note of a week that ended with no run record',
+      { weekId: '2026-W42', trigger: 'schedule', reason: 'the run kept throwing' },
+    );
+  });
+
+  it('sends the held failure note instead, never both', async () => {
+    const logger = mockLogger();
+    const onGiveUp = vi.fn<GiveUp>(() => Promise.resolve());
+    const onNoRecord = vi.fn<SendNote>(() => Promise.resolve());
+
+    await handOver({ onGiveUp, onNoRecord, logger }, owed, where, 'the run kept throwing', note);
+
+    expect(onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', owed);
+    expect(onNoRecord).not.toHaveBeenCalled();
+  });
+
+  it('does not fall back to the note when a held failure has no onGiveUp to go through', async () => {
+    const logger = mockLogger();
+    const onNoRecord = vi.fn<SendNote>(() => Promise.resolve());
+
+    await handOver({ onNoRecord, logger }, owed, where, 'x', note);
+
+    expect(onNoRecord).not.toHaveBeenCalled();
+  });
+
+  it('does nothing without a note, or without onNoRecord', async () => {
+    const logger = mockLogger();
+    const onNoRecord = vi.fn<SendNote>(() => Promise.resolve());
+
+    await handOver({ onNoRecord, logger }, undefined, where, 'x');
+    await handOver({ logger }, undefined, where, 'x', note);
+
+    expect(onNoRecord).not.toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('logs a hook that rejects or throws, and does not throw', async () => {
+    const logger = mockLogger();
+    const rejects = vi.fn<SendNote>(() => Promise.reject(new Error('Slack is down')));
+    const throws = vi.fn<SendNote>(() => {
+      throw new Error('bad hook');
+    });
+
+    await expect(
+      handOver({ onNoRecord: rejects, logger }, undefined, where, 'x', note),
+    ).resolves.toBeUndefined();
+    await expect(
+      handOver({ onNoRecord: throws, logger }, undefined, where, 'x', note),
+    ).resolves.toBeUndefined();
+
+    expect(logger.error).toHaveBeenNthCalledWith(1, 'Could not send the scheduler failure note', {
+      weekId: '2026-W42',
+      trigger: 'schedule',
+      error: 'Slack is down',
+    });
+    expect(logger.error).toHaveBeenNthCalledWith(
+      2,
+      'Could not send the scheduler failure note',
       expect.objectContaining({ error: 'bad hook' }),
     );
   });

@@ -115,20 +115,41 @@ describe('attemptRun', () => {
     expect(settings.logger.error).not.toHaveBeenCalled();
   });
 
-  it('does not take a plain Error with the lock text for a held lock', async () => {
-    const settings = settingsFor(() => Promise.reject(new Error('Another run is in progress')));
+  it('says the lock is held when the lock adapter lost every race for it', async () => {
+    const settings = settingsFor(() =>
+      Promise.reject(new DigestError('Could not take the run lock: another run is starting')),
+    );
 
     const attempt = await attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
 
-    expect(attempt).toEqual({ kind: 'threw', noted: false });
+    expect(attempt).toEqual({
+      kind: 'lock-held',
+      error: 'Could not take the run lock: another run is starting',
+    });
+    expect(settings.logger.error).not.toHaveBeenCalled();
   });
 
-  it('logs any other error the run throws, and does not retry it', async () => {
+  it.each([
+    ['Another run is in progress'],
+    ['Could not take the run lock: another run is starting'],
+  ])('does not take a plain Error saying "%s" for a held lock', async (text) => {
+    const settings = settingsFor(() => Promise.reject(new Error(text)));
+
+    const attempt = await attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
+
+    expect(attempt.kind).toBe('threw');
+  });
+
+  it('logs any other error the run throws and carries the note the week owes for it', async () => {
     const settings = settingsFor(() => Promise.reject(new Error('disk gone')));
 
     const attempt = await attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
 
-    expect(attempt).toEqual({ kind: 'threw', noted: false });
+    expect(attempt).toEqual({
+      kind: 'threw',
+      error: 'disk gone',
+      note: 'The run for 2026-W42 stopped before it saved a record (Error).',
+    });
     expect(settings.logger.error).toHaveBeenCalledExactlyOnceWith('Scheduled run failed', {
       weekId: '2026-W42',
       trigger: 'schedule',
@@ -136,12 +157,48 @@ describe('attemptRun', () => {
     });
   });
 
-  it('marks an error as noted when the run could not save its record and said so', async () => {
+  it('puts the errno code in the note, and none of the message', async () => {
+    const eio = Object.assign(new Error("EIO: i/o error, read '/data/dist/run.json'"), {
+      code: 'EIO',
+    });
+    const settings = settingsFor(() => Promise.reject(eio));
+
+    const attempt = await attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
+
+    expect(attempt).toMatchObject({
+      kind: 'threw',
+      note: 'The run for 2026-W42 stopped before it saved a record (EIO).',
+    });
+  });
+
+  it('is noted, with no note owed, when the run could not save its record and said so', async () => {
     const settings = settingsFor(() => Promise.reject(new RecordNotSavedError('no space')));
 
     const attempt = await attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
 
-    expect(attempt).toEqual({ kind: 'threw', noted: true });
+    expect(attempt).toEqual({ kind: 'noted' });
+  });
+
+  it('reports a throw after the time limit fired as timed out, which nobody retries', async () => {
+    vi.useFakeTimers();
+    const settings = settingsFor(
+      (_weekId, signal) =>
+        new Promise<RunResult>((_resolve, reject) => {
+          signal.addEventListener('abort', () => {
+            reject(new Error('lost the store'));
+          });
+        }),
+      HOUR_MS,
+    );
+
+    const pending = attemptRun(settings, '2026-W42', 'schedule', { notifyFailure: true });
+    await vi.advanceTimersByTimeAsync(HOUR_MS);
+    const attempt = await pending;
+
+    expect(attempt).toEqual({
+      kind: 'timed-out',
+      note: 'The run for 2026-W42 stopped before it saved a record (Error).',
+    });
   });
 
   it('logs the time limit, aborts the run, and reports a timed-out attempt', async () => {

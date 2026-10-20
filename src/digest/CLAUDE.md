@@ -30,7 +30,7 @@ flowchart TD
   lock --> part{"failed record that reached a channel? (not force, not dry run)"}
   part -->|yes| resume["resumeDelivery: saved digest.md to missing channels, no health check or model call"]
   part -->|no| chain["runChain: signal check, assertModelsReady (Ollama up, models pulled), stages"]
-  chain -->|"a stage threw: failed, exit 1"| endRun
+  chain -->|"a stage threw (collect: every source failed): failed, exit 1"| endRun
   chain -->|"no items, or under 3 after process: quiet, exit 3"| endRun
   chain -->|"a draft won: sent, or dry-run, exit 0"| endRun
   chain -->|"every draft rejected"| fb{"fallback on and passes its checks?"}
@@ -40,9 +40,9 @@ flowchart TD
   endRun["finish, endRun: record, files, note, prune; then release the lock"]
 ```
 
-- Quiet after `collect` (no items) alerts every channel and names the failed sources; after
-  `process` (under `DIGEST_MIN_ITEMS`, 3) it sends no note. `runDigest` throws, not returns, for a
-  bad week id, a window under 1 day or not whole, a held lock and `RecordNotSavedError`.
+- Quiet after `collect` (sources answered, no items) alerts every channel; after `process` (under
+  `DIGEST_MIN_ITEMS`, 3) it sends no note. All sources failing is `failed`. `runDigest` throws, not
+  returns, for a bad week id, a window under 1 day or not whole, a held lock, `RecordNotSavedError`.
 - A stage function in `stages/` takes the name of its stage, except `process` (`processItems`) and
   `select` (`selectWinner`). Files: items.json (collect), scores.json (classify), drafts.json (write,
   fallback), digest.md (select). The judge runs only with 2+ passing drafts and a profile judge.
@@ -55,8 +55,9 @@ flowchart TD
   the guards and every model call stop within one call, and no new call or writer starts. Only
   `deliver` ignores it: a send that has started finishes. The failure starts
   `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
-- A run never replaces a record that got further (`keepReason`), else a sent week goes out twice.
-  Meanwhile (`holdArtifacts`) its files wait in `ChainState.held`, written only if its record is saved.
+- A run never replaces a record that got further (`keepReason`, against the store as the run ends),
+  else a sent week goes out twice. Meanwhile (`holdArtifacts`) its files wait in `ChainState.held`,
+  written only if its record is saved. A run that lost its lock: see `deliver` in `stages/`.
 - `notifyFailure` false holds a `failed` run's note for a retrying caller (the scheduler);
   `sendHeldNote` sends it later. Quiet, blocked, `Run aborted`, `--force` and "record not saved"
   notes go anyway. A dry run sends none. Notes, records and errors never hold model or feed text.

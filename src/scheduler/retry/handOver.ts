@@ -3,27 +3,50 @@ import { errorMessage } from '../../shared/errors';
 import type { AttemptSettings, RetryWhere } from './types';
 
 const SENDING_HELD_NOTE = 'Sending the failure note held back for a retry that will not run';
+const SENDING_OWN_NOTE = 'Sending the failure note of a week that ended with no run record';
+
+type Hooks = Pick<AttemptSettings, 'onGiveUp' | 'onNoRecord' | 'logger'>;
 
 /**
- * The retry a failed attempt held its note for is not coming: hand the failed result to
- * `onGiveUp`, which sends the note. Nothing is owed when no attempt held one. A hook that fails is
- * logged, never thrown: the service must stay up.
+ * The week ends and the retry its failed attempt held a note for is not coming: send the one note
+ * it owes. That is the failed result an attempt held back, through `onGiveUp`; with none held,
+ * `note`, which the scheduler composed for a week whose run left no record, through `onNoRecord`.
+ * Never both, so the week gets one note. Nothing goes out when neither exists. A hook that fails
+ * is logged, never thrown: the service must stay up.
  */
 export async function handOver(
-  { onGiveUp, logger }: Pick<AttemptSettings, 'onGiveUp' | 'logger'>,
+  hooks: Hooks,
   owed: RunResult | undefined,
-  { weekId, trigger }: RetryWhere,
+  where: RetryWhere,
   reason: string,
+  note?: string,
 ): Promise<void> {
-  if (owed === undefined || onGiveUp === undefined) return;
-  logger.warn(SENDING_HELD_NOTE, { weekId, trigger, reason });
+  const { onGiveUp, onNoRecord, logger } = hooks;
+  const { weekId, trigger } = where;
+  if (owed !== undefined) {
+    if (onGiveUp === undefined) return;
+    logger.warn(SENDING_HELD_NOTE, { weekId, trigger, reason });
+    await guarded(logger, 'Could not send the failure note held back', where, () =>
+      onGiveUp(weekId, owed),
+    );
+    return;
+  }
+  if (note === undefined || onNoRecord === undefined) return;
+  logger.warn(SENDING_OWN_NOTE, { weekId, trigger, reason });
+  await guarded(logger, 'Could not send the scheduler failure note', where, () =>
+    onNoRecord(weekId, note),
+  );
+}
+
+async function guarded(
+  logger: Hooks['logger'],
+  failure: string,
+  { weekId, trigger }: RetryWhere,
+  send: () => Promise<void>,
+): Promise<void> {
   try {
-    await onGiveUp(weekId, owed);
+    await send();
   } catch (error) {
-    logger.error('Could not send the failure note held back', {
-      weekId,
-      trigger,
-      error: errorMessage(error),
-    });
+    logger.error(failure, { weekId, trigger, error: errorMessage(error) });
   }
 }

@@ -165,16 +165,12 @@ describe('createMarkdownFileDelivery: the HTML copy', () => {
     expect(await readdir(root)).toEqual([]);
   });
 
-  it('does not touch the failure note of the same week', async () => {
+  it('removes the failure note of the same week, so it does not sit beside the sent pair', async () => {
     const delivery = createMarkdownFileDelivery({ dir });
     await delivery.sendFailure({ weekId: '2026-W42', message: 'earlier failure' });
 
     await delivery.sendDigest({ ...message, view });
 
-    expect((await readdir(dir)).sort()).toEqual([
-      '2026-W42.failed.md',
-      '2026-W42.html',
-      '2026-W42.md',
-    ]);
+    expect((await readdir(dir)).sort()).toEqual(['2026-W42.html', '2026-W42.md']);
   });
 });

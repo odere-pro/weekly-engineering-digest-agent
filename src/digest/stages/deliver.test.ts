@@ -3,7 +3,9 @@ import { deliver } from './deliver';
 import { PartialFailure } from '../chain/failures';
 import { FALLBACK_NOTE } from '../../render/layout';
 import { DigestError } from '../../shared/errors';
+import { makeRunRecord } from '../../../test/builders';
 import { CapturingDelivery } from '../../../test/fakes';
+import { isUnretriable } from '../ending/notes/unretriable';
 import {
   WEEK,
   WRITER_A,
@@ -100,5 +102,89 @@ describe('deliver', () => {
     const { state } = failure as PartialFailure;
     expect(state.deliveredTo).toEqual([]);
     expect(state.sentUrls).toEqual([]);
+  });
+});
+
+describe('deliver when another run delivered the week while this one worked', () => {
+  const sentByOther = makeRunRecord({
+    runId: WEEK,
+    status: 'sent',
+    deliveredTo: ['markdown', 'email'],
+  });
+  const markdownOnly = makeRunRecord({ runId: WEEK, status: 'failed', deliveredTo: ['markdown'] });
+
+  const abort = async (h: ReturnType<typeof contextFor>): Promise<DigestError> => {
+    const failure = await deliver(h.ctx, stateWith(), h.logger).catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(DigestError);
+    return failure as DigestError;
+  };
+
+  it('sends to no channel when the store holds a sent record this run did not start with', async () => {
+    const h = contextFor();
+    h.store.records.set(WEEK, sentByOther);
+
+    const failure = await abort(h);
+
+    expect(failure.step).toBe('deliver');
+    expect(failure.message).toMatch(/^Run aborted before the deliver step: another run delivered/);
+    expect(isUnretriable(failure.message)).toBe(true);
+    for (const delivery of h.deliveries as CapturingDelivery[]) {
+      expect(delivery.digests).toEqual([]);
+    }
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({ level: 'warn', message: 'Another run delivered this week' }),
+    );
+  });
+
+  it('sends to no channel when another run reached a channel this run did not start with', async () => {
+    const h = contextFor({ previousRecord: makeRunRecord({ runId: WEEK, status: 'failed' }) });
+    h.store.records.set(WEEK, markdownOnly);
+
+    const failure = await abort(h);
+
+    expect(isUnretriable(failure.message)).toBe(true);
+    for (const delivery of h.deliveries as CapturingDelivery[]) {
+      expect(delivery.digests).toEqual([]);
+    }
+  });
+
+  it('names no channel, address or digest text in the failure', async () => {
+    const h = contextFor();
+    h.store.records.set(WEEK, sentByOther);
+
+    const failure = await abort(h);
+
+    expect(failure.message).toBe(
+      `Run aborted before the deliver step: another run delivered ${WEEK} while this one worked`,
+    );
+  });
+
+  it.each<[string, ReturnType<typeof makeRunRecord>]>([
+    ['a forced run over a sent week', sentByOther],
+    ['a run over a partly delivered week', markdownOnly],
+  ])('still delivers for %s: that record was there when the run began', async (_name, began) => {
+    const h = contextFor({ previousRecord: began });
+    h.store.records.set(WEEK, began);
+
+    const next = await deliver(h.ctx, stateWith(), h.logger);
+
+    expect(next.deliveredTo).toEqual(['markdown', 'email']);
+  });
+
+  it('delivers when the store holds no record of the week', async () => {
+    const h = contextFor();
+
+    const next = await deliver(h.ctx, stateWith(), h.logger);
+
+    expect(next.deliveredTo).toEqual(['markdown', 'email']);
+  });
+
+  it('delivers when the record is a failed one that reached no channel', async () => {
+    const h = contextFor();
+    h.store.records.set(WEEK, makeRunRecord({ runId: WEEK, status: 'failed' }));
+
+    const next = await deliver(h.ctx, stateWith(), h.logger);
+
+    expect(next.deliveredTo).toEqual(['markdown', 'email']);
   });
 });

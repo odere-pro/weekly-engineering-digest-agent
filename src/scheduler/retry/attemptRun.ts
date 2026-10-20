@@ -5,11 +5,18 @@ import { errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
 import { isLockHeldError } from '../../store/lockHeld';
 import { startRunLimit } from '../runLimit/runLimit';
+import { isLockMissError } from './lockMiss';
+import { errorLabel, threwNote } from './noRecordNote';
 import type { Attempt, AttemptSettings, RunAttempt, Trigger } from './types';
 
 const FINISHED: Attempt = { kind: 'finished' };
 
-/** One call of `run` under its time limit. Never throws; says whether another attempt may help. */
+/**
+ * One call of `run` under its time limit. Never throws; says whether another attempt may help. A
+ * run that throws has no record to report, so the attempt carries the note the week owes if no
+ * attempt is left; only a run that could not save its record (`RecordNotSavedError`) owes none, as
+ * it sent that note itself. A throw after the time limit fired is not retried.
+ */
 export async function attemptRun(
   { run, logger, runTimeoutMs }: Pick<AttemptSettings, 'run' | 'logger' | 'runTimeoutMs'>,
   weekId: string,
@@ -38,9 +45,14 @@ export async function attemptRun(
       notifyFailure: attempt.notifyFailure,
     });
   } catch (error) {
-    if (isLockHeldError(error)) return { kind: 'lock-held', error: error.message };
+    if (isLockHeldError(error) || isLockMissError(error)) {
+      return { kind: 'lock-held', error: error.message };
+    }
     logger.error('Scheduled run failed', { weekId, trigger, error: errorMessage(error) });
-    return { kind: 'threw', noted: error instanceof RecordNotSavedError };
+    if (error instanceof RecordNotSavedError) return { kind: 'noted' };
+    const note = threwNote(weekId, errorLabel(error));
+    if (limit.timedOut()) return { kind: 'timed-out', note };
+    return { kind: 'threw', error: errorMessage(error), note };
   } finally {
     limit.clear();
   }

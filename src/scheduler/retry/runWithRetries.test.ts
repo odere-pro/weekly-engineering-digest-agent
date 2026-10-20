@@ -103,14 +103,15 @@ describe('runWithRetries: one attempt is enough', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it('does not retry a run that threw an error, and hands over nothing it does not owe', async () => {
+  it('retries a run that threw on the failed budget, and hands over no held note it does not owe', async () => {
     const { context, run, onGiveUp } = setup();
     run.mockRejectedValue(new Error('disk gone'));
 
-    await runWithRetries(context, where.weekId, where.trigger);
+    const finished = runWithRetries(context, where.weekId, where.trigger);
     await vi.advanceTimersByTimeAsync(10 * HOUR_MS);
+    await finished;
 
-    expect(run).toHaveBeenCalledOnce();
+    expect(run).toHaveBeenCalledTimes(3);
     expect(onGiveUp).not.toHaveBeenCalled();
   });
 });
@@ -229,6 +230,19 @@ describe('runWithRetries: a held lock', () => {
     expect(run).toHaveBeenCalledTimes(1 + 1 + 24);
     expect(onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', earlier);
   });
+
+  it('hands over the earlier held note when every retry throws', async () => {
+    const { context, run, onGiveUp } = setup();
+    const earlier = failed('first');
+    run.mockResolvedValueOnce(earlier).mockRejectedValue(new Error('disk gone'));
+
+    const finished = runWithRetries(context, where.weekId, where.trigger);
+    await vi.advanceTimersByTimeAsync(10 * HOUR_MS);
+    await finished;
+
+    expect(run).toHaveBeenCalledTimes(3);
+    expect(onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', earlier);
+  });
 });
 
 describe('runWithRetries: an attempt nobody retries', () => {
@@ -250,19 +264,6 @@ describe('runWithRetries: an attempt nobody retries', () => {
 
     expect(run).toHaveBeenCalledOnce();
     expect(onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', result);
-  });
-
-  it('hands over the earlier held note when a retry throws', async () => {
-    const { context, run, onGiveUp } = setup();
-    const earlier = failed('first');
-    run.mockResolvedValueOnce(earlier).mockRejectedValue(new Error('disk gone'));
-
-    const finished = runWithRetries(context, where.weekId, where.trigger);
-    await vi.advanceTimersByTimeAsync(30 * MINUTE_MS);
-    await finished;
-
-    expect(run).toHaveBeenCalledTimes(2);
-    expect(onGiveUp).toHaveBeenCalledExactlyOnceWith('2026-W42', earlier);
   });
 
   it('does not send the held note again when the retry already noted why it threw', async () => {

@@ -17,10 +17,13 @@ flowchart TD
   plain --> send
   note --> send
   send -->|"throws"| err["errors/redact: redactedError, a DeliveryError with the retry facts"]
+  send -->|"smtp resolves, some recipients refused"| partial["errors/refusedRecipients: a DeliveryError with no retry fact"]
 ```
 
 - `markdownFile`: always on. Config `delivery.markdown.dir` (optional); no secret. A failure note is
-  `<week>.failed.md`: the title, the step and the error.
+  `<week>.failed.md`: the title, the step and the error. `sendDigest` removes that week's
+  `.failed.md` once the digest is written (a failed write keeps it). The run folder's `error.json`
+  stays: the `RunStore` port has no delete.
 - `smtp`: config `delivery.email` (`host`, `port`, `secure`, `requireTLS`, `user`, `from`, `to`);
   `SMTP_PASSWORD` from `.env`. A failure note is a mail titled `failureTitle`, with the reason.
 - `slack`: config `delivery.slack.enabled`; `SLACK_WEBHOOK_URL` from `.env`, https only. A failure
@@ -46,6 +49,13 @@ flowchart TD
 - A failed SMTP or Slack call throws the `DeliveryError` of `redactedError`; a non-2xx Slack answer
   is a `DeliveryError` with its `status`. A non-https webhook, an invalid week id and a file error
   throw as they are: none of their texts holds a secret.
+- A mail the server took for only some recipients is a failed send: nodemailer throws only when
+  all are refused, else it resolves with `{ accepted, rejected, rejectedErrors }`, which `smtp` reads
+  (`errors/refusedRecipients`). The error counts the refused recipients and gives the SMTP reply
+  codes, never server text or an address, and has no retry fact (a 450 would be retried, and the
+  accepting recipients would get the mail twice). Trade-off, on purpose: the channel fails, the
+  failure note goes out and a resume sends the whole mail again, so recipients that accepted the
+  first one can get a second copy. The alternative, `sent` with one recipient never told, hides it.
 
 ## Files
 
@@ -65,6 +75,7 @@ Tests sit next to each file. Goldens and fixtures are in the folders' `__fixture
 - `markdownFile.test.ts` and `markdownFile.html.test.ts` mock `shared/atomicFile`: moving
   `writeFileAtomic` breaks them.
 - `smtp.mime.test.ts` builds the real MIME with nodemailer's stream transport, so it pins the
-  headers and parts. `smtp.test.ts` mocks `nodemailer` instead.
+  headers and parts (also the encoded Subject of a hostile headline, built with `digestMessage`).
+  `smtp.test.ts` mocks `nodemailer` instead; `smtp.refused.test.ts` covers the partly refused mail.
 - `deliveryRetry.test.ts` runs these adapters through `app/retryingDelivery`: a new retry fact or
   error shape needs both sides changed.

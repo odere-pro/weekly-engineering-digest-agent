@@ -5,6 +5,7 @@ import { renderEmailHtml } from './email/emailHtml';
 import { renderEmailText } from './email/emailText';
 import { failureTitle } from './errors/failureNote';
 import { redactedError, redactSecrets } from './errors/redact';
+import { refusedRecipientsError } from './errors/refusedRecipients';
 
 const CONNECTION_TIMEOUT_MS = 15_000;
 const GREETING_TIMEOUT_MS = 15_000;
@@ -71,11 +72,16 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
   });
 
   async function send(content: MailContent): Promise<void> {
+    let answer: unknown;
     try {
-      await transport.sendMail({ ...content, from: options.from, to: recipients });
+      answer = await transport.sendMail({ ...content, from: options.from, to: recipients });
     } catch (error) {
       throw redactedError('SMTP delivery failed', error, [options.password]);
     }
+    // nodemailer throws only when every recipient is refused; with some accepted it resolves and
+    // lists the refused ones. That is not delivered: the channel fails (see `errors/`).
+    const refused = refusedRecipientsError(answer, recipients.length);
+    if (refused !== undefined) throw refused;
   }
 
   return {

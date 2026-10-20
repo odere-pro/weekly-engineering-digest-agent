@@ -2,9 +2,11 @@
 // with the wiring `digest serve` uses. Only time is faked.
 import { writeFile } from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sendSchedulerNote } from '../cli/serve/sendSchedulerNote';
 import { runDigest } from '../digest/runDigest';
 import { sendHeldNote } from '../digest/ending/notes/failureNotes';
 import type { ModelHealth } from '../models/ModelProvider';
+import { DigestError } from '../shared/errors';
 import type { RunStore } from '../store/RunStore';
 import {
   DEFAULT_FAILED_RETRY,
@@ -45,6 +47,7 @@ async function serve(
     logger: world.deps.logger,
     failedRetry: DEFAULT_FAILED_RETRY,
     onGiveUp: (weekId, lastResult) => sendHeldNote(world.deps, weekId, lastResult.record),
+    onNoRecord: (weekId, message) => sendSchedulerNote(world.deps, weekId, message),
     cronFactory,
     ...overrides,
   });
@@ -325,7 +328,7 @@ describe('scheduler with the real run and store', () => {
     );
 
     it(
-      'when the retry throws instead of running',
+      'when every retry throws instead of running',
       async () => {
         vi.useFakeTimers({ now: new Date(FRIDAY), toFake: ['setTimeout', 'clearTimeout'] });
         const world = createWorld({ now: FRIDAY, dataDir: dataDir(), health: DOWN });
@@ -340,10 +343,10 @@ describe('scheduler with the real run and store', () => {
 
         const running = service.tick();
         await untilRetries(world, 1);
-        await vi.advanceTimersByTimeAsync(30 * 60_000);
+        await vi.advanceTimersByTimeAsync(2 * 30 * 60_000);
         await running;
 
-        expect(calls).toBe(2);
+        expect(calls).toBe(3);
         expectOneNoteEach(world);
       },
       TEST_TIMEOUT_MS,
@@ -504,4 +507,130 @@ describe('scheduler with the real run and store', () => {
       TEST_TIMEOUT_MS,
     );
   });
+});
+
+describe('a run that throws instead of returning a result (COR-4)', () => {
+  const EIO = (): Error =>
+    Object.assign(new Error("EIO: i/o error, read '/secret/dist/2026-10-12/digest/run.json'"), {
+      code: 'EIO',
+    });
+
+  /** The run `digest serve` makes, over a store that `wrap` has changed. */
+  function runOver(world: World, wrap: (inner: RunStore) => RunStore): SchedulerOptions['run'] {
+    const store = wrap(world.deps.store);
+    return (weekId, signal, attempt) =>
+      runDigest(
+        { ...world.deps, store },
+        { weekId, signal, notifyFailure: attempt?.notifyFailure },
+      );
+  }
+
+  it(
+    "retries a store read that fails before the lock, then sends one note of the scheduler's own",
+    async () => {
+      vi.useFakeTimers({ now: new Date(FRIDAY), toFake: ['setTimeout', 'clearTimeout'] });
+      const world = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      let reads = 0;
+      const run = runOver(world, (inner) => ({
+        ...inner,
+        hasSentDigest: () => {
+          reads += 1;
+          return Promise.reject(EIO());
+        },
+      }));
+      const service = await serve(world, { run });
+
+      const running = service.tick();
+      await vi.advanceTimersByTimeAsync(2 * 30 * 60_000);
+      await running;
+
+      expect(reads).toBe(3);
+      const note = `The run for ${WEEK} stopped before it saved a record (EIO).`;
+      expect(noteMessages(world)).toEqual([[note], [note], [note]]);
+      expect(world.logs.map((line) => line.message)).toContain(
+        'Scheduled run gave up: the run kept throwing',
+      );
+      expect(await lockExists(dataDir())).toBe(false);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'recovers the week when the store read works again, and sends no note',
+    async () => {
+      vi.useFakeTimers({ now: new Date(FRIDAY), toFake: ['setTimeout', 'clearTimeout'] });
+      const world = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      let reads = 0;
+      const run = runOver(world, (inner) => ({
+        ...inner,
+        hasSentDigest: (runId) => {
+          reads += 1;
+          return reads === 1 ? Promise.reject(EIO()) : inner.hasSentDigest(runId);
+        },
+      }));
+      const service = await serve(world, { run });
+
+      const running = service.tick();
+      await vi.advanceTimersByTimeAsync(30 * 60_000);
+      await running;
+
+      expect(noteCounts(world)).toEqual([0, 0, 0]);
+      expect((await readRunJson(dataDir(), WEEK)).status).toBe('sent');
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'retries "Could not take the run lock" on the lock budget, like a held lock',
+    async () => {
+      vi.useFakeTimers({ now: new Date(FRIDAY), toFake: ['setTimeout', 'clearTimeout'] });
+      const world = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      let takes = 0;
+      const run = runOver(world, (inner) => ({
+        ...inner,
+        acquireLock: (runId) => {
+          takes += 1;
+          return takes === 1
+            ? Promise.reject(
+                new DigestError('Could not take the run lock: another run is starting'),
+              )
+            : inner.acquireLock(runId);
+        },
+      }));
+      const service = await serve(world, { run });
+
+      const running = service.tick();
+      await untilLogged(world, LOCK_RETRYING, 1);
+      await vi.advanceTimersByTimeAsync(5 * 60_000);
+      await running;
+
+      expect(takes).toBe(2);
+      expect(noteCounts(world)).toEqual([0, 0, 0]);
+      expect((await readRunJson(dataDir(), WEEK)).status).toBe('sent');
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'sends one note when another run holds the lock for the whole budget',
+    async () => {
+      vi.useFakeTimers({ now: new Date(FRIDAY), toFake: ['setTimeout', 'clearTimeout'] });
+      const world = createWorld({ now: FRIDAY, dataDir: dataDir() });
+      await writeLock(dataDir(), { pid: process.pid, runId: WEEK, startedAt: FRIDAY });
+      const service = await serve(world, { lockRetry: { everyMs: 60_000, forMs: 180_000 } });
+
+      const running = service.tick();
+      for (let wait = 1; wait <= 3; wait++) {
+        await untilLogged(world, LOCK_RETRYING, wait);
+        expect(noteCounts(world)).toEqual([0, 0, 0]);
+        await vi.advanceTimersByTimeAsync(60_000);
+      }
+      await running;
+
+      const note = `The run for ${WEEK} did not start: another run held the run lock for the whole retry budget.`;
+      expect(noteMessages(world)).toEqual([[note], [note], [note]]);
+      expect(world.rss.calls).toEqual([]);
+    },
+    TEST_TIMEOUT_MS,
+  );
 });

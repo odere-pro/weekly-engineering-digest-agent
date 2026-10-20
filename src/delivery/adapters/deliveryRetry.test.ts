@@ -139,6 +139,40 @@ describe('SMTP: what is retried', () => {
     expect(sleep).not.toHaveBeenCalled();
   });
 
+  it.each([421, 450, 451, 550])(
+    'sends once and throws when the server refuses one recipient with a %i reply: the others have the mail',
+    async (responseCode) => {
+      const refusal = nodemailer.reply(responseCode, 'EENVELOPE', 'Recipient command failed');
+      const sendMail = vi.fn<MailTransport['sendMail']>(() =>
+        Promise.resolve({
+          accepted: ['me@example.test'],
+          rejected: ['typo@example.test'],
+          rejectedErrors: [refusal],
+        }),
+      );
+      const smtp = createSmtpDelivery({
+        host: 'smtp.example.test',
+        port: 587,
+        secure: false,
+        user: 'digest@example.test',
+        password: PASSWORD,
+        from: 'digest@example.test',
+        to: ['me@example.test', 'typo@example.test'],
+        createTransport: () => ({ sendMail }),
+      });
+      const { logger, lines } = recordingLogger();
+      const sleep = vi.fn<(ms: number) => Promise<void>>(() => Promise.resolve());
+
+      await expect(withDeliveryRetry(smtp, { logger, sleep }).sendDigest(MESSAGE)).rejects.toThrow(
+        `1 of 2 recipients refused (SMTP ${String(responseCode)})`,
+      );
+
+      expect(sendMail).toHaveBeenCalledTimes(1);
+      expect(sleep).not.toHaveBeenCalled();
+      expect(lines).toHaveLength(0);
+    },
+  );
+
   it('treats a failure note like the digest', async () => {
     const reset = smtpWith(nodemailer.reset());
     const refused = smtpWith(nodemailer.refused());

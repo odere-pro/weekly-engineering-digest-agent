@@ -24,11 +24,17 @@ See [feature folders](../architecture/feature-folders.md).
   status is not `sent`, `quiet` or `blocked`, it runs the week now.
 - Gives a run a time limit of 3 hours. At the limit the run is aborted after its current step, ends
   `failed` and frees its lock.
-- Lock miss: when a manual run holds the lock, it retries every 5 minutes for up to 2 hours.
-- Failed run: `digest serve` retries it up to 2 more times, 30 minutes apart. It does not retry a
-  time-limit abort, a failure that only `--force` can clear, or an unknown error.
+- Lock miss: when a manual run holds the lock, or another run is taking it right now, it retries
+  every 5 minutes for up to 2 hours.
+- Failed run: `digest serve` retries it up to 2 more times, 30 minutes apart. A run that throws
+  before it saves a record (a store read that fails with `EIO`, say) is retried on the same
+  budget. It does not retry a time-limit abort or a failure that only `--force` can clear.
 - Sends one failure note per failed week. An attempt that will be retried holds its note back. If
   the retry never comes (a stop, the budget used up, the lock never freed), the held note is sent.
+- Writes the note itself when the week has no run record to report: the run threw on every
+  attempt, or another run held the lock for the whole 2 hours. The text names the week and an
+  error code or class, never the error message. A stop sends no such note; the next start runs
+  the week again.
 - A tick never throws. Failures are logged and the service stays up.
 - `stop()` stops new ticks and cancels a pending retry, but lets a running digest finish.
 - OS schedules (`digest init` prints one when you are not on Docker): launchd on macOS, a systemd

@@ -12,10 +12,11 @@ flowchart LR
   os[("Docker Compose, OS signals")] -->|"digest serve, then SIGINT or SIGTERM"| serve:::focus
   serve -.->|"loadConfig"| cfg[("digest.config.json, .env")]
   serve -->|"LoadedConfig"| app["app/container: buildApp"]
-  serve -->|"cron, timeZone, run, runStatus, onGiveUp"| sched["scheduler/startScheduler"]
+  serve -->|"cron, timeZone, run, runStatus, onGiveUp, onNoRecord"| sched["scheduler/startScheduler"]
   sched -.->|"run(weekId, limit, attempt)"| digest["digest/runDigest"]
   sched -.->|"runStatus(weekId)"| store[[RunStore]]
   sched -.->|"onGiveUp: sendHeldNote"| ending["digest/ending/notes"]
+  sched -.->|"onNoRecord: sendSchedulerNote"| own["sendSchedulerNote.ts"]
   classDef focus stroke-width:3px
 ```
 
@@ -28,7 +29,7 @@ sequenceDiagram
   participant sched as scheduler
   participant run as runDigest
   serve->>os: waitForSignal() before the config loads
-  serve->>sched: startScheduler(cron, timeZone, run, runStatus, onGiveUp)
+  serve->>sched: startScheduler(cron, timeZone, run, runStatus, onGiveUp, onNoRecord)
   sched->>run: runDigest(deps, weekId, notifyFailure, signal: limit or quitNow)
   os->>serve: first signal
   serve->>sched: stop(), then wait for whenIdle()
@@ -58,24 +59,29 @@ sequenceDiagram
   (`failedRetry: DEFAULT_FAILED_RETRY`, two more tries 30 minutes apart; the scheduler has none by
   default), so a failed week sends one note. `onGiveUp` sends the held note with `sendHeldNote` when
   no retry follows (`stop()` cancels a waiting retry, the lock stays held, the run throws).
+  `onNoRecord` sends the scheduler's own note (`sendSchedulerNote`) to every channel for a week
+  that has no run record: its run threw on every attempt, or another run held the lock for the
+  whole budget. The text comes from the scheduler (week and error code, never error text).
 - The config is read once: a change to `digest.config.json` or `.env` needs a restart.
 - `closeApp` logs a failing close and does not throw: it must not hide how the service ended.
 
 ## Files
 
-| File       | Role                                                                                     |
-| ---------- | ---------------------------------------------------------------------------------------- |
-| `serve.ts` | `serveCommand`, `ServeCommandIo`, `waitForShutdownSignal`, the run closures, `untilIdle` |
+| File                   | Role                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `serve.ts`             | `serveCommand`, `ServeCommandIo`, `waitForShutdownSignal`, the run closures, `untilIdle` |
+| `sendSchedulerNote.ts` | `sendSchedulerNote`: the scheduler's own failure note to every channel, best effort      |
 
 `serve.test.ts` covers wiring, shutdown order, the run signal, failures and `waitForShutdownSignal`
-(real `SIGINT` and `SIGTERM` emitted on `process`); `serve.notify.test.ts` the attempt and the held
-note, with `CapturingDelivery`.
+(real `SIGINT` and `SIGTERM` emitted on `process`); `serve.notify.test.ts` the attempt, the held
+note and the scheduler's own note, with `CapturingDelivery`.
 
 ## Gotchas
 
 - The tests pin the order: signal listener before config, then `stop()`, wait, close, return 0. The
   second-signal tests count the cancel signals handed to `waitForSignal`; keep the call order.
 - `sendHeldNote` comes from `digest/ending/notes/failureNotes.ts` and `DEFAULT_FAILED_RETRY` from `scheduler/scheduler`:
-  renaming either breaks this command. A new scheduler option reaches the service only when it is
-  passed to `startScheduler` here.
+  renaming either breaks this command. `sendSchedulerNote` repeats the small channel loop of that
+  file's private `broadcastNote`: it has no run record to build a `sendHeldNote` call from. A new
+  scheduler option reaches the service only when it is passed to `startScheduler` here.
 - The service logs through `deps.logger`; stderr carries only a `DigestError`. There is no summary.

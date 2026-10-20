@@ -22,7 +22,8 @@ flowchart TD
 ## Rules
 
 - A stage returns a new `ChainState`; it never changes the one it got. `held` carries the files a
-  run must not write yet (`RunContext.holdArtifacts`).
+  run must not write yet (`RunContext.holdArtifacts`). `RunContext.previousRecord` is the week's
+  record at the lock: `runDigest` sets it after the first read, `deliver` compares the store with it.
 - `settled` ends the run early (`quiet`, `blocked`); later stages skip it, so the chain ends
   normally and `finish` builds the record. `timed` stamps `settled.step`.
 - `StepFailure.state` is the state the step started from plus the failed step's timing. A stage that

@@ -9,6 +9,7 @@ import type { GuardCheckId } from '../../guards/guardVerdict';
 import type { InputGuard, OutputGuard } from '../../guards/Guard';
 import type { ModelProvider } from '../../models/ModelProvider';
 import type { SourceFetcher } from '../../sources/SourceFetcher';
+import type { RunRecord } from '../../store/runRecord';
 import type { LogFields, Logger } from '../../shared/telemetry';
 import type { CheckedDraft } from '../../write/checkedStep/types';
 import { makeConfig, makeDraft, makeItem, makeScoredItem } from '../../../test/builders';
@@ -76,6 +77,8 @@ export interface ContextOptions {
   dryRun?: boolean;
   useFallback?: boolean;
   holdArtifacts?: boolean;
+  /** The week's record when the run began; see `RunContext.previousRecord`. */
+  previousRecord?: RunRecord;
   disabledGuards?: readonly GuardCheckId[];
   signal?: AbortSignal;
   sinceDays?: number;
@@ -127,6 +130,7 @@ export function contextFor(options: ContextOptions = {}) {
     logger,
     disabledGuards: options.disabledGuards ?? [],
     holdArtifacts: options.holdArtifacts ?? false,
+    previousRecord: options.previousRecord,
   };
   return { ctx, deps, store, deliveries, model, logs, spans, logger };
 }

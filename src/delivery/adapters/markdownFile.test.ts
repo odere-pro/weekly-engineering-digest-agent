@@ -104,6 +104,43 @@ describe('createMarkdownFileDelivery', () => {
       expect(await readdir(dir)).toEqual(['2026-W42.md']);
     });
 
+    it('removes the failure note an earlier attempt left for the week once the digest is written', async () => {
+      const delivery = createMarkdownFileDelivery({ dir });
+      await delivery.sendFailure({ weekId: '2026-W42', step: 'write', message: 'first attempt' });
+      expect(await readdir(dir)).toEqual(['2026-W42.failed.md']);
+
+      await delivery.sendDigest(message);
+
+      expect(await readdir(dir)).toEqual(['2026-W42.md']);
+    });
+
+    it('leaves the failure note of another week alone', async () => {
+      const delivery = createMarkdownFileDelivery({ dir });
+      await delivery.sendFailure({ weekId: '2026-W41', message: 'last week broke' });
+      await delivery.sendFailure({ weekId: '2026-W42', message: 'this week broke' });
+
+      await delivery.sendDigest(message);
+
+      expect((await readdir(dir)).sort()).toEqual(['2026-W41.failed.md', '2026-W42.md']);
+    });
+
+    it('keeps the failure note when the digest could not be written', async () => {
+      const delivery = createMarkdownFileDelivery({ dir });
+      await delivery.sendFailure({ weekId: '2026-W42', message: 'first attempt' });
+      vi.mocked(writeFileAtomic).mockRejectedValueOnce(new Error('disk full'));
+
+      await expect(delivery.sendDigest(message)).rejects.toThrow('disk full');
+
+      expect(await readdir(dir)).toEqual(['2026-W42.failed.md']);
+    });
+
+    it('sends a digest to a folder that has no failure note without complaint', async () => {
+      await createMarkdownFileDelivery({ dir }).sendDigest(message);
+      await createMarkdownFileDelivery({ dir }).sendDigest(message);
+
+      expect(await readdir(dir)).toEqual(['2026-W42.md']);
+    });
+
     it.each([
       '../evil',
       'a/b',

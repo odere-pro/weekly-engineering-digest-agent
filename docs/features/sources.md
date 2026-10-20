@@ -33,7 +33,8 @@ It is the first step, collect, at the start of the chain described in
   non-http(s) targets. A response over 5 MiB fails the source. The token goes only to the first
   host.
 - A source that fails goes to `failedSources` in `run.json`, with its error text cut to 300
-  characters. The other sources carry on. If nothing at all is collected, the week ends `quiet`.
+  characters. The other sources carry on. If nothing at all is collected, the week ends `quiet`,
+  except when every configured source failed: that week ends `failed`, so the scheduler retries it.
 - During a run, saves what each source answered and the items it was read into, under the week's
   Monday folder: `<dataDir>/<monday>/<sourceId>/raw/` and `formatted/items.json`. A failed save is
   only a warning, and the save runs in the background, so a slow disk never eats the fetch time limit.
@@ -62,8 +63,12 @@ It is the first step, collect, at the start of the chain described in
 - GitHub rate-limits you. A rate-limited source is not retried; set `GITHUB_TOKEN`.
 - A feed that parses but has no entries in the window is not an error and is not listed anywhere
   in `run.json`.
-- Every source fails or the window is empty: the week is `quiet`. See
+- The window is empty, or some sources failed and the rest had nothing: the week is `quiet`. See
   [quiet week](../runbooks/debug/quiet-week.md).
+- Every source fails (the network or DNS is down at the scheduled minute): the week is `failed` at
+  `collect`, not `quiet`. The scheduler retries a failed week and catch-up runs it again, so it
+  is not lost. One note goes out with the counts only. See
+  [failing feed](../runbooks/debug/failing-feed.md).
 - To see what a feed returned during a run, open `<dataDir>/<monday>/<sourceId>/raw/`. To see it
   now, with no models, run `pnpm digest fetch --source <id>`. See
   [fetch sources only](../runbooks/run/fetch-sources-only.md) and
@@ -80,6 +85,7 @@ It is the first step, collect, at the start of the chain described in
 ## Related
 
 - Next step: [guards](guards.md) check each collected item.
-- [digest](digest.md) turns a failed or empty collect into `quiet` or a note.
+- [digest](digest.md) turns an empty collect into `quiet` and a collect where every source failed
+  into `failed`, each with a note.
 - [evals](evals.md) replays recorded feed responses to measure parsing.
 - Safety rules for fetching: [safety](../architecture/safety.md).

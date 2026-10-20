@@ -335,9 +335,14 @@ describe('startScheduler lock retry', () => {
     await vi.advanceTimersByTimeAsync(HOUR_MS);
 
     expect(h.run).toHaveBeenCalledTimes(2);
-    expect(h.logger.error).toHaveBeenCalledExactlyOnceWith(
-      expect.stringContaining('failed'),
+    expect(h.logger.error).toHaveBeenCalledWith(
+      'Scheduled run failed',
       expect.objectContaining({ weekId: '2026-W42', error: 'ollama is down' }),
+    );
+    // The lock budget is not the throw's: with no failed retry configured, it ends the week.
+    expect(h.logger.error).toHaveBeenCalledWith(
+      'Scheduled run gave up: the run kept throwing',
+      expect.objectContaining({ weekId: '2026-W42', retries: 0 }),
     );
   });
 

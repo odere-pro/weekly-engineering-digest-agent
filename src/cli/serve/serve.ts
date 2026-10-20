@@ -9,6 +9,7 @@ import {
 } from '../../scheduler/scheduler';
 import { DigestError, errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
+import { sendSchedulerNote } from './sendSchedulerNote';
 
 export interface ServeCommandOptions {
   /** Path to digest.config.json. */
@@ -92,6 +93,8 @@ async function serveUntilSignal(
     failedRetry: DEFAULT_FAILED_RETRY,
     // The note an attempt held back goes out here if its retry never runs.
     onGiveUp: (weekId, lastResult) => sendHeldNote(deps, weekId, lastResult.record),
+    // A week whose run threw or never got the lock has no record: the scheduler writes the note.
+    onNoRecord: (weekId, message) => sendSchedulerNote(deps, weekId, message),
   });
   const nextRun = scheduler.nextRun();
   if (nextRun === null) {

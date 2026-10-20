@@ -6,7 +6,7 @@ import { isoWeekId } from '../shared/isoWeek';
 import type { Logger } from '../shared/telemetry';
 import { catchUp } from './catchUp/catchUp';
 import { runWithRetries } from './retry/runWithRetries';
-import type { GiveUp, RetryContext, RunWeek, Trigger } from './retry/types';
+import type { GiveUp, RetryContext, RunWeek, SendNote, Trigger } from './retry/types';
 import { budgetOf, createWaiter } from './retry/wait';
 import { DEFAULT_RUN_TIMEOUT_MS } from './runLimit/runLimit';
 import { HOUR_MS, MINUTE_MS } from './timing';
@@ -82,6 +82,16 @@ export interface SchedulerOptions {
    * and that run notifies for itself: the note of a new failure, not a second one for this.
    */
   onGiveUp?: GiveUp;
+  /**
+   * Sends a failure note the scheduler composed itself, for a week that ended with no run record
+   * to report: its run threw (retried on `failedRetry`, so with none it is noted at once), or
+   * another run held the lock for the whole `lockRetry` budget. Called once per scheduled run,
+   * and not when `onGiveUp` already sent the note an earlier failed attempt held back, so a week
+   * gets one note. `stop()` sends none: the next start catches the week up. The text names the
+   * week and an error code or class, never an error message. `whenIdle()` waits for it; a
+   * rejection is logged. Without it such a week ends with a log line only.
+   */
+  onNoRecord?: SendNote;
   /** Default: croner. */
   cronFactory?: CronFactory;
 }
@@ -172,6 +182,7 @@ function createExecutor(options: SchedulerOptions): Executor {
       logger,
       runTimeoutMs: options.runTimeoutMs ?? DEFAULT_RUN_TIMEOUT_MS,
       onGiveUp: options.onGiveUp,
+      onNoRecord: options.onNoRecord,
     },
     budgets: {
       'lock-held': budgetOf(lockRetry.everyMs, lockRetry.forMs / lockRetry.everyMs),

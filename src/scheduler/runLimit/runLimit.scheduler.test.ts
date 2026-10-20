@@ -214,12 +214,27 @@ describe('scheduler run time limit', () => {
   });
 
   it('leaves no timer behind when the run throws', async () => {
-    const h = harness();
+    const h = harness({ failedRetry: undefined });
     h.run.mockRejectedValue(new Error('boom'));
     await start(h.options);
 
     await h.tick();
 
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('leaves no run timer behind when a thrown run waits for its retry', async () => {
+    const h = harness();
+    h.run.mockRejectedValue(new Error('boom'));
+    await start(h.options);
+
+    const tick = h.tick();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Only the wait for the retry is pending, not the 3 h limit of the run that threw.
+    expect(vi.getTimerCount()).toBe(1);
+    await vi.advanceTimersByTimeAsync(10 * HOUR_MS);
+    await tick;
     expect(vi.getTimerCount()).toBe(0);
   });
 

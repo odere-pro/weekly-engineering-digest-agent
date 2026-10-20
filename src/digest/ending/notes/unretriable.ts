@@ -32,6 +32,15 @@ export function abortedDuring(
   return abortFailure(signal, step, ` during the ${step} step`);
 }
 
+/**
+ * The failure of a run that found another run had delivered the week while it worked (it lost its
+ * lock to a takeover). It starts like `abortedError`, so `isUnretriable` holds. Names the week only.
+ */
+export function supersededError(weekId: string, step: StepName): DigestError {
+  const message = `${ABORTED_PREFIX} before the ${step} step: another run delivered ${weekId} while this one worked`;
+  return new DigestError(message, { step });
+}
+
 function abortFailure(
   signal: AbortSignal | undefined,
   step: StepName | undefined,

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { endRun } from './endRun';
+import { KEPT_OTHER_RUN_REASON } from './keepReason';
 import { failureNote } from './notes/failureNotes';
 import type { HeldArtifact } from './types';
 import type { RunRecord } from '../../store/runRecord';
@@ -284,5 +285,72 @@ describe('endRun: review sheet', () => {
     await endRun(h.ctx, { record: withWinner, artifacts: files }, sent);
 
     expect(h.store.artifacts.get(`${WEEK}/review.md`)).toBeUndefined();
+  });
+});
+
+describe('endRun: a week another run delivered while this one worked', () => {
+  // This run read no record when it began (previous is undefined); the store has one by now.
+  it.each<[string, RunRecord]>([
+    ['sent', sent],
+    ['partly delivered', partly],
+  ])('keeps the %s record the other run saved, and its files', async (_name, other) => {
+    const h = setupEnding();
+    h.store.records.set(WEEK, other);
+    h.store.artifacts.set(`${WEEK}/digest.md`, '# Other wording\n');
+    const failed = record({ status: 'failed', error: { message: 'Run aborted' } });
+    const failure = { error: new Error('Run aborted'), step: 'deliver' as const };
+    const note = failureNote(WEEK, failure);
+
+    const { written, kept } = await endRun(
+      h.ctx,
+      { record: failed, failure, note, artifacts: held },
+      undefined,
+    );
+
+    expect(kept).toBe(KEPT_OTHER_RUN_REASON);
+    expect(written).toEqual(new Set());
+    expect(h.store.records.get(WEEK)).toBe(other);
+    expect(writtenFiles(h.store)).toEqual([`${WEEK}/digest.md`]);
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({ level: 'warn', message: KEPT_OTHER_RUN_REASON }),
+    );
+    for (const delivery of h.deliveries) expect(delivery.failures).toEqual([note]);
+  });
+
+  it('keeps it also against a quiet run, which would make the sent week look unsent', async () => {
+    const h = setupEnding();
+    h.store.records.set(WEEK, sent);
+
+    const { kept } = await endRun(h.ctx, { record: record({ status: 'quiet' }) }, undefined);
+
+    expect(kept).toBe(KEPT_OTHER_RUN_REASON);
+    expect(h.store.records.get(WEEK)).toBe(sent);
+  });
+
+  it('saves a run that is itself sent: the week is sent either way', async () => {
+    const h = setupEnding();
+    h.store.records.set(WEEK, partly);
+
+    const ended = await endRun(h.ctx, { record: sent }, undefined);
+
+    expect(ended).not.toHaveProperty('kept');
+    expect(h.store.records.get(WEEK)).toBe(sent);
+  });
+
+  it('goes by the record it began with when the store cannot be read again', async () => {
+    const h = setupEnding();
+    vi.spyOn(h.store, 'getRunRecord').mockRejectedValue(new Error('EIO'));
+
+    const ended = await endRun(h.ctx, { record: partly }, undefined);
+
+    expect(ended).not.toHaveProperty('kept');
+    expect(h.store.records.get(WEEK)).toBe(partly);
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({
+        level: 'warn',
+        message: 'Could not read the week record again before saving',
+        fields: { error: 'EIO' },
+      }),
+    );
   });
 });

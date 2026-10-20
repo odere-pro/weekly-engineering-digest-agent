@@ -8,7 +8,8 @@
 
 ```mermaid
 flowchart TD
-  start["endRun(ctx, ending, previous)"] --> keep{"keepReason: does the earlier record stay?"}:::focus
+  start["endRun(ctx, ending, previous)"] --> stored["storedRecord: read the week again"]
+  stored --> keep{"keepReason: does the earlier record stay?"}:::focus
   keep -->|"yes: warn, status"| notes
   keep -->|no| save["saveRecord: alert, then RecordNotSavedError, if it fails"]
   save --> held["runFiles: writeHeld, review.md, error.json"]
@@ -23,6 +24,9 @@ flowchart TD
 - `keepReason`: a sent week is replaced only by a sent run; a part-delivered week only by a run that
   reached a channel. Else a sent week looks unsent and goes out twice. When the earlier record stays,
   this run's held files, `review.md` and `error.json` go with its record; the note still goes.
+- `previous` is what the run read at its start. A run that lost its lock can find a newer record in
+  the store (`storedRecord`, read again before saving): one that reached a channel the run did not
+  start with stays too (`KEPT_OTHER_RUN_REASON`, `deliveredMeanwhile`). A read that fails keeps `previous`.
 - `saveRecord` is the only step that throws: it sends a note saying the record was not saved, then
   throws `RecordNotSavedError`, so a caller holding another note does not send it as well.
 - Every other write is best effort: it logs and goes on. Nothing here reads model or feed text.
@@ -30,15 +34,15 @@ flowchart TD
 
 ## Files
 
-| File / folder   | Role                                                                      |
-| --------------- | ------------------------------------------------------------------------- |
-| `endRun.ts`     | `endRun`, `pruneOldRuns`                                                  |
-| `types.ts`      | `EndingContext`, `Ending`, `Ended`, `Failure`, `HeldArtifact`             |
-| `saveRecord.ts` | `saveRecord`, `RecordNotSavedError`                                       |
-| `keepReason.ts` | `keepReason`, `reachedAChannel`, `KEPT_SENT_REASON`, `KEPT_PARTLY_REASON` |
-| `runFiles/`     | `toJson`, the file schemas, held files, `review.md`, `error.json`         |
-| `notes/`        | Failure notes, held notes, `abortedError`, `isUnretriable`, `needsForce`  |
-| `shipping/`     | `shipDigest`, `forEachDelivery`, `digestMessage`, `winnerMessage`         |
+| File / folder   | Role                                                                          |
+| --------------- | ----------------------------------------------------------------------------- |
+| `endRun.ts`     | `endRun`, `pruneOldRuns`                                                      |
+| `types.ts`      | `EndingContext`, `Ending`, `Ended`, `Failure`, `HeldArtifact`                 |
+| `saveRecord.ts` | `saveRecord`, `RecordNotSavedError`                                           |
+| `keepReason.ts` | `keepReason`, `reachedAChannel`, `deliveredMeanwhile`, `KEPT_*_REASON`        |
+| `runFiles/`     | `toJson`, the file schemas, held files, `review.md`, `error.json`             |
+| `notes/`        | Failure notes, held notes, `abortedError`, `supersededError`, `isUnretriable` |
+| `shipping/`     | `shipDigest`, `forEachDelivery`, `digestMessage`, `winnerMessage`             |
 
 ## Gotchas
 

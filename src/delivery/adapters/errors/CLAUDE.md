@@ -1,8 +1,8 @@
 # Delivery errors
 
 > What a failed send throws, and the failure-note text. Entries: `redactedError` (`redact.ts`),
-> `DeliveryError`, `deliveryFacts` (`deliveryError.ts`), `failureTitle` and `failureOneLiner`
-> (`failureNote.ts`).
+> `DeliveryError`, `deliveryFacts` (`deliveryError.ts`), `refusedRecipientsError`
+> (`refusedRecipients.ts`), `failureTitle` and `failureOneLiner` (`failureNote.ts`).
 
 ## Flow
 
@@ -27,14 +27,20 @@ flowchart TD
   `DOMException` has one) and a code that is free text are dropped: text may carry a secret.
 - The code is added to the message when the text hides it (`fetch failed` hides `ECONNREFUSED`).
 - The chain is read and copied up to `MAX_CAUSE_DEPTH` (5) levels, so a loop in `cause` ends.
+- `refusedRecipientsError(answer, recipientCount)` reads the answer of a send that did not throw
+  (`rejected`, `rejectedErrors`) and returns a `DeliveryError` when some recipients were refused,
+  else nothing. Its text is a count and integer reply codes, so it needs no redaction. It has no
+  facts, no cause and no `responseCode` on purpose: a retry would send the mail again to the
+  recipients who already have it (see `adapters/CLAUDE.md`).
 
 ## Files
 
-| File               | Role                                                                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `deliveryError.ts` | `DeliveryError`, `DeliveryErrorFacts`, `deliveryFacts`, `statedFacts`, `causeOf`, `describeError`, `MAX_CAUSE_DEPTH` |
-| `redact.ts`        | `redactSecrets`, `redactedError`                                                                                     |
-| `failureNote.ts`   | `failureTitle`; `failureOneLiner` (the reason on one line, 300 characters at most)                                   |
+| File                   | Role                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `deliveryError.ts`     | `DeliveryError`, `DeliveryErrorFacts`, `deliveryFacts`, `statedFacts`, `causeOf`, `describeError`, `MAX_CAUSE_DEPTH` |
+| `redact.ts`            | `redactSecrets`, `redactedError`                                                                                     |
+| `refusedRecipients.ts` | `refusedRecipientsError`: a mail only some recipients accepted                                                       |
+| `failureNote.ts`       | `failureTitle`; `failureOneLiner` (the reason on one line, 300 characters at most)                                   |
 
 Tests sit next to each file; no fixtures.
 
@@ -42,4 +48,5 @@ Tests sit next to each file; no fixtures.
 
 - `app/retryingDelivery.ts` and `app/deliveryRetry/transientError.ts` read the facts: a new fact needs
   the retry rule changed too. Their tests and `container.secrets.test.ts` import `deliveryError.ts` and `redact.ts`.
+- Never give `refusedRecipientsError` a fact: `isTransientDeliveryError` retries 421, 450 and 451.
 - `config/load.ts` has its own `redactSecrets`, over the `Secrets` object. This one takes a list.

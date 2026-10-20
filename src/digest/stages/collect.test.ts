@@ -2,8 +2,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { collect } from './collect';
 import { FakeSourceFetcher } from '../../../test/fakes';
 import type { Item } from '../../domain/schemas';
+import { DigestError } from '../../shared/errors';
 import type { SourceFetcher } from '../../sources/SourceFetcher';
 import { makeItem } from '../../../test/builders';
+import { PartialFailure } from '../chain/failures';
+import { isUnretriable } from '../ending/notes/unretriable';
 import { NOW, WEEK, contextFor, stateOf } from '../__fixtures__/stageKit';
 
 const items = [1, 2, 3].map((n) =>
@@ -62,14 +65,95 @@ describe('collect', () => {
     expect(h.store.artifacts.get(`${WEEK}/items.json`)).toBe('[]\n');
   });
 
-  it('names the failed sources in the state and in the note of a quiet week', async () => {
-    const fetcher = new FakeSourceFetcher('rss', { 'example-feed': new Error('feed is down') });
-    const h = contextFor({ fetchers: { rss: fetcher } });
+  describe('when some sources failed and the others returned nothing', () => {
+    const twoFeeds = {
+      sources: [
+        { id: 'example-feed', kind: 'rss' as const, url: 'https://example.com/feed.xml' },
+        { id: 'other-feed', kind: 'rss' as const, url: 'https://example.org/feed.xml' },
+      ],
+    };
 
-    const next = await collect(h.ctx, stateOf(), h.logger);
+    it('stays quiet, with the failed sources in the state and the counts in the note', async () => {
+      const fetcher = new FakeSourceFetcher('rss', {
+        'example-feed': [],
+        'other-feed': new Error('feed is down'),
+      });
+      const h = contextFor({ fetchers: { rss: fetcher }, config: twoFeeds });
 
-    expect(next.failedSources).toEqual([{ sourceId: 'example-feed', error: 'feed is down' }]);
-    expect(next.settled?.note).toBe('no items collected (1 of 1 sources failed)');
+      const next = await collect(h.ctx, stateOf(), h.logger);
+
+      expect(next.failedSources).toEqual([{ sourceId: 'other-feed', error: 'feed is down' }]);
+      expect(next.settled).toEqual({
+        status: 'quiet',
+        note: 'no items collected (1 of 2 sources failed)',
+      });
+    });
+  });
+
+  describe('when every source failed', () => {
+    const everySourceFails = (): ReturnType<typeof contextFor> =>
+      contextFor({
+        fetchers: {
+          rss: new FakeSourceFetcher('rss', {
+            'example-feed': new Error('getaddrinfo ENOTFOUND feed.example.com'),
+            'other-feed': new Error('getaddrinfo ENOTFOUND other.example.org'),
+          }),
+        },
+        config: {
+          sources: [
+            { id: 'example-feed', kind: 'rss', url: 'https://feed.example.com/feed.xml' },
+            { id: 'other-feed', kind: 'rss', url: 'https://other.example.org/feed.xml' },
+          ],
+        },
+      });
+
+    it('fails the collect step instead of settling the week as quiet', async () => {
+      const h = everySourceFails();
+
+      const failure = await collect(h.ctx, stateOf(), h.logger).catch((error: unknown) => error);
+
+      expect(failure).toBeInstanceOf(PartialFailure);
+      const { state, cause } = failure as PartialFailure;
+      expect(cause).toBeInstanceOf(DigestError);
+      expect(cause).toMatchObject({ step: 'collect' });
+      expect(state.settled).toBeUndefined();
+      expect(state.failedSources.map((failed) => failed.sourceId)).toEqual([
+        'example-feed',
+        'other-feed',
+      ]);
+    });
+
+    it('names the counts only, never a feed address or the text a feed returned', async () => {
+      const h = everySourceFails();
+
+      const failure = await collect(h.ctx, stateOf(), h.logger).catch((error: unknown) => error);
+
+      const { message } = (failure as PartialFailure).cause as DigestError;
+      expect(message).toBe('every source failed (2 of 2 sources), so no items were collected');
+      expect(message).not.toMatch(/example\.(com|org)|ENOTFOUND/);
+    });
+
+    it('is not a failure that no retry can clear', async () => {
+      const h = everySourceFails();
+
+      const failure = await collect(h.ctx, stateOf(), h.logger).catch((error: unknown) => error);
+
+      const { message } = (failure as PartialFailure).cause as DigestError;
+      expect(isUnretriable(message)).toBe(false);
+    });
+  });
+
+  it('settles the run as quiet when no source is configured: nothing failed', async () => {
+    // The config schema asks for a source, so build the context the schema would refuse.
+    const h = contextFor({ fetchers: {} });
+    const ctx = {
+      ...h.ctx,
+      deps: { ...h.ctx.deps, config: { ...h.ctx.deps.config, sources: [] } },
+    };
+
+    const next = await collect(ctx, stateOf(), h.logger);
+
+    expect(next.settled).toEqual({ status: 'quiet', note: 'no items collected' });
   });
 
   it('goes on with the items of the sources that worked when another failed', async () => {

@@ -4,6 +4,7 @@ import { planGuards } from '../../guards/guardRun';
 import { DigestError } from '../../shared/errors';
 import { isoWeekId } from '../../shared/isoWeek';
 import { noopLogger, type Logger } from '../../shared/telemetry';
+import type { RunRecord } from '../../store/runRecord';
 import type { DigestDeps, RunOptions } from '../types';
 
 /** One run's fixed inputs, resolved before anything runs. */
@@ -27,6 +28,11 @@ export interface RunContext {
    * This run then holds its files in the chain state; `endRun` writes them if its record is saved.
    */
   readonly holdArtifacts: boolean;
+  /**
+   * The week's record when this run took the lock (none for a week never run). `deliver` compares
+   * the store with it to see that another run delivered the week while this one worked.
+   */
+  readonly previousRecord?: RunRecord;
 }
 
 /** Resolves the options against the config and the clock; throws on a bad week id or window. */

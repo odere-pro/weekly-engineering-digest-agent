@@ -13,6 +13,9 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
   `no items collected`.
 - A week is quiet when nothing was collected, or when fewer than 3 items are left after the
   `process` step. Often that is a valid result. Check it only when it repeats.
+- A week where every source failed is not quiet: it ends `failed` at `collect` with
+  `every source failed (24 of 24 sources)`, and the scheduler retries it. Go to
+  [Failing feed](failing-feed.md).
 - If one feed is the problem, go to [Failing feed](failing-feed.md).
 
 ## Prerequisites
@@ -40,7 +43,7 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
 
    | Where the count falls            | Meaning                                         | Next                                 |
    | -------------------------------- | ----------------------------------------------- | ------------------------------------ |
-   | `collected` is 0                 | Feeds empty in the window, or every feed failed | Read `Source failed:` lines; step 5  |
+   | `collected` is 0                 | Feeds empty in the window, or some feeds failed | Read `Source failed:` lines; step 5  |
    | `after guards` below `collected` | Input guards dropped items                      | `show --part scores`; guard settings |
    | `selected` below `classified`    | `process` dropped items (step 3)                | Step 3                               |
    | `selected` is 1 or 2             | Fewer than 3 survived, so the week is quiet     | Step 4                               |
@@ -50,6 +53,12 @@ or something upstream is wrong. A quiet week has exit code 3 and sends no digest
 
    ```text
    Weekly digest 2026-W43 failed at collect: no items collected (3 of 24 sources failed)
+   ```
+
+   If every source failed, the status is `failed`, not `quiet`, and the note counts them:
+
+   ```text
+   Weekly digest 2026-W43 failed at collect: every source failed (24 of 24 sources), so no items were collected
    ```
 
 3. Work out why `process` dropped an item. The reasons are not saved, so compare the scores

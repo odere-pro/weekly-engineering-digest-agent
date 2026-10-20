@@ -31,7 +31,11 @@ export async function runDigest(deps: DigestDeps, options: RunOptions = {}): Pro
       if (previous?.status === 'sent' && !options.force) return skipped(ctx);
       const part = options.force || ctx.dryRun ? undefined : await loadPartDelivery(ctx, previous);
       if (part) return await resumed(ctx, part);
-      const chainCtx = { ...ctx, holdArtifacts: reachedAChannel(previous) };
+      const chainCtx = {
+        ...ctx,
+        holdArtifacts: reachedAChannel(previous),
+        previousRecord: previous,
+      };
       return await finish(chainCtx, await runChain(chainCtx), previous);
     } finally {
       await releaseLock(ctx, lock);

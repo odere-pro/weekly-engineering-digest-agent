@@ -48,12 +48,15 @@ sequenceDiagram
   run took over.
 - `hasSentDigest` is true only for status `sent`. `sentUrls(week, n)` reads the `n` weeks before and
   counts a record with status `sent` or a non-empty `deliveredTo`: a part-delivered week must not repeat links.
+  Both read a `run.json` that fails `RunRecordSchema` (a newer build's channel id after a rollback) by
+  its `status`, `deliveredTo` and `sentUrls` alone, so a sent week is not taken for an unsent one.
 - `prune(week, keepWeeks)` empties the weeks older than the `keepWeeks` before `week`: source folders and
   all of `digest/` except `digest.md` and the delivered `<week>.md`, `.html`, `.failed.md`. It deletes
   `run.json`, so config requires `keepWeeks >= dedupeWeeks`. `pruneOldDays` removes older days' source
   folders and `logs/<day>/`.
 - A missing `run.json` reads as `undefined`; so does a corrupt, wrong-week or schema-failing one, with
-  a warning. Other filesystem errors propagate. So a new `RunRecord` field must be optional.
+  a warning (`getRunRecord`, `listRuns`). Other filesystem errors propagate. So a new `RunRecord` field
+  must be optional.
 - Secrets are removed before data gets here (`redactStore`): add no record field that could hold one.
 
 ## Files

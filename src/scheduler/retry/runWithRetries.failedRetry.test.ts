@@ -277,8 +277,22 @@ describe('scheduler failed-run retry', () => {
     },
   );
 
-  it('does not retry a run that threw, which is not a failed record', async () => {
+  it('retries a run that threw on the same budget, as it has no failed record to read', async () => {
     const h = harness();
+    h.run.mockRejectedValue(new Error('disk gone'));
+    await start(h.options);
+
+    const tick = h.tick();
+    await vi.advanceTimersByTimeAsync(30 * MINUTE_MS - 1);
+    expect(h.run).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(10 * HOUR_MS);
+    await tick;
+
+    expect(h.run).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry a run that threw when no failed retry is configured', async () => {
+    const h = harness({ failedRetry: undefined });
     h.run.mockRejectedValue(new Error('disk gone'));
     await start(h.options);
 

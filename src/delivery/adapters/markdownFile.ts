@@ -47,6 +47,11 @@ export function digestFilePaths(dir: string, weekId: string): DigestFilePaths {
   return { markdown: join(dir, `${weekId}.md`), html: join(dir, `${weekId}.html`) };
 }
 
+/** `<dir>/<weekId>.failed.md`: where a failure note for the week is written. */
+function failureFilePath(dir: string, weekId: string): string {
+  return join(dir, `${weekId}.failed.md`);
+}
+
 function failureMarkdown(note: FailureNote): string {
   const step = note.step ? `- Step: ${note.step}\n` : '';
   return `# ${failureTitle(note)}\n\n${step}- Error: ${visibleText(note.message)}\n`;
@@ -56,7 +61,9 @@ function failureMarkdown(note: FailureNote): string {
  * Always-on delivery: writes <folder>/<weekId>.md (W1-12) and, when the message carries its view,
  * <folder>/<weekId>.html (W8-05), the same page the email channel sends, so the digest opens in a
  * browser. A digest without a view removes the week's old .html: the two files never disagree.
- * The folder is `markdownFolder(options, weekId)`.
+ * Once the digest is written the week's failure note (<weekId>.failed.md) goes too: an earlier
+ * attempt left it, and it must not sit beside a digest that was sent. The folder is
+ * `markdownFolder(options, weekId)`.
  */
 export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delivery {
   async function ensureDir(weekId: string): Promise<string> {
@@ -66,7 +73,8 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
   }
 
   async function sendDigest(message: DigestMessage): Promise<void> {
-    const paths = digestFilePaths(markdownFolder(options, message.weekId), message.weekId);
+    const folder = markdownFolder(options, message.weekId);
+    const paths = digestFilePaths(folder, message.weekId);
     // Rendered before anything is written, so a render failure leaves the folder as it was.
     const html = message.view === undefined ? undefined : renderEmailHtml(message.view);
     await ensureDir(message.weekId);
@@ -76,12 +84,14 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
     // Already clean when this build rendered it; a digest.md saved by an older build is cleaned here.
     await writeFileAtomic(paths.markdown, visibleText(message.markdown));
     if (html !== undefined) await writeFileAtomic(paths.html, html);
+    // Last, so a failed write keeps the note: it is then the only record of what went wrong.
+    await rm(failureFilePath(folder, message.weekId), { force: true });
   }
 
   async function sendFailure(note: FailureNote): Promise<void> {
     assertWeekId(note.weekId);
     const dir = await ensureDir(note.weekId);
-    await writeFileAtomic(join(dir, `${note.weekId}.failed.md`), failureMarkdown(note));
+    await writeFileAtomic(failureFilePath(dir, note.weekId), failureMarkdown(note));
   }
 
   return { id: 'markdown', sendDigest, sendFailure };
