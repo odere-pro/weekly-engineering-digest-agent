@@ -13,8 +13,9 @@ feed never stops a run: it is skipped and listed, and the other feeds still coun
 - `pnpm digest doctor` prints `! source <id>`.
 - A source you expect in the digest never shows up. A feed that works but is empty is also
   covered here.
-- If every feed fails, the week is [quiet](quiet-week.md); the cause is then usually the
-  network of the machine or the container.
+- If every feed fails, the week ends `failed` at `collect` (exit 1), not [quiet](quiet-week.md),
+  and the scheduler retries it. The cause is then usually the network of the machine or the
+  container.
 
 ## Prerequisites
 

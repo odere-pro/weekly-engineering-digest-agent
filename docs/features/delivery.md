@@ -30,8 +30,9 @@ It is the last step, deliver, after select. See [data flow](../architecture/data
 - Retries a transient failure twice (after 5 s, then 10 s), but only when sending again cannot
   double the message: a connect failure, HTTP 429 or 5xx, or SMTP 421, 450 or 451. A reset after
   the body went out is not retried. A message can still arrive twice in the rare 429 or 5xx case.
-- Sends a failure note, a short plain text, to every channel when a run fails, is blocked or
-  collected nothing. An ordinary quiet week and a dry run send no note.
+- Sends a failure note, a short plain text, to every channel when a run fails (also when every
+  source failed), is blocked, or ends `quiet` with nothing collected. An ordinary quiet week and a
+  dry run send no note.
 - Recipients, webhook and folder come from config and `.env` only, never from model output.
   Secrets are removed from every message and error before it leaves.
 

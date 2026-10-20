@@ -11,8 +11,12 @@ Only one run may use a data folder (`dist/` by default) at a time. The lock is t
   or not at all (a temp file and a hard link), and holds the process id, host, start time and a
   heartbeat.
 - The holder rewrites the heartbeat every 60 seconds.
-- A second run that finds the lock fails with exit 1: "Another run is in progress".
-- The scheduler treats that message as a lock miss and retries every 5 minutes for up to 2 hours.
+- A second run that finds the lock fails with exit 1: "Another run is in progress". A run that
+  loses all 3 races for the lock file (another run is taking it at that moment) fails with exit 1:
+  "Could not take the run lock: another run is starting".
+- The scheduler treats both messages as a lock miss and retries every 5 minutes for up to 2 hours.
+  When that time is spent, it sends one note: "The run for 2026-W43 did not start: another run held
+  the run lock for the whole retry budget."
 
 ## When a lock is taken over
 

@@ -119,3 +119,4 @@ delete the `ollama-models` volume (Linux). Delete `dist/` only if you want to lo
 - [First run](first-run.md), [Schedule weekly runs](schedule-weekly-runs.md)
 - [Deployment](../../architecture/deployment.md), [Environment variables](../../reference/environment-variables.md)
 - [Stopping and restarts](../../operations/stopping-and-restarts.md)
+- Later, to move to a newer version: [Upgrade the tool](../maintain/upgrade-the-tool.md)

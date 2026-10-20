@@ -58,8 +58,9 @@ Quote a password that contains `#`: an unquoted value ends at the first `#`
 - A digest mail has a text part and an HTML part. The subject is
   `Engineering digest <week>: <headline>`, cut to a safe length.
 - A failure note is a short plain text mail titled `Weekly digest <week> failed at <step>`.
-  `failed` and `blocked` runs send one, and so does a `quiet` run when nothing was collected. A dry
-  run sends none. The title says "failed" for all of them.
+  `failed` and `blocked` runs send one (a run where every source failed is `failed`, at
+  `collect`), and so does a `quiet` run when nothing was collected. A dry run sends none. The title
+  says "failed" for all of them.
 - Recipients come only from `delivery.email.to`. A model can never add one.
 - Text from feeds and models is put on one line, and invisible characters (a bidi mark or
   override, a zero-width space, a tag character) become a space, so a feed cannot reorder or hide

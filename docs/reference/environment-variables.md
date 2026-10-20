@@ -10,17 +10,17 @@ two sources combine is explained in [environment](../configuration/environment.m
 
 These are defined in `SecretsSchema` and `EnvSchema` in `src/config/schema.ts`.
 
-| Variable                      | Secret | Default                  | Meaning                                                                                                              |
-| ----------------------------- | ------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `SMTP_PASSWORD`               | yes    | unset                    | Password for `delivery.email.user`. Needed when email is configured                                                  |
-| `SLACK_WEBHOOK_URL`           | yes    | unset                    | Slack incoming webhook. Must be `https`. Needed when Slack is enabled                                                |
-| `GITHUB_TOKEN`                | yes    | unset                    | Raises GitHub rate limits; GitHub sources then use the REST API                                                      |
-| `OLLAMA_URL`                  | no     | `http://localhost:11434` | Where Ollama answers. Never `localhost` inside Docker                                                                |
-| `LOG_LEVEL`                   | no     | `info`                   | `debug`, `info`, `warn` or `error`. Logs are JSON on stdout and in `<dataDir>/logs/<day>/digest.log`                 |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | no     | unset                    | A URL. When set, OpenTelemetry traces are exported there                                                             |
-| `DIGEST_HOST_OS`              | no     | this process's OS        | OS of the machine Ollama runs on: `darwin`, `linux`, `windows` or `uname -s` spelling                                |
-| `DIGEST_HOST_ARCH`            | no     | this process's CPU       | CPU of that machine: `arm64`, `aarch64`, `x86_64`, `x64`, `amd64`                                                    |
-| `EVAL_JUDGE`                  | no     | unset                    | Model tag `digest eval` uses to score digests of a profile with no judge. Not the judge a `models.writers` list gets |
+| Variable                      | Secret | Default                  | Meaning                                                                                                                                                     |
+| ----------------------------- | ------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SMTP_PASSWORD`               | yes    | unset                    | Password for `delivery.email.user`. Needed when email is configured                                                                                         |
+| `SLACK_WEBHOOK_URL`           | yes    | unset                    | Slack incoming webhook. Must be `https`. Needed when Slack is enabled                                                                                       |
+| `GITHUB_TOKEN`                | yes    | unset                    | Raises GitHub rate limits; GitHub sources then use the REST API                                                                                             |
+| `OLLAMA_URL`                  | no     | `http://localhost:11434` | Where Ollama answers: an `http://` or `https://` URL, never `localhost` inside Docker. A `user:password@` in it is sent as Basic authorization and redacted |
+| `LOG_LEVEL`                   | no     | `info`                   | `debug`, `info`, `warn` or `error`. Logs are JSON on stdout and in `<dataDir>/logs/<day>/digest.log`                                                        |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | no     | unset                    | An `http://` or `https://` URL. When set, OpenTelemetry traces are exported there                                                                           |
+| `DIGEST_HOST_OS`              | no     | this process's OS        | OS of the machine Ollama runs on: `darwin`, `linux`, `windows` or `uname -s` spelling                                                                       |
+| `DIGEST_HOST_ARCH`            | no     | this process's CPU       | CPU of that machine: `arm64`, `aarch64`, `x86_64`, `x64`, `amd64`                                                                                           |
+| `EVAL_JUDGE`                  | no     | unset                    | Model tag `digest eval` uses to score digests of a profile with no judge. Not the judge a `models.writers` list gets                                        |
 
 A bad value stops the command with `Invalid environment (...)` and names the variable, never the
 value. `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH` with other values stop it with
@@ -60,10 +60,12 @@ exports `DIGEST_HOST_OS` and `DIGEST_HOST_ARCH` from `uname`, and `make tracing-
 
 ## Which are secrets
 
-`SMTP_PASSWORD`, `SLACK_WEBHOOK_URL` and `GITHUB_TOKEN`. The program removes their values from
-logs, run records, traces, delivered messages and error text. For the Slack webhook, the URL path
-is what counts as secret. Passwords inside `OLLAMA_URL` or the tracing endpoint are not redacted,
-so keep credentials out of those URLs.
+`SMTP_PASSWORD`, `SLACK_WEBHOOK_URL` and `GITHUB_TOKEN`, and the password in `OLLAMA_URL`. The
+program removes their values from logs, run records, traces, delivered messages and error text. For
+the Slack webhook, the URL path is what counts as secret. For `OLLAMA_URL`, the password of a
+`user:password@` is the secret (a lone `token@` counts as the token), and Ollama gets it as Basic
+authorization, never in the request URL. A password inside the tracing endpoint is not redacted, so keep
+credentials out of that URL.
 
 ## Related
 

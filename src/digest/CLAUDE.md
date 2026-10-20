@@ -50,11 +50,10 @@ flowchart TD
 
 ## Rules
 
-- The abort signal is checked at chain start, before each stage and before a resume's delivery. It
-  also enters the collect, classify, write, select and guard stages and the fallback: the fetchers,
-  the guards and every model call stop within one call, and no new call or writer starts. Only
-  `deliver` ignores it: a send that has started finishes. The failure starts
-  `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
+- The abort signal is checked at chain start, before each stage and a resume's delivery. It also enters
+  collect, classify, write, select, the guards and the fallback: each fetch, guard and model call stops
+  within one call, and no new call or writer starts. Only `deliver` ignores it: a started send finishes.
+  The failure starts `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
 - A run never replaces a record that got further (`keepReason`, against the store as the run ends),
   else a sent week goes out twice. Meanwhile (`holdArtifacts`) its files wait in `ChainState.held`,
   written only if its record is saved. A run that lost its lock: see `deliver` in `stages/`.

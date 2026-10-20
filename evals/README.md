@@ -17,7 +17,7 @@ pnpm digest eval --profile light --only guards
 pnpm digest eval --profile light --resume
 
 # Compare two saved scorecards: every metric, both values, the delta and the gate.
-pnpm digest eval --compare evals/scorecards/2026-10-16-light.json evals/scorecards/2026-10-19-light.json
+pnpm digest eval --compare evals/scorecards/2026-10-17-light.json evals/scorecards/2026-10-18-light.json
 ```
 
 - `--only` saves `<date>-<profile>-partial-<section>.json` with `partial: ["guards"]`. The other

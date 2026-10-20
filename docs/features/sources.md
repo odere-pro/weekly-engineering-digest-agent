@@ -25,6 +25,12 @@ It is the first step, collect, at the start of the chain described in
 - Keeps entries with an http(s) link and a valid date that fall inside the window, newest first.
   A date with no zone is read as UTC. Each source is capped at its own `maxItems`, else at
   `maxItemsPerSource`. Duplicate ids are removed; the source earlier in config order wins.
+- Makes each link safe for the digest when it reads the entry (`canonicalLink`). A character that
+  Markdown or a channel takes for structure (parentheses, brackets, quotes, the backtick, the pipe,
+  the backslash, spaces and invisible characters) is percent-encoded, and so is an `&` that starts
+  a character reference. A double-encoded `&amp;` becomes `&`. Trailing punctuation is encoded and
+  an empty trailing `?` or `#` is dropped. An ordinary link stays as it is, so its id does not move.
+  A title is cut to 300 characters. An entry whose link is over 2048 characters is left out.
 - Cuts each summary to plain text of at most 600 characters. When an entry has no summary, it reads
   the entry's own page (never for GitHub). Limits: same host, 2 MiB per page, 3 s per page, 4 s in
   total. A page problem never fails the source.

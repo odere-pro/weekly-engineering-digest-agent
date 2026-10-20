@@ -1,8 +1,11 @@
 // Tunes minRelevance, maxHype, maxMinorRelease and guardFlag for one profile (W3-03).
 // `capture` calls the models once and saves their raw outputs; `sweep` picks the thresholds from
 // those outputs offline, with no model calls:
-//   tsx evals/tuneThresholds.ts capture --config data/thresholds/light.json
+//   tsx evals/tuneThresholds.ts capture [--config <digest config file>]
 //   tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json
+// `capture` builds the app from a digest config file (default digest.config.json) and captures the
+// `profile` set in it. To capture another profile, pass a copy of the config with that profile
+// (a recipe is in evals/thresholds/README.md).
 // This file is the command line only; the work is in evals/thresholds/ (see its CLAUDE.md).
 import { realpathSync } from 'node:fs';
 import { join } from 'node:path';

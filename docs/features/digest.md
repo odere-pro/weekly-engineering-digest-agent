@@ -28,8 +28,10 @@ in [data flow](../architecture/data-flow.md).
   A guard role whose checks are all off does not need its model.
 - Runs collect, guardInput, classify, process, write, guardOutput, select and deliver in order.
   A dry run stops before deliver. Models run strictly one after another.
-- A step can end the week early. `quiet`: nothing was collected, or fewer than 3 items are left
-  after process. If every draft is rejected by the checks or the output guards, the run builds a
+- A step can end the week early. `quiet`: the sources answered but nothing was collected (or some
+  failed and the rest had nothing), or fewer than 3 items are left after process. When every
+  configured source failed, `collect` fails the run instead: that is a broken network, not a quiet
+  week, so the week is `failed` and the scheduler retries it. If every draft is rejected by the checks or the output guards, the run builds a
   fallback digest from the selected items' own text (no model) and sends that. Only when the
   fallback itself cannot be built does the week end `blocked`. See [Fallback digest](#fallback-digest).
 - At the end it saves `run.json`, the held files, `review.md` and `error.json` (failure only),
@@ -37,14 +39,14 @@ in [data flow](../architecture/data-flow.md).
 - It never replaces a record that got further. A `sent` week stays `sent`, and a partly
   delivered week stays that way unless the new run reaches a channel too.
 
-| Status    | Exit code | Meaning                                                          |
-| --------- | --------- | ---------------------------------------------------------------- |
-| `sent`    | 0         | The winner reached every channel                                 |
-| `dry-run` | 0         | A winner was written to disk, nothing was sent                   |
-| `skipped` | 0         | The week already has a sent digest                               |
-| `failed`  | 1         | A health check, a step or a delivery failed, or no writer worked |
-| `blocked` | 2         | Every draft was rejected and no fallback digest could be made    |
-| `quiet`   | 3         | Nothing collected, or fewer than 3 items worth sending           |
+| Status    | Exit code | Meaning                                                                               |
+| --------- | --------- | ------------------------------------------------------------------------------------- |
+| `sent`    | 0         | The winner reached every channel                                                      |
+| `dry-run` | 0         | A winner was written to disk, nothing was sent                                        |
+| `skipped` | 0         | The week already has a sent digest                                                    |
+| `failed`  | 1         | A health check, a step or a delivery failed, no writer worked, or every source failed |
+| `blocked` | 2         | Every draft was rejected and no fallback digest could be made                         |
+| `quiet`   | 3         | Sources answered but nothing was collected, or fewer than 3 items worth sending       |
 
 ## Fallback digest
 
@@ -78,7 +80,8 @@ item is "good to know", there are no action lines, and the headline only names t
 
 ## What can go wrong
 
-- `failed`: a step error, Ollama down or a model missing, a held lock, or a delivery error. The
+- `failed`: a step error (also when every source failed), Ollama down or a model missing, a held
+  lock, or a delivery error. The
   failure note and `error.json` name the step. See
   [failed run](../runbooks/debug/failed-run.md).
 - `sent` with `fallback: true`: the writers' drafts were all rejected. See

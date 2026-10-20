@@ -114,7 +114,7 @@ Finish a partly delivered week or run a week again. [Folder index](recover/READM
 
 ### Maintain
 
-Upgrade models, free disk, re-baseline evals, rotate secrets. [Folder index](maintain/README.md).
+Upgrade the tool or its models, free disk, re-baseline evals, rotate secrets. [Folder index](maintain/README.md).
 
 | Runbook                                                                       | Use it to                                                                                                                                                  |
 | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -123,6 +123,7 @@ Upgrade models, free disk, re-baseline evals, rotate secrets. [Folder index](mai
 | [Re-baseline evals](maintain/re-baseline-evals.md)                            | Record a fresh scorecard for a profile and update the pages that quote it, so the written baseline matches what the code does today.                       |
 | [Rotate secrets](maintain/rotate-secrets.md)                                  | Replace the SMTP password, the Slack webhook URL or the GitHub token with new ones, without leaking the old or the new value.                              |
 | [Upgrade models](maintain/upgrade-models.md)                                  | Move to a newer model, or a newer build of the same tag, without breaking runs.                                                                            |
+| [Upgrade the tool](maintain/upgrade-the-tool.md)                              | Move an installed copy to a newer version of the tool itself, on Node or in Docker, and check it before the scheduler uses it.                             |
 
 ### Release
 

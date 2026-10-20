@@ -18,6 +18,9 @@ The honest list. Each item says what happens and why.
   (unless that holds another URL or a `www.`). It reads a bare URL as a Markdown viewer does, to
   the next space, so a few harmless forms fail it and the writer retries: a URL in square
   brackets, one with `|` or `(` glued on, an `<a href="...">` tag.
+- An item's link is made safe for Markdown when it is collected: brackets, quotes, `|`, `\`,
+  spaces and trailing punctuation are percent-encoded. A link whose host is an IPv6 address in
+  brackets (`http://[::1]/x`) is no longer a link after that, so its entry is left out.
 - `digest.md` writes `<` and `>` in the model's and the feeds' text with a backslash
   (`\<svg\>`), so a viewer that allows HTML shows tags as text. A viewer that does not read
   Markdown shows the backslashes. A `digest.md` saved before this keeps its raw brackets; resuming

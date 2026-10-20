@@ -96,3 +96,4 @@ and your config). Remove any OS schedule you saved
 - [First run](first-run.md), [Choose a profile and pull models](choose-profile-and-pull-models.md)
 - [CLI commands](../../reference/cli-commands.md), [Config keys](../../reference/config-keys.md)
 - [Cost and hardware](../../overview/cost-and-hardware.md)
+- Later, to move to a newer version: [Upgrade the tool](../maintain/upgrade-the-tool.md)

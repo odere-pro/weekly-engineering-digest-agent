@@ -14,8 +14,9 @@ Every `digest` command and option, with the defaults the program uses. `pnpm dig
 
 On a Mac, `make docker-init` and `make docker-up` wrap `digest init` and `docker compose up -d`.
 
-**Global option**, before the command name: `-c, --config <path>`, the path to
-`digest.config.json` (default `digest.config.json`). `-h, --help` works on every command.
+**Global options**, before the command name: `-c, --config <path>`, the path to
+`digest.config.json` (default `digest.config.json`), and `-V, --version`, which prints the version
+from `package.json` and exits 0. `-h, --help` works on every command.
 A usage error (unknown command or option, missing argument) prints help and exits 1.
 
 ## Commands at a glance

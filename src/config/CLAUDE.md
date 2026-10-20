@@ -38,14 +38,15 @@ flowchart TD
   writer means no judge and no select step. The profile table is in `docs/configuration/profiles.md`.
 - Tags per role: `modelsForRole` (`write` returns the panel), `requiredModels`, `modelsByRole`.
   `modelsInUse` drops a guard role whose checks are all off, so doctor does not ask for its model.
-- Folders: `dataDir` (`dist`) holds everything the project produces, laid out by `store/layout.ts`.
-  `delivery.markdown.dir` has no default: unset, the Markdown files go to each week's `digest/` folder.
+- `dataDir` (`dist`) is laid out by `store/layout.ts`. `delivery.markdown.dir` unset: files go to `digest/`.
 
 ## Rules
 
 - Secrets come from `.env` or the process environment only, never `digest.config.json`.
-  `SLACK_WEBHOOK_URL` must be https (its secret path must not travel in clear). A source URL with
-  `user:pass@` is refused: `fetch` echoes the whole URL into errors, logs and run records.
+  `SLACK_WEBHOOK_URL` must be https (its secret path must not travel in clear). `OLLAMA_URL` and
+  `OTEL_EXPORTER_OTLP_ENDPOINT` must be http(s); a `user:pass@` in `OLLAMA_URL` is sent as Basic
+  auth (`models/adapters/endpoint.ts`) and redacted. A source URL with `user:pass@` is refused:
+  `fetch` echoes the whole URL into errors, logs and run records.
 - Error messages name fields and rules, never the rejected values (`z.prettifyError`). A new
   setting needs a default, so existing `digest.config.json` files still load.
 - A source id must not be `digest`: a source's folder shares the day folder with the week's
@@ -70,11 +71,10 @@ Tests sit next to each file. `load.test.ts` reads `test/fixtures/config/` and pi
 
 ## Gotchas
 
-- `schema.ts` and `profiles.ts` are frozen (`.claude/rules/parallel-work.md`). A `MODEL_TAGS` change
-  alters what `digest doctor` asks users to pull. A new setting goes in `docs/configuration/` and
-  `docs/reference/config-keys.md`.
+- `schema.ts` and `profiles.ts` are frozen. A `MODEL_TAGS` change alters what `digest doctor` asks
+  users to pull. A new setting goes in `docs/configuration/` and `docs/reference/config-keys.md`.
 - The keys of `guards.input|output.checks` decide which guards the guard step runs (`planGuards`).
 - Two judges, two names: the env variable `EVAL_JUDGE` (`EnvSchema`) is the tag `digest eval` scores
   digests with; `OVERRIDE_JUDGE` (`profiles.ts`) is the judge a multi-writer override gets.
 - `redactSecrets` here takes the `Secrets` object and does not add the Slack webhook path
-  (`app/redaction/knownSecrets` does); `delivery/adapters/errors/redact.ts` has another over `string[]`.
+  or the `OLLAMA_URL` password (`app/redaction/knownSecrets` does); `delivery/adapters/errors/redact.ts` has another over `string[]`.

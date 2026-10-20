@@ -74,13 +74,15 @@ The same cases tune the classifier thresholds and `guardFlag`. Two commands, des
 [evals/thresholds/README.md](../../../evals/thresholds/README.md):
 
 ```bash
-pnpm tsx evals/tuneThresholds.ts capture --config data/thresholds/light.json
+pnpm tsx evals/tuneThresholds.ts capture
 pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json
 ```
 
-`capture` calls the models once and saves their raw answers. `sweep` runs offline, picks values on
-a train split and reports them on a holdout split (the two newest weeks and every third case).
-Values in use come from the `light` sweep of 2026-10-17: see [thresholds](../../configuration/thresholds.md).
+`capture` calls the models once and saves their raw answers. It reads `digest.config.json` and
+captures the profile set in that file. To capture another profile, pass `--config` with a copy of
+the config that sets it (the README shows how). `sweep` runs offline, picks values on a train split
+and reports them on a holdout split (the two newest weeks and every third case). Values in use come
+from the `light` sweep of 2026-10-17: see [thresholds](../../configuration/thresholds.md).
 
 The sweep's "filter accuracy" (keep an item when its label is 2 or 3) reached 0.867. The scorecard
 metric is a different number. The saved scorecard (2026-10-18) measured exact area and relevance

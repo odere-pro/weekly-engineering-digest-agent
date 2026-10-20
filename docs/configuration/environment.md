@@ -27,18 +27,18 @@ The full list with types is in the
 | `GITHUB_TOKEN`      | optional                 | Raises GitHub rate limits; uses the REST API |
 
 Secrets never reach logs, run records, traces, error messages or the screen. Error messages name a
-variable, never its value.
+variable, never its value. The password in `OLLAMA_URL` (see below) is treated the same way.
 
 ## Other settings
 
-| Variable                      | Default                  | Meaning                                              |
-| ----------------------------- | ------------------------ | ---------------------------------------------------- |
-| `OLLAMA_URL`                  | `http://localhost:11434` | Where Ollama answers. Never `localhost` in Docker    |
-| `LOG_LEVEL`                   | `info`                   | `debug`, `info`, `warn` or `error`                   |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | unset (no traces)        | A URL such as `http://jaeger:4318/v1/traces`         |
-| `DIGEST_HOST_OS`              | this machine's OS        | OS of the machine Ollama runs on, for profile choice |
-| `DIGEST_HOST_ARCH`            | this machine's CPU       | CPU of that machine                                  |
-| `EVAL_JUDGE`                  | unset                    | Model tag `digest eval` uses to score digests        |
+| Variable                      | Default                  | Meaning                                                                                                                                               |
+| ----------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OLLAMA_URL`                  | `http://localhost:11434` | Where Ollama answers: `http://` or `https://` only. Never `localhost` in Docker. A `user:password@` in it is sent as Basic authorization and redacted |
+| `LOG_LEVEL`                   | `info`                   | `debug`, `info`, `warn` or `error`                                                                                                                    |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | unset (no traces)        | An `http://` or `https://` URL such as `http://jaeger:4318/v1/traces`                                                                                 |
+| `DIGEST_HOST_OS`              | this machine's OS        | OS of the machine Ollama runs on, for profile choice                                                                                                  |
+| `DIGEST_HOST_ARCH`            | this machine's CPU       | CPU of that machine                                                                                                                                   |
+| `EVAL_JUDGE`                  | unset                    | Model tag `digest eval` uses to score digests                                                                                                         |
 
 Host detection and the two `DIGEST_HOST_*` values are explained in [profiles](profiles.md).
 `EVAL_JUDGE` is explained in [judge](judge.md).

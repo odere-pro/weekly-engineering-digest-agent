@@ -88,14 +88,15 @@ the Monday slot has already passed. See [schedule weekly runs](schedule-weekly-r
 
 ## Troubleshooting
 
-| Symptom                                                     | Cause                                                                            | Fix                                                                                    |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Exit 3, `Status    quiet`                                   | Nothing collected, or fewer than 3 items qualified                               | Often fine. See [quiet week](../debug/quiet-week.md). Try `run --dry-run --since 14d`. |
-| Exit 1, `Ollama is not reachable ... Start Ollama`          | Ollama is down or `OLLAMA_URL` is wrong                                          | Start Ollama, then run `doctor`.                                                       |
-| Exit 1, `Ollama is missing models for profile "light": ...` | A model is not pulled                                                            | Run the `ollama pull` lines from `doctor`.                                             |
-| Exit 1, `Another run is in progress`                        | Another run holds `dist/digest.lock`                                             | Wait, or see [stuck lock](../debug/stuck-lock.md).                                     |
-| Exit 2, `Status    blocked`                                 | Every draft failed a check or a guard, and the fallback digest could not be made | See [blocked run](../debug/blocked-run.md).                                            |
-| `Error: could not write the dry-run digest to ...`          | The digest folder is not writable                                                | Fix permissions, or pass `--out <dir>`.                                                |
+| Symptom                                                                 | Cause                                                                            | Fix                                                                                    |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Exit 3, `Status    quiet`                                               | Nothing in the window, or fewer than 3 items qualified                           | Often fine. See [quiet week](../debug/quiet-week.md). Try `run --dry-run --since 14d`. |
+| Exit 1, `Error (step: collect): every source failed (24 of 24 sources)` | The machine cannot reach any feed (no network or DNS)                            | See [failing feed](../debug/failing-feed.md).                                          |
+| Exit 1, `Ollama is not reachable ... Start Ollama`                      | Ollama is down or `OLLAMA_URL` is wrong                                          | Start Ollama, then run `doctor`.                                                       |
+| Exit 1, `Ollama is missing models for profile "light": ...`             | A model is not pulled                                                            | Run the `ollama pull` lines from `doctor`.                                             |
+| Exit 1, `Another run is in progress`                                    | Another run holds `dist/digest.lock`                                             | Wait, or see [stuck lock](../debug/stuck-lock.md).                                     |
+| Exit 2, `Status    blocked`                                             | Every draft failed a check or a guard, and the fallback digest could not be made | See [blocked run](../debug/blocked-run.md).                                            |
+| `Error: could not write the dry-run digest to ...`                      | The digest folder is not writable                                                | Fix permissions, or pass `--out <dir>`.                                                |
 
 ## Related
 

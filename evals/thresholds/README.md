@@ -4,8 +4,22 @@
 (W3-03). The models are called once per profile; the sweep then runs offline.
 
 ```bash
-LOG_LEVEL=warn pnpm tsx evals/tuneThresholds.ts capture --config data/thresholds/light.json
+LOG_LEVEL=warn pnpm tsx evals/tuneThresholds.ts capture
 pnpm tsx evals/tuneThresholds.ts sweep evals/thresholds/raw/<date>-light.json [--holdout 2026-W40,2026-W41]
+```
+
+`capture` builds the app the way `digest run` does, from a digest config file: `digest.config.json`,
+or the file named by `--config <file>`. The `profile` in that file is the profile that is captured,
+and its `thresholds` are the baseline the sweep compares with. Ollama must run and have the models
+of the profile. The raw file is named `raw/<date>-<profile>.json`, with the profile of the config.
+
+To capture a profile that `digest.config.json` does not use, write a copy of the config with that
+profile under `dist/`, and pass it. This one is for `light`:
+
+```bash
+mkdir -p dist/thresholds
+node -e "const c = JSON.parse(fs.readFileSync('digest.config.json', 'utf8')); fs.writeFileSync('dist/thresholds/light.json', JSON.stringify({ ...c, profile: 'light' }, null, 2))"
+LOG_LEVEL=warn pnpm tsx evals/tuneThresholds.ts capture --config dist/thresholds/light.json
 ```
 
 | File                                                | What                                                                                                                                                                                              |

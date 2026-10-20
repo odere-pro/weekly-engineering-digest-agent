@@ -24,8 +24,10 @@ flowchart TD
   `deliveredTo` lists the channels that already had the digest, then the ones that took it now.
 - The error names what failed and what got through, so a rerun sends only to the others:
   `Delivery failed on email (SMTP 554); delivered on markdown`.
-- The subject is one line, cut to 120 characters. A blank headline leaves it out. The view is added
-  only when there is one, so a channel without a view shows the Markdown.
+- The subject is `Engineering digest <week>: <headline>`, the headline passed through `visibleLine`
+  (one line, no invisible characters) and the whole subject cut to 120 characters. A blank headline
+  leaves it out. The view is added only when there is one, so a channel without a view shows the
+  Markdown.
 - `winnerMessage` marks a template-only fallback in the view footer and names the guards that were off.
 
 ## Files
