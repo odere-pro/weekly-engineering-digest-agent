@@ -1,17 +1,34 @@
 import type { ScoredItem } from '../../classify/classification';
+import { normalizeUrl } from '../../shared/url';
 import type { Entry } from '../types';
 
-/** Ranks by `byRank`, except that ids in `order` come first, in that order (W11-07). */
-export function rankBy(order: readonly string[] | undefined): (a: Entry, b: Entry) => number {
-  if (order === undefined) return byRank;
+/**
+ * Ranks by `byRank`, except that ids in `order` come first, in that order (W11-07). Items whose
+ * normalized URL is in `boostUrls` (already normalized by the caller) win relevance ties only:
+ * the bonus never beats higher relevance.
+ */
+export function rankBy(
+  order: readonly string[] | undefined,
+  boostUrls?: ReadonlySet<string>,
+): (a: Entry, b: Entry) => number {
+  const base = boostUrls === undefined || boostUrls.size === 0 ? byRank : boostedRank(boostUrls);
+  if (order === undefined) return base;
   const position = new Map(order.map((id, index) => [id, index]));
   const at = (entry: Entry): number => position.get(entry.item.id) ?? Number.POSITIVE_INFINITY;
   return (a, b) => {
     const pa = at(a);
     const pb = at(b);
-    if (pa === pb) return byRank(a, b);
+    if (pa === pb) return base(a, b);
     return pa < pb ? -1 : 1;
   };
+}
+
+function boostedRank(boostUrls: ReadonlySet<string>): (a: Entry, b: Entry) => number {
+  const boosted = (entry: Entry): number => (boostUrls.has(normalizeUrl(entry.item.url)) ? 1 : 0);
+  return (a, b) =>
+    b.item.classification.relevance - a.item.classification.relevance ||
+    boosted(b) - boosted(a) ||
+    byRank(a, b);
 }
 
 /**

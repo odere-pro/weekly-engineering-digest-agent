@@ -2,8 +2,8 @@
 
 > Picks the 3-5 items for the writers: drops what was sent, repeated or weak, then ranks the rest
 > and spreads them across areas. Plain code, no model: the same input gives the same output.
-> Entry: `processStep({ items, sentUrls, thresholds, topN, calibration?, pairwiseOrder? })` →
-> `{ selected, dropped, belowTopN }`
+> Entry: `processStep({ items, sentUrls, thresholds, topN, calibration?, pairwiseOrder?, boostUrls? })` →
+> `{ selected, dropped, belowTopN, eligible }`
 > (`process.ts`). The chain step is `process`; `src/select/` is the judge, a different feature.
 
 ## Context
@@ -36,7 +36,10 @@ flowchart TD
 
 - An item gets the first reason that fits. `dropped` lists reasons in stage order, then
   `below-top-n`. A value equal to a threshold is kept.
-- Rank order (`byRank`, `pairwiseOrder`) and the area spread are in `rank/CLAUDE.md`.
+- `boostUrls` (normalized URLs of items kept from an earlier run, set by the caller) wins relevance
+  ties only; `eligible` is every item that passed the filters, in rank order (`selected` plus
+  `belowTopN`).
+- Rank order (`byRank`, `pairwiseOrder`, `boostUrls`) and the area spread are in `rank/CLAUDE.md`.
 
 ## Rules
 

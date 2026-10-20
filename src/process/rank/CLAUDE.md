@@ -1,7 +1,7 @@
 # Process rank
 
 > Orders the entries and picks the top N with an area spread.
-> Entry: `rankBy(pairwiseOrder?) → compare(a, b)` (`rankBy.ts`), sorted once up front, and
+> Entry: `rankBy(pairwiseOrder?, boostUrls?) → compare(a, b)` (`rankBy.ts`), sorted once up front, and
 > `pickWithAreaSpread(ranked, topN) → Set<Entry>` (`pickWithAreaSpread.ts`). No port: pure code.
 
 ## Flow
@@ -27,6 +27,9 @@ flowchart TD
   not change a digest.
 - Areas compare after `normalizeText`, so case, spacing and punctuation do not split one.
 - Ids in `pairwiseOrder` rank by position before any unlisted item; unlisted ones keep `byRank`.
+- `boostUrls` (already normalized by the caller; items compare via `normalizeUrl`) ranks a boosted
+  item ahead of an unboosted one only at equal relevance, before areaConfidence. Without it, or
+  empty, `rankBy` returns `byRank` unchanged.
 - Entries are tracked by identity, so two items with equal ids stay apart.
 
 ## Files

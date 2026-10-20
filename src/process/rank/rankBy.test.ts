@@ -132,3 +132,41 @@ describe('rankBy with a pairwise order (W11-07)', () => {
     expect(() => ranked([high, low], order)).not.toThrow();
   });
 });
+
+describe('rankBy with boostUrls', () => {
+  const boosted = new Set(['https://example.com/kept']);
+  const kept = (id: string, relevance: number) =>
+    scored(id, { relevance }, { url: 'https://example.com/kept/' });
+
+  it('puts a boosted item first when relevance is equal', () => {
+    const items = [scored('a', { relevance: 2.5 }), kept('z', 2.5)];
+
+    const order = entryIds(entriesOf(items).sort(rankBy(undefined, boosted)));
+
+    expect(order).toEqual(['z', 'a']);
+  });
+
+  it('never lets the bonus beat higher relevance', () => {
+    const items = [kept('z', 2), scored('a', { relevance: 2.5 })];
+
+    const order = entryIds(entriesOf(items).sort(rankBy(undefined, boosted)));
+
+    expect(order).toEqual(['a', 'z']);
+  });
+
+  it('ranks as today without boostUrls or with an empty set', () => {
+    const items = [kept('z', 2.5), scored('a', { relevance: 2.5 })];
+
+    expect(rankBy(undefined, undefined)).toBe(byRank);
+    expect(rankBy(undefined, new Set())).toBe(byRank);
+    expect(ranked(items)).toEqual(['a', 'z']);
+  });
+
+  it('keeps the pairwise position ahead of the bonus', () => {
+    const items = [kept('z', 2.5), scored('a', { relevance: 2.5 })];
+
+    const order = entryIds(entriesOf(items).sort(rankBy(['a'], boosted)));
+
+    expect(order).toEqual(['a', 'z']);
+  });
+});

@@ -294,7 +294,12 @@ describe('processStep top N', () => {
 
   it('allows fewer than topN, and an empty result', () => {
     expect(run([scored('only')], { topN: 5 }).selected).toHaveLength(1);
-    expect(run([], { topN: 5 })).toEqual({ selected: [], dropped: [], belowTopN: [] });
+    expect(run([], { topN: 5 })).toEqual({
+      selected: [],
+      dropped: [],
+      belowTopN: [],
+      eligible: [],
+    });
   });
 
   it('selects nothing when topN is 0', () => {
@@ -428,5 +433,54 @@ describe('processStep pairwise order (W11-07)', () => {
     const out = run([other, listed], { topN: 2, pairwiseOrder: ['listed'] });
 
     expect(ids(out.selected)).toEqual(['listed', 'other']);
+  });
+});
+
+describe('processStep boostUrls and eligible', () => {
+  it('lists every item that passed the filters in rank order, selected and below top N', () => {
+    const items = [
+      scored('c', { relevance: 2 }),
+      scored('a', { relevance: 3 }),
+      scored('weak', { relevance: 0 }),
+      scored('b', { relevance: 2.5 }),
+    ];
+
+    const out = run(items, { topN: 2 });
+
+    expect(ids(out.eligible)).toEqual(['a', 'b', 'c']);
+    expect(ids(out.selected)).toEqual(['a', 'b']);
+    expect(ids(out.belowTopN)).toEqual(['c']);
+  });
+
+  it('lets a boosted URL win a relevance tie for the last slot', () => {
+    const items = [
+      scored('a', { relevance: 2.5 }, { url: 'https://example.com/a' }),
+      scored('b', { relevance: 2.5 }, { url: 'https://example.com/b' }),
+    ];
+
+    const out = run(items, { topN: 1, boostUrls: new Set(['https://example.com/b']) });
+
+    expect(ids(out.selected)).toEqual(['b']);
+  });
+
+  it('does not let a boosted URL beat higher relevance', () => {
+    const items = [
+      scored('a', { relevance: 3 }, { url: 'https://example.com/a' }),
+      scored('b', { relevance: 2 }, { url: 'https://example.com/b' }),
+    ];
+
+    const out = run(items, { topN: 1, boostUrls: new Set(['https://example.com/b']) });
+
+    expect(ids(out.selected)).toEqual(['a']);
+  });
+
+  it('ranks as before without boostUrls and does not mutate its input', () => {
+    const items = [scored('b'), scored('a')];
+    const snapshot = structuredClone(items);
+
+    const out = run(items, { topN: 1 });
+
+    expect(ids(out.selected)).toEqual(['a']);
+    expect(items).toEqual(snapshot);
   });
 });

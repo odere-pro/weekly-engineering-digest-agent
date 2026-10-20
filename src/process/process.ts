@@ -21,6 +21,11 @@ export interface ProcessInput {
    * position, before any unlisted item. Absent: ranking is unchanged.
    */
   pairwiseOrder?: readonly string[] | undefined;
+  /**
+   * Normalized URLs of items kept from an earlier run: they win relevance ties, never more.
+   * Absent: ranking is unchanged.
+   */
+  boostUrls?: ReadonlySet<string> | undefined;
 }
 
 export interface ProcessOutput {
@@ -28,11 +33,13 @@ export interface ProcessOutput {
   dropped: Dropped[];
   /** The eligible items the top N cut left out, best first: the next picks (PERF-2 backfill). */
   belowTopN: ScoredItem[];
+  /** Every item that passed all filters, in rank order: `selected` and `belowTopN` together. */
+  eligible: ScoredItem[];
 }
 
 /** Pure ranking and filtering in code, no model calls (W1-08). */
 export function processStep(input: ProcessInput): ProcessOutput {
-  const { sentUrls, thresholds, topN, calibration, pairwiseOrder } = input;
+  const { sentUrls, thresholds, topN, calibration, pairwiseOrder, boostUrls } = input;
   assertTopN(topN);
   const items = calibration
     ? input.items.map((item) => ({
@@ -42,7 +49,7 @@ export function processStep(input: ProcessInput): ProcessOutput {
     : input.items;
 
   // Rank once up front: every later list (drops included) is in rank order, whatever the input order.
-  const ranked = items.map((item): Entry => ({ item })).sort(rankBy(pairwiseOrder));
+  const ranked = items.map((item): Entry => ({ item })).sort(rankBy(pairwiseOrder, boostUrls));
   const { kept: eligible, dropped } = filterStages(sentUrls, thresholds).reduce(applyStage, {
     kept: ranked,
     dropped: [],
@@ -56,6 +63,7 @@ export function processStep(input: ProcessInput): ProcessOutput {
     selected: selected.map(({ item }) => item),
     dropped: [...dropped, ...belowTopN.map(({ item }) => drop(item, 'below-top-n'))],
     belowTopN: belowTopN.map(({ item }) => item),
+    eligible: eligible.map(({ item }) => item),
   };
 }
 
