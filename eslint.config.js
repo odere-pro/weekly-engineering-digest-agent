@@ -40,7 +40,7 @@ const coreBoundary = {
 
 export default defineConfig(
   {
-    ignores: ['dist/**', 'coverage/**', 'data/**', 'docs/plan/**', '.claude/**', 'node_modules/**'],
+    ignores: ['dist/**', 'coverage/**', 'data/**', '.claude/**', 'node_modules/**'],
   },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,

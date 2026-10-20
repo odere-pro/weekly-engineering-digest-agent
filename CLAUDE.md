@@ -4,7 +4,7 @@ Local-first CLI agent: collects allowlisted RSS/Atom feeds and GitHub releases, 
 guard-input (rule guard) → classify → process → guard-candidates (model guards) → write (writer
 panel) → guard-output → select → deliver,
 all on Ollama. Output: a weekly Markdown digest of the 3-5 releases that matter, in `dist/`.
-Full spec (private, main checkout only): `docs/plan/spec.md`.
+The full spec is private and kept by the maintainer outside the repo.
 
 ## Map
 
@@ -88,9 +88,9 @@ a zizmor job and CodeQL.
 
 ## Git and parallel work
 
-- Work is split into issues in `docs/plan/issues/` (gitignored, main checkout only).
-  Workers run `/implement-issue <id>` in their own worktree; the coordinator runs `/merge-issue`.
-- Read `.claude/rules/parallel-work.md` before editing anything on an issue branch.
+- Parallel work runs in worktrees, one task and one set of files per worker; the coordinator
+  merges locally with `git merge --ff-only`. Read `.claude/rules/parallel-work.md` before editing
+  anything on a worktree branch.
 - Commits: conventional (`feat: …`), subject ≤ 72 chars, signed, authored by the maintainer.
   Never add Co-Authored-By or "Generated with" lines. Never push; the maintainer pushes.
 - The `commit-msg` hook in `.githooks/` is active only where `core.hooksPath` points at it;

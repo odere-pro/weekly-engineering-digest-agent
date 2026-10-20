@@ -52,4 +52,3 @@ Also here: [default sources](sources.md) (a test parses its table, so it keeps i
   `src/config/schema.ts`. Never invent one.
 - Runbooks use the same eight headings: purpose, when to use, prerequisites, steps, verify,
   roll back, troubleshooting, related.
-- `docs/plan/` is private working material and is not part of the wiki.

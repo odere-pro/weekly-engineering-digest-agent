@@ -1,19 +1,12 @@
 # Parallel work in worktrees
 
-Many agents build this repo at once, each on one issue in its own git worktree. This works only
-if no two of them touch the same file.
-
-## Where things live
-
-- Issues: `docs/plan/issues/<ID>-<slug>.md` in the **main checkout** (gitignored, so it is not in
-  your worktree). Find it from anywhere:
-  `PLAN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")/docs/plan"`.
-- The spec: `$PLAN/spec.md`. The board: `node "$PLAN/bin/board.mjs"`.
+Several agents may build this repo at once, each on one task in its own git worktree. This works
+only if no two of them touch the same file.
 
 ## Ownership
 
-- Your issue's `owns:` globs are the only files you may create or change (plus its tests and
-  fixtures, which are listed there too). `node "$PLAN/bin/check-owns.mjs" <ID>` verifies it.
+- The coordinator's brief names the files you may create or change (plus their tests, fixtures
+  and the feature's `CLAUDE.md`). Touch nothing else; `git diff --name-only main...HEAD` shows it.
 - **Frozen files** (blocked by the `guard-frozen` hook on any branch but `main`): `package.json`,
   `pnpm-lock.yaml`, tool configs, `CLAUDE.md`, `.claude/**`, `.githooks/**`, `.github/**`,
   the five ports (`src/models/ModelProvider.ts`, `src/guards/Guard.ts`,
@@ -22,23 +15,16 @@ if no two of them touch the same file.
   `src/domain/schemas.ts`, `src/models/structured.ts`, `src/config/schema.ts`,
   `src/config/profiles.ts`, `src/shared/**`, `src/cli/program.ts`, `src/cli/index.ts`,
   `test/fakes/**`, `test/builders.ts`.
-- Need a frozen file changed, or a new dependency? Do not work around it. Set your issue to
-  `status: blocked`, write the exact change under the issue's `## Notes`, and stop. The coordinator changes it on
-  `main`; you then `git rebase main` and continue.
-- Do not change another module's exported signatures. Stubs already have their final signatures.
-
-## Issue lifecycle (frontmatter `status`)
-
-`todo` → `in_progress` (worker started) → `review` (one signed commit, gate green) →
-`done` (coordinator fast-forwarded `main`). `blocked` at any point, with the reason under `## Notes`.
-Workers edit only their own issue file. Only the coordinator sets `done`.
+- Need a frozen file changed, or a new dependency? Do not work around it. Stop and report the
+  exact change; the coordinator makes it on `main`, then you `git rebase main` and continue.
+- Do not change another module's exported signatures unless your brief says so.
 
 ## Git
 
 - Branch from local `main`. Never switch to or commit on `main` inside a worktree.
-- Before review: `git rebase main`, then squash to one commit: `git reset --soft main && git commit`.
+- Before handing back: `git rebase main`, then squash to one commit: `git reset --soft main && git commit`.
 - Commit as configured (Oleksandr Derechei, SSH-signed). Conventional subject ≤ 72 chars,
-  e.g. `feat(sources): add RSS/Atom fetcher (W1-01)`. No Co-Authored-By or "Generated with" lines;
+  e.g. `feat(sources): add RSS/Atom fetcher`. No Co-Authored-By or "Generated with" lines;
   the `commit-msg` hook rejects them, and also a subject over 72 characters.
 - **Never push, never merge.** The coordinator merges locally with `git merge --ff-only`.
 

@@ -55,7 +55,7 @@ cli / scheduler / evals  →  app/container  →  */adapters/  →  ports  ←  
   `WeekIdSchema`, `StepName`, `RunStatus`, `ExitCode`).
 - A feature grows by subfeature folders, not by long files: no source file over 300 lines. A
   subfeature is one responsibility (`cli/init/envFile/`), with its code, tests and a `CLAUDE.md`.
-  The feature's entry file stays and calls the subfeatures. Method: `docs/plan/PHASE-B-STANDARD.md`.
+  The feature's entry file stays and calls the subfeatures.
 
 ## Step shape
 

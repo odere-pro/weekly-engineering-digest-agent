@@ -156,7 +156,7 @@ Bad or neutral:
 - We lose Studio, graph view, time travel and step status for free. We never used them.
 - We write the sequencing ourselves (a loop over `WorkflowStep`). If the chain grows branches or
   waits, we own that code.
-- The spec names Mastra. The coordinator should note the deviation in `docs/plan/spec.md`.
+- The spec names Mastra. This ADR records the deviation.
 - Docs and comments that name Mastra must change (see issue 3).
 
 Revisit and write ADR 0002 if one of these becomes true. Then use Mastra fully, not thinly.

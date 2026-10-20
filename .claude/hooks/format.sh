@@ -7,7 +7,7 @@ file="$(jq -r '.tool_input.file_path // empty' <<<"$input" 2>/dev/null)"
 [ -n "$file" ] && [ -f "$file" ] || exit 0
 
 case "$file" in
-  */docs/plan/* | */node_modules/* | */dist/* | */coverage/*) exit 0 ;;
+  */node_modules/* | */dist/* | */coverage/*) exit 0 ;;
   *.ts | *.js | *.mjs | *.json | *.md | *.yml | *.yaml) ;;
   *) exit 0 ;;
 esac
