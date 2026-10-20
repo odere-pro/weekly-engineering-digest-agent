@@ -87,7 +87,7 @@ flowchart TD
   the week's own files and never removes `<week>.failed.md` or `<week>.md`. The email and Slack title
   gets ` (<label>)` from `view.variant`, and `view.appendix` is shown after the footer.
 - `store` prune keeps the files named `<week>.*` in a week's `digest/` folder: keep that prefix on
-  every file this channel writes there. `<week>-<variant>.*` does not match `<week>.`: `pruneWeekFolder`
-  (`store/adapters/runFolders.ts`) needs a matching rule before variants survive a prune.
+  every file this channel writes there. `<week>-<variant>.md/.html` is kept by its own rule
+  (`VARIANT_FILE_SUFFIX` in `store/adapters/runFolders.ts`): any other name needs a rule there too.
 - `deliveryRetry.test.ts` imports `app/retryingDelivery`: change the facts and the rule together.
   A send can still land twice if the server took it, then answered 429/5xx or SMTP 421/450/451.

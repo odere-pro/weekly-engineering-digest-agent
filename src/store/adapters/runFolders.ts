@@ -13,6 +13,8 @@ export const RUN_RECORD_FILE = 'run.json';
 export const DIGEST_FILE = 'digest.md';
 /** What `writeFileAtomic` leaves behind when a process dies mid-write. */
 const TEMP_SUFFIX = '.tmp';
+/** What follows the week id in a variant digest the Markdown channel wrote: `-<slug>.md` or `.html`. */
+export const VARIANT_FILE_SUFFIX = /^-[a-z0-9][a-z0-9-]{0,59}\.(md|html)$/;
 
 export interface RunFolders {
   /** The data folder; a week's run lives in <dataDir>/<monday>/digest (see `../layout`). */
@@ -137,14 +139,16 @@ function lenientFacts(json: unknown, runId: string): RunFileRead | undefined {
 
 /**
  * Empties a week down to what was delivered: its digest folder keeps digest.md and the files the
- * Markdown channel wrote (<weekId>.md, .html, .failed.md); the sources' raw and formatted folders
+ * Markdown channel wrote (<weekId>.md, .html, .failed.md, and variants <weekId>-<slug>.md/.html); the sources' raw and formatted folders
  * of that Monday go. True when something was deleted.
  */
 export async function pruneWeekFolder(folders: RunFolders, runId: string): Promise<boolean> {
   const dayDir = join(folders.dataDir, weekDay(runId));
   const digestDir = runDir(folders, runId);
   const kept = (name: string): boolean =>
-    name === DIGEST_FILE || (name.startsWith(`${runId}.`) && !name.endsWith(TEMP_SUFFIX));
+    name === DIGEST_FILE ||
+    (name.startsWith(`${runId}.`) && !name.endsWith(TEMP_SUFFIX)) ||
+    (name.startsWith(runId) && VARIANT_FILE_SUFFIX.test(name.slice(runId.length)));
   const doomed = [
     ...(await readdir(dayDir))
       .filter((name) => name !== DIGEST_DIR)

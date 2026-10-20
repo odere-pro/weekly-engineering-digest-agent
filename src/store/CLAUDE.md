@@ -54,7 +54,7 @@ sequenceDiagram
   its `status`, `deliveredTo` and `sentUrls` alone, so a sent week is not taken for an unsent one.
 - `prune(week, keepWeeks)` empties the weeks older than the `keepWeeks` before `week`: source folders and
   all of `digest/` (also `answers.jsonl`, `app/answerCache`) except `digest.md` and the delivered
-  `<week>.md`, `.html`, `.failed.md`. It deletes
+  `<week>.md`, `.html`, `.failed.md` and the variant digests `<week>-<slug>.md`, `.html`. It deletes
   `run.json`, so config requires `keepWeeks >= dedupeWeeks`. `pruneOldDays` removes older days' source
   folders and `logs/<day>/`.
 - A missing `run.json` reads as `undefined`; so does a corrupt, wrong-week or schema-failing one, with
