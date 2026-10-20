@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,6 +13,8 @@ import type { Item, Source } from '../src/domain/schemas';
 import { itemIdFor } from '../src/shared/url';
 import { MAX_BODY_BYTES } from '../src/sources/adapters/http';
 import { fixedClock } from '../src/shared/clock';
+
+const isRoot = process.getuid?.() === 0;
 
 const rss: Source = { id: 'feed-a', kind: 'rss', url: 'https://a.example.com/feed.xml' };
 const repo: Source = { id: 'repo-b', kind: 'github', url: 'https://github.com/example/repo-b' };
@@ -192,6 +194,26 @@ describe('recordSources', () => {
     expect(await readFile(join(outDir, 'feed-a', 'body.xml'), 'utf8')).toBe('<rss>old</rss>');
     expect((await readJson('feed-a/response.json'))['bodyFile']).toBe('body.xml');
   });
+
+  it.skipIf(isRoot)(
+    'reports the file system error when it cannot tell whether a recording is there',
+    async () => {
+      const folder = join(outDir, 'feed-a');
+      await mkdir(folder);
+      await chmod(folder, 0o400); // listed, not searched: stat of body.xml inside fails with EACCES
+      try {
+        const result = await recordSources(
+          { outDir },
+          deps(async () => new Response('down', { status: 503 }), [rss]),
+        );
+
+        expect(result.failed).toHaveLength(1);
+        expect(result.failed[0]!.error).toMatch(/EACCES.*stat/);
+      } finally {
+        await chmod(folder, 0o700);
+      }
+    },
+  );
 });
 
 describe('recordPages', () => {
@@ -319,6 +341,23 @@ describe('recordPages', () => {
     await recordPages({ outDir }, deps(second.fetchImpl, [rss]));
 
     expect(second.requested).toEqual(['https://a.example.com/four']);
+  });
+
+  it.skipIf(isRoot)('reports a page it cannot check for, and does not fetch it again', async () => {
+    await seed(rss, FEED, expectedFor(URLS));
+    const pages = join(outDir, 'feed-a', 'pages');
+    await mkdir(pages);
+    await chmod(pages, 0o400); // listed, not searched: stat of a page inside fails with EACCES
+    const { fetchImpl, requested } = fetching();
+    try {
+      const result = await recordPages({ outDir }, deps(fetchImpl, [rss]));
+
+      expect(requested).toEqual([]);
+      expect(result.failed).toHaveLength(3);
+      expect(result.failed.every((failure) => failure.error.includes('EACCES'))).toBe(true);
+    } finally {
+      await chmod(pages, 0o700);
+    }
   });
 
   it('leaves GitHub sources alone', async () => {

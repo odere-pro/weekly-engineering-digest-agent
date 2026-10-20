@@ -1,10 +1,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { z } from 'zod';
 import { DigestError, errorMessage } from '../../src/shared/errors';
-
-function isNotFound(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT';
-}
+import { errnoCode } from '../../src/shared/fsErrors';
 
 /** undefined when the file does not exist; a DigestError that names the file when it is bad. */
 export async function readJson<T>(path: string, schema: z.ZodType<T>): Promise<T | undefined> {
@@ -12,7 +9,7 @@ export async function readJson<T>(path: string, schema: z.ZodType<T>): Promise<T
   try {
     text = await readFile(path, 'utf8');
   } catch (error) {
-    if (isNotFound(error)) return undefined;
+    if (errnoCode(error) === 'ENOENT') return undefined;
     throw new DigestError(`Cannot read ${path}: ${errorMessage(error)}`, { cause: error });
   }
   let json: unknown;
@@ -40,7 +37,7 @@ export async function requireFolder(path: string, hint?: string): Promise<void> 
     await stat(path);
   } catch (error) {
     const missing = hint === undefined ? 'not found' : `not found. ${hint}`;
-    const reason = isNotFound(error) ? missing : errorMessage(error);
+    const reason = errnoCode(error) === 'ENOENT' ? missing : errorMessage(error);
     throw new DigestError(`Eval folder ${path}: ${reason}`, { cause: error });
   }
 }
@@ -50,7 +47,7 @@ export async function listNames(dir: string): Promise<string[]> {
   try {
     return (await readdir(dir)).sort();
   } catch (error) {
-    if (isNotFound(error)) return [];
+    if (errnoCode(error) === 'ENOENT') return [];
     throw new DigestError(`Cannot read ${dir}: ${errorMessage(error)}`, { cause: error });
   }
 }

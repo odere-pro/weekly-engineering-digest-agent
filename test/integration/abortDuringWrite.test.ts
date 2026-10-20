@@ -10,7 +10,8 @@ import type { FakeModelProvider } from '../fakes';
 import { FIRST_WRITER, FRIDAY, TEST_TIMEOUT_MS, WEEK } from './harness/constants';
 import { createWorld } from './harness/world';
 import { useDataDir } from './harness/dataDir';
-import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { readTextIfExists } from '../../src/shared/atomicFile';
+import { readRunJson, runFile } from './harness/runFiles';
 import { lockExists } from './harness/lock';
 
 const dataDir = useDataDir();

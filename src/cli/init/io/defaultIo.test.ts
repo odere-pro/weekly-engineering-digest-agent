@@ -2,6 +2,7 @@ import { totalmem } from 'node:os';
 import * as inquirer from '@inquirer/prompts';
 import { describe, expect, it, vi } from 'vitest';
 import { renderOsSchedule } from '../../../scheduler/osSchedule';
+import { readTextIfExists } from '../../../shared/atomicFile';
 import { systemClock } from '../../../shared/clock';
 import { CONFIG_PATH, harness, writtenEnv } from '../__fixtures__/initHarness';
 import { initCommand } from '../init';
@@ -9,7 +10,7 @@ import { writeSecretFile } from '../envFile/secretFile';
 import { defaultScheduleProgram } from '../schedule/schedule';
 import { createDefaultIo } from './defaultIo';
 import { inquirerPrompts } from './inquirerPrompts';
-import { isEmptyFile, pathExists, readTextIfPresent, writeTextFile } from './files';
+import { isEmptyFile, mayExist, writeTextFile } from './files';
 
 vi.mock('@inquirer/prompts', () => ({
   checkbox: vi.fn(),
@@ -45,9 +46,9 @@ describe('createDefaultIo', () => {
     expect(io.prompts).toBe(inquirerPrompts);
     expect(io.renderSchedule).toBe(renderOsSchedule);
     expect(io.scheduleProgram).toBe(defaultScheduleProgram());
-    expect(io.exists).toBe(pathExists);
+    expect(io.exists).toBe(mayExist);
     expect(io.isEmptyFile).toBe(isEmptyFile);
-    expect(io.readFile).toBe(readTextIfPresent);
+    expect(io.readFile).toBe(readTextIfExists);
     expect(io.writeFile).toBe(writeTextFile);
     expect(io.writeSecretFile).toBe(writeSecretFile);
   });

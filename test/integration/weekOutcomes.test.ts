@@ -21,7 +21,8 @@ import { IRRELEVANT_ANSWER } from './harness/answers';
 import { createWorld, type World } from './harness/world';
 import { createOllamaWorld } from './harness/ollamaWorld';
 import { useDataDir } from './harness/dataDir';
-import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { readTextIfExists } from '../../src/shared/atomicFile';
+import { readRunJson, runFile } from './harness/runFiles';
 import { lockExists } from './harness/lock';
 
 const dataDir = useDataDir();

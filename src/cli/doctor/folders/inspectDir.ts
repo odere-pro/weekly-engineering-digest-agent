@@ -1,6 +1,6 @@
 import { dirname } from 'node:path';
 import { errorMessage } from '../../../shared/errors';
-import { errorCode, isNotFound } from '../errorCode';
+import { errnoCode, isNotFound } from '../../../shared/fsErrors';
 import type { DoctorIo, PathInfo } from '../types';
 
 export type DirIo = Pick<DoctorIo, 'stat' | 'lstat' | 'access'>;
@@ -76,15 +76,15 @@ export async function pathKind(path: string, io: Pick<DirIo, 'stat' | 'lstat'>):
   try {
     info = await io.lstat(path);
   } catch (error) {
-    // ENOTDIR: a parent is a file. Climbing on finds it, so the message can name it.
-    if (isNotFound(error) || errorCode(error) === 'ENOTDIR') return 'missing';
+    // ENOENT, or ENOTDIR (a parent is a file). Climbing on finds it, so the message can name it.
+    if (isNotFound(error)) return 'missing';
     throw error;
   }
   if (!info.isSymbolicLink) return info.isDirectory ? 'folder' : 'file';
   try {
     return (await io.stat(path)).isDirectory ? 'folder' : 'file';
   } catch (error) {
-    if (isNotFound(error)) return 'dangling';
+    if (errnoCode(error) === 'ENOENT') return 'dangling';
     throw error;
   }
 }

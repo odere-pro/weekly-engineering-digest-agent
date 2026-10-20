@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -152,6 +152,24 @@ describe('feedbackToLabels', () => {
 
     await expect(run()).rejects.toThrow(/labels\.json/);
   });
+
+  it.skipIf(process.getuid?.() === 0)(
+    'never replaces a labels file it cannot read: it is there, so it is not created again',
+    async () => {
+      const p = paths();
+      await put(p.feedback, { weekId: WEEK, wrongPicks: [], missed: ['m1'] });
+      await put(p.labels, { mustInclude: ['a'], mustExclude: [], notes: 'by hand' });
+      await put(join(p.weekDir, 'items.json'), []);
+      await chmod(p.labels, 0o200); // writable, not readable
+      try {
+        await expect(run()).rejects.toThrow(/labels\.json/);
+      } finally {
+        await chmod(p.labels, 0o600);
+      }
+
+      expect(await labels()).toEqual({ mustInclude: ['a'], mustExclude: [], notes: 'by hand' });
+    },
+  );
 
   it('rejects a week that is not an ISO week id', async () => {
     await expect(

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  chmod,
   lutimes,
   mkdir,
   mkdtemp,
@@ -15,11 +16,11 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createFileExclusive,
-  isErrnoException,
   readTextIfExists,
   removeStaleTempFiles,
   writeFileAtomic,
 } from './atomicFile';
+import { errnoCode } from './fsErrors';
 import type * as Fs from 'node:fs/promises';
 
 // A test can make the clean-up after a write vanish (a writer killed mid-write), make linking
@@ -150,7 +151,7 @@ describe('createFileExclusive', () => {
     faults.failLinkWith = 'ENOTSUP';
 
     await expect(createFileExclusive(join(dir, 'lock'), 'mine')).rejects.toSatisfy(
-      (error: unknown) => isErrnoException(error, 'ENOTSUP'),
+      (error: unknown) => errnoCode(error) === 'ENOTSUP',
     );
 
     expect(await names()).toEqual([]);
@@ -164,28 +165,40 @@ describe('readTextIfExists', () => {
     await expect(readTextIfExists(join(dir, 'file'))).resolves.toBe('text');
   });
 
+  it('reads non-ASCII text and an empty file as they are', async () => {
+    await writeFile(join(dir, 'text'), 'héllo\n', 'utf8');
+    await writeFile(join(dir, 'empty'), '');
+
+    await expect(readTextIfExists(join(dir, 'text'))).resolves.toBe('héllo\n');
+    await expect(readTextIfExists(join(dir, 'empty'))).resolves.toBe('');
+  });
+
   it('returns undefined for a file that does not exist', async () => {
     await expect(readTextIfExists(join(dir, 'nope'))).resolves.toBeUndefined();
   });
 
-  it('propagates other errors', async () => {
-    await expect(readTextIfExists(dir)).rejects.toSatisfy((error: unknown) =>
-      isErrnoException(error, 'EISDIR'),
+  it.skipIf(process.getuid?.() === 0)('propagates EACCES for a file it may not read', async () => {
+    const path = join(dir, 'secret');
+    await writeFile(path, 'x');
+    await chmod(path, 0o000);
+
+    await expect(readTextIfExists(path)).rejects.toSatisfy(
+      (error: unknown) => errnoCode(error) === 'EACCES',
     );
   });
-});
 
-describe('isErrnoException', () => {
-  it('matches an Error with the code, and nothing else', () => {
-    expect(isErrnoException(Object.assign(new Error('x'), { code: 'EEXIST' }), 'EEXIST')).toBe(
-      true,
+  it('propagates other errors', async () => {
+    await expect(readTextIfExists(dir)).rejects.toSatisfy(
+      (error: unknown) => errnoCode(error) === 'EISDIR',
     );
-    expect(isErrnoException(Object.assign(new Error('x'), { code: 'EPERM' }), 'EEXIST')).toBe(
-      false,
+  });
+
+  it('propagates ENOTDIR: a file in the place of a folder is not a missing file', async () => {
+    await writeFile(join(dir, 'a-file'), 'x');
+
+    await expect(readTextIfExists(join(dir, 'a-file', 'below'))).rejects.toSatisfy(
+      (error: unknown) => errnoCode(error) === 'ENOTDIR',
     );
-    expect(isErrnoException(new Error('x'), 'EEXIST')).toBe(false);
-    expect(isErrnoException({ code: 'EEXIST' }, 'EEXIST')).toBe(false);
-    expect(isErrnoException('EEXIST', 'EEXIST')).toBe(false);
   });
 });
 
@@ -308,8 +321,8 @@ describe('removeStaleTempFiles', () => {
   it('throws when the folder cannot be read', async () => {
     await writeFile(join(dir, 'a-file'), 'x');
 
-    await expect(sweep(['digest.lock'], join(dir, 'a-file'))).rejects.toSatisfy((error: unknown) =>
-      isErrnoException(error, 'ENOTDIR'),
+    await expect(sweep(['digest.lock'], join(dir, 'a-file'))).rejects.toSatisfy(
+      (error: unknown) => errnoCode(error) === 'ENOTDIR',
     );
   });
 

@@ -77,7 +77,7 @@ flowchart TD
   a renamed flag or a new one without a row fails there.
 - Some folders import a sibling: `run`, `show/summary` and `fetch/report` take the duration helpers
   from `history/history`; `run` takes `parseSince` from `fetch/plan/parseSince.ts`; `init` takes the RAM check and its measured wording from
-  `doctor/readiness/memory.ts` and `errorCode` from `doctor/errorCode.ts`; `eval.ts` imports `evals/`.
+  `doctor/readiness/memory.ts`; `eval.ts` imports `evals/`.
   `test/integration/harness/runCli.ts` calls `runCommand`.
 - `fetch/fetch.tap.test.ts` lets only `fetch/sourceRun/{buildFetchers,recorder,types}.ts` among the
   CLI files say `tap` or `SourceTap`, and only `buildFetchers.ts` call `createFetcher(`. A new CLI

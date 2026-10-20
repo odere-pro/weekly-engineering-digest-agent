@@ -2,14 +2,11 @@ import { randomUUID } from 'node:crypto';
 import { link, lstat, open, readdir, readFile, rename, rm, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { errorMessage } from './errors';
+import { errnoCode } from './fsErrors';
 
 const TEMP_SUFFIX = '.tmp';
 /** The `<pid>.<uuid>` between a file's name and `.tmp` in the names `tempFilePath` builds. */
 const TEMP_IDENTITY = /^\d+\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-
-export function isErrnoException(error: unknown, code: string): boolean {
-  return error instanceof Error && 'code' in error && error.code === code;
-}
 
 /** A unique name for a temp file next to `path`. `isTempFileOf` recognises exactly these. */
 function tempFilePath(path: string): string {
@@ -62,7 +59,7 @@ export async function createFileExclusive(path: string, content: string): Promis
     await link(tempPath, path);
     return true;
   } catch (error) {
-    if (isErrnoException(error, 'EEXIST')) return false;
+    if (errnoCode(error) === 'EEXIST') return false;
     throw error;
   } finally {
     await rm(tempPath, { force: true });
@@ -74,7 +71,7 @@ export async function readTextIfExists(path: string): Promise<string | undefined
   try {
     return await readFile(path, 'utf8');
   } catch (error) {
-    if (isErrnoException(error, 'ENOENT')) return undefined;
+    if (errnoCode(error) === 'ENOENT') return undefined;
     throw error;
   }
 }
@@ -101,7 +98,7 @@ async function listNames(folder: string): Promise<string[]> {
   try {
     return await readdir(folder);
   } catch (error) {
-    if (isErrnoException(error, 'ENOENT')) return [];
+    if (errnoCode(error) === 'ENOENT') return [];
     throw error;
   }
 }
@@ -124,7 +121,7 @@ async function removeIfStale(
     return { kind: 'removed', name };
   } catch (error) {
     // Another run may have removed it since we looked: nothing left to do, nothing to report.
-    if (isErrnoException(error, 'ENOENT')) return { kind: 'kept' };
+    if (errnoCode(error) === 'ENOENT') return { kind: 'kept' };
     return { kind: 'failed', name, error: errorMessage(error) };
   }
 }

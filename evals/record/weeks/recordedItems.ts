@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { ItemSchema, type Item } from '../../../src/domain/schemas';
 import { DigestError, errorMessage } from '../../../src/shared/errors';
-import { hasErrorCode } from '../fsErrors';
+import { errnoCode } from '../../../src/shared/fsErrors';
 
 /** The items an earlier run recorded, undefined when there is no items.json yet. */
 export async function readRecordedItems(path: string): Promise<Item[] | undefined> {
@@ -9,7 +9,7 @@ export async function readRecordedItems(path: string): Promise<Item[] | undefine
   try {
     raw = await readFile(path, 'utf8');
   } catch (error) {
-    if (hasErrorCode(error, 'ENOENT')) return undefined;
+    if (errnoCode(error) === 'ENOENT') return undefined;
     throw error;
   }
   try {

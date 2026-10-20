@@ -1,5 +1,7 @@
+import { mkdtemp, rm, symlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { LoadOptions } from '../../../src/config/load';
 import { DigestError } from '../../../src/shared/errors';
 import { DEFAULT_SOURCES } from '../../../src/sources/defaultSources';
@@ -45,12 +47,31 @@ describe('resolveSources', () => {
     expect(resolved.githubToken).toBeUndefined();
   });
 
-  it('fails when the config path cannot be checked instead of using the defaults', async () => {
-    await expect(
-      resolveSources(
-        noEnv({ configPath: join(CONFIG_FIXTURES, 'valid.config.json', 'nested.json') }),
-      ),
-    ).rejects.toThrow(/ENOTDIR/);
+  it('falls back to the defaults when a parent of the config path is a file: it cannot be there', async () => {
+    const resolved = await resolveSources(
+      noEnv({ configPath: join(CONFIG_FIXTURES, 'valid.config.json', 'nested.json') }),
+    );
+
+    expect(resolved.origin).toBe('default');
+    expect(resolved.sources).toEqual(DEFAULT_SOURCES);
+  });
+
+  describe('a config path that cannot be checked', () => {
+    let dir: string;
+    beforeEach(async () => {
+      dir = await mkdtemp(join(tmpdir(), 'resolve-sources-'));
+    });
+    afterEach(async () => {
+      await rm(dir, { recursive: true, force: true });
+    });
+
+    it('fails with the system error instead of using the defaults', async () => {
+      // A link that loops: stat fails with ELOOP, which says nothing about whether a config is there.
+      const loop = join(dir, 'digest.config.json');
+      await symlink(loop, loop);
+
+      await expect(resolveSources(noEnv({ configPath: loop }))).rejects.toThrow(/ELOOP/);
+    });
   });
 
   it('fails on an invalid config instead of silently using the defaults', async () => {

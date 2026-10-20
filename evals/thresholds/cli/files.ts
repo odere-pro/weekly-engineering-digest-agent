@@ -1,9 +1,10 @@
 // The files the commands read and write: raw captures in, raw captures and tuning results out.
-import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { format, resolveConfig } from 'prettier';
 import { z } from 'zod';
 import { DigestError, errorMessage } from '../../../src/shared/errors';
+import { pathExists } from '../../../src/shared/fsErrors';
 import { RawCaptureSchema, type RawCapture } from '../capture/schemas';
 
 /** The local calendar date of an instant, as YYYY-MM-DD; names the capture and sweep files. */
@@ -24,14 +25,15 @@ export async function writeJson(path: string, value: unknown, overwrite = true):
   await writeFile(path, text, { encoding: 'utf8', flag: overwrite ? 'w' : 'wx' });
 }
 
-/** Fails before any model call when the capture would replace an earlier one. */
+/**
+ * Fails before any model call when the capture would replace an earlier one, or when that cannot
+ * be told (the file system error is thrown): a capture costs GPU time, and `writeJson` would
+ * only fail on the same path after it.
+ */
 export async function assertNew(path: string): Promise<void> {
-  const exists = await access(path).then(
-    () => true,
-    () => false,
-  );
-  if (exists)
+  if (await pathExists(path)) {
     throw new DigestError(`${path} exists; pass --force to replace it, or move it away first`);
+  }
 }
 
 /** A raw capture file, checked against its schema. */

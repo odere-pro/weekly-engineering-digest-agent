@@ -15,7 +15,7 @@ flowchart LR
   doctor -.->|"one item per source"| feeds[("feed hosts, api.github.com")]
   doctor -.->|"stat, lstat, access, readFile"| disk[("config file, data dir, markdown dir, .env")]
   doctor -->|"lines, summary, exit code"| out[("stdout")]
-  init["cli/init"] -.->|"errorCode, fitsRam, formatGiB, QUALITY_TIGHT_RAM"| doctor
+  init["cli/init"] -.->|"fitsRam, formatGiB, QUALITY_TIGHT_RAM"| doctor
   classDef focus stroke-width:3px
 ```
 
@@ -55,16 +55,15 @@ env.OLLAMA_URL)` (the `OLLAMA_URL` password too), and the `.env` checks name a k
 
 ## Files
 
-| File / folder  | Role                                                                                     |
-| -------------- | ---------------------------------------------------------------------------------------- |
-| `doctor.ts`    | `doctorCommand`, `DoctorCommandOptions`, `defaultIo`, `tryLoadConfig`                    |
-| `types.ts`     | `DoctorIo`, `PathInfo`                                                                   |
-| `errorCode.ts` | `errorCode`, `isNotFound`: read a Node error code                                        |
-| `report/`      | Result type, lines, summary, exit codes, URL credential stripper. See `report/CLAUDE.md` |
-| `checks/`      | Ollama, models, sources, delivery, guards. See `checks/CLAUDE.md`                        |
-| `envFile/`     | `.env` permissions and values cut at `#`. See `envFile/CLAUDE.md`                        |
-| `folders/`     | Can a run write to or create a folder. See `folders/CLAUDE.md`                           |
-| `readiness/`   | `--readiness`: profile table, RAM, versions. See `readiness/CLAUDE.md`                   |
+| File / folder | Role                                                                                     |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| `doctor.ts`   | `doctorCommand`, `DoctorCommandOptions`, `defaultIo`, `tryLoadConfig`                    |
+| `types.ts`    | `DoctorIo`, `PathInfo`                                                                   |
+| `report/`     | Result type, lines, summary, exit codes, URL credential stripper. See `report/CLAUDE.md` |
+| `checks/`     | Ollama, models, sources, delivery, guards. See `checks/CLAUDE.md`                        |
+| `envFile/`    | `.env` permissions and values cut at `#`. See `envFile/CLAUDE.md`                        |
+| `folders/`    | Can a run write to or create a folder. See `folders/CLAUDE.md`                           |
+| `readiness/`  | `--readiness`: profile table, RAM, versions. See `readiness/CLAUDE.md`                   |
 
 Tests sit next to the code. `__fixtures__/doctorHarness.ts` is the fake machine; `doctor.fs.test.ts`
 and `doctor.defaults.test.ts` run the real disk calls and the real defaults.
@@ -72,7 +71,7 @@ and `doctor.defaults.test.ts` run the real disk calls and the real defaults.
 ## Gotchas
 
 - Printed text, check labels, result order and exit codes are public: tests find lines by `label:`.
-- `cli/init` imports `errorCode.ts` (`init/envFile/secretFile.ts`, `init/io/files.ts`) and
-  `readiness/memory.ts` (`init/prompts/profile.ts`). Moving either breaks init.
+- `cli/init` imports `readiness/memory.ts` (`init/prompts/profile.ts`). Moving it breaks init.
+  Node error codes come from `shared/fsErrors` (`errnoCode`, `isNotFound`), not from here.
 - A new check is a function in `checks/` (its own folder if it is complex), one line in
   `doctorCommand` and a test on the harness.

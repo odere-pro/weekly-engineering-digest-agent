@@ -17,7 +17,7 @@ import {
   type Rule,
 } from './__fixtures__/initHarness';
 import { initCommand } from './init';
-import { pathExists } from './io/files';
+import { mayExist } from './io/files';
 import { DOCKERENV_PATH } from './paths';
 import type { InitIo } from './types';
 
@@ -30,7 +30,7 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 // The real disk without /.dockerenv: init runs as on a host, so OLLAMA_URL is localhost even
 // when the tests themselves run in a container.
 const existsOnHost = async (path: string): Promise<boolean> =>
-  path !== DOCKERENV_PATH && (await pathExists(path));
+  path !== DOCKERENV_PATH && (await mayExist(path));
 
 describe('in Docker, where the files are single-file bind mounts', () => {
   let dir: string;

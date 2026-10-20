@@ -11,7 +11,8 @@ import { TEST_TIMEOUT_MS, FIRST_WRITER, FRIDAY, SECOND_WRITER, WEEK } from './ha
 import { createWorld, type World } from './harness/world';
 import { createOllamaWorld } from './harness/ollamaWorld';
 import { useDataDir } from './harness/dataDir';
-import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { readTextIfExists } from '../../src/shared/atomicFile';
+import { readRunJson, runFile } from './harness/runFiles';
 import { lockExists } from './harness/lock';
 
 // The real adapter waits 1 s, then 2 s, between attempts: about 5 s in real time over this file.

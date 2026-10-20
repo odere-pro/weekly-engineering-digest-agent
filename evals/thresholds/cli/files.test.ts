@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -59,6 +59,18 @@ describe('assertNew', () => {
     const path = join(dir, 'there.json');
     await writeFile(path, '{}');
     await expect(assertNew(path)).rejects.toThrow(`${path} exists; pass --force to replace it`);
+  });
+
+  it('accepts a path below a file: nothing can be there', async () => {
+    await writeFile(join(dir, 'file'), 'x');
+    await expect(assertNew(join(dir, 'file', 'below.json'))).resolves.toBeUndefined();
+  });
+
+  it('fails with the system error when it cannot tell, before any model is called', async () => {
+    // A link that loops: stat fails with ELOOP, which says nothing about whether a capture is there.
+    const path = join(dir, 'loop.json');
+    await symlink(path, path);
+    await expect(assertNew(path)).rejects.toThrow(/ELOOP/);
   });
 });
 

@@ -40,5 +40,5 @@ flowchart TD
 ## Gotchas
 
 - The read-only-folder tests skip when run as root.
-- `errorCode` comes from `cli/doctor/errorCode.ts`; `mergeEnvText` and `formatEnvValue` from
+- `errnoCode` comes from `shared/fsErrors`; `mergeEnvText` and `formatEnvValue` from
   `config/load.ts`. Never put a value in an error message.

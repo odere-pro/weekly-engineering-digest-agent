@@ -2,7 +2,7 @@
 // evals/sources/<id>/ (W6-01). The bodies are untrusted data: they are written to disk as text
 // and never executed. expected.json is written by hand and is never touched here.
 import { realpathSync } from 'node:fs';
-import { access, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { format, resolveConfig } from 'prettier';
@@ -14,6 +14,7 @@ import { DEFAULT_SOURCES } from '../src/sources/defaultSources';
 import type { Source } from '../src/domain/schemas';
 import { systemClock, type Clock } from '../src/shared/clock';
 import { errorMessage } from '../src/shared/errors';
+import { pathExists } from '../src/shared/fsErrors';
 import type { SourceResponse } from './schema';
 import { loadSourceRecordings } from './sourceConformance/recordings/loadSourceRecordings';
 import { EVERYTHING } from './sourceConformance/replayFetch/fetchFromRecording';
@@ -69,12 +70,7 @@ async function resetFolder(dir: string): Promise<void> {
 
 async function hasRecordedBody(dir: string): Promise<boolean> {
   const found = await Promise.all(
-    ['body.xml', 'body.json'].map((name) =>
-      access(join(dir, name)).then(
-        () => true,
-        () => false,
-      ),
-    ),
+    ['body.xml', 'body.json'].map((name) => pathExists(join(dir, name))),
   );
   return found.some(Boolean);
 }
@@ -170,12 +166,6 @@ interface MissingPage {
   id: string;
   url: string;
 }
-
-const pathExists = (path: string): Promise<boolean> =>
-  access(path).then(
-    () => true,
-    () => false,
-  );
 
 /** The entries of a recorded feed that carry no text, as the pipeline reads them. */
 async function entriesWithoutText(

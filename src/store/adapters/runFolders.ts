@@ -6,7 +6,8 @@ import { DIGEST_DIR, isDayName, LOGS_DIR, weekDay, weekDigestDir, weekOfDay } fr
 import { WEEK_ID_PATTERN } from '../../domain/schemas';
 import { DigestError, errorMessage } from '../../shared/errors';
 import type { Logger } from '../../shared/telemetry';
-import { isErrnoException, readTextIfExists } from '../../shared/atomicFile';
+import { readTextIfExists } from '../../shared/atomicFile';
+import { errnoCode } from '../../shared/fsErrors';
 
 export const RUN_RECORD_FILE = 'run.json';
 export const DIGEST_FILE = 'digest.md';
@@ -48,7 +49,7 @@ async function subfolders(dir: string): Promise<string[]> {
     const entries = await readdir(dir, { withFileTypes: true });
     return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
   } catch (error) {
-    if (isErrnoException(error, 'ENOENT')) return [];
+    if (errnoCode(error) === 'ENOENT') return [];
     throw error;
   }
 }

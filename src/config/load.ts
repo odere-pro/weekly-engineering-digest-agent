@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parseEnv } from 'node:util';
 import { z } from 'zod';
@@ -6,6 +5,7 @@ import { resolveProfile, type ModelProfile, type Platform } from './profiles';
 import { ConfigSchema, EnvSchema, SecretsSchema } from './schema';
 import type { Config, Env, Secrets } from './schema';
 import { createRedactor } from '../observability/redact';
+import { readTextIfExists } from '../shared/atomicFile';
 import { DigestError, errorMessage } from '../shared/errors';
 
 const DEFAULT_CONFIG_PATH = 'digest.config.json';
@@ -263,13 +263,8 @@ function withoutEmpty(
 /** The file's text, undefined when it does not exist. Other failures are wrapped. */
 async function readTextFile(path: string): Promise<string | undefined> {
   try {
-    return await readFile(path, 'utf8');
+    return await readTextIfExists(path);
   } catch (cause) {
-    if (isNotFound(cause)) return undefined;
     throw new DigestError(`Cannot read ${path}: ${errorMessage(cause)}`, { cause });
   }
-}
-
-function isNotFound(error: unknown): boolean {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
 }

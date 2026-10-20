@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile, access } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -6,6 +6,7 @@ import { runCli } from './calibrate';
 import { loadConfig, type LoadedConfig } from '../src/config/load';
 import { CalibrationSchema } from '../src/process/calibration';
 import { DigestError } from '../src/shared/errors';
+import { pathExists } from '../src/shared/fsErrors';
 import { makeConfig } from '../test/builders';
 import { liftingCapture, rawCapture, weekCases } from './calibration/__fixtures__/calibrationKit';
 import type { RawCapture } from './thresholds/capture/schemas';
@@ -13,12 +14,6 @@ import type { RawCapture } from './thresholds/capture/schemas';
 // The real loader reads digest.config.json and .env from the working folder: replaced here, so
 // the default wiring is tested without a file. Every other test injects `loadDataDir`.
 vi.mock('../src/config/load', () => ({ loadConfig: vi.fn() }));
-
-const exists = (path: string) =>
-  access(path).then(
-    () => true,
-    () => false,
-  );
 
 describe('runCli', () => {
   const dirs: string[] = [];
@@ -74,7 +69,7 @@ describe('runCli', () => {
     expect(code).toBe(0);
     expect(out).toContain('holdout recall');
     const kept = out.includes('verdict: keep');
-    expect(await exists(join(dir, 'c.json'))).toBe(kept);
+    expect(await pathExists(join(dir, 'c.json'))).toBe(kept);
     if (kept)
       expect(
         CalibrationSchema.safeParse(JSON.parse(await readFile(join(dir, 'c.json'), 'utf8')))
@@ -85,8 +80,8 @@ describe('runCli', () => {
   it('does not write without --write', async () => {
     const { dir, dataDir, code } = await kit([]);
     expect(code).toBe(0);
-    expect(await exists(join(dataDir, 'eval'))).toBe(false);
-    expect(await exists(join(dir, 'evals', 'calibration'))).toBe(false);
+    expect(await pathExists(join(dataDir, 'eval'))).toBe(false);
+    expect(await pathExists(join(dir, 'evals', 'calibration'))).toBe(false);
   });
 
   it('exits 1 for a bad capture or a bad holdout week', async () => {
@@ -127,7 +122,7 @@ describe('runCli', () => {
       const { casesDir, code } = await kit(['--holdout', '2026-W40', '--write'], liftingCapture());
 
       expect(code).toBe(0);
-      expect(await exists(join(casesDir, 'calibration'))).toBe(false);
+      expect(await pathExists(join(casesDir, 'calibration'))).toBe(false);
     });
 
     it('lets --out win and never asks for the data folder', async () => {
@@ -140,8 +135,8 @@ describe('runCli', () => {
 
       expect(code).toBe(0);
       expect(loadDataDir).not.toHaveBeenCalled();
-      expect(await exists(join(dir, 'chosen.json'))).toBe(true);
-      expect(await exists(join(dataDir, 'eval'))).toBe(false);
+      expect(await pathExists(join(dir, 'chosen.json'))).toBe(true);
+      expect(await pathExists(join(dataDir, 'eval'))).toBe(false);
     });
 
     it('fails with a hint to pass --out when the data folder cannot be read', async () => {
@@ -159,7 +154,7 @@ describe('runCli', () => {
       expect(err).toContain('calibrate failed:');
       expect(err).toContain('No digest.config.json found at /x');
       expect(err).toContain('--out <file>');
-      expect(await exists(join(dir, 'evals', 'calibration'))).toBe(false);
+      expect(await pathExists(join(dir, 'evals', 'calibration'))).toBe(false);
     });
 
     it('takes the data folder from digest.config.json by default', async () => {
@@ -181,7 +176,9 @@ describe('runCli', () => {
       expect(code).toBe(0);
       expect(loadConfig).toHaveBeenCalledTimes(1);
       expect(loadConfig).toHaveBeenCalledWith();
-      expect(await exists(join(dir, 'configured', 'eval', 'calibration', 'light.json'))).toBe(true);
+      expect(await pathExists(join(dir, 'configured', 'eval', 'calibration', 'light.json'))).toBe(
+        true,
+      );
     });
 
     it('writes nothing without --write, though the verdict is keep', async () => {
@@ -191,7 +188,7 @@ describe('runCli', () => {
       expect(out).toContain('verdict: keep');
       expect(out).not.toContain('wrote');
       expect(loadDataDir).not.toHaveBeenCalled();
-      expect(await exists(join(dataDir, 'eval'))).toBe(false);
+      expect(await pathExists(join(dataDir, 'eval'))).toBe(false);
     });
   });
 
@@ -217,7 +214,7 @@ describe('runCli', () => {
     expect(out).toContain('verdict: drop (recall did not rise or leaks rose)');
     expect(out).not.toContain('wrote');
     expect(loadDataDir).not.toHaveBeenCalled();
-    expect(await exists(join(dataDir, 'eval'))).toBe(false);
+    expect(await pathExists(join(dataDir, 'eval'))).toBe(false);
   });
 
   it('prints to the process streams when no stream is given', async () => {

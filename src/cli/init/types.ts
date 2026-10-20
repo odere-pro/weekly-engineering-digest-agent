@@ -51,6 +51,7 @@ export interface InitIo {
   /** How a scheduler starts digest, without arguments, e.g. "/usr/local/bin/digest". */
   scheduleProgram: string;
   renderSchedule: (os: NodeJS.Platform, options: OsScheduleOptions) => OsSchedule;
+  /** False only for a path known to be missing; one it cannot check counts as there. */
   exists: (path: string) => Promise<boolean>;
   /** True for an existing file with no content, such as the ones `make docker-init` creates. */
   isEmptyFile: (path: string) => Promise<boolean>;

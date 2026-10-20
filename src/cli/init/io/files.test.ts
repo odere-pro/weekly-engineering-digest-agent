@@ -1,8 +1,8 @@
-import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { isEmptyFile, pathExists, readTextIfPresent, writeTextFile } from './files';
+import { isEmptyFile, mayExist, writeTextFile } from './files';
 
 const isRoot = process.getuid?.() === 0;
 let dir: string;
@@ -16,63 +16,39 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe('pathExists', () => {
+describe('mayExist', () => {
   it('is true for a file and for a folder', async () => {
     await writeFile(join(dir, 'a.txt'), 'x');
 
-    expect(await pathExists(join(dir, 'a.txt'))).toBe(true);
-    expect(await pathExists(dir)).toBe(true);
+    expect(await mayExist(join(dir, 'a.txt'))).toBe(true);
+    expect(await mayExist(dir)).toBe(true);
   });
 
   it('is false for a path that is not there', async () => {
-    expect(await pathExists(join(dir, 'missing.txt'))).toBe(false);
+    expect(await mayExist(join(dir, 'missing.txt'))).toBe(false);
   });
 
   it('is false for a path below a file (ENOTDIR)', async () => {
     await writeFile(join(dir, 'a.txt'), 'x');
 
-    expect(await pathExists(join(dir, 'a.txt', 'below'))).toBe(false);
+    expect(await mayExist(join(dir, 'a.txt', 'below'))).toBe(false);
+  });
+
+  it('is true when it cannot tell (a link that loops), so the caller asks before overwriting', async () => {
+    await symlink(join(dir, 'loop'), join(dir, 'loop'));
+
+    expect(await mayExist(join(dir, 'loop'))).toBe(true);
   });
 
   it.skipIf(isRoot)(
-    'is true when it cannot tell, so the caller asks before overwriting',
+    'is true when it cannot tell (a folder it may not search), so the caller asks before overwriting',
     async () => {
       await writeFile(join(dir, 'a.txt'), 'x');
       await chmod(dir, 0o000);
 
-      expect(await pathExists(join(dir, 'a.txt'))).toBe(true);
+      expect(await mayExist(join(dir, 'a.txt'))).toBe(true);
     },
   );
-});
-
-describe('readTextIfPresent', () => {
-  it('returns the text of a file', async () => {
-    await writeFile(join(dir, 'a.txt'), 'héllo\n', 'utf8');
-
-    expect(await readTextIfPresent(join(dir, 'a.txt'))).toBe('héllo\n');
-  });
-
-  it('returns an empty string for an empty file', async () => {
-    await writeFile(join(dir, 'a.txt'), '');
-
-    expect(await readTextIfPresent(join(dir, 'a.txt'))).toBe('');
-  });
-
-  it('returns undefined for a file that is not there', async () => {
-    expect(await readTextIfPresent(join(dir, 'missing.txt'))).toBeUndefined();
-  });
-
-  it('rejects for any other failure, such as reading a folder', async () => {
-    await expect(readTextIfPresent(dir)).rejects.toMatchObject({ code: 'EISDIR' });
-  });
-
-  it.skipIf(isRoot)('rejects for a file it may not read', async () => {
-    const file = join(dir, 'secret.txt');
-    await writeFile(file, 'x');
-    await chmod(file, 0o000);
-
-    await expect(readTextIfPresent(file)).rejects.toMatchObject({ code: 'EACCES' });
-  });
 });
 
 describe('writeTextFile', () => {

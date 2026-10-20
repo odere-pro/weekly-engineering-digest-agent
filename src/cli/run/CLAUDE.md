@@ -50,7 +50,9 @@ flowchart TD
   failed write prints `Error: could not write the dry-run digest to <dir>` after the summary and
   exits 1, whatever the run's own code was.
 - File lines list what is on disk. A resumed week whose markdown channel took the digest in another
-  folder prints no path; the HTML line appears only when the page exists.
+  folder prints no path; the HTML line appears only when the page exists. A path it cannot check
+  (`pathExists` throws: no access to the folder, a link that loops) is left out too, and the
+  summary and the run's exit code stay: the listing is a courtesy and must not fail a finished run.
 - `--since` is `Nd` with 1 to 31 days (`parseSince`, shared with `fetch/plan/parseSince.ts`), `--seed` a whole number of 0 or more (checked again here:
   library callers skip commander), `--out` not blank. `withSeed` and `withOut` return new configs.
 - The app is closed in `finally`. A failed close prints `Warning: could not close the app cleanly`
@@ -69,7 +71,7 @@ channel). `__fixtures__/runHarness.ts` holds the scripted app and the captured o
 
 ## Gotchas
 
-- `run.ts` is 291 lines; the cap is 300. Extract a subfolder (the summary, the dry-run copy) before
+- `run.ts` is 278 lines; the cap is 300. Extract a subfolder (the summary, the dry-run copy) before
   adding code.
 - Two adapter imports are on purpose: `markdownFileOptions`, `markdownFolder` and `digestFilePaths`
   (`delivery/adapters/markdownFile`) give the paths the channel writes to, and `DIGEST_FILE`

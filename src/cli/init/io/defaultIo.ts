@@ -1,11 +1,12 @@
 import { totalmem } from 'node:os';
 import { renderOsSchedule } from '../../../scheduler/osSchedule';
+import { readTextIfExists } from '../../../shared/atomicFile';
 import { systemClock } from '../../../shared/clock';
 import { writeSecretFile } from '../envFile/secretFile';
 import { DEFAULT_ENV_PATH } from '../paths';
 import { defaultScheduleProgram } from '../schedule/schedule';
 import type { InitIo } from '../types';
-import { isEmptyFile, pathExists, readTextIfPresent, writeTextFile } from './files';
+import { isEmptyFile, mayExist, writeTextFile } from './files';
 import { inquirerPrompts } from './inquirerPrompts';
 
 /** The real machine: the terminal, this process, the disk and the OS scheduler. Tests replace parts of it. */
@@ -22,9 +23,9 @@ export function createDefaultIo(): InitIo {
     envPath: DEFAULT_ENV_PATH,
     scheduleProgram: defaultScheduleProgram(),
     renderSchedule: renderOsSchedule,
-    exists: pathExists,
+    exists: mayExist,
     isEmptyFile,
-    readFile: readTextIfPresent,
+    readFile: readTextIfExists,
     writeFile: writeTextFile,
     writeSecretFile,
     stdout: (text) => {

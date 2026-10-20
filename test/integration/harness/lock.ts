@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { readTextIfExists } from './runFiles';
+import { readTextIfExists } from '../../../src/shared/atomicFile';
 
 export const LOCK_FILE = 'digest.lock';
 

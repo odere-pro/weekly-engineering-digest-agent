@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { format, resolveConfig } from 'prettier';
-import { hasErrorCode } from '../fsErrors';
+import { errnoCode } from '../../../src/shared/fsErrors';
 
 /** Creates `path` only when it does not exist yet; true when this call created it. */
 export async function writeIfAbsent(path: string, content: string): Promise<boolean> {
@@ -8,7 +8,7 @@ export async function writeIfAbsent(path: string, content: string): Promise<bool
     await writeFile(path, content, { flag: 'wx' });
     return true;
   } catch (error) {
-    if (hasErrorCode(error, 'EEXIST')) return false;
+    if (errnoCode(error) === 'EEXIST') return false;
     throw error;
   }
 }

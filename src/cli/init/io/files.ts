@@ -1,29 +1,17 @@
-import { access, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { errorCode } from '../../doctor/errorCode';
+import { pathExists } from '../../../shared/fsErrors';
 
 /**
- * False only for a path that is not there (ENOENT) or sits below a file (ENOTDIR). Any other
- * failure, such as a folder it may not read, counts as "exists": the caller then asks before
- * it overwrites.
+ * False only for a path that is not there (`pathExists`: ENOENT, or ENOTDIR below a file). When
+ * the path cannot be checked (a folder it may not read), it may exist: the answer is true, and
+ * the caller then asks before it overwrites. `pathExists` itself rethrows that case.
  */
-export async function pathExists(path: string): Promise<boolean> {
+export async function mayExist(path: string): Promise<boolean> {
   try {
-    await access(path);
+    return await pathExists(path);
+  } catch {
     return true;
-  } catch (error) {
-    const code = errorCode(error);
-    return code !== 'ENOENT' && code !== 'ENOTDIR';
-  }
-}
-
-/** The text of a file, undefined when it does not exist. Other failures reject. */
-export async function readTextIfPresent(path: string): Promise<string | undefined> {
-  try {
-    return await readFile(path, 'utf8');
-  } catch (error) {
-    if (errorCode(error) === 'ENOENT') return undefined;
-    throw error;
   }
 }
 

@@ -19,8 +19,10 @@ flowchart TD
 
 ## Rules
 
-- A config that exists but fails to load throws; only a missing file falls back to the defaults. Any
-  other error from the existence check (a path under a file, `ENOTDIR`) throws too.
+- A config that exists but fails to load throws; only a missing file falls back to the defaults. The
+  check is `pathExists` (`shared/fsErrors`): a path below a file (`ENOTDIR`) is missing too, and any
+  other error from it (`EACCES`, `EIO`, a link that loops) throws, so a config it could not check is
+  never swapped for the defaults.
 - The GitHub token is `secrets.GITHUB_TOKEN` from `loadConfig`; this folder never reads `.env`.
 - The RSS fetcher gets the logger only; the GitHub fetcher gets the token and the logger.
 - A caller that passes its own `sources` or `fetchers` to `recordWeeks` skips this folder.

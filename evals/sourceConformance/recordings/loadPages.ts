@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DigestError, errorMessage } from '../../../src/shared/errors';
+import { errnoCode } from '../../../src/shared/fsErrors';
 import type { SourceExpected } from '../../schema';
 
 /** Not `.html`: prettier would try to format a recorded page, and fail on some. */
@@ -16,7 +17,7 @@ export async function loadPages(
   try {
     names = (await readdir(pagesDir)).sort();
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return {};
+    if (errnoCode(error) === 'ENOENT') return {};
     throw new DigestError(`Cannot read ${pagesDir}: ${errorMessage(error)}`, { cause: error });
   }
   const urlById = new Map(expected.items.map((item) => [item.id, item.url]));

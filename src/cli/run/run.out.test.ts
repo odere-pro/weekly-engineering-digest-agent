@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -150,6 +150,20 @@ describe('runCommand: local files', () => {
     await runCommand({}, h.deps);
 
     expect(text(h.out)).not.toContain(digestsDir);
+  });
+
+  it('lists no file it cannot check, and still prints the summary with the exit code of the run', async () => {
+    // A link that loops: stat fails with ELOOP, which says nothing about whether a file is there.
+    const loop = join(root, 'loop');
+    await symlink(loop, loop);
+    const h = harness(sentResult(deliveredToMarkdown), { markdownDir: loop });
+
+    const code = await runCommand({}, h.deps);
+
+    expect(code).toBe(ExitCode.Sent);
+    expect(text(h.out)).toContain('Week');
+    expect(text(h.out)).not.toContain(loop);
+    expect(text(h.err)).toBe('');
   });
 
   it('prints no local path when the Markdown channel was not reached', async () => {

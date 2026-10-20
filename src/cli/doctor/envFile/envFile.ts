@@ -1,5 +1,5 @@
 import { errorMessage } from '../../../shared/errors';
-import { isNotFound } from '../errorCode';
+import { errnoCode } from '../../../shared/fsErrors';
 import { ok, warn, type CheckResult } from '../report/checkResult';
 import type { DoctorIo } from '../types';
 import { keysCutAtHash } from './keysCutAtHash';
@@ -17,7 +17,7 @@ export async function checkEnvFile(io: Pick<DoctorIo, 'stat' | 'envPath'>): Prom
     const shown = (mode & PERMISSION_MASK).toString(OCTAL);
     return warn(label, `readable by other users (mode ${shown})`, 'chmod 600 .env');
   } catch (error) {
-    if (isNotFound(error)) {
+    if (errnoCode(error) === 'ENOENT') {
       return ok(label, 'no .env file (secrets come from the process environment)');
     }
     return warn(
@@ -41,7 +41,7 @@ export async function checkEnvValues(
   try {
     text = await io.readFile(io.envPath);
   } catch (error) {
-    if (isNotFound(error)) return []; // the .env check already says there is none
+    if (errnoCode(error) === 'ENOENT') return []; // the .env check already says there is none
     return [
       warn(
         label,

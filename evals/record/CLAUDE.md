@@ -58,7 +58,7 @@ flowchart TD
 | `../recordSources.ts`            | Saves each default source's response; `--pages` saves article pages          |
 | `../feedbackToLabels.ts`         | Merges `digest feedback` into `labels.json`; never changes an existing label |
 | `types.ts`                       | `WeekRecord`, `ResolvedSources`: what the report and the fetchers share      |
-| `display.ts`, `fsErrors.ts`      | `oneLine`, `pluralizeItems`; `hasErrorCode` for `ENOENT` and `EEXIST`        |
+| `display.ts`                     | `oneLine`, `pluralizeItems`                                                  |
 | `weeks/`, `report/`, `fetchers/` | Week files, report lines, sources and fetchers. See each `CLAUDE.md`         |
 
 Tests sit next to each file. `__fixtures__/recordKit.ts` has two sources and the item builders.

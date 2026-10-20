@@ -26,7 +26,8 @@ flowchart TD
   eval-set loader, the clock and the two streams. Nothing here imports `app/container` (only its
   type), `config/load` or a model; the entry file does the real wiring.
 - Exit codes: 0 done, 1 failed, 2 usage; the entry file maps a throw to `tuneThresholds failed: <message>`
-  and exit 1. The "refuse to replace" check comes before any case is loaded or model is called.
+  and exit 1. The "refuse to replace" check (`assertNew`, on `pathExists`) comes before any case is loaded
+  or model is called; a capture path it cannot check (`EACCES`, `EIO`) stops the command the same way.
 
 ## Files
 

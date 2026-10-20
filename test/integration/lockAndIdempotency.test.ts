@@ -10,7 +10,8 @@ import type { ModelProvider } from '../../src/models/ModelProvider';
 import { TEST_TIMEOUT_MS, FRIDAY, WEEK } from './harness/constants';
 import { createWorld, withModel, type World } from './harness/world';
 import { useDataDir } from './harness/dataDir';
-import { readRunJson, readTextIfExists, runFile } from './harness/runFiles';
+import { readTextIfExists } from '../../src/shared/atomicFile';
+import { readRunJson, runFile } from './harness/runFiles';
 import { LOCK_FILE, deadPid, lockExists, writeLock, type LockContents } from './harness/lock';
 import { runCli } from './harness/runCli';
 

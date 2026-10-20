@@ -1,4 +1,3 @@
-import { access } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   digestFilePaths,
@@ -15,6 +14,7 @@ import { type DigestDeps, type RunOptions, type RunResult } from '../../digest/t
 import { ExitCode } from '../../domain/schemas';
 import { createRedactor, type Redactor } from '../../observability/redact';
 import { DigestError, errorMessage } from '../../shared/errors';
+import { pathExists } from '../../shared/fsErrors';
 import { parseSince } from '../fetch/plan/parseSince';
 import { formatRunDuration } from '../history/history';
 
@@ -196,8 +196,8 @@ async function localFilesOf(
   if (!reached) return undefined;
   const paths = digestFilePaths(dir, record.runId);
   const [hasMarkdown, hasHtml] = await Promise.all([
-    fileExists(paths.markdown),
-    fileExists(paths.html),
+    isListable(paths.markdown),
+    isListable(paths.html),
   ]);
   // A resumed week whose Markdown channel took the digest in an earlier run (and maybe another
   // folder) has nothing here: list what is there, not what the folder should hold.
@@ -205,13 +205,12 @@ async function localFilesOf(
   return hasHtml ? paths : { markdown: paths.markdown };
 }
 
-async function fileExists(path: string): Promise<boolean> {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
+/**
+ * Whether the summary may list the file. A path that cannot be checked (no access to the folder, a
+ * link that loops) is left out: the summary is a courtesy and must not fail a finished run.
+ */
+function isListable(path: string): Promise<boolean> {
+  return pathExists(path).catch(() => false);
 }
 
 /** A failed close is reported, but never hides the run's outcome or its error. */

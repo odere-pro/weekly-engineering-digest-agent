@@ -1,4 +1,5 @@
-import { isErrnoException, readTextIfExists } from '../../../shared/atomicFile';
+import { readTextIfExists } from '../../../shared/atomicFile';
+import { errnoCode } from '../../../shared/fsErrors';
 import { parseLockFile, type LockFile, type OwnLock } from './lockFile';
 import {
   LOCK_HEARTBEAT_TIMEOUT_MS,
@@ -20,7 +21,7 @@ function isPidAlive(pid: number): boolean {
     return true;
   } catch (error) {
     // EPERM: the process exists but belongs to another user.
-    return isErrnoException(error, 'EPERM');
+    return errnoCode(error) === 'EPERM';
   }
 }
 

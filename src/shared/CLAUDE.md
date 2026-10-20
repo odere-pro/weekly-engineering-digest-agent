@@ -2,7 +2,8 @@
 
 > Small helpers many features need and none should own: errors with exit codes, clock, retry, timeout, a
 > bounded pool, ISO weeks, URL and text cleaning, the untrusted-data wrapper, `Logger` and `Tracer`,
-> atomic file writes, the progress log. Any layer may import them. No entry point, no port.
+> atomic file writes, Node error codes and "does this path exist", the progress log. Any layer may
+> import them. No entry point, no port.
 
 ## Context
 
@@ -26,6 +27,7 @@ flowchart TD
   isoWeek["isoWeek.ts"] --> weeks["run ids: digest, scheduler, fsRunStore, evals"]
   text["text.ts"] --> caps["toPlainText in sources/adapters, truncate in write, select, render, delivery, printableLine in eval scorecard and show tables"]
   atomic["atomicFile.ts"] --> files["run store, lock, markdown delivery, source archive, preview"]
+  fsErrors["fsErrors.ts"] -->|"errnoCode, isNotFound, pathExists"| fsUsers["atomicFile, run store, config load, doctor, init, run summary, evals"]
   progress["progress.ts"] -->|"startProgress"| steps["guards/guardRun, classify/classify"]
 ```
 
@@ -33,7 +35,7 @@ flowchart TD
 
 - No state, no feature imports, so any layer can import it. It imports only `domain/schemas`
   (`errors.ts`, `isoWeek.ts`; `domain` never imports `shared`, so no cycle), `node:crypto` (`url.ts`)
-  and, in `atomicFile.ts` alone, `node:fs`. Time and sleep are passed in (`Clock`, `sleep`): tests never wait.
+  and, in `atomicFile.ts` and `fsErrors.ts` alone, `node:fs`. Time and sleep are passed in (`Clock`, `sleep`): tests never wait.
 - `DigestError.exitCode` becomes the process exit code (default `Failed`, 1); `step` names the step that
   threw. `FetchError` adds `status` and `retryable`, which the fetcher sets (`sources/adapters/http.ts`).
 - `itemIdFor` is the first 16 hex chars of sha256 of `normalizeUrl(url)`: ids are saved in digests, run
@@ -53,25 +55,32 @@ flowchart TD
   the median gap between two ticks times the items left: the median, because the first item often loads
   the model; ticks, so it holds with any number of items in flight. Fields are counts, times and
   `label`, never item text. A step calls it, not the model adapter: only the step knows the total.
+- Node file errors are read here, in `fsErrors.ts`. `errnoCode(error)` is an `Error`'s string `code`, else
+  undefined; compare it: `errnoCode(error) === 'ENOENT'`. `isNotFound` is ENOENT or ENOTDIR: the path is
+  not there. `pathExists` is `stat`: false on `isNotFound`, true when it works, and any other error
+  (EACCES, EIO, ELOOP) is thrown. Reading one file that may be missing wants ENOENT alone
+  (`readTextIfExists`): ENOTDIR there is a wrong folder layout. A caller that must answer even when it
+  cannot check wraps `pathExists` in its own folder (`init/io` `mayExist`, `cli/run` `isListable`).
 - `withRetry`: `retries` counts extra tries, delay `baseDelayMs * 2^attempt` up to `maxDelayMs`; a
   fired `signal` ends it at once. `withTimeout` rejects with `TimeoutError` even when `fn` ignores the signal.
 
 ## Files
 
-| File             | Role                                                                                                     |
-| ---------------- | -------------------------------------------------------------------------------------------------------- |
-| `atomicFile.ts`  | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles`, `isErrnoException` |
-| `causeChain.ts`  | `causeChain`, `MAX_CAUSE_DEPTH`: an error and its `Error` causes, at most 5 deep                         |
-| `clock.ts`       | `Clock`, `systemClock`, `fixedClock` (a fresh `Date` per call)                                           |
-| `concurrency.ts` | `mapWithConcurrency`: a bounded pool that keeps the input order                                          |
-| `errors.ts`      | `DigestError`, `FetchError`, `errorMessage`                                                              |
-| `isoWeek.ts`     | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`                          |
-| `progress.ts`    | `startProgress`, `formatDuration`, `PROGRESS_EVERY_ITEMS`, `PROGRESS_EVERY_MS`                           |
-| `retry.ts`       | `withRetry`, `withTimeout`, `TimeoutError`                                                               |
-| `telemetry.ts`   | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                                              |
-| `text.ts`        | `toPlainText`, `truncate`, `wordCount`, `printableLine`                                                  |
-| `untrusted.ts`   | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`                          |
-| `url.ts`         | `normalizeUrl`, `itemIdFor`, `sameUrl`                                                                   |
+| File             | Role                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| `atomicFile.ts`  | `writeFileAtomic`, `createFileExclusive`, `readTextIfExists`, `removeStaleTempFiles` |
+| `causeChain.ts`  | `causeChain`, `MAX_CAUSE_DEPTH`: an error and its `Error` causes, at most 5 deep     |
+| `clock.ts`       | `Clock`, `systemClock`, `fixedClock` (a fresh `Date` per call)                       |
+| `concurrency.ts` | `mapWithConcurrency`: a bounded pool that keeps the input order                      |
+| `errors.ts`      | `DigestError`, `FetchError`, `errorMessage`                                          |
+| `fsErrors.ts`    | `errnoCode`, `isNotFound`, `pathExists`: Node error codes and "is this path there"   |
+| `isoWeek.ts`     | `isoWeekId`, `parseWeekId`, `weekStartUtc`, `previousWeekIds`, `compareWeekIds`      |
+| `progress.ts`    | `startProgress`, `formatDuration`, `PROGRESS_EVERY_ITEMS`, `PROGRESS_EVERY_MS`       |
+| `retry.ts`       | `withRetry`, `withTimeout`, `TimeoutError`                                           |
+| `telemetry.ts`   | `Logger`, `Tracer`, `LogFields`, `noopLogger`, `noopTracer`                          |
+| `text.ts`        | `toPlainText`, `truncate`, `wordCount`, `printableLine`                              |
+| `untrusted.ts`   | `wrapUntrusted`, `neutralize`, `UNTRUSTED_DATA_RULE`, `DATA_OPEN`, `DATA_CLOSE`      |
+| `url.ts`         | `normalizeUrl`, `itemIdFor`, `sameUrl`                                               |
 
 Tests sit next to each file, except `clock.ts` and `telemetry.ts`. One fixture, `__fixtures__/steppedClock.ts`:
 a `fixedClock` a test moves by hand (`advance`), for the progress tests here, in `guards` and in `classify`.
@@ -88,5 +97,7 @@ a `fixedClock` a test moves by hand (`advance`), for the progress tests here, in
 - The progress tests in `guards` and `classify` read the `Progress` message and its field names.
 - A change to `Logger` or `Tracer` needs a matching change in `src/observability`, the `noop*` objects
   (re-exported by `test/fakes`) and hand-made loggers in tests (`write.retry.test.ts`).
+- Never hand-write `error instanceof Error && 'code' in error`, nor `access(path).then(() => true, () => false)`:
+  the second turns EACCES and EIO into "missing" (`evals/feedbackToLabels.ts` could replace labels it could not read).
 - `atomicFile.ts` is the one writer behind every saved file (temp file, fsync, rename). Keep its
   signatures: the store, the markdown channel, the archive and `preview` call it.

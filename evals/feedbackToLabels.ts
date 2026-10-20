@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { WeekIdSchema } from '../src/domain/schemas';
 import { DigestError, errorMessage } from '../src/shared/errors';
+import { pathExists } from '../src/shared/fsErrors';
 import { weekDigestDir } from '../src/store/layout';
 import { MUST_INCLUDE_COUNT } from './schema';
 
@@ -140,10 +141,10 @@ async function readJson(path: string, hint: string): Promise<unknown> {
 /** Makes the week folder from the run's items.json, with empty labels, when it is missing. */
 async function ensureWeek(weekDir: string, runItems: string): Promise<boolean> {
   const labelsPath = join(weekDir, 'labels.json');
-  if (await exists(labelsPath)) return false;
+  if (await pathExists(labelsPath)) return false;
   await mkdir(weekDir, { recursive: true });
   const itemsPath = join(weekDir, 'items.json');
-  if (!(await exists(itemsPath))) {
+  if (!(await pathExists(itemsPath))) {
     try {
       await copyFile(runItems, itemsPath);
     } catch (error) {
@@ -154,15 +155,6 @@ async function ensureWeek(weekDir: string, runItems: string): Promise<boolean> {
   }
   await writeFile(labelsPath, `${JSON.stringify(NEW_LABELS, null, 2)}\n`, 'utf8');
   return true;
-}
-
-async function exists(path: string): Promise<boolean> {
-  try {
-    await readFile(path);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 // realpath: node resolves symlinks for the entry module, so argv[1] must be resolved the same way.

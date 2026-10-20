@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { z } from 'zod';
 import { DigestError, errorMessage } from '../../../src/shared/errors';
+import { errnoCode } from '../../../src/shared/fsErrors';
 
 /** A JSON file read and checked against its schema; the error names the file. */
 export async function readParsed<T>(path: string, schema: z.ZodType<T>): Promise<T> {
@@ -26,7 +27,7 @@ export async function folderNames(dir: string): Promise<string[]> {
       .map((entry) => entry.name)
       .sort();
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return [];
+    if (errnoCode(error) === 'ENOENT') return [];
     throw new DigestError(`Cannot read ${dir}: ${errorMessage(error)}`, { cause: error });
   }
 }

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { chmod, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { errorMessage } from '../../../shared/errors';
-import { errorCode } from '../../doctor/errorCode';
+import { errnoCode } from '../../../shared/fsErrors';
 
 const SECRET_FILE_MODE = 0o600;
 const GROUP_AND_OTHER_BITS = 0o077;
@@ -19,7 +19,7 @@ export async function writeSecretFile(path: string, content: string): Promise<vo
   try {
     await writeViaTempFile(path, content);
   } catch (error) {
-    if (!IN_PLACE_FALLBACK_CODES.has(errorCode(error) ?? '')) throw error;
+    if (!IN_PLACE_FALLBACK_CODES.has(errnoCode(error) ?? '')) throw error;
     await writeInPlace(path, content);
   }
 }
@@ -51,7 +51,7 @@ async function restrictToOwner(path: string): Promise<void> {
   try {
     await chmod(path, SECRET_FILE_MODE);
   } catch (error) {
-    if (errorCode(error) === 'ENOENT') return;
+    if (errnoCode(error) === 'ENOENT') return;
     if (await isOwnerOnly(path)) return;
     throw new Error(
       `${path} is readable by others and cannot be restricted (${errorMessage(error)}). ${OWNER_ONLY_HINT}`,
