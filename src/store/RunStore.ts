@@ -4,6 +4,14 @@ export type ArtifactName =
   'items.json' | 'scores.json' | 'drafts.json' | 'digest.md' | 'review.md' | 'error.json';
 
 export interface RunLock {
+  /**
+   * Fires once the lock is found to be no longer this run's: another run took it over after this
+   * one went quiet past the heartbeat timeout (a stall, a sleeping laptop), or the lock file was
+   * removed. The week then belongs to the other run, so the holder must stop: send nothing, write
+   * nothing. The reason is `lockLostReason()` (`lockLost.ts`). `release()` does not fire it.
+   */
+  readonly lost: AbortSignal;
+  /** Stops holding the lock. Safe to repeat; never removes a lock another run took over. */
   release(): Promise<void>;
 }
 
@@ -16,6 +24,8 @@ export interface RunStore {
   saveArtifact(runId: string, name: ArtifactName, content: string): Promise<void>;
   /** The saved artifact, or undefined when the week has none. */
   readArtifact(runId: string, name: ArtifactName): Promise<string | undefined>;
+  /** Removes a saved artifact; nothing to do when the week has none. */
+  removeArtifact(runId: string, name: ArtifactName): Promise<void>;
   saveRunRecord(record: RunRecord): Promise<void>;
   getRunRecord(runId: string): Promise<RunRecord | undefined>;
   /** URLs delivered in the `weeks` weeks before `runId`: sent weeks and partly delivered weeks alike. */

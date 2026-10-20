@@ -12,11 +12,12 @@ import type { RunRecord } from '../../store/runRecord';
 import { endRun } from '../ending/endRun';
 import { failureNote } from '../ending/notes/failureNotes';
 import { abortedError } from '../ending/notes/unretriable';
-import { recordError } from '../ending/runFiles/errorFile';
 import { DraftsFileSchema } from '../ending/runFiles/runFiles';
 import { digestMessage } from '../ending/shipping/digestMessage';
+import { stopBeforeSending } from '../ending/shipping/sendGuard';
 import { shipDigest, type Shipped } from '../ending/shipping/shipping';
 import type { EndingContext, Failure } from '../ending/types';
+import { resumedRecord, resumeProgress } from './resumedRecord';
 
 /** What a resume needs from the run: the ending context, plus the clock and the tracer. */
 export interface ResumeContext extends EndingContext {
@@ -37,6 +38,8 @@ export interface ResumeResult {
   readonly record: RunRecord;
   /** The saved digest, when it was sent or tried to a channel; none otherwise. */
   readonly markdown: string | undefined;
+  /** Why the week's record stayed instead of this one (`Ended.kept`); none when it was saved. */
+  readonly kept?: string;
 }
 
 /** A parse error can quote the file; a log line needs only the start of it. */
@@ -56,6 +59,7 @@ export async function loadPartDelivery(
 /**
  * Sends the saved digest to the channels the failed run missed: no health check, no model call.
  * The record keeps the previous run's results, with the new outcome, channels and deliver timing.
+ * Nothing is sent when the run lost its lock or another run delivered the week meanwhile.
  */
 export async function resumeDelivery(
   ctx: ResumeContext,
@@ -67,28 +71,25 @@ export async function resumeDelivery(
     deliveredTo,
     channels: missing.map((delivery) => delivery.id),
   });
-  const verdict = missing.length > 0 ? sendable(ctx, part) : undefined;
+  const verdict = missing.length > 0 ? await sendable(ctx, part) : undefined;
   const { shipped, timing } = await deliverStep(ctx, missing, verdict, part);
   const failure: Failure | undefined = shipped.error && { error: shipped.error, step: 'deliver' };
-
-  const { error: _previousError, ...kept } = previous;
-  const record: RunRecord = {
-    ...kept,
-    status: failure ? 'failed' : 'sent',
-    startedAt: ctx.startedAt.toISOString(),
-    finishedAt: ctx.deps.clock.now().toISOString(),
+  const record = resumedRecord(ctx, previous, {
+    deliveredTo: shipped.deliveredTo,
+    failure,
+    finishedAt: ctx.deps.clock.now(),
     timings: [...previous.timings, timing],
-    deliveredTo: [...shipped.deliveredTo],
-    ...(failure && { error: recordError(failure) }),
-  };
-  // The record always reached a channel, so the earlier one never stays and `endRun` keeps nothing.
-  await endRun(
+  });
+  // The record reached a channel, so the earlier one stays only when another run delivered the
+  // week meanwhile or this run lost its lock (`endRun`).
+  const ended = await endRun(
     ctx,
     { record, failure, note: failure && failureNote(ctx.weekId, failure) },
     previous,
   );
   // The digest is only named when it was sent, or tried, to a channel.
-  return { record, markdown: verdict?.ok ? verdict.markdown : undefined };
+  const markdown = verdict?.ok ? verdict.markdown : undefined;
+  return { record, markdown, ...(ended.kept !== undefined && { kept: ended.kept }) };
 }
 
 /** The deliver step of a resume, traced, timed and logged like a step of the chain. */
@@ -148,16 +149,35 @@ async function traced(
 }
 
 type Verdict =
-  | { readonly ok: true; readonly markdown: string }
+  | { readonly ok: true; readonly markdown: string; readonly view?: DigestView }
   | { readonly ok: false; readonly error: DigestError };
 
 /**
- * Whether the delivery may start. With every configured channel served there is nothing to send,
- * so the caller skips this and digest.md does not matter. A run told to stop does not start it.
+ * Whether the delivery may start, and what it sends. With every configured channel served there is
+ * nothing to send, so the caller skips this and digest.md does not matter. A run told to stop does
+ * not start it; nor, checked last before the send, one that lost its lock or whose week another
+ * run delivered meanwhile (`stopBeforeSending`).
  */
-function sendable(ctx: ResumeContext, part: PartDelivery): Verdict {
+async function sendable(ctx: ResumeContext, part: PartDelivery): Promise<Verdict> {
   const stopped = abortedError(ctx.signal, 'deliver');
-  return stopped ? { ok: false, error: stopped } : verifyDigest(part);
+  if (stopped) return { ok: false, error: stopped };
+  const verified = verifyDigest(part);
+  if (!verified.ok) return verified;
+  const view = await savedView(ctx, part.previous, verified.markdown);
+  const late = await lastCheck(ctx, part.previous);
+  return late ? { ok: false, error: late } : { ...verified, view };
+}
+
+/** `stopBeforeSending`, with a failed read of the week's record failing the delivery. */
+async function lastCheck(
+  ctx: ResumeContext,
+  previous: RunRecord,
+): Promise<DigestError | undefined> {
+  try {
+    return await stopBeforeSending(ctx, previous, ctx.logger.child({ step: 'deliver' }));
+  } catch (error) {
+    return new DigestError(errorMessage(error), { step: 'deliver', cause: error });
+  }
 }
 
 /**
@@ -213,9 +233,8 @@ async function send(
   if (verdict === undefined) return { deliveredTo };
   if (!verdict.ok) return { deliveredTo, error: verdict.error };
   const { headline } = readSavedDigest(verdict.markdown);
-  const view = await savedView(ctx, previous, verdict.markdown);
-  const message = digestMessage(ctx.weekId, headline, verdict.markdown, view);
-  return shipDigest(missing, message, deliveredTo);
+  const message = digestMessage(ctx.weekId, headline, verdict.markdown, verdict.view);
+  return shipDigest(missing, message, deliveredTo, resumeProgress(ctx, previous));
 }
 
 /**

@@ -77,6 +77,19 @@ All notable changes to this project are listed here. The format follows
 
 ### Fixed
 
+- A run saves `run.json` after each channel that takes the digest. A run killed while it delivers
+  (out of memory, power loss) now leaves a partly delivered week: the next run sends the digest
+  only to the channels that lack it, not to every channel again.
+- A late run (a catch-up after downtime, a retry) collects from where the last delivered week's
+  run collected, up to 31 days back, so it no longer misses the items published in between.
+- A week that ends without a failure removes the `error.json` an earlier attempt left. A week
+  that ends `sent`, also by a resume, removes `<week>.failed.md`.
+- A run that loses its lock now stops. This happens when the run was frozen for more than 5
+  minutes and another run took the lock over, or when someone deleted `digest.lock`. The run sees
+  the loss at its next heartbeat. After that it sends no digest and writes no file or record of
+  the week; only its `Run aborted` note goes out. A run that already sent the digest still saves
+  its record, so the other run does not send the week again. A resume now also checks right before
+  it sends that no other run delivered the week meanwhile.
 - Slack and email text no longer carries a bidi override, a zero-width or tag character or another
   invisible format character; a joined emoji stays whole. This includes the Markdown that Slack
   gets when a message has no layout, and the failure note, which keep their line breaks.

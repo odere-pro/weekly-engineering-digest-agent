@@ -29,6 +29,11 @@ history is kept, and where it is stored.
 
 - `windowDays` is the age limit for an item. A run collects items published in the last
   `windowDays` days. `digest run --since 14d` overrides it for one run (1d to 31d).
+- A late run reaches further back. When the last week that reached a channel started its run
+  more than `windowDays` days ago (a catch-up after downtime, a retry 30 minutes later), the run
+  collects from that start, so nothing published in between is missed. It never goes back more
+  than 31 days, and the dedupe of sent URLs drops what that run already sent. An explicit
+  `--since` is used as given.
 - `maxItemsPerSource` caps each source after sorting newest first. A source can set its own cap
   with the `maxItems` field of that source (1 to 100). See [sources](sources.md).
 - GitHub's Atom feed keeps only 10 releases per repository, so a busy repo can lose items

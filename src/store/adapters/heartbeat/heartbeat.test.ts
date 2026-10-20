@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 import { startHeartbeat, type Heartbeat, type HeartbeatOptions } from './heartbeat';
 import { createLockFile, type LockFile, type OwnLock } from '../lockState/lockFile';
 import { LOCK_HEARTBEAT_INTERVAL_MS } from '../lockState/lockTimings';
+import { LOCK_LOST_MESSAGE } from '../../lockLost';
+import { errorMessage } from '../../../shared/errors';
 import { noopLogger, type Logger } from '../../../shared/telemetry';
 import type * as AtomicFile from '../../../shared/atomicFile';
 
@@ -32,7 +34,7 @@ const MINUTE_MS = 60_000;
 /** Short enough to see several beats in a test, long enough not to starve the event loop. */
 const FAST_BEAT_MS = 15;
 const WAIT = { timeout: 3000 };
-const LOST_LOCK_WARNING = 'Run lock is no longer ours (taken over or removed); its heartbeat stops';
+const LOST_LOCK_WARNING = 'Run lock is no longer ours (taken over or removed); this run stops';
 
 const mine: OwnLock = {
   pid: process.pid,
@@ -145,6 +147,15 @@ describe('startHeartbeat while the lock is ours', () => {
     expect(atomic.writes).toBeGreaterThanOrEqual(2);
   });
 
+  it('never fires lost', async () => {
+    const heartbeat = begin();
+
+    nowMs += MINUTE_MS;
+    await waitForHeartbeat(iso());
+
+    expect(heartbeat.lost.aborted).toBe(false);
+  });
+
   it('does not keep the process alive', () => {
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
 
@@ -232,6 +243,16 @@ describe('stop', () => {
 
     await expect(heartbeat.stop()).resolves.toBeUndefined();
   });
+
+  it('does not fire lost: a release is not a loss', async () => {
+    const heartbeat = begin();
+
+    await heartbeat.stop();
+    await rm(lockPath);
+    await sleep(FAST_BEAT_MS * 6);
+
+    expect(heartbeat.lost.aborted).toBe(false);
+  });
 });
 
 describe('when the lock stops being ours', () => {
@@ -242,6 +263,27 @@ describe('when the lock stops being ours', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('fires lost, with a reason that names the loss only', async () => {
+    const heartbeat = begin();
+    await writeFile(lockPath, JSON.stringify(theirs));
+
+    await vi.advanceTimersByTimeAsync(FAST_BEAT_MS);
+    await waitForLostLockWarning();
+
+    expect(heartbeat.lost.aborted).toBe(true);
+    expect(errorMessage(heartbeat.lost.reason)).toBe(LOCK_LOST_MESSAGE);
+  });
+
+  it('fires lost when the lock file was removed, too', async () => {
+    const heartbeat = begin();
+    await rm(lockPath);
+
+    await vi.advanceTimersByTimeAsync(FAST_BEAT_MS);
+    await waitForLostLockWarning();
+
+    expect(heartbeat.lost.aborted).toBe(true);
   });
 
   it('does not overwrite a lock another run took over, and stops beating', async () => {
@@ -276,7 +318,7 @@ describe('when the lock stops being ours', () => {
 
 describe('when a beat fails', () => {
   it('logs it, keeps the run going and tries again', async () => {
-    begin();
+    const heartbeat = begin();
     atomic.failWrites = true;
 
     await vi.waitFor(() => {
@@ -285,6 +327,7 @@ describe('when a beat fails', () => {
         expect.objectContaining({ error: 'disk full' }),
       );
     }, WAIT);
+    expect(heartbeat.lost.aborted).toBe(false);
 
     atomic.failWrites = false;
     nowMs += MINUTE_MS;

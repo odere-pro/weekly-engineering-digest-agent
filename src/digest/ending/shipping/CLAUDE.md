@@ -22,6 +22,7 @@ flowchart TD
 
 - `shipDigest` never throws and tries every channel; one that fails does not stop the others.
   `deliveredTo` lists the channels that already had the digest, then the ones that took it now.
+  `onDelivered` hears the channels so far after each success; it must not throw (`saveProgress`).
 - The error names what failed and what got through, so a rerun sends only to the others:
   `Delivery failed on email (SMTP 554); delivered on markdown`.
 - The subject is `Engineering digest <week>: <headline>`, the headline passed through `visibleLine`
@@ -29,6 +30,8 @@ flowchart TD
   leaves it out. The view is added only when there is one, so a channel without a view shows the
   Markdown.
 - `winnerMessage` marks a template-only fallback in the view footer and names the guards that were off.
+- `stopBeforeSending` runs last before a send: a fired signal (also a lost lock) or a record that
+  another run delivered since the run began stops it with `Run aborted` (`isUnretriable`).
 
 ## Files
 
@@ -36,6 +39,7 @@ flowchart TD
 | ------------------ | ------------------------------------------------------------- |
 | `shipping.ts`      | `shipDigest`, `forEachDelivery`, `Shipped`, `DeliveryFailure` |
 | `digestMessage.ts` | `digestMessage`, `winnerMessage`, `WinnerContext`             |
+| `sendGuard.ts`     | `stopBeforeSending`: the last check of `deliver` and a resume |
 
 Tests sit next to each file; `digestMessage.winner.test.ts` covers `winnerMessage`.
 

@@ -4,9 +4,9 @@ import { isOurs, type OwnLock } from '../lockState/lockFile';
 import type { RunLock } from '../../RunStore';
 
 /**
- * The `RunLock` of a lock we just created: starts its heartbeat, and on `release()` stops the
- * heartbeat and removes the file. Release is safe to repeat and never removes a lock that
- * another run took over.
+ * The `RunLock` of a lock we just created: starts its heartbeat, whose `lost` it hands out, and on
+ * `release()` stops the heartbeat and removes the file. Release is safe to repeat and never
+ * removes a lock that another run took over.
  */
 export function createLockHandle(
   lockPath: string,
@@ -16,6 +16,7 @@ export function createLockHandle(
   const heartbeat = startHeartbeat(lockPath, mine, options);
   let released = false;
   return {
+    lost: heartbeat.lost,
     async release() {
       if (released) return;
       await heartbeat.stop();

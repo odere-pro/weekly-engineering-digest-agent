@@ -25,6 +25,7 @@ function mockLogger(): MockLogger {
 interface FlakyDelivery extends Delivery {
   sendDigest: Mock<Delivery['sendDigest']>;
   sendFailure: Mock<Delivery['sendFailure']>;
+  clearFailure: Mock<Delivery['clearFailure']>;
 }
 
 function flaky(id: Delivery['id'] = 'slack'): FlakyDelivery {
@@ -32,6 +33,7 @@ function flaky(id: Delivery['id'] = 'slack'): FlakyDelivery {
     id,
     sendDigest: vi.fn<Delivery['sendDigest']>(() => Promise.resolve()),
     sendFailure: vi.fn<Delivery['sendFailure']>(() => Promise.resolve()),
+    clearFailure: vi.fn<Delivery['clearFailure']>(() => Promise.resolve()),
   };
 }
 
@@ -225,6 +227,15 @@ describe('withDeliveryRetry wraps every member of the channel', () => {
 
       expect(inner.sendFailure).toHaveBeenCalledTimes(2);
       expect(inner.sendFailure).toHaveBeenLastCalledWith(NOTE);
+    },
+    // Local and idempotent (the Markdown file's note): nothing to retry, so it goes straight through.
+    clearFailure: async (wrapped, inner) => {
+      inner.clearFailure.mockRejectedValueOnce(failed({ status: 503 }));
+
+      await expect(wrapped.clearFailure('2026-W42')).rejects.toThrow('Delivery failed');
+
+      expect(inner.clearFailure).toHaveBeenCalledOnce();
+      expect(inner.clearFailure).toHaveBeenCalledWith('2026-W42');
     },
   };
 

@@ -683,3 +683,42 @@ describe('clock readings', () => {
     expect(reads()).toBe(4);
   });
 });
+
+describe('lost', () => {
+  // The takeover must land between two beats, so the test fires the beats by hand.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** A contender whose clock is 6 minutes ahead: to it, the holder's heartbeat is stale. */
+  const aheadClock = { now: () => new Date(nowMs + 6 * MINUTE_MS) };
+
+  it('fires at the next beat once a contender took the lock over', async () => {
+    const lock = await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
+    await acquire({ hostname: OTHER_HOST, clock: aheadClock });
+    expect(lock.lost.aborted).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(FAST_BEAT_MS);
+
+    await vi.waitFor(
+      () => {
+        expect(lock.lost.aborted).toBe(true);
+      },
+      { timeout: 3000 },
+    );
+    expect((await readLock()).hostname).toBe(OTHER_HOST);
+  });
+
+  it('does not fire while the lock is ours, nor on release', async () => {
+    const lock = await acquire({ heartbeatIntervalMs: FAST_BEAT_MS });
+
+    await vi.advanceTimersByTimeAsync(FAST_BEAT_MS * 3);
+    await lock.release();
+
+    expect(lock.lost.aborted).toBe(false);
+  });
+});

@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { RunRecordSchema, type RunRecord } from '../runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../RunStore';
@@ -67,6 +67,11 @@ export function createFsRunStore(options: FsRunStoreOptions): RunStore {
     async readArtifact(runId: string, name: ArtifactName): Promise<string | undefined> {
       const file = artifactFile(name);
       return readTextIfExists(join(runDir(folders, runId), file));
+    },
+
+    async removeArtifact(runId: string, name: ArtifactName): Promise<void> {
+      const file = artifactFile(name);
+      await rm(join(runDir(folders, runId), file), { force: true });
     },
 
     async saveRunRecord(record: RunRecord): Promise<void> {

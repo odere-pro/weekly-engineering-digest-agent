@@ -31,13 +31,25 @@ export interface Shipped {
   readonly error?: DigestError;
 }
 
+/**
+ * Told, after each channel that took the digest and before the next is tried, every channel that
+ * has it so far. Must not throw: a throw would count a channel that has the digest as failed.
+ */
+export type OnDelivered = (deliveredTo: readonly DeliveryId[]) => Promise<void>;
+
 /** Tries every channel; never throws. A rerun sends only to the channels the error leaves out. */
 export async function shipDigest(
   channels: readonly Delivery[],
   message: DigestMessage,
   alreadyDelivered: readonly DeliveryId[],
+  onDelivered?: OnDelivered,
 ): Promise<Shipped> {
-  const failures = await forEachDelivery(channels, (channel) => channel.sendDigest(message));
+  let soFar = alreadyDelivered;
+  const failures = await forEachDelivery(channels, async (channel) => {
+    await channel.sendDigest(message);
+    soFar = [...soFar, channel.id];
+    await onDelivered?.(soFar);
+  });
   const failed = new Set(failures.map((failure) => failure.id));
   const reached = channels.map((channel) => channel.id).filter((id) => !failed.has(id));
   const deliveredTo = [...alreadyDelivered, ...reached];

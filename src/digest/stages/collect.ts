@@ -8,6 +8,8 @@ import { toJson } from '../ending/runFiles/runFiles';
 import { keepArtifact } from './keepArtifact';
 
 const DAY_MS = 86_400_000;
+/** The longest window there is: `windowDays` and `--since` stop at 31 days too. */
+const MAX_WINDOW_DAYS = 31;
 
 /**
  * Reads the sources over the run's window. No items at all settles the run as quiet, unless every
@@ -21,7 +23,7 @@ export async function collect(
 ): Promise<ChainState> {
   const { config, fetchers, clock } = ctx.deps;
   const until = ctx.startedAt;
-  const since = new Date(until.getTime() - ctx.sinceDays * DAY_MS);
+  const since = windowStart(ctx, logger);
   const { items, failedSources } = await collectStep(
     { sources: config.sources, since, until, maxItemsPerSource: config.maxItemsPerSource },
     { fetchers, logger, clock, signal: ctx.signal },
@@ -42,4 +44,23 @@ export async function collect(
   const detail =
     failedSources.length > 0 ? ` (${failedSources.length} of ${total} sources failed)` : '';
   return { ...next, settled: { status: 'quiet', note: `no items collected${detail}` } };
+}
+
+/**
+ * `sinceDays` before the run's start, or the start of the last delivered run when that is earlier:
+ * it collected up to there, so a late run (a catch-up, a retry) misses nothing in between. Never
+ * more than 31 days back. Items both runs saw are dropped later by the cross-week dedupe.
+ */
+function windowStart(ctx: RunContext, logger: Logger): Date {
+  const until = ctx.startedAt.getTime();
+  const usual = until - ctx.sinceDays * DAY_MS;
+  const lastStart = Date.parse(ctx.lastDelivered?.startedAt ?? '');
+  // No earlier delivered run, or one that started inside the usual window.
+  if (Number.isNaN(lastStart) || lastStart >= usual) return new Date(usual);
+  const since = new Date(Math.max(lastStart, until - MAX_WINDOW_DAYS * DAY_MS));
+  logger.info('Collecting from where the last delivered run stopped', {
+    since: since.toISOString(),
+    lastDelivered: ctx.lastDelivered?.runId,
+  });
+  return since;
 }

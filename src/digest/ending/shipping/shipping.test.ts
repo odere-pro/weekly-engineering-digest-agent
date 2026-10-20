@@ -77,6 +77,43 @@ describe('shipDigest', () => {
   });
 });
 
+describe('shipDigest progress', () => {
+  const message = { weekId: WEEK, subject: 'Digest', markdown: '# Digest\n' };
+
+  it('reports, after each channel that took the digest, every channel that has it so far', async () => {
+    const [email, slack] = [new CapturingDelivery('email'), new CapturingDelivery('slack')];
+    email.failWith = new Error('SMTP 554');
+    const reported: (readonly string[])[] = [];
+
+    await shipDigest([email, slack], message, ['markdown'], (deliveredTo) => {
+      reported.push(deliveredTo);
+      return Promise.resolve();
+    });
+
+    expect(reported).toEqual([['markdown', 'slack']]);
+  });
+
+  it('reports a channel only once it has the digest, before the next one is tried', async () => {
+    const [markdownFile, email] = [
+      new CapturingDelivery('markdown'),
+      new CapturingDelivery('email'),
+    ];
+    const order: string[] = [];
+    const send = email.sendDigest.bind(email);
+    email.sendDigest = (sent) => {
+      order.push('email');
+      return send(sent);
+    };
+
+    await shipDigest([markdownFile, email], message, [], (deliveredTo) => {
+      order.push(`progress ${deliveredTo.join(',')}`);
+      return Promise.resolve();
+    });
+
+    expect(order).toEqual(['progress markdown', 'email', 'progress markdown,email']);
+  });
+});
+
 describe('shipDigest with a view', () => {
   it('hands the same message, view included, to every channel', async () => {
     const channels = [new CapturingDelivery('email'), new CapturingDelivery('slack')];

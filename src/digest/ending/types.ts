@@ -18,6 +18,11 @@ export interface EndingContext {
    * the caller's to send (`sendHeldNote`) if the retry it waited for does not happen.
    */
   readonly notifyFailure?: boolean;
+  /**
+   * The lock's `lost` (`RunLock`): once it fired, the run saves no record and no file and prunes
+   * nothing, unless it reached a new channel before it saw the loss (`leftToLockHolder`).
+   */
+  readonly lockLost?: AbortSignal;
   readonly logger: Logger;
   readonly deps: {
     readonly store: RunStore;

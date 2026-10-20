@@ -285,6 +285,7 @@ function flakyDelivery(
     id,
     sendDigest: (message) => attempt(() => digests.push(message)),
     sendFailure: () => attempt(() => undefined),
+    clearFailure: () => Promise.resolve(),
   };
   return { delivery, digests, calls: () => calls };
 }

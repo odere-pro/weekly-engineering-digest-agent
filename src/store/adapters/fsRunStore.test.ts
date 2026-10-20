@@ -6,6 +6,7 @@ import { ARTIFACT_FILES } from './artifactFiles';
 import { createFsRunStore } from './fsRunStore';
 import type { ArtifactName, RunStore } from '../RunStore';
 import { weekDigestDir } from '../layout';
+import { isLockHeldError } from '../lockHeld';
 import { DigestError } from '../../shared/errors';
 import { fixedClock } from '../../shared/clock';
 import { noopLogger, type Logger } from '../../shared/telemetry';
@@ -148,6 +149,31 @@ describe('artifacts', () => {
     await expect(store.readArtifact('2026-W42', '../../evil.txt' as ArtifactName)).rejects.toThrow(
       DigestError,
     );
+  });
+
+  it('removes an artifact and leaves the others of the week', async () => {
+    const store = makeStore();
+    await store.saveArtifact('2026-W42', 'error.json', '{}');
+    await store.saveArtifact('2026-W42', 'digest.md', '# Digest');
+
+    await store.removeArtifact('2026-W42', 'error.json');
+
+    await expect(store.readArtifact('2026-W42', 'error.json')).resolves.toBeUndefined();
+    await expect(store.readArtifact('2026-W42', 'digest.md')).resolves.toBe('# Digest');
+  });
+
+  it('removes nothing, without complaint, when the week has no such artifact or no folder', async () => {
+    const store = makeStore();
+
+    await expect(store.removeArtifact('2026-W42', 'error.json')).resolves.toBeUndefined();
+  });
+
+  it('refuses to remove anything outside the week folder', async () => {
+    const store = makeStore();
+    await expect(store.removeArtifact('../escape', 'error.json')).rejects.toThrow(DigestError);
+    await expect(
+      store.removeArtifact('2026-W42', '../../evil.txt' as ArtifactName),
+    ).rejects.toThrow(DigestError);
   });
 });
 
@@ -587,6 +613,18 @@ describe('contract parity with MemoryRunStore', () => {
     );
   }
 
+  /** What is left of a week's files after error.json is removed, twice: the second finds none. */
+  async function removedArtifact(store: RunStore): Promise<unknown> {
+    await store.saveArtifact('2026-W42', 'error.json', '{}');
+    await store.saveArtifact('2026-W42', 'digest.md', '# Digest');
+    await store.removeArtifact('2026-W42', 'error.json');
+    await store.removeArtifact('2026-W42', 'error.json');
+    return {
+      error: await store.readArtifact('2026-W42', 'error.json'),
+      digest: await store.readArtifact('2026-W42', 'digest.md'),
+    };
+  }
+
   async function observe(store: RunStore): Promise<unknown> {
     await seedPartlyDelivered(store);
     await seed(store);
@@ -599,6 +637,7 @@ describe('contract parity with MemoryRunStore', () => {
       listed: (await store.listRuns(4)).map((r) => r.runId),
       // The port does not specify the order of pruned ids.
       pruned: (await store.prune('2026-W42', 3)).sort(),
+      removed: await removedArtifact(store),
       remaining: (await store.listRuns()).map((r) => r.runId),
     };
   }
@@ -607,6 +646,24 @@ describe('contract parity with MemoryRunStore', () => {
     const fromDisk = await observe(makeStore());
     const fromMemory = await observe(new MemoryRunStore());
     expect(fromDisk).toEqual(fromMemory);
+  });
+
+  async function observeLock(store: RunStore): Promise<unknown> {
+    const lock = await store.acquireLock('2026-W42');
+    const lostWhileHeld = lock.lost.aborted;
+    const second = await store.acquireLock('2026-W43').then(
+      () => 'acquired',
+      (error: unknown) => (isLockHeldError(error) ? 'held' : 'failed'),
+    );
+    await lock.release();
+    return { lostWhileHeld, second, lostAfterRelease: lock.lost.aborted };
+  }
+
+  it('hands out the same lock: held once, lost neither while held nor on release', async () => {
+    const fromDisk = await observeLock(makeStore());
+    const fromMemory = await observeLock(new MemoryRunStore());
+    expect(fromDisk).toEqual({ lostWhileHeld: false, second: 'held', lostAfterRelease: false });
+    expect(fromMemory).toEqual(fromDisk);
   });
 });
 

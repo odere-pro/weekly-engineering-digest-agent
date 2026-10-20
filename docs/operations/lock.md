@@ -33,6 +33,29 @@ A new run takes over the lock by itself when any of these is true:
 Takeovers go through a guard file (`digest.lock.takeover`, abandoned after 30 seconds), so two
 contenders cannot both remove the stale lock. Acquire tries 3 times, then fails.
 
+## When a run loses its lock
+
+A run that was frozen for more than 5 minutes (a suspended process or VM, a sleeping laptop) can
+find, when it wakes, that another run took its lock over. The lock is also lost when someone
+deletes `digest.lock` while the run is alive. The run sees the loss at its next heartbeat, within
+60 seconds, and logs `Run lock is no longer ours (taken over or removed); this run stops`. Then:
+
+- It stops within one model call or fetch. Its error starts with `Run aborted`, names the step,
+  and ends with `this run lost its lock (another run took it over, or the lock file was removed)`.
+  The scheduler does not retry it.
+- It writes nothing more to the week's folder. It saves no `run.json`, `review.md` or `error.json`
+  and prunes nothing. `digest run` prints why:
+  `Kept the week for the run that took over the lock; this run lost it`.
+- It sends no digest. Its failure note still goes to every channel, so you learn about the stall.
+- One exception: a run that already sent the digest to a channel before it saw the loss still
+  saves its record. Without it the other run would not know that the week was sent, and would
+  send it again.
+
+A run also checks the week's record right before it sends, and a resume does the same. If another
+run delivered the week meanwhile, it fails with
+`Run aborted before the deliver step: another run delivered ...`. It sends no digest and leaves
+that run's record in place. This also covers a takeover that the heartbeat has not seen yet.
+
 ## What you do
 
 - **A run is going:** wait.
@@ -44,11 +67,10 @@ contenders cannot both remove the stale lock. Acquire tries 3 times, then fails.
 
 ## Limits
 
-- A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run. It
-  does not stop when it wakes. Before it sends, it reads the week's record: if the other run
-  delivered the week meanwhile, it fails with `Run aborted before the deliver step: another run
-delivered ...`, sends no digest, and leaves the other run's record in place. A run that wakes
-  after that check has passed can still send a second copy.
+- A run that lost its lock notices only at its next heartbeat. Until then, up to 60 seconds after
+  it wakes, it may still write a file of the week. A run frozen in the middle of a send finishes
+  that send when it wakes. If the run that took over has sent the week by then, the week goes out
+  twice.
 - The lock is plain files, with no operating-system lock. It needs a file system with hard
   links. Do not share the data folder between machines.
 - `release()` never removes a lock that another run took over.

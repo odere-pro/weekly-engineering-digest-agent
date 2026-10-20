@@ -57,6 +57,23 @@ export async function sendFailureNote(ctx: EndingContext, note: FailureNote): Pr
   await broadcastNote(ctx.deps.deliveries, ctx.logger, note);
 }
 
+/**
+ * Asks every channel to take back the week's failure note (`Delivery.clearFailure`): the week is
+ * sent now. `endRun` calls it once a sent record is saved, so a resume, which does not write the
+ * Markdown file again, leaves no stale `<week>.failed.md`. A channel that fails is logged.
+ */
+export async function clearFailureNotes(ctx: EndingContext): Promise<void> {
+  const failures = await forEachDelivery(ctx.deps.deliveries, (delivery) =>
+    delivery.clearFailure(ctx.weekId),
+  );
+  for (const failure of failures) {
+    ctx.logger.error('Could not clear the failure note', {
+      delivery: failure.id,
+      error: failure.error,
+    });
+  }
+}
+
 /** Every channel gets the note; the ones that fail are logged and do not stop the others. */
 async function broadcastNote(
   deliveries: readonly Delivery[],

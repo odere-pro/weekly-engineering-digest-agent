@@ -160,6 +160,10 @@ describe('redactStore wraps every member of the run store', () => {
     sentUrls: { call: (store) => store.sentUrls('2026-W42', 2), redacts: false },
     listRuns: { call: (store) => store.listRuns(5), redacts: false },
     prune: { call: (store) => store.prune('2026-W42', 8), redacts: false },
+    removeArtifact: {
+      call: (store) => store.removeArtifact('2026-W42', 'error.json'),
+      redacts: false,
+    },
   };
 
   it.each(Object.keys(MEMBERS) as (keyof RunStore)[])(
@@ -375,6 +379,11 @@ describe('redactDelivery wraps every member of the channel', () => {
       await wrapped.sendFailure({ weekId: '2026-W42', message: `Refused ${SMTP_PASSWORD}` });
 
       expect(inner.failures).toEqual([{ weekId: '2026-W42', message: `Refused ${REDACTED}` }]);
+    },
+    clearFailure: async (wrapped, inner) => {
+      await wrapped.clearFailure('2026-W42');
+
+      expect(inner.cleared).toEqual(['2026-W42']);
     },
   };
 

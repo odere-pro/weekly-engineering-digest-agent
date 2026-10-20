@@ -7,13 +7,19 @@ export function createEvalStore(): RunStore {
   const artifacts = new Map<string, string>();
   const records = new Map<string, RunRecord>();
   return {
-    acquireLock: () => Promise.resolve({ release: () => Promise.resolve() }),
+    // One replay at a time, in memory: the lock is never lost.
+    acquireLock: () =>
+      Promise.resolve({ lost: new AbortController().signal, release: () => Promise.resolve() }),
     hasSentDigest: (runId) => Promise.resolve(records.get(runId)?.status === 'sent'),
     saveArtifact: (runId, name, content) => {
       artifacts.set(`${runId}/${name}`, content);
       return Promise.resolve();
     },
     readArtifact: (runId, name) => Promise.resolve(artifacts.get(`${runId}/${name}`)),
+    removeArtifact: (runId, name) => {
+      artifacts.delete(`${runId}/${name}`);
+      return Promise.resolve();
+    },
     saveRunRecord: (record) => {
       records.set(record.runId, record);
       return Promise.resolve();

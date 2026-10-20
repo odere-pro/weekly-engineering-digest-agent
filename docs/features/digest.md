@@ -16,7 +16,8 @@ in [data flow](../architecture/data-flow.md).
 ## What it does
 
 - Works out the week id (the ISO week of the run date) and the collection window. `--since` sets
-  the window in days; the default is `windowDays`. A window under 1 day is refused.
+  the window in days; the default is `windowDays`, reaching back to where the last delivered
+  week's run collected when that is earlier (up to 31 days). A window under 1 day is refused.
 - Skips the week when it already has a sent digest, unless you pass `--force`. A skipped run
   exits 0 and saves no new record.
 - Takes the run lock. Only one run can use a data folder at a time; a second run fails with
@@ -34,8 +35,13 @@ in [data flow](../architecture/data-flow.md).
   week, so the week is `failed` and the scheduler retries it. If every draft is rejected by the checks or the output guards, the run builds a
   fallback digest from the selected items' own text (no model) and sends that. Only when the
   fallback itself cannot be built does the week end `blocked`. See [Fallback digest](#fallback-digest).
+- While it delivers, it saves `run.json` after each channel that takes the digest. A run killed
+  in the middle (out of memory, power loss) leaves a partly delivered week, which the next run
+  resumes on the missing channels only.
 - At the end it saves `run.json`, the held files, `review.md` and `error.json` (failure only),
-  sends a failure note when one is due, and prunes the weeks older than `keepWeeks`.
+  sends a failure note when one is due, and prunes the weeks older than `keepWeeks`. A run that
+  did not fail removes the `error.json` of an earlier attempt; a `sent` one also removes the
+  earlier `<week>.failed.md`.
 - It never replaces a record that got further. A `sent` week stays `sent`, and a partly
   delivered week stays that way unless the new run reaches a channel too.
 

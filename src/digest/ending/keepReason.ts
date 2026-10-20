@@ -7,6 +7,9 @@ export const KEPT_PARTLY_REASON =
 /** Why a record another run saved while this one worked stayed: that run reached a channel first. */
 export const KEPT_OTHER_RUN_REASON =
   'Kept the run record of another run that delivered this week while this one worked';
+/** Why a run that lost its lock saved nothing: the week belongs to the run that took the lock. */
+export const KEPT_LOST_LOCK_REASON =
+  'Kept the week for the run that took over the lock; this run lost it';
 
 /**
  * A run never replaces a record that got further with delivery. A sent week that looked unsent
@@ -30,6 +33,19 @@ function keepEarlier(earlier: RunRecord | undefined, record: RunRecord): string 
     return record.status === 'sent' ? undefined : KEPT_SENT_REASON;
   }
   return reachedAChannel(earlier) && !reachedAChannel(record) ? KEPT_PARTLY_REASON : undefined;
+}
+
+/**
+ * True when a run that lost its lock must leave the week alone: it reached no channel `previous`
+ * lacked. A run that did (it sent before it saw the loss) must still save its record, or the run
+ * that took the lock over would send the week again.
+ */
+export function leftToLockHolder(
+  lockLost: AbortSignal | undefined,
+  previous: RunRecord | undefined,
+  record: RunRecord,
+): boolean {
+  return lockLost?.aborted === true && !deliveredMeanwhile(previous, record);
 }
 
 /** A sent record, or a failed one that some channel took: the week must not be sent from scratch. */

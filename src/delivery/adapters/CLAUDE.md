@@ -22,8 +22,8 @@ flowchart TD
 
 - `markdownFile`: always on. Config `delivery.markdown.dir` (optional); no secret. A failure note is
   `<week>.failed.md`: the title, the step and the error. `sendDigest` removes that week's
-  `.failed.md` once the digest is written (a failed write keeps it). The run folder's `error.json`
-  stays: the `RunStore` port has no delete.
+  `.failed.md` once the digest is written (a failed write keeps it), and `clearFailure` removes it
+  when `endRun` saves a sent week a resume finished. `smtp` and `slack` make `clearFailure` a no-op.
 - `smtp`: config `delivery.email` (`host`, `port`, `secure`, `requireTLS`, `user`, `from`, `to`);
   `SMTP_PASSWORD` from `.env`. A failure note is a mail titled `failureTitle`, with the reason.
 - `slack`: config `delivery.slack.enabled`; `SLACK_WEBHOOK_URL` from `.env`, https only. A failure

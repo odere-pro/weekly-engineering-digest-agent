@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { endRun } from './endRun';
-import { KEPT_OTHER_RUN_REASON } from './keepReason';
+import { KEPT_LOST_LOCK_REASON, KEPT_OTHER_RUN_REASON } from './keepReason';
 import { failureNote } from './notes/failureNotes';
 import type { HeldArtifact } from './types';
 import type { RunRecord } from '../../store/runRecord';
 import { DigestError } from '../../shared/errors';
+import { LOCK_LOST_MESSAGE, lockLostReason } from '../../store/lockLost';
 import { makeClassification, makeDraft, makeItem } from '../../../test/builders';
 import type { MemoryRunStore } from '../../../test/fakes';
 import { WEEK, partly, record, sent, setupEnding } from './__fixtures__/endingKit';
@@ -350,6 +351,141 @@ describe('endRun: a week another run delivered while this one worked', () => {
         level: 'warn',
         message: 'Could not read the week record again before saving',
         fields: { error: 'EIO' },
+      }),
+    );
+  });
+});
+
+describe('endRun: a run that lost its lock', () => {
+  const lostLock = (): AbortSignal => {
+    const lock = new AbortController();
+    lock.abort(lockLostReason());
+    return lock.signal;
+  };
+  const failure = {
+    error: new DigestError(`Run aborted during the classify step: ${LOCK_LOST_MESSAGE}`),
+    step: 'classify' as const,
+  };
+  const aborted = record({ status: 'failed', error: { message: failure.error.message } });
+
+  it('saves no record, file, sheet or error.json and prunes nothing; the note still goes', async () => {
+    const h = setupEnding({ lockLost: lostLock(), notifyFailure: false });
+    const old = record({ runId: '2026-W30' });
+    h.store.records.set(old.runId, old);
+    const note = failureNote(WEEK, failure);
+
+    const ended = await endRun(
+      h.ctx,
+      { record: aborted, failure, note, artifacts: held },
+      undefined,
+    );
+
+    expect(ended).toEqual({ written: new Set(), kept: KEPT_LOST_LOCK_REASON });
+    expect(h.store.records.has(WEEK)).toBe(false);
+    expect(h.store.records.get(old.runId)).toBe(old);
+    expect(writtenFiles(h.store)).toEqual([]);
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({ level: 'warn', message: KEPT_LOST_LOCK_REASON }),
+    );
+    for (const delivery of h.deliveries) expect(delivery.failures).toEqual([note]);
+  });
+
+  it('leaves the record the week had, also when this run read it at its start', async () => {
+    const h = setupEnding({ lockLost: lostLock() });
+    h.store.records.set(WEEK, partly);
+    const resumedNothing = { ...partly, error: { step: 'deliver' as const, message: 'x' } };
+
+    const { kept } = await endRun(h.ctx, { record: resumedNothing }, partly);
+
+    expect(kept).toBe(KEPT_LOST_LOCK_REASON);
+    expect(h.store.records.get(WEEK)).toBe(partly);
+  });
+
+  it('still saves the record of a delivery it made before it saw the loss', async () => {
+    const h = setupEnding({ lockLost: lostLock() });
+
+    const ended = await endRun(h.ctx, { record: sent }, undefined);
+
+    expect(ended).not.toHaveProperty('kept');
+    expect(h.store.records.get(WEEK)).toBe(sent);
+  });
+
+  it('ends as usual while the lock is still held', async () => {
+    const h = setupEnding({ lockLost: new AbortController().signal });
+
+    const ended = await endRun(h.ctx, { record: aborted, failure }, undefined);
+
+    expect(ended).not.toHaveProperty('kept');
+    expect(h.store.records.get(WEEK)).toBe(aborted);
+  });
+});
+
+describe('endRun: the failure files an earlier attempt left', () => {
+  const errorFile = `${WEEK}/error.json`;
+  const failedBefore = record({ status: 'failed', error: { message: 'Ollama down' } });
+
+  it.each<RunRecord['status']>(['sent', 'dry-run', 'quiet', 'blocked'])(
+    'removes error.json once a %s record, which has no failure, is saved',
+    async (status) => {
+      const h = setupEnding();
+      h.store.artifacts.set(errorFile, '{"from":"the failed attempt"}');
+
+      await endRun(h.ctx, { record: record({ status }) }, failedBefore);
+
+      expect(h.store.artifacts.has(errorFile)).toBe(false);
+    },
+  );
+
+  it('keeps error.json with the earlier record when that record stays', async () => {
+    const h = setupEnding();
+    h.store.records.set(WEEK, partly);
+    h.store.artifacts.set(errorFile, '{"from":"the partly delivered run"}');
+
+    await endRun(h.ctx, { record: record({ status: 'quiet' }) }, partly);
+
+    expect(h.store.artifacts.get(errorFile)).toBe('{"from":"the partly delivered run"}');
+  });
+
+  it("asks every channel to clear the week's failure note once a sent record is saved", async () => {
+    const h = setupEnding();
+
+    await endRun(h.ctx, { record: sent }, partly);
+
+    for (const delivery of h.deliveries) expect(delivery.cleared).toEqual([WEEK]);
+  });
+
+  it('leaves the failure notes of a week that did not end sent: a quiet note is the alert', async () => {
+    const h = setupEnding();
+    const note = { weekId: WEEK, step: 'collect' as const, message: 'no items collected' };
+
+    await endRun(h.ctx, { record: record({ status: 'quiet' }), note }, undefined);
+
+    for (const delivery of h.deliveries) {
+      expect(delivery.cleared).toEqual([]);
+      expect(delivery.failures).toEqual([note]);
+    }
+  });
+
+  it('logs a store or channel that cannot clear, and still ends', async () => {
+    const h = setupEnding();
+    vi.spyOn(h.store, 'removeArtifact').mockRejectedValue(new Error('EACCES'));
+    const [markdownFile] = h.deliveries;
+    if (!markdownFile) throw new Error('setupEnding has channels');
+    vi.spyOn(markdownFile, 'clearFailure').mockRejectedValue(new Error('EBUSY'));
+
+    const ended = await endRun(h.ctx, { record: sent }, partly);
+
+    expect(ended).not.toHaveProperty('kept');
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({
+        message: 'Could not remove error.json',
+        fields: { error: 'EACCES' },
+      }),
+    );
+    expect(h.logs).toContainEqual(
+      expect.objectContaining({
+        message: 'Could not clear the failure note',
+        fields: { delivery: 'markdown', error: 'EBUSY' },
       }),
     );
   });

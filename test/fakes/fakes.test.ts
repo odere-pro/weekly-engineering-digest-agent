@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeItem, makeRunRecord } from '../builders';
+import { LOCK_LOST_MESSAGE } from '../../src/store/lockLost';
+import { errorMessage } from '../../src/shared/errors';
 import {
   CapturingDelivery,
   FakeInputGuard,
@@ -34,6 +36,33 @@ describe('test fakes', () => {
     expect(await store.getRunRecord('2026-W40')).toBeDefined();
     expect(await store.prune('2026-W42', 12)).toEqual(['2026-W20']);
     expect(store.artifacts.get('2026-W42/digest.md')).toBe('# hi');
+    await store.removeArtifact('2026-W42', 'digest.md');
+    expect(store.artifacts.has('2026-W42/digest.md')).toBe(false);
+  });
+
+  it('MemoryRunStore takes the lock away as a takeover does: lost fires, the next run gets it', async () => {
+    const store = new MemoryRunStore();
+    const stalled = await store.acquireLock('2026-W42');
+
+    store.loseLock();
+
+    expect(stalled.lost.aborted).toBe(true);
+    expect(errorMessage(stalled.lost.reason)).toBe(LOCK_LOST_MESSAGE);
+    const next = await store.acquireLock('2026-W42');
+    // Like the file lock, a release never frees a lock that another run took over.
+    await stalled.release();
+    expect(store.isLocked).toBe(true);
+    await next.release();
+    expect(store.isLocked).toBe(false);
+    expect(next.lost.aborted).toBe(false);
+  });
+
+  it('CapturingDelivery records the weeks whose failure note it was told to clear', async () => {
+    const delivery = new CapturingDelivery('markdown');
+
+    await delivery.clearFailure('2026-W42');
+
+    expect(delivery.cleared).toEqual(['2026-W42']);
   });
 
   it('MemoryRunStore dedupes the URLs of a partly delivered week like fsRunStore', async () => {

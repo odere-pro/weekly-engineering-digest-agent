@@ -30,8 +30,9 @@ sequenceDiagram
   st->>lock: create it exclusively, an abandoned lock is taken over under the .takeover guard
   st--x run: a live run holds it: DigestError "Another run is in progress"
   st->>lock: every 60 s while held: heartbeat, only if the file is still ours
+  st-->>run: the file is no longer ours (taken over, removed): lock.lost fires, the run stops
   run->>st: getRunRecord again (a run that held the lock may have just sent), sentUrls
-  run->>st: saveArtifact per stage, saveRunRecord, review.md, error.json, prune
+  run->>st: saveArtifact per stage, saveRunRecord (also after each channel), review.md, error.json or removeArtifact, prune
   run->>st: lock.release(): stop the beat, remove the file if still ours
 ```
 
@@ -45,7 +46,8 @@ sequenceDiagram
   the methods that take one refuse any other string, also a W53 its year does not have.
 - One lock per data folder, not per week: `runId` only names the holder. A live holder fails the
   caller with `DigestError` (exit 1). `release()` is safe to repeat and never removes a lock another
-  run took over.
+  run took over. `RunLock.lost` fires once the lock is found taken over or removed, never on
+  `release()`: the week is no longer the holder's, so `digest/` writes and sends nothing after it.
 - `hasSentDigest` is true only for status `sent`. `sentUrls(week, n)` reads the `n` weeks before and
   counts a record with status `sent` or a non-empty `deliveredTo`: a part-delivered week must not repeat links.
   Both read a `run.json` that fails `RunRecordSchema` (a newer build's channel id after a rollback) by
@@ -65,6 +67,7 @@ sequenceDiagram
 | -------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `RunStore.ts`  | The port, `RunLock`, `ArtifactName`                                                                                   |
 | `lockHeld.ts`  | `LOCK_HELD_MESSAGE`, `isLockHeldError`: how a caller tells a held lock from a failure                                 |
+| `lockLost.ts`  | `LOCK_LOST_MESSAGE`, `lockLostReason`: the reason `RunLock.lost` fires with, in every store                           |
 | `runRecord.ts` | `RunRecordSchema`, `RunRecord`, `DraftOutcome`: what `run.json` holds                                                 |
 | `layout.ts`    | The `dist/` layout: `weekDay`, `weekOfDay`, `weekDigestDir`, `sourceDir`, `logsDir`, `dayOf`, `LOCK_FILE`. Paths only |
 | `adapters/`    | The file adapter: folders, the lock, temp-folder tests. See `adapters/CLAUDE.md`                                      |
@@ -73,6 +76,7 @@ sequenceDiagram
 
 - `RunStore.ts` and `test/fakes/MemoryRunStore.ts` are frozen. `fsRunStore.test.ts` ("contract parity
   with MemoryRunStore") runs the same cases on both: change port behaviour and the fake together.
+  `MemoryRunStore.loseLock()` stands in for a takeover: it fires the holder's `lost`.
 - `RunRecord` embeds `DeliveryIdSchema`, `GuardCheckIdSchema` and `JudgeScoreSchema`: removing a
   value from one makes old `run.json` files unreadable.
 - `scheduler/retry/attemptRun.ts` calls `isLockHeldError`; `MemoryRunStore` throws the same literal.

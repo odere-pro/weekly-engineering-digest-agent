@@ -62,7 +62,8 @@ function failureMarkdown(note: FailureNote): string {
  * <folder>/<weekId>.html (W8-05), the same page the email channel sends, so the digest opens in a
  * browser. A digest without a view removes the week's old .html: the two files never disagree.
  * Once the digest is written the week's failure note (<weekId>.failed.md) goes too: an earlier
- * attempt left it, and it must not sit beside a digest that was sent. The folder is
+ * attempt left it, and it must not sit beside a digest that was sent. `clearFailure` removes it
+ * too, for a resume that did not write the digest again. The folder is
  * `markdownFolder(options, weekId)`.
  */
 export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delivery {
@@ -94,5 +95,10 @@ export function createMarkdownFileDelivery(options: MarkdownFileOptions): Delive
     await writeFileAtomic(failureFilePath(dir, note.weekId), failureMarkdown(note));
   }
 
-  return { id: 'markdown', sendDigest, sendFailure };
+  async function clearFailure(weekId: string): Promise<void> {
+    assertWeekId(weekId);
+    await rm(failureFilePath(markdownFolder(options, weekId), weekId), { force: true });
+  }
+
+  return { id: 'markdown', sendDigest, sendFailure, clearFailure };
 }

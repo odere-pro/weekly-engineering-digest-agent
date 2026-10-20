@@ -5,6 +5,6 @@ import type { RunResult } from '../types';
 
 /** A resume sends the saved digest only; its record keeps the previous run's results. */
 export async function resumed(ctx: RunContext, part: PartDelivery): Promise<RunResult> {
-  const { record, markdown } = await resumeDelivery(ctx, part);
-  return { record, exitCode: exitCodeFor(record.status), markdown };
+  const { record, markdown, kept } = await resumeDelivery(ctx, part);
+  return { record, exitCode: exitCodeFor(record.status), markdown, ...(kept && { kept }) };
 }

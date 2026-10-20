@@ -21,11 +21,11 @@ week into one folder instead:
 
 ## What is written
 
-| File               | When                                                                      |
-| ------------------ | ------------------------------------------------------------------------- |
-| `<week>.md`        | Every digest, for example `2026-W42.md`                                   |
-| `<week>.html`      | The same digest as a page that opens in a browser                         |
-| `<week>.failed.md` | A failure note: the step and the error, after a `failed` or `blocked` run |
+| File               | When                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------- |
+| `<week>.md`        | Every digest, for example `2026-W42.md`                                                                  |
+| `<week>.html`      | The same digest as a page that opens in a browser                                                        |
+| `<week>.failed.md` | A failure note: the step and the error, after a `failed` or `blocked` run. Removed once the week is sent |
 
 Text from feeds and models is written without invisible characters (a bidi override, a zero-width
 space, a tag character): each becomes a space, so a feed cannot reorder or hide what you read. The

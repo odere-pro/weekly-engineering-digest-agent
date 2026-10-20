@@ -243,6 +243,7 @@ describe('runDigest: skipped and locked', () => {
   it('logs a lock that cannot be released and keeps the outcome', async () => {
     const h = setup();
     vi.spyOn(h.store, 'acquireLock').mockResolvedValue({
+      lost: new AbortController().signal,
       release: () => Promise.reject(new Error('EPERM')),
     });
 

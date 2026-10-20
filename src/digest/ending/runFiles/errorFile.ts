@@ -8,6 +8,23 @@ export function recordError(failure: Failure): NonNullable<RunRecord['error']> {
   return { message: errorMessage(failure.error), step: failure.step };
 }
 
+/**
+ * error.json goes with the saved record: written for a failure, else an earlier attempt's is
+ * removed, so it never sits beside a week that did not fail. Best effort, like the write.
+ */
+export async function settleErrorFile(
+  ctx: EndingContext,
+  failure: Failure | undefined,
+  at: Date,
+): Promise<void> {
+  if (failure) return saveErrorFile(ctx, failure, at);
+  try {
+    await ctx.deps.store.removeArtifact(ctx.weekId, 'error.json');
+  } catch (error) {
+    ctx.logger.error('Could not remove error.json', { error: errorMessage(error) });
+  }
+}
+
 /** Best effort: run.json already holds the error; this file only adds the stack. */
 export async function saveErrorFile(ctx: EndingContext, failure: Failure, at: Date): Promise<void> {
   const { error, step } = failure;

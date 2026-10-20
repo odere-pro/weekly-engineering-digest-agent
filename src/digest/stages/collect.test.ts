@@ -4,7 +4,7 @@ import { FakeSourceFetcher } from '../../../test/fakes';
 import type { Item } from '../../domain/schemas';
 import { DigestError } from '../../shared/errors';
 import type { SourceFetcher } from '../../sources/SourceFetcher';
-import { makeItem } from '../../../test/builders';
+import { makeItem, makeRunRecord } from '../../../test/builders';
 import { PartialFailure } from '../chain/failures';
 import { isUnretriable } from '../ending/notes/unretriable';
 import { NOW, WEEK, contextFor, stateOf } from '../__fixtures__/stageKit';
@@ -25,6 +25,41 @@ describe('collect', () => {
       since: new Date('2026-10-13T08:00:00Z'),
       until: new Date(NOW),
     });
+  });
+
+  /** The window collect asked the sources for, with the last delivered run started at `at`. */
+  async function windowAfter(at: string, sinceDays = 7) {
+    const fetcher = new FakeSourceFetcher('rss', { 'example-feed': items });
+    const lastDelivered = makeRunRecord({ runId: '2026-W41', status: 'sent', startedAt: at });
+    const h = contextFor({ fetchers: { rss: fetcher }, sinceDays, lastDelivered });
+    await collect(h.ctx, stateOf(), h.logger);
+    return { window: fetcher.calls[0]?.window, logs: h.logs };
+  }
+
+  it('starts where the last delivered run collected, when a late run would miss items', async () => {
+    // NOW is 2026-10-16T08:00Z; the run before collected up to its start, 9 days ago.
+    const { window, logs } = await windowAfter('2026-10-07T07:30:00Z');
+
+    expect(window).toMatchObject({ since: new Date('2026-10-07T07:30:00Z'), until: new Date(NOW) });
+    expect(logs).toContainEqual(
+      expect.objectContaining({
+        level: 'info',
+        message: 'Collecting from where the last delivered run stopped',
+        fields: expect.objectContaining({ since: '2026-10-07T07:30:00.000Z' }) as object,
+      }),
+    );
+  });
+
+  it('keeps the usual window when the last delivered run started inside it', async () => {
+    const { window } = await windowAfter('2026-10-12T08:00:00Z');
+
+    expect(window?.since).toEqual(new Date('2026-10-09T08:00:00Z'));
+  });
+
+  it('never reaches back more than 31 days, the longest window there is', async () => {
+    const { window } = await windowAfter('2026-08-01T08:00:00Z');
+
+    expect(window?.since).toEqual(new Date('2026-09-15T08:00:00Z'));
   });
 
   it('keeps the items newest first, writes items.json and logs the count', async () => {

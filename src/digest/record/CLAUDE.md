@@ -18,7 +18,9 @@ flowchart TD
 ```
 
 - `skipped` builds a record from `EMPTY_STATE` and saves nothing. `resumed` hands the week to
-  `resume/` and returns the saved digest as `markdown`, with no `message`.
+  `resume/` and returns the saved digest as `markdown`, with no `message`, and `kept` when set.
+- `lastDelivered` reads the runs before the chain (only without `--since`): the latest earlier
+  week that reached a channel, for `collect`. A store that cannot list them gives none, logged.
 
 ## Rules
 
@@ -31,12 +33,13 @@ flowchart TD
 
 ## Files
 
-| File             | Role                                                                       |
-| ---------------- | -------------------------------------------------------------------------- |
-| `buildRecord.ts` | `buildRecord`, `statusOf`: the `RunRecord` and its status                  |
-| `finish.ts`      | `finish`, `noteFor`: end a chain run through `endRun` and shape the result |
-| `skipped.ts`     | `skipped`: the result for a week that already has a sent digest            |
-| `resumed.ts`     | `resumed`: the result of finishing a part-delivered week                   |
+| File               | Role                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| `buildRecord.ts`   | `buildRecord`, `statusOf`: the `RunRecord` and its status                  |
+| `finish.ts`        | `finish`, `noteFor`: end a chain run through `endRun` and shape the result |
+| `skipped.ts`       | `skipped`: the result for a week that already has a sent digest            |
+| `resumed.ts`       | `resumed`: the result of finishing a part-delivered week                   |
+| `lastDelivered.ts` | `lastDelivered`: `RunContext.lastDelivered`, the late run's collect start  |
 
 ## Gotchas
 

@@ -16,7 +16,8 @@ changes the collection window, not the week.
 - **Lock.** A run takes `dist/digest.lock` (inside `dataDir`) before it does anything. A holder
   rewrites the heartbeat every 60 seconds. A lock whose heartbeat is 5 minutes old, or whose
   process is gone on the same host, is taken over. Otherwise a second run fails with exit 1 and
-  the message "Another run is in progress". See [lock](../operations/lock.md).
+  the message "Another run is in progress". A frozen run whose lock was taken over stops at its
+  next heartbeat and leaves the week to the other run. See [lock](../operations/lock.md).
 - The scheduler handles a held lock for you: it retries every 5 minutes for up to 2 hours.
   See [scheduler](../operations/scheduler.md).
 
@@ -24,7 +25,9 @@ changes the collection window, not the week.
 
 - **Skip.** A week that already has a `sent` record ends `skipped` (exit 0) and sends nothing.
 - **Resume.** A week that reached only some channels is not run again. `digest run` sends the
-  saved `digest.md` to the missing channels and marks the week `sent`. No model is called. If
+  saved `digest.md` to the missing channels and marks the week `sent`. No model is called. A run
+  saves `run.json` after each channel that takes the digest, so a run killed while it delivers
+  is resumed this way too, instead of sent again to every channel. If
   `digest.md` is gone, or its links differ from what the other channels got, it refuses with a
   message that mentions `--force`. See [resume a partial delivery](../runbooks/recover/resume-partial-delivery.md).
 - **Force.** `--force` runs the week from scratch, even if it was sent. See
@@ -54,7 +57,8 @@ See [stopping and restarts](../operations/stopping-and-restarts.md).
 | `failed`  | A health check, a step or a delivery failed, or no draft | 1    | yes                           |
 
 A failure note is a short plain-text message on every channel, plus `<week>.failed.md`. A dry
-run sends none.
+run sends none. Once the week ends `sent`, also by a resume, `<week>.failed.md` and the earlier
+`error.json` are removed; a mail or a Slack message already sent stays.
 
 `blocked` is rare. When every writer draft is rejected by the checks or the output guards, the run
 builds a fallback digest from the selected items' own text and sends it, so the status is `sent`

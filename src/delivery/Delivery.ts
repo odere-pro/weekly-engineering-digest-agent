@@ -19,4 +19,9 @@ export interface Delivery {
   readonly id: 'markdown' | 'email' | 'slack';
   sendDigest(message: DigestMessage): Promise<void>;
   sendFailure(note: FailureNote): Promise<void>;
+  /**
+   * Takes back the week's failure note where the channel keeps it (the Markdown file's
+   * `<week>.failed.md`), once the week is sent. A sent mail or Slack message stays: no-op there.
+   */
+  clearFailure(weekId: string): Promise<void>;
 }

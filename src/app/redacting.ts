@@ -19,6 +19,7 @@ const STORE_RULES: MemberRules<RunStore, Redactor> = {
   saveArtifact: (store, redactor) => (runId, name, content) =>
     store.saveArtifact(runId, name, redactor.text(content)),
   readArtifact: (store) => (runId, name) => store.readArtifact(runId, name),
+  removeArtifact: (store) => (runId, name) => store.removeArtifact(runId, name),
   // async, so a record that cannot be redacted rejects, as the port promises, instead of throwing.
   saveRunRecord: (store, redactor) => async (record) => {
     await store.saveRunRecord(redactedRecord(record, redactor));
@@ -59,6 +60,7 @@ const DELIVERY_RULES: MemberRules<Delivery, Redactor> = {
   sendDigest: (delivery, redactor) => (message) =>
     delivery.sendDigest(redactMessage(message, redactor)),
   sendFailure: (delivery, redactor) => (note) => delivery.sendFailure(redactNote(note, redactor)),
+  clearFailure: (delivery) => (weekId) => delivery.clearFailure(weekId),
 };
 
 /** A channel that gets the digest and the failure notes with the secrets taken out of the text. */

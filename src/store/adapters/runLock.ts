@@ -30,7 +30,8 @@ export interface AcquireLockOptions {
 /**
  * Takes the single-run lock. Throws DigestError (exit 1) when a live run holds it; an abandoned
  * lock is taken over with a warning. While held, the lock's `heartbeatAt` is refreshed every
- * LOCK_HEARTBEAT_INTERVAL_MS until `release()`.
+ * LOCK_HEARTBEAT_INTERVAL_MS until `release()`. The beat that finds the file no longer ours (taken
+ * over, or removed) fires the lock's `lost`, so the run stops.
  *
  * A lock is abandoned when its heartbeat is older than LOCK_HEARTBEAT_TIMEOUT_MS, when it names
  * this host and its pid is dead, when it names this host and pid but another process token (an
@@ -48,8 +49,9 @@ export interface AcquireLockOptions {
  *   crashed or was frozen (a suspended laptop, a paused VM) for longer than the guard/lock expiry
  *   while another run starts at the same moment.
  * - A holder that resumes after a stall longer than LOCK_HEARTBEAT_TIMEOUT_MS may find its lock
- *   taken over. It notices at its next beat and stops beating, but its run carries on, so two
- *   runs can overlap.
+ *   taken over. It notices only at its next beat (at most one interval later; after a laptop
+ *   sleep the timer does not count the sleep), then stops beating and fires `lost`. Until that
+ *   beat, two runs overlap.
  * - The heartbeat comes from the process's event loop, not from the run's progress: a run that
  *   hangs while the process stays alive keeps its lock for as long as it hangs.
  * - Creating the lock needs hard links (`link`); a file system without them fails with an

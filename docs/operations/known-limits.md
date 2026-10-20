@@ -57,6 +57,8 @@ The honest list. Each item says what happens and why.
 - One replica. The lock is a file on local disk. Two machines sharing `dist/` over a network file
   system are not supported, and `dist/` needs hard links (not FAT, exFAT or some SMB shares).
 - A run suspended for more than 5 minutes (a sleeping laptop) can lose its lock to another run.
+  It stops at its next heartbeat, within 60 seconds, and sends nothing after that. See
+  [lock](lock.md#when-a-run-loses-its-lock).
 - The abort signal (the run time limit, or a stop of `digest serve`) stops the feed fetches, the
   guards and every model call (classify, write, select) within one call, and is checked between the
   other steps. A delivery that has started finishes first.

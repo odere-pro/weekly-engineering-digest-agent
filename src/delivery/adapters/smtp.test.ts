@@ -60,6 +60,14 @@ describe('createSmtpDelivery', () => {
     expect(createSmtpDelivery({ ...baseOptions, createTransport }).id).toBe('email');
   });
 
+  it('clears no failure note: a sent mail cannot be taken back', async () => {
+    const { sendMail, createTransport } = fakeTransport();
+
+    await createSmtpDelivery({ ...baseOptions, createTransport }).clearFailure('2026-W42');
+
+    expect(sendMail).not.toHaveBeenCalled();
+  });
+
   it('opens the transport with the server settings and credentials', () => {
     const { createTransport } = fakeTransport();
     createSmtpDelivery({ ...baseOptions, createTransport });

@@ -148,6 +148,22 @@ describe('the heartbeat it starts', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
+  it('fires lost once another run took the lock over, not on release', async () => {
+    const handle = handleFor({ heartbeatIntervalMs: FAST_BEAT_MS });
+    await handle.release();
+    expect(handle.lost.aborted).toBe(false);
+
+    const taken = handleFor({ heartbeatIntervalMs: FAST_BEAT_MS });
+    await writeFile(lockPath, JSON.stringify(theirs));
+
+    await vi.waitFor(
+      () => {
+        expect(taken.lost.aborted).toBe(true);
+      },
+      { timeout: 3000 },
+    );
+  });
+
   it('is waited for on release, so a beat in flight leaves no file behind', async () => {
     const handle = handleFor({ heartbeatIntervalMs: 1 });
     await sleep(20);

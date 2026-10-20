@@ -14,7 +14,13 @@ export interface RunContext {
   readonly dryRun: boolean;
   readonly sinceDays: number;
   readonly startedAt: Date;
+  /** The caller's signal (`RunOptions.signal`) and, once the run holds the lock, its `lost` too. */
   readonly signal?: AbortSignal;
+  /**
+   * The lock's `lost` (`RunLock`), once the run holds it: fired, the week belongs to the run that
+   * took the lock over, so this one writes no file and `endRun` saves nothing. See `holdingLock`.
+   */
+  readonly lockLost?: AbortSignal;
   /** See `RunOptions.notifyFailure`. */
   readonly notifyFailure: boolean;
   /** See `RunOptions.noFallback`. */
@@ -33,6 +39,12 @@ export interface RunContext {
    * the store with it to see that another run delivered the week while this one worked.
    */
   readonly previousRecord?: RunRecord;
+  /**
+   * The latest record of an earlier week that reached a channel, read when the window is the
+   * config's (no `RunOptions.sinceDays`). `collect` reaches back to its start, where that run
+   * collected up to, so a late run misses nothing. None for an explicit window or a first run.
+   */
+  readonly lastDelivered?: RunRecord;
 }
 
 /** Resolves the options against the config and the clock; throws on a bad week id or window. */
@@ -61,6 +73,15 @@ export function runContext(deps: DigestDeps, options: RunOptions): RunContext {
     disabledGuards: plannedDisabledGuards(deps),
     holdArtifacts: false,
   };
+}
+
+/**
+ * The context of a run that holds the lock: its signal also fires when the lock is lost, so every
+ * stage, fetch and model call stops as it does for the caller's signal (`Run aborted ...`).
+ */
+export function holdingLock(ctx: RunContext, lockLost: AbortSignal): RunContext {
+  const signal = ctx.signal ? AbortSignal.any([ctx.signal, lockLost]) : lockLost;
+  return { ...ctx, signal, lockLost };
 }
 
 /**

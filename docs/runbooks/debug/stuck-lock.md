@@ -81,8 +81,11 @@ file is gone. `pnpm digest history -n 1` shows the status of the week.
 ## Roll back
 
 A lock cannot be restored, and there is nothing to restore. If you deleted the lock while a
-run was alive, that run logs `Run lock is no longer ours (taken over or removed); its
-heartbeat stops` and carries on. Stop one of the two runs yourself, or both may send.
+run was alive, that run logs this at its next heartbeat, within 60 seconds:
+`Run lock is no longer ours (taken over or removed); this run stops`. It then fails with
+`Run aborted ...: this run lost its lock`, saves no record and sends no digest. Run the week
+again (step 6) if nothing else is running it. See
+[lock](../../operations/lock.md#when-a-run-loses-its-lock).
 
 ## Troubleshooting
 

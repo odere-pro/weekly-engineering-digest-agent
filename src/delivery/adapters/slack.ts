@@ -71,5 +71,7 @@ export function createSlackDelivery(options: SlackOptions): Delivery {
       post(message.view ? toSlackBlocks(message.view) : { text: toSlackMrkdwn(message.markdown) }),
     sendFailure: (note) =>
       post({ text: toSlackMrkdwn(redactSecrets(failureOneLiner(note), secrets)) }),
+    // A posted message stays posted.
+    clearFailure: () => Promise.resolve(),
   };
 }

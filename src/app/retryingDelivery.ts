@@ -29,6 +29,8 @@ const RETRY_RULES: MemberRules<Delivery, Attempt> = {
     attempt('sendDigest', () => delivery.sendDigest(message)),
   sendFailure: (delivery, attempt) => (note) =>
     attempt('sendFailure', () => delivery.sendFailure(note)),
+  // Nothing goes over the network (the Markdown file's note, else a no-op): nothing to retry.
+  clearFailure: (delivery) => (weekId) => delivery.clearFailure(weekId),
 };
 
 /**

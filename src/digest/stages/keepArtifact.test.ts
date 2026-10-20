@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { keepArtifact } from './keepArtifact';
-import { WEEK, contextFor, stateOf } from '../__fixtures__/stageKit';
+import { WEEK, contextFor, lostLock, stateOf } from '../__fixtures__/stageKit';
 
 describe('keepArtifact', () => {
   it('writes the file now and hands the state back as it is', async () => {
@@ -24,6 +24,15 @@ describe('keepArtifact', () => {
       { name: 'scores.json', content: '[1]\n' },
     ]);
     expect(state.held).toHaveLength(1);
+    expect(h.store.artifacts.size).toBe(0);
+  });
+
+  it('writes nothing once the run lost its lock: the week folder belongs to the other run', async () => {
+    const h = contextFor({ lockLost: lostLock() });
+
+    const failure = keepArtifact(h.ctx, stateOf(), 'scores.json', '[]\n');
+
+    await expect(failure).rejects.toThrow(/^Run aborted: this run lost its lock/);
     expect(h.store.artifacts.size).toBe(0);
   });
 

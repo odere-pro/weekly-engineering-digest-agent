@@ -20,7 +20,8 @@ import {
   MemoryRunStore,
   fixedClock,
 } from '../../../test/fakes';
-import type { RunContext } from '../chain/runContext';
+import { holdingLock, type RunContext } from '../chain/runContext';
+import { lockLostReason } from '../../store/lockLost';
 import { EMPTY_STATE, type ChainState } from '../chain/state';
 import type { DigestDeps } from '../types';
 
@@ -77,10 +78,21 @@ export interface ContextOptions {
   holdArtifacts?: boolean;
   /** The week's record when the run began; see `RunContext.previousRecord`. */
   previousRecord?: RunRecord;
+  /** See `RunContext.lastDelivered`. */
+  lastDelivered?: RunRecord;
   disabledGuards?: readonly GuardCheckId[];
   signal?: AbortSignal;
+  /** The lock's `lost`; the run signal then fires with it, as it does under `runDigest`. */
+  lockLost?: AbortSignal;
   sinceDays?: number;
   sampling?: DigestDeps['sampling'];
+}
+
+/** The `lost` of a lock that another run has taken over. */
+export function lostLock(): AbortSignal {
+  const lock = new AbortController();
+  lock.abort(lockLostReason());
+  return lock.signal;
 }
 
 /** A run context at `NOW` for `WEEK`, with fakes for everything it reaches. */
@@ -116,7 +128,7 @@ export function contextFor(options: ContextOptions = {}) {
     clock: fixedClock(NOW),
     ...(options.sampling && { sampling: options.sampling }),
   };
-  const ctx: RunContext = {
+  const base: RunContext = {
     deps,
     weekId: WEEK,
     dryRun: options.dryRun ?? false,
@@ -129,7 +141,9 @@ export function contextFor(options: ContextOptions = {}) {
     disabledGuards: options.disabledGuards ?? [],
     holdArtifacts: options.holdArtifacts ?? false,
     previousRecord: options.previousRecord,
+    lastDelivered: options.lastDelivered,
   };
+  const ctx = options.lockLost ? holdingLock(base, options.lockLost) : base;
   return { ctx, deps, store, deliveries, model, logs, spans, logger };
 }
 

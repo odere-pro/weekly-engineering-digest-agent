@@ -58,7 +58,8 @@ It is a supporting layer used at the start and the end of every run, as shown in
   [stuck lock](../runbooks/debug/stuck-lock.md). A crashed run's lock is taken over by the next run
   after the heartbeat times out.
 - A laptop that sleeps for more than 5 minutes in the middle of a run can lose its lock to another
-  run. See [known limits](../operations/known-limits.md).
+  run. The run then stops and leaves the week to that run. See
+  [lock](../operations/lock.md#when-a-run-loses-its-lock).
 - The data folder is not writable or the disk is full: the run fails with "Could not save the run
   record". See [failed run](../runbooks/debug/failed-run.md) and
   [prune disk](../runbooks/maintain/prune-disk.md).

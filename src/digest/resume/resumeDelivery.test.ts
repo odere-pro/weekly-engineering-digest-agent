@@ -12,6 +12,9 @@ import type { Clock } from '../../shared/clock';
 import type { LogFields, Logger, Tracer } from '../../shared/telemetry';
 import { makeConfig, makeRunRecord } from '../../../test/builders';
 import { CapturingDelivery, MemoryRunStore, fixedClock } from '../../../test/fakes';
+import { KEPT_LOST_LOCK_REASON, KEPT_OTHER_RUN_REASON } from '../ending/keepReason';
+import { DELIVERY_CUT_OFF } from '../ending/saveProgress';
+import { lockLostReason } from '../../store/lockLost';
 
 const WEEK = '2026-W42';
 const NOW = '2026-10-16T08:00:00Z';
@@ -389,5 +392,122 @@ describe('resumeDelivery', () => {
         }) as LogFields,
       }),
     );
+  });
+});
+
+describe('resumeDelivery when the week was taken from it', () => {
+  /** The context of a resume whose lock fires `lost` when `lock` aborts, as under runDigest. */
+  const holding = (h: Harness, lock: AbortController): ResumeContext => ({
+    ...h.ctx,
+    signal: lock.signal,
+    lockLost: lock.signal,
+  });
+
+  it('sends nothing and saves no record once the run lost its lock', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    const lock = new AbortController();
+    lock.abort(lockLostReason());
+
+    const result = await resumeDelivery(holding(h, lock), await partOf(h, previous));
+
+    expect(sentCounts(h)).toEqual([0, 0, 0]);
+    expect(result.record.error?.message).toMatch(
+      /^Run aborted before the deliver step: this run lost its lock/,
+    );
+    expect(result.kept).toBe(KEPT_LOST_LOCK_REASON);
+    expect(result.markdown).toBeUndefined();
+    expect(h.store.records.get(WEEK)).toBe(previous);
+  });
+
+  it('checks right before the send: a loss while it rebuilds the view stops it', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    const part = await partOf(h, previous);
+    const lock = new AbortController();
+    const read = h.store.readArtifact.bind(h.store);
+    h.store.readArtifact = async (runId, name) => {
+      if (name === 'drafts.json') lock.abort(lockLostReason());
+      return read(runId, name);
+    };
+
+    const result = await resumeDelivery(holding(h, lock), part);
+
+    expect(sentCounts(h)).toEqual([0, 0, 0]);
+    expect(result.kept).toBe(KEPT_LOST_LOCK_REASON);
+  });
+
+  it('sends nothing when another run finished the week meanwhile, and keeps its record', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    const part = await partOf(h, previous);
+    const { error: _error, ...rest } = previous;
+    const finished: RunRecord = { ...rest, status: 'sent', deliveredTo: ['markdown', 'email'] };
+    h.store.records.set(WEEK, finished);
+
+    const result = await resumeDelivery(h.ctx, part);
+
+    expect(sentCounts(h)).toEqual([0, 0, 0]);
+    expect(result.record.error?.message).toBe(
+      `Run aborted before the deliver step: another run delivered ${WEEK} while this one worked`,
+    );
+    expect(result.kept).toBe(KEPT_OTHER_RUN_REASON);
+    expect(h.store.records.get(WEEK)).toBe(finished);
+  });
+
+  it('fails the delivery, sending nothing, when the record cannot be read again', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    const part = await partOf(h, previous);
+    h.store.getRunRecord = () => Promise.reject(new Error('EIO'));
+
+    const result = await resumeDelivery(h.ctx, part);
+
+    expect(sentCounts(h)).toEqual([0, 0, 0]);
+    expect(result.record).toMatchObject({
+      status: 'failed',
+      deliveredTo: ['markdown'],
+      error: { step: 'deliver', message: 'EIO' },
+    });
+    expect(result.kept).toBeUndefined();
+  });
+});
+
+describe('resumeDelivery saves its progress after each channel', () => {
+  it('leaves the channels reached so far in the record, so a killed resume goes on from there', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    const slack = h.channel('slack');
+    const send = slack.sendDigest.bind(slack);
+    const seen: { record?: RunRecord } = {};
+    slack.sendDigest = (message) => {
+      seen.record = h.store.records.get(WEEK);
+      return send(message);
+    };
+
+    const result = await resumeDelivery(h.ctx, await partOf(h, previous));
+
+    expect(seen.record).toMatchObject({
+      status: 'failed',
+      deliveredTo: ['markdown', 'email'],
+      sentUrls: URLS,
+      timings: previous.timings,
+      error: { step: 'deliver', message: DELIVERY_CUT_OFF },
+    });
+    expect(result.record).toMatchObject({ status: 'sent' });
+    expect(h.store.records.get(WEEK)).toBe(result.record);
+  });
+});
+
+describe('resumeDelivery clears what the failed attempt left', () => {
+  it('asks every channel, the ones that had the digest too, to clear the failure note', async () => {
+    const h = setup();
+    const previous = savedWeek(h);
+    h.store.artifacts.set(`${WEEK}/error.json`, '{"from":"the failed attempt"}');
+
+    await resumeDelivery(h.ctx, await partOf(h, previous));
+
+    expect(h.deliveries.map((delivery) => delivery.cleared)).toEqual([[WEEK], [WEEK], [WEEK]]);
+    expect(h.store.artifacts.has(`${WEEK}/error.json`)).toBe(false);
   });
 });

@@ -1,8 +1,9 @@
 # Delivery
 
 > Hands one finished digest, or one failure note, to a channel: file, email or Slack. Port:
-> `Delivery` (`sendDigest(DigestMessage)`, `sendFailure(FailureNote)`). The `deliver` step and the
-> loop over channels live in `src/digest` (`shipDigest`); this folder owns the port and adapters.
+> `Delivery` (`sendDigest(DigestMessage)`, `sendFailure(FailureNote)`, `clearFailure(weekId)`).
+> The `deliver` step and the loop over channels live in `src/digest` (`shipDigest`); this folder
+> owns the port and adapters.
 
 ## Context
 
@@ -59,7 +60,8 @@ flowchart TD
   `delivery.markdown.dir`, else the week's `digest/` folder (`markdownFileOptions`, `markdownFolder`).
   The HTML is rendered and the old `.html` removed before the writes, which are atomic: the two
   files never disagree. After them `sendDigest` removes the week's `.failed.md`, so a failure note
-  from an earlier attempt does not stay beside the sent digest.
+  from an earlier attempt does not stay beside the sent digest; `clearFailure` does the same when a
+  resume did not write the digest again (`endRun`, once the week is sent).
 
 ## Files
 

@@ -92,6 +92,8 @@ export function createSmtpDelivery(options: SmtpOptions): Delivery {
       const reason = redactSecrets(note.message, [options.password]);
       return send({ subject: title, text: `${title}.\n\n${visibleText(reason)}\n` });
     },
+    // A sent mail cannot be taken back.
+    clearFailure: () => Promise.resolve(),
   };
 }
 

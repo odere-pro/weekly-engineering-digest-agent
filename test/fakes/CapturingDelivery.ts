@@ -4,6 +4,8 @@ import type { Delivery, DigestMessage, FailureNote } from '../../src/delivery/De
 export class CapturingDelivery implements Delivery {
   readonly digests: DigestMessage[] = [];
   readonly failures: FailureNote[] = [];
+  /** The weeks whose failure note it was told to clear. */
+  readonly cleared: string[] = [];
   failWith: Error | undefined;
 
   constructor(readonly id: Delivery['id'] = 'markdown') {}
@@ -11,6 +13,11 @@ export class CapturingDelivery implements Delivery {
   sendDigest(message: DigestMessage): Promise<void> {
     if (this.failWith) return Promise.reject(this.failWith);
     this.digests.push(message);
+    return Promise.resolve();
+  }
+
+  clearFailure(weekId: string): Promise<void> {
+    this.cleared.push(weekId);
     return Promise.resolve();
   }
 

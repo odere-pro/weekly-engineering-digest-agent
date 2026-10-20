@@ -32,8 +32,13 @@ flowchart LR
   nothing, or some failed and none had items, still settle `quiet`.
 - `write` throws `PartialFailure` when every writer failed, naming writers, never model text; `guardOutput`
   falls back to `withFallback` when no draft passed.
-- `deliver` reads the week's record before it sends and fails `Run aborted` (`supersededError`) when
-  another run reached a channel since `RunContext.previousRecord`: this run lost its lock to a takeover.
+- `collect` reads from `sinceDays` back, or from `RunContext.lastDelivered.startedAt` when that is
+  earlier (a late run), never more than 31 days.
+- `deliver` checks last before it sends (`stopBeforeSending`): it fails `Run aborted` when the signal
+  fired (a lost lock too), or when another run reached a channel since `RunContext.previousRecord`.
+  After each channel that takes the digest it saves a `failed` record with `DELIVERY_CUT_OFF`
+  (`saveProgress`), so a run killed then is resumed, not sent again everywhere.
+  `keepArtifact` writes nothing once `RunContext.lockLost` fired: the folder is the other run's.
 
 ## Files
 

@@ -29,7 +29,7 @@ flowchart TD
   seen -->|no| lock["acquireLock, read the record again: sent meanwhile also skips"]
   lock --> part{"failed record that reached a channel? (not force, not dry run)"}
   part -->|yes| resume["resumeDelivery: saved digest.md to missing channels, no health check or model call"]
-  part -->|no| chain["runChain: signal check, assertModelsReady (Ollama up, models pulled), stages"]
+  part -->|"no: lastDelivered (no --since) widens collect"| chain["runChain: signal check, assertModelsReady (Ollama up, models pulled), stages"]
   chain -->|"a stage threw (collect: every source failed): failed, exit 1"| endRun
   chain -->|"no items, or under 3 after process: quiet, exit 3"| endRun
   chain -->|"a draft won: sent, or dry-run, exit 0"| endRun
@@ -50,13 +50,13 @@ flowchart TD
 
 ## Rules
 
-- The abort signal is checked at chain start, before each stage and a resume's delivery. It also enters
-  collect, classify, write, select, the guards and the fallback: each fetch, guard and model call stops
-  within one call, and no new call or writer starts. Only `deliver` ignores it: a started send finishes.
-  The failure starts `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
+- The abort signal (the caller's, and `RunLock.lost` under the lock: `holdingLock`) is checked at
+  chain start, before each stage and last before a send. It enters collect, classify, write, select,
+  the guards and the fallback: each call stops within one call. A started send finishes. The failure
+  starts `Run aborted before|during the <step> step` (`isUnretriable`), whatever it threw.
 - A run never replaces a record that got further (`keepReason`, against the store as the run ends),
-  else a sent week goes out twice. Meanwhile (`holdArtifacts`) its files wait in `ChainState.held`,
-  written only if its record is saved. A run that lost its lock: see `deliver` in `stages/`.
+  else a sent week goes out twice; held files (`ChainState.held`) go only with a saved record. A run
+  that lost its lock writes no file and saves nothing (`keepArtifact`, `endRun`) unless it sent.
 - `notifyFailure` false holds a `failed` run's note for a retrying caller (the scheduler);
   `sendHeldNote` sends it later. Quiet, blocked, `Run aborted`, `--force` and "record not saved"
   notes go anyway. A dry run sends none. Notes, records and errors never hold model or feed text.

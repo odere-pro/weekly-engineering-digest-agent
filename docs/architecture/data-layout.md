@@ -16,7 +16,7 @@ dist/                                     dataDir (default "dist")
     drafts.json                           drafts, failed writers, rejections with problems
     digest.md                             the winning digest (kept after pruning)
     review.md                             tick sheet for `digest feedback`
-    error.json                            only after a failure: step, message, time
+    error.json                            only beside a failed record: step, message, time
     <week>.md, <week>.html                the Markdown channel (default; kept after pruning)
     <week>.failed.md                      the failure note (default; kept after pruning)
     preview/                              `digest preview` output (default)

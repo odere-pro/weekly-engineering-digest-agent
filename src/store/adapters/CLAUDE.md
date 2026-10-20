@@ -35,8 +35,8 @@ milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
   fails typecheck when it and the port type disagree; `artifactFile` uses `Object.hasOwn`, so
   `constructor` or `__proto__` throw `DigestError` before any path is built.
 - Plain files give no OS lock. The known limits (a holder stalled past the heartbeat timeout can
-  lose its lock and run on; a hung process keeps it) are in the doc comment of `acquireRunLock`.
-  The heartbeat only logs the loss; `digest/` guards delivery and the record against it (`deliver`, `endRun`).
+  lose its lock and runs on until its next beat; a hung process keeps it) are in the doc comment of
+  `acquireRunLock`. The beat that sees the loss fires `RunLock.lost`; `digest/` stops on it.
 - `hasSentDigest` and `sentUrls` go through `readDeliveryFacts`: the full record when `run.json` parses,
   else its `status`, `deliveredTo` and `sentUrls` alone (no enums), with the same warning.
 
@@ -56,5 +56,6 @@ milliseconds) and `<monday>/digest/` with `run.json` and the six artifacts.
 
 - `runLock.contention.test.ts` is the only test of the real race (4 processes, 40 rounds, slow).
   Run it after any change to the lock, the guard or the heartbeat.
-- `heartbeat/` and `takeover/` import only `shared/atomicFile` and `lockState`: not each other, not `runLock.ts`.
+- `heartbeat/` and `takeover/` import only `shared/`, `lockState` and the store's own top-level files
+  (`../lockHeld`, `../lockLost`): not each other, not `runLock.ts`.
 - A new artifact goes in `ArtifactName` (`../RunStore.ts`, frozen) and in `ARTIFACT_FILES`.

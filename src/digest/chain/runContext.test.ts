@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { runContext } from './runContext';
-import { DigestError } from '../../shared/errors';
+import { holdingLock, runContext } from './runContext';
+import { DigestError, errorMessage } from '../../shared/errors';
+import { LOCK_LOST_MESSAGE, lockLostReason } from '../../store/lockLost';
 import { FakeInputGuard, FakeOutputGuard } from '../../../test/fakes';
 import { NOW, WEEK, contextFor } from '../__fixtures__/stageKit';
 
@@ -87,5 +88,30 @@ describe('runContext', () => {
 
     expect(ctx.disabledGuards).toHaveLength(5);
     expect(h.logs.filter((line) => line.level === 'warn')).toEqual([]);
+  });
+});
+
+describe('holdingLock', () => {
+  it('fires the run signal, with the lock reason, once the lock is lost', () => {
+    const lock = new AbortController();
+    const ctx = holdingLock(runContext(contextFor().deps, {}), lock.signal);
+    expect(ctx.signal?.aborted).toBe(false);
+
+    lock.abort(lockLostReason());
+
+    expect(ctx.signal?.aborted).toBe(true);
+    expect(errorMessage(ctx.signal?.reason)).toBe(LOCK_LOST_MESSAGE);
+    expect(ctx.lockLost).toBe(lock.signal);
+  });
+
+  it("still fires the run signal for the caller's stop, which is not a lost lock", () => {
+    const caller = new AbortController();
+    const lock = new AbortController();
+    const ctx = holdingLock(runContext(contextFor().deps, { signal: caller.signal }), lock.signal);
+
+    caller.abort(new Error('run timed out after 3 h'));
+
+    expect(errorMessage(ctx.signal?.reason)).toBe('run timed out after 3 h');
+    expect(ctx.lockLost?.aborted).toBe(false);
   });
 });

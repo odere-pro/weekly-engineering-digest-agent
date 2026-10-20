@@ -1,12 +1,13 @@
 import { errorMessage } from '../shared/errors';
 import type { RunLock } from '../store/RunStore';
-import { runContext, type RunContext } from './chain/runContext';
+import { holdingLock, runContext, type RunContext } from './chain/runContext';
 import { settle } from './chain/settle';
 import { EMPTY_STATE, type ChainOutcome } from './chain/state';
 import { reachedAChannel } from './ending/keepReason';
 import { abortedError } from './ending/notes/unretriable';
 import { assertModelsReady } from './health/assertModelsReady';
 import { finish } from './record/finish';
+import { lastDelivered } from './record/lastDelivered';
 import { resumed } from './record/resumed';
 import { skipped } from './record/skipped';
 import { loadPartDelivery } from './resume/resumeDelivery';
@@ -26,15 +27,20 @@ export async function runDigest(deps: DigestDeps, options: RunOptions = {}): Pro
     if (!options.force && (await deps.store.hasSentDigest(ctx.weekId))) return skipped(ctx);
     const lock = await deps.store.acquireLock(ctx.weekId);
     try {
+      // A run that loses the lock stops as if told to, and leaves the week to the run that took it.
+      const locked = holdingLock(ctx, lock.lost);
       // Read again under the lock: a run that held it may have just sent this week.
       const previous = await deps.store.getRunRecord(ctx.weekId);
       if (previous?.status === 'sent' && !options.force) return skipped(ctx);
-      const part = options.force || ctx.dryRun ? undefined : await loadPartDelivery(ctx, previous);
-      if (part) return await resumed(ctx, part);
+      const part =
+        options.force || ctx.dryRun ? undefined : await loadPartDelivery(locked, previous);
+      if (part) return await resumed(locked, part);
       const chainCtx = {
-        ...ctx,
+        ...locked,
         holdArtifacts: reachedAChannel(previous),
         previousRecord: previous,
+        // An explicit window is kept as asked; the config's reaches back for a late run.
+        lastDelivered: options.sinceDays === undefined ? await lastDelivered(locked) : undefined,
       };
       return await finish(chainCtx, await runChain(chainCtx), previous);
     } finally {

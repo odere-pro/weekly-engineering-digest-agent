@@ -2,26 +2,41 @@ import type { RunRecord } from '../../src/store/runRecord';
 import type { ArtifactName, RunLock, RunStore } from '../../src/store/RunStore';
 import { DigestError } from '../../src/shared/errors';
 import { compareWeekIds, previousWeekIds } from '../../src/shared/isoWeek';
+import { lockLostReason } from '../../src/store/lockLost';
 
 /** In-memory RunStore with the same contract as fsRunStore. */
 export class MemoryRunStore implements RunStore {
   readonly artifacts = new Map<string, string>();
   readonly records = new Map<string, RunRecord>();
-  private locked = false;
+  /** The holder's `lost`, while a run holds the lock. */
+  private holder: AbortController | undefined;
 
   acquireLock(_runId: string): Promise<RunLock> {
-    if (this.locked) return Promise.reject(new DigestError('Another run is in progress'));
-    this.locked = true;
+    if (this.holder) return Promise.reject(new DigestError('Another run is in progress'));
+    const mine = new AbortController();
+    this.holder = mine;
     return Promise.resolve({
+      lost: mine.signal,
       release: () => {
-        this.locked = false;
+        // Like the file lock: a lock another run took over stays theirs.
+        if (this.holder === mine) this.holder = undefined;
         return Promise.resolve();
       },
     });
   }
 
   get isLocked(): boolean {
-    return this.locked;
+    return this.holder !== undefined;
+  }
+
+  /**
+   * Takes the lock from its holder, as a takeover after a stall does, and fires its `lost` the way
+   * the file lock's next heartbeat would. The next `acquireLock` succeeds.
+   */
+  loseLock(): void {
+    const holder = this.holder;
+    this.holder = undefined;
+    holder?.abort(lockLostReason());
   }
 
   hasSentDigest(runId: string): Promise<boolean> {
@@ -35,6 +50,11 @@ export class MemoryRunStore implements RunStore {
 
   readArtifact(runId: string, name: ArtifactName): Promise<string | undefined> {
     return Promise.resolve(this.artifacts.get(`${runId}/${name}`));
+  }
+
+  removeArtifact(runId: string, name: ArtifactName): Promise<void> {
+    this.artifacts.delete(`${runId}/${name}`);
+    return Promise.resolve();
   }
 
   saveRunRecord(record: RunRecord): Promise<void> {

@@ -11,9 +11,13 @@ import {
   WRITER_A,
   checkedDraft,
   contextFor,
+  lostLock,
   scored,
   stateOf,
 } from '../__fixtures__/stageKit';
+import { lockLostReason } from '../../store/lockLost';
+import type { RunRecord } from '../../store/runRecord';
+import { DELIVERY_CUT_OFF } from '../ending/saveProgress';
 
 const items = [1, 2, 3].map((n) => scored(3, { title: `Runner ${n}.0 ships` }));
 const winner = checkedDraft(items, WRITER_A);
@@ -186,5 +190,93 @@ describe('deliver when another run delivered the week while this one worked', ()
     const next = await deliver(h.ctx, stateWith(), h.logger);
 
     expect(next.deliveredTo).toEqual(['markdown', 'email']);
+  });
+});
+
+describe('deliver when the run lost its lock', () => {
+  const sentNothing = (h: ReturnType<typeof contextFor>): void => {
+    for (const delivery of h.deliveries as CapturingDelivery[]) {
+      expect(delivery.digests).toEqual([]);
+    }
+  };
+
+  it('sends to no channel: the week belongs to the run that took the lock over', async () => {
+    const h = contextFor({ lockLost: lostLock() });
+
+    const failure = await deliver(h.ctx, stateWith(), h.logger).catch((error: unknown) => error);
+
+    expect(failure).toBeInstanceOf(DigestError);
+    expect((failure as DigestError).message).toMatch(
+      /^Run aborted before the deliver step: this run lost its lock/,
+    );
+    sentNothing(h);
+  });
+
+  it('checks right before the first send: a loss while it reads the record stops it', async () => {
+    const lock = new AbortController();
+    const h = contextFor({ lockLost: lock.signal });
+    const read = h.store.getRunRecord.bind(h.store);
+    h.store.getRunRecord = async (runId) => {
+      const stored = await read(runId);
+      lock.abort(lockLostReason());
+      return stored;
+    };
+
+    await expect(deliver(h.ctx, stateWith(), h.logger)).rejects.toThrow(/lost its lock/);
+    sentNothing(h);
+  });
+});
+
+describe('deliver saves its progress after each channel', () => {
+  const urls = winner.draft.digest.items.map((item) => item.url);
+
+  /** The week's record in the store at the moment `channel` is sent to. */
+  const recordWhenSending = (h: ReturnType<typeof contextFor>, index: number) => {
+    const channel = (h.deliveries as CapturingDelivery[])[index];
+    if (!channel) throw new Error(`no channel ${String(index)}`);
+    const seen: { record?: RunRecord } = {};
+    const send = channel.sendDigest.bind(channel);
+    channel.sendDigest = (message) => {
+      seen.record = h.store.records.get(WEEK);
+      return send(message);
+    };
+    return seen;
+  };
+
+  it('leaves a partly delivered record behind each channel, so a killed run is resumed', async () => {
+    const h = contextFor();
+    const atEmail = recordWhenSending(h, 1);
+
+    await deliver(h.ctx, stateWith(), h.logger);
+
+    expect(atEmail.record).toMatchObject({
+      runId: WEEK,
+      status: 'failed',
+      deliveredTo: ['markdown'],
+      sentUrls: urls,
+      winner: WRITER_A,
+      error: { step: 'deliver', message: DELIVERY_CUT_OFF },
+    });
+    expect(h.store.records.get(WEEK)).toMatchObject({ deliveredTo: ['markdown', 'email'] });
+  });
+
+  it('saves nothing before the first channel took the digest', async () => {
+    const h = contextFor();
+    const atMarkdown = recordWhenSending(h, 0);
+
+    await deliver(h.ctx, stateWith(), h.logger);
+
+    expect(atMarkdown.record).toBeUndefined();
+  });
+
+  it('writes the files it held with the record, so a resume sends the digest of this run', async () => {
+    const began = makeRunRecord({ runId: WEEK, status: 'failed', deliveredTo: ['slack'] });
+    const h = contextFor({ holdArtifacts: true, previousRecord: began });
+    h.store.records.set(WEEK, began);
+    const held = [{ name: 'digest.md' as const, content: '# This run\n' }];
+
+    await deliver(h.ctx, stateWith({ held }), h.logger);
+
+    expect(h.store.artifacts.get(`${WEEK}/digest.md`)).toBe('# This run\n');
   });
 });

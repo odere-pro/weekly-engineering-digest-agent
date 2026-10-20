@@ -39,6 +39,14 @@ describe('createSlackDelivery', () => {
     expect(createSlackDelivery({ webhookUrl: WEBHOOK, fetch: okFetch() }).id).toBe('slack');
   });
 
+  it('clears no failure note: a posted message stays posted', async () => {
+    const fetchMock = okFetch();
+
+    await createSlackDelivery({ webhookUrl: WEBHOOK, fetch: fetchMock }).clearFailure('2026-W42');
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   describe('sendDigest', () => {
     it('POSTs JSON { text } to the webhook with the digest as Slack mrkdwn', async () => {
       const fetchMock = okFetch();

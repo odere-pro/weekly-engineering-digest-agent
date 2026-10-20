@@ -217,4 +217,29 @@ describe('createMarkdownFileDelivery', () => {
       expect((await readdir(dir)).sort()).toEqual(['2026-W42.failed.md', '2026-W42.md']);
     });
   });
+
+  describe('clearFailure', () => {
+    it("removes the week's failure note and leaves its digest and other weeks alone", async () => {
+      const delivery = createMarkdownFileDelivery({ dir });
+      await delivery.sendDigest(message);
+      await delivery.sendFailure({ weekId: '2026-W42', message: 'email failed' });
+      await delivery.sendFailure({ weekId: '2026-W41', message: 'last week broke' });
+
+      await delivery.clearFailure('2026-W42');
+
+      expect((await readdir(dir)).sort()).toEqual(['2026-W41.failed.md', '2026-W42.md']);
+    });
+
+    it('does nothing, without complaint, when there is no note or no folder', async () => {
+      await expect(createMarkdownFileDelivery({ dir }).clearFailure('2026-W42')).resolves.toBe(
+        undefined,
+      );
+    });
+
+    it('refuses a week id that is not one, as the file name comes from it', async () => {
+      await expect(createMarkdownFileDelivery({ dir }).clearFailure('../x')).rejects.toThrow(
+        /invalid week id/,
+      );
+    });
+  });
 });
