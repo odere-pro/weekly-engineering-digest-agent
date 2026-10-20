@@ -125,6 +125,23 @@ describe('historyCommand: table', () => {
     }),
   ];
 
+  it('marks a variant week with * and explains it under the table only then', async () => {
+    const h = harness([
+      makeRunRecord({ runId: '2026-W42', variant: { kind: 'enrich' } }),
+      makeRunRecord({ runId: '2026-W41' }),
+    ]);
+
+    await historyCommand({}, h.deps);
+
+    const rows = lines(h.out);
+    expect(rows[1]).toMatch(/^2026-W42\s+sent\*\s/);
+    expect(rows[2]).toMatch(/^2026-W41\s+sent\s/);
+    expect(rows.at(-1)).toBe('* a variant digest was sent');
+    const plain = harness(records);
+    await historyCommand({}, plain.deps);
+    expect(plain.out.join('')).not.toContain('variant');
+  });
+
   it('prints a header and one row per run, most recent first', async () => {
     const h = harness(records);
 

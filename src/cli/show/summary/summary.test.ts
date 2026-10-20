@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { summary } from './summary';
+import type { RunRecord } from '../../../store/runRecord';
 import { makeRunRecord } from '../../../../test/builders';
 
 const full = makeRunRecord({
@@ -98,5 +99,30 @@ describe('summary', () => {
     expect(lines.at(-1)).toBe('Error:      boom');
     const failed = lines.find((line) => line.startsWith('Source failed:')) ?? '';
     expect(failed).toBe(`Source failed: feed-x: ${'e'.repeat(197)}...`);
+  });
+
+  describe('variant line', () => {
+    const variantLine = (variant: RunRecord['variant']): string | undefined =>
+      summary(makeRunRecord({ variant }))
+        .split('\n')
+        .find((l) => l.startsWith('Variant:'));
+
+    it('prints no line for an old record', () => {
+      expect(summary(makeRunRecord())).not.toContain('Variant:');
+    });
+
+    it.each([
+      [{ kind: 'enrich' as const }, 'Variant:    enriched'],
+      [{ kind: 'complete' as const }, 'Variant:    complete'],
+      [{ kind: 'perspective' as const, topic: 'security' }, 'Variant:    perspective: security'],
+      [{ kind: 'perspective' as const }, 'Variant:    perspective'],
+      [{ kind: 'add-sources' as const }, 'Variant:    enriched'],
+      [
+        { kind: 'add-sources' as const, addedSources: ['a', 'b'] },
+        'Variant:    enriched (added: a, b)',
+      ],
+    ])('prints %j as %s', (variant, line) => {
+      expect(variantLine(variant)).toBe(line);
+    });
   });
 });

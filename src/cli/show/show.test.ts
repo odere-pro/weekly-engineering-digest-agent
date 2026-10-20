@@ -118,6 +118,19 @@ describe('showCommand: summary', () => {
     expect(h.out()).toContain('none');
   });
 
+  it('strips control and bidi characters from the variant topic', async () => {
+    const h = harness();
+    h.store.records.set(
+      WEEK,
+      makeRunRecord({
+        runId: WEEK,
+        variant: { kind: 'perspective', topic: 'se\u202Ecur\u0007ity' },
+      }),
+    );
+    await showCommand({ week: WEEK }, h.deps);
+    expect(h.out()).toContain('Variant:    perspective: security\n');
+  });
+
   it('prints the record as JSON with --json', async () => {
     const h = harness();
     const code = await showCommand({ week: WEEK, json: true }, h.deps);

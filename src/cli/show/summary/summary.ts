@@ -22,12 +22,29 @@ function selectedItems(counts: Counts): string {
     : `${selected} (model guards checked ${String(counts.guardedCandidates)})`;
 }
 
+/** What the second run of the week built; the text is operator text, `show` cleans it. */
+function variantLine(variant: NonNullable<RunRecord['variant']>): string {
+  switch (variant.kind) {
+    case 'enrich':
+      return 'enriched';
+    case 'complete':
+      return 'complete';
+    case 'perspective':
+      return variant.topic === undefined ? 'perspective' : `perspective: ${variant.topic}`;
+    case 'add-sources':
+      return variant.addedSources === undefined || variant.addedSources.length === 0
+        ? 'enriched'
+        : `enriched (added: ${variant.addedSources.join(', ')})`;
+  }
+}
+
 /** The default `digest show` text: one line per fact of the run, problems last. */
 export function summary(record: RunRecord): string {
   const { counts } = record;
   const lines = [
     `Week ${record.runId}: ${record.status}${record.dryRun ? ' (dry run)' : ''}`,
     `Profile:    ${record.profile}`,
+    ...(record.variant === undefined ? [] : [`Variant:    ${variantLine(record.variant)}`]),
     `Started:    ${record.startedAt} (${formatRunDuration(record)})`,
     `Items:      ${String(counts.collected)} collected, ${guardedItems(counts)}, ` +
       `${String(counts.classified)} classified, ${selectedItems(counts)}, ` +

@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart TD
-  record["RunRecord"] --> head["Week, Profile, Started, Items, Winner, Delivered, Guards off, Timings"]
+  record["RunRecord"] --> head["Week, Profile, Variant (if any), Started, Items, Winner, Delivered, Guards off, Timings"]
   record --> rejected["Rejected: one line per draft that did not pass"]
   record --> failed["Source failed: one line per failed source"]
   record --> error["Error: message and step"]
@@ -25,6 +25,10 @@ flowchart TD
 - A record with `counts.guardedCandidates` (0 when the run ended before that step) ran the model
   guards after `process`: `Items:` says `after the rule guard` and `N selected (model guards checked
 M)`. Older records, and runs with `models.rescoreWithWriter`, say `after guards`.
+- A record with `variant` (a second run of the week) gets a `Variant:` line after `Profile:`:
+  `enriched`, `enriched (added: id1, id2)` (kind `add-sources`), `complete` or `perspective: <topic>`.
+  No line without it, so older output is unchanged. The topic and ids are operator text; `show.ts`
+  cleans control and bidi characters from the whole text.
 - The summary redacts nothing: `show.ts` cleans and redacts the whole text.
 
 ## Files

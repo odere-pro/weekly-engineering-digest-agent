@@ -20,6 +20,7 @@ export interface HistoryCommandDeps {
 }
 
 const DEFAULT_LIMIT = 12;
+const VARIANT_MARK = '*';
 const COLUMN_GAP = '  ';
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -47,12 +48,21 @@ export async function historyCommand(
     const loaded = await io.loadConfig({ configPath: options.config });
     const store = io.createFsRunStore({ dataDir: loaded.config.dataDir });
     const runs = await store.listRuns(options.limit ?? DEFAULT_LIMIT);
-    io.stdout(runs.length === 0 ? 'No runs yet.\n' : `${formatRunTable(runs)}\n`);
+    io.stdout(
+      runs.length === 0 ? 'No runs yet.\n' : `${formatRunTable(runs)}\n${variantLegend(runs)}`,
+    );
     return ExitCode.Sent;
   } catch (error) {
     io.stderr(`${errorMessage(error)}\n`);
     return error instanceof DigestError ? error.exitCode : ExitCode.Failed;
   }
+}
+
+/** The line under the table that explains the mark, only when a row has it. */
+function variantLegend(runs: readonly RunRecord[]): string {
+  return runs.some((run) => run.variant !== undefined)
+    ? `${VARIANT_MARK} a variant digest was sent\n`
+    : '';
 }
 
 /** Week, status, collected → digest items, duration and winner, one run per line. */
@@ -62,7 +72,7 @@ function formatRunTable(runs: readonly RunRecord[]): string {
     header,
     ...runs.map((run) => [
       run.runId,
-      run.status,
+      run.variant === undefined ? run.status : `${run.status}${VARIANT_MARK}`,
       `${run.counts.collected} → ${run.counts.digestItems}`,
       formatRunDuration(run),
       run.winner ?? '-',

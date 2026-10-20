@@ -22,6 +22,9 @@ flowchart TD
 - `Items` is `collected → digestItems`; `Winner` is `-` when no draft won. Columns are padded to the
   widest cell, two spaces apart, and trailing spaces are cut.
 
+- A week whose record has a `variant` shows `sent*` in `Status`; the line `* a variant digest was
+sent` follows the table only when some row has the mark. Without one the output is unchanged.
+
 ## Rules
 
 - Read only: no app, no lock, no model. It redacts nothing, because `redactStore` cleaned every
