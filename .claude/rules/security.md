@@ -22,3 +22,5 @@ Every collected item is untrusted web text. These hold in every change:
 6. **Guards are switchable, checks are not.** A disabled guard is recorded in `run.json` and
    named in the digest footer.
 7. **Supply chain.** No new dependencies on issue branches; versions are pinned in the lockfile.
+   pnpm refuses versions under 14 days old (`pnpm-workspace.yaml`), and Dependabot proposes
+   updates only after the same cooldown (`.github/dependabot.yml`).

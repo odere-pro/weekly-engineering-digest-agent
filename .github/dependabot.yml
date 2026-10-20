@@ -1,0 +1,34 @@
+# Weekly update PRs for npm packages, the pinned GitHub Actions SHAs and the Docker base images.
+# The 14-day cooldown matches pnpm's minimumReleaseAge (pnpm-workspace.yaml): no version younger
+# than two weeks is proposed, so a malicious release has time to be found and pulled first.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    open-pull-requests-limit: 5
+    groups:
+      production:
+        dependency-type: production
+      development:
+        dependency-type: development
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14

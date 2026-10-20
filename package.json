@@ -33,7 +33,7 @@
     "knip": "knip",
     "dupes": "jscpd",
     "analyze": "pnpm knip && pnpm dupes",
-    "lint:actions": "uvx zizmor@1.30.1 --offline .github/workflows",
+    "lint:actions": "uvx zizmor@1.30.1 --offline .github",
     "check": "pnpm typecheck && pnpm lint && pnpm knip && pnpm format:check && pnpm test && pnpm docs:mermaid && pnpm build",
     "eval:record": "tsx evals/recordWeeks.ts"
   },
