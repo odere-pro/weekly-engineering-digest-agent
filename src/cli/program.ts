@@ -1,5 +1,6 @@
 // CLI wiring. Every command is registered here once; each handler lives in its own folder.
 import { Command, InvalidArgumentError } from 'commander';
+import pkg from '../../package.json' with { type: 'json' };
 import { doctorCommand } from './doctor/doctor';
 import { evalCommand } from './eval/eval';
 import { feedbackCommand } from './feedback/feedback';
@@ -29,6 +30,7 @@ export function buildProgram(setExitCode: (code: number) => void): Command {
   const program = new Command()
     .name('digest')
     .description('Weekly digest of the AI and platform engineering releases that matter.')
+    .version(pkg.version, '-V, --version')
     .option('-c, --config <path>', 'path to digest.config.json', 'digest.config.json')
     .showHelpAfterError();
 

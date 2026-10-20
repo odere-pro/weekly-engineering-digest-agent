@@ -14,6 +14,7 @@ import { runDigest } from '../../digest/runDigest';
 import { type DigestDeps, type RunOptions, type RunResult } from '../../digest/types';
 import { ExitCode } from '../../domain/schemas';
 import { DigestError, errorMessage } from '../../shared/errors';
+import { parseSince } from '../fetch/plan/parseSince';
 import { formatRunDuration } from '../history/history';
 
 export interface RunCommandOptions {
@@ -38,9 +39,6 @@ export interface RunCommandDeps {
   stderr: (text: string) => void;
 }
 
-const SINCE_PATTERN = /^(\d+)d$/;
-const MIN_SINCE_DAYS = 1;
-const MAX_SINCE_DAYS = 31;
 const LABEL_WIDTH = 'Duration'.length;
 
 /** The command's output channels; everything printed passes through the secret redaction. */
@@ -154,18 +152,6 @@ function withOut(loaded: LoadedConfig, dir: string | undefined): LoadedConfig {
       delivery: { ...delivery, markdown: { ...delivery.markdown, dir } },
     },
   };
-}
-
-/** "7d" is 7 days. Undefined means "use the configured window". */
-function parseSince(since: string | undefined): number | undefined {
-  if (since === undefined) return undefined;
-  const days = Number(SINCE_PATTERN.exec(since)?.[1]);
-  if (!Number.isInteger(days) || days < MIN_SINCE_DAYS || days > MAX_SINCE_DAYS) {
-    throw new DigestError(
-      `Invalid --since "${since}". Use a number of days from ${MIN_SINCE_DAYS}d to ${MAX_SINCE_DAYS}d, for example 7d.`,
-    );
-  }
-  return days;
 }
 
 /** What `saveDryRunCopy` did: `error` is set when the write failed. */

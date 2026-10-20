@@ -1,11 +1,14 @@
+import { posix } from 'node:path';
 import { DigestError } from '../shared/errors';
 import { parseSimpleCron, type SimpleCron } from './simpleCron';
 
 export interface OsScheduleOptions {
   cron: string;
   /**
-   * Absolute command line, e.g. "/usr/local/bin/digest run". It is written as is, so the caller
-   * quotes it for the target OS. On Windows it may not contain quotes or cmd.exe operators.
+   * Command line whose program is an absolute path, e.g. "/usr/local/bin/digest run". It is
+   * written as is, so the caller quotes it for the target OS. launchd and systemd do not search
+   * PATH, so on macOS and Linux a program that is not absolute is refused. On Windows it may
+   * not contain quotes or cmd.exe operators.
    */
   command: string;
   workingDir: string;
@@ -43,6 +46,7 @@ export function renderOsSchedule(os: NodeJS.Platform, options: OsScheduleOptions
   }
   assertSafeValue('command', options.command);
   assertSafeValue('working directory', options.workingDir);
+  if (os !== 'win32') assertAbsoluteProgram(options.command);
   return renderer(parseSimpleCron(options.cron), options);
 }
 
@@ -60,6 +64,23 @@ function assertSafeValue(label: string, value: string): void {
   }
   if (value.endsWith('\\')) {
     throw new DigestError(`The ${label} for the OS schedule must not end with a backslash.`);
+  }
+}
+
+/**
+ * launchd runs the command through /bin/sh with a bare PATH, and systemd refuses an ExecStart
+ * that is not an absolute path. Either way a unit with a bare "digest" installs fine and then
+ * never runs, so refuse it here. The program is the first word, or the first quoted string.
+ */
+function assertAbsoluteProgram(command: string): void {
+  const program = /^\s*(?:"([^"]*)"|(\S+))/.exec(command);
+  const first = program?.[1] ?? program?.[2] ?? '';
+  if (!posix.isAbsolute(first)) {
+    throw new DigestError(
+      `The command for the OS schedule must start with an absolute path, but it starts with ` +
+        `"${first}". launchd and systemd do not search PATH, so the schedule would never run. ` +
+        'Use the full path of the program, e.g. "/usr/local/bin/digest run".',
+    );
   }
 }
 

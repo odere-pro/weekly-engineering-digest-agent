@@ -32,6 +32,7 @@ export const VALID_CONFIG = join(CONFIG_FIXTURES, 'valid.config.json');
 export const MISSING_ENV = join(CONFIG_FIXTURES, 'missing.env');
 export const DATA_DIR = '/srv/digest/data';
 export const ENV_PATH = '/srv/digest/.env';
+export const CONFIG_PATH = '/srv/digest/digest.config.json';
 export const FEED_URL = 'https://example.com/feed.xml';
 export const GITHUB_URL = 'https://github.com/acme/tool';
 export const ATOM_FEED =
@@ -89,6 +90,11 @@ export interface Setup {
   envStatError?: Error;
   /** Text of the .env file. */
   envText?: string;
+  /**
+   * Text of digest.config.json as the loader read it. Default: `config` as JSON, so the file on
+   * the fake disk agrees with the config the fake loader returns.
+   */
+  configText?: string;
   /** Makes reading the .env file fail. */
   envReadError?: Error;
   /** Directories that exist; others are missing (ENOENT). */
@@ -127,6 +133,10 @@ function fakeDisk(setup: Setup): Map<string, FsEntry> {
       content: setup.envText ?? '',
     });
   }
+  disk.set(CONFIG_PATH, {
+    kind: 'file',
+    content: setup.configText ?? JSON.stringify(setup.config ?? {}),
+  });
   for (const [path, entry] of Object.entries(setup.fs ?? {})) disk.set(path, entry);
   return disk;
 }
@@ -165,7 +175,7 @@ export function loadedFor(setup: Setup = {}): LoadedConfig {
     env: { OLLAMA_URL: 'http://localhost:11434', LOG_LEVEL: 'info', ...setup.hostEnv },
     secrets: setup.secrets ?? {},
     profile,
-    configPath: '/srv/digest/digest.config.json',
+    configPath: CONFIG_PATH,
     platform: setup.loadedPlatform ?? platform,
   };
 }

@@ -2,7 +2,9 @@
 // would not render fails `pnpm check` and CI instead of showing an error on the page.
 // No browser: a jsdom window supplies the few DOM globals that Mermaid (DOMPurify, d3) looks for.
 //
-// usage: node scripts/check-mermaid.mjs [file.md ...]   (no files: every tracked *.md file)
+// usage: node scripts/check-mermaid.mjs [file.md ...]
+// No files: every *.md file git knows (tracked or new), minus what .gitignore excludes. A new doc
+// that is not staged yet is checked too, so a broken diagram fails here and not first in CI.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -25,11 +27,12 @@ async function installDom() {
 /** The files to check as `{ label, path }`: the label is what a failure prints. */
 function filesToCheck(args) {
   if (args.length > 0) return args.map((arg) => ({ label: arg, path: arg }));
-  const tracked = execFileSync('git', ['-C', REPO_ROOT, 'ls-files', '-z', '*.md'], {
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  return tracked
+  const listed = execFileSync(
+    'git',
+    ['-C', REPO_ROOT, 'ls-files', '-z', '--cached', '--others', '--exclude-standard', '*.md'],
+    { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
+  );
+  return listed
     .split('\0')
     .filter((name) => name !== '')
     .map((name) => ({ label: name, path: join(REPO_ROOT, name) }));

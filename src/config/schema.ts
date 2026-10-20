@@ -190,12 +190,22 @@ export type Secrets = z.infer<typeof SecretsSchema>;
 
 export const SECRET_KEYS = Object.keys(SecretsSchema.shape) as (keyof Secrets)[];
 
+/**
+ * http(s) only. A bare `localhost:11434` parses as a URL whose scheme is `localhost:`, and
+ * `ftp://x` is one too; both would fail later as a misleading "unknown scheme" error.
+ */
+const httpUrl = () =>
+  z.url({
+    protocol: /^https?$/,
+    error: 'must be a URL that starts with http:// or https://',
+  });
+
 /** Non-secret environment settings. */
 export const EnvSchema = z.object({
-  OLLAMA_URL: z.url().default('http://localhost:11434'),
+  OLLAMA_URL: httpUrl().default('http://localhost:11434'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   /** Set to enable OpenTelemetry traces (e.g. http://localhost:4318/v1/traces). */
-  OTEL_EXPORTER_OTLP_ENDPOINT: z.url().optional(),
+  OTEL_EXPORTER_OTLP_ENDPOINT: httpUrl().optional(),
   /**
    * The OS and CPU of the machine Ollama runs on, when it differs from this process (the app in
    * a Linux container, Ollama on a Mac host). Values as `uname -s` / `uname -m` or Node's

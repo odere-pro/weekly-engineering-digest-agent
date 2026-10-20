@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { harness, SCHEDULE } from '../__fixtures__/initHarness';
+import type { InitIo } from '../types';
 import {
   defaultScheduleProgram,
   quoteIfSpaced,
@@ -53,6 +54,61 @@ describe('scheduleSection', () => {
     expect(text).toContain('No OS schedule snippet is available (renderOsSchedule failed).');
     expect(text).toContain('"digest run"');
     expect(text).toContain('"digest serve"');
+  });
+
+  describe('when the schedule runs a build that is not there yet', () => {
+    const BUILT = resolve('/repo/dist/artifacts/cli.js');
+    const programWith = (script: string): InitIo => ({
+      ...harness().io,
+      scheduleProgram: [process.execPath, script].map(quoteIfSpaced).join(' '),
+    });
+
+    it('warns above the snippet to run pnpm build first, and still prints the snippet', () => {
+      const text = scheduleSection(
+        programWith(BUILT),
+        '/work/digest.config.json',
+        CRON,
+        () => false,
+      );
+
+      expect(text).toContain(`Warning: ${BUILT} does not exist yet`);
+      expect(text).toContain('Run "pnpm build" first');
+      expect(text.indexOf('pnpm build')).toBeLessThan(text.indexOf(SCHEDULE.content));
+      expect(text).toContain(`save this as ${SCHEDULE.path}`);
+      expect(text).toContain(SCHEDULE.content);
+    });
+
+    it('asks about the script the program runs, unquoted', () => {
+      const asked: string[] = [];
+      const spaced = resolve('/my repo/dist/artifacts/cli.js');
+
+      scheduleSection(programWith(spaced), '/work/digest.config.json', CRON, (path) => {
+        asked.push(path);
+        return true;
+      });
+
+      expect(asked).toEqual([spaced]);
+    });
+
+    it('prints no warning once the build exists', () => {
+      const text = scheduleSection(
+        programWith(BUILT),
+        '/work/digest.config.json',
+        CRON,
+        () => true,
+      );
+
+      expect(text).not.toContain('Warning');
+      expect(text).not.toContain('pnpm build');
+    });
+
+    it('does not look at the disk for an installed digest command', () => {
+      const text = scheduleSection(harness().io, '/work/digest.config.json', CRON, () => {
+        throw new Error('the disk must not be read');
+      });
+
+      expect(text).not.toContain('Warning');
+    });
   });
 
   it('prints the reason when the platform has no snippet', () => {
@@ -128,13 +184,23 @@ describe('defaultScheduleProgram', () => {
   });
 
   it.each(['index.ts', 'index.tsx', 'index.mts', 'index.cts'])(
-    'falls back to the installed digest command for the TypeScript entry %s (a dev run through tsx)',
+    'runs the built CLI of the repo for the TypeScript entry %s (a dev run through tsx)',
     (script) => {
       process.argv = [process.execPath, `/repo/src/cli/${script}`];
 
-      expect(defaultScheduleProgram()).toBe('digest');
+      expect(defaultScheduleProgram()).toBe(
+        [process.execPath, resolve('/repo/dist/artifacts/cli.js')].map(quoteIfSpaced).join(' '),
+      );
     },
   );
+
+  it('quotes the built CLI path when the repo folder has spaces', () => {
+    process.argv = [process.execPath, '/my repo/src/cli/index.ts'];
+
+    expect(
+      defaultScheduleProgram().endsWith(` "${resolve('/my repo/dist/artifacts/cli.js')}"`),
+    ).toBe(true);
+  });
 
   it('falls back to the installed digest command when there is no script', () => {
     process.argv = [process.execPath];

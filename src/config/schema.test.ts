@@ -224,6 +224,38 @@ describe('config schema', () => {
     });
   });
 
+  describe.each(['OLLAMA_URL', 'OTEL_EXPORTER_OTLP_ENDPOINT'] as const)('%s', (key) => {
+    const parse = (value: string) => EnvSchema.safeParse({ [key]: value });
+
+    it.each([
+      'http://localhost:11434',
+      'http://ollama:11434',
+      'https://host',
+      'https://host:4318/v1/traces',
+    ])('accepts %s', (value) => {
+      expect(parse(value).success).toBe(true);
+    });
+
+    it.each(['localhost:11434', 'host.docker.internal:11434', 'ftp://x', 'ws://host', 'not a url'])(
+      'rejects %s',
+      (value) => {
+        expect(parse(value).success).toBe(false);
+      },
+    );
+
+    it('says the value must start with http:// or https://, without echoing it', () => {
+      const result = parse('localhost:s3cr3t');
+      const message = JSON.stringify(result.error?.issues);
+      expect(message).toContain('http:// or https://');
+      expect(message).not.toContain('s3cr3t');
+    });
+  });
+
+  it('keeps the OTLP endpoint optional', () => {
+    expect(EnvSchema.safeParse({}).success).toBe(true);
+    expect(EnvSchema.parse({}).OTEL_EXPORTER_OTLP_ENDPOINT).toBeUndefined();
+  });
+
   it('separates secrets from env settings', () => {
     expect(SECRET_KEYS).toEqual(['SMTP_PASSWORD', 'SLACK_WEBHOOK_URL', 'GITHUB_TOKEN']);
     expect(SecretsSchema.parse({})).toEqual({});

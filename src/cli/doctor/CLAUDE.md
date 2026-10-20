@@ -13,7 +13,7 @@ flowchart LR
   doctor -.->|"loadConfig"| cfg[("digest.config.json, .env")]
   doctor -.->|"health()"| mp[[ModelProvider]] -.-> ollama[(Ollama)]
   doctor -.->|"one item per source"| feeds[("feed hosts, api.github.com")]
-  doctor -.->|"stat, lstat, access, readFile"| disk[("data dir, markdown dir, .env")]
+  doctor -.->|"stat, lstat, access, readFile"| disk[("config file, data dir, markdown dir, .env")]
   doctor -->|"lines, summary, exit code"| out[("stdout")]
   init["cli/init"] -.->|"errorCode, fitsRam, formatGiB, QUALITY_TIGHT_RAM"| doctor
   classDef focus stroke-width:3px
@@ -28,7 +28,7 @@ flowchart TD
   mode -->|no| load["tryLoadConfig"]
   load -->|"fails"| bad["one config error line with a fix; no other check"] --> code
   load -->|ok| health["health() once: Ollama version and models"]
-  health --> checks["checks in a fixed order: config, ollama, version, apple silicon, models, think, sources, markdown, email, slack, .env, .env values, guards, data dir"]
+  health --> checks["checks in a fixed order: config, config keys, ollama, version, apple silicon, models, think, sources, markdown, email, slack, .env, .env values, guards, schedule, data dir"]
   checks --> report["report: lines, summary, secrets removed"] --> code["exit code: 1 if any error, else 0"]
 ```
 
@@ -36,6 +36,10 @@ flowchart TD
   version and models. A broken feed is a warning, because a run skips that feed.
 - The platform judged is the one the loader resolved for the profile, so a bad `DIGEST_HOST_OS` is a
   config error and the checks judge the host the profile was chosen for.
+- `ConfigSchema` strips unknown keys, so a typo is dropped without a word. `checkUnknownKeys` reads
+  the config file again (`DoctorIo.readFile`) and warns per key the schema lacks, with "did you mean".
+  `checkSchedule` builds the croner job as `startScheduler` does, so `serve` and doctor refuse the
+  same cron and zone.
 
 ## Rules
 
@@ -43,8 +47,9 @@ flowchart TD
   `stat`, `lstat`, `readFile`, `access`, stdout. Tests replace it with a fake machine.
 - Output never carries a secret: `report` redacts the whole text, and the `.env` checks name a key
   and a line, never a value.
-- An error is a missing model, an old Ollama, a blocked folder or a missing secret; a warning (a
-  feed that fails, a loose `.env`, a guard switched off) never fails the exit code.
+- An error is a missing model, an old Ollama, a blocked folder, a missing secret or a schedule that
+  `serve` would refuse; a warning (a feed that fails, a loose `.env`, a guard switched off, an
+  unknown config key) never fails the exit code.
 - A folder here never imports `doctor.ts`; shared types go in `types.ts`.
 
 ## Files

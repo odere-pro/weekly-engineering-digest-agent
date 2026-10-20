@@ -10,7 +10,9 @@ import { checkDelivery } from './checks/delivery';
 import { checkAppleSilicon, checkOllama } from './checks/host';
 import { checkGuards } from './checks/guards';
 import { checkModels, checkThink } from './checks/models';
+import { checkSchedule } from './checks/schedule';
 import { checkSources, SOURCE_TIMEOUT_MS } from './checks/sources';
+import { checkUnknownKeys } from './checks/unknownKeys';
 import { checkEnvFile, checkEnvValues } from './envFile/envFile';
 import { checkWritableDir, dataDirCheck } from './folders/writableDir';
 import { readinessCommand } from './readiness/readiness';
@@ -64,6 +66,7 @@ export async function doctorCommand(
   const health = await io.createProvider(loaded.value, io.fetch).health();
   const results: CheckResult[] = [
     ok('config', `loaded ${loaded.value.configPath} (profile ${config.profile})`),
+    ...(await checkUnknownKeys(loaded.value.configPath, io)),
     ...checkOllama(health, loaded.value),
     // The platform the loader resolved the profile for, so the checks judge the same host.
     checkAppleSilicon(loaded.value, loaded.platform),
@@ -74,6 +77,7 @@ export async function doctorCommand(
     await checkEnvFile(io),
     ...(await checkEnvValues(io)),
     checkGuards(config.guards),
+    checkSchedule(config.schedule, io.clock),
     await checkWritableDir(dataDirCheck(config.dataDir), io),
   ];
   return report(results, io.stdout, loaded.value.secrets);

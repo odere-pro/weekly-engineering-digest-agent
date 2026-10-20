@@ -23,6 +23,10 @@ import { runCli } from './tuneThresholds';
 vi.mock('../src/config/load', () => ({ loadConfig: vi.fn() }));
 vi.mock('../src/app/container', () => ({ buildApp: vi.fn() }));
 
+// `localDate` names a file after the machine's calendar day, so the clock is set from local parts:
+// local noon on 2026-10-17 is that day in every time zone, and the expected names can be literal.
+const CAPTURE_CLOCK = fixedClock(new Date(2026, 9, 17, 12));
+
 // The command line: arguments in, exit code and text out. What each command does is tested
 // beside it in thresholds/cli/.
 
@@ -43,7 +47,7 @@ describe('runCli', () => {
   function io(overrides: Partial<CliIo> = {}): Partial<CliIo> {
     return {
       outDir: dir,
-      clock: fixedClock('2026-10-17T10:00:00Z'),
+      clock: CAPTURE_CLOCK,
       stdout: (text) => out.push(text),
       stderr: (text) => err.push(text),
       ...overrides,
@@ -87,7 +91,7 @@ describe('runCli', () => {
   it('captures with the session the config opens and saves the raw outputs', async () => {
     let closed = false;
     const code = await runCli(
-      ['capture', '--config', 'data/thresholds/light.json'],
+      ['capture', '--config', 'dist/thresholds/light.json'],
       captureIo(scriptedModel(), () => (closed = true)),
     );
     expect(code).toBe(0);
@@ -103,7 +107,7 @@ describe('runCli', () => {
     const seen: (string | undefined)[] = [];
     const scripted = scriptedModel();
     const code = await runCli(
-      ['capture', '--config', 'data/thresholds/light.json'],
+      ['capture', '--config', 'dist/thresholds/light.json'],
       io({
         openCapture: (configPath) => {
           seen.push(configPath);
@@ -113,7 +117,7 @@ describe('runCli', () => {
       }),
     );
     expect(code).toBe(0);
-    expect(seen).toEqual(['data/thresholds/light.json']);
+    expect(seen).toEqual(['dist/thresholds/light.json']);
   });
 
   it('saves a capture with failed calls but exits 1 and counts them', async () => {
@@ -207,11 +211,11 @@ describe('runCli wiring', () => {
     vi.mocked(loadConfig).mockResolvedValue(loaded);
     vi.mocked(buildApp).mockResolvedValue(handle);
     const err: string[] = [];
-    const code = await runCli(['capture', '--config', 'data/thresholds/light.json'], {
+    const code = await runCli(['capture', '--config', 'dist/thresholds/light.json'], {
       stderr: (text) => err.push(text),
     });
     expect(code).toBe(1);
-    expect(loadConfig).toHaveBeenCalledWith({ configPath: 'data/thresholds/light.json' });
+    expect(loadConfig).toHaveBeenCalledWith({ configPath: 'dist/thresholds/light.json' });
     expect(buildApp).toHaveBeenCalledWith(loaded);
     expect(err.join('')).toContain('tuneThresholds failed: Ollama is not reachable: ECONNREFUSED');
     expect(closed()).toBe(1);

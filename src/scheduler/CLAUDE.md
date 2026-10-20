@@ -59,7 +59,9 @@ flowchart TD
 - OS schedules take only `m h * * dow` (weekday: `*`, number with 0 and 7 as Sunday, name, list or
   range), else `DigestError`; a new shape needs all three renderers and tests. They fire in the
   machine's time zone, not `schedule.timeZone`. Values are escaped per format; Windows refuses
-  `" & | < > ^ %`. The systemd timer is `Persistent`.
+  `" & | < > ^ %`. The systemd timer is `Persistent`. macOS and Linux refuse a command whose program
+  is not an absolute path: launchd and systemd do not search PATH, so a bare `digest` would install
+  and never run.
 
 ## Files
 

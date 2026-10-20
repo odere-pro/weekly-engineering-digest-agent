@@ -24,9 +24,10 @@ fixes which time zone decides the ISO week id.
 - `timeZone` is an IANA name such as `Europe/Berlin`. The default is the zone of the process
   that loads the file. A container runs on UTC unless `TZ` is set in `.env` or the shell. That is
   why `digest init` asks for the zone and writes it.
-- The config check does not test either value. `digest doctor` does not either. `digest serve`
-  does, at start-up, and stops with `Invalid schedule (cron "...", time zone "..."): <reason>` and
-  exit code 1.
+- The config check only needs both to be non-empty. `digest doctor` tests them the way `digest
+serve` does and prints `✓ schedule: next run <time>`, or a `✗ schedule:` line with the same
+  `Invalid schedule (cron "...", time zone "..."): <reason>` text and a `fix:` line. `digest
+serve` tests them at start-up and stops with that text and exit code 1.
 - The ISO week id comes from `timeZone` too, for `serve` and for `digest run`. A Monday run near
   midnight lands in the week of the local calendar, not UTC. The day folder of `digest fetch` and
   the day of a log file (`dist/logs/<day>/digest.log`) come from `timeZone` as well.

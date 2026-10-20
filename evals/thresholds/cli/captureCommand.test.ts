@@ -7,8 +7,12 @@ import { fixedClock } from '../../../src/shared/clock';
 import { captureDeps, evalSet, scriptedModel, type Scripted } from '../__fixtures__/captureKit';
 import { RawCaptureSchema } from '../capture/schemas';
 import { captureCommand } from './captureCommand';
-import { localDate } from './files';
 import type { CaptureSession, CliIo } from './io';
+
+// `localDate` names a file after the machine's calendar day, so each clock is set from local parts:
+// local noon on a day is that day in every time zone, and the expected names can be literal.
+const CAPTURE_CLOCK = fixedClock(new Date(2026, 9, 17, 12));
+const LATER_CLOCK = fixedClock(new Date(2026, 10, 3, 12));
 
 let dir: string;
 let out: string[];
@@ -41,7 +45,7 @@ function io(scripted: Scripted, overrides: Partial<CliIo> = {}, onClose?: () => 
   return {
     casesDir: '/unused',
     outDir: dir,
-    clock: fixedClock('2026-10-17T10:00:00Z'),
+    clock: CAPTURE_CLOCK,
     stdout: (text) => out.push(text),
     stderr: (text) => err.push(text),
     openCapture: () => Promise.resolve(session(scripted, onClose)),
@@ -56,7 +60,7 @@ describe('captureCommand', () => {
   it('captures with the session the config opens and saves the raw outputs', async () => {
     let closed = false;
     const code = await captureCommand(
-      { config: 'data/thresholds/light.json', force: false },
+      { config: 'dist/thresholds/light.json', force: false },
       io(scriptedModel(), {}, () => (closed = true)),
     );
     expect(code).toBe(0);
@@ -75,7 +79,7 @@ describe('captureCommand', () => {
     const seen: (string | undefined)[] = [];
     const scripted = scriptedModel();
     await captureCommand(
-      { config: 'data/thresholds/light.json', force: false },
+      { config: 'dist/thresholds/light.json', force: false },
       io(scripted, {
         openCapture: (configPath) => {
           seen.push(configPath);
@@ -83,7 +87,7 @@ describe('captureCommand', () => {
         },
       }),
     );
-    expect(seen).toEqual(['data/thresholds/light.json']);
+    expect(seen).toEqual(['dist/thresholds/light.json']);
   });
 
   it('reports progress on stderr, starting with the profile and its models', async () => {
@@ -136,10 +140,8 @@ describe('captureCommand', () => {
 
   it('names the file after the local date of the clock and the profile', async () => {
     const scripted = scriptedModel();
-    const later = io(scripted, { clock: fixedClock('2026-11-03T12:00:00Z') });
+    const later = io(scripted, { clock: LATER_CLOCK });
     await captureCommand(options, later);
-    expect(await readdir(join(dir, 'raw'))).toEqual([
-      `${localDate('2026-11-03T12:00:00Z')}-light.json`,
-    ]);
+    expect(await readdir(join(dir, 'raw'))).toEqual(['2026-11-03-light.json']);
   });
 });

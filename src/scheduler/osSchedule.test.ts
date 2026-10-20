@@ -44,7 +44,10 @@ describe('renderOsSchedule darwin', () => {
   it('escapes XML in the command and the working directory', () => {
     const { content } = renderOsSchedule(
       'darwin',
-      options({ command: 'digest run && echo "<done>"', workingDir: '/tmp/a&b' }),
+      options({
+        command: '/usr/local/bin/digest run && echo "<done>"',
+        workingDir: '/tmp/a&b',
+      }),
     );
 
     expect(content).toContain('digest run &amp;&amp; echo &quot;&lt;done&gt;&quot;');
@@ -271,6 +274,40 @@ describe('renderOsSchedule cron parsing', () => {
     expect(renderOsSchedule('win32', options()).installHint).toMatch(
       /\(cmd\.exe\), not PowerShell/,
     );
+  });
+
+  it.each([
+    ['a bare command', 'digest run'],
+    ['a relative path', './bin/digest run'],
+    ['a home shortcut', '~/bin/digest run'],
+    ['a variable', '$HOME/bin/digest run'],
+    ['a quoted relative path', '"bin/my digest" run'],
+  ])(
+    'rejects %s on macOS and Linux, where launchd and systemd do not search PATH',
+    (_label, command) => {
+      for (const os of ['darwin', 'linux'] as const) {
+        const attempt = (): unknown => renderOsSchedule(os, options({ command }));
+
+        expect(attempt).toThrow(DigestError);
+        expect(attempt).toThrow(/command.*absolute path/);
+      }
+    },
+  );
+
+  it.each([
+    ['a plain path', '/usr/local/bin/digest run'],
+    ['a quoted path with spaces', '"/opt/my tools/node" "/opt/my tools/cli.js" run'],
+    ['an absolute node and script', '/usr/local/bin/node /srv/digest/dist/artifacts/cli.js run'],
+  ])('accepts %s as the program', (_label, command) => {
+    for (const os of ['darwin', 'linux'] as const) {
+      expect(() => renderOsSchedule(os, options({ command }))).not.toThrow();
+    }
+  });
+
+  it('does not check the program on Windows, where a scheduled task keeps the user PATH', () => {
+    const { content } = renderOsSchedule('win32', options({ command: 'digest run' }));
+
+    expect(content).toContain('&& digest run"');
   });
 
   it('rejects a platform it has no generator for', () => {

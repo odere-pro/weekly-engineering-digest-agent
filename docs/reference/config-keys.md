@@ -3,7 +3,8 @@
 Part of [Reference](README.md).
 
 Every key of `digest.config.json`, from `src/config/schema.ts`. Only `focusAreas` and `sources`
-are required. A key with a default may be left out. Unknown keys are ignored without a warning.
+are required. A key with a default may be left out. A run ignores unknown keys; `digest doctor`
+warns about each one.
 `sources[*]` means each entry of the `sources` list; `<role>` is one of `classify`,
 `guardPolicy`, `guardRisk`, `write`, `judge`.
 

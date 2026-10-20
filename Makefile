@@ -2,6 +2,7 @@
 
 install:
 	pnpm install --frozen-lockfile
+	git config core.hooksPath .githooks
 
 check:
 	pnpm check

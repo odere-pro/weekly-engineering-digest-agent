@@ -20,19 +20,19 @@ A usage error (unknown command or option, missing argument) prints help and exit
 
 ## Commands at a glance
 
-| Command           | What it does                                                       | Exit codes |
-| ----------------- | ------------------------------------------------------------------ | ---------- |
-| `init`            | Ask for focus areas, delivery and profile; write config and `.env` | 0, 1       |
-| `doctor`          | Check Ollama, models, feeds, delivery, `.env`, guards, data folder | 0, 1       |
-| `run`             | One full run                                                       | 0, 1, 2, 3 |
-| `eval`            | Replay the eval set and print the scorecard                        | 0, 1       |
-| `fetch`           | Fetch the sources only, no models                                  | 0, 1       |
-| `show <week>`     | Print a run's saved data                                           | 0, 1       |
-| `preview <week>`  | Render a run's digest for each channel into files                  | 0, 1       |
-| `history`         | List past runs                                                     | 0, 1       |
-| `feedback <week>` | Turn ticks in `review.md` into eval labels                         | 0, 1       |
-| `serve`           | Run the weekly scheduler in the foreground                         | 0, 1       |
-| `help [command]`  | Show help                                                          |            |
+| Command           | What it does                                                                              | Exit codes |
+| ----------------- | ----------------------------------------------------------------------------------------- | ---------- |
+| `init`            | Ask for focus areas, delivery and profile; write config and `.env`                        | 0, 1       |
+| `doctor`          | Check config keys, Ollama, models, feeds, delivery, `.env`, guards, schedule, data folder | 0, 1       |
+| `run`             | One full run                                                                              | 0, 1, 2, 3 |
+| `eval`            | Replay the eval set and print the scorecard                                               | 0, 1       |
+| `fetch`           | Fetch the sources only, no models                                                         | 0, 1       |
+| `show <week>`     | Print a run's saved data                                                                  | 0, 1       |
+| `preview <week>`  | Render a run's digest for each channel into files                                         | 0, 1       |
+| `history`         | List past runs                                                                            | 0, 1       |
+| `feedback <week>` | Turn ticks in `review.md` into eval labels                                                | 0, 1       |
+| `serve`           | Run the weekly scheduler in the foreground                                                | 0, 1       |
+| `help [command]`  | Show help                                                                                 |            |
 
 Meaning of each code: [exit codes](exit-codes.md). A week id looks like `2026-W42`.
 
@@ -55,9 +55,14 @@ asks before overwriting. Needs no Ollama.
 | `--readiness` | off     | Print the machine summary and a verdict for every profile |
 
 Prints one line per check with `✓`, `!` or `✗`, a `fix:` line for each problem, and
-`Doctor: all checks passed.` or `Doctor: N errors, M warnings.` Checks: `config`, `ollama`,
-`ollama version`, `apple silicon`, `model <tag>`, `think`, `source <id>`, `markdown`, `email`,
-`slack`, `.env`, `.env values`, `guards`, `data dir`. A bad feed is a warning, not an error. With no
+`Doctor: all checks passed.` or `Doctor: N errors, M warnings.` Checks: `config`,
+`config key "<path>"`, `ollama`, `ollama version`, `apple silicon`, `model <tag>`, `think`,
+`source <id>`, `markdown`, `email`, `slack`, `.env`, `.env values`, `guards`, `schedule`,
+`data dir`. A bad feed is a warning, not an error. `config key` is a warning for each key in
+`digest.config.json` that no setting has, with a "did you mean" when one known key is close
+(`topn` for `topN`): a run ignores such a key. `schedule` is `✓ next run <time>` when `serve`
+accepts `schedule.cron` and `schedule.timeZone`, and a `✗` with the same `Invalid schedule` text
+`serve` stops with when it does not. With no
 `delivery.markdown.dir`, the `markdown` line says digests go to each week's folder in the data
 folder, which `data dir` checks.
 `--readiness` works without a config and calls only Ollama.

@@ -21,9 +21,10 @@ lives, how it is checked, and when a change takes effect.
 - Only `focusAreas` and `sources` are required. Everything else has a default.
 - Every command that needs the config reads and checks it at the start. A problem stops the
   command and names the field.
-- Unknown keys are ignored without a warning. A typo such as `windowDay` is dropped and the
-  default for `windowDays` applies. Compare your keys with the
-  [config keys reference](../reference/config-keys.md) when a setting seems to do nothing.
+- A run ignores unknown keys. A typo such as `windowDay` is dropped and the default for
+  `windowDays` applies. `digest doctor` warns about each one (`! config key "windowDay": ...`)
+  and names the key it looks like (`did you mean "windowDays"?`), so run it after editing the
+  file. The [config keys reference](../reference/config-keys.md) lists every key.
 - The file holds no secrets. A source URL with `user:pass@` is refused. Secrets go in
   [`.env`](environment.md).
 

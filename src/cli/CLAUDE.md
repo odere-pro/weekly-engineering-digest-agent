@@ -72,8 +72,10 @@ flowchart TD
 - A new command or option needs the coordinator (`program.ts`, `index.ts` are frozen); a field added
   to a handler's options type does nothing until `program.ts` registers its flag. Tests pin printed
   text, table headers and `fix:` lines.
+  `program.test.ts` replaces every handler and pins the options each flag delivers (`FLAG_CASES`), so
+  a renamed flag or a new one without a row fails there.
 - Some folders import a sibling: `run`, `show/summary` and `fetch/report` take the duration helpers
-  from `history/history`; `init` takes the RAM check and its measured wording from
+  from `history/history`; `run` takes `parseSince` from `fetch/plan/parseSince.ts`; `init` takes the RAM check and its measured wording from
   `doctor/readiness/memory.ts` and `errorCode` from `doctor/errorCode.ts`; `eval.ts` imports `evals/`.
   `test/integration/harness/runCli.ts` calls `runCommand`.
 - `fetch/fetch.tap.test.ts` lets only `fetch/sourceRun/{buildFetchers,recorder,types}.ts` among the

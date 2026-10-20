@@ -59,7 +59,9 @@ time (and the ISO week) in.
   ```
 
 - Convert `nextRun` to your zone: it must be the day and hour you wanted.
-- `pnpm digest doctor` does not look at the schedule. Only `serve` rejects a bad value, at start.
+- `pnpm digest doctor` has a `schedule` line: `✓ schedule: next run <time>` (UTC), or a `✗` with
+  the same `Invalid schedule` text that `serve` stops with at start, so a bad value is caught
+  before a container crash-loops.
 
 ## Roll back
 

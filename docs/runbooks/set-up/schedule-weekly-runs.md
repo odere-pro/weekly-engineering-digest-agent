@@ -47,9 +47,10 @@ current week at once if the Monday slot has passed and the week is not `sent`, `
 ### B. An OS timer
 
 1. `digest init` printed a snippet and a save path. If you no longer have it, write the file by
-   hand from the examples below. The command inside must use absolute paths. A snippet made by
-   `pnpm digest init` says plain `digest run`, which only works when a `digest` command is on the
-   scheduler's PATH. After `pnpm build`, use `node /abs/path/dist/artifacts/cli.js run`.
+   hand from the examples below. The command inside must use absolute paths. Run through
+   `pnpm digest init`, the snippet runs `<node> <clone>/dist/artifacts/cli.js run`. That file only
+   exists after `pnpm build`: if it is missing, `init` prints a warning above the snippet. Run
+   `pnpm build` before you install the timer.
 2. macOS: save the plist as `~/Library/LaunchAgents/dev.eng-digest.weekly.plist`, then:
 
    ```bash
@@ -101,13 +102,14 @@ The snippet takes only a cron of the form `m h * * dow`. Anything else needs you
 
 ## Troubleshooting
 
-| Symptom                                                  | Cause                                                    | Fix                                                            |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
-| The job ran at the wrong hour                            | OS timers use local time; a container uses UTC           | Match the zone, or set `schedule.timeZone` for `serve`.        |
-| `digest: command not found` in the job log               | The snippet says plain `digest`                          | Use the absolute `node .../dist/artifacts/cli.js run` command. |
-| `No OS schedule snippet is available`                    | Platform not supported, or the cron is not `m h * * dow` | Use `serve`, or call `digest run` from your own scheduler.     |
-| The Windows snippet is refused (quote or `& \| < > ^ %`) | `cmd.exe` would act on those characters                  | Use a path without them, or point at a wrapper script.         |
-| Nothing ran while the machine was off                    | An OS timer has no catch-up (except systemd)             | Run `pnpm digest run` by hand, or use `serve`.                 |
+| Symptom                                                  | Cause                                                                                         | Fix                                                            |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| The job ran at the wrong hour                            | OS timers use local time; a container uses UTC                                                | Match the zone, or set `schedule.timeZone` for `serve`.        |
+| `digest: command not found` in the job log               | A hand-written unit says plain `digest`                                                       | Use the absolute `node .../dist/artifacts/cli.js run` command. |
+| The job fails with `Cannot find module .../cli.js`       | The snippet was installed before `pnpm build`                                                 | Run `pnpm build` in the clone, then start the job again.       |
+| `No OS schedule snippet is available`                    | Platform not supported, the cron is not `m h * * dow`, or the command is not an absolute path | Use `serve`, or call `digest run` from your own scheduler.     |
+| The Windows snippet is refused (quote or `& \| < > ^ %`) | `cmd.exe` would act on those characters                                                       | Use a path without them, or point at a wrapper script.         |
+| Nothing ran while the machine was off                    | An OS timer has no catch-up (except systemd)                                                  | Run `pnpm digest run` by hand, or use `serve`.                 |
 
 ## Related
 

@@ -55,6 +55,7 @@ describe('doctorCommand', () => {
         'markdown',
         '.env',
         'guards',
+        'schedule',
         'data dir',
       ]) {
         expect(resultFor(text, '✓', `${label}:`), label).toBeDefined();

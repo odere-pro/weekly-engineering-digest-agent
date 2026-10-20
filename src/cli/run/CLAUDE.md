@@ -50,7 +50,7 @@ flowchart TD
   exits 1, whatever the run's own code was.
 - File lines list what is on disk. A resumed week whose markdown channel took the digest in another
   folder prints no path; the HTML line appears only when the page exists.
-- `--since` is `Nd` with 1 to 31 days, `--seed` a whole number of 0 or more (checked again here:
+- `--since` is `Nd` with 1 to 31 days (`parseSince`, shared with `fetch/plan/parseSince.ts`), `--seed` a whole number of 0 or more (checked again here:
   library callers skip commander), `--out` not blank. `withSeed` and `withOut` return new configs.
 - The app is closed in `finally`. A failed close prints `Warning: could not close the app cleanly`
   and changes neither the exit code nor the run's error.
