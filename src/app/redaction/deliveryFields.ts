@@ -40,6 +40,8 @@ const MESSAGE_RULES: FieldRules<DigestMessage> = {
   subject: text,
   markdown: text,
   view: (view, redactor) => redactFields(view, VIEW_RULES, redactor),
+  // A slug built in code from `[a-z0-9-]`; it becomes a file name, so it must stay as it is.
+  variant: unchanged,
 };
 
 const NOTE_RULES: FieldRules<FailureNote> = {

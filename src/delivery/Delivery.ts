@@ -6,6 +6,8 @@ export interface DigestMessage {
   markdown: string;
   /** The laid-out digest; channels without it fall back to `markdown`. */
   view?: DigestView;
+  /** A second run's variant slug (`enriched`, `complete`, `perspective-<topic>`); none for the week's own digest. */
+  variant?: string;
 }
 
 export interface FailureNote {
