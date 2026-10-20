@@ -20,19 +20,29 @@ name. Run commands as `pnpm digest <command>`. In Docker the prefix is
 `docker compose run --rm digest <command>`; on a Mac `make docker-init` and `make docker-up` wrap
 `init` and `up`.
 
-| Command           | What it does                                                                        |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| `init`            | Asks for focus areas, profile, time zone and delivery; writes the config and `.env` |
-| `doctor`          | One line per check with a `fix:` hint; `--readiness` gives a verdict per profile    |
-| `run`             | One full run: `--since`, `--dry-run`, `--force`, `--seed`, `--out`                  |
-| `eval`            | Runs the eval set for `--profile <name>` or `all` and prints the scorecard          |
-| `fetch`           | Fetches the sources only, with no models, into `dist/<day>/<source>/`               |
-| `show <week>`     | Prints a saved run; `--part` picks items, scores, drafts, digest, run or review     |
-| `preview <week>`  | Renders the digest for markdown, email and Slack into the week's `digest/preview/`  |
-| `history`         | Lists the last 12 runs (`-n` changes the count)                                     |
-| `feedback <week>` | Turns the ticks in `review.md` into `dist/feedback/<week>.json`                     |
-| `serve`           | Runs the weekly scheduler in the foreground (the Docker Compose service)            |
+| Command           | What it does                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| `init`            | Asks for focus areas, profile, time zone and delivery; writes the config and `.env`                |
+| `doctor`          | One line per check with a `fix:` hint; `--readiness` gives a verdict per profile                   |
+| `run`             | One full run: `--since`, `--dry-run`, `--force`, `--seed`, `--out`, and the second-run flags below |
+| `eval`            | Runs the eval set for `--profile <name>` or `all` and prints the scorecard                         |
+| `fetch`           | Fetches the sources only, with no models, into `dist/<day>/<source>/`                              |
+| `show <week>`     | Prints a saved run; `--part` picks items, scores, drafts, digest, run or review                    |
+| `preview <week>`  | Renders the digest for markdown, email and Slack into the week's `digest/preview/`                 |
+| `history`         | Lists the last 12 runs (`-n` changes the count)                                                    |
+| `feedback <week>` | Turns the ticks in `review.md` into `dist/feedback/<week>.json`                                    |
+| `serve`           | Runs the weekly scheduler in the foreground (the Docker Compose service)                           |
 
+- A second `run` in a week that is `sent` or `dry-run` opens a menu when stdin and stdout are a
+  terminal and `--force` is not given: `Rerun to enrich digest`, `Add sources and enrich digest`,
+  `Generate complete digest with events`, `Rerun with new perspective`, `Skip` (the default).
+  The flags do the same without the menu, for scripts and Docker, one at a time: `--enrich`,
+  `--complete`, `--perspective <topic>`, `--add-source <url...>`. The variant is written beside the
+  week's digest as `<week>-enriched`, `<week>-complete` or `<week>-perspective-<slug>` (`.md` and
+  `.html`). A terminal is asked `Send to email, slack?` (default no); without a terminal a flag
+  sends, and `--dry-run` only writes the files. A sent variant adds `variant` to `run.json`. Exit
+  codes are the build's, or 1 when a file or a send failed. See
+  [run again](../runbooks/run/run-again.md).
 - Exit codes: 0 sent, dry-run, skipped or fine; 1 failed; 2 blocked; 3 quiet. `doctor` exits 1 on
   any error, and `eval` exits 1 when a hard gate fails. A handler never exits the process itself.
 - `init --yes` takes the defaults and refuses to overwrite an existing config. `.env` is merged,
@@ -63,7 +73,7 @@ name. Run commands as `pnpm digest <command>`. In Docker the prefix is
   Exit 0 can hide a fallback digest (no model wrote it): look for `Winner    fallback` in the `run` output.
 - `serve` does not see config changes after it starts. Restart it. See
   [stopping and restarts](../operations/stopping-and-restarts.md).
-- Common tasks: [run now](../runbooks/run/run-now.md), [dry run](../runbooks/run/dry-run.md),
+- Common tasks: [run now](../runbooks/run/run-now.md), [run again](../runbooks/run/run-again.md), [dry run](../runbooks/run/dry-run.md),
   [preview a week](../runbooks/run/preview-a-week.md) and
   [fetch sources only](../runbooks/run/fetch-sources-only.md).
 

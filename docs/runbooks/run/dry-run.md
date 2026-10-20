@@ -44,6 +44,8 @@ passed, it runs the week for real.
 
 If the week is already `sent`, a plain dry run ends `skipped`. With `--dry-run --force` it runs,
 but it never replaces the sent record or the week's files, and it writes no digest files. The summary then says the week's run folder is unchanged.
+To build a second digest beside a sent one (`--enrich`, `--complete`, `--perspective`,
+`--add-source`), see [Run again](run-again.md).
 
 ## Verify
 

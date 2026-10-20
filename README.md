@@ -65,6 +65,10 @@ pnpm digest doctor          # checks Ollama, models, feeds; prints a fix for eac
 pnpm digest run --dry-run   # a full run that sends nothing
 ```
 
+A second `pnpm digest run` in a week that already has a digest offers to enrich it, add sources,
+list every release or favour a topic (flags: `--enrich`, `--complete`, `--perspective`,
+`--add-source`): see [run again](docs/runbooks/run/run-again.md).
+
 Pull the models first with `ollama pull <tag>`; `doctor` prints the exact line for each missing
 model. The digest lands in `dist/<monday>/digest/` (the `./dist` folder in Docker). Docker setup and
 scheduling: [getting started](docs/overview/getting-started.md).

@@ -14,7 +14,9 @@ Every channel then gets a new digest.
 - Not for a week that only reached some channels: a plain `digest run` finishes those with no model
   call. See [Resume a partial delivery](../recover/resume-partial-delivery.md).
 - Not for a week that failed before any channel got it: a plain `digest run` already starts over.
-- To try a week without sending a second digest, use [Dry run](dry-run.md). More recovery
+- To try a week without sending a second digest, use [Dry run](dry-run.md).
+- To keep the sent digest and add a second one (more items, more sources, every release, or a
+  new topic), use [Run again](run-again.md). More recovery
   options: [Re-run a week](../recover/re-run-a-week.md).
 
 ## Prerequisites

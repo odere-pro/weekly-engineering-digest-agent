@@ -73,6 +73,7 @@ Start a run, rehearse one, replay a week, measure quality. [Folder index](run/RE
 | [Fetch sources only](run/fetch-sources-only.md) | Fetch the configured feeds the way a run does, with no models, and save the raw responses and the parsed items.                                                         |
 | [Force a week](run/force-a-week.md)             | Run a week again from scratch with `digest run --force`, even though it already has a sent digest.                                                                      |
 | [Preview a week](run/preview-a-week.md)         | Render a saved run's winning draft the way each channel shows it (Markdown, email, Slack) into files you can open.                                                      |
+| [Run again](run/run-again.md)                   | Make a second digest for a week that already has one: enrich it, add sources, list every release, or favour a topic. The week's own digest stays as it is.              |
 | [Run evals](run/run-evals.md)                   | Replay the recorded weeks and the labeled cases through the real pipeline and models, and print a scorecard with 18 measurements and a pass or fail for the hard gates. |
 | [Run now](run/run-now.md)                       | Produce this week's digest and deliver it to every configured channel right away, instead of waiting for the schedule.                                                  |
 

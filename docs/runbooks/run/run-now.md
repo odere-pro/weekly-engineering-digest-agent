@@ -12,7 +12,8 @@ waiting for the schedule.
 - The week has no digest yet and you do not want to wait for Monday.
 - A week ended `failed` and you fixed the cause.
 - To try the pipeline without sending, use [Dry run](dry-run.md).
-- To run a week that is already `sent`, use [Force a week](force-a-week.md).
+- To run a week that is already `sent`, use [Force a week](force-a-week.md), or
+  [Run again](run-again.md) to add a second digest beside it.
 - A week that reached only some channels is finished by a plain `digest run`:
   see [Resume a partial delivery](../recover/resume-partial-delivery.md).
 
